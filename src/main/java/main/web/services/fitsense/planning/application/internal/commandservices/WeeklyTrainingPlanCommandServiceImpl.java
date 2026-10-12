@@ -37,6 +37,13 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     private final ExternalConfigurationService externalConfigurationService;
     private final JsonSupport jsonSupport;
 
+    /**
+     * Que hacer con el veredicto de cobertura 4C antes de generar. Propiedad y
+     * no despliegue: la cuenta entra siempre, bloquear es otra decision.
+     */
+    private final main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement
+            coveragePregeneration;
+
     public WeeklyTrainingPlanCommandServiceImpl(WeeklyTrainingPlanRepository planRepository,
                                                 PlannedWorkoutRepository plannedWorkoutRepository,
                                                 PlanGenerationPipeline pipeline,
@@ -45,7 +52,12 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                                                 ExternalProfilingService externalProfilingService,
                                                 ExternalCatalogService externalCatalogService,
                                                 ExternalConfigurationService externalConfigurationService,
-                                                JsonSupport jsonSupport) {
+                                                JsonSupport jsonSupport,
+                                                @org.springframework.beans.factory.annotation.Value(
+                                                        "${fitsense.coverage.pregeneration:OBSERVE}")
+                                                String coveragePregeneration) {
+        this.coveragePregeneration = main.web.services.fitsense.planning.domain.services
+                .SlotCoverageEnforcement.parse(coveragePregeneration);
         this.planRepository = planRepository;
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.pipeline = pipeline;
@@ -99,6 +111,22 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         if (eligible.isEmpty())
             throw new main.web.services.fitsense.catalog.domain.exceptions.EmptyEligibleSetException(
                     command.userId());
+
+        // COMPROBACION PREVIA DE COBERTURA 4C.
+        //
+        // Va AQUI y no antes: se valora el conjunto que de verdad le queda al
+        // participante, despues de equipamiento, dificultad efectiva, bloqueos
+        // y las restricciones de SafetyProfile. Contarlo sobre el catalogo
+        // entero mediria un conjunto que nadie va a recibir.
+        //
+        // Es lo unico que el Step 4 aporta y el backend no tenia: decir
+        // "no factible" ANTES de gastar tres intentos de IA mas el motor de
+        // reglas. No cambia la dosis ni toca el conjunto elegible.
+        //
+        // La decision vive en SlotCoverageGate, que es dominio puro: asi se
+        // prueba sin Spring, sin base y sin Replicate.
+        main.web.services.fitsense.planning.domain.services.SlotCoverageGate
+                .evaluateBeforeGeneration(command.userId(), eligible, coveragePregeneration);
 
         short weekNumber = resolveWeekNumber(command.userId(), previousActive.orElse(null));
         var previousWeek = previousWeekAssembler.assemble(

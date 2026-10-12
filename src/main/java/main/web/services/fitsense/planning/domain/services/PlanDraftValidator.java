@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class PlanDraftValidator {
 
+    private static final org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger(PlanDraftValidator.class);
+
     /** Pisos de 18.4. No dependen de configuracion porque son limites de seguridad. */
     private static final int MIN_EXERCISES_PER_SESSION = 2;
     private static final int MIN_SETS = 2;
@@ -31,8 +34,38 @@ public class PlanDraftValidator {
 
     private final SessionDurationEstimator durationEstimator;
 
-    public PlanDraftValidator(SessionDurationEstimator durationEstimator) {
+    /**
+     * Como se trata un incumplimiento de cobertura 4C. Propiedad, no despliegue:
+     * el codigo entra entero y esto decide si bloquea. Ver
+     * {@link SlotCoverageEnforcement}.
+     */
+    private final SlotCoverageEnforcement coverageEnforcement;
+
+    /**
+     * La anotacion Autowired de abajo es obligatoria, no decoracion: con dos
+     * constructores publicos y ninguno marcado, Spring no sabe cual usar y el
+     * contexto NO arranca.
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    public PlanDraftValidator(
+            SessionDurationEstimator durationEstimator,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${fitsense.coverage.enforcement:OBSERVE}")
+            String coverageEnforcement) {
         this.durationEstimator = durationEstimator;
+        this.coverageEnforcement = SlotCoverageEnforcement.parse(coverageEnforcement);
+    }
+
+    /** Para pruebas y para construirlo sin contenedor. */
+    public PlanDraftValidator(SessionDurationEstimator durationEstimator,
+                              SlotCoverageEnforcement coverageEnforcement) {
+        this.durationEstimator = durationEstimator;
+        this.coverageEnforcement = coverageEnforcement == null
+                ? SlotCoverageEnforcement.OBSERVE : coverageEnforcement;
+    }
+
+    public SlotCoverageEnforcement coverageEnforcement() {
+        return coverageEnforcement;
     }
 
     public void validate(PlanDraft draft, PlanGenerationContext context, int durationToRepsDivisor) {
@@ -44,6 +77,7 @@ public class PlanDraftValidator {
 
         validateExercisesAndDays(draft, context, eligible, problems);
         validateFocusCoverage(draft, eligible, problems);
+        validateWeeklySlotCoverage(draft, context, eligible, problems);
         validateSessions(draft, context, problems);
         validateVolumeTarget(draft, context, durationToRepsDivisor, problems);
         validateLoads(draft, context, problems);
@@ -225,6 +259,79 @@ public class PlanDraftValidator {
                 });
             }
         }
+    }
+
+    /**
+     * V23: COBERTURA SEMANAL DE LOS CUATRO SLOTS OBLIGATORIOS (Step 4C §5).
+     * <p>
+     * Es una comprobacion de SEMANA, no de sesion, y por eso no cabe dentro de
+     * V15: V15 pregunta si cada entrenamiento respeta su enfoque y lo hace con
+     * {@code body_part}; esta pregunta si la semana entera toca los cuatro
+     * patrones de 4C y lo hace con {@code movement_pattern}. Son dos datos
+     * distintos y una no implica la otra: un FULL_BODY con sentadilla, press y
+     * remo pasa V15 y se deja LOWER_HIP sin tocar.
+     * <p>
+     * NO MIRA LA DOSIS. Ni series, ni repeticiones, ni descanso, ni carga: solo
+     * si cada slot aparece al menos una vez en la semana.
+     * <p>
+     * LO QUE SE EXIGE NO ES SIEMPRE LOS CUATRO. Se exige la interseccion de los
+     * cuatro slots con los que el conjunto elegible puede cubrir. Exigir un slot
+     * que el conjunto elegible no contiene rechazaria el plan por algo que el
+     * generador no puede arreglar, y el final de ese camino es
+     * {@code PlanGenerationFailedException}: semana sin plan y adherencia NULL.
+     * El propio pipeline dice que esa perdida de datos es irrecuperable. Que un
+     * slot este vacio es un hallazgo de la comprobacion PREVIA, en
+     * {@code prepare()}, no un motivo para dejar al participante sin semana.
+     * <p>
+     * El modo lo decide {@code fitsense.coverage.enforcement}. En OBSERVE la
+     * cuenta se registra y no se rechaza nada, que es como hay que medir esto
+     * durante la primera ronda antes de activarlo.
+     */
+    private void validateWeeklySlotCoverage(PlanDraft draft, PlanGenerationContext context,
+                                            Map<Long, CandidateExercise> eligible,
+                                            List<String> problems) {
+        if (!coverageEnforcement.mide()) return;
+
+        var disponible = SlotCoveragePolicy.ofEligible(context.availableExercises());
+        var cubierto = SlotCoveragePolicy.ofDraft(draft, eligible);
+        var exigibles = SlotCoveragePolicy.requiredOf(disponible);
+
+        var faltan = exigibles.stream().filter(slot -> cubierto.count(slot) == 0).toList();
+
+        // Si la semana no tiene posiciones para todos los slots exigibles, no se
+        // puede cumplir por aritmetica, no por mala eleccion. REDUCE_VOLUME con
+        // REDUCE_DAYS deja dos sesiones de dos ejercicios: cuatro posiciones.
+        int posiciones = SlotCoveragePolicy.exercisePositions(draft);
+        boolean caben = posiciones >= exigibles.size();
+
+        log.info("Cobertura 4C del usuario {} semana {}: elegible [{}] · borrador [{}] · "
+                        + "exigibles {} · faltan {} · posiciones {} · modo {}",
+                context.userId(), context.weekNumber(), disponible.describe(),
+                cubierto.describe(), exigibles, faltan, posiciones, coverageEnforcement);
+
+        if (faltan.isEmpty()) return;
+
+        boolean bloquea = coverageEnforcement.bloqueaA(draft.source())
+                && (caben || coverageEnforcement == SlotCoverageEnforcement.ENFORCE_ALWAYS);
+
+        if (!bloquea) {
+            log.warn("Cobertura 4C incumplida para el usuario {} y NO se rechaza "
+                            + "(modo {}, origen {}, caben={}): faltan {}. "
+                            + "Slots disponibles en el conjunto elegible: {}.",
+                    context.userId(), coverageEnforcement, draft.source(), caben, faltan,
+                    disponible.describe());
+            return;
+        }
+
+        problems.add(("V23: la semana no cubre %s. Step 4C exige que la semana toque los cuatro "
+                + "patrones obligatorios cuando hay ejercicios para ellos. Hay %s elegibles para "
+                + "esos patrones. Cambia algun ejercicio por uno de ese patron sin tocar series, "
+                + "repeticiones ni descansos: el volumen total no debe cambiar.")
+                .formatted(
+                        faltan.stream().map(Enum::name).collect(Collectors.joining(", ")),
+                        faltan.stream()
+                                .map(slot -> slot.name() + "=" + disponible.count(slot))
+                                .collect(Collectors.joining(", "))));
     }
 
     /** Validaciones 4, 5, 7, 9 y 10. */

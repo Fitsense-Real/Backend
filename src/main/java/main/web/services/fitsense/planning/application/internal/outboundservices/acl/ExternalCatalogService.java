@@ -45,7 +45,11 @@ public class ExternalCatalogService {
                         profile.blockedExerciseIds(),
                         safety.excludeHighImpact(),
                         safety.excludeFloorWork(),
-                        safety.excludeAxialLoad())
+                        safety.excludeAxialLoad(),
+                        safety.excludeKneeling(),
+                        safety.excludeHanging(),
+                        safety.excludeOverhead(),
+                        safety.excludeInversion())
                 .stream()
                 .filter(view -> !BODY_PARTS_OUTSIDE_FOCUS.contains(view.bodyPartCode()))
                 // Estiramientos fuera del trabajo principal (hallazgo M): son
@@ -60,7 +64,10 @@ public class ExternalCatalogService {
                         view.equipmentCode(),
                         view.difficultyLevel(),
                         view.isDurationBased() ? PrescriptionType.DURATION : PrescriptionType.SETS_REPS,
-                        view.targetMuscle()))
+                        view.targetMuscle(),
+                        // V26, para la cobertura de los cuatro slots de 4C. Se
+                        // pasa tal cual: la traduccion a slots es de planning.
+                        view.movementPattern()))
                 .toList();
     }
 

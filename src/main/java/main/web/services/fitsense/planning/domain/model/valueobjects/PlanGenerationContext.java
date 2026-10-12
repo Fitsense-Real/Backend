@@ -54,9 +54,22 @@ public record PlanGenerationContext(
      * lo mismo que verifica V16); constraints.rep_limits pasa a max_reps y se
      * retira min_reps_for_level; se suma prompt_version.
      * <p>
+     * GEN-IN-1.9: cada available_exercise suma movement_pattern (V26, Step 3A).
+     * Es un campo ANADIDO: nada se quita ni cambia de nombre, asi que un lector
+     * de GEN-IN-1.8 sigue entendiendo un snapshot 1.9 y al contrario. Sube la
+     * version porque el VALIDADOR lo usa para la cobertura de los cuatro slots
+     * de 4C, y el contrato de input_snapshot es que una validacion se pueda
+     * reproducir meses despues con lo que el snapshot guarda.
+     * <p>
+     * NO sube principles_version ni prompt_version: el texto que recibe la IA no
+     * cambia. Consecuencia conocida y aceptada: la IA ve el dato pero no una
+     * instruccion de cubrir los cuatro slots, asi que la cobertura al primer
+     * intento queda al azar y es el mensaje de rechazo del reintento el que se
+     * la ensena. Cambiar eso exige subir P-1.2, que esta congelado.
+     * <p>
      * Los snapshots antiguos siguen siendo legibles con su version.
      */
-    public static final String SCHEMA_VERSION = "GEN-IN-1.8";
+    public static final String SCHEMA_VERSION = "GEN-IN-1.9";
 
     /**
      * Dificultad maxima efectiva: la del perfil, salvo que el ajuste ordene

@@ -207,7 +207,22 @@ public record PlanInputSnapshot(
              * numero que verifica V16 (RepLimits.minRepsFor con zona y nivel).
              * null en los de duracion o sin limites en la configuracion.
              */
-            @JsonProperty("min_reps") Integer minReps) {}
+            @JsonProperty("min_reps") Integer minReps,
+            /**
+             * GEN-IN-1.9: patron de movimiento del Step 3A (V26).
+             * <p>
+             * Viaja porque el VALIDADOR lo usa, y el contrato de este tipo es
+             * que todo lo que el validador necesita este aqui: «una validacion
+             * puede reproducirse meses despues». Sin este campo, la cobertura de
+             * 4C se habria calculado con un dato que el snapshot no guarda, y un
+             * rechazo por cobertura no se podria reproducir desde la evidencia.
+             * <p>
+             * No cambia el TEXTO del prompt. La IA recibe el campo pero ninguna
+             * instruccion sobre el: el texto de principios P-1.2 esta congelado
+             * y subirlo es una decision de diseno del estudio, no una
+             * consecuencia tecnica de esta validacion.
+             */
+            @JsonProperty("movement_pattern") String movementPattern) {}
 
     public static PlanInputSnapshot of(PlanGenerationContext context) {
         var profile = context.profile();
@@ -290,7 +305,8 @@ public record PlanInputSnapshot(
                         candidate.defaultPrescription() == null ? null
                                 : candidate.defaultPrescription().name(),
                         candidate.targetMuscle(),
-                        minRepsOrNull(candidate, limites, profile.fitnessLevel()))));
+                        minRepsOrNull(candidate, limites, profile.fitnessLevel()),
+                        candidate.movementPattern())));
 
         var random = new java.util.Random(
                 context.userId() * 1_000_003L + context.weekStartDate().toEpochDay());
