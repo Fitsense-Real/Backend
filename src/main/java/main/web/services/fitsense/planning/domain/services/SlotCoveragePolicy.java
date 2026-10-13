@@ -4,6 +4,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateEx
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SlotCoverage;
+import main.web.services.fitsense.planning.domain.model.valueobjects.WeeklySlotDistribution;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -86,6 +87,65 @@ public final class SlotCoveragePolicy {
             }
         }
         return new SlotCoverage(Map.copyOf(counts), fuera, sinPatron);
+    }
+
+    /**
+     * DISTRIBUCION SEMANAL. Cuantas veces aparece cada slot y EN CUANTOS DIAS
+     * DISTINTOS.
+     * <p>
+     * Se anade porque contar colocaciones engana: en el plan 4 del 12/10/2026
+     * {@code LOWER_HIP} tenia 2 colocaciones y las dos el mismo dia. La
+     * cobertura daba la semana por buena y el participante entrenaba cadena
+     * posterior una sola vez.
+     * <p>
+     * SOLO OBSERVA. No participa en {@link #requiredOf} ni en ninguna decision
+     * de aceptacion: la concentracion de un patron en un dia NO es un
+     * incumplimiento de 4C, es un dato que hay que reunir antes de decidir si
+     * merece una regla.
+     * <p>
+     * El dia se cuenta por FECHA, no por sesion ni por ejercicio: dos
+     * ejercicios de cadera el miercoles son un dia. Si dos sesiones cayeran en
+     * la misma fecha -que V12 ya rechaza- seguirian contando como un dia.
+     */
+    public static WeeklySlotDistribution distributionOf(PlanDraft draft,
+                                                        Map<Long, CandidateExercise> eligible) {
+        var fechas = draft == null || draft.workouts() == null ? List.<java.time.LocalDate>of()
+                : draft.workouts().stream()
+                .filter(Objects::nonNull)
+                .map(PlanDraft.DraftWorkout::scheduledDate)
+                .filter(Objects::nonNull)
+                .distinct()
+                .sorted()
+                .toList();
+
+        var porSlot = new java.util.LinkedHashMap<MandatorySlot, List<Integer>>();
+        for (var slot : MandatorySlot.ALL) {
+            var ceros = new java.util.ArrayList<Integer>();
+            fechas.forEach(fecha -> ceros.add(0));
+            porSlot.put(slot, ceros);
+        }
+
+        if (draft != null && draft.workouts() != null) {
+            for (var workout : draft.workouts()) {
+                if (workout == null || workout.exercises() == null
+                        || workout.scheduledDate() == null) continue;
+                int indice = fechas.indexOf(workout.scheduledDate());
+                if (indice < 0) continue;
+                for (var exercise : workout.exercises()) {
+                    if (exercise == null) continue;
+                    var candidate = eligible == null ? null
+                            : eligible.get(exercise.exerciseId());
+                    var slot = MandatorySlot.of(candidate);
+                    if (slot.isEmpty()) continue;
+                    var cuentas = porSlot.get(slot.get());
+                    cuentas.set(indice, cuentas.get(indice) + 1);
+                }
+            }
+        }
+
+        var inmutable = new java.util.LinkedHashMap<MandatorySlot, List<Integer>>();
+        porSlot.forEach((slot, cuentas) -> inmutable.put(slot, List.copyOf(cuentas)));
+        return new WeeklySlotDistribution(fechas, Map.copyOf(inmutable));
     }
 
     /**

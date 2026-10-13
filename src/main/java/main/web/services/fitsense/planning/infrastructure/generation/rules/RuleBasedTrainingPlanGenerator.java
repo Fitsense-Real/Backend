@@ -1,12 +1,10 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
-import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
-import main.web.services.fitsense.planning.domain.services.TrainingPlanGenerator;
+import main.web.services.fitsense.planning.domain.services.*;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -69,11 +67,11 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     // Definidos en PlanDraftNormalizer: un ejercicio de duracion se ve igual
     // venga del motor de reglas o de una propuesta de IA ya normalizada.
     private static final short DURATION_SETS =
-            main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer.DURATION_SETS;
+            PlanDraftNormalizer.DURATION_SETS;
     private static final int DURATION_SECONDS =
-            main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer.DURATION_SECONDS;
+            PlanDraftNormalizer.DURATION_SECONDS;
     private static final short DURATION_REST_SECONDS =
-            main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer.DURATION_REST_SECONDS;
+            PlanDraftNormalizer.DURATION_REST_SECONDS;
 
     private final int durationToRepsDivisor;
     private final SessionDurationEstimator durationEstimator;
@@ -96,10 +94,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         // Division semanal (WeeklySplitPlanner): la misma que recibe la IA como
         // suggested_split y la que usa el validador para sus mensajes.
         var split = context.suggestedSplit();
-        var dates = split.stream().map(main.web.services.fitsense.planning.domain.services
-                .WeeklySplitPlanner.PlannedSession::date).toList();
-        var focuses = split.stream().map(main.web.services.fitsense.planning.domain.services
-                .WeeklySplitPlanner.PlannedSession::focus).toList();
+        var dates = split.stream().map(WeeklySplitPlanner.PlannedSession::date).toList();
+        var focuses = split.stream().map(WeeklySplitPlanner.PlannedSession::focus).toList();
 
         int sessionMinutes = context.effectiveSessionMinutes();
         int exercisesPerSession = sessionMinutes < SHORT_SESSION_MINUTES
@@ -226,7 +222,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
      * devuelve el borrador tal cual. Solo baja: nunca sube nada.
      */
     private PlanDraft applyReductionCaps(PlanDraft draft, PlanGenerationContext context) {
-        var caps = main.web.services.fitsense.planning.domain.services.PlanDraftValidator.reductionCaps(context);
+        var caps = PlanDraftValidator.reductionCaps(context);
         if (caps.isEmpty()) return draft;
 
         var workouts = draft.workouts().stream()

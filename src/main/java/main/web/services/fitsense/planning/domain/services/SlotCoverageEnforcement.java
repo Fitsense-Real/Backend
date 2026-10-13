@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning.domain.services;
 
+import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
+
 /**
  * Como se trata un incumplimiento de cobertura 4C. Separa la IMPLEMENTACION de
  * su HABILITACION: el codigo entra entero y lo que decide si bloquea es una
@@ -91,12 +93,11 @@ public enum SlotCoverageEnforcement {
      * aqui para que se vea en una linea en vez de repartido por el validador.
      */
     public boolean bloqueaA(
-            main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource origen) {
+            GenerationSource origen) {
         if (!bloquea()) return false;
         if (this != ENFORCE_AI_ONLY) return true;
         // Sin origen declarado se asume lo prudente: no bloquear.
-        return origen == main.web.services.fitsense.planning.domain.model
-                .valueobjects.GenerationSource.AI;
+        return origen == GenerationSource.AI;
     }
 
     /**

@@ -3,7 +3,6 @@ package main.web.services.fitsense.planning.application.internal.commandservices
 import main.web.services.fitsense.execution.interfaces.acl.WorkoutResultView;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalExecutionService;
-import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutStatus;

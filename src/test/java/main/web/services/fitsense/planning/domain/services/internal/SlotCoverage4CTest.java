@@ -1,9 +1,10 @@
-package main.web.services.fitsense.planning.domain.services;
+package main.web.services.fitsense.planning.domain.services.internal;
 
 import main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams;
 import main.web.services.fitsense.planning.domain.exceptions.InsufficientSlotCoverageException;
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
+import main.web.services.fitsense.planning.domain.services.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,11 @@
 package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.model.valueobjects.TargetPrescription;
+import main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner;
 import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 
 import java.math.BigDecimal;
@@ -336,7 +339,7 @@ public record PlanInputSnapshot(
      * mas, nunca menos.
      */
     private static SuggestedSession suggestedSession(
-            main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.PlannedSession session,
+            WeeklySplitPlanner.PlannedSession session,
             Integer minExercises) {
         var grupos = session.focus().bodyPartCodes();
         Integer tope = (minExercises == null || grupos.size() < 3 || minExercises < 4)
@@ -373,12 +376,12 @@ public record PlanInputSnapshot(
 
     /** Mismo calculo que V16: sin limites completos en la configuracion, V16 no valida. */
     private static Integer minRepsOrNull(
-            main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise candidate,
+            CandidateExercise candidate,
             main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams.RepLimits limites,
             String fitnessLevel) {
         if (limites == null || !limites.isComplete()) return null;
         if (candidate.defaultPrescription()
-                == main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.DURATION)
+                == PrescriptionType.DURATION)
             return null;
         return limites.minRepsFor(candidate.bodyPartCode(), fitnessLevel);
     }

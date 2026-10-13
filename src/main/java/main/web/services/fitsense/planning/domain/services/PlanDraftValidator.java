@@ -309,6 +309,22 @@ public class PlanDraftValidator {
                 context.userId(), context.weekNumber(), disponible.describe(),
                 cubierto.describe(), exigibles, faltan, posiciones, coverageEnforcement);
 
+        // DESGLOSE POR DIA. Va DESPUES de generar y solo despues: antes de
+        // generar no existe reparto semanal que medir.
+        //
+        // Es observacion pura y no entra en `problems`: que un slot se
+        // concentre en un solo dia NO es un incumplimiento de 4C. Cubrir los
+        // cuatro patrones y repartirlos bien son dos cosas distintas, y hasta
+        // reunir varias generaciones no hay con que decidir si la segunda
+        // merece una regla.
+        //
+        // Lo motiva el plan 4 del 12/10/2026: LOWER_HIP con 2 colocaciones, las
+        // dos el mismo dia. La linea de arriba lo daba por bueno y habia que
+        // cruzar el JSON a mano para verlo.
+        log.info("Usuario {} · {}", context.userId(),
+                SlotCoveragePolicy.distributionOf(draft, eligible)
+                        .describe(context.weekNumber(), coverageEnforcement.name()));
+
         if (faltan.isEmpty()) return;
 
         boolean bloquea = coverageEnforcement.bloqueaA(draft.source())

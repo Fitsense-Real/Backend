@@ -4,8 +4,6 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerat
 import main.web.services.fitsense.shared.infrastructure.json.JsonSupport;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  * Arma el prompt. La entrada estructurada de 19.1 viaja como JSON dentro del
  * mensaje, tal cual se persiste en input_snapshot, para que lo que se envio y lo

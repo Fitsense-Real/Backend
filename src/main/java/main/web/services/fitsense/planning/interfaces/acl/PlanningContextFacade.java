@@ -15,7 +15,6 @@ import main.web.services.fitsense.planning.infrastructure.persistence.jpa.reposi
 import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

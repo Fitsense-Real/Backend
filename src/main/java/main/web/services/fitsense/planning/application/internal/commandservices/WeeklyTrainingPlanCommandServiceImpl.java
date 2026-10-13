@@ -1,7 +1,14 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
-import main.web.services.fitsense.planning.application.internal.outboundservices.acl.*;
-import main.web.services.fitsense.planning.domain.exceptions.*;
+import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
+import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalConfigurationService;
+import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalIamService;
+import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalProfilingService;
+import main.web.services.fitsense.planning.domain.exceptions.PlanAlreadyExistsException;
+import main.web.services.fitsense.planning.domain.exceptions.PlannedWorkoutNotFoundException;
+import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
+import main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement;
+import main.web.services.fitsense.planning.domain.services.SlotCoverageGate;
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.commands.*;
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
@@ -41,7 +48,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      * Que hacer con el veredicto de cobertura 4C antes de generar. Propiedad y
      * no despliegue: la cuenta entra siempre, bloquear es otra decision.
      */
-    private final main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement
+    private final SlotCoverageEnforcement
             coveragePregeneration;
 
     public WeeklyTrainingPlanCommandServiceImpl(WeeklyTrainingPlanRepository planRepository,
@@ -56,8 +63,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                                                 @org.springframework.beans.factory.annotation.Value(
                                                         "${fitsense.coverage.pregeneration:OBSERVE}")
                                                 String coveragePregeneration) {
-        this.coveragePregeneration = main.web.services.fitsense.planning.domain.services
-                .SlotCoverageEnforcement.parse(coveragePregeneration);
+        this.coveragePregeneration = SlotCoverageEnforcement.parse(coveragePregeneration);
         this.planRepository = planRepository;
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.pipeline = pipeline;
@@ -125,7 +131,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         //
         // La decision vive en SlotCoverageGate, que es dominio puro: asi se
         // prueba sin Spring, sin base y sin Replicate.
-        main.web.services.fitsense.planning.domain.services.SlotCoverageGate
+        SlotCoverageGate
                 .evaluateBeforeGeneration(command.userId(), eligible, coveragePregeneration);
 
         short weekNumber = resolveWeekNumber(command.userId(), previousActive.orElse(null));
@@ -279,7 +285,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
     // ------------------------------------------------------------------ helpers
 
-    private main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout requireWorkout(
+    private PlannedWorkout requireWorkout(
             Long plannedWorkoutId) {
         return plannedWorkoutRepository.findById(plannedWorkoutId)
                 .orElseThrow(() -> new PlannedWorkoutNotFoundException(plannedWorkoutId));

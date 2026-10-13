@@ -2,7 +2,10 @@ package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
-import main.web.services.fitsense.planning.domain.model.valueobjects.*;
+import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
+import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
 import main.web.services.fitsense.shared.infrastructure.json.JsonSupport;
 import org.springframework.stereotype.Component;
 

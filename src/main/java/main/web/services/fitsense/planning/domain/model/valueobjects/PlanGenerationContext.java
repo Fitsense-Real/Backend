@@ -1,6 +1,7 @@
 package main.web.services.fitsense.planning.domain.model.valueobjects;
 
 import main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams;
+import main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -100,10 +101,10 @@ public record PlanGenerationContext(
     }
 
     /** Division sugerida para la semana, igual para IA, motor de reglas y validador. */
-    public java.util.List<main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.PlannedSession>
+    public java.util.List<WeeklySplitPlanner.PlannedSession>
     suggestedSplit() {
         int sessions = Math.min(effectiveDaysPerWeek(), profile.availableDays().size());
-        return main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.plan(
+        return WeeklySplitPlanner.plan(
                 weekStartDate, profile.availableDays(), sessions, weekNumber);
     }
 
