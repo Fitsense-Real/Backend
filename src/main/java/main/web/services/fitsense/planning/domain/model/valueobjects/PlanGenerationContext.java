@@ -1,7 +1,6 @@
 package main.web.services.fitsense.planning.domain.model.valueobjects;
 
 import main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams;
-import main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -69,8 +68,30 @@ public record PlanGenerationContext(
      * la ensena. Cambiar eso exige subir P-1.2, que esta congelado.
      * <p>
      * Los snapshots antiguos siguen siendo legibles con su version.
+     * <p>
+     * GEN-IN-1.10 (P-1.3, 16/10/2026): cada available_exercise suma slot y
+     * clase_dosis, y constraints suma dosis_por_clase, max_colocaciones_dia,
+     * minutos_utiles_dia y slots_exigibles. Todo sale de MvpDosePolicy y de
+     * SlotCoveragePolicy; ningun numero se escribe a mano en el contrato.
+     * <p>
+     * Esta version SI sube principles_version y prompt_version, y cierra lo que
+     * el parrafo de 1.9 dejo declarado: la IA pasa a recibir una instruccion
+     * sobre esos campos. La decision se tomo con la medicion del plan 15
+     * delante -36, 12 y 30 incumplimientos en tres intentos, y los 11 del
+     * intento 2 todos de inversion estructural/relleno- y la aprobaron Juan el
+     * 16/10 y Daniel ese mismo dia.
+     * <p>
+     * Campos ANADIDOS otra vez: nada se quita ni cambia de nombre. Pero la
+     * compatibilidad en las dos direcciones NO se da por supuesta, que es lo
+     * que esta clase afirmo en 1.9 sin probarlo: la fijan las dos pruebas de
+     * {@code PlanInputSnapshotDosisTest}, una por direccion.
+     * <p>
+     * Solo con GAIN_MUSCLE llevan valor. Con los otros cuatro objetivos los
+     * campos viajan en null, porque el ObjectMapper de JsonSupport no tiene
+     * NON_NULL configurado: el CONTRATO cambia para los cinco, aunque la
+     * instruccion solo aparezca en uno.
      */
-    public static final String SCHEMA_VERSION = "GEN-IN-1.9";
+    public static final String SCHEMA_VERSION = "GEN-IN-1.10";
 
     /**
      * Dificultad maxima efectiva: la del perfil, salvo que el ajuste ordene
@@ -101,10 +122,10 @@ public record PlanGenerationContext(
     }
 
     /** Division sugerida para la semana, igual para IA, motor de reglas y validador. */
-    public java.util.List<WeeklySplitPlanner.PlannedSession>
+    public java.util.List<main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.PlannedSession>
     suggestedSplit() {
         int sessions = Math.min(effectiveDaysPerWeek(), profile.availableDays().size());
-        return WeeklySplitPlanner.plan(
+        return main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.plan(
                 weekStartDate, profile.availableDays(), sessions, weekNumber);
     }
 

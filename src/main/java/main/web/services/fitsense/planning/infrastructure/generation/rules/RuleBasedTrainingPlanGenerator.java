@@ -1,10 +1,12 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
-import main.web.services.fitsense.planning.domain.services.*;
+import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
+import main.web.services.fitsense.planning.domain.services.TrainingPlanGenerator;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -67,11 +69,11 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     // Definidos en PlanDraftNormalizer: un ejercicio de duracion se ve igual
     // venga del motor de reglas o de una propuesta de IA ya normalizada.
     private static final short DURATION_SETS =
-            PlanDraftNormalizer.DURATION_SETS;
+            main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer.DURATION_SETS;
     private static final int DURATION_SECONDS =
-            PlanDraftNormalizer.DURATION_SECONDS;
+            main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer.DURATION_SECONDS;
     private static final short DURATION_REST_SECONDS =
-            PlanDraftNormalizer.DURATION_REST_SECONDS;
+            main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer.DURATION_REST_SECONDS;
 
     private final int durationToRepsDivisor;
     private final SessionDurationEstimator durationEstimator;
@@ -94,12 +96,26 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         // Division semanal (WeeklySplitPlanner): la misma que recibe la IA como
         // suggested_split y la que usa el validador para sus mensajes.
         var split = context.suggestedSplit();
-        var dates = split.stream().map(WeeklySplitPlanner.PlannedSession::date).toList();
-        var focuses = split.stream().map(WeeklySplitPlanner.PlannedSession::focus).toList();
+        var dates = split.stream().map(main.web.services.fitsense.planning.domain.services
+                .WeeklySplitPlanner.PlannedSession::date).toList();
+        var focuses = split.stream().map(main.web.services.fitsense.planning.domain.services
+                .WeeklySplitPlanner.PlannedSession::focus).toList();
 
         int sessionMinutes = context.effectiveSessionMinutes();
         int exercisesPerSession = sessionMinutes < SHORT_SESSION_MINUTES
                 ? EXERCISES_SHORT_SESSION : EXERCISES_PER_SESSION;
+
+        // 4D v3, solo GAIN_MUSCLE: la dosis la fija MvpDosePolicy y el relleno
+        // tiene dos limites EXPLICITOS -el tope de colocaciones y el presupuesto
+        // de §5-, no el efecto indirecto de que una dosis mas pesada llegue
+        // antes al piso de duracion.
+        boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
+        int topeColocaciones = dosisFijada
+                ? Math.min(MvpDosePolicy.MAX_COLOC_DIA, MAX_EXERCISES_PER_SESSION)
+                : MAX_EXERCISES_PER_SESSION;
+        double presupuestoDia = dosisFijada
+                ? MvpDosePolicy.presupuestoDiarioSegundos(sessionMinutes)
+                : Double.MAX_VALUE;
 
         var random = new Random(seedFor(context));
         var recentlyUsed = new HashSet<>(context.previousWeek().exerciseIdsUsedLast7Days());
@@ -141,11 +157,21 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                         new PlanDraft.DraftWorkout(date, focus, nameOf(focus), sessionMinutes, exercises),
                         context.prescription()) < minimumMinutes;
 
-                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, true);
-                raiseSetsUntilMinimum(picked, exercises, falta, true);
-                raiseSetsUntilMinimum(picked, exercises, falta, false);
-                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, false);
-                raiseSetsUntilMinimum(picked, exercises, falta, false);
+                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, true,
+                        topeColocaciones, presupuestoDia);
+                // 4D v3: con la dosis fijada NO se suben series. El numero de
+                // series lo decide la capacidad, y subirlo para llegar al piso
+                // de duracion seria incumplir la dosis obligatoria para cumplir
+                // V20. Si con el tope de colocaciones no se llega al piso, se
+                // queda corto y V20 lo dira: es un dato, no algo que tapar
+                // rompiendo 4D.
+                if (!dosisFijada) {
+                    raiseSetsUntilMinimum(picked, exercises, falta, true);
+                    raiseSetsUntilMinimum(picked, exercises, falta, false);
+                }
+                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, false,
+                        topeColocaciones, presupuestoDia);
+                if (!dosisFijada) raiseSetsUntilMinimum(picked, exercises, falta, false);
             }
 
             // V4/V17: si el contenido supera el techo del perfil, se quitan
@@ -187,13 +213,47 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                                  List<CandidateExercise> picked,
                                  List<PlanDraft.DraftExercise> exercises,
                                  TargetPrescription prescription, PlanGenerationContext context,
-                                 java.util.function.BooleanSupplier falta, boolean respetarTopes) {
-        while (exercises.size() < MAX_EXERCISES_PER_SESSION && falta.getAsBoolean()) {
+                                 java.util.function.BooleanSupplier falta, boolean respetarTopes,
+                                 int tope, double presupuestoSegundos) {
+        while (exercises.size() < tope && falta.getAsBoolean()) {
             var extra = selector.pickAdditional(focus, picked, respetarTopes);
             if (extra.isEmpty()) return;
+
+            var nueva = toDraftExercise(extra.get(), prescription, context);
+
+            // 4D v3: no se anade nada que saque el dia del presupuesto de §5.
+            // Se comprueba ANTES de anadir, con el candidato ya convertido, para
+            // no tener que deshacerlo. Con los demas objetivos el presupuesto es
+            // infinito y esto no cambia nada.
+            if (presupuestoSegundos < Double.MAX_VALUE) {
+                double conLaNueva = costeSegundos4D(exercises) + costeSegundos4D(nueva);
+                if (conLaNueva > presupuestoSegundos) return;
+            }
+
             picked.add(extra.get());
-            exercises.add(toDraftExercise(extra.get(), prescription, context));
+            exercises.add(nueva);
         }
+    }
+
+    /** Coste del dia por 4D v2 §5, sobre lo que ya hay en la sesion. */
+    private double costeSegundos4D(List<PlanDraft.DraftExercise> exercises) {
+        double total = 0;
+        for (var e : exercises) total += costeSegundos4D(e);
+        return total;
+    }
+
+    /**
+     * Coste de una colocacion por 4D v2 §5: el descanso se cobra despues de cada
+     * serie, tambien la ultima. Las de DURACION se saltan, como en el validador:
+     * 4D v2 §4 regla 4 se abstiene con ellas, y el presupuesto queda por tanto
+     * OPTIMISTA.
+     */
+    private double costeSegundos4D(PlanDraft.DraftExercise e) {
+        if (e == null || e.prescriptionType() != PrescriptionType.SETS_REPS) return 0;
+        int series = e.plannedSets() == null ? 0 : e.plannedSets();
+        int reps = e.plannedReps() == null ? 0 : e.plannedReps();
+        int descanso = e.restSeconds() == null ? 0 : e.restSeconds();
+        return series * (reps * MvpDosePolicy.SEG_POR_REP + descanso);
     }
 
     /**
@@ -222,7 +282,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
      * devuelve el borrador tal cual. Solo baja: nunca sube nada.
      */
     private PlanDraft applyReductionCaps(PlanDraft draft, PlanGenerationContext context) {
-        var caps = PlanDraftValidator.reductionCaps(context);
+        var caps = main.web.services.fitsense.planning.domain.services.PlanDraftValidator.reductionCaps(context);
         if (caps.isEmpty()) return draft;
 
         var workouts = draft.workouts().stream()
@@ -263,6 +323,20 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 : context.previousWeek().lastLoadFor(candidate.exerciseId())
                 .map(PreviousWeekSummary.LoadReference::loadKg)
                 .orElse(null);
+
+        // 4D v3: con GAIN_MUSCLE manda MvpDosePolicy y NADA MAS. Es la unica
+        // autoridad de dosis para ese objetivo, incluida la excepcion de zona
+        // pequena, asi que aqui no se vuelven a escribir sus valores ni se
+        // aplican los de TargetPrescription. El resto de objetivos sigue por el
+        // camino de abajo, sin ningun cambio.
+        var dosis4D = MvpDosePolicy.aplicaA(context.profile().goalType())
+                ? MvpDosePolicy.dosisPara(MandatorySlot.of(candidate), candidate.bodyPartCode())
+                : Optional.<MvpDosePolicy.Dosis>empty();
+        if (dosis4D.isPresent()) {
+            var d = dosis4D.get();
+            return new PlanDraft.DraftExercise(candidate.exerciseId(), PrescriptionType.SETS_REPS,
+                    d.series(), d.reps(), null, suggestedLoad, d.descansoSegundos(), null);
+        }
 
         // Minimo por zona (migracion V20): la tabla por objetivo pone 6
         // repeticiones para fuerza, y 6 elevaciones de talon no son coherentes.

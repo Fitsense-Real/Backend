@@ -4,6 +4,8 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerat
 import main.web.services.fitsense.shared.infrastructure.json.JsonSupport;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * Arma el prompt. La entrada estructurada de 19.1 viaja como JSON dentro del
  * mensaje, tal cual se persiste en input_snapshot, para que lo que se envio y lo
@@ -14,6 +16,24 @@ public class PlanPromptBuilder {
 
     /**
      * Version del texto de reglas. Viaja en input_snapshot.prompt_version.
+     * <p>
+     * PR-1.3 (GEN-IN-1.10, P-1.3): la regla 16 y el texto del reintento ceden ante
+     * clase_dosis. Se pliegan DENTRO de PR-1.3 en vez de subir a PR-1.4 porque
+     * ningun plan se genero todavia con la version intermedia: no hay evidencia
+     * atada a ella, y el estudio queda con un solo artefacto -el prompt coherente y
+     * etiquetado- en lugar de dos que nunca se usaron por separado. Si ya hubiera
+     * corrido un plan con PR-1.3, habria que subir.
+     * <p>
+     * Lo que motivo los dos cambios, medido el 16/10: el reintento ordenaba
+     * conservar al menos los ejercicios que ya habia y anadir una serie para llegar
+     * al minimo, mientras el rechazo pedia bajar de diez colocaciones a seis y 4D
+     * fijaba las series. Ninguna propuesta podia cumplir las dos cosas.
+     * <p>
+     * Ademas sube la
+     * version porque lo que sube es el ARTEFACTO EFECTIVO: el prompt final suma los
+     * campos de dosis del snapshot y, con GAIN_MUSCLE, el punto 10 de los
+     * principios. Precision de Juan del 16/10, que corrige una premisa mia: la
+     * version registra lo que recibio el modelo, no si cambio este codigo.
      * <p>
      * PR-1.2 (GEN-IN-1.8): la regla 15 remite a las cuotas por grupo que ahora
      * trae suggested_split (en los planes 31 y 32 el dia inferior salio con casi
@@ -36,7 +56,7 @@ public class PlanPromptBuilder {
      * <p>
      * Cambiar cualquier texto de este archivo exige subir la version.
      */
-    public static final String VERSION = "PR-1.2";
+    public static final String VERSION = "PR-1.3";
 
     private final JsonSupport jsonSupport;
 
@@ -102,6 +122,9 @@ public class PlanPromptBuilder {
                     del objetivo de esta persona, y apartate de ahi ejercicio por
                     ejercicio segun los principios. No pongas la misma prescripcion
                     a todos los ejercicios.
+                    Cuando clase_dosis tenga un valor no nulo, la dosis de esa clase
+                    manda sobre target_reps y target_sets: no te apartes de ella. Los demas
+                    siguen partiendo de target_reps y target_sets.
                 17. expected_duration_minutes debe ser lo que dura el contenido
                     que prescribes, no una copia de session_minutes. El backend
                     lo recalcula asi y rechaza un desvio mayor al 20 %:
@@ -117,9 +140,11 @@ public class PlanPromptBuilder {
                     con ejercicios o series, no con descanso: rest_seconds nunca
                     supera constraints.max_rest_seconds.
                     constraints.min_exercises_per_session dice cuantos ejercicios
-                    hacen falta para llegar a ese minimo con target_sets x
-                    target_reps. Usalo como referencia al armar cada sesion: con
-                    menos ejercicios, solo llegas subiendo series o repeticiones.
+                    hacen falta para llegar a ese minimo. Se calcula con la dosis
+                    de la tabla cuando hay clase_dosis, y con target_sets x
+                    target_reps cuando no. Usalo como referencia al armar cada
+                    sesion: con menos ejercicios solo llegas subiendo series o
+                    repeticiones, y eso solo es posible si clase_dosis es null.
                 18. Recuperacion entre dias consecutivos: el mismo exercise_id
                     no se repite en dos dias seguidos, y chest, back, shoulders y
                     upper legs no se trabajan dos dias seguidos. Con dias
@@ -170,7 +195,8 @@ public class PlanPromptBuilder {
         // datos: primero lo que invalida el plan, luego el criterio para elegir
         // dentro de lo valido. El texto y su version viven en
         // PrescriptionPrinciples; la version queda en input_snapshot.
-        prompt.append('\n').append(PrescriptionPrinciples.TEXT);
+        prompt.append('\n').append(
+                PrescriptionPrinciples.textFor(context.profile().goalType()));
 
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
 
@@ -209,9 +235,12 @@ public class PlanPromptBuilder {
                 cambia solo lo necesario para resolver cada motivo y conserva lo que
                 ya estaba bien. Si un motivo nombra un exercise_id, corrige ese
                 ejercicio. Si una sesion no llega al minimo de minutos, anadele un
-                ejercicio o una serie en vez de rehacerla.
-                NO quites ejercicios ni sesiones para corregir. Cada sesion conserva
-                al menos los ejercicios que ya tenia. Si sobran de un grupo muscular,
+                ejercicio en vez de rehacerla; anade series solo si clase_dosis
+                es null y el ejercicio es SETS_REPS.
+                NO quites ejercicios ni sesiones para corregir, SALVO que un motivo
+                del rechazo exija bajar el numero de ejercicios o las series: en ese
+                caso quitalos y conserva lo demas. Fuera de ese caso, cada sesion
+                conserva al menos los ejercicios que ya tenia. Si sobran de un grupo muscular,
                 REEMPLAZALOS por otros del enfoque, nunca los elimines sin reponerlos.
                 La lista de motivos solo nombra lo que fallo esta vez: TODAS las
                 reglas siguen valiendo. Antes de responder, repasa tu nueva propuesta

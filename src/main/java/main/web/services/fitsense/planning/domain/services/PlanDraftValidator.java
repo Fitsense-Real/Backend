@@ -42,6 +42,13 @@ public class PlanDraftValidator {
     private final SlotCoverageEnforcement coverageEnforcement;
 
     /**
+     * Como se trata un incumplimiento de la dosis de 4D v2 en {@code GAIN_MUSCLE}.
+     * Propiedad, no despliegue, igual que la de cobertura. Ver
+     * {@link DoseEnforcement}.
+     */
+    private final DoseEnforcement doseEnforcement;
+
+    /**
      * La anotacion Autowired de abajo es obligatoria, no decoracion: con dos
      * constructores publicos y ninguno marcado, Spring no sabe cual usar y el
      * contexto NO arranca.
@@ -51,17 +58,38 @@ public class PlanDraftValidator {
             SessionDurationEstimator durationEstimator,
             @org.springframework.beans.factory.annotation.Value(
                     "${fitsense.coverage.enforcement:OBSERVE}")
-            String coverageEnforcement) {
+            String coverageEnforcement,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${fitsense.dose.enforcement:OBSERVE}")
+            String doseEnforcement) {
         this.durationEstimator = durationEstimator;
         this.coverageEnforcement = SlotCoverageEnforcement.parse(coverageEnforcement);
+        this.doseEnforcement = DoseEnforcement.parse(doseEnforcement);
     }
 
-    /** Para pruebas y para construirlo sin contenedor. */
+    /**
+     * Para pruebas y para construirlo sin contenedor. Deja la dosis en
+     * {@link DoseEnforcement#OFF} para que las pruebas anteriores a 4D sigan
+     * comprobando exactamente lo que comprobaban.
+     */
     public PlanDraftValidator(SessionDurationEstimator durationEstimator,
                               SlotCoverageEnforcement coverageEnforcement) {
+        this(durationEstimator, coverageEnforcement, DoseEnforcement.OFF);
+    }
+
+    /** Para probar la dosis sin contenedor. */
+    public PlanDraftValidator(SessionDurationEstimator durationEstimator,
+                              SlotCoverageEnforcement coverageEnforcement,
+                              DoseEnforcement doseEnforcement) {
         this.durationEstimator = durationEstimator;
         this.coverageEnforcement = coverageEnforcement == null
                 ? SlotCoverageEnforcement.OBSERVE : coverageEnforcement;
+        this.doseEnforcement = doseEnforcement == null
+                ? DoseEnforcement.OBSERVE : doseEnforcement;
+    }
+
+    public DoseEnforcement doseEnforcement() {
+        return doseEnforcement;
     }
 
     public SlotCoverageEnforcement coverageEnforcement() {
@@ -87,8 +115,133 @@ public class PlanDraftValidator {
         appendSplitSuggestion(context, problems);
         validateReductionDoesNotIncrease(draft, context, eligible, problems);
         validateMinimumDurationAndRest(draft, context, problems);
+        validateMvpDose(draft, context, eligible, problems);
 
         if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
+    }
+
+    /**
+     * V24 · DOSIS Y TIEMPO DE 4D v2, solo para {@code GAIN_MUSCLE}.
+     * <p>
+     * Tres comprobaciones, las tres simetricas: valen igual para un borrador de
+     * IA y para uno del motor de reglas.
+     * <ol>
+     *   <li><b>Dosis por capacidad.</b> La capacidad la asigna
+     *       {@link MvpDosePolicy} desde el {@code movement_pattern} del catalogo,
+     *       NO desde las repeticiones del borrador.</li>
+     *   <li><b>Maximo de colocaciones por dia</b> -seis, por
+     *       {@code MvpDosePolicy.MAX_COLOC_DIA}- aunque el tiempo sobre.</li>
+     *   <li><b>Presupuesto del dia</b> con la formula de 4D v2 §5, que NO es la
+     *       de {@link SessionDurationEstimator}: 4D v2 cobra el descanso despues
+     *       de cada serie y el estimador solo entre series. Son dos preguntas
+     *       distintas y las dos se quedan. V17 pregunta si la IA declaro
+     *       honestamente; esta pregunta si cabe en el presupuesto metodologico.</li>
+     * </ol>
+     * LO QUE NO COMPRUEBA, y conviene que se vea:
+     * <ul>
+     *   <li><b>El reparto del 25 % de fuerza secundaria.</b> 4D v2 §6 da la
+     *       fraccion pero no su denominador. Es objetivo de prescripcion, no
+     *       condicion de rechazo, y de un plan que pase esto NO se puede afirmar
+     *       que lo cumplio.</li>
+     *   <li><b>El RIR.</b> No hay columna donde guardarlo.</li>
+     *   <li><b>Los ejercicios por lado.</b> El detector de 4D v2 §5.2 esta
+     *       declarado provisional, asi que el coste se calcula SIN duplicar la
+     *       ejecucion. El presupuesto queda por tanto OPTIMISTA: un ejercicio
+     *       por lado no detectado cuesta mas de lo que esta cuenta dice.</li>
+     *   <li><b>Las colocaciones de DURACION.</b> 4D v2 §4 deja
+     *       {@code MOBILITY} y {@code LOCOMOTOR} fuera del MVP y su regla 4 es
+     *       una abstencion: sin unidad fiable no se prescribe automaticamente.
+     *       Aqui se cuentan y se registran, no se les inventa una dosis.</li>
+     * </ul>
+     */
+    private void validateMvpDose(PlanDraft draft, PlanGenerationContext context,
+                                 Map<Long, CandidateExercise> eligible,
+                                 List<String> problems) {
+        if (!doseEnforcement.mide()) return;
+        if (context.profile() == null || !MvpDosePolicy.aplicaA(context.profile().goalType())) return;
+        if (draft == null || draft.workouts() == null) return;
+
+        double presupuesto = MvpDosePolicy.presupuestoDiarioSegundos(context.profile().sessionMinutes());
+        var incumplimientos = new ArrayList<String>();
+        int abstenciones = 0;
+        int comprobadas = 0;
+
+        for (var workout : draft.workouts()) {
+            if (workout == null || workout.exercises() == null) continue;
+
+            // 2: tope de colocaciones, antes que el tiempo. Nueve ejercicios en
+            // un dia no se aceptan ni aunque quepan.
+            int colocaciones = workout.exercises().size();
+            if (colocaciones > MvpDosePolicy.MAX_COLOC_DIA)
+                incumplimientos.add(("V24: el entrenamiento del %s tiene %d colocaciones y el maximo "
+                        + "de 4D v2 §5 es %d.")
+                        .formatted(workout.scheduledDate(), colocaciones, MvpDosePolicy.MAX_COLOC_DIA));
+
+            double costeDia = 0;
+            for (var exercise : workout.exercises()) {
+                if (exercise == null) continue;
+
+                // Abstencion de unidad: 4D v2 §4, regla 4.
+                if (exercise.prescriptionType() != PrescriptionType.SETS_REPS) {
+                    abstenciones++;
+                    continue;
+                }
+
+                var candidate = eligible == null ? null : eligible.get(exercise.exerciseId());
+                var dosis = candidate == null ? Optional.<MvpDosePolicy.Dosis>empty()
+                        : MvpDosePolicy.dosisPara(MandatorySlot.of(candidate),
+                        candidate.bodyPartCode());
+                if (dosis.isEmpty()) {
+                    // Sin patron no hay capacidad asignable. La validacion 1 ya
+                    // rechaza un ejercicio que no este en el conjunto elegible;
+                    // aqui no se duplica el motivo ni se inventa una dosis.
+                    abstenciones++;
+                    continue;
+                }
+
+                var exigida = dosis.get();
+                comprobadas++;
+                costeDia += exigida.costeSegundos(false);
+
+                short series = exercise.plannedSets() == null ? -1 : exercise.plannedSets();
+                short reps = exercise.plannedReps() == null ? -1 : exercise.plannedReps();
+                short descanso = exercise.restSeconds() == null ? -1 : exercise.restSeconds();
+
+                if (series != exigida.series() || reps != exigida.reps()
+                        || descanso != exigida.descansoSegundos())
+                    incumplimientos.add(("V24: el ejercicio %d del %s lleva %dx%d con %d s de descanso "
+                            + "y 4D v2 exige %s. Ajusta la dosis exactamente a la de su capacidad; "
+                            + "si no cabe en el dia, quita una colocacion en vez de recortar la dosis.")
+                            .formatted(exercise.exerciseId(), workout.scheduledDate(),
+                                    series, reps, descanso, exigida.describe()));
+            }
+
+            // 3: presupuesto del dia con la formula de 4D v2 §5.
+            if (costeDia > presupuesto)
+                incumplimientos.add(("V24: el entrenamiento del %s cuesta %.1f minutos por la formula "
+                        + "de 4D v2 §5 y el presupuesto del dia es %.1f (%.0f %% de %d minutos). "
+                        + "Quita una colocacion.")
+                        .formatted(workout.scheduledDate(), costeDia / 60.0, presupuesto / 60.0,
+                                MvpDosePolicy.FRACCION_UTIL * 100, context.profile().sessionMinutes()));
+        }
+
+        // Visible siempre que mida, como la linea de cobertura 4C: un filtro que
+        // no se ve cuesta una medicion entera (INC-4C-03).
+        log.info("DOSIS_4D usuario {} semana {}: objetivo {} · {} comprobadas · {} abstenciones "
+                        + "(duracion o sin patron) · {} incumplimientos · modo {} · {}",
+                context.userId(), context.weekNumber(), context.profile().goalType(),
+                comprobadas, abstenciones, incumplimientos.size(), doseEnforcement,
+                MvpDosePolicy.describeTabla());
+
+        if (incumplimientos.isEmpty()) return;
+
+        if (!doseEnforcement.bloquea()) {
+            log.warn("Dosis de 4D v2 incumplida para el usuario {} y NO se rechaza (modo {}, "
+                            + "origen {}): {}",
+                    context.userId(), doseEnforcement, draft.source(), incumplimientos);
+            return;
+        }
+        problems.addAll(incumplimientos);
     }
 
     /** Validaciones 1, 2, 3, 6 y 12. */

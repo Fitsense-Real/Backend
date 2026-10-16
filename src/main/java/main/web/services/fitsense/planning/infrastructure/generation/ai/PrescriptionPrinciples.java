@@ -20,8 +20,28 @@ public final class PrescriptionPrinciples {
     /**
      * P-1.0: puntos 1-8. P-1.1: anade el punto 9, desempeno de la semana
      * anterior. P-1.2: el punto 8 pasa de "sin kilos" a peso sugerido con tope.
+     * <p>
+     * P-1.3 (16/10/2026): anade el punto 10, la dosis de 4D, y SOLO para
+     * {@code GAIN_MUSCLE}. Ver {@link #BLOQUE_DOSIS_4D} y
+     * {@link #textFor(String)}.
+     * <p>
+     * El punto 5 cede ante {@code clase_dosis} con un inciso. Decia «BEGINNER:
+     * 2 series» donde 4D exige 3 en las estructurales, y ese texto lo reciben
+     * los cinco objetivos: por eso el inciso es condicional en vez de un cambio
+     * del numero. Para los otros cuatro el campo es siempre nulo, asi que la
+     * frase sigue diciendoles exactamente lo mismo que antes.
+     * <p>
+     * El inciso se pliega DENTRO de P-1.3 en vez de subir a P-1.4: ningun plan
+     * se genero todavia con la version intermedia.
+     * <p>
+     * La version es una sola para los cinco objetivos aunque el punto 10 solo
+     * aparezca en uno. No es descuido: el contrato del snapshot
+     * (GEN-IN-1.10) cambia para los cinco, porque los campos nuevos viajan en
+     * null, asi que ningun plan de esta fecha recibe el prompt de P-1.2 tal
+     * cual. Una version por objetivo registraria mejor el texto, pero haria
+     * ilegible la trazabilidad; esto es lo que de verdad paso.
      */
-    public static final String VERSION = "P-1.2";
+    public static final String VERSION = "P-1.3";
 
     /*
      * Trazabilidad por punto (no se envia al modelo):
@@ -44,7 +64,7 @@ public final class PrescriptionPrinciples {
      *    secundaria al cumplimiento, nunca como criterio principal.
      */
     static final String TEXT = """
-            PRINCIPIOS DE PRESCRIPCION (version P-1.2). Aplicalos a CADA ejercicio.
+            PRINCIPIOS DE PRESCRIPCION (version P-1.3). Aplicalos a CADA ejercicio.
 
             1. ESFUERZO. No hace falta llegar al fallo. Elige las repeticiones para
                que la persona termine cada serie con unas 2-3 repeticiones en reserva.
@@ -68,8 +88,9 @@ public final class PrescriptionPrinciples {
                movimiento controlado.
 
             5. NIVEL (user.fitness_level).
-               - BEGINNER: ejercicios simples, 2 series, repeticiones moderadas o
-                 altas, unas 3 en reserva, prioridad a la tecnica.
+               - BEGINNER: ejercicios simples, 2 series (salvo que el ejercicio
+                 tenga clase_dosis no nula, que manda), repeticiones moderadas o altas,
+                 unas 3 en reserva, prioridad a la tecnica.
                - INTERMEDIATE: 2-3 series, 2-3 en reserva.
                - ADVANCED: 2-3 o mas series segun el volumen semanal.
 
@@ -121,6 +142,57 @@ public final class PrescriptionPrinciples {
                - actual_load_kg es el peso que uso la persona: base del peso
                  sugerido (principio 8).
             """;
+
+    /*
+     * Trazabilidad del punto 10 (no se envia al modelo):
+     *  10 Dosis por clase, tope de colocaciones, presupuesto
+     *     y cobertura de slots ...................... [Diseno, criterio 4D v3 y 4C v5]
+     *     NINGUNA CIFRA EN EL TEXTO: las cuatro frases NOMBRAN los campos del
+     *     snapshot, que salen de MvpDosePolicy y SlotCoveragePolicy. Condicion
+     *     de Juan del 16/10: «no duplicar las reglas de 4D manualmente dentro
+     *     del prompt; la informacion debe salir de MvpDosePolicy, para que el
+     *     validador y la IA utilicen la misma referencia». Si se escribiera un
+     *     numero aqui, cambiar la politica dejaria el prompt mintiendo.
+     */
+
+    /**
+     * P-1.3, punto 10. SOLO viaja con {@code GAIN_MUSCLE}: es el unico objetivo
+     * que {@code MvpDosePolicy} gobierna, y los campos que nombra estan en null
+     * para los otros cuatro. Darselo a un plan de LOSE_WEIGHT seria pedirle que
+     * use una dosis que su snapshot no trae.
+     */
+    static final String BLOQUE_DOSIS_4D = """
+
+            10. DOSIS, TOPE Y COBERTURA. El backend verifica este punto y rechaza
+                la propuesta si no se cumple.
+                Cada candidato trae un campo clase_dosis. Cuando no es null,
+                en constraints esta la dosis de esa clase
+                (constraints.dosis_por_clase): usa exactamente esa dosis en el
+                candidato que elijas, no la ajustes por tu cuenta.
+                No pongas mas de constraints.max_colocaciones_dia ejercicios en
+                una sesion, y que el dia no supere constraints.minutos_utiles_dia:
+                suma el coste_minutos de las clases que uses.
+                La semana debe tocar al menos una vez cada uno de los
+                constraints.slots_exigibles. El slot de cada candidato viaja en
+                su campo slot.
+                Los candidatos con clase_dosis en null no reciben dosis de series
+                y repeticiones: son los de prescription_type DURATION, y siguen
+                rigiendose por el punto 7.
+            """;
+
+    /**
+     * El texto que recibe un plan, segun su objetivo.
+     * <p>
+     * {@link #TEXT} es lo comun a los cinco; el punto 10 se anade solo donde
+     * {@code MvpDosePolicy} manda. Que el bloque sea condicional, y no una
+     * frase con «si tu objetivo es GAIN_MUSCLE», es deliberado: una instruccion
+     * que el modelo debe decidir si le aplica es una instruccion que puede
+     * aplicarse mal.
+     */
+    public static String textFor(String goalType) {
+        return main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy
+                .aplicaA(goalType) ? TEXT + BLOQUE_DOSIS_4D : TEXT;
+    }
 
     private PrescriptionPrinciples() {}
 }
