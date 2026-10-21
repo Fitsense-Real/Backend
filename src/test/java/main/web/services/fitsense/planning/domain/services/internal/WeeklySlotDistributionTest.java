@@ -261,7 +261,7 @@ class WeeklySlotDistributionTest {
                     new BigDecimal("72.0"), new BigDecimal("75.0"), "BEGINNER",
                     "GAIN_MUSCLE", "Ganar masa muscular", "Ninguna", "HOME", 3,
                     List.of((short) 1, (short) 3, (short) 5), 45,
-                    List.of("body weight", "dumbbell", "band"), List.of());
+                    List.of("body weight", "dumbbell", "band"), List.of(), SafetyProfile.Declaradas.sinLimitaciones());
             return new PlanGenerationContext(1L, (short) 1, LUNES, LUNES.plusDays(6),
                     perfil, PlanAdjustment.none(), null, elegibles,
                     SafetyProfile.none(), (PrescriptionParams) null);

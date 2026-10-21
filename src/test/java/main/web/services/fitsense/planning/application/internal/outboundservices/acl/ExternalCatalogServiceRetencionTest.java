@@ -42,7 +42,7 @@ class ExternalCatalogServiceRetencionTest {
                 new BigDecimal("175"), new BigDecimal("72"), new BigDecimal("75"),
                 "BEGINNER", "GAIN_MUSCLE", "Ganar masa", "Ninguna", "HOME",
                 3, List.of((short) 1, (short) 3, (short) 5), 45,
-                List.of("body weight", "dumbbell", "band"), List.of());
+                List.of("body weight", "dumbbell", "band"), List.of(), SafetyProfile.Declaradas.sinLimitaciones());
     }
 
     private static ExternalCatalogService conCatalogo(List<EligibleExerciseView> vistas) {

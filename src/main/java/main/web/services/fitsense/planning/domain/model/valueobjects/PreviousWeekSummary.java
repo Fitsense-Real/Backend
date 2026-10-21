@@ -31,6 +31,14 @@ public record PreviousWeekSummary(
      * cuente: no se registro, que NO es lo mismo que haberlo hecho al 0 %.
      */
     public record WorkoutOutcome(
+            /**
+             * V31. El identificador del entrenamiento previsto. Es lo que
+             * permite construir la derivacion al copiar: la fecha cambia entre
+             * semanas y el esquema ni siquiera impide dos entrenamientos el
+             * mismo dia -solo hay unicidad por display_order-, asi que no
+             * identifica univocamente ni dentro de la misma semana.
+             */
+            Long plannedWorkoutId,
             LocalDate scheduledDate,
             String focusCode,
             String workoutStatus,
@@ -40,7 +48,11 @@ public record PreviousWeekSummary(
             String sessionStatus,
             /** Por dia: la persona lo reporta al terminar cada sesion. */
             Short sessionRpe,
-            BigDecimal completionPct
+            BigDecimal completionPct,
+            /** V31. Para copiar la sesion con su nombre, no con uno inventado. */
+            String workoutName,
+            /** V31. Duracion indicada, para reconstruir la sesion conservada. */
+            short expectedDurationMinutes
     ) {}
 
     /**
@@ -51,6 +63,8 @@ public record PreviousWeekSummary(
      * dato de ese ejercicio.
      */
     public record PrescriptionOutcome(
+            /** V31. A que entrenamiento pertenece, sin depender de la fecha. */
+            Long plannedWorkoutId,
             LocalDate scheduledDate,
             Long exerciseId,
             String name,
@@ -66,7 +80,16 @@ public record PreviousWeekSummary(
             BigDecimal completionPct,
             String exerciseStatus,
             String skipReason,
-            String status
+            String status,
+            /**
+             * V31. El descanso prescrito.
+             * <p>
+             * Falta aqui hasta hoy, y hacia falta: el descanso es parte de la
+             * DOSIS que 4D exige exacta -90 s para un estructural-, asi que un
+             * plan conservado sin el fallaria la validacion de dosis aunque
+             * hubiera copiado bien las series y las repeticiones.
+             */
+            Short restSeconds
     ) {}
 
     public static final String NOT_RECORDED = "NOT_RECORDED";

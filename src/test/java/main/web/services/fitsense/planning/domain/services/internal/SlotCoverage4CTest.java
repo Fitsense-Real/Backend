@@ -49,7 +49,7 @@ class SlotCoverage4CTest {
                 new BigDecimal("72.0"), new BigDecimal("75.0"), "BEGINNER",
                 "GAIN_MUSCLE", "Ganar masa muscular entrenando en casa", "Ninguna",
                 "HOME", dias, List.of((short) 1, (short) 3, (short) 5), minutos,
-                List.of("body weight", "dumbbell", "band"), List.of());
+                List.of("body weight", "dumbbell", "band"), List.of(), SafetyProfile.Declaradas.sinLimitaciones());
     }
 
     private static PlanGenerationContext contexto(List<CandidateExercise> elegibles,

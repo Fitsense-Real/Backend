@@ -113,31 +113,84 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     /**
+     * QUE SE LE PIDE AL PROVEEDOR, ademas del prompt: el esquema que tiene que
+     * cumplir la respuesta y la etiqueta con que se registra la peticion.
+     * <p>
+     * Los dos campos van juntos a proposito. Son la unica diferencia entre una
+     * generacion inicial y una adaptacion, y si viajaran por separado nada
+     * impediria mandar el esquema de una con la etiqueta de la otra, que es
+     * justo el error que hacia mentir a la traza.
+     *
+     * @param jsonSchema    lo que acepta Replicate en {@code json_schema}.
+     * @param promptVersion para la linea "Salida de la IA". Identifica QUE se
+     *                      pidio: esa linea es la evidencia de la tesis sobre
+     *                      que propuso el modelo en cada intento, y con la
+     *                      etiqueta equivocada no vale para comparar nada.
+     */
+    record Peticion(Map<String, Object> jsonSchema, String promptVersion) {
+
+        /** Generacion inicial: una semana entera, con sus principios. */
+        static Peticion deSemana(int workoutCount) {
+            return new Peticion(PlanJsonSchema.format(workoutCount),
+                    PlanPromptBuilder.VERSION + " " + PrescriptionPrinciples.VERSION);
+        }
+
+        /** Adaptacion localizada: correcciones de sesiones concretas. */
+        static Peticion deCorrecciones(int sessionCount) {
+            return new Peticion(SessionFixJsonSchema.format(sessionCount),
+                    SessionFixPromptBuilder.VERSION + " " + SessionFixJsonSchema.VERSION);
+        }
+    }
+
+    /**
      * Envoltura de medicion. Es fina a proposito: lo unico que hace es abrir el
      * cronometro monotonico y garantizar que la linea REPLICATE_TIMING se
      * escriba por TODAS las salidas, incluidas las que lanzan excepcion.
      * <p>
      * Visibilidad de paquete para que la prueba de instrumentacion pueda medir
-     * los tramos sin montar un {@code PlanGenerationContext} completo.
+     * los tramos sin montar un {@code PlanGenerationContext} completo. No la
+     * llama nadie mas: el pipeline entra por {@link #requestOutput}.
      */
     String call(String prompt, int workoutCount,
                 Long userId, short weekNumber, int attempt) {
+        return call(prompt, Peticion.deSemana(workoutCount), userId, weekNumber, attempt);
+    }
+
+    /**
+     * La misma llamada medida, con la peticion ya armada.
+     * <p>
+     * Existe porque la ADAPTACION manda otro esquema y otra etiqueta. Lo que no
+     * cambia -el POST, el sondeo de predicciones en curso, la linea
+     * REPLICATE_TIMING- se comparte, que es la parte que no conviene duplicar.
+     */
+    String call(String prompt, Peticion peticion,
+                Long userId, short weekNumber, int attempt) {
         var medicion = new Medicion();
         try {
-            return callMedido(prompt, workoutCount, medicion);
+            return callMedido(prompt, peticion, medicion);
         } finally {
             log.info("{}", medicion.timing(userId, weekNumber, attempt).describe());
         }
     }
 
-    private String callMedido(String prompt, int workoutCount, Medicion medicion) {
+    private String callMedido(String prompt, Peticion peticion, Medicion medicion) {
         var input = new LinkedHashMap<String, Object>();
         input.put("model", properties.model());
         input.put("prompt", prompt);
         input.put("reasoning_effort", properties.reasoningEffort());
-        input.put("json_schema", PlanJsonSchema.format(workoutCount));
+        input.put("json_schema", peticion.jsonSchema());
 
-        String rawBody = post(input);
+        String rawBody;
+        try {
+            rawBody = post(input);
+        } catch (RuntimeException e) {
+            // ANTES SALIA post_ms=0 SIEMPRE. Un POST que revienta a los 50 s y
+            // uno que revienta al instante se registraban igual, y por tanto ese
+            // campo no media nada en el caso en que mas falta hace. La excepcion
+            // se relanza TAL CUAL: el pipeline sigue viendo exactamente lo mismo.
+            medicion.postFallo();
+            throw e;
+        }
         medicion.postTerminado();
 
         // Respuesta inicial de Replicate: repite el prompt entero (unos 160 KB con
@@ -153,10 +206,13 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // catalogo completo el modelo tarda mas, y la respuesta llegaba con
         // estado "starting": no era un fallo, era una prediccion aun en curso
         // que se contabilizaba como intento perdido.
+        var desenlace = Sondeo.Desenlace.RESPONDIO;
         if (response != null && response.pending()) {
             // Copia final: la lambda no puede capturar una variable que se reasigna.
             final var enCurso = response;
-            response = medicion.sondeando(() -> awaitCompletion(enCurso));
+            var sondeo = medicion.sondeando(() -> awaitCompletion(enCurso));
+            desenlace = sondeo.desenlace();
+            response = sondeo.response();
             medicion.predictionId(response == null ? null : response.id());
         }
 
@@ -164,12 +220,9 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             String detail = response == null
                     ? "respuesta vacia"
                     : response.status() + " " + response.error();
-            // Se agoto el sondeo con la prediccion todavia viva, o fallo de otra
-            // forma. Separarlos es justo lo que permite decidir si conviene
-            // ampliar el limite o recortar el prompt.
-            medicion.resultado(response != null && response.pending()
-                    ? ReplicateTiming.Resultado.TIMEOUT
-                    : ReplicateTiming.Resultado.NOT_SUCCEEDED);
+            // Separar estos casos es justo lo que permite decidir si conviene
+            // ampliar el limite: solo TIMEOUT dice algo sobre el tiempo de espera.
+            medicion.resultado(clasificar(response, desenlace));
             log.warn("Replicate devolvio un estado no exitoso: {}", detail);
 
             // Excepcion de proveedor, no de plan invalido: el modelo no llego a
@@ -185,10 +238,32 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // Evidencia de cada intento, tambien de los rechazados: la proporcion de
         // planes validos al primer intento es un resultado de la tesis y esta
         // linea es lo que permite revisar QUE propuso el modelo cada vez.
-        log.info("Salida de la IA (prediccion {}, prompt {} {}, {} caracteres de prompt): {}",
-                response.id(), PlanPromptBuilder.VERSION, PrescriptionPrinciples.VERSION,
-                prompt.length(), output);
+        // La etiqueta sale de la peticion, no de PlanPromptBuilder. Estaba fija
+        // y una adaptacion habria quedado registrada como si fuera generacion
+        // inicial. La linea rendida no cambia para la generacion inicial:
+        // Peticion.deSemana une las dos versiones con un espacio, igual que los
+        // dos marcadores de antes.
+        log.info("Salida de la IA (prediccion {}, prompt {}, {} caracteres de prompt): {}",
+                response.id(), peticion.promptVersion(), prompt.length(), output);
         return output;
+    }
+
+    /**
+     * Que resultado registrar cuando la llamada no termino en exito.
+     * <p>
+     * La prediccion en estado "pending" NO implica timeout: puede ser que
+     * dejaramos de esperar, que no pudieramos preguntar, o que nos estuvieran
+     * apagando. Hasta el 13/10/2026 los tres se escribian como TIMEOUT.
+     */
+    private static ReplicateTiming.Resultado clasificar(ReplicateResponse response,
+                                                        Sondeo.Desenlace desenlace) {
+        if (response == null || !response.pending())
+            return ReplicateTiming.Resultado.NOT_SUCCEEDED;
+        return switch (desenlace) {
+            case FALLO_LA_CONSULTA -> ReplicateTiming.Resultado.POLL_ERROR;
+            case INTERRUMPIDO -> ReplicateTiming.Resultado.INTERRUPTED;
+            case LIMITE_AGOTADO, RESPONDIO -> ReplicateTiming.Resultado.TIMEOUT;
+        };
     }
 
     /**
@@ -221,13 +296,18 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             resultado = ReplicateTiming.Resultado.NOT_SUCCEEDED;
         }
 
+        /** El POST lanzo. Se mide igual: cuanto tardo en fallar tambien es dato. */
+        void postFallo() {
+            postMs = ReplicateTiming.msDesde(inicio, System.nanoTime());
+        }
+
         /** Mide el tramo de sondeo y se queda con cuantas consultas costo. */
-        ReplicateResponse sondeando(java.util.function.Supplier<Sondeo> sondeo) {
+        Sondeo sondeando(java.util.function.Supplier<Sondeo> sondeo) {
             long inicioSondeo = System.nanoTime();
             try {
                 var hecho = sondeo.get();
                 pollingRequests = hecho.requests();
-                return hecho.response();
+                return hecho;
             } finally {
                 pollingMs = ReplicateTiming.msDesde(inicioSondeo, System.nanoTime());
             }
@@ -246,8 +326,25 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         }
     }
 
-    /** Lo que devuelve el sondeo: la respuesta y cuantas consultas costo. */
-    record Sondeo(ReplicateResponse response, int requests) {}
+    /** Lo que devuelve el sondeo: la respuesta, cuanto costo y COMO termino. */
+    record Sondeo(ReplicateResponse response, int requests, Desenlace desenlace) {
+
+        /**
+         * Como termino el sondeo. Existe para que "dejamos de esperar" no se
+         * confunda con "no pudimos preguntar": los dos dejan la prediccion en
+         * pending y hasta ahora se registraban igual.
+         */
+        enum Desenlace {
+            /** Llego un estado final: succeeded, failed, canceled. */
+            RESPONDIO,
+            /** Se agoto fitsense.ai.timeout-seconds con la prediccion viva. */
+            LIMITE_AGOTADO,
+            /** Un GET de sondeo fallo, o no habia urls.get al que preguntar. */
+            FALLO_LA_CONSULTA,
+            /** Se interrumpio el hilo: la aplicacion se esta parando. */
+            INTERRUMPIDO
+        }
+    }
 
     /**
      * Consulta la prediccion hasta que termina. El limite lo marca
@@ -258,7 +355,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         var pollUrl = pending.pollUrl();
         if (pollUrl == null) {
             log.warn("La prediccion sigue en curso y no trae urls.get: no se puede consultar");
-            return new Sondeo(pending, 0);
+            return new Sondeo(pending, 0, Sondeo.Desenlace.FALLO_LA_CONSULTA);
         }
 
         var limite = Instant.now().plusSeconds(properties.timeoutSeconds());
@@ -272,7 +369,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 // Restaurar la marca: alguien esta parando la aplicacion y no
                 // queremos dejar el hilo en un estado inconsistente.
                 Thread.currentThread().interrupt();
-                return new Sondeo(actual, consultas);
+                return new Sondeo(actual, consultas, Sondeo.Desenlace.INTERRUMPIDO);
             }
 
             try {
@@ -285,8 +382,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 actual = jsonSupport.read(raw, ReplicateResponse.class);
             } catch (RuntimeException e) {
                 consultas++;
-                log.warn("Fallo al consultar la prediccion {}: {}", pending.id(), e.getMessage());
-                return new Sondeo(actual, consultas);
+                // NO es un timeout: puede haber pasado a los tres segundos.
+                log.warn("Fallo al consultar la prediccion {} tras {} consulta(s): {}",
+                        pending.id(), consultas, e.getMessage());
+                return new Sondeo(actual, consultas, Sondeo.Desenlace.FALLO_LA_CONSULTA);
             }
         }
 
@@ -295,7 +394,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                             + "(el POST ya habia esperado hasta {} s con Prefer: wait)",
                     pending.id(), properties.timeoutSeconds(), PREFER_WAIT_SECONDS);
 
-        return new Sondeo(actual, consultas);
+        return new Sondeo(actual, consultas,
+                actual != null && actual.pending()
+                        ? Sondeo.Desenlace.LIMITE_AGOTADO
+                        : Sondeo.Desenlace.RESPONDIO);
     }
 
     private String post(Map<String, Object> input) {

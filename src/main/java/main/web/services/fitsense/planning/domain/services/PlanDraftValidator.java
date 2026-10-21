@@ -97,6 +97,16 @@ public class PlanDraftValidator {
     }
 
     public void validate(PlanDraft draft, PlanGenerationContext context, int durationToRepsDivisor) {
+        validate(draft, context, durationToRepsDivisor, ConservationReport.vacio());
+    }
+
+    /**
+     * V8C: exencion de V20 por sesion para fechas autorizadas a acortarse.
+     * El productor incorpora los problemas de ConservationReport por separado.
+     * La validacion inicial sigue usando la sobrecarga de tres argumentos.
+     */
+    public void validate(PlanDraft draft, PlanGenerationContext context,
+                         int durationToRepsDivisor, ConservationReport conservation) {
         var problems = new ArrayList<String>();
 
         var eligible = context.availableExercises().stream()
@@ -114,7 +124,7 @@ public class PlanDraftValidator {
         validateArmSplit(draft, eligible, problems);
         appendSplitSuggestion(context, problems);
         validateReductionDoesNotIncrease(draft, context, eligible, problems);
-        validateMinimumDurationAndRest(draft, context, problems);
+        validateMinimumDurationAndRest(draft, context, conservation, problems);
         validateMvpDose(draft, context, eligible, problems);
 
         if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
@@ -943,6 +953,7 @@ public class PlanDraftValidator {
      * se consiga con trabajo y no con pausas.
      */
     private void validateMinimumDurationAndRest(PlanDraft draft, PlanGenerationContext context,
+                                                ConservationReport conservation,
                                                 List<String> problems) {
         var prescription = context.prescription();
         if (prescription == null) return;
@@ -957,6 +968,10 @@ public class PlanDraftValidator {
         int floor = minimumSessionMinutes(context);
         if (floor <= 0) return;
         for (var workout : draft.workouts()) {
+            // V8C: solo las sesiones autorizadas a acortarse quedan exentas de V20.
+            if (conservation.fechasConDuracionReducible().contains(workout.scheduledDate()))
+                continue;
+
             int estimada = durationEstimator.estimateMinutes(workout, prescription);
             if (estimada < floor)
                 problems.add(("V20: el entrenamiento del %s dura unos %d minutos y el minimo es %d "

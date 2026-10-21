@@ -3,6 +3,7 @@ package main.web.services.fitsense.analytics.domain.model.aggregates;
 import jakarta.persistence.*;
 import lombok.Getter;
 import main.web.services.fitsense.analytics.domain.model.valueobjects.MetricsCalculation;
+import main.web.services.fitsense.shared.domain.model.valueobjects.EvidenceRule;
 import main.web.services.fitsense.analytics.domain.model.valueobjects.RiskLevel;
 import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -56,8 +57,34 @@ public class WeeklyUserMetrics {
     @Column(name = "completed_workouts", nullable = false)
     private Short completedWorkouts;
 
+    /**
+     * DESDE V30 cuenta solo los entrenamientos CON REGISTRO que no llegaron al
+     * umbral de valida. Hasta V29 incluia tambien los que no tenian registro,
+     * que es el defecto que V30 corrige: valid + skipped == recorded.
+     */
     @Column(name = "skipped_workouts", nullable = false)
     private Short skippedWorkouts;
+
+    /**
+     * V30. Previstos con registro: hay sesion, o el previsto quedo en SKIPPED.
+     * NULL en las filas calculadas antes de V30, donde no se distinguia lo
+     * desconocido y rellenarlo afirmaria una cobertura que no consta.
+     */
+    @Column(name = "recorded_workouts")
+    private Short recordedWorkouts;
+
+    /**
+     * V30. Cumplimiento ponderado SOLO sobre lo que tiene registro. NO es la
+     * metrica primaria del estudio: esa es weightedAdherencePct y no cambia.
+     * Es la que debe usar la decision de adaptacion, para que una sesion sin
+     * registro no se convierta en baja adherencia.
+     */
+    @Column(name = "observed_adherence_pct", precision = 5, scale = 2)
+    private BigDecimal observedAdherencePct;
+
+    /** V30. recordedWorkouts / scheduledWorkouts. Decide si hay evidencia. */
+    @Column(name = "registration_coverage_pct", precision = 5, scale = 2)
+    private BigDecimal registrationCoveragePct;
 
     @Column(name = "assigned_exercises", nullable = false)
     private Short assignedExercises;
@@ -179,6 +206,9 @@ public class WeeklyUserMetrics {
         this.validWorkouts = (short) calculation.validWorkouts();
         this.completedWorkouts = (short) calculation.completedWorkouts();
         this.skippedWorkouts = (short) calculation.skippedWorkouts();
+        this.recordedWorkouts = (short) calculation.recordedWorkouts();
+        this.observedAdherencePct = calculation.observedAdherencePct();
+        this.registrationCoveragePct = calculation.registrationCoveragePct();
         this.assignedExercises = (short) calculation.assignedExercises();
         this.completedExercises = (short) calculation.completedExercises();
         this.weightedAdherencePct = calculation.weightedAdherencePct();
@@ -206,5 +236,21 @@ public class WeeklyUserMetrics {
 
     public boolean isMeasurable() {
         return hasActivePlan && weightedAdherencePct != null;
+    }
+
+    /**
+     * V30. Hay evidencia para decidir una adaptacion.
+     * <p>
+     * No basta con que la semana sea medible: hace falta que una parte
+     * suficiente de ella tenga registro. Sin esto, cero sesiones registradas y
+     * tres omitidas son el mismo numero, y son los dos casos que hay que
+     * tratar al contrario.
+     * <p>
+     * El umbral llega desde fuera porque es una decision metodologica
+     * PROVISIONAL -pendiente de aprobacion- y no debe quedar escrita aqui.
+     */
+    public boolean hasEnoughEvidence(double coberturaMinimaPct) {
+        return isMeasurable() && EvidenceRule.enoughEvidence(
+                observedAdherencePct, registrationCoveragePct, coberturaMinimaPct);
     }
 }

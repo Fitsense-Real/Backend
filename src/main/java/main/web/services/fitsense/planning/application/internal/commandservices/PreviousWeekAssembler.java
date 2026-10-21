@@ -3,6 +3,7 @@ package main.web.services.fitsense.planning.application.internal.commandservices
 import main.web.services.fitsense.execution.interfaces.acl.WorkoutResultView;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalExecutionService;
+import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutStatus;
@@ -90,6 +91,7 @@ public class PreviousWeekAssembler {
             for (var exercise : workout.exercisesView()) {
                 var done = byPlannedExercise.get(exercise.getId());
                 prescriptions.add(new PreviousWeekSummary.PrescriptionOutcome(
+                        workout.getId(),
                         workout.getScheduledDate(),
                         exercise.getExerciseId(),
                         names.getOrDefault(exercise.getExerciseId(), null),
@@ -106,7 +108,8 @@ public class PreviousWeekAssembler {
                         done == null || done.status() == null
                                 ? PreviousWeekSummary.NOT_RECORDED : done.status(),
                         done == null ? null : done.skipReason(),
-                        workout.getStatus().name()));
+                        workout.getStatus().name(),
+                        exercise.getRestSeconds()));
             }
         }
 
@@ -121,13 +124,44 @@ public class PreviousWeekAssembler {
     private static PreviousWeekSummary.WorkoutOutcome toWorkoutOutcome(PlannedWorkout workout,
                                                                        WorkoutResultView result) {
         return new PreviousWeekSummary.WorkoutOutcome(
+                workout.getId(),
                 workout.getScheduledDate(),
                 workout.getFocusCode().name(),
                 workout.getStatus().name(),
                 workout.getSkipReason() == null ? null : workout.getSkipReason().name(),
-                result != null,
+                hayRegistro(result != null, workout.getStatus()),
                 result == null ? null : result.sessionStatus(),
                 result == null ? null : result.sessionRpe(),
-                result == null ? null : result.completionPercentage());
+                result == null ? null : result.completionPercentage(),
+                workout.getWorkoutName(),
+                workout.getExpectedDurationMinutes());
+    }
+
+    /**
+     * Si de esa sesion HAY INFORMACION. Alineado con V30.
+     * <p>
+     * Antes era {@code result != null}: solo contaba como registrada si existia
+     * un resultado de ejecucion. Pero una OMISION DECLARADA es informacion: la
+     * persona nos dijo que no entreno. {@code WeeklyMetricsCalculator} ya lo
+     * contaba asi desde V30, y {@code planning} no, de modo que el mismo
+     * concepto significaba dos cosas en dos modulos.
+     * <p>
+     * Importa porque este valor viaja al prompt por dos caminos -el bloque de
+     * sesiones senaladas de la adaptacion y {@code previous_week.workouts} de la
+     * generacion inicial-, y la distincion que se perdia es justo la que decide
+     * si adaptar: una omision declarada no es una sesion desconocida.
+     * <p>
+     * Se compara con la CONSTANTE del enum, no con la cadena "SKIPPED": si
+     * manana se renombra, esto deja de compilar en vez de devolver false en
+     * silencio.
+     * <p>
+     * No es privado para que la prueba pueda recorrer la tabla de verdad sin
+     * montar una entidad JPA.
+     *
+     * @param conResultado si existe un {@link WorkoutResultView} de esa sesion
+     * @param status       el estado del previsto; nunca null en esta ruta
+     */
+    static boolean hayRegistro(boolean conResultado, WorkoutStatus status) {
+        return conResultado || status == WorkoutStatus.SKIPPED;
     }
 }

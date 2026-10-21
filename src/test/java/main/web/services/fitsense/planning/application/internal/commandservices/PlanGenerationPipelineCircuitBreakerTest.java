@@ -13,8 +13,8 @@ import main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer;
 import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 import main.web.services.fitsense.planning.domain.services.TrainingPlanGenerator;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.AirCircuitBreaker;
-import main.web.services.fitsense.planning.infrastructure.generation.ai.AiRetryFeedback;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTrainingPlanGenerator;
+import main.web.services.fitsense.planning.infrastructure.generation.ai.AiRetryFeedback;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -301,7 +301,7 @@ class PlanGenerationPipelineCircuitBreakerTest {
                 new BigDecimal("72.0"), new BigDecimal("75.0"), "BEGINNER",
                 "GAIN_MUSCLE", "Ganar masa muscular entrenando en casa", "Ninguna",
                 "HOME", 2, List.of((short) 1, (short) 3), 45,
-                List.of("body weight", "dumbbell", "band"), List.of());
+                List.of("body weight", "dumbbell", "band"), List.of(), SafetyProfile.Declaradas.sinLimitaciones());
     }
 
     private static PlanDraft borrador(GenerationSource origen) {

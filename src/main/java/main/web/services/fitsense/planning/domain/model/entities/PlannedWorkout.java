@@ -74,6 +74,17 @@ public class PlannedWorkout {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
+    /**
+     * V31. El entrenamiento de la semana anterior del que proviene este.
+     * <p>
+     * NULL en un plan que no deriva de nada, que es todo lo anterior a V31.
+     * Lo rellena quien construye el plan derivado AL COPIAR, con
+     * {@link #linkSource(Long)}: la relacion se construye, no se deduce al
+     * final por fecha, orden o enfoque, porque los tres cambian o se repiten.
+     */
+    @Column(name = "source_planned_workout_id")
+    private Long sourcePlannedWorkoutId;
+
     @OneToMany(mappedBy = "plannedWorkout", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("exerciseOrder ASC")
     private List<PlannedWorkoutExercise> exercises = new ArrayList<>();
@@ -83,8 +94,8 @@ public class PlannedWorkout {
     }
 
     public PlannedWorkout(WeeklyTrainingPlan plan, LocalDate scheduledDate, WorkoutFocus focusCode,
-                   String workoutName, int expectedDurationMinutes, short displayOrder,
-                   OffsetDateTime expiresAt) {
+                          String workoutName, int expectedDurationMinutes, short displayOrder,
+                          OffsetDateTime expiresAt) {
         this.plan = plan;
         this.scheduledDate = scheduledDate;
         this.focusCode = focusCode;
@@ -133,6 +144,33 @@ public class PlannedWorkout {
 
     public void markSkipped(SkipReason reason) {
         markOutcome(WorkoutStatus.SKIPPED, reason);
+    }
+
+    /**
+     * V31. Declara de que entrenamiento de la semana anterior proviene este.
+     * <p>
+     * Se llama al CONSTRUIR el plan derivado, copiando la sesion anterior. Es
+     * lo que permite a la validacion de conservacion comparar semana contra
+     * semana aunque hayan cambiado la fecha, el orden y el enfoque.
+     * <p>
+     * No se puede reasignar: una derivacion es un hecho del momento en que se
+     * creo el plan, no un atributo editable. La base lo respalda con
+     * uq_pw_source_per_plan, ck_pw_source_not_self y el trigger
+     * fn_derivacion_coherente -mismo usuario y semana origen anterior-.
+     */
+    public void linkSource(Long sourcePlannedWorkoutId) {
+        if (this.sourcePlannedWorkoutId != null)
+            throw new DomainRuleViolationException(
+                    "Este entrenamiento ya declara de cual proviene.");
+        if (sourcePlannedWorkoutId == null)
+            throw new DomainRuleViolationException(
+                    "El entrenamiento de origen no puede ser nulo.");
+        this.sourcePlannedWorkoutId = sourcePlannedWorkoutId;
+    }
+
+    /** V31. true si este entrenamiento proviene de uno de la semana anterior. */
+    public boolean isDerived() {
+        return sourcePlannedWorkoutId != null;
     }
 
     public void markReplaced() {

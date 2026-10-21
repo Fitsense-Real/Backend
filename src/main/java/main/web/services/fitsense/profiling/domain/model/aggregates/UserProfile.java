@@ -83,6 +83,14 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
     @Column(name = "health_notes", length = 500)
     private String healthNotes;
 
+    /**
+     * INC-4C-03: los cinco movimientos que el participante declara que puede
+     * hacer. Las columnas existen desde V25; este campo es lo que faltaba para
+     * que llegaran al filtro de seguridad.
+     */
+    @Embedded
+    private MovementAllowances allowances;
+
     protected UserProfile() {
         // JPA
     }
@@ -100,6 +108,10 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
         this.equipmentCodes = normalizeEquipment(command.equipmentCodes());
         this.blockedExerciseIds = normalizeBlocked(command.blockedExerciseIds());
         this.healthNotes = normalizeNotes(command.healthNotes());
+        this.allowances = MovementAllowances.declaradas(
+                command.allowHighImpact(), command.allowFloorExercises(),
+                command.allowKneelingExercises(), command.allowHangingExercises(),
+                command.allowOverheadExercises());
     }
 
     /**
@@ -118,9 +130,23 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
         this.equipmentCodes = normalizeEquipment(command.equipmentCodes());
         this.blockedExerciseIds = normalizeBlocked(command.blockedExerciseIds());
         this.healthNotes = normalizeNotes(command.healthNotes());
+        // Lo no declarado se CONSERVA: ver MovementAllowances.conCambios.
+        this.allowances = allowancesOrDefault().conCambios(
+                command.allowHighImpact(), command.allowFloorExercises(),
+                command.allowKneelingExercises(), command.allowHangingExercises(),
+                command.allowOverheadExercises());
     }
 
     // ---------------------------------------------------------------- consultas
+
+    /**
+     * Nunca nulo. Un perfil creado antes de este cambio tiene las columnas a
+     * TRUE por el DEFAULT de V25; normalizar aqui evita que un embebido nulo
+     * repita en silencio el defecto que estamos arreglando.
+     */
+    public MovementAllowances allowancesOrDefault() {
+        return allowances == null ? MovementAllowances.sinLimitaciones() : allowances;
+    }
 
     public int age() {
         return Period.between(birthDate, LocalDate.now()).getYears();

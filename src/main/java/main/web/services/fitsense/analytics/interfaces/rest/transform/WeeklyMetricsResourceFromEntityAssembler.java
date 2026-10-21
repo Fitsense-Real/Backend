@@ -37,6 +37,9 @@ public class WeeklyMetricsResourceFromEntityAssembler {
                 entity.getRiskLevel() == null ? null : entity.getRiskLevel().name(),
                 entity.isDropout(),
                 entity.getCalculationVersion(),
-                entity.getCalculatedAt());
+                entity.getCalculatedAt(),
+                entity.getRecordedWorkouts(),
+                entity.getObservedAdherencePct(),
+                entity.getRegistrationCoveragePct());
     }
 }

@@ -8,6 +8,7 @@ import main.web.services.fitsense.adaptation.domain.model.commands.DecideWeeklyA
 import main.web.services.fitsense.adaptation.domain.model.commands.LinkResultingPlanCommand;
 import main.web.services.fitsense.adaptation.domain.model.commands.RecordInterventionOutcomeCommand;
 import main.web.services.fitsense.adaptation.domain.model.valueobjects.AdjustmentContext;
+import main.web.services.fitsense.adaptation.domain.services.AdaptationOrderDecider;
 import main.web.services.fitsense.adaptation.domain.services.AdjustmentDecisionTable;
 import main.web.services.fitsense.adaptation.domain.services.UserInterventionCommandService;
 import main.web.services.fitsense.adaptation.infrastructure.persistence.jpa.repositories.UserInterventionRepository;
@@ -15,6 +16,7 @@ import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,19 +33,36 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
     private final ExternalProfilingService externalProfilingService;
     private final ExternalPlanningService externalPlanningService;
     private final ExternalConfigurationService externalConfigurationService;
+    private final AdaptationOrderDecider adaptationOrderDecider;
+
+    /**
+     * Cobertura de registro minima para decidir una adaptacion.
+     * <p>
+     * Es una propiedad y no una constante porque el valor es PROVISIONAL y esta
+     * pendiente de aprobacion metodologica. Su sitio definitivo es la
+     * configuracion de calculo, que es donde viven los demas umbrales; vive
+     * aqui mientras se decide, para no gastar una version de configuracion en
+     * un numero que va a cambiar.
+     */
+    private final double coberturaMinimaPct;
 
     public UserInterventionCommandServiceImpl(UserInterventionRepository interventionRepository,
                                               AdjustmentDecisionTable decisionTable,
                                               ExternalAnalyticsService externalAnalyticsService,
                                               ExternalProfilingService externalProfilingService,
                                               ExternalPlanningService externalPlanningService,
-                                              ExternalConfigurationService externalConfigurationService) {
+                                              ExternalConfigurationService externalConfigurationService,
+                                              AdaptationOrderDecider adaptationOrderDecider,
+                                              @Value("${fitsense.adaptation.min-registration-coverage-pct:50.0}")
+                                              double coberturaMinimaPct) {
         this.interventionRepository = interventionRepository;
         this.decisionTable = decisionTable;
         this.externalAnalyticsService = externalAnalyticsService;
         this.externalProfilingService = externalProfilingService;
         this.externalPlanningService = externalPlanningService;
         this.externalConfigurationService = externalConfigurationService;
+        this.adaptationOrderDecider = adaptationOrderDecider;
+        this.coberturaMinimaPct = coberturaMinimaPct;
     }
 
     /**
@@ -98,6 +117,11 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
                 .map(WeeklyMetricsView::weightedAdherencePct)
                 .orElse(null);
 
+        // Lo que paso sesion a sesion, con las senaladas ya marcadas por el
+        // identificador de analytics con los umbrales del instrumento.
+        var sessionOutcomes = externalAnalyticsService
+                .fetchSessionOutcomes(command.userId(), week.startDate());
+
         var context = new AdjustmentContext(
                 metrics.weightedAdherencePct(),
                 metrics.dominantSkipReason(),
@@ -105,7 +129,27 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
                 baselineVolume,
                 previousDays, previousMinutes, previousDifficulty,
                 previousAdherence,
-                metrics.averageSessionRpe());
+                metrics.averageSessionRpe(),
+                sessionOutcomes,
+                metrics.recordedWorkouts() == null ? 0 : metrics.recordedWorkouts(),
+                metrics.scheduledWorkouts(),
+                metrics.observedAdherencePct(),
+                metrics.registrationCoveragePct());
+
+        // ORDEN NUEVA, EN OBSERVACION. Se calcula y se registra, pero NO decide
+        // todavia: lo que se persiste y lo que llega al generador sigue siendo
+        // la decision porcentual de siempre. Se activara junto con la
+        // validacion de conservacion que sustituye a V8, porque sin ella una
+        // orden localizada produciria un plan que V8 rechazaria por no haber
+        // movido el volumen. Mismo metodo que se uso con 4C y con 4D: medir
+        // primero en modo observacion, activar despues.
+        var orden = adaptationOrderDecider.decide(context, configuration.params(),
+                coberturaMinimaPct);
+        log.info("ORDEN_ADAPTACION usuario {} semana {}: {} · observada {} · cobertura {} · "
+                        + "registradas {}/{} · EN OBSERVACION, no decide",
+                command.userId(), week.startDate(), orden.describe(),
+                orden.observedAdherencePct(), orden.registrationCoveragePct(),
+                orden.recordedWorkouts(), orden.scheduledWorkouts());
 
         var decision = decisionTable.decide(context, configuration.params());
 

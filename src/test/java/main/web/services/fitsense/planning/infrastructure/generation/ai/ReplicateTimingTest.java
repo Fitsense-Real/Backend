@@ -1,8 +1,8 @@
 package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
-import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTiming.Resultado;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTiming.Resultado;
 
 import static org.junit.jupiter.api.Assertions.*;
 
