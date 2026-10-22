@@ -13,9 +13,10 @@ package main.web.services.fitsense.shared.domain.model.valueobjects;
  * vive aqui, y de la que este enum se deriva.
  * <p>
  * EL MOTIVO ORIENTA, NO ORDENA. Una sesion omitida no demuestra que sus
- * ejercicios sean malos: si se omitio por falta de tiempo, lo que hay que
- * cambiar es la duracion o el reparto, no los ejercicios. Este enum es lo que
- * impide que la IA sustituya ejercicios cuando el problema era el horario.
+ * ejercicios sean malos: si se omitio por falta de tiempo, cabe reducir el
+ * trabajo autorizado o retirar un unico ejercicio de relleno, no sustituir
+ * arbitrariamente ejercicios estructurales. Este enum impide que la IA cambie
+ * lo que no corresponde al motivo registrado.
  * <p>
  * Tampoco ordena cambiar: {@link #permiteSustituirEjercicio()} dice que esta
  * PERMITIDO, no que sea obligatorio. Si no hay una alternativa valida, lo
@@ -30,19 +31,26 @@ public enum TipoIntervencion {
      * tampoco la dosis: lo unico que estorbaba era la fecha.
      */
     REPROGRAMAR_DIAS(false, false, false,
-            "Reprogramar el dia de la sesion. No sustituir ejercicios ni cambiar la dosis."),
+            "Reprogramar el dia de la sesion. No sustituir ejercicios ni "
+                    + "retirarlos, y no cambiar la dosis."),
 
     /**
-     * LACK_OF_TIME: acortar o reorganizar, conservando los ejercicios cuando se
-     * pueda. Aqui la dosis SI puede bajar: acortar una sesion es precisamente
-     * quitarle series o repeticiones.
+     * LACK_OF_TIME: acortar o reorganizar la sesion. Autoriza cambiar dosis
+     * cuando las demas reglas lo permitan o retirar UN ejercicio de relleno;
+     * si se retira, las dosis de todos los restantes deben quedar intactas.
+     * No autoriza sustituir ejercicios ni cambiar el dia.
      */
     ACORTAR_O_REORGANIZAR(false, true, false,
-            "Acortar o reorganizar la sesion, conservando los ejercicios cuando sea posible."),
+            "Acortar o reorganizar la sesion. Puedes bajar la dosis y retirar UNA "
+                    + "colocacion de relleno. No sustituir ni anadir ejercicios, no "
+                    + "cambiar el dia, y no tocar la dosis de las que se quedan si "
+                    + "retiras una. La duracion minima de la sesion no te obliga en "
+                    + "esta."),
 
     /** TOO_DIFFICULT: variante mas sencilla del MISMO patron, o ajustar la carga. */
     VARIANTE_MAS_SENCILLA_O_CARGA(true, true, false,
-            "Buscar una variante mas sencilla del mismo patron de movimiento, o ajustar la carga."),
+            "Buscar una variante mas sencilla del mismo patron de movimiento, o "
+                    + "ajustar la carga. No cambiar el dia."),
 
     /**
      * PAIN_OR_DISCOMFORT: la seguridad manda. No insistir en el ejercicio que
@@ -55,12 +63,14 @@ public enum TipoIntervencion {
      * lo correcto es declarar que esa parte no se pudo resolver.
      */
     SEGURIDAD_ANTE_DOLOR(true, true, true,
-            "No insistir en el ejercicio que causo dolor. Evaluar la restriccion declarada "
-                    + "antes de proponer cualquier reemplazo."),
+            "No insistir en el ejercicio que causo dolor. Evaluar la restriccion "
+                    + "declarada antes de proponer cualquier reemplazo; retirarlo sin "
+                    + "reemplazo tambien vale. No cambiar el dia."),
 
-    /** FATIGUE: revisar recuperacion y carga. Sustituir solo con justificacion. */
+    /** FATIGUE: revisar recuperacion y carga; no sustituir ni retirar ejercicios. */
     REVISAR_CARGA_Y_RECUPERACION(false, true, false,
-            "Revisar carga y recuperacion. Sustituir ejercicios solo si hay justificacion."),
+            "Revisar carga y recuperacion. Puedes ajustar la dosis. No sustituir ni "
+                    + "retirar ejercicios, y no cambiar el dia."),
 
     /**
      * LACK_OF_MOTIVATION: investigar que dificulta mantener la rutina y proponer
@@ -69,7 +79,8 @@ public enum TipoIntervencion {
      */
     INVESTIGAR_CAMBIO_MINIMO(false, true, false,
             "Investigar que dificulta mantener la rutina y proponer cambios pequenos "
-                    + "y justificados."),
+                    + "en la dosis. No sustituir ni retirar ejercicios, y no cambiar "
+                    + "el dia."),
 
     /**
      * OTHER o sin motivo: no se inventa una sustitucion, ni un recorte de dosis,
@@ -77,7 +88,9 @@ public enum TipoIntervencion {
      * que no hubo adaptacion efectiva.
      */
     CAUSA_NO_REGISTRADA(false, false, false,
-            "Informacion insuficiente sobre la causa. No inventar una sustitucion.");
+            "Informacion insuficiente sobre la causa. No inventar una sustitucion, no "
+                    + "retirar ejercicios, y no cambiar la dosis ni el dia. Conservar "
+                    + "la sesion es la respuesta correcta.");
 
     private final boolean permiteSustituirEjercicio;
     private final boolean permiteCambiarDosis;
@@ -154,7 +167,16 @@ public enum TipoIntervencion {
         return this == ACORTAR_O_REORGANIZAR;
     }
 
-    /** Texto para el prompt. Es lo que la IA tiene permitido hacer, en una linea. */
+    /**
+     * Permite quitar como maximo un ejercicio de relleno en una sesion
+     * ACORTAR_O_REORGANIZAR; las restricciones adicionales las verifica V8C.
+     * Es un permiso derivado, no cambia los tres booleanos del constructor.
+     */
+    public boolean permiteQuitarEjercicio() {
+        return this == ACORTAR_O_REORGANIZAR;
+    }
+
+    /** Texto para el prompt. Describe permisos y prohibiciones de cada intervencion. */
     public String instruccion() {
         return instruccion;
     }

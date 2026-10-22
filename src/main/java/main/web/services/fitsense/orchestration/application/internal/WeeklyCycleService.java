@@ -3,8 +3,10 @@ package main.web.services.fitsense.orchestration.application.internal;
 import main.web.services.fitsense.adaptation.interfaces.acl.AdaptationContextFacade;
 import main.web.services.fitsense.adaptation.interfaces.acl.AdjustmentOrderView;
 import main.web.services.fitsense.analytics.interfaces.acl.AnalyticsContextFacade;
+import main.web.services.fitsense.analytics.interfaces.acl.WeeklyMetricsView;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdjustmentType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
+import main.web.services.fitsense.planning.interfaces.acl.MeasuredWeekView;
 import main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +87,22 @@ public class WeeklyCycleService {
 
         Optional<Long> planId;
         try {
-            planId = planningContextFacade.generateWeeklyPlan(userId, newWeekStart, adjustment,
+            // LA SEMANA SE DERIVA DE LA ANTERIOR EN CUANTO HAY UNA.
+            //
+            // decideForWeek devuelve vacio exactamente cuando no hay semana
+            // medida con plan: primera semana del participante, o una semana
+            // sin plan. Ese es el unico caso de generacion inicial; a partir de
+            // ahi la semana nueva se copia de la anterior y se corrige solo lo
+            // que fallo, que es la direccion aprobada -«solo se adapta cuando
+            // hay baja adherencia; si no, no se hace nada»-.
+            //
+            // Con NO_CHANGE o INSUFFICIENT_DATA no se le pide nada a la IA: el
+            // productor conserva la continuidad y publica igual, porque la
+            // semana nueva necesita un plan aunque no se cambie nada de el.
+            planId = order.isPresent()
+                    ? planningContextFacade.adaptWeeklyPlan(userId, newWeekStart, adjustment,
+                    previousAdherence, previousRpe, medidaDe(metrics, order.get()))
+                    : planningContextFacade.generateWeeklyPlan(userId, newWeekStart, adjustment,
                     previousAdherence, previousRpe);
         } catch (RuntimeException e) {
             // 19.4: si no hay plan valido la semana queda sin plan y su
@@ -102,23 +119,81 @@ public class WeeklyCycleService {
         return planId;
     }
 
-    private static PlanAdjustment toAdjustment(AdjustmentOrderView order) {
+    /**
+     * Los cuatro datos de la semana medida que planning necesita para la
+     * evidencia de V32, y que no puede consultar: no tiene ACL hacia analytics.
+     * <p>
+     * Si no hubiera metricas no habria orden -{@code decideForWeek} las usa
+     * para decidir-, asi que llegar aqui sin ellas significaria que el paso 2 y
+     * el 4 del ciclo discrepan. Se dice en voz alta en vez de registrar una
+     * evidencia con identificadores inventados.
+     */
+    private static MeasuredWeekView medidaDe(Optional<WeeklyMetricsView> metrics,
+                                             AdjustmentOrderView order) {
+        var vista = metrics.orElseThrow(() -> new IllegalStateException(
+                "Hay orden de ajuste y no hay metricas de la semana medida."));
+
+        return new MeasuredWeekView(
+                vista.weeklyMetricId(),
+                vista.planId(),
+                vista.observedAdherencePct(),
+                vista.registrationCoveragePct(),
+                order.outcome());
+    }
+
+    /**
+     * La vista del ACL traducida a lo que entiende planning.
+     * <p>
+     * VISIBILIDAD DE PAQUETE, no privado, para que {@code WeeklyCycleAdjustmentTest}
+     * pueda comprobar la regla de abajo sin montar los tres facades. Es la unica
+     * razon: no lo llama nadie mas.
+     * <p>
+     * LOS DOS MECANISMOS NO PUEDEN VIAJAR JUNTOS. {@code PlanAdjustment} lanza
+     * si recibe {@code targetVolume != null} con sesiones senaladas -son
+     * irreconciliables: con la dosis fijada por capacidad en 4D, nada puede
+     * mover el volumen hasta un objetivo porcentual-. Y la trampa es que
+     * {@code AdjustmentOrderView.targetVolume()} es un {@code int} PRIMITIVO:
+     * al pasarlo a un parametro {@code Integer} se autoboxea, asi que
+     * <b>incluso un cero llega como no nulo</b> y dispararia esa excepcion.
+     * <p>
+     * Por eso los tres campos de volumen solo viajan cuando el mecanismo
+     * porcentual ACTUO de verdad, y eso se reconoce por los tipos: si lo unico
+     * que hay es {@code NONE}, no hubo ajuste porcentual y el volumen no
+     * significa nada.
+     * <p>
+     * ESA CONDICION NO ES COSMETICA. Desde que la tabla de decision porcentual
+     * salio del flujo, los tipos son {@code NONE} y el volumen es 0 SIEMPRE.
+     * Pasar ese cero autoboxeado haria que {@code PlanAdjustment.isActive()}
+     * -que es literalmente {@code targetVolume != null}- devolviera cierto cada
+     * semana, y {@code persist} marcaria cada plan con
+     * {@code adjustment_applied = "NONE"} como si se le hubiera aplicado un
+     * ajuste. Con sesiones senaladas, ademas, lanzaria.
+     */
+    static PlanAdjustment toAdjustment(AdjustmentOrderView order) {
         List<AdjustmentType> types = order.adjustmentTypes().stream()
                 .map(AdjustmentType::valueOf)
                 .toList();
 
+        List<PlanAdjustment.TargetedSession> senaladas = order.targetedSessions().stream()
+                .map(s -> new PlanAdjustment.TargetedSession(
+                        s.plannedWorkoutId(), s.intervencion()))
+                .toList();
+
+        boolean porcentual = types.stream().anyMatch(tipo -> tipo != AdjustmentType.NONE);
+
         return new PlanAdjustment(
                 types,
-                order.targetVolume(),
-                order.targetVolumeMin(),
-                order.targetVolumeMax(),
-                order.targetVolumeChangePct(),
-                order.loadChangePct(),
+                porcentual ? (Integer) order.targetVolume() : null,
+                porcentual ? (Integer) order.targetVolumeMin() : null,
+                porcentual ? (Integer) order.targetVolumeMax() : null,
+                porcentual ? order.targetVolumeChangePct() : 0.0,
+                porcentual ? order.loadChangePct() : 0.0,
                 order.forcedMaxDifficulty(),
                 order.forcedDaysPerWeek(),
                 order.forcedSessionMinutes(),
                 order.reason(),
                 order.dominantSkipReason(),
-                order.distributionHint());
+                order.distributionHint(),
+                senaladas);
     }
 }

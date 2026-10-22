@@ -54,7 +54,7 @@ public class SessionFixPromptBuilder {
      * subirla, igual que en {@link PlanPromptBuilder}: la version registra lo
      * que recibio el modelo.
      */
-    public static final String VERSION = "FIX-PR-1.1";
+    public static final String VERSION = "FIX-PR-1.3";
 
     private final JsonSupport json;
 
@@ -162,6 +162,38 @@ public class SessionFixPromptBuilder {
                 14. Si safety_notes no es null, respetalo. available_exercises YA
                     excluye lo prohibido, pero de los que quedan elige las variantes
                     mas conservadoras.
+                15. REGLA EXCLUSIVA DE ACORTAR_O_REORGANIZAR. Si el motivo de la
+                    sesion es ese, puedes RETIRAR como maximo UNA colocacion de
+                    relleno de esa sesion.
+                    No anadas ni sustituyas ejercicios, y si retiras una conserva
+                    EXACTAMENTE la dosis de las que se quedan. No cambies el dia.
+                    Si retiras una colocacion de relleno, conserva exactamente la
+                    prescripcion de todas las colocaciones restantes. Esto incluye
+                    planned_sets, planned_reps, planned_duration_seconds y
+                    rest_seconds, respetando tambien los valores null originales.
+                    En ejercicios DURATION, los segundos indican la duracion de
+                    cada serie cuando se especifica un numero de series; no
+                    representan necesariamente la duracion total del ejercicio.
+                    Cuando user.goal_type sea GAIN_MUSCLE, identifica el relleno
+                    cruzando el exercise_id de la sesion con available_exercises:
+                    slot en null significa que no pertenece a los cuatro patrones
+                    obligatorios. En SETS_REPS su clase_dosis empieza por
+                    RELLENO_; en DURATION clase_dosis puede venir en null aunque
+                    el ejercicio SI tenga slot.
+                    Para otros objetivos, slot y clase_dosis vienen ambos en null
+                    POR DISENO: eso NO prueba que el ejercicio sea de relleno. Si
+                    no puedes comprobarlo, no lo retires y ajusta solo la dosis.
+                    Este limite de UNA retirada es exclusivo de
+                    ACORTAR_O_REORGANIZAR y NO cambia lo que pueden hacer
+                    VARIANTE_MAS_SENCILLA_O_CARGA ni SEGURIDAD_ANTE_DOLOR, que
+                    tienen sus propios permisos.
+                    Y recuerda la regla 6: nunca dejes una sesion con menos de 2
+                    ejercicios.
+                16. constraints.min_session_minutes NO TE OBLIGA en una sesion
+                    cuyo motivo sea ACORTAR_O_REORGANIZAR: en esa, y solo en esa,
+                    la duracion puede quedar por debajo de ese minimo. En las
+                    demas sigue siendo obligatorio. Esto no cambia la regla 11:
+                    los minutos que declares tienen que corresponder al contenido.
 
                 change_reason y rationale se le muestran al usuario: escribelos en
                 espanol, en segunda persona, breves y concretos. Di que cambiaste y por
@@ -278,10 +310,28 @@ public class SessionFixPromptBuilder {
         linea.append("exercise_id ").append(p.exerciseId());
         if (p.name() != null) linea.append(" (").append(p.name()).append(')');
 
-        if ("DURATION".equals(p.prescriptionType()))
-            linea.append(": ").append(p.durationSeconds()).append(" s");
-        else
+        // LAS SERIES DE UNA DURATION TAMBIEN VIAJAN, Y ES EL ARREGLO DE
+        // INC-P2D-02.
+        //
+        // Hasta FIX-PR-1.2 esta rama imprimia solo los segundos. El modelo no
+        // tenia de donde sacar planned_sets, devolvia null, y V8C -que compara
+        // los CINCO campos del record Dosis, series incluido- lo leia como un
+        // cambio de dosis que el modelo no habia hecho. La corrida pagada del
+        // 22/10 se perdio asi tres peticiones seguidas con el ejercicio 1077,
+        // que tenia 3 series de 40 s y llegaba al prompt como «40 s».
+        //
+        // No se escribe «3x40 s»: eso se lee como 40 repeticiones y es justo la
+        // confusion que hay que evitar. Y si las series vienen nulas NO se
+        // inventa ninguna cantidad: se deja el formato de antes, porque el
+        // modelo tiene que conservar ese null tal cual.
+        if ("DURATION".equals(p.prescriptionType())) {
+            linea.append(": ");
+            if (p.sets() != null)
+                linea.append(p.sets()).append(p.sets() == 1 ? " serie de " : " series de ");
+            linea.append(p.durationSeconds()).append(" s");
+        } else {
             linea.append(": ").append(p.sets()).append("x").append(p.reps());
+        }
 
         if (p.restSeconds() != null) linea.append(", descanso ").append(p.restSeconds()).append(" s");
 
@@ -352,8 +402,8 @@ public class SessionFixPromptBuilder {
                 Si no puedes resolver una sesion sin romper otra regla, OMITELA del
                 arreglo: conservarla es mejor que devolver algo invalido.
                 La lista de motivos solo nombra lo que fallo esta vez: todas las reglas
-                siguen valiendo. Antes de responder, repasa tu propuesta contra las
-                reglas 1 a 14 completas.
+                siguen valiendo. Antes de responder, repasa tu propuesta contra TODAS
+                las reglas de arriba, de la primera a la ultima, sin excepcion.
                 """);
     }
 }

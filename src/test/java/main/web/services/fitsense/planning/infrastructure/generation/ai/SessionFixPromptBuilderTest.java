@@ -159,6 +159,86 @@ class SessionFixPromptBuilderTest {
     }
 
     @Test
+    @DisplayName("Una colocacion DURATION informa series en plural, singular o nulas")
+    void laDuracionLlevaSusSeries() {
+        // INC-P2D-02: el prompt no mostraba las series de DURATION.
+        var prompt = construir(senalando(102L, TipoIntervencion.ACORTAR_O_REORGANIZAR),
+                semanaConDuraciones());
+        var texto = plano(prompt);
+
+        // Incluir prefijo y parentesis: describir() imprime ambos.
+        assertTrue(texto.contains("exercise_id 801 (ejercicio 801): 3 series de 40 s, descanso 45 s"),
+                () -> extracto(prompt));
+        assertTrue(texto.contains("exercise_id 802 (ejercicio 802): 1 serie de 40 s, descanso 45 s"),
+                () -> extracto(prompt));
+        assertFalse(texto.contains("1 series de"), () -> extracto(prompt));
+
+        // Si las series son nulas, la cantidad no debe inventarse.
+        assertTrue(texto.contains("exercise_id 803 (ejercicio 803): 40 s, descanso 45 s"),
+                () -> extracto(prompt));
+        assertFalse(texto.contains("null serie"), () -> extracto(prompt));
+
+        // SETS_REPS permanece identico.
+        assertTrue(texto.contains("exercise_id 304 (ejercicio 304): 3x10, descanso 90 s"),
+                () -> extracto(prompt));
+        assertFalse(texto.contains("3x40"), () -> extracto(prompt));
+    }
+
+    @Test
+    @DisplayName("La regla 15 nombra los cuatro campos que hay que conservar al retirar")
+    void laRegla15NombraLosCamposDeLaDosis() {
+        // La regla fija tambien se incluye al senalar una sesion por horario.
+        var prompt = construir(senalando(102L, TipoIntervencion.REPROGRAMAR_DIAS));
+        var texto = plano(prompt);
+
+        assertTrue(texto.contains("Esto incluye planned_sets, planned_reps,"
+                        + " planned_duration_seconds y rest_seconds, respetando tambien"
+                        + " los valores null originales"),
+                () -> extracto(prompt));
+        assertTrue(texto.contains("los segundos indican la duracion de cada serie"
+                        + " cuando se especifica un numero de series"),
+                () -> extracto(prompt));
+    }
+
+    @Test
+    @DisplayName("La regla de retirada se declara EXCLUSIVA de ACORTAR_O_REORGANIZAR")
+    void laRetiradaSeDeclaraExclusiva() {
+        // Esta sesion se senala por horario: NO permite retirar. Por eso
+        // comprobamos que la regla fija del prompt se declara exclusiva.
+        var prompt = construir(senalando(102L, TipoIntervencion.REPROGRAMAR_DIAS));
+        var plano = plano(prompt);
+
+        assertTrue(plano.contains("REGLA EXCLUSIVA DE ACORTAR_O_REORGANIZAR"),
+                () -> extracto(prompt));
+        assertTrue(plano.contains("puedes RETIRAR como maximo UNA colocacion de relleno"),
+                "La retirada debe tener el limite UNA: " + extracto(prompt));
+        assertTrue(plano.contains("conserva EXACTAMENTE la dosis de las que se quedan"),
+                "La retirada debe conservar las dosis restantes: " + extracto(prompt));
+        assertTrue(plano.contains("NO cambia lo que pueden hacer"),
+                "El nuevo permiso no debe aplicarse a otras intervenciones: "
+                        + extracto(prompt));
+        assertTrue(plano.contains("eso NO prueba que el ejercicio sea de relleno"),
+                () -> extracto(prompt));
+        assertTrue(plano.contains(
+                        "Y recuerda la regla 6: nunca dejes una sesion con menos de 2 ejercicios"),
+                () -> extracto(prompt));
+    }
+
+    @Test
+    @DisplayName("La exencion del minimo de duracion se declara solo para ACORTAR_O_REORGANIZAR")
+    void laExencionDelMinimoNoEsGeneral() {
+        var prompt = construir(senalando(102L, TipoIntervencion.REPROGRAMAR_DIAS));
+        var plano = plano(prompt);
+
+        assertTrue(plano.contains("constraints.min_session_minutes NO TE OBLIGA en una"
+                        + " sesion cuyo motivo sea ACORTAR_O_REORGANIZAR"),
+                () -> extracto(prompt));
+        assertTrue(plano.contains("En las demas sigue siendo obligatorio"),
+                "La exencion debe limitarse al motivo ACORTAR_O_REORGANIZAR: "
+                        + extracto(prompt));
+    }
+
+    @Test
     @DisplayName("NO le manda las sesiones conservadas")
     void noMandaLasConservadas() {
         var prompt = construir(senalando(102L, TipoIntervencion.ACORTAR_O_REORGANIZAR));
@@ -227,6 +307,13 @@ class SessionFixPromptBuilderTest {
         assertTrue(plano(prompt).contains("no anadas ninguna otra"), () -> extracto(prompt));
         assertTrue(plano(prompt).contains("OMITELA del arreglo: conservarla es mejor"),
                 "la salida honesta cuando no puede resolverla");
+
+        // No fijar rangos numericos de reglas en el mensaje de reintento:
+        // las reglas 15 y 16 quedaron fuera en FIX-PR-1.2.
+        assertFalse(plano(prompt).matches(".*reglas \\d+ a \\d+.*"),
+                "el reintento no puede citar un rango de reglas que puede caducar");
+        assertTrue(plano(prompt).contains("TODAS las reglas de arriba"),
+                () -> extracto(prompt));
     }
 
     @Test
@@ -493,6 +580,30 @@ class SessionFixPromptBuilderTest {
     private static PlanDraft.DraftExercise ej(long id) {
         return new PlanDraft.DraftExercise(id, PrescriptionType.SETS_REPS,
                 (short) 3, (short) 10, null, null, (short) 90, null);
+    }
+
+    /** Tres variantes DURATION en la sesion senalada, para el defecto INC-P2D-02. */
+    private static PreviousWeekSummary.PrescriptionOutcome porDuracion(long workoutId,
+                                                                       long exerciseId,
+                                                                       Short series) {
+        return new PreviousWeekSummary.PrescriptionOutcome(
+                workoutId, L1, exerciseId, "ejercicio " + exerciseId, "DURATION",
+                series, null, 40, null,
+                null, null, null, null,
+                new BigDecimal("100.00"), "COMPLETED", "LACK_OF_TIME", "COMPLETED",
+                (short) 45);
+    }
+
+    private static PreviousWeekSummary semanaConDuraciones() {
+        var base = semana(null);
+        var todas = new java.util.ArrayList<>(base.prescriptions());
+        todas.add(porDuracion(102L, 801L, (short) 3));
+        todas.add(porDuracion(102L, 802L, (short) 1));
+        todas.add(porDuracion(102L, 803L, null));
+
+        return new PreviousWeekSummary(base.weightedAdherencePct(),
+                base.averageSessionRpe(), base.totalVolume(), base.bodyPartDistribution(),
+                base.workouts(), List.copyOf(todas), base.exerciseIdsUsedLast7Days());
     }
 
     private static PreviousWeekSummary semanaDeTres() {

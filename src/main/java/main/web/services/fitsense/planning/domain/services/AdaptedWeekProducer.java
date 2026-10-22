@@ -44,10 +44,13 @@ import java.util.Map;
  * </ul>
  */
 /*
- * SIN @Component A PROPOSITO hasta P2-B-3. Nadie implementa todavia
- * StrictPlanValidation, asi que registrarlo como bean haria fallar el arranque
- * de Spring por una dependencia no satisfecha. El proyecto tiene que seguir
- * arrancando entre entregas. En P2-B-3, con el adaptador real, se anade.
+ * SIN @Component, Y SIGUE SIENDO A PROPOSITO. Se registra como @Bean en
+ * AdaptationWiringConfiguration, igual que AdaptationEvidenceMapper: es dominio
+ * puro, no depende del contenedor y sus pruebas lo construyen con new.
+ *
+ * Hasta P2-B-3 no estaba registrado en ningun sitio, porque nadie implementaba
+ * StrictPlanValidation y hacerlo bean habria roto el arranque por una
+ * dependencia no satisfecha. StrictValidationAdapter cerro esa condicion.
  */
 public class AdaptedWeekProducer {
 

@@ -69,6 +69,15 @@ public class ReplicateSessionFixGenerator {
     }
 
     /**
+     * El modelo que respondio. Lo necesita {@code AdaptedPublication}: una
+     * semana con origen AI declara su modelo, y una CONSERVED tiene que
+     * declararlo en null -su constructor lo rechaza si no-.
+     */
+    public String modelName() {
+        return transporte.modelName();
+    }
+
+    /**
      * Pide las correcciones y devuelve la respuesta SIN interpretar. UNA SOLA
      * peticion, con todas las sesiones senaladas: es el contrato A aprobado.
      * <p>

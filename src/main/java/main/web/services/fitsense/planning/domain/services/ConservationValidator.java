@@ -3,6 +3,7 @@ package main.web.services.fitsense.planning.domain.services;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport;
 import main.web.services.fitsense.planning.domain.model.valueobjects.DerivedWorkout;
+import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
@@ -406,12 +407,93 @@ public class ConservationValidator {
                                     List<String> problems) {
 
         if (!intervencion.permiteSustituirEjercicio()) {
-            // Quitar ejercicios ante dolor siempre vale; aqui no estamos en ese
-            // caso, asi que ni quitar ni anadir esta autorizado.
-            problems.add(("V8C: la sesion %d esta senalada como %s, que no autoriza sustituir "
-                    + "ejercicios (anade %s, quita %s). %s")
-                    .formatted(origen, intervencion, d.anadidos(), d.quitados(),
-                            intervencion.instruccion()));
+
+            // ANADIR SIGUE PROHIBIDO SIEMPRE, y sin permiso de retirada tampoco
+            // se puede quitar: es el comportamiento de antes, intacto para las
+            // seis intervenciones que no son ACORTAR_O_REORGANIZAR.
+            if (!d.anadidos().isEmpty() || !intervencion.permiteQuitarEjercicio()) {
+                problems.add(("V8C: la sesion %d esta senalada como %s, que no autoriza sustituir "
+                        + "ejercicios (anade %s, quita %s). %s")
+                        .formatted(origen, intervencion, d.anadidos(), d.quitados(),
+                                intervencion.instruccion()));
+                return;
+            }
+
+            // Solo hay retiradas y la intervencion las autoriza (INC-P2D-01).
+            // Dos limites, y los dos se comprueban aqui porque V24 NO los cubre.
+
+            // UNA, Y SOLO UNA. Acortar es quitar trabajo, no vaciar la sesion.
+            if (d.quitados().size() > 1) {
+                problems.add(("V8C: la sesion %d esta senalada como %s y retira %d ejercicios "
+                        + "(%s). Se autoriza retirar UNA sola colocacion de relleno. %s")
+                        .formatted(origen, intervencion, d.quitados().size(), d.quitados(),
+                                intervencion.instruccion()));
+                return;
+            }
+
+            Long retirado = d.quitados().get(0);
+            var candidato = catalogo.get(retirado);
+
+            // SIN CATALOGO NO SE PUEDE CLASIFICAR, Y NO SE DA POR RELLENO.
+            // MandatorySlot.of(null) devuelve Optional.empty(), que es
+            // exactamente lo que significa «es de relleno»: sin esta rama, un
+            // ejercicio que no este en el conjunto elegible pasaria por relleno
+            // sin que nadie lo haya comprobado. Es el mismo criterio que ya usa
+            // la rama de patron desconocido de mas abajo.
+            if (candidato == null) {
+                problems.add(("V8C: la sesion %d retira el ejercicio %d y no consta en el "
+                        + "conjunto elegible, asi que no se puede comprobar que sea una "
+                        + "colocacion de relleno.").formatted(origen, retirado));
+                return;
+            }
+
+            // SOLO RELLENO. El criterio no se reinventa: es el de
+            // MvpDosePolicy, que decide con relleno = MandatorySlot.of(x).isEmpty()
+            // -su linea 260-. Un ejercicio con slot obligatorio es ESTRUCTURAL y
+            // sostiene la cobertura 4C de la semana.
+            //
+            // HACE FALTA COMPROBARLO AQUI, y no basta con V24: la clase de dosis
+            // depende del slot del ejercicio -del catalogo-, NO de su posicion en
+            // la sesion. Al retirar un estructural, el relleno que queda NO pasa a
+            // estructural, asi que sus dosis siguen siendo validas y V24 no se
+            // entera de la perdida.
+            var slot = MandatorySlot.of(candidato);
+            if (slot.isPresent()) {
+                problems.add(("V8C: la sesion %d esta senalada como %s y retira el ejercicio %d, "
+                        + "que es una colocacion ESTRUCTURAL (patron %s, slot %s). Solo se "
+                        + "autoriza retirar una de relleno: una estructural sostiene la "
+                        + "cobertura de la semana. %s")
+                        .formatted(origen, intervencion, retirado,
+                                candidato.movementPattern(), slot.get(),
+                                intervencion.instruccion()));
+                return;
+            }
+
+            // AL RETIRAR, LO QUE QUEDA SE CONSERVA TAL CUAL.
+            //
+            // Sin esta rama el permiso nuevo abriria una puerta que no se pidio:
+            // ACORTAR_O_REORGANIZAR lleva permiteCambiarDosis = true, y
+            // revisarSenalada solo objeta la dosis cuando ese permiso es false.
+            // Asi que una propuesta podria retirar un relleno Y ADEMAS recortar
+            // las series de otro, y V8C no diria nada. Con GAIN_MUSCLE V24
+            // probablemente lo atajaria; con los demas objetivos, nada.
+            //
+            // El permiso de dosis se mantiene INTACTO cuando no hay retirada:
+            // este metodo solo se llama si hay anadidos o retiradas, asi que una
+            // propuesta que solo cambie la dosis no pasa por aqui y se sigue
+            // autorizando como antes.
+            if (!d.dosisCambiada().isEmpty()) {
+                problems.add(("V8C: la sesion %d esta senalada como %s y retira el ejercicio %d "
+                        + "Y ADEMAS cambia la dosis de %s. Al retirar una colocacion, las que "
+                        + "quedan se conservan tal cual: una cosa o la otra. %s")
+                        .formatted(origen, intervencion, retirado, d.dosisCambiada(),
+                                intervencion.instruccion()));
+                return;
+            }
+
+            // Una sola retirada, de relleno, con el resto intacto: autorizada. Lo
+            // que quede sigue pasando por V5, V15, V17, V20, V23 y V24 como
+            // siempre.
             return;
         }
 
