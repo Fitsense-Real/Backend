@@ -4,6 +4,7 @@ import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailab
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.exceptions.PlanGenerationFailedException;
 import main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer;
+import main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
@@ -89,6 +90,7 @@ public class PlanGenerationPipeline {
     public record Result(PlanDraft draft, short attempts) {}
 
     public Result run(PlanGenerationContext context, int durationToRepsDivisor) {
+        registrarCapacidades(context);
         short attempts = 0;
         // Todos los motivos de rechazo, en orden y sin repetir: los recibe el
         // motor de reglas y, en el reintento, la parte que no es del ultimo.
@@ -162,6 +164,23 @@ public class PlanGenerationPipeline {
             throw new PlanGenerationFailedException(context.userId(),
                     "Ultimos problemas: " + String.join(" | ", e.problems()));
         }
+    }
+
+    /**
+     * Paso 1 · 4A v6, SOLO OBSERVACION. Deja en el log que capacidades exige el
+     * objetivo antes de generar; no decide nada ni entra en el prompt. Va aqui
+     * y no en {@code prepare()} para no tocar el camino de adaptacion (P2-D).
+     */
+    private void registrarCapacidades(PlanGenerationContext context) {
+        var profile = context.profile();
+        String goal = profile == null ? null : profile.goalType();
+        String level = profile == null ? null : profile.fitnessLevel();
+        GoalCapabilityPolicy.forGoal(goal).ifPresentOrElse(
+                capacidades -> log.info("CAPACIDADES_4A user={} semana={} {} modo=OBSERVE",
+                        context.userId(), context.weekNumber(), capacidades.describe(level)),
+                () -> log.warn("CAPACIDADES_4A user={} semana={} version={} objetivo={} "
+                                + "sin_matriz modo=OBSERVE",
+                        context.userId(), context.weekNumber(), GoalCapabilityPolicy.VERSION, goal));
     }
 
     /**
