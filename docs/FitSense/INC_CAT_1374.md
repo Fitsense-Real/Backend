@@ -110,40 +110,15 @@ SELECT count(*) AS prescripciones, count(DISTINCT p.user_id) AS participantes
  WHERE pwe.exercise_id = 1374;
 ```
 
-## 5. Qué hace hoy P2-D con una semana que contiene el 1374 (diagnóstico, probado)
+## 5. Qué hace P2-D con una semana que contiene el 1374
 
-`AdaptacionRegresionIT` › `0c` (PostgreSQL efímero, flujo real, validadores reales): el 1374 se inyecta en la semana medida como si fuera anterior a la contención.
+**Antes de SUST-SEG-1** (diagnóstico del 23/10, sustituido): la continuidad con el 1374 se rechazaba por V1 y quien no tenía barra, o no podía levantar los brazos, se quedaba sin semana (`NO_FACTIBLE`).
 
-| Participante | Resultado de la adaptación |
-|---|---|
-| Sin barra | **No se conserva.** `NO_FACTIBLE` con «V1: el ejercicio 1374 …», evidencia registrada, sin plan; la semana medida intacta |
-| Con barra pero brazos arriba prohibidos | Igual: `NO_FACTIBLE` |
-| Con barra y sin restricciones | Copia exacta con el 1374; `generation_attempts = 1`, `ai_calls = 0` |
+**Ahora** (desarrollo y pruebas, no desplegado): el 1374 heredado se sustituye por un relleno elegible con dosis recalculada, la semana pasa por V8C (excepción explícita) y por V1–V24, y la evidencia V32 registra la sustitución. Si no hay sustituto, sigue en `NO_FACTIBLE` con un motivo `SEGURIDAD:`. Con barra y sin restricciones, la copia sigue siendo exacta.
 
-**Por caminos:**
+Detalle, reglas y pruebas: [`P2D_SUSTITUCION_SEGURIDAD.md`](P2D_SUSTITUCION_SEGURIDAD.md).
 
-- **`NO_CHANGE` / `INSUFFICIENT_DATA` / respaldo.** La continuidad se revalida entera; V1 rechaza la sesión con el 1374 y la semana sale `NO_FACTIBLE`. **No se publica nada inseguro, pero el participante se queda sin semana** hasta una intervención.
-- **Adaptación con IA.**
-  - El prompt ya no ofrece el 1374.
-  - Si la sesión que lo contiene **no** está señalada, V8C prohíbe cambiarla: la IA no puede arreglarla, los intentos fallan por V1 y el respaldo termina en `NO_FACTIBLE`.
-  - Si está señalada con una intervención que permite sustituir, la IA puede reemplazarlo y la semana pasa por todas las validaciones.
-- **Generación inicial:** no le afecta (contenido).
+## 6. Pendiente
 
-## 6. Propuesta: sustitución determinista segura (NO implementada; requiere autorización)
-
-Para no dejar sin semana a quien cumple el plan, la continuidad podría sustituir **solo** los ejercicios que dejaron de ser elegibles por **seguridad**:
-
-1. Alternativa elegible para el perfil actual, en este orden de preferencia:
-   1. misma clase de slot (estructural sigue estructural en el mismo slot; relleno sigue relleno);
-   2. misma zona, o en su defecto una zona que el enfoque admita;
-   3. mismo tipo de prescripción;
-   4. misma clase de dosis 4D, copiando la dosis.
-
-   Además: que no esté ya en la sesión, que no se repita en días consecutivos, que no esté bloqueado y que no esté en revisión de clasificación. Desempate por id.
-2. La semana resultante pasa por **todas** las validaciones (V1–V24, V8C).
-3. **Si no hay alternativa válida:** `NO_FACTIBLE` con un motivo específico («sin sustituto seguro para N»), nunca una sustitución insegura.
-4. Evidencia V32 que diga qué se sustituyó y por qué. Hoy V8C rechaza cualquier cambio en una sesión no señalada, así que haría falta una excepción explícita y trazable, del tipo «sustitución por seguridad de catálogo».
-
-Toca `AdaptedWeekProducer`, `ConservationValidator` y la evidencia, es decir, clases productivas de P2-D. Por eso queda **propuesta**, con su prueba a escribir antes de implementarla.
-
-**Lo ya publicado** (sección 4) necesitaría la misma sustitución aplicada una sola vez a las sesiones afectadas, o retirarlas de la vista con aviso. Se decide después de medir.
+- **Planes ya publicados** (sección 4): identificarlos, bloquear en la vista la sesión afectada o repararla en una versión nueva, sin tocar el histórico.
+- **V34** sigue fuera de `db/migration` hasta tener lo anterior y las comprobaciones de despliegue.

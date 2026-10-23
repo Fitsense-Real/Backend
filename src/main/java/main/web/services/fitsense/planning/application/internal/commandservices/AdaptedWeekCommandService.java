@@ -8,6 +8,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedPubl
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedWeekResult;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CorrectedSession;
+import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreparedPlanGeneration;
@@ -85,6 +86,17 @@ public class AdaptedWeekCommandService {
      */
     private final AirCircuitBreaker breaker = new AirCircuitBreaker();
 
+    /**
+     * Que heredados quedaron fuera SOLO por seguridad, para la sustitucion
+     * obligatoria de SafetySubstitutionPolicy. Null en las pruebas que
+     * construyen el servicio a mano: entonces no se sustituye nada.
+     */
+    private final SafetyExclusionResolver safetyExclusions;
+
+    /**
+     * Para pruebas que construyen el servicio a mano: sin sustitucion por
+     * seguridad, exactamente el comportamiento anterior.
+     */
     public AdaptedWeekCommandService(ReplicateSessionFixGenerator fixGenerator,
                                      WeekDerivationBuilder derivationBuilder,
                                      AdaptedWeekProducer producer,
@@ -92,6 +104,21 @@ public class AdaptedWeekCommandService {
                                      AdaptationEvidenceMapper evidenceMapper,
                                      AdaptationFailureRecorder failureRecorder,
                                      JsonSupport jsonSupport) {
+        this(fixGenerator, derivationBuilder, producer, planCommandService, evidenceMapper,
+                failureRecorder, jsonSupport, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public AdaptedWeekCommandService(ReplicateSessionFixGenerator fixGenerator,
+                                     WeekDerivationBuilder derivationBuilder,
+                                     AdaptedWeekProducer producer,
+                                     WeeklyTrainingPlanCommandService planCommandService,
+                                     AdaptationEvidenceMapper evidenceMapper,
+                                     AdaptationFailureRecorder failureRecorder,
+                                     JsonSupport jsonSupport,
+                                     SafetyExclusionResolver safetyExclusions) {
+        this.safetyExclusions = safetyExclusions;
+
         this.fixGenerator = fixGenerator;
         this.derivationBuilder = derivationBuilder;
         this.producer = producer;
@@ -126,13 +153,14 @@ public class AdaptedWeekCommandService {
 
         var derivation = derivar(context);
         var elegibles = porId(context.availableExercises());
+        var exclusiones = exclusionesDeSeguridad(context);
 
         // CON NO_CHANGE O INSUFFICIENT_DATA NO SE LE PIDE NADA A LA IA: se
         // conserva la continuidad. Lista vacia y no null: null significa «no
         // hubo respuesta usable», y aqui no se pregunto nada.
         var intento = decision.ordenaAdaptar()
-                ? corregir(context, derivation, elegibles)
-                : new Intento(producer.produce(context, derivation, List.of(), elegibles),
+                ? corregir(context, derivation, elegibles, exclusiones)
+                : new Intento(producir(context, derivation, List.of(), elegibles, exclusiones),
                 null, (short) 0);
 
         if (intento.resultado().publicable())
@@ -175,6 +203,35 @@ public class AdaptedWeekCommandService {
         }
 
         return derivationBuilder.derive(previa, origenes, fechas);
+    }
+
+    /**
+     * Las exclusiones de seguridad de los heredados. Si no se pueden calcular,
+     * se sigue sin ellas: entonces no se sustituye nada y V1 rechaza lo que ya
+     * no es elegible, que es el comportamiento seguro de siempre.
+     */
+    private ExclusionesDeSeguridad exclusionesDeSeguridad(PlanGenerationContext context) {
+        if (safetyExclusions == null) return ExclusionesDeSeguridad.ninguna();
+        try {
+            return safetyExclusions.resolver(context);
+        } catch (RuntimeException e) {
+            log.warn("EXCLUSIONES_SEGURIDAD user={} no se pudieron calcular, sin sustitucion: {}",
+                    context.userId(), e.toString());
+            return ExclusionesDeSeguridad.ninguna();
+        }
+    }
+
+    /**
+     * Sin exclusiones de seguridad, la llamada de siempre; con ellas, la que
+     * repara los heredados. Son equivalentes cuando no hay nada que sustituir.
+     */
+    private AdaptedWeekResult producir(PlanGenerationContext context, WeekDerivation derivation,
+                                       List<CorrectedSession> correcciones,
+                                       Map<Long, CandidateExercise> elegibles,
+                                       ExclusionesDeSeguridad exclusiones) {
+        return exclusiones.vacias()
+                ? producer.produce(context, derivation, correcciones, elegibles)
+                : producer.produce(context, derivation, correcciones, elegibles, exclusiones);
     }
 
     private static Map<Long, CandidateExercise> porId(List<CandidateExercise> elegibles) {
@@ -228,10 +285,11 @@ public class AdaptedWeekCommandService {
      */
     private Intento corregir(PlanGenerationContext context,
                              WeekDerivation derivation,
-                             Map<Long, CandidateExercise> elegibles) {
+                             Map<Long, CandidateExercise> elegibles,
+                             ExclusionesDeSeguridad exclusiones) {
 
         if (!fixGenerator.isEnabled() || !proveedorDisponible(context.userId()))
-            return sinPropuestaUsable(context, derivation, elegibles, (short) 0);
+            return sinPropuestaUsable(context, derivation, elegibles, exclusiones, (short) 0);
 
         var full = PlanInputSnapshot.of(context);
         var acumulados = new LinkedHashSet<String>();
@@ -282,7 +340,7 @@ public class AdaptedWeekCommandService {
                 continue;
             }
 
-            var resultado = producer.produce(context, derivation, correcciones, elegibles);
+            var resultado = producir(context, derivation, correcciones, elegibles, exclusiones);
             if (resultado.publicable())
                 return new Intento(resultado, snapshotJson, llamadas);
 
@@ -297,7 +355,7 @@ public class AdaptedWeekCommandService {
 
         log.warn("Sin correccion usable tras {} intento(s) para el usuario {}: {}",
                 llamadas, context.userId(), acumulados);
-        return sinPropuestaUsable(context, derivation, elegibles, llamadas);
+        return sinPropuestaUsable(context, derivation, elegibles, exclusiones, llamadas);
     }
 
     /**
@@ -313,8 +371,9 @@ public class AdaptedWeekCommandService {
     private Intento sinPropuestaUsable(PlanGenerationContext context,
                                        WeekDerivation derivation,
                                        Map<Long, CandidateExercise> elegibles,
+                                       ExclusionesDeSeguridad exclusiones,
                                        short llamadas) {
-        return new Intento(producer.produce(context, derivation, null, elegibles), null, llamadas);
+        return new Intento(producir(context, derivation, null, elegibles, exclusiones), null, llamadas);
     }
 
     // =======================================================================

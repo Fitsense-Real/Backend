@@ -3,6 +3,7 @@ package main.web.services.fitsense.p2d;
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
 import main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy;
 import main.web.services.fitsense.planning.domain.services.GoalFeasibilityPolicy;
+import main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy;
 import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.AiRetryFeedback;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateSessionFixGenerator;
@@ -203,6 +204,82 @@ class AdaptacionRegresionIT {
         }
     }
 
+    /**
+     * Sustitucion por seguridad publicada: solo cambian las posiciones del
+     * quitado, cada una por un sustituto; dia, enfoque, duracion y el resto de
+     * ejercicios y dosis quedan identicos. La evidencia V32 registra cada una.
+     * Devuelve los sustitutos.
+     */
+    private List<Long> assertSustitucionSegura(Participante p, long planNuevo, long quitado, String motivo) {
+        return assertSustitucionSegura(p, planNuevo, quitado, motivo, 0);
+    }
+
+    private List<Long> assertSustitucionSegura(Participante p, long planNuevo, long quitado, String motivo,
+                                               int llamadas) {
+        var nueva = semana(planNuevo);
+        assertEquals(p.semana().size(), nueva.size());
+        var puestos = new ArrayList<Long>();
+        for (int i = 0; i < nueva.size(); i++) {
+            var antes = p.semana().get(i);
+            var despues = nueva.get(i);
+            assertEquals(antes.fecha().plusWeeks(1), despues.fecha());
+            assertEquals(antes.enfoque(), despues.enfoque());
+            assertEquals(duracion(antes.id()), duracion(despues.id()), "la duracion declarada no cambia");
+            assertEquals(antes.ejercicios().size(), despues.ejercicios().size());
+            for (int j = 0; j < antes.ejercicios().size(); j++) {
+                var e = antes.ejercicios().get(j);
+                var n = despues.ejercicios().get(j);
+                if (e.id() == quitado) {
+                    assertNotEquals(quitado, n.id());
+                    puestos.add(n.id());
+                } else {
+                    assertEquals(e, n, "la sesion " + antes.id() + " cambio fuera de la sustitucion");
+                }
+            }
+        }
+        assertFalse(puestos.isEmpty(), "premisa: el quitado estaba en la semana medida");
+
+        var evidencia = intento(p);
+        assertEquals(planNuevo, ((Number) evidencia.get("resulting_plan_id")).longValue());
+        assertEquals("CONSERVED", evidencia.get("generation_source"));
+        assertEquals(llamadas, llamadasIa(p));
+        assertEquals(Math.max(1, llamadas), intentosDeGeneracion(planNuevo));
+        var registradas = jdbc.queryForList("SELECT s->>'quitado' AS quitado, s->>'puesto' AS puesto,"
+                + " s->>'motivo' AS motivo, s->>'regla' AS regla, s->>'sesion_origen' AS sesion,"
+                + " s->>'dosis_nueva' AS dosis FROM plan_adaptation_attempts a,"
+                + " jsonb_array_elements(a.conservation_report->'sustituciones') s"
+                + " WHERE a.user_id = ? AND a.new_week_start_date = ?", p.userId(), SEMANA_NUEVA);
+        assertEquals(puestos.size(), registradas.size(), String.valueOf(registradas));
+        for (int k = 0; k < registradas.size(); k++) {
+            var r = registradas.get(k);
+            assertEquals(String.valueOf(quitado), r.get("quitado"));
+            assertTrue(puestos.contains(Long.valueOf((String) r.get("puesto"))), String.valueOf(r));
+            assertTrue(String.valueOf(r.get("motivo")).contains(motivo), String.valueOf(r));
+            assertEquals("SUST-SEG-1", r.get("regla"));
+            assertNotNull(r.get("sesion"));
+            assertNotNull(r.get("dosis"));
+        }
+        return puestos;
+    }
+
+    private int duracion(long plannedWorkoutId) {
+        return jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts"
+                + " WHERE planned_workout_id = ?", Integer.class, plannedWorkoutId);
+    }
+
+    /** GAIN_MUSCLE: la dosis del sustituto es la de 4D para su clase y su zona. */
+    private void assertDosis4D(long planNuevo, long ejercicio) {
+        var zona = jdbc.queryForObject("SELECT bp.code FROM exercises x JOIN body_parts bp"
+                + " ON bp.body_part_id = x.body_part_id WHERE x.exercise_id = ?", String.class, ejercicio);
+        var esperada = MvpDosePolicy.dosisPara(MandatorySlot.ofMovementPattern(patron(ejercicio)), zona)
+                .orElseThrow();
+        var publicada = semana(planNuevo).stream().flatMap(s -> s.ejercicios().stream())
+                .filter(e -> e.id() == ejercicio).findFirst().orElseThrow();
+        assertEquals(esperada.series(), publicada.series());
+        assertEquals(esperada.reps(), publicada.reps());
+        assertEquals(esperada.descansoSegundos(), publicada.descanso());
+    }
+
     /** La IA simulada: devuelve, para cada contexto, la correccion que construye el caso. */
     private void iaPropone(Function<PlanGenerationContext, List<CorrectedSession>> propuesta) {
         when(ia.interpretar(anyString(), any())).thenAnswer(inv -> propuesta.apply(inv.getArgument(1)));
@@ -370,30 +447,33 @@ class AdaptacionRegresionIT {
         }
 
         @Test
-        @DisplayName("sin barra: la semana con el 1374 no se conserva; NO_FACTIBLE explicito, con evidencia")
-        void sinBarraNoSeConserva() {
+        @DisplayName("sin barra: el 1374 se sustituye por un relleno elegible; el resto de la semana, identico")
+        void sinBarraSeSustituye() {
             var p = con1374(participante(GoalType.GAIN_MUSCLE, true));
             var medida = semana(p.planMedido());
 
-            assertTrue(adaptar(p, AdaptationDecision.NO_CHANGE, List.of()).isEmpty(),
-                    "se republico el 1374 a quien no tiene barra");
-            var evidencia = intento(p);
-            assertEquals("NO_FACTIBLE", evidencia.get("status"));
-            assertNull(evidencia.get("resulting_plan_id"));
-            assertTrue(String.valueOf(evidencia.get("rejection_reason")).contains("V1: el ejercicio 1374"),
-                    String.valueOf(evidencia.get("rejection_reason")));
+            long nuevo = adaptar(p, AdaptationDecision.NO_CHANGE, List.of())
+                    .orElseThrow(() -> new AssertionError("no se publico: " + intento(p)));
+            var puestos = assertSustitucionSegura(p, nuevo, 1374L, "INC-CAT-1374");
+            for (long puesto : puestos) {
+                assertFalse(esSlot(patron(puesto)), "un relleno se sustituye por un relleno");
+                assertDosis4D(nuevo, puesto);
+            }
             assertEquals(medida, semana(p.planMedido()), "la semana medida no se toca");
             verifyNoInteractions(ia);
         }
 
         @Test
-        @DisplayName("brazos arriba prohibidos, aun con barra: tampoco se conserva")
-        void sinBrazosArribaNoSeConserva() {
+        @DisplayName("brazos arriba prohibidos, aun con barra: tambien se sustituye")
+        void sinBrazosArribaSeSustituye() {
             var con = new ArrayList<>(EQUIPAMIENTO);
             con.add("pull-up bar");
             var p = con1374(participante(GoalType.GAIN_MUSCLE, true, con, false));
-            assertTrue(adaptar(p, AdaptationDecision.NO_CHANGE, List.of()).isEmpty());
-            assertEquals("NO_FACTIBLE", intento(p).get("status"));
+            long nuevo = adaptar(p, AdaptationDecision.NO_CHANGE, List.of())
+                    .orElseThrow(() -> new AssertionError("no se publico: " + intento(p)));
+            for (long puesto : assertSustitucionSegura(p, nuevo, 1374L, "INC-CAT-1374"))
+                assertNotEquals(Boolean.TRUE, jdbc.queryForObject(
+                        "SELECT requires_overhead FROM exercises WHERE exercise_id = ?", Boolean.class, puesto));
         }
 
         @Test
@@ -458,19 +538,75 @@ class AdaptacionRegresionIT {
         }
 
         @Test
-        @DisplayName("reclasificado con una restriccion de seguridad vigente: se trata como problema real, no se conserva")
+        @DisplayName("reclasificado con una restriccion de seguridad vigente: se sustituye SOLO ese ejercicio, por uno de su slot")
         void reclasificadoConRestriccionDeSeguridad() {
             var p = participante(GoalType.GAIN_MUSCLE, false);
-            long afectado = p.semana().get(0).ejercicios().get(0).id();
+            var afectado = p.semana().get(0).ejercicios().get(0);
+            jdbc.update("UPDATE exercises SET requires_floor = TRUE WHERE exercise_id = ?", afectado.id());
+            try {
+                long nuevo = adaptar(p, AdaptationDecision.NO_CHANGE, List.of())
+                        .orElseThrow(() -> new AssertionError("no se publico: " + intento(p)));
+                for (long puesto : assertSustitucionSegura(p, nuevo, afectado.id(), "suelo")) {
+                    assertEquals(MandatorySlot.ofMovementPattern(patron(afectado.id())),
+                            MandatorySlot.ofMovementPattern(patron(puesto)), "mismo slot");
+                    assertNotEquals(Boolean.TRUE, jdbc.queryForObject(
+                            "SELECT requires_floor FROM exercises WHERE exercise_id = ?", Boolean.class, puesto));
+                    assertDosis4D(nuevo, puesto);
+                }
+            } finally {
+                jdbc.update("UPDATE exercises SET requires_floor = FALSE WHERE exercise_id = ?", afectado.id());
+            }
+        }
 
-            jdbc.update("UPDATE exercises SET requires_floor = TRUE WHERE exercise_id = ?", afectado);
+        @Test
+        @DisplayName("con la IA corrigiendo otra sesion: la sustitucion por seguridad tambien se aplica, y nada mas")
+        void sustitucionConIaSinPropuesta() {
+            var p = participante(GoalType.GAIN_MUSCLE, false);
+            var afectado = p.semana().get(1).ejercicios().get(0);
+            iaPropone(ctx -> List.of());
+            jdbc.update("UPDATE exercises SET requires_floor = TRUE WHERE exercise_id = ?", afectado.id());
+            try {
+                long nuevo = adaptar(p, AdaptationDecision.ADAPT_LOCALIZED, List.of(new PlanAdjustment.TargetedSession(
+                        p.semana().get(0).id(), TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)))
+                        .orElseThrow(() -> new AssertionError("no se publico: " + intento(p)));
+                assertSustitucionSegura(p, nuevo, afectado.id(), "suelo", 1);
+            } finally {
+                jdbc.update("UPDATE exercises SET requires_floor = FALSE WHERE exercise_id = ?", afectado.id());
+            }
+        }
 
-            assertTrue(adaptar(p, AdaptationDecision.NO_CHANGE, List.of()).isEmpty());
-            var evidencia = intento(p);
-            assertEquals("NO_FACTIBLE", evidencia.get("status"));
-            assertTrue(String.valueOf(evidencia.get("rejection_reason"))
-                            .contains("V1: el ejercicio " + afectado + " no esta en available_exercises"),
-                    String.valueOf(evidencia.get("rejection_reason")));
+        @Test
+        @DisplayName("sin sustituto seguro en todo el slot: NO_FACTIBLE con el motivo de seguridad; nada se publica")
+        void sinSustitutoSeguroNoFactible() {
+            var p = participante(GoalType.GAIN_MUSCLE, false);
+            var afectado = p.semana().get(0).ejercicios().stream().filter(e -> esSlot(patron(e.id())))
+                    .findFirst().orElseThrow();
+            var slot = MandatorySlot.ofMovementPattern(patron(afectado.id())).orElseThrow();
+            var patrones = jdbc.queryForList("SELECT DISTINCT movement_pattern FROM exercises"
+                    + " WHERE movement_pattern IS NOT NULL", String.class).stream()
+                    .filter(x -> MandatorySlot.ofMovementPattern(x).equals(Optional.of(slot))).toList();
+            var tocados = jdbc.queryForList("SELECT exercise_id FROM exercises WHERE movement_pattern = ANY(?)"
+                    + " AND requires_floor IS DISTINCT FROM TRUE", Long.class,
+                    (Object) patrones.toArray(String[]::new));
+            var medida = semana(p.planMedido());
+            jdbc.update("UPDATE exercises SET requires_floor = TRUE WHERE exercise_id = ANY(?)",
+                    (Object) tocados.toArray(Long[]::new));
+            try {
+                assertTrue(adaptar(p, AdaptationDecision.NO_CHANGE, List.of()).isEmpty(),
+                        "se publico una semana sin sustituto seguro");
+                var evidencia = intento(p);
+                assertEquals("NO_FACTIBLE", evidencia.get("status"));
+                assertNull(evidencia.get("resulting_plan_id"));
+                var motivo = String.valueOf(evidencia.get("rejection_reason"));
+                assertTrue(motivo.startsWith("SEGURIDAD: el ejercicio "), motivo);
+                assertTrue(motivo.contains("SUST-SEG-1") && motivo.contains("suelo"), motivo);
+                assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans"
+                        + " WHERE user_id = ? AND week_start_date = ?", Integer.class, p.userId(), SEMANA_NUEVA));
+                assertEquals(medida, semana(p.planMedido()), "la semana medida no se toca");
+            } finally {
+                jdbc.update("UPDATE exercises SET requires_floor = FALSE WHERE exercise_id = ANY(?)",
+                        (Object) tocados.toArray(Long[]::new));
+            }
         }
     }
 

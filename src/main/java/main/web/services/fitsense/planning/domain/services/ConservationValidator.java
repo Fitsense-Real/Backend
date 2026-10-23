@@ -7,6 +7,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySl
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
+import main.web.services.fitsense.planning.domain.model.valueobjects.SustitucionSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * V8C · VALIDACION DE CONSERVACION.
@@ -78,9 +80,21 @@ public class ConservationValidator {
         // comprobar: la semana conservada tiene que ser de verdad una copia.
         // Esa comprobacion es validateContinuidad, mas abajo, y no esta aqui
         // para no cambiar lo que este metodo hacia.
+        return validate(derivation, previous, adjustment, eligible, List.of());
+    }
+
+    /**
+     * Igual, admitiendo las sustituciones OBLIGATORIAS POR SEGURIDAD de
+     * {@link SafetySubstitutionPolicy}, y solo esas, despues de comprobarlas.
+     */
+    public ConservationReport validate(WeekDerivation derivation,
+                                       PreviousWeekSummary previous,
+                                       PlanAdjustment adjustment,
+                                       Map<Long, CandidateExercise> eligible,
+                                       List<SustitucionSeguridad> autorizadas) {
         if (adjustment == null || !adjustment.adapta()) return ConservationReport.vacio();
 
-        return revisar(derivation, previous, adjustment, eligible);
+        return revisar(derivation, previous, adjustment, eligible, autorizadas);
     }
 
     /**
@@ -105,13 +119,22 @@ public class ConservationValidator {
     public ConservationReport validateContinuidad(WeekDerivation derivation,
                                                   PreviousWeekSummary previous,
                                                   Map<Long, CandidateExercise> eligible) {
-        return revisar(derivation, previous, PlanAdjustment.none(), eligible);
+        return validateContinuidad(derivation, previous, eligible, List.of());
+    }
+
+    /** Continuidad admitiendo las sustituciones obligatorias por seguridad comprobadas. */
+    public ConservationReport validateContinuidad(WeekDerivation derivation,
+                                                  PreviousWeekSummary previous,
+                                                  Map<Long, CandidateExercise> eligible,
+                                                  List<SustitucionSeguridad> autorizadas) {
+        return revisar(derivation, previous, PlanAdjustment.none(), eligible, autorizadas);
     }
 
     private ConservationReport revisar(WeekDerivation derivation,
                                        PreviousWeekSummary previous,
                                        PlanAdjustment adjustment,
-                                       Map<Long, CandidateExercise> eligible) {
+                                       Map<Long, CandidateExercise> eligible,
+                                       List<SustitucionSeguridad> autorizadas) {
 
         // SI SE ORDENO ADAPTAR, LA FALTA DE DATOS ES UN ERROR, NO UN VISTO
         // BUENO. La version anterior devolvia el informe vacio cuando faltaban la
@@ -150,6 +173,7 @@ public class ConservationValidator {
         var conDolorDeSesion = indexarDolorDeSesion(previous);
         var catalogo = eligible == null ? Map.<Long, CandidateExercise>of() : eligible;
 
+        var admitidas = new ArrayList<SustitucionSeguridad>();
         var vistos = new LinkedHashSet<Long>();
         for (var derivada : derivation.workouts()) {
             Long origen = derivada.sourcePlannedWorkoutId();
@@ -168,8 +192,14 @@ public class ConservationValidator {
             }
 
             var intervencion = adjustment.intervencionDe(origen).orElse(null);
-            var diferencias = comparar(anterior, dosisPorSesion.getOrDefault(origen, Map.of()),
-                    derivada);
+            // SUSTITUCION OBLIGATORIA POR SEGURIDAD: la UNICA excepcion a que una
+            // sesion no senalada se conserve igual. Se comprueba cada una y solo
+            // las legitimas dejan de contar como diferencia; todo lo demas se
+            // revisa exactamente como antes.
+            var diferencias = neutralizarSustituciones(origen, derivada,
+                    comparar(anterior, dosisPorSesion.getOrDefault(origen, Map.of()), derivada),
+                    dosisPorSesion.getOrDefault(origen, Map.of()), catalogo,
+                    autorizadas == null ? List.of() : autorizadas, admitidas, problems);
 
             // EL DOLOR SE COMPRUEBA ANTES DE SABER SI LA SESION ESTABA
             // SENALADA, Y SIN MIRAR SU TIPO DE INTERVENCION.
@@ -210,8 +240,71 @@ public class ConservationValidator {
 
         revisarParticion(previous, derivation, adjustment, vistos, problems);
 
+        if (autorizadas != null)
+            autorizadas.stream().filter(s -> !vistos.contains(s.sesionOrigen()))
+                    .forEach(s -> problems.add(("V8C: se declara una sustitucion por seguridad en la sesion %d, "
+                            + "que no esta en la semana nueva.").formatted(s.sesionOrigen())));
+
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
-                fechasReducibles);
+                fechasReducibles, admitidas);
+    }
+
+    /**
+     * Quita de las diferencias de una sesion las sustituciones obligatorias por
+     * seguridad que cumplen TODAS las condiciones; las que no, se rechazan con
+     * su motivo y su diferencia sigue contando.
+     * <ol>
+     *   <li>el quitado estaba en esta sesion de la semana medida;</li>
+     *   <li>el quitado YA NO es elegible: si lo fuera, no habria motivo;</li>
+     *   <li>el puesto es elegible y no estaba en la sesion;</li>
+     *   <li>los dos son de la misma clase de slot (4C);</li>
+     *   <li>en la semana nueva esta el puesto y no el quitado.</li>
+     * </ol>
+     * La dosis del puesto NO se compara con la del quitado: se recalcula para el
+     * sustituto y la juzgan V16, V17, V20 y V24 en la validacion estricta.
+     */
+    private Diferencias neutralizarSustituciones(Long origen, DerivedWorkout derivada, Diferencias d,
+                                                 Map<Long, Dosis> dosisAnterior,
+                                                 Map<Long, CandidateExercise> catalogo,
+                                                 List<SustitucionSeguridad> autorizadas,
+                                                 List<SustitucionSeguridad> admitidas,
+                                                 List<String> problems) {
+        var deEsta = autorizadas.stream().filter(s -> origen.equals(s.sesionOrigen())).toList();
+        if (deEsta.isEmpty()) return d;
+
+        var anadidos = new ArrayList<>(d.anadidos());
+        var quitados = new ArrayList<>(d.quitados());
+        var idsNuevos = derivada.workout().exercises().stream()
+                .map(PlanDraft.DraftExercise::exerciseId).collect(Collectors.toSet());
+        for (var s : deEsta) {
+            var puesto = catalogo.get(s.puesto());
+            String motivo = null;
+            if (!dosisAnterior.containsKey(s.quitado()))
+                motivo = "el ejercicio %d no estaba en esa sesion de la semana medida".formatted(s.quitado());
+            else if (catalogo.containsKey(s.quitado()))
+                motivo = "el ejercicio %d sigue siendo elegible: no hay motivo de seguridad".formatted(s.quitado());
+            else if (puesto == null)
+                motivo = "el sustituto %d no es elegible".formatted(s.puesto());
+            else if (dosisAnterior.containsKey(s.puesto()))
+                motivo = "el sustituto %d ya estaba en la sesion".formatted(s.puesto());
+            else if (!MandatorySlot.ofMovementPattern(s.patronQuitado()).equals(MandatorySlot.of(puesto)))
+                motivo = "el sustituto %d (%s) no es de la misma clase de slot que %d (%s)"
+                        .formatted(s.puesto(), puesto.movementPattern(), s.quitado(), s.patronQuitado());
+            else if (!idsNuevos.contains(s.puesto()) || idsNuevos.contains(s.quitado()))
+                motivo = "la sesion no refleja la sustitucion de %d por %d".formatted(s.quitado(), s.puesto());
+
+            if (motivo != null) {
+                problems.add("V8C: la sustitucion por seguridad de la sesion %d no se admite: %s."
+                        .formatted(origen, motivo));
+                continue;
+            }
+            anadidos.remove(s.puesto());
+            quitados.remove(s.quitado());
+            admitidas.add(s);
+        }
+        return new Diferencias(List.copyOf(anadidos), List.copyOf(quitados), d.dosisCambiada(),
+                d.idsAnteriores(), d.idsNuevos(), d.diaMovido(), d.diaNuevo(), d.focoCambiado(), d.focoNuevo(),
+                d.minutosCambiados(), d.minutosNuevos());
     }
 
     // =======================================================================

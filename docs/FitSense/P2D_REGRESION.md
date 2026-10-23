@@ -19,7 +19,7 @@ En cada caso, la semana medida la produce el motor de reglas para un participant
 |---|---|
 | Control (`GAIN_MUSCLE`, sin cambios de catálogo, IA sin propuesta) | Se publica una **copia exacta**, sesión por sesión, con ejercicios y dosis; origen `CONSERVED` |
 | Un relleno de la semana medida se reclasifica a `HIP_HINGE` (pasa a estructural) | **No se publica.** V32 registra `NO_FACTIBLE` con `V24: el ejercicio N …`: la dosis conservada ya no corresponde a su clase. La semana medida no se toca |
-| Un ejercicio de la semana medida pasa a exigir suelo y el participante no lo permite | **No se publica.** `NO_FACTIBLE` con `V1: el ejercicio N no esta en available_exercises`: se trata como incompatibilidad de seguridad real, no se conserva |
+| Un ejercicio de la semana medida pasa a exigir suelo y el participante no lo permite | **Se sustituye solo ese ejercicio** por uno de su slot, sin suelo y con dosis 4D (SUST-SEG-1); el resto queda idéntico. Sin sustituto seguro: `NO_FACTIBLE` con `SEGURIDAD: …`. Ver [`P2D_SUSTITUCION_SEGURIDAD.md`](P2D_SUSTITUCION_SEGURIDAD.md). *Hasta el 23/10 este caso terminaba en `NO_FACTIBLE` por V1* |
 
 ## 2. Complementos de cardio y movilidad
 
@@ -38,7 +38,7 @@ Las sesiones señaladas usan `SEGURIDAD_ANTE_DOLOR` sin ejercicio identificado. 
 |---|---|
 | Control (`GAIN_MUSCLE`): la IA sustituye un estructural por una variante del mismo patrón y zona | Se publica con origen `AI` y la variante |
 | La misma variante, **bloqueada** por el participante | Los tres intentos se rechazan con `V1: el ejercicio Z …`. El respaldo publica la semana conservada, **sin el bloqueado** y idéntica a la medida; origen `CONSERVED`, `ai_calls = 3` |
-| Se bloquea un ejercicio que **estaba** en la semana medida | **No se publica.** `NO_FACTIBLE` con `V1: el ejercicio Y …`: el conflicto con la sesión anterior se detecta, no se conserva |
+| Se bloquea un ejercicio que **estaba** en la semana medida | **No se publica.** `NO_FACTIBLE` con `V1: el ejercicio Y …`: el conflicto con la sesión anterior se detecta, no se conserva. Un bloqueo es una preferencia, no seguridad: SUST-SEG-1 no lo sustituye |
 
 ## 4. Defecto encontrado y CORREGIDO: publicar una continuidad sin IA
 

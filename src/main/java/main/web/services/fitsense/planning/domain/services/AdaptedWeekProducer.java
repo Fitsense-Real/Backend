@@ -5,6 +5,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateEx
 import main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CorrectedSession;
 import main.web.services.fitsense.planning.domain.model.valueobjects.DerivedWorkout;
+import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
@@ -92,6 +93,22 @@ public class AdaptedWeekProducer {
                                      WeekDerivation derivation,
                                      List<CorrectedSession> correcciones,
                                      Map<Long, CandidateExercise> eligible) {
+        return produce(context, derivation, correcciones, eligible, ExclusionesDeSeguridad.ninguna());
+    }
+
+    /**
+     * Igual, reparando antes los ejercicios HEREDADOS que dejaron de ser
+     * compatibles por seguridad ({@link SafetySubstitutionPolicy}). La
+     * reparacion se aplica en los tres caminos -continuidad, respaldo y
+     * correccion de la IA- y despues todo pasa por V8C, que solo admite esas
+     * sustituciones, y por la validacion estricta. Sin sustituto, la semana es
+     * NO_FACTIBLE con el motivo.
+     */
+    public AdaptedWeekResult produce(PlanGenerationContext context,
+                                     WeekDerivation derivation,
+                                     List<CorrectedSession> correcciones,
+                                     Map<Long, CandidateExercise> eligible,
+                                     ExclusionesDeSeguridad exclusiones) {
 
         if (context == null)
             throw new IllegalArgumentException("No se puede adaptar sin contexto.");
@@ -107,14 +124,22 @@ public class AdaptedWeekProducer {
         // datos NO se interpreta como buena adherencia: se interpreta como que
         // no hay motivo para tocar nada.
         if (adjustment == null || !adjustment.adapta())
-            return continuidad(context, derivation, AdaptedWeekResult.Motivo.SIN_ORDEN, eligible);
+            return continuidad(context, derivation, AdaptedWeekResult.Motivo.SIN_ORDEN, eligible, exclusiones);
 
         // Fallo de IA. Antes de conservar hay que mirar si conservar es seguro.
         if (correcciones == null)
-            return respaldo(context, derivation, adjustment, eligible);
+            return respaldo(context, derivation, adjustment, eligible, exclusiones);
 
         var adaptada = applier.apply(derivation, correcciones, adjustment);
-        var informe = conservation.validate(adaptada, context.previousWeek(), adjustment, eligible);
+        // Lo HEREDADO que dejo de ser seguro se repara tambien aqui: una sesion
+        // no senalada con el ejercicio no la puede corregir la IA, porque V8C
+        // le prohibe tocarla. Lo que trajo la IA no se repara: si no es
+        // elegible, V1 lo rechaza.
+        var reparada = SafetySubstitutionPolicy.reparar(adaptada.workouts(), context.previousWeek(),
+                exclusiones, eligible, context);
+        var informe = conservation.validate(
+                new WeekDerivation(reparada.semana(), adaptada.sourcesWithoutDerived()),
+                context.previousWeek(), adjustment, eligible, reparada.sustituciones());
 
         // El origen lo decide si la IA cambio algo DE VERDAD, no si contesto.
         // Una semana de adaptaciones sin efecto es CONSERVED aunque el modelo
@@ -124,7 +149,8 @@ public class AdaptedWeekProducer {
         var motivo = huboEfecto
                 ? AdaptedWeekResult.Motivo.CORRECCION_IA : AdaptedWeekResult.Motivo.SIN_EFECTO;
 
-        return revisarYCerrar(context, adaptada.workouts(), informe, source, motivo, eligible);
+        return revisarYCerrar(context, reparada.semana(), informe, source, motivo, eligible,
+                reparada.problemas());
     }
 
     /**
@@ -139,7 +165,8 @@ public class AdaptedWeekProducer {
     private AdaptedWeekResult respaldo(PlanGenerationContext context,
                                        WeekDerivation derivation,
                                        PlanAdjustment adjustment,
-                                       Map<Long, CandidateExercise> eligible) {
+                                       Map<Long, CandidateExercise> eligible,
+                                       ExclusionesDeSeguridad exclusiones) {
 
         var conSeguridad = adjustment.targetedSessions().stream()
                 .filter(s -> s.intervencion().exigeRevisionDeSeguridad())
@@ -156,7 +183,7 @@ public class AdaptedWeekProducer {
         // Sin dolor, se conserva la semana entera. Las senaladas quedan como
         // conservadas: la adaptacion no ocurrio, y eso es un hecho que hay que
         // registrar, no un plan invalido.
-        return continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible);
+        return continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, exclusiones);
     }
 
     /**
@@ -175,11 +202,18 @@ public class AdaptedWeekProducer {
     private AdaptedWeekResult continuidad(PlanGenerationContext context,
                                           WeekDerivation derivation,
                                           AdaptedWeekResult.Motivo motivo,
-                                          Map<Long, CandidateExercise> eligible) {
+                                          Map<Long, CandidateExercise> eligible,
+                                          ExclusionesDeSeguridad exclusiones) {
 
-        var informe = conservation.validateContinuidad(derivation, context.previousWeek(), eligible);
-        return revisarYCerrar(context, derivation.workouts(), informe,
-                GenerationSource.CONSERVED, motivo, eligible);
+        // Conservar no es publicar lo que hoy es inseguro: lo heredado que dejo
+        // de ser compatible por seguridad se sustituye, o la semana no sale.
+        var reparada = SafetySubstitutionPolicy.reparar(derivation.workouts(), context.previousWeek(),
+                exclusiones, eligible, context);
+        var informe = conservation.validateContinuidad(
+                new WeekDerivation(reparada.semana(), derivation.sourcesWithoutDerived()),
+                context.previousWeek(), eligible, reparada.sustituciones());
+        return revisarYCerrar(context, reparada.semana(), informe,
+                GenerationSource.CONSERVED, motivo, eligible, reparada.problemas());
     }
 
     /**
@@ -196,9 +230,13 @@ public class AdaptedWeekProducer {
                                              ConservationReport informe,
                                              GenerationSource source,
                                              AdaptedWeekResult.Motivo motivo,
-                                             Map<Long, CandidateExercise> eligible) {
+                                             Map<Long, CandidateExercise> eligible,
+                                             List<String> sinSustituto) {
 
-        var problemas = new ArrayList<>(informe.problems());
+        // Primero lo que no tuvo sustituto seguro: es el motivo de fondo, y los
+        // V1 que provoca el ejercicio que se quedo son su consecuencia.
+        var problemas = new ArrayList<>(sinSustituto);
+        problemas.addAll(informe.problems());
         problemas.addAll(estricta.revisar(borradorPara(semana, source, informe), context, informe));
 
         if (!problemas.isEmpty())

@@ -54,7 +54,20 @@ public record ConservationReport(List<String> problems,
                                   * entrenamientos el mismo dia DENTRO de la semana
                                   * generada, que es el unico alcance en que se usa.
                                   */
-                                 Set<LocalDate> fechasConDuracionReducible) {
+                                 Set<LocalDate> fechasConDuracionReducible,
+                                 /**
+                                  * Las sustituciones OBLIGATORIAS POR SEGURIDAD que V8C
+                                  * comprobo y admitio. Es la unica forma en que una
+                                  * sesion no senalada puede cambiar, y por eso consta
+                                  * aqui, con su motivo y su regla, y llega a V32.
+                                  */
+                                 List<SustitucionSeguridad> sustituciones) {
+
+    /** Sin sustituciones de seguridad: el informe de siempre. */
+    public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
+                              List<Long> conservadas, Set<LocalDate> fechasConDuracionReducible) {
+        this(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible, List.of());
+    }
 
     public ConservationReport {
         problems = problems == null ? List.of() : List.copyOf(problems);
@@ -63,6 +76,7 @@ public record ConservationReport(List<String> problems,
         conservadas = conservadas == null ? List.of() : List.copyOf(conservadas);
         fechasConDuracionReducible = fechasConDuracionReducible == null
                 ? Set.of() : Set.copyOf(fechasConDuracionReducible);
+        sustituciones = sustituciones == null ? List.of() : List.copyOf(sustituciones);
     }
 
     public static ConservationReport vacio() {
@@ -85,6 +99,8 @@ public record ConservationReport(List<String> problems,
     /** Una linea para la traza, sin sustituir a la persistencia. */
     public String describe() {
         return "V8C: %d aplicadas, %d sin efecto, %d conservadas, %d problemas"
-                .formatted(aplicadas.size(), sinEfecto.size(), conservadas.size(), problems.size());
+                .formatted(aplicadas.size(), sinEfecto.size(), conservadas.size(), problems.size())
+                + (sustituciones.isEmpty() ? ""
+                : ", %d sustituciones por seguridad".formatted(sustituciones.size()));
     }
 }

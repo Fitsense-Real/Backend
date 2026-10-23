@@ -106,8 +106,35 @@ public class ExternalCatalogService {
         return elegibles(profile, maxDifficultyLevel, safety, false);
     }
 
+    /**
+     * P2-D · el conjunto que el perfil tendria SIN las restricciones de
+     * seguridad -banderas, retencion INC-4C-03 y contencion INC-CAT-1374-, con
+     * todo lo demas igual: equipamiento, dificultad, bloqueos del participante y
+     * filtro funcional. Sirve SOLO para saber si un ejercicio heredado quedo
+     * fuera por seguridad; nunca llega a un generador ni a un plan.
+     */
+    public List<CandidateExercise> fetchIgnoringSafety(PlanningProfile profile, int maxDifficultyLevel) {
+        return elegibles(profile, maxDifficultyLevel, SafetyProfile.none(), false, false);
+    }
+
+    /** Los ejercicios que retiene INC-4C-03. */
+    public static boolean retenidoInc4C03(Long exerciseId) {
+        return exerciseId != null && RETENIDOS_INC_4C_03.contains(exerciseId);
+    }
+
+    /** Si INC-CAT-1374 contiene este ejercicio para este perfil. */
+    public static boolean contenidoIncCat1374(Long exerciseId, PlanningProfile profile, SafetyProfile safety) {
+        return java.util.Objects.equals(exerciseId, CONTENIDO_INC_CAT_1374) && !admite1374(profile, safety);
+    }
+
     private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
                                               SafetyProfile safety, boolean registrar) {
+        return elegibles(profile, maxDifficultyLevel, safety, registrar, true);
+    }
+
+    private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
+                                              SafetyProfile safety, boolean registrar,
+                                              boolean aplicarRetenciones) {
         var delCatalogo = catalogContextFacade.fetchEligibleExercises(
                 profile.equipmentCodes(),
                 profile.excludesGymOnlyEquipment(),
@@ -132,12 +159,12 @@ public class ExternalCatalogService {
                 .toList();
 
         // INC-CAT-1374: contencion de seguridad, tambien antes de todo lo demas.
-        boolean contener1374 = !admite1374(profile, safety);
+        boolean contener1374 = aplicarRetenciones && !admite1374(profile, safety);
         boolean contenido = contener1374 && delCatalogo.stream()
                 .anyMatch(view -> java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374));
 
         var seguros = delCatalogo.stream()
-                .filter(view -> !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
+                .filter(view -> !aplicarRetenciones || !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
                 .filter(view -> !(contener1374 && java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374)))
                 .map(view -> new CandidateExercise(
                         view.exerciseId(),
