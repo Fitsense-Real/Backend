@@ -62,9 +62,12 @@ public final class GoalCapabilityPolicy {
         /** Aplica siempre. */
         ALWAYS,
         /**
-         * {@code POWER} en {@code INCREASE_STRENGTH}: no aplica a principiantes.
-         * 4D la declara estructuralmente inalcanzable para ese nivel, y su
-         * ausencia no debe invalidar el objetivo.
+         * {@code POWER} en {@code INCREASE_STRENGTH}. No ser principiante es
+         * condicion NECESARIA, NO SUFICIENTE: ademas hacen falta seguridad y alto
+         * impacto permitidos, equipamiento y candidatos elegibles compatibles,
+         * dosis 4D factible y tiempo disponible. Esas comprobaciones llegan con
+         * los pasos 2 a 4; aqui solo se descarta por nivel. Su ausencia nunca
+         * invalida el objetivo.
          */
         CONDITIONAL,
         /**
@@ -81,8 +84,12 @@ public final class GoalCapabilityPolicy {
                         "Una capacidad principal no puede ser condicional: " + capability);
         }
 
-        /** Si la capacidad aplica a un participante de este nivel. */
-        public boolean appliesTo(String fitnessLevel) {
+        /**
+         * Si la capacidad PUEDE aplicar a este nivel. {@code false} la descarta;
+         * {@code true} no garantiza que se pueda incorporar (ver
+         * {@link Condition#CONDITIONAL}).
+         */
+        public boolean mayApplyTo(String fitnessLevel) {
             return condition != Condition.CONDITIONAL || !"BEGINNER".equals(fitnessLevel);
         }
     }
@@ -97,10 +104,14 @@ public final class GoalCapabilityPolicy {
             return withRole(Role.SECONDARY);
         }
 
-        /** Secundarias que aplican al nivel dado: POWER sale para principiantes. */
-        public Set<Capability> secondariesFor(String fitnessLevel) {
+        /**
+         * Secundarias que no se descartan por nivel: POWER sale para
+         * principiantes. Son candidatas, no obligaciones ni disponibilidad
+         * confirmada.
+         */
+        public Set<Capability> candidateSecondariesFor(String fitnessLevel) {
             return requirements.stream()
-                    .filter(r -> r.role() == Role.SECONDARY && r.appliesTo(fitnessLevel))
+                    .filter(r -> r.role() == Role.SECONDARY && r.mayApplyTo(fitnessLevel))
                     .map(Requirement::capability)
                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(Capability.class)));
         }
@@ -119,7 +130,7 @@ public final class GoalCapabilityPolicy {
             var principalesFaltan = EnumSet.noneOf(Capability.class);
             primaries().stream().filter(c -> !cubiertas.contains(c)).forEach(principalesFaltan::add);
             var secundariasFaltan = EnumSet.noneOf(Capability.class);
-            secondariesFor(fitnessLevel).stream()
+            candidateSecondariesFor(fitnessLevel).stream()
                     .filter(c -> !cubiertas.contains(c)).forEach(secundariasFaltan::add);
             return new Assessment(goalType, principalesFaltan, secundariasFaltan);
         }
@@ -131,7 +142,9 @@ public final class GoalCapabilityPolicy {
                             .filter(r -> r.role() == Role.SECONDARY)
                             .map(r -> r.condition() == Condition.ALWAYS ? r.capability().name()
                                     : "%s(%s%s)".formatted(r.capability(), r.condition(),
-                                    r.appliesTo(fitnessLevel) ? "" : ",no_aplica_" + fitnessLevel))
+                                    r.condition() == Condition.OPPORTUNISTIC ? ""
+                                            : r.mayApplyTo(fitnessLevel) ? ",candidata"
+                                            : ",descartada_por_nivel_" + fitnessLevel))
                             .toList());
         }
 

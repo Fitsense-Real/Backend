@@ -92,8 +92,8 @@ class GoalCapabilityPolicyTest {
     void powerEsCondicionalYNoAplicaAPrincipiantes() {
         var capacidades = GoalCapabilityPolicy.forGoal("INCREASE_STRENGTH").orElseThrow();
         assertEquals(Condition.CONDITIONAL, capacidades.requirementOf(POWER).orElseThrow().condition());
-        assertEquals(Set.of(HYPERTROPHY), capacidades.secondariesFor("BEGINNER"));
-        assertEquals(Set.of(HYPERTROPHY, POWER), capacidades.secondariesFor("INTERMEDIATE"));
+        assertEquals(Set.of(HYPERTROPHY), capacidades.candidateSecondariesFor("BEGINNER"));
+        assertEquals(Set.of(HYPERTROPHY, POWER), capacidades.candidateSecondariesFor("INTERMEDIATE"));
 
         var principiante = capacidades.evaluate(Set.of(STRENGTH, HYPERTROPHY), "BEGINNER");
         assertTrue(principiante.primariesSatisfied());
@@ -145,7 +145,10 @@ class GoalCapabilityPolicyTest {
         assertEquals("4A-v6", GoalCapabilityPolicy.VERSION);
         var linea = GoalCapabilityPolicy.forGoal("INCREASE_STRENGTH").orElseThrow().describe("BEGINNER");
         assertTrue(linea.startsWith("version=4A-v6 objetivo=INCREASE_STRENGTH"), linea);
-        assertTrue(linea.contains("POWER(CONDITIONAL,no_aplica_BEGINNER)"), linea);
+        assertTrue(linea.contains("POWER(CONDITIONAL,descartada_por_nivel_BEGINNER)"), linea);
+        var intermedio = GoalCapabilityPolicy.forGoal("INCREASE_STRENGTH").orElseThrow()
+                .describe("INTERMEDIATE");
+        assertTrue(intermedio.contains("POWER(CONDITIONAL,candidata)"), intermedio);
     }
 
     @ParameterizedTest

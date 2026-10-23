@@ -24,10 +24,18 @@
 
 ## 3. Reglas
 
-1. **Una capacidad secundaria nunca hace fallar un plan que cumple sus capacidades principales.** La única respuesta de aceptación de la política (`Assessment.primariesSatisfied()`) depende solo de las principales. Las secundarias ausentes se informan.
+1. **Una capacidad secundaria nunca hace fallar ni bloquea la publicación de un plan que cumple todas sus capacidades principales.** La única respuesta de aceptación de la política (`Assessment.primariesSatisfied()`) depende solo de las principales. Las secundarias ausentes se informan.
 2. Una capacidad principal debe cubrirse en la **semana**, no necesariamente en cada sesión.
 3. Una capacidad principal es siempre incondicional; la clase rechaza construir una principal condicional.
-4. **`POWER` condicional:** no aplica a participantes `BEGINNER`, porque 4D la declara estructuralmente inalcanzable para ese nivel. Para los demás niveles es una secundaria más. *Interpretación de implementación pendiente de confirmar metodológicamente: la condición se limita al nivel.*
+4. **`POWER` condicional.** No ser `BEGINNER` es condición **necesaria, pero no suficiente**: 4D declara la potencia estructuralmente inalcanzable para principiantes. Para que `POWER` pueda incorporarse hace falta, además:
+   - nivel compatible;
+   - seguridad y alto impacto permitidos para el participante;
+   - equipamiento compatible;
+   - candidatos elegibles;
+   - dosis 4D factible;
+   - tiempo disponible.
+
+   En esta versión solo se comprueba el nivel (`Requirement.mayApplyTo`). Las demás condiciones se resolverán cuando estén los filtros (paso 2), la factibilidad (paso 3) y 4D (paso 4). Hasta entonces, `POWER` es para un no principiante una secundaria *candidata*, no una disponibilidad confirmada.
 5. **`BALANCE` oportunista:** se incluye si el conjunto elegible ofrece una ruta compatible. Su ausencia nunca invalida el objetivo.
 
 ## 4. Lo que esta versión no hace todavía
