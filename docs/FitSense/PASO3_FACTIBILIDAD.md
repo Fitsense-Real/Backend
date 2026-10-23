@@ -60,7 +60,7 @@ Si la observación falla, se registra y no impide generar.
 | `LOSE_WEIGHT` | 0 | **88** | 20 |
 | `GENERAL_FITNESS` | 0 | **108** | 0 |
 
-El motor de reglas solo elige por slots en `GAIN_MUSCLE` y no elige complementos. Por eso ninguna semana de `LOSE_WEIGHT` contiene cardio verificado, aunque en 60 perfiles el pool de cardio sea robusto o frágil. Es exactamente la diferencia entre pool y semana. Corregirlo es el Paso 5 (generadores).
+El motor de reglas solo elige por slots en `GAIN_MUSCLE` y no elige complementos. Por eso ninguna semana de `LOSE_WEIGHT` contiene cardio verificado, aunque en **70** perfiles (44 robustos + 26 frágiles) el pool de cardio lo permitiría. De esas 70 semanas, 60 no tienen ningún ejercicio de cardio y 10 solo tienen cardio en revisión. Es exactamente la diferencia entre pool y semana. Corregirlo es el Paso 5 (generadores).
 
 **Mismas restricciones, distinto veredicto según el objetivo.** En los datos reales, 66 de las 108 combinaciones dan dos veredictos distintos (`FRAGIL`/`ROBUSTO`: 28; `NO_VERIFICABLE`/`ROBUSTO`: 19; `FRAGIL`/`NO_VERIFICABLE`: 19). **Ninguna da tres a la vez en esta matriz.** El caso de tres veredictos (robusto, frágil y no factible) está cubierto con datos sintéticos (`GoalFeasibilityPolicyTest.mismoPoolTresVeredictosSegunElObjetivo`), no con datos reales.
 
