@@ -114,7 +114,7 @@ public class PlanDraftValidator {
                         (a, b) -> a));
 
         validateExercisesAndDays(draft, context, eligible, problems);
-        validateFocusCoverage(draft, eligible, problems);
+        validateFocusCoverage(draft, context, eligible, problems);
         validateWeeklySlotCoverage(draft, context, eligible, problems);
         validateSessions(draft, context, problems);
         validateVolumeTarget(draft, context, durationToRepsDivisor, problems);
@@ -350,19 +350,34 @@ public class PlanDraftValidator {
      * El minimo se calcula contra lo que el conjunto elegible permite: si el
      * usuario solo tiene material para dos grupos del enfoque, exigir tres
      * dejaria la semana sin plan.
+     * <p>
+     * PASO 2: los COMPLEMENTOS DE CAPACIDAD -cardio y movilidad que solo entran
+     * por 4A v6, ver {@link CatalogEligibilityPolicy}- quedan fuera de V15: no
+     * son grupo ajeno de ningun enfoque y tampoco cuentan para cubrirlo. Asi el
+     * catalogo y V15 dicen lo mismo, y una sesion de estiramientos no pasa por
+     * trabajo de piernas. Todo lo que ya era elegible se trata igual que antes.
      */
-    private void validateFocusCoverage(PlanDraft draft, Map<Long, CandidateExercise> eligible,
+    private void validateFocusCoverage(PlanDraft draft, PlanGenerationContext context,
+                                       Map<Long, CandidateExercise> eligible,
                                        List<String> problems) {
+        var complementos = CatalogEligibilityPolicy.complementos(eligible.values(),
+                context.profile() == null ? null : context.profile().goalType());
+
         for (var workout : draft.workouts()) {
             var esperados = workout.focus().bodyPartCodes();
 
             // Cuantos grupos del enfoque tienen material disponible.
             long disponibles = esperados.stream()
                     .filter(code -> eligible.values().stream()
+                            .filter(candidate -> !complementos.contains(candidate.exerciseId()))
                             .anyMatch(candidate -> code.equals(candidate.bodyPartCode())))
                     .count();
 
-            var cubiertos = workout.exercises().stream()
+            var deTrabajo = workout.exercises().stream()
+                    .filter(exercise -> !complementos.contains(exercise.exerciseId()))
+                    .toList();
+
+            var cubiertos = deTrabajo.stream()
                     .map(exercise -> eligible.get(exercise.exerciseId()))
                     .filter(java.util.Objects::nonNull)
                     .map(CandidateExercise::bodyPartCode)
@@ -377,7 +392,7 @@ public class PlanDraftValidator {
             // FULL_BODY queda exento: su lista es orientativa y no tiene sentido
             // rechazar un cuerpo completo por incluir gemelos o antebrazos.
             if (workout.focus() != WorkoutFocus.FULL_BODY) {
-                var ajenos = workout.exercises().stream()
+                var ajenos = deTrabajo.stream()
                         .map(exercise -> eligible.get(exercise.exerciseId()))
                         .filter(java.util.Objects::nonNull)
                         .map(CandidateExercise::bodyPartCode)
@@ -395,7 +410,7 @@ public class PlanDraftValidator {
             // Se pide cubrir todo lo que se pueda, con tope en 3: exigir los
             // cinco grupos de FULL_BODY obligaria a sesiones de cinco
             // ejercicios minimo, y con REDUCE_VOLUME puede haber solo dos.
-            int minimo = (int) Math.min(2, Math.min(disponibles, workout.exercises().size()));
+            int minimo = (int) Math.min(2, Math.min(disponibles, deTrabajo.size()));
 
             if (cubiertos.size() < minimo)
                 problems.add(("V15: el entrenamiento del %s tiene enfoque %s y solo trabaja %s. "
@@ -406,19 +421,19 @@ public class PlanDraftValidator {
 
             // Ademas, ningun grupo puede acaparar mas de la mitad de la sesion
             // cuando el enfoque abarca varios.
-            if (esperados.size() >= 3 && workout.exercises().size() >= 4) {
-                var porGrupo = workout.exercises().stream()
+            if (esperados.size() >= 3 && deTrabajo.size() >= 4) {
+                var porGrupo = deTrabajo.stream()
                         .map(exercise -> eligible.get(exercise.exerciseId()))
                         .filter(java.util.Objects::nonNull)
                         .collect(Collectors.groupingBy(CandidateExercise::bodyPartCode,
                                 Collectors.counting()));
 
                 porGrupo.forEach((grupo, cuantos) -> {
-                    if (cuantos > workout.exercises().size() / 2)
+                    if (cuantos > deTrabajo.size() / 2)
                         problems.add(("V15: el entrenamiento del %s dedica %d de %d ejercicios a %s. "
                                 + "Reparte entre los grupos del enfoque %s.")
                                 .formatted(workout.scheduledDate(), cuantos,
-                                        workout.exercises().size(), grupo, workout.focus()));
+                                        deTrabajo.size(), grupo, workout.focus()));
                 });
             }
         }

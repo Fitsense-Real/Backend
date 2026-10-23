@@ -6,12 +6,12 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateEx
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningProfile;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
+import main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,13 +20,6 @@ import java.util.Set;
 public class ExternalCatalogService {
 
     private static final Logger log = LoggerFactory.getLogger(ExternalCatalogService.class);
-
-    /**
-     * Grupos que ningun enfoque admite (WorkoutFocus). Solo entraban por la
-     * exencion de FULL_BODY y engordaban el prompt: 26 ejercicios de cuello,
-     * antebrazo y cardio que la IA no podia usar con sentido.
-     */
-    private static final Set<String> BODY_PARTS_OUTSIDE_FOCUS = Set.of("neck", "lower arms", "cardio");
 
     /**
      * RETENIDOS POR INC-4C-03. Fuera de la seleccion automatica hasta revisar
@@ -96,14 +89,8 @@ public class ExternalCatalogService {
                 .sorted()
                 .toList();
 
-        var candidatos = delCatalogo.stream()
+        var seguros = delCatalogo.stream()
                 .filter(view -> !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
-                .filter(view -> !BODY_PARTS_OUTSIDE_FOCUS.contains(view.bodyPartCode()))
-                // Estiramientos fuera del trabajo principal (hallazgo M): son
-                // movilidad, no entrenamiento de fuerza. Quedan en el catalogo
-                // para cuando exista calentamiento y vuelta a la calma.
-                .filter(view -> view.nameEs() == null
-                        || !view.nameEs().toLowerCase(Locale.ROOT).contains("estiramiento"))
                 .map(view -> new CandidateExercise(
                         view.exerciseId(),
                         view.nameEs(),
@@ -116,6 +103,23 @@ public class ExternalCatalogService {
                         // pasa tal cual: la traduccion a slots es de planning.
                         view.movementPattern()))
                 .toList();
+
+        // Paso 2: filtro FUNCIONAL, despues de seguridad, dificultad,
+        // equipamiento, bloqueos y retenidos. Zonas fuera de enfoque y
+        // estiramientos (hallazgo M) siguen fuera, salvo que su patron sea la
+        // ruta de una capacidad del objetivo (4A v6): cardio para LOSE_WEIGHT y
+        // GENERAL_FITNESS, movilidad para GENERAL_FITNESS. La decision es de
+        // CatalogEligibilityPolicy, la misma que leen el motor de reglas y V15.
+        var candidatos = seguros.stream()
+                .filter(c -> CatalogEligibilityPolicy.decidir(c, profile.goalType()).admite())
+                .toList();
+
+        // Visible siempre, como EJERCICIOS_RETENIDOS: un filtro que no se ve
+        // cuesta una medicion entera.
+        log.info("CATALOGO_FUNCIONAL user={} objetivo={} seguros={} elegibles={} {}",
+                profile.userId() == null ? "desconocido" : profile.userId(), profile.goalType(),
+                seguros.size(), candidatos.size(),
+                CatalogEligibilityPolicy.informe(seguros, profile.goalType()).describe());
 
         // Visible a proposito. INC-4C-03 existe porque un filtro invisible
         // -el del cortacircuitos- costo una medicion entera.

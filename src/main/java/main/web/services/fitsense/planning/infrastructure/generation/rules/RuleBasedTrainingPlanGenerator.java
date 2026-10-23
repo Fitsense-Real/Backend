@@ -119,7 +119,16 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
 
         var random = new Random(seedFor(context));
         var recentlyUsed = new HashSet<>(context.previousWeek().exerciseIdsUsedLast7Days());
-        var selector = new ExerciseSelector(context.availableExercises(),
+        // Paso 2: los complementos de capacidad (cardio, movilidad que solo
+        // entran por 4A v6) no son trabajo de un enfoque y el selector elige por
+        // zona. Quitarlos deja la lista igual que antes del Paso 2, asi que el
+        // motor de reglas produce exactamente la misma semana.
+        var complementos = main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy
+                .complementos(context.availableExercises(), profile.goalType());
+        var seleccionables = context.availableExercises().stream()
+                .filter(candidate -> !complementos.contains(candidate.exerciseId()))
+                .toList();
+        var selector = new ExerciseSelector(seleccionables,
                 context.effectiveMaxDifficulty(), recentlyUsed, random);
 
         // Seleccion estructural, solo con la dosis fijada. Con los demas
