@@ -302,14 +302,22 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         // disparador de V32 compara los dos y rechaza el intento si difieren.
         var source = resultado.source();
 
+        // generation_attempts cuenta los intentos de PRODUCIR la semana, y
+        // ck_plan_attempts (V4) exige al menos uno. Una continuidad sin IA
+        // -NO_CHANGE, INSUFFICIENT_DATA, respaldo con la IA apagada o el
+        // cortacircuitos abierto- es un intento determinista: con aiCalls = 0
+        // la publicacion fallaba y la semana quedaba sin plan y sin evidencia.
+        // ai_calls de la evidencia V32 sigue siendo el numero REAL de llamadas.
+        short generationAttempts = (short) Math.max(1, publicacion.aiCalls());
+
         var plan = previousActive
                 .map(previous -> WeeklyTrainingPlan.nextVersionOf(previous, source,
                         publicacion.modelName(), publicacion.inputSnapshotJson(),
-                        publicacion.aiCalls(), etiqueta, motivo))
+                        generationAttempts, etiqueta, motivo))
                 .orElseGet(() -> WeeklyTrainingPlan.firstVersion(command.userId(),
                         prepared.weekNumber(), prepared.weekStartDate(), prepared.weekEndDate(),
                         source, publicacion.modelName(), publicacion.inputSnapshotJson(),
-                        publicacion.aiCalls()));
+                        generationAttempts));
 
         // POR ordenaAdaptar(), NO POR isActive(). isActive() mira targetVolume,
         // que en una orden localizada es null, asi que una adaptacion se

@@ -186,6 +186,21 @@ class PublishAdaptedTest {
     }
 
     @Test
+    @DisplayName("Con llamadas reales a la IA, generation_attempts y ai_calls conservan el numero real")
+    void conLlamadasRealesSeConservaElNumero() {
+        var captor = ArgumentCaptor.forClass(WeeklyTrainingPlan.class);
+        var tres = new AdaptedPublication(corregida(), AdaptationDecision.ADAPT_LOCALIZED, 400L, 300L,
+                "{\"prompt_version\":\"FIX-PR-1.1\"}", "gpt-5-nano", (short) 3,
+                new BigDecimal("42.00"), new BigDecimal("80.00"), "baja adherencia");
+
+        servicio.publishAdapted(preparado(ordenLocalizada()), tres);
+
+        verify(planRepository).saveAndFlush(captor.capture());
+        assertEquals((short) 3, captor.getValue().getGenerationAttempts());
+        assertEquals((short) 3, evidencia.get().aiCalls());
+    }
+
+    @Test
     @DisplayName("El plan se vacia a la base ANTES del intento: fk_paa_result no es diferida")
     void elPlanSeEscribeAntesDeLaEvidencia() {
         servicio.publishAdapted(preparado(ordenLocalizada()),
@@ -222,6 +237,11 @@ class PublishAdaptedTest {
         assertEquals((short) 0, fila.aiCalls(),
                 "sin orden de adaptacion no se llama a la IA");
         assertTrue(fila.appliedSessions().isEmpty(), () -> fila.appliedSessions().toString());
+
+        // Pero el plan si cuenta un intento de produccion: ck_plan_attempts (V4)
+        // exige >= 1, y con 0 la continuidad no se podia publicar.
+        assertEquals((short) 1, captor.getValue().getGenerationAttempts(),
+                "una continuidad sin IA es un intento determinista de producir la semana");
     }
 
     @Test

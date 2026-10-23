@@ -166,6 +166,16 @@ class AdaptacionRegresionIT {
                 p.userId(), SEMANA_NUEVA);
     }
 
+    /** generation_attempts del plan publicado. */
+    private int intentosDeGeneracion(long planId) {
+        return jdbc.queryForObject("SELECT generation_attempts FROM weekly_training_plans WHERE plan_id = ?",
+                Integer.class, planId);
+    }
+
+    private int llamadasIa(Participante p) {
+        return ((Number) intento(p).get("ai_calls")).intValue();
+    }
+
     private String patron(long ejercicio) {
         return jdbc.queryForObject("SELECT movement_pattern FROM exercises WHERE exercise_id = ?",
                 String.class, ejercicio);
@@ -203,6 +213,125 @@ class AdaptacionRegresionIT {
     }
 
     // =====================================================================
+    // 0. Publicacion sin IA (defecto ck_plan_attempts, corregido)
+    // =====================================================================
+
+    /**
+     * Una continuidad que no llama a la IA es un intento DETERMINISTA de
+     * producir la semana: generation_attempts = 1, ai_calls = 0. Antes se
+     * publicaba con generation_attempts = 0, ck_plan_attempts (V4) lo rechazaba
+     * y la semana quedaba sin plan y sin evidencia.
+     */
+    @Nested
+    @DisplayName("0 · publicar sin IA: la semana conservada se publica y la evidencia dice la verdad")
+    class PublicacionSinIa {
+
+        private void assertContinuidadSinIa(Participante p, long nuevo, String estado) {
+            assertCopiaExacta(p, nuevo);
+            assertEquals(1, intentosDeGeneracion(nuevo));
+            var evidencia = intento(p);
+            assertEquals(0, llamadasIa(p), "no se llamo a la IA y la evidencia no puede decir otra cosa");
+            assertEquals(estado, evidencia.get("status"));
+            assertEquals("CONSERVED", evidencia.get("generation_source"));
+            assertEquals(nuevo, ((Number) evidencia.get("resulting_plan_id")).longValue());
+            verify(ia, never()).pedirRespuesta(any(), any(), any(), any(), anyInt());
+        }
+
+        @Test
+        @DisplayName("NO_CHANGE: copia exacta, generation_attempts = 1, ai_calls = 0")
+        void noChangePublicaLaCopiaExacta() {
+            var p = participante(GoalType.GAIN_MUSCLE, true);
+            long nuevo = adaptar(p, AdaptationDecision.NO_CHANGE, List.of())
+                    .orElseThrow(() -> new AssertionError("NO_CHANGE no publico: " + intento(p)));
+            assertContinuidadSinIa(p, nuevo, "SIN_ORDEN");
+        }
+
+        @Test
+        @DisplayName("INSUFFICIENT_DATA: conserva y publica sin IA")
+        void insufficientDataPublicaSinIa() {
+            var p = participante(GoalType.GAIN_MUSCLE, true);
+            long nuevo = adaptar(p, AdaptationDecision.INSUFFICIENT_DATA, List.of())
+                    .orElseThrow(() -> new AssertionError("INSUFFICIENT_DATA no publico: " + intento(p)));
+            assertContinuidadSinIa(p, nuevo, "SIN_ORDEN");
+        }
+
+        @Test
+        @DisplayName("IA desactivada con orden de adaptar: publica el respaldo valido sin pedir nada")
+        void iaDesactivadaPublicaElRespaldo() {
+            var p = participante(GoalType.GAIN_MUSCLE, true);
+            when(ia.isEnabled()).thenReturn(false);
+            long nuevo = adaptar(p, AdaptationDecision.ADAPT_LOCALIZED, List.of(new PlanAdjustment.TargetedSession(
+                    p.semana().get(0).id(), TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)))
+                    .orElseThrow(() -> new AssertionError("sin respaldo: " + intento(p)));
+            assertContinuidadSinIa(p, nuevo, "RESPALDO");
+        }
+
+        @Test
+        @DisplayName("fallo real de publicacion: rollback, ni plan ni evidencia a medias")
+        void falloDePublicacionHaceRollback() {
+            var p = participante(GoalType.GAIN_MUSCLE, true);
+            var medidaAntes = semana(p.planMedido());
+            var inexistente = new Participante(p.userId(), p.planMedido(), 999_999_999L, p.semana());
+
+            // fk_paa_metric no es diferida: la evidencia no se puede insertar y
+            // la transaccion de publicacion entera tiene que deshacerse.
+            assertThrows(RuntimeException.class,
+                    () -> adaptar(inexistente, AdaptationDecision.NO_CHANGE, List.of()));
+
+            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans"
+                    + " WHERE user_id = ? AND week_start_date = ?", Integer.class, p.userId(), SEMANA_NUEVA),
+                    "quedo un plan sin su evidencia");
+            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE user_id = ?",
+                    Integer.class, p.userId()), "quedo evidencia sin su plan");
+            assertEquals(medidaAntes, semana(p.planMedido()), "la semana medida no se toca");
+        }
+    }
+
+    /**
+     * Cortacircuitos abierto. Va en su propia clase y con contexto descartado al
+     * terminar: el cortacircuitos vive en el bean AdaptedWeekCommandService y,
+     * abierto, cambiaria el comportamiento de las demas pruebas durante diez
+     * minutos.
+     */
+    @Nested
+    @org.springframework.test.annotation.DirtiesContext(
+            classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
+    @DisplayName("0b · cortacircuitos abierto: publica el respaldo sin invocar Replicate")
+    class CortacircuitosAbierto {
+
+        @Test
+        void conElCortacircuitosAbiertoSePublicaElRespaldoSinLlamar() {
+            when(ia.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                    .thenThrow(new main.web.services.fitsense.planning.domain.exceptions
+                            .AiProviderUnavailableException("proveedor caido (simulado)"));
+
+            // Tres caidas seguidas abren el cortacircuitos. Cada una ya publica
+            // su respaldo, con la llamada fallida contada.
+            for (int i = 0; i < main.web.services.fitsense.planning.infrastructure.generation.ai
+                    .AirCircuitBreaker.UMBRAL; i++) {
+                var q = participante(GoalType.GAIN_MUSCLE, true);
+                long plan = adaptar(q, AdaptationDecision.ADAPT_LOCALIZED, List.of(new PlanAdjustment.TargetedSession(
+                        q.semana().get(0).id(), TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)))
+                        .orElseThrow(() -> new AssertionError("sin respaldo con el proveedor caido"));
+                assertEquals(1, llamadasIa(q));
+                assertEquals(1, intentosDeGeneracion(plan));
+            }
+            verify(ia, times(3)).pedirRespuesta(any(), any(), any(), any(), anyInt());
+
+            // Abierto: la siguiente adaptacion no pide nada y publica el respaldo.
+            var p = participante(GoalType.GAIN_MUSCLE, true);
+            long nuevo = adaptar(p, AdaptationDecision.ADAPT_LOCALIZED, List.of(new PlanAdjustment.TargetedSession(
+                    p.semana().get(0).id(), TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)))
+                    .orElseThrow(() -> new AssertionError("sin respaldo con el cortacircuitos abierto"));
+            verify(ia, times(3)).pedirRespuesta(any(), any(), any(), any(), anyInt());
+            assertCopiaExacta(p, nuevo);
+            assertEquals(0, llamadasIa(p));
+            assertEquals(1, intentosDeGeneracion(nuevo));
+            assertEquals("RESPALDO", intento(p).get("status"));
+        }
+    }
+
+    // =====================================================================
     // 1. Reclasificacion
     // =====================================================================
 
@@ -220,31 +349,9 @@ class AdaptacionRegresionIT {
                     .orElseThrow(() -> new AssertionError("el control no paso: " + intento(p)));
             assertCopiaExacta(p, nuevo);
             assertEquals("CONSERVED", intento(p).get("generation_source"));
-        }
-
-        /**
-         * DEFECTO ABIERTO, CARACTERIZADO, NO CORREGIDO (P2-D intocable en este
-         * paso). Una continuidad sin llamadas a la IA -NO_CHANGE,
-         * INSUFFICIENT_DATA, o respaldo con la IA apagada o el cortacircuitos
-         * abierto- se publica con generation_attempts = ai_calls = 0, y
-         * ck_plan_attempts (V4) exige >= 1. La semana queda sin plan.
-         * <p>
-         * Cuando se corrija, ESTA PRUEBA FALLARA a proposito: hay que sustituirla
-         * por la que comprueba la copia exacta con NO_CHANGE.
-         */
-        @Test
-        @DisplayName("DEFECTO ABIERTO: NO_CHANGE sin llamadas a la IA viola ck_plan_attempts y no publica")
-        void defectoAbiertoNoChangeSinLlamadasViolaCkPlanAttempts() {
-            var p = participante(GoalType.GAIN_MUSCLE, true);
-            var error = assertThrows(org.springframework.dao.DataIntegrityViolationException.class,
-                    () -> adaptar(p, AdaptationDecision.NO_CHANGE, List.of()));
-            assertTrue(error.getMostSpecificCause().getMessage().contains("ck_plan_attempts"),
-                    error.getMostSpecificCause().getMessage());
-            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans"
-                    + " WHERE user_id = ? AND week_start_date = ?", Integer.class, p.userId(), SEMANA_NUEVA));
-            System.out.println("DEFECTO_ABIERTO ck_plan_attempts: intentos registrados = " + jdbc.queryForObject(
-                    "SELECT count(*) FROM plan_adaptation_attempts WHERE user_id = ?", Integer.class, p.userId()));
-            verifyNoInteractions(ia);
+            // IA llamada una vez: el numero real, en el plan y en la evidencia.
+            assertEquals(1, llamadasIa(p));
+            assertEquals(1, intentosDeGeneracion(nuevo));
         }
 
         @Test
@@ -609,7 +716,9 @@ class AdaptacionRegresionIT {
                     "el ejercicio bloqueado se publico");
             assertCopiaExacta(p, nuevo);
             assertEquals("CONSERVED", intento(p).get("generation_source"));
-            assertEquals(3, ((Number) intento(p).get("ai_calls")).intValue());
+            // IA llamada tres veces: el numero real, en el plan y en la evidencia.
+            assertEquals(3, llamadasIa(p));
+            assertEquals(3, intentosDeGeneracion(nuevo));
         }
 
         @Test
