@@ -7,6 +7,8 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.SlotCoverag
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeeklySlotDistribution;
 
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +36,8 @@ public final class SlotCoveragePolicy {
      */
     public static SlotCoverage ofEligible(List<CandidateExercise> eligible) {
         var counts = nuevoMapa();
+        // 4C §6 exige candidatos distintos, no filas repetidas del mismo exercise_id.
+        var vistosPorSlot = new EnumMap<MandatorySlot, Set<Long>>(MandatorySlot.class);
         int fuera = 0;
         int sinPatron = 0;
 
@@ -44,8 +48,14 @@ public final class SlotCoveragePolicy {
                 continue;
             }
             var slot = MandatorySlot.of(candidate);
-            if (slot.isPresent()) counts.merge(slot.get(), 1, Integer::sum);
-            else fuera++;
+            if (slot.isPresent()) {
+                // ID nulo no es un candidato seleccionable valido.
+                if (candidate.exerciseId() != null && vistosPorSlot
+                        .computeIfAbsent(slot.get(), ignored -> new HashSet<>())
+                        .add(candidate.exerciseId())) {
+                    counts.merge(slot.get(), 1, Integer::sum);
+                }
+            } else fuera++;
         }
         return new SlotCoverage(Map.copyOf(counts), fuera, sinPatron);
     }
