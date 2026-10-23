@@ -224,6 +224,8 @@ class CatalogoElegibleIT {
                    and (not :sinSuspension or not e.requires_hanging)
                    and (not :sinOverhead or not e.requires_overhead)
                    and (not :sinInversion or not e.requires_inversion)
+                   -- INC-CAT-1374: solo con barra declarada y sin restringir colgarse ni brazos arriba
+                   and (e.exercise_id <> 1374 or (:barra and not :sinSuspension and not :sinOverhead))
                    and not exists (
                          select 1 from exercise_equipment_requirements r
                           where r.exercise_id = e.exercise_id
@@ -245,7 +247,8 @@ class CatalogoElegibleIT {
                 .addValue("sinSuspension", sinSuspension).addValue("sinOverhead", sinOverhead)
                 .addValue("sinInversion", sinInversion).addValue("disponibles", disponibles)
                 .addValue("enCasa", "HOME".equals(entorno.lugar()))
-                .addValue("cardio", cardio).addValue("movilidad", movilidad);
+                .addValue("cardio", cardio).addValue("movilidad", movilidad)
+                .addValue("barra", entorno.equipamiento().contains("pull-up bar"));
         return new HashSet<>(jdbc.queryForList(sql, params, Long.class));
     }
 

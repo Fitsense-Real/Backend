@@ -52,6 +52,32 @@ public class ExternalCatalogService {
     private static final Set<Long> RETENIDOS_INC_4C_03 =
             Set.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
 
+    /**
+     * CONTENCION INC-CAT-1374 (23/10/2026). El 1374 «wind sprints» es, segun su
+     * GIF, una elevacion alterna de rodillas COLGADO de una barra, pero su
+     * registro dice que no exige colgarse, ni brazos arriba, ni barra
+     * (docs/FitSense/REVISION_CATALOGO_CARDIO.md). Con ese dato los filtros de
+     * seguridad no lo ven y llega a quien declaro no poder colgarse o no tiene
+     * barra.
+     * <p>
+     * Mientras el dato no se corrija con su migracion, solo llega a quien cumple
+     * los requisitos REALES del ejercicio: barra de dominadas declarada y ni
+     * colgarse ni brazos arriba restringidos. La exclusion por alto impacto del
+     * dato actual se mantiene: es mas conservadora que la corregida.
+     * <p>
+     * Igual que INC-4C-03, SIN INTERRUPTOR: es seguridad, no medicion. Sale
+     * cuando la migracion correctiva este aplicada.
+     */
+    static final long CONTENIDO_INC_CAT_1374 = 1374L;
+    static final String BARRA_DE_DOMINADAS = "pull-up bar";
+
+    /** Si el perfil cumple los requisitos reales del 1374. */
+    static boolean admite1374(PlanningProfile profile, SafetyProfile safety) {
+        boolean barra = profile.equipmentCodes() != null && profile.equipmentCodes().stream()
+                .anyMatch(code -> code != null && BARRA_DE_DOMINADAS.equals(code.trim().toLowerCase(java.util.Locale.ROOT)));
+        return barra && !safety.excludeHanging() && !safety.excludeOverhead();
+    }
+
     private final CatalogContextFacade catalogContextFacade;
 
     public ExternalCatalogService(CatalogContextFacade catalogContextFacade) {
@@ -105,8 +131,14 @@ public class ExternalCatalogService {
                 .sorted()
                 .toList();
 
+        // INC-CAT-1374: contencion de seguridad, tambien antes de todo lo demas.
+        boolean contener1374 = !admite1374(profile, safety);
+        boolean contenido = contener1374 && delCatalogo.stream()
+                .anyMatch(view -> java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374));
+
         var seguros = delCatalogo.stream()
                 .filter(view -> !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
+                .filter(view -> !(contener1374 && java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374)))
                 .map(view -> new CandidateExercise(
                         view.exerciseId(),
                         view.nameEs(),
@@ -131,6 +163,11 @@ public class ExternalCatalogService {
                 .toList();
 
         if (!registrar) return candidatos;
+
+        if (contenido)
+            log.info("EJERCICIOS_CONTENIDOS user={} motivo=INC-CAT-1374 ids=[1374] (exige barra, colgarse y "
+                            + "brazos arriba; el dato del catalogo no lo dice)",
+                    profile.userId() == null ? "desconocido" : profile.userId());
 
         // Visible siempre, como EJERCICIOS_RETENIDOS: un filtro que no se ve
         // cuesta una medicion entera.

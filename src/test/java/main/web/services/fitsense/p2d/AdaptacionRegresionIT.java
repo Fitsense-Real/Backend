@@ -106,7 +106,14 @@ class AdaptacionRegresionIT {
         }
     }
 
+    static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
+
     private Participante participante(GoalType objetivo, Boolean permiteSuelo) {
+        return participante(objetivo, permiteSuelo, EQUIPAMIENTO, true);
+    }
+
+    private Participante participante(GoalType objetivo, Boolean permiteSuelo, List<String> equipamiento,
+                                      Boolean permiteBrazosArriba) {
         int n = SECUENCIA.incrementAndGet();
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
                 + " VALUES (?, 'x', 'Prueba', now(), now())", "regresion" + n + "@pruebas.invalid");
@@ -115,8 +122,8 @@ class AdaptacionRegresionIT {
         perfiles.handle(new CreateUserProfileCommand(userId, LocalDate.of(1992, 5, 10), BiologicalSex.FEMALE,
                 new BigDecimal("165"), new BigDecimal("68"), null, FitnessLevel.INTERMEDIATE, objetivo,
                 "prueba de regresion", TrainingLocation.GYM, (short) 3, List.of((short) 1, (short) 3, (short) 5),
-                (short) 45, List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band"),
-                List.of(), "Ninguna", true, permiteSuelo, true, true, true));
+                (short) 45, equipamiento,
+                List.of(), "Ninguna", true, permiteSuelo, true, true, permiteBrazosArriba));
 
         long plan = planning.generateWeeklyPlan(userId, SEMANA_MEDIDA, PlanAdjustment.none(), null, null)
                 .orElseThrow(() -> new AssertionError("no se genero la semana medida"));
@@ -328,6 +335,79 @@ class AdaptacionRegresionIT {
             assertEquals(0, llamadasIa(p));
             assertEquals(1, intentosDeGeneracion(nuevo));
             assertEquals("RESPALDO", intento(p).get("status"));
+        }
+    }
+
+    // =====================================================================
+    // 0c. INC-CAT-1374: una semana existente que ya lo contiene
+    // =====================================================================
+
+    /**
+     * Diagnostico de P2-D con la contencion de INC-CAT-1374 activa. El 1374 se
+     * inyecta en la semana medida como si se hubiera generado ANTES de la
+     * contencion, en lugar de un relleno de cintura de la misma clase de dosis
+     * -asi V15, V16 y V24 no cambian-, y se pide la continuidad.
+     */
+    @Nested
+    @DisplayName("0c · INC-CAT-1374: semanas que ya contienen el 1374")
+    class Contencion1374 {
+
+        /** Sustituye en la semana medida un relleno de cintura por el 1374. */
+        private Participante con1374(Participante p) {
+            var relleno = p.semana().stream()
+                    .filter(s -> WorkoutFocus.valueOf(s.enfoque()).accepts("waist")
+                            || WorkoutFocus.valueOf(s.enfoque()) == WorkoutFocus.FULL_BODY)
+                    .flatMap(s -> s.ejercicios().stream())
+                    .filter(e -> "SETS_REPS".equals(e.tipo()) && !esSlot(patron(e.id())))
+                    .filter(e -> "waist".equals(jdbc.queryForObject("SELECT bp.code FROM exercises x JOIN body_parts bp"
+                            + " ON bp.body_part_id = x.body_part_id WHERE x.exercise_id = ?", String.class, e.id())))
+                    .findFirst().orElseThrow(() -> new AssertionError("premisa: sin relleno de cintura"));
+            assertFalse(p.ids().contains(1374L));
+            jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1374 WHERE exercise_id = ?"
+                    + " AND planned_workout_id IN (SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?)",
+                    relleno.id(), p.planMedido());
+            return new Participante(p.userId(), p.planMedido(), p.metrica(), semana(p.planMedido()));
+        }
+
+        @Test
+        @DisplayName("sin barra: la semana con el 1374 no se conserva; NO_FACTIBLE explicito, con evidencia")
+        void sinBarraNoSeConserva() {
+            var p = con1374(participante(GoalType.GAIN_MUSCLE, true));
+            var medida = semana(p.planMedido());
+
+            assertTrue(adaptar(p, AdaptationDecision.NO_CHANGE, List.of()).isEmpty(),
+                    "se republico el 1374 a quien no tiene barra");
+            var evidencia = intento(p);
+            assertEquals("NO_FACTIBLE", evidencia.get("status"));
+            assertNull(evidencia.get("resulting_plan_id"));
+            assertTrue(String.valueOf(evidencia.get("rejection_reason")).contains("V1: el ejercicio 1374"),
+                    String.valueOf(evidencia.get("rejection_reason")));
+            assertEquals(medida, semana(p.planMedido()), "la semana medida no se toca");
+            verifyNoInteractions(ia);
+        }
+
+        @Test
+        @DisplayName("brazos arriba prohibidos, aun con barra: tampoco se conserva")
+        void sinBrazosArribaNoSeConserva() {
+            var con = new ArrayList<>(EQUIPAMIENTO);
+            con.add("pull-up bar");
+            var p = con1374(participante(GoalType.GAIN_MUSCLE, true, con, false));
+            assertTrue(adaptar(p, AdaptationDecision.NO_CHANGE, List.of()).isEmpty());
+            assertEquals("NO_FACTIBLE", intento(p).get("status"));
+        }
+
+        @Test
+        @DisplayName("con barra y sin restricciones: se conserva la copia exacta, con el 1374")
+        void conBarraSeConserva() {
+            var con = new ArrayList<>(EQUIPAMIENTO);
+            con.add("pull-up bar");
+            var p = con1374(participante(GoalType.GAIN_MUSCLE, true, con, true));
+            long nuevo = adaptar(p, AdaptationDecision.NO_CHANGE, List.of())
+                    .orElseThrow(() -> new AssertionError("no se conservo: " + intento(p)));
+            assertCopiaExacta(p, nuevo);
+            assertTrue(semana(nuevo).stream().flatMap(s -> s.ejercicios().stream()).anyMatch(e -> e.id() == 1374L));
+            assertEquals(1, intentosDeGeneracion(nuevo));
+            assertEquals(0, llamadasIa(p));
         }
     }
 
