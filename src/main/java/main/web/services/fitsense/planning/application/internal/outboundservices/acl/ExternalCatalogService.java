@@ -66,6 +66,22 @@ public class ExternalCatalogService {
     public List<CandidateExercise> fetchEligibleFor(PlanningProfile profile,
                                                     int maxDifficultyLevel,
                                                     SafetyProfile safety) {
+        return elegibles(profile, maxDifficultyLevel, safety, true);
+    }
+
+    /**
+     * Paso 3 · el mismo conjunto, SIN escribir en el log. Solo para recuentos
+     * contrafactuales que explican una escasez («con esta restriccion levantada
+     * habria N»): su resultado nunca llega a un generador ni a un plan.
+     */
+    public List<CandidateExercise> fetchEligibleForExplanation(PlanningProfile profile,
+                                                               int maxDifficultyLevel,
+                                                               SafetyProfile safety) {
+        return elegibles(profile, maxDifficultyLevel, safety, false);
+    }
+
+    private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
+                                              SafetyProfile safety, boolean registrar) {
         var delCatalogo = catalogContextFacade.fetchEligibleExercises(
                 profile.equipmentCodes(),
                 profile.excludesGymOnlyEquipment(),
@@ -113,6 +129,8 @@ public class ExternalCatalogService {
         var candidatos = seguros.stream()
                 .filter(c -> CatalogEligibilityPolicy.decidir(c, profile.goalType()).admite())
                 .toList();
+
+        if (!registrar) return candidatos;
 
         // Visible siempre, como EJERCICIOS_RETENIDOS: un filtro que no se ve
         // cuesta una medicion entera.

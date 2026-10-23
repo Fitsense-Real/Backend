@@ -177,8 +177,25 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      */
     @Override
     public GeneratedPlan generate(PreparedPlanGeneration prepared) {
+        if (feasibilityObserver != null) feasibilityObserver.antesDeGenerar(prepared.context());
         var result = pipeline.run(prepared.context(), prepared.divisor());
+        if (feasibilityObserver != null)
+            feasibilityObserver.despuesDeGenerar(prepared.context(), result.draft());
         return new GeneratedPlan(result.draft(), result.attempts());
+    }
+
+    /**
+     * Paso 3 · factibilidad por objetivo, SOLO OBSERVACION y solo en la
+     * generacion inicial: el camino de adaptacion no pasa por generate().
+     * <p>
+     * Por setter y opcional, no por constructor, para no tocar las pruebas que
+     * construyen este servicio a mano (P2-D): ahi queda en null y no observa.
+     */
+    private GoalFeasibilityObserver feasibilityObserver;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setFeasibilityObserver(GoalFeasibilityObserver feasibilityObserver) {
+        this.feasibilityObserver = feasibilityObserver;
     }
 
     /**

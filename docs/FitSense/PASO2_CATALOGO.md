@@ -57,6 +57,8 @@ Ruta directa total por perfil (incluye lo que ya era elegible), con el umbral 0 
 
 Los 38 perfiles sin cardio añadido son principiantes, mayores de 60 o personas que declararon no permitir impacto o suelo: la seguridad sigue mandando. Esto mide el **pool**, no una semana válida (pasos 3 y 4).
 
+> **Corrección del Paso 3.** El «0: 0» de la ruta de cardio cuenta los 21 ejercicios con clasificación en revisión. Sin ellos, **38 de 108 perfiles no tienen ningún candidato de cardio verificado** (ver `PASO3_FACTIBILIDAD.md`). Estos conteos no son evidencia de factibilidad.
+
 ## 5. Impacto sobre la generación existente
 
 - `GAIN_MUSCLE` e `INCREASE_STRENGTH`: conjunto elegible, V15 y motor de reglas idénticos.
