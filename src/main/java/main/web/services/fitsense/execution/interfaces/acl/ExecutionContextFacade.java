@@ -87,7 +87,19 @@ public class ExecutionContextFacade {
         return sessionRepository.existsByPlannedWorkoutIdAndStatus(plannedWorkoutId, SessionStatus.IN_PROGRESS);
     }
 
-    /** Ultima sesion que conto, en cualquier semana. Base de days_since_last_workout. */
+    /**
+     * Ultima sesion que cuenta Y es valida (cumplimiento >= minValidPct),
+     * anterior a {@code before}. Una sesion por debajo del umbral sigue en el
+     * historial y aporta su porcentaje a la adherencia, pero no reinicia los
+     * dias sin entrenar.
+     */
+    @Transactional(readOnly = true)
+    public Optional<OffsetDateTime> fetchLastValidSessionAt(Long userId, double minValidPct,
+                                                            OffsetDateTime before) {
+        return sessionRepository.findLastValidSessionDate(userId, java.math.BigDecimal.valueOf(minValidPct), before);
+    }
+
+    /** Ultima sesion que conto, en cualquier semana, sea o no valida. */
     @Transactional(readOnly = true)
     public Optional<OffsetDateTime> fetchLastCountedSessionAt(Long userId) {
         return sessionRepository.findLastCountedSessionDate(userId);

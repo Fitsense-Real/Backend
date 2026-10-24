@@ -17,7 +17,16 @@ La auditoría parte del commit `ef472ee`, en la rama `generation`. No se cambiar
 
 **Nivel según el puntaje:** 25 o más es MODERATE, 50 o más es HIGH, 70 o más es CRITICAL; por debajo de 25 es LOW.
 
-**Abandono** (`is_dropout`): se marca cuando pasan 14 días o más desde la última sesión que contó. Es una marca aparte y no suma al puntaje. Quien nunca entrenó no se marca.
+**Abandono** (`is_dropout`): se marca cuando pasan 14 días o más sin una **sesión válida**. Es una señal operativa, no la prueba de que la persona dejó el ejercicio, y no suma al puntaje.
+- Sesión válida: cuenta para la adherencia y llega al 30 % (el mismo umbral de 17.3).
+- Los días se cuentan en la fecha **local** del participante (`users.timezone`), hasta el domingo de cierre incluido. Si la zona no se encuentra, se usa la de referencia del MVP, `America/Lima`.
+- Quien nunca tuvo una sesión válida no tiene días ni se marca.
+
+| Última sesión | ¿Reinicia los 14 días? |
+|---|---|
+| 100 %, 80 %, 60 % o 30 % | Sí |
+| 25 % o 10 % | No: aporta su porcentaje a la adherencia, pero no reinicia |
+| Entrenamiento omitido | No |
 
 **Semana sin plan:** no tiene puntaje ni nivel; solo puede llevar la marca de abandono.
 
@@ -63,14 +72,14 @@ Los valores esperados están calculados a mano en las pruebas.
 
 ## Hallazgos
 
-No hay un defecto demostrado en el puntaje: todas las reglas se comportan como están escritas y usan la adherencia nueva. Quedan cuatro hallazgos que no se corrigieron:
+No hay un defecto demostrado en el puntaje: todas las reglas se comportan como están escritas y usan la adherencia nueva. Los hallazgos 1 y 2 se corrigieron después (ver "Corrección del abandono"); el 3 y el 4 siguen como están.
 
-1. **El abandono cuenta sesiones por debajo del 30 %.**
+1. **El abandono cuenta sesiones por debajo del 30 %.** *(Corregido.)*
    - `ExternalExecutionService.daysSinceLastWorkout` está documentado como "días sin ninguna sesión válida (17.5)".
    - Usa `findLastCountedSessionDate`, que toma cualquier sesión que cuente, incluidas las de menos del 30 %, que no son válidas según 17.3.
    - Consecuencia: alguien que registra sesiones del 10 % nunca se marca como abandono. La racha de omisiones, en cambio, sí exige el 30 %.
    - Requiere decidir cuál es la regla (ver "Decisiones pendientes").
-2. **Corte UTC en los días sin entrenar.**
+2. **Corte UTC en los días sin entrenar.** *(Corregido.)*
    - Los días se cuentan con la fecha UTC de la sesión. Una sesión después de las 19:00 en Lima cuenta como del día siguiente.
    - Consecuencia: la marca de abandono puede llegar un día tarde.
    - Es menor y no se corrigió.
@@ -82,6 +91,27 @@ No hay un defecto demostrado en el puntaje: todas las reglas se comportan como e
    - Si la semana anterior no está calculada, no hay caída.
    - El ciclo semanal calcula las semanas en orden, así que en la operación normal no ocurre. Un recálculo manual fuera de orden sí lo produce.
 
-## Decisiones pendientes
+## Corrección del abandono
 
-- **Hallazgo 1:** ¿el abandono debe contar solo sesiones válidas (30 % o más), como dice su documentación, o cualquier sesión que cuente, como hace hoy?
+Decisión del 24/10/2026: el abandono considera solo sesiones válidas (30 % o más), con el umbral de 14 días sin cambios.
+
+**Cambios:**
+- `ExternalExecutionService.daysSinceLastWorkout` toma la última sesión que cuenta con un cumplimiento de 30 % o más (`findLastValidSessionDate`) y anterior al fin del domingo de cierre en la zona del participante.
+- Los días se cuentan con la fecha local de esa sesión.
+- La zona horaria llega por una ACL nueva hacia IAM (`analytics/.../ExternalIamService`).
+- Las sesiones por debajo del 30 % no se tocan: siguen en el historial y aportan su porcentaje.
+
+Además, una sesión posterior al cierre ya no cuenta para la semana medida. Antes daba 0 días al recalcular una semana pasada.
+
+**Pruebas:**
+- `AbandonoIT` (10, PostgreSQL temporal):
+  - sesiones al 10, 25, 30 y 80 %;
+  - un entrenamiento omitido;
+  - los límites de 13 y 14 días;
+  - domingo 23:50 y lunes 00:10 en Lima;
+  - un participante en Tokio;
+  - una sesión posterior al cierre;
+  - quien nunca entrenó, y quien solo entrenó por debajo del 30 %.
+
+  Con el código anterior fallan 6 de las 10.
+- `DiasSinEntrenarTest` (4 pruebas unitarias del conteo de días por fecha local).

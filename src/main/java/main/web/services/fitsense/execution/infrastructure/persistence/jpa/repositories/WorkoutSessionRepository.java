@@ -67,4 +67,18 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
            WHERE s.userId = :userId AND s.countsTowardAdherence = true
            """)
     Optional<OffsetDateTime> findLastCountedSessionDate(@Param("userId") Long userId);
+
+    /**
+     * Ultima sesion VALIDA antes de un instante: cuenta para la adherencia y
+     * llega al umbral de sesion valida (17.3). Base de days_since_last_workout.
+     */
+    @Query("""
+           SELECT MAX(s.startedAt) FROM WorkoutSession s
+           WHERE s.userId = :userId AND s.countsTowardAdherence = true
+             AND s.completionPercentage >= :minPct
+             AND s.startedAt < :before
+           """)
+    Optional<OffsetDateTime> findLastValidSessionDate(@Param("userId") Long userId,
+                                                      @Param("minPct") java.math.BigDecimal minPct,
+                                                      @Param("before") OffsetDateTime before);
 }

@@ -6,6 +6,8 @@ import main.web.services.fitsense.execution.interfaces.acl.ExecutionContextFacad
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -44,16 +46,29 @@ public class ExternalExecutionService {
     }
 
     /**
-     * Dias sin ninguna sesion valida al cierre (17.5). Null si nunca entreno: no
-     * es cero, y tampoco un numero grande arbitrario que marcaria como abandono
-     * a alguien que acaba de inscribirse.
+     * Dias sin ninguna sesion VALIDA al cierre de la semana (17.5): la ultima
+     * sesion que cuenta y llega al umbral de 17.3 (30 %), hasta el domingo
+     * incluido. Una sesion del 10 % aporta su 10 % a la adherencia pero no
+     * reinicia este contador.
+     * <p>
+     * Null si nunca tuvo una sesion valida: no es cero, y tampoco un numero
+     * grande arbitrario que marcaria como abandono a alguien que acaba de
+     * inscribirse.
      */
-    public Short daysSinceLastWorkout(Long userId, LocalDate weekEnd) {
-        return executionContextFacade.fetchLastCountedSessionAt(userId)
-                .map(at -> {
-                    long days = ChronoUnit.DAYS.between(at.toLocalDate(), weekEnd);
-                    return (short) Math.max(0, Math.min(days, Short.MAX_VALUE));
-                })
+    public Short daysSinceLastWorkout(Long userId, LocalDate weekEnd, double minValidPct, ZoneId zone) {
+        var finDeSemana = weekEnd.plusDays(1).atStartOfDay(zone).toOffsetDateTime();
+        return executionContextFacade.fetchLastValidSessionAt(userId, minValidPct, finDeSemana)
+                .map(at -> diasHasta(at, weekEnd, zone))
                 .orElse(null);
+    }
+
+    /**
+     * Dias entre el DIA LOCAL de la sesion y el cierre. Con la fecha UTC, una
+     * sesion a las 20:00 en Lima (01:00 UTC del dia siguiente) contaba un dia
+     * de menos.
+     */
+    public static short diasHasta(OffsetDateTime at, LocalDate weekEnd, ZoneId zone) {
+        long days = ChronoUnit.DAYS.between(at.atZoneSameInstant(zone).toLocalDate(), weekEnd);
+        return (short) Math.max(0, Math.min(days, Short.MAX_VALUE));
     }
 }
