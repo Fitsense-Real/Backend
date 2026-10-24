@@ -7,6 +7,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySl
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
+import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SustitucionSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion;
@@ -80,21 +81,27 @@ public class ConservationValidator {
         // comprobar: la semana conservada tiene que ser de verdad una copia.
         // Esa comprobacion es validateContinuidad, mas abajo, y no esta aqui
         // para no cambiar lo que este metodo hacia.
-        return validate(derivation, previous, adjustment, eligible, List.of());
+        return validate(derivation, previous, adjustment, eligible, ExclusionesDeSeguridad.ninguna(), List.of());
     }
 
     /**
      * Igual, admitiendo las sustituciones OBLIGATORIAS POR SEGURIDAD de
      * {@link SafetySubstitutionPolicy}, y solo esas, despues de comprobarlas.
+     *
+     * @param causas      las exclusiones con causa de seguridad VERIFICADA,
+     *                    calculadas aparte de quien propone las sustituciones:
+     *                    una autorizacion sin causa aqui no se admite
+     * @param autorizadas las sustituciones que se piden
      */
     public ConservationReport validate(WeekDerivation derivation,
                                        PreviousWeekSummary previous,
                                        PlanAdjustment adjustment,
                                        Map<Long, CandidateExercise> eligible,
+                                       ExclusionesDeSeguridad causas,
                                        List<SustitucionSeguridad> autorizadas) {
         if (adjustment == null || !adjustment.adapta()) return ConservationReport.vacio();
 
-        return revisar(derivation, previous, adjustment, eligible, autorizadas);
+        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas);
     }
 
     /**
@@ -119,21 +126,23 @@ public class ConservationValidator {
     public ConservationReport validateContinuidad(WeekDerivation derivation,
                                                   PreviousWeekSummary previous,
                                                   Map<Long, CandidateExercise> eligible) {
-        return validateContinuidad(derivation, previous, eligible, List.of());
+        return validateContinuidad(derivation, previous, eligible, ExclusionesDeSeguridad.ninguna(), List.of());
     }
 
     /** Continuidad admitiendo las sustituciones obligatorias por seguridad comprobadas. */
     public ConservationReport validateContinuidad(WeekDerivation derivation,
                                                   PreviousWeekSummary previous,
                                                   Map<Long, CandidateExercise> eligible,
+                                                  ExclusionesDeSeguridad causas,
                                                   List<SustitucionSeguridad> autorizadas) {
-        return revisar(derivation, previous, PlanAdjustment.none(), eligible, autorizadas);
+        return revisar(derivation, previous, PlanAdjustment.none(), eligible, causas, autorizadas);
     }
 
     private ConservationReport revisar(WeekDerivation derivation,
                                        PreviousWeekSummary previous,
                                        PlanAdjustment adjustment,
                                        Map<Long, CandidateExercise> eligible,
+                                       ExclusionesDeSeguridad causas,
                                        List<SustitucionSeguridad> autorizadas) {
 
         // SI SE ORDENO ADAPTAR, LA FALTA DE DATOS ES UN ERROR, NO UN VISTO
@@ -199,6 +208,7 @@ public class ConservationValidator {
             var diferencias = neutralizarSustituciones(origen, derivada,
                     comparar(anterior, dosisPorSesion.getOrDefault(origen, Map.of()), derivada),
                     dosisPorSesion.getOrDefault(origen, Map.of()), catalogo,
+                    causas == null ? ExclusionesDeSeguridad.ninguna() : causas,
                     autorizadas == null ? List.of() : autorizadas, admitidas, problems);
 
             // EL DOLOR SE COMPRUEBA ANTES DE SABER SI LA SESION ESTABA
@@ -255,6 +265,9 @@ public class ConservationValidator {
      * su motivo y su diferencia sigue contando.
      * <ol>
      *   <li>el quitado estaba en esta sesion de la semana medida;</li>
+     *   <li>el quitado tiene una CAUSA DE SEGURIDAD VERIFICADA, calculada aparte
+     *       ({@code SafetyConflictPolicy}), y el motivo declarado es esa causa:
+     *       un bloqueo, el equipamiento o el filtro funcional no autorizan;</li>
      *   <li>el quitado YA NO es elegible: si lo fuera, no habria motivo;</li>
      *   <li>el puesto es elegible y no estaba en la sesion;</li>
      *   <li>los dos son de la misma clase de slot (4C);</li>
@@ -266,6 +279,7 @@ public class ConservationValidator {
     private Diferencias neutralizarSustituciones(Long origen, DerivedWorkout derivada, Diferencias d,
                                                  Map<Long, Dosis> dosisAnterior,
                                                  Map<Long, CandidateExercise> catalogo,
+                                                 ExclusionesDeSeguridad causas,
                                                  List<SustitucionSeguridad> autorizadas,
                                                  List<SustitucionSeguridad> admitidas,
                                                  List<String> problems) {
@@ -281,6 +295,12 @@ public class ConservationValidator {
             String motivo = null;
             if (!dosisAnterior.containsKey(s.quitado()))
                 motivo = "el ejercicio %d no estaba en esa sesion de la semana medida".formatted(s.quitado());
+            else if (!causas.incluye(s.quitado()))
+                motivo = ("el ejercicio %d no tiene una causa de seguridad verificada (un bloqueo, el "
+                        + "equipamiento o el filtro funcional no autorizan a sustituirlo)").formatted(s.quitado());
+            else if (!causas.motivos().get(s.quitado()).equals(s.motivo()))
+                motivo = "el motivo declarado para %d (%s) no es su causa verificada (%s)"
+                        .formatted(s.quitado(), s.motivo(), causas.motivos().get(s.quitado()));
             else if (catalogo.containsKey(s.quitado()))
                 motivo = "el ejercicio %d sigue siendo elegible: no hay motivo de seguridad".formatted(s.quitado());
             else if (puesto == null)

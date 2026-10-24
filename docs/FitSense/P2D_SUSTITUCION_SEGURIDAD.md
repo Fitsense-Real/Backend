@@ -12,8 +12,11 @@ Ahora ese ejercicio, y **solo ese**, se sustituye por uno elegible, si existe. S
 
 `SafetyExclusionResolver` lo decide por cada ejercicio **heredado** de la semana medida que hoy no es elegible.
 
-- **Es de seguridad** si el ejercicio estaría en el conjunto del mismo perfil (equipamiento, nivel, dificultad, bloqueos, filtro funcional) **sin restricciones de seguridad**, sin la retención INC-4C-03 y sin la contención INC-CAT-1374 (`ExternalCatalogService.fetchIgnoringSafety`).
-- **El motivo** se identifica levantando una restricción cada vez: `INC-4C-03`, `INC-CAT-1374`, `alto_impacto`, `suelo`, `carga_axial`, `rodillas`, `suspension`, `brazos_arriba`, `inversion`. Si ninguna basta por sí sola, el motivo es `varias_restricciones_de_seguridad`.
+- **Es de seguridad solo con una causa verificada** (`SafetyConflictPolicy`, revisión del 24/10). No basta con que el ID falte del conjunto elegible. La causa sale de un dato comprobable:
+  - una **bandera del catálogo** contra una **restricción actual** del perfil: `alto_impacto`, `suelo`, `carga_axial`, `rodillas`, `suspension`, `brazos_arriba`, `inversion`;
+  - la retención **`INC-4C-03`**;
+  - la contención **`INC-CAT-1374`**.
+- **El motivo** registra todas las causas unidas por `+` (p. ej. `INC-CAT-1374`, `suelo+brazos_arriba`). `ExclusionesDeSeguridad` rechaza al construirse cualquier motivo que no esté hecho solo de esas causas. Ya no existe `varias_restricciones_de_seguridad`.
 - **No es de seguridad**, y sigue en V1 como siempre:
   - un ejercicio **bloqueado** por el participante (es una preferencia);
   - equipamiento que ya no declara;
@@ -57,11 +60,12 @@ Un ejercicio que introduce la IA no se repara: si no es elegible, es un error de
 V8C prohíbe cualquier cambio en una sesión no señalada. Por eso la excepción es **una lista explícita de sustituciones**, no un permiso sobre la sesión. `ConservationValidator.neutralizarSustituciones` admite cada sustitución solo si se cumplen todas estas condiciones:
 
 1. El quitado estaba en esa sesión de la semana medida.
-2. El quitado ya **no** es elegible. Si lo sigue siendo, no hay motivo de seguridad y la sustitución se rechaza.
-3. El sustituto es elegible.
-4. El sustituto no estaba ya en la sesión.
-5. Misma clase de slot, comparando el patrón del quitado con el del sustituto.
-6. La semana nueva contiene el sustituto y no el quitado.
+2. **El quitado tiene una causa de seguridad verificada y el motivo declarado es exactamente esa causa.** V8C recibe las exclusiones, que `SafetyExclusionResolver` calcula aparte desde las banderas, y no se fía de la autorización. Una autorización fabricada para un ejercicio bloqueado, sin el equipamiento o fuera por el filtro funcional se rechaza, aunque su ID falte del conjunto elegible. Esa sesión sigue entonces sin poder cambiarse.
+3. El quitado ya **no** es elegible. Si lo sigue siendo, no hay motivo de seguridad y la sustitución se rechaza.
+4. El sustituto es elegible.
+5. El sustituto no estaba ya en la sesión.
+6. Misma clase de slot, comparando el patrón del quitado con el del sustituto.
+7. La semana nueva contiene el sustituto y no el quitado.
 
 Una sustitución admitida se descuenta del par añadido/quitado. **Cualquier otra diferencia en la misma sesión sigue rechazada**: otro ejercicio, otra dosis u otro orden. Una autorización para una sesión que no existe es un problema, y una autorización ilegítima deja el cambio sin neutralizar, así que V8C lo rechaza como siempre.
 

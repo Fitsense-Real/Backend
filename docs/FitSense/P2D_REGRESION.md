@@ -70,7 +70,7 @@ short generationAttempts = (short) Math.max(1, publicacion.aiCalls());
 | IA llamada una vez | `sinCambiosSePublicaLaCopiaExacta` | `ai_calls = 1`, `generation_attempts = 1` |
 | IA llamada tres veces | `unBloqueadoNoEntraEnUnaAdaptacionNueva` | `ai_calls = 3`, `generation_attempts = 3` |
 | Fallo real de publicación (métrica inexistente, `fk_paa_metric`) | `falloDePublicacionHaceRollback` | Excepción, 0 planes y 0 intentos: sin plan ni evidencia a medias; la semana medida intacta |
-| Plan original incompatible con seguridad | `reclasificadoConRestriccionDeSeguridad` | Sigue `NO_FACTIBLE` con V1: no se fuerza ninguna publicación |
+| Plan original incompatible con seguridad | `reclasificadoConRestriccionDeSeguridad` | Desde SUST-SEG-1 (23/10): **se sustituye solo ese ejercicio** si hay alternativa segura (sección 1). Sin alternativa, `NO_FACTIBLE` con `SEGURIDAD: …` (`sinSustitutoSeguroNoFactible`). Nunca se fuerza una publicación insegura |
 
 - Unitarias en `PublishAdaptedTest`: `generation_attempts = 1` con `ai_calls = 0` en `NO_CHANGE`, y `3`/`3` con tres llamadas.
 - **Mutación de control:** sin la corrección fallan exactamente los cuatro casos de continuidad sin IA, con `ck_plan_attempts`, y la unitaria.

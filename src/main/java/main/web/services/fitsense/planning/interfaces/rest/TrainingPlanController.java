@@ -21,6 +21,7 @@ import main.web.services.fitsense.planning.interfaces.rest.resources.SkipWorkout
 import main.web.services.fitsense.planning.interfaces.rest.resources.WeeklyTrainingPlanResource;
 import main.web.services.fitsense.planning.interfaces.rest.transform.WeeklyTrainingPlanResourceFromEntityAssembler;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
+import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,15 +47,18 @@ public class TrainingPlanController {
     private final WeeklyTrainingPlanCommandService commandService;
     private final ExternalCatalogService externalCatalogService;
     private final JsonSupport jsonSupport;
+    private final PublishedPlanSafetyService publishedPlanSafety;
 
     public TrainingPlanController(WeeklyTrainingPlanQueryService queryService,
                                   WeeklyTrainingPlanCommandService commandService,
                                   ExternalCatalogService externalCatalogService,
-                                  JsonSupport jsonSupport) {
+                                  JsonSupport jsonSupport,
+                                  PublishedPlanSafetyService publishedPlanSafety) {
         this.queryService = queryService;
         this.commandService = commandService;
         this.externalCatalogService = externalCatalogService;
         this.jsonSupport = jsonSupport;
+        this.publishedPlanSafety = publishedPlanSafety;
     }
 
     @GetMapping("/users/me/plan/current")
@@ -141,7 +145,10 @@ public class TrainingPlanController {
         // para pintar la pantalla del ejercicio sin una llamada por cada uno.
         return WeeklyTrainingPlanResourceFromEntityAssembler.toResourceFromEntity(
                 plan, externalCatalogService.fetchDetails(exerciseIds),
-                EffortGuidance.forLevel(fitnessLevelOf(plan)));
+                EffortGuidance.forLevel(fitnessLevelOf(plan)),
+                // Un plan guardado no se revalida solo: las sesiones abiertas se
+                // comprueban contra la seguridad de HOY (INC-CAT-1374 y otras).
+                publishedPlanSafety.conflictos(plan));
     }
 
     /**

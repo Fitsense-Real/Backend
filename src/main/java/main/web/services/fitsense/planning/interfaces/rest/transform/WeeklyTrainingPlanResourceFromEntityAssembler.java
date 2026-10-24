@@ -22,12 +22,25 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
 
     private WeeklyTrainingPlanResourceFromEntityAssembler() {}
 
+    public static final String AVISO_BLOQUEO = "Esta sesion tiene un ejercicio que ya no es seguro para ti. "
+            + "No la inicies: necesita una correccion.";
+
     public static WeeklyTrainingPlanResource toResourceFromEntity(
             WeeklyTrainingPlan entity, Map<Long, EligibleExerciseView> catalogo,
             EffortGuidance guidance) {
+        return toResourceFromEntity(entity, catalogo, guidance, Map.of());
+    }
+
+    /**
+     * @param conflictos por planned_exercise_id, la causa de seguridad de HOY
+     *                   (solo sesiones abiertas de un plan activo)
+     */
+    public static WeeklyTrainingPlanResource toResourceFromEntity(
+            WeeklyTrainingPlan entity, Map<Long, EligibleExerciseView> catalogo,
+            EffortGuidance guidance, Map<Long, String> conflictos) {
 
         var workouts = entity.workoutsView().stream()
-                .map(workout -> toWorkoutResource(workout, catalogo))
+                .map(workout -> toWorkoutResource(workout, catalogo, conflictos))
                 .toList();
 
         return new WeeklyTrainingPlanResource(
@@ -65,6 +78,11 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
 
     public static PlannedWorkoutResource toWorkoutResource(
             PlannedWorkout workout, Map<Long, EligibleExerciseView> catalogo) {
+        return toWorkoutResource(workout, catalogo, Map.of());
+    }
+
+    public static PlannedWorkoutResource toWorkoutResource(
+            PlannedWorkout workout, Map<Long, EligibleExerciseView> catalogo, Map<Long, String> conflictos) {
 
         var exercises = workout.exercisesView().stream()
                 .map(exercise -> {
@@ -87,10 +105,12 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
                             exercise.getNotes(),
                             detalle == null ? null : detalle.gifPath(),
                             detalle == null ? null : detalle.imagePath(),
-                            detalle == null ? null : detalle.mediaAttribution());
+                            detalle == null ? null : detalle.mediaAttribution(),
+                            conflictos.get(exercise.getId()));
                 })
                 .toList();
 
+        boolean bloqueada = workout.exercisesView().stream().anyMatch(e -> conflictos.containsKey(e.getId()));
         return new PlannedWorkoutResource(
                 workout.getId(),
                 workout.getScheduledDate(),
@@ -101,6 +121,8 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
                 workout.getStatus().name(),
                 workout.getSkipReason() == null ? null : workout.getSkipReason().name(),
                 workout.getExpiresAt(),
-                exercises);
+                exercises,
+                bloqueada,
+                bloqueada ? AVISO_BLOQUEO : null);
     }
 }

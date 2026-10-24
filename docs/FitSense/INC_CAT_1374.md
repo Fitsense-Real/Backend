@@ -84,7 +84,7 @@ Ambas cosas, después de las secciones 4 y 5.
 
 **La contención no corrige lo ya publicado.** Una semana activa publicada antes de esta corrección sigue mostrando el 1374 a quien lo tenga: la app lee el plan guardado, no el catálogo. La contención solo actúa en las semanas que se generan o adaptan desde ahora.
 
-Consultas de **solo lectura**, para la base de pruebas o para producción con un usuario de lectura:
+**Versión vigente de las consultas (24/10):** `docs/FitSense/consultas/exposicion_planes_publicados.sql`, con `IS DISTINCT FROM TRUE`, equipamiento normalizado, separación entre activo o futuro e histórico, y participantes distintos. La protección y la reparación están en [`PLANES_PUBLICADOS_SEGURIDAD.md`](PLANES_PUBLICADOS_SEGURIDAD.md). Debajo, la primera versión, conservada como registro:
 
 ```sql
 -- Exposición: semanas activas o futuras con el 1374 prescrito a quien no cumple sus requisitos reales
@@ -120,5 +120,5 @@ Detalle, reglas y pruebas: [`P2D_SUSTITUCION_SEGURIDAD.md`](P2D_SUSTITUCION_SEGU
 
 ## 6. Pendiente
 
-- **Planes ya publicados** (sección 4): identificarlos, bloquear en la vista la sesión afectada o repararla en una versión nueva, sin tocar el histórico.
+- **Planes ya publicados** (sección 4): desarrollado el 24/10. Lectura marcada, inicio rechazado en el backend y reparación por versión nueva sin tocar el histórico; ver [`PLANES_PUBLICADOS_SEGURIDAD.md`](PLANES_PUBLICADOS_SEGURIDAD.md). Falta ejecutar la exposición en producción y decidir el caso de la semana ya empezada.
 - **V34** sigue fuera de `db/migration` hasta tener lo anterior y las comprobaciones de despliegue.

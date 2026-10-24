@@ -85,6 +85,20 @@ public class CatalogContextFacade {
     }
 
     /** Nombre para mostrar de un conjunto de ids. */
+    /** Las banderas de seguridad de cada ejercicio pedido, exista o no en el conjunto elegible. */
+    @Transactional(readOnly = true)
+    public Map<Long, ExerciseSafetyFlagsView> fetchSafetyFlags(Set<Long> exerciseIds) {
+        if (exerciseIds == null || exerciseIds.isEmpty()) return Map.of();
+        return exerciseIds.stream()
+                .map(id -> exerciseQueryService.handle(new GetExerciseByIdQuery(id)))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(Exercise::getId, e -> new ExerciseSafetyFlagsView(e.getId(),
+                        e.isActive(), e.isHighImpact(), e.isRequiresFloor(), e.isAxialLoad(),
+                        e.isRequiresKneeling(), e.isRequiresHanging(), e.isRequiresOverhead(),
+                        e.isRequiresInversion()), (a, b) -> a));
+    }
+
     @Transactional(readOnly = true)
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return fetchDetails(exerciseIds).entrySet().stream()

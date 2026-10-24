@@ -3,6 +3,7 @@ package main.web.services.fitsense.planning.application.internal.outboundservice
 import main.web.services.fitsense.catalog.interfaces.acl.CatalogContextFacade;
 import main.web.services.fitsense.catalog.interfaces.acl.EligibleExerciseView;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
+import main.web.services.fitsense.planning.domain.model.valueobjects.ExerciseSafetyFacts;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningProfile;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
@@ -106,17 +107,6 @@ public class ExternalCatalogService {
         return elegibles(profile, maxDifficultyLevel, safety, false);
     }
 
-    /**
-     * P2-D · el conjunto que el perfil tendria SIN las restricciones de
-     * seguridad -banderas, retencion INC-4C-03 y contencion INC-CAT-1374-, con
-     * todo lo demas igual: equipamiento, dificultad, bloqueos del participante y
-     * filtro funcional. Sirve SOLO para saber si un ejercicio heredado quedo
-     * fuera por seguridad; nunca llega a un generador ni a un plan.
-     */
-    public List<CandidateExercise> fetchIgnoringSafety(PlanningProfile profile, int maxDifficultyLevel) {
-        return elegibles(profile, maxDifficultyLevel, SafetyProfile.none(), false, false);
-    }
-
     /** Los ejercicios que retiene INC-4C-03. */
     public static boolean retenidoInc4C03(Long exerciseId) {
         return exerciseId != null && RETENIDOS_INC_4C_03.contains(exerciseId);
@@ -129,12 +119,6 @@ public class ExternalCatalogService {
 
     private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
                                               SafetyProfile safety, boolean registrar) {
-        return elegibles(profile, maxDifficultyLevel, safety, registrar, true);
-    }
-
-    private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
-                                              SafetyProfile safety, boolean registrar,
-                                              boolean aplicarRetenciones) {
         var delCatalogo = catalogContextFacade.fetchEligibleExercises(
                 profile.equipmentCodes(),
                 profile.excludesGymOnlyEquipment(),
@@ -159,12 +143,12 @@ public class ExternalCatalogService {
                 .toList();
 
         // INC-CAT-1374: contencion de seguridad, tambien antes de todo lo demas.
-        boolean contener1374 = aplicarRetenciones && !admite1374(profile, safety);
+        boolean contener1374 = !admite1374(profile, safety);
         boolean contenido = contener1374 && delCatalogo.stream()
                 .anyMatch(view -> java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374));
 
         var seguros = delCatalogo.stream()
-                .filter(view -> !aplicarRetenciones || !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
+                .filter(view -> !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
                 .filter(view -> !(contener1374 && java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374)))
                 .map(view -> new CandidateExercise(
                         view.exerciseId(),
@@ -215,6 +199,29 @@ public class ExternalCatalogService {
 
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return catalogContextFacade.fetchNames(exerciseIds);
+    }
+
+    /** Las banderas de seguridad de cada ejercicio pedido, activo o no. */
+    public Map<Long, ExerciseSafetyFacts> fetchSafetyFacts(Set<Long> exerciseIds) {
+        var facts = new java.util.HashMap<Long, ExerciseSafetyFacts>();
+        catalogContextFacade.fetchSafetyFlags(exerciseIds).forEach((id, f) -> facts.put(id, new ExerciseSafetyFacts(
+                f.exerciseId(), f.active(), f.highImpact(), f.requiresFloor(), f.axialLoad(), f.requiresKneeling(),
+                f.requiresHanging(), f.requiresOverhead(), f.requiresInversion())));
+        return facts;
+    }
+
+    /**
+     * Los ejercicios pedidos como candidatos, esten o no en el conjunto
+     * elegible. Solo para describir un ejercicio YA PRESCRITO (su slot, zona y
+     * tipo) al buscarle sustituto; nunca para ofrecerlo.
+     */
+    public Map<Long, CandidateExercise> fetchAsCandidates(Set<Long> exerciseIds) {
+        var candidatos = new java.util.HashMap<Long, CandidateExercise>();
+        catalogContextFacade.fetchDetails(exerciseIds).forEach((id, view) -> candidatos.put(id, new CandidateExercise(
+                view.exerciseId(), view.nameEs(), view.bodyPartCode(), view.equipmentCode(), view.difficultyLevel(),
+                view.isDurationBased() ? PrescriptionType.DURATION : PrescriptionType.SETS_REPS,
+                view.targetMuscle(), view.movementPattern())));
+        return candidatos;
     }
 
     /** Detalle con media, para pintar el plan en la app. */

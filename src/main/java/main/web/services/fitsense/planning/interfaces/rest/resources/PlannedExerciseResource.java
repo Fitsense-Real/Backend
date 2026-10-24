@@ -27,5 +27,11 @@ public record PlannedExerciseResource(
         String notes,
         String gifPath,
         String imagePath,
-        String mediaAttribution
+        String mediaAttribution,
+        /**
+         * Si este ejercicio choca HOY con la seguridad del participante, la
+         * causa (p. ej. «INC-CAT-1374», «suelo»). Null si no. Solo se calcula en
+         * sesiones abiertas de un plan activo; el historico se muestra tal cual.
+         */
+        String safetyBlockReason
 ) {}

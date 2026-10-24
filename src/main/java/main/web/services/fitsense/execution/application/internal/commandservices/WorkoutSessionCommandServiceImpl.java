@@ -51,6 +51,11 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
             throw WorkoutNotAvailableException.closed(command.plannedWorkoutId(), workout.status());
         if (workout.isExpired(OffsetDateTime.now()))
             throw WorkoutNotAvailableException.expired(command.plannedWorkoutId());
+        // Un plan publicado antes de una correccion de seguridad puede contener
+        // un ejercicio que hoy no es seguro para esta persona. No se abre: la
+        // app lo muestra bloqueado y la sesion espera una version corregida.
+        if (workout.blockedForSafety())
+            throw WorkoutNotAvailableException.unsafe(command.plannedWorkoutId(), workout.safetyConflicts());
 
         sessionRepository.findByUserIdAndStatus(command.userId(), SessionStatus.IN_PROGRESS)
                 .ifPresent(open -> {
@@ -73,6 +78,9 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
         var workout = requireOwnedWorkout(command.userId(), session.getPlannedWorkoutId());
 
         var target = findTarget(workout, command.plannedExerciseId());
+        // Una sesion abierta antes del bloqueo no permite registrar como hecho
+        // el ejercicio inseguro; omitirlo, si.
+        rechazarSiInseguro(workout, command.plannedExerciseId(), command.skipReason());
         session.recordExercise(target, command.actualSets(), command.actualRepsTotal(),
                 command.actualDurationSeconds(), command.actualLoadKg(), command.skipReason(),
                 externalConfigurationService.thresholds());
@@ -136,6 +144,9 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
 
         for (var reported : command.exercises()) {
             var target = findTarget(workout, reported.plannedExerciseId());
+            // Solo afecta a sesiones aun abiertas: los conflictos de una sesion
+            // cerrada no se calculan, porque el reporte retroactivo es historia.
+            rechazarSiInseguro(workout, reported.plannedExerciseId(), reported.skipReason());
             session.recordExercise(target, reported.actualSets(), reported.actualRepsTotal(),
                     reported.actualDurationSeconds(), reported.actualLoadKg(),
                     reported.skipReason(), thresholds);
@@ -148,6 +159,12 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
     }
 
     // ------------------------------------------------------------------ helpers
+
+    private static void rechazarSiInseguro(PlannedWorkoutView workout, Long plannedExerciseId, Object skipReason) {
+        var causa = workout.safetyConflicts().get(plannedExerciseId);
+        if (causa != null && skipReason == null)
+            throw WorkoutNotAvailableException.unsafeExercise(plannedExerciseId, causa);
+    }
 
     /**
      * Regla del intento valido: solo el ultimo intento finalizado cuenta.

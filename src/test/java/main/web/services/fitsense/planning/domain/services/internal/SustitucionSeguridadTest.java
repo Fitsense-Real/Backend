@@ -151,10 +151,10 @@ class SustitucionSeguridadTest {
         @Test
         @DisplayName("prefiere la misma zona y nunca elige uno en revision de clasificacion")
         void mismaZonaYNoEnRevision() {
-            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "x"),
+            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "suelo"),
                     elegibles(EN_REVISION, RELLENO_OTRA_ZONA, RELLENO_CINTURA), "GENERAL_FITNESS");
             assertEquals(2001L, r.sustituciones().get(0).puesto());
-            var soloRevision = reparar(copia(), excluido(RELLENO_INSEGURO, "x"),
+            var soloRevision = reparar(copia(), excluido(RELLENO_INSEGURO, "suelo"),
                     elegibles(EN_REVISION), "GENERAL_FITNESS");
             assertFalse(soloRevision.problemas().isEmpty());
         }
@@ -192,7 +192,7 @@ class SustitucionSeguridadTest {
                     new DerivedWorkout(101L, sesion(L2, dosis(740, 3, 10))),
                     new DerivedWorkout(102L, sesion(L2.plusDays(2), dosis(304, 3, 10), dosis(1101, 2, 13))),
                     new DerivedWorkout(103L, sesion(L2.plusDays(4), dosis(592, 3, 10)))), List.of());
-            var r = reparar(d, excluido(RELLENO_INSEGURO, "x"), elegibles(RELLENO_CINTURA), "GENERAL_FITNESS");
+            var r = reparar(d, excluido(RELLENO_INSEGURO, "suelo"), elegibles(RELLENO_CINTURA), "GENERAL_FITNESS");
             assertTrue(r.sustituciones().isEmpty());
             assertEquals(d.workouts(), r.semana());
         }
@@ -203,7 +203,7 @@ class SustitucionSeguridadTest {
             var d = new WeekDerivation(List.of(
                     new DerivedWorkout(101L, sesion(L2, dosis(740, 3, 10), dosis(1101, 2, 13))),
                     new DerivedWorkout(102L, sesion(L2.plusDays(1), dosis(2001, 2, 13)))), List.of());
-            var r = SafetySubstitutionPolicy.reparar(d.workouts(), semanaMedida(), excluido(RELLENO_INSEGURO, "x"),
+            var r = SafetySubstitutionPolicy.reparar(d.workouts(), semanaMedida(), excluido(RELLENO_INSEGURO, "suelo"),
                     elegibles(RELLENO_CINTURA, ej(2004, "waist", "TRUNK_ROTATION")), contexto("GENERAL_FITNESS", elegibles()));
             assertEquals(2004L, r.sustituciones().get(0).puesto(), "2001 esta el dia siguiente");
         }
@@ -211,7 +211,7 @@ class SustitucionSeguridadTest {
         @Test
         @DisplayName("una zona que el enfoque no admite no sirve de sustituto")
         void zonaFueraDelEnfoque() {
-            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "x"), elegibles(RELLENO_OTRA_ZONA), "GENERAL_FITNESS");
+            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "suelo"), elegibles(RELLENO_OTRA_ZONA), "GENERAL_FITNESS");
             assertTrue(r.sustituciones().isEmpty());
             assertEquals(1, r.problemas().size());
         }
@@ -237,7 +237,7 @@ class SustitucionSeguridadTest {
             var el = elegibles(RELLENO_CINTURA);
             var r = reparar(copia(), excluido(RELLENO_INSEGURO, "INC-CAT-1374"), el, "GENERAL_FITNESS");
             var informe = v8c.validateContinuidad(new WeekDerivation(r.semana(), List.of()), semanaMedida(), el,
-                    r.sustituciones());
+                    excluido(RELLENO_INSEGURO, "INC-CAT-1374"), r.sustituciones());
             assertTrue(informe.problems().isEmpty(), informe.problems().toString());
             assertEquals(List.of(101L, 102L, 103L), informe.conservadas());
             assertEquals(r.sustituciones(), informe.sustituciones());
@@ -247,7 +247,7 @@ class SustitucionSeguridadTest {
         @DisplayName("sin autorizacion, la misma sustitucion es un cambio no permitido, como siempre")
         void sinAutorizacion() {
             var el = elegibles(RELLENO_CINTURA);
-            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "x"), el, "GENERAL_FITNESS");
+            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "suelo"), el, "GENERAL_FITNESS");
             var informe = v8c.validateContinuidad(new WeekDerivation(r.semana(), List.of()), semanaMedida(), el);
             assertTrue(informe.problems().stream().anyMatch(p -> p.contains("aparecen los ejercicios [2001]")),
                     informe.problems().toString());
@@ -257,11 +257,12 @@ class SustitucionSeguridadTest {
         @DisplayName("si el quitado sigue siendo elegible, no hay motivo de seguridad: se rechaza")
         void quitadoTodaviaElegible() {
             var el = elegibles(RELLENO_CINTURA, RELLENO_INSEGURO);
-            var s = new SustitucionSeguridad(101L, L2, 1101L, "TRUNK_FLEXION", 2001L, "x", "R", "a", "b");
+            var s = new SustitucionSeguridad(101L, L2, 1101L, "TRUNK_FLEXION", 2001L, "suelo", "R", "a", "b");
             var semana = new WeekDerivation(List.of(
                     new DerivedWorkout(101L, sesion(L2, dosis(740, 3, 10), dosis(2001, 2, 13))),
                     copia().workouts().get(1), copia().workouts().get(2)), List.of());
-            var informe = v8c.validateContinuidad(semana, semanaMedida(), el, List.of(s));
+            var informe = v8c.validateContinuidad(semana, semanaMedida(), el,
+                    excluido(RELLENO_INSEGURO, "suelo"), List.of(s));
             assertTrue(informe.problems().stream().anyMatch(p -> p.contains("sigue siendo elegible")),
                     informe.problems().toString());
             assertTrue(informe.sustituciones().isEmpty());
@@ -272,11 +273,12 @@ class SustitucionSeguridadTest {
         void otraClaseDeSlot() {
             var el = elegibles(RELLENO_CINTURA);
             el.remove(740L);
-            var s = new SustitucionSeguridad(101L, L2, 740L, "KNEE_DOMINANT", 2001L, "x", "R", "a", "b");
+            var s = new SustitucionSeguridad(101L, L2, 740L, "KNEE_DOMINANT", 2001L, "suelo", "R", "a", "b");
             var semana = new WeekDerivation(List.of(
                     new DerivedWorkout(101L, sesion(L2, dosis(2001, 3, 10), dosis(1101, 2, 13))),
                     copia().workouts().get(1), copia().workouts().get(2)), List.of());
-            var informe = v8c.validateContinuidad(semana, semanaMedida(), el, List.of(s));
+            var informe = v8c.validateContinuidad(semana, semanaMedida(), el, excluido(RODILLA, "suelo"),
+                    List.of(s));
             assertTrue(informe.problems().stream().anyMatch(p -> p.contains("misma clase de slot")),
                     informe.problems().toString());
         }
@@ -285,7 +287,7 @@ class SustitucionSeguridadTest {
         @DisplayName("la excepcion no abre la sesion: cualquier otro cambio en ella sigue rechazado")
         void noAbreLaSesion() {
             var el = elegibles(RELLENO_CINTURA);
-            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "x"), el, "GENERAL_FITNESS");
+            var r = reparar(copia(), excluido(RELLENO_INSEGURO, "suelo"), el, "GENERAL_FITNESS");
             // Ademas de la sustitucion, se cambia la dosis del 740.
             var tocada = r.semana().get(0).workout();
             var ejercicios = new ArrayList<>(tocada.exercises());
@@ -293,9 +295,79 @@ class SustitucionSeguridadTest {
             var semana = new WeekDerivation(List.of(new DerivedWorkout(101L, new PlanDraft.DraftWorkout(
                     tocada.scheduledDate(), tocada.focus(), tocada.name(), tocada.expectedDurationMinutes(),
                     ejercicios)), r.semana().get(1), r.semana().get(2)), List.of());
-            var informe = v8c.validateContinuidad(semana, semanaMedida(), el, r.sustituciones());
+            var informe = v8c.validateContinuidad(semana, semanaMedida(), el,
+                    excluido(RELLENO_INSEGURO, "suelo"), r.sustituciones());
             assertTrue(informe.problems().stream().anyMatch(p -> p.contains("cambia la dosis de [740]")),
                     informe.problems().toString());
+        }
+
+        /** La semana con 1101 sustituido por 2001, construida a mano. */
+        private WeekDerivation con2001() {
+            return new WeekDerivation(List.of(
+                    new DerivedWorkout(101L, sesion(L2, dosis(740, 3, 10), dosis(2001, 2, 13))),
+                    copia().workouts().get(1), copia().workouts().get(2)), List.of());
+        }
+
+        @Test
+        @DisplayName("autorizacion fabricada sin causa verificada (p. ej. un bloqueo): se rechaza aunque el id falte del conjunto elegible")
+        void autorizacionSinCausa() {
+            var el = elegibles(RELLENO_CINTURA);   // 1101 no es elegible
+            var s = new SustitucionSeguridad(101L, L2, 1101L, "TRUNK_FLEXION", 2001L, "suelo", "R", "a", "b");
+            var informe = v8c.validateContinuidad(con2001(), semanaMedida(), el, ExclusionesDeSeguridad.ninguna(),
+                    List.of(s));
+            assertTrue(informe.problems().stream().anyMatch(p -> p.contains("no tiene una causa de seguridad verificada")),
+                    informe.problems().toString());
+            assertTrue(informe.sustituciones().isEmpty());
+            assertTrue(informe.problems().stream().anyMatch(p -> p.contains("aparecen los ejercicios [2001]")),
+                    "el cambio sigue contando como diferencia: " + informe.problems());
+        }
+
+        @Test
+        @DisplayName("motivo declarado distinto de la causa verificada: se rechaza")
+        void motivoDistinto() {
+            var el = elegibles(RELLENO_CINTURA);
+            var s = new SustitucionSeguridad(101L, L2, 1101L, "TRUNK_FLEXION", 2001L, "INC-CAT-1374", "R", "a", "b");
+            var informe = v8c.validateContinuidad(con2001(), semanaMedida(), el, excluido(RELLENO_INSEGURO, "suelo"),
+                    List.of(s));
+            assertTrue(informe.problems().stream().anyMatch(p -> p.contains("no es su causa verificada")),
+                    informe.problems().toString());
+        }
+
+        @Test
+        @DisplayName("una exclusion con un motivo que no es de seguridad no se puede ni construir")
+        void exclusionSinCausaDeSeguridad() {
+            for (var motivo : List.of("bloqueado", "equipamiento", "filtro_funcional", "varias", "", "suelo+bloqueado"))
+                assertThrows(IllegalArgumentException.class, () -> excluido(RELLENO_INSEGURO, motivo), motivo);
+            assertDoesNotThrow(() -> excluido(RELLENO_INSEGURO, "suelo+brazos_arriba"));
+        }
+    }
+
+    @Nested
+    @DisplayName("SafetyConflictPolicy: la causa sale de una bandera contra una restriccion, no de un id ausente")
+    class Causas {
+
+        static ExerciseSafetyFacts banderas(boolean suelo, boolean colgado, boolean brazosArriba) {
+            return new ExerciseSafetyFacts(1L, true, false, suelo, false, false, colgado, brazosArriba, false);
+        }
+
+        @Test
+        @DisplayName("solo cuenta la bandera que el perfil restringe")
+        void soloLaRestringida() {
+            var sinSuelo = new SafetyProfile(false, true, false, false, false, false, false);
+            assertEquals(List.of("suelo"), SafetyConflictPolicy.causas(banderas(true, true, true), sinSuelo, false, false));
+            assertEquals(List.of(), SafetyConflictPolicy.causas(banderas(false, true, true), sinSuelo, false, false));
+            assertEquals(List.of(), SafetyConflictPolicy.causas(banderas(true, true, true), SafetyProfile.none(), false, false));
+        }
+
+        @Test
+        @DisplayName("retencion y contencion con nombre, y varias causas a la vez")
+        void retencionContencionYVarias() {
+            var s = new SafetyProfile(false, true, false, false, true, true, false);
+            assertEquals(List.of("INC-4C-03", "INC-CAT-1374", "suelo", "suspension", "brazos_arriba"),
+                    SafetyConflictPolicy.causas(banderas(true, true, true), s, true, true));
+            assertTrue(SafetyConflictPolicy.esMotivoDeSeguridad("INC-CAT-1374+suelo"));
+            assertFalse(SafetyConflictPolicy.esMotivoDeSeguridad("bloqueado"));
+            assertFalse(SafetyConflictPolicy.esMotivoDeSeguridad(null));
         }
     }
 

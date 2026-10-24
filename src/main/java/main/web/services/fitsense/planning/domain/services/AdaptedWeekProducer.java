@@ -139,7 +139,7 @@ public class AdaptedWeekProducer {
                 exclusiones, eligible, context);
         var informe = conservation.validate(
                 new WeekDerivation(reparada.semana(), adaptada.sourcesWithoutDerived()),
-                context.previousWeek(), adjustment, eligible, reparada.sustituciones());
+                context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones());
 
         // El origen lo decide si la IA cambio algo DE VERDAD, no si contesto.
         // Una semana de adaptaciones sin efecto es CONSERVED aunque el modelo
@@ -211,7 +211,7 @@ public class AdaptedWeekProducer {
                 exclusiones, eligible, context);
         var informe = conservation.validateContinuidad(
                 new WeekDerivation(reparada.semana(), derivation.sourcesWithoutDerived()),
-                context.previousWeek(), eligible, reparada.sustituciones());
+                context.previousWeek(), eligible, exclusiones, reparada.sustituciones());
         return revisarYCerrar(context, reparada.semana(), informe,
                 GenerationSource.CONSERVED, motivo, eligible, reparada.problemas());
     }

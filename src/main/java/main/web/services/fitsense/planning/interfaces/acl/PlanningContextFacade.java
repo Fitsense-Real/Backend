@@ -14,6 +14,8 @@ import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCom
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanQueryService;
 import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository;
 import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
+import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
+import main.web.services.fitsense.planning.application.internal.commandservices.PublishedPlanSafetyRepairService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,15 +36,21 @@ public class PlanningContextFacade {
     private final WeeklyTrainingPlanCommandService commandService;
     private final WeeklyTrainingPlanRepository planRepository;
     private final AdaptedWeekCommandService adaptedWeekCommandService;
+    private final PublishedPlanSafetyService publishedPlanSafety;
+    private final PublishedPlanSafetyRepairService publishedPlanRepair;
 
     public PlanningContextFacade(WeeklyTrainingPlanQueryService queryService,
                                  WeeklyTrainingPlanCommandService commandService,
                                  WeeklyTrainingPlanRepository planRepository,
-                                 AdaptedWeekCommandService adaptedWeekCommandService) {
+                                 AdaptedWeekCommandService adaptedWeekCommandService,
+                                 PublishedPlanSafetyService publishedPlanSafety,
+                                 PublishedPlanSafetyRepairService publishedPlanRepair) {
         this.queryService = queryService;
         this.commandService = commandService;
         this.planRepository = planRepository;
         this.adaptedWeekCommandService = adaptedWeekCommandService;
+        this.publishedPlanSafety = publishedPlanSafety;
+        this.publishedPlanRepair = publishedPlanRepair;
     }
 
     /**
@@ -188,10 +196,23 @@ public class PlanningContextFacade {
                 .map(WeeklyTrainingPlan::getId);
     }
 
+    /**
+     * Repara por seguridad la semana activa que contiene ese dia, con una
+     * version nueva (ver {@link PublishedPlanSafetyRepairService}).
+     * <p>
+     * NADIE LA LLAMA TODAVIA: no hay endpoint ni tarea. Ejecutarla sobre planes
+     * reales es una decision de despliegue que no esta autorizada.
+     * Sin {@code @Transactional}: el servicio abre las suyas por fases.
+     */
+    public PublishedPlanSafetyRepairService.Resultado repairPublishedPlanForSafety(Long userId, LocalDate day,
+                                                                                   LocalDate today) {
+        return publishedPlanRepair.reparar(userId, day, today);
+    }
+
     @Transactional(readOnly = true)
     public Optional<PlannedWorkoutView> fetchPlannedWorkout(Long plannedWorkoutId) {
         return queryService.handle(new GetPlannedWorkoutByIdQuery(plannedWorkoutId))
-                .map(PlanningContextFacade::toView);
+                .map(this::toView);
     }
 
     @Transactional
@@ -205,7 +226,11 @@ public class PlanningContextFacade {
                 plannedWorkoutId, WorkoutStatus.valueOf(outcome), skipReason));
     }
 
-    private static PlannedWorkoutView toView(PlannedWorkout workout) {
+    /**
+     * La vista lleva los conflictos de seguridad de HOY: execution no tiene que
+     * saber de restricciones para negarse a ejecutar una sesion insegura.
+     */
+    private PlannedWorkoutView toView(PlannedWorkout workout) {
         var targets = workout.exercisesView().stream()
                 .map(exercise -> new PlannedExerciseTarget(
                         exercise.getId(),
@@ -226,6 +251,7 @@ public class PlanningContextFacade {
                 workout.getExpectedDurationMinutes(),
                 workout.getStatus().name(),
                 workout.getExpiresAt(),
-                targets);
+                targets,
+                publishedPlanSafety.conflictos(workout.getPlan().getUserId(), workout));
     }
 }
