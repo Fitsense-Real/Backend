@@ -24,7 +24,7 @@ public record WeeklyMetricsView(
         int scheduledWorkouts,
         int assignedExercises,
         // V30. Lo que necesita el decisor para separar "no sabemos" de "no
-        // entreno". weightedAdherencePct se queda como esta.
+        // entreno". weightedAdherencePct sigue siendo la primaria.
         Integer recordedWorkouts,
         BigDecimal observedAdherencePct,
         BigDecimal registrationCoveragePct

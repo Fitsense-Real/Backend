@@ -19,6 +19,8 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
 
     Optional<WorkoutSession> findByUserIdAndStatus(Long userId, SessionStatus status);
 
+    boolean existsByPlannedWorkoutIdAndStatus(Long plannedWorkoutId, SessionStatus status);
+
     /** Para modificarla: serializa los comandos concurrentes sobre la misma sesion. */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM WorkoutSession s WHERE s.id = :sessionId")

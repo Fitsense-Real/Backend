@@ -74,8 +74,8 @@ public class WeeklyUserMetrics {
     private Short recordedWorkouts;
 
     /**
-     * V30. Cumplimiento ponderado SOLO sobre lo que tiene registro. NO es la
-     * metrica primaria del estudio: esa es weightedAdherencePct y no cambia.
+     * V30. Cumplimiento SOLO sobre lo que tiene registro, sin pesos. NO es la
+     * metrica primaria del estudio: esa es weightedAdherencePct.
      * Es la que debe usar la decision de adaptacion, para que una sesion sin
      * registro no se convierta en baja adherencia.
      */
@@ -92,7 +92,11 @@ public class WeeklyUserMetrics {
     @Column(name = "completed_exercises", nullable = false)
     private Short completedExercises;
 
-    /** Metrica primaria del estudio. NULL si la semana no llego a generarse. */
+    /**
+     * Metrica primaria del estudio: A_w = sum(A_s / 100) / m x 100, cada
+     * previsto pesa uno. El nombre de la columna es historico (hasta 11b5aae
+     * ponderaba por duracion). NULL si la semana no llego a generarse.
+     */
     @Column(name = "weighted_adherence_pct", precision = 5, scale = 2)
     private BigDecimal weightedAdherencePct;
 

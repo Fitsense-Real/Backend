@@ -54,6 +54,7 @@ public class SessionOutcomeIdentifier {
                 WeekSessionInput::plannedWorkoutId, s -> s, (a, b) -> b));
 
         double umbralCompletada = params.adherence().sessionCompletedThresholdPct();
+        plan = plan.unoPorDia(byWorkout.keySet());
 
         return plan.workouts().stream()
                 .sorted(Comparator.comparing(WeekPlanInput.ScheduledWorkout::scheduledDate,

@@ -1,5 +1,6 @@
 package main.web.services.fitsense.analytics.application.internal.outboundservices.acl;
 
+import main.web.services.fitsense.analytics.domain.model.valueobjects.WeekPlanInput;
 import main.web.services.fitsense.analytics.domain.model.valueobjects.WeekSessionInput;
 import main.web.services.fitsense.execution.interfaces.acl.ExecutionContextFacade;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,16 @@ public class ExternalExecutionService {
         this.executionContextFacade = executionContextFacade;
     }
 
-    public List<WeekSessionInput> fetchWeekSessions(Long userId, LocalDate weekStart,
-                                                    LocalDate weekEnd,
-                                                    int durationToRepsDivisor) {
+    /**
+     * Las sesiones que cuentan de los entrenamientos previstos de la semana,
+     * por entrenamiento y no por fecha de inicio: el reporte retroactivo y la
+     * zona horaria no cambian a que semana pertenece una sesion.
+     */
+    public List<WeekSessionInput> fetchWeekSessions(WeekPlanInput plan, int durationToRepsDivisor) {
+        if (plan == null || plan.workouts() == null || plan.workouts().isEmpty()) return List.of();
+        var ids = plan.workouts().stream().map(WeekPlanInput.ScheduledWorkout::plannedWorkoutId).toList();
         return executionContextFacade
-                .fetchCountedSessions(userId, weekStart, weekEnd, durationToRepsDivisor).stream()
+                .fetchCountedSessionsOf(ids, durationToRepsDivisor).stream()
                 .map(session -> new WeekSessionInput(
                         session.plannedWorkoutId(),
                         session.completionPercentage(),

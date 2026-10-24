@@ -94,4 +94,4 @@ Los seis primeros fallan con el código de `190e2f7` en `EjecucionEntrenamientos
 
 - **Reemplazo de la versión con una sesión abierta.** Si la versión se reemplaza mientras hay una sesión en curso, el cierre marca el entrenamiento de la versión vieja. Hoy solo reemplazan la adaptación semanal y la reparación por seguridad, que no está conectada.
 - **El cierre duplicado no es idempotente.** El segundo cierre responde 422; la app debe consultar la sesión en vez de reintentar el cierre.
-- **Omitir con una sesión abierta.** Omitir un entrenamiento `IN_PROGRESS` deja abierta su sesión hasta que se cierre o caduque. Si se cierra, prevalece su resultado.
+- **Omitir con una sesión abierta.** Corregido después, en la corrección de adherencia: ahora se rechaza hasta que la sesión se cierre o se abandone (ver `ADHERENCIA.md`).

@@ -48,12 +48,13 @@ public record MetricsCalculation(
         // obliga a recolocar una llamada de treinta argumentos posicionales y
         // un error ahi no lo detecta el compilador.
         //
-        // weightedAdherencePct NO cambia de definicion: sigue siendo la
-        // metrica primaria del estudio, con el denominador de TODOS los
-        // entrenamientos previstos. Estas tres son medidas nuevas al lado.
+        // weightedAdherencePct es la metrica primaria del estudio, con el
+        // denominador de TODOS los entrenamientos previstos. Pese al nombre,
+        // desde la correccion de adherencia no pondera: cada previsto pesa uno
+        // (docs/FitSense/ADHERENCIA.md). Estas tres son medidas al lado.
         /** Previstos que tienen registro: hay sesion, o el previsto quedo SKIPPED. */
         int recordedWorkouts,
-        /** Cumplimiento ponderado SOLO sobre los que tienen registro. NULL si ninguno. */
+        /** Cumplimiento SOLO sobre los que tienen registro, sin pesos. NULL si ninguno. */
         BigDecimal observedAdherencePct,
         /** recordedWorkouts / scheduledWorkouts. Decide si hay evidencia para adaptar. */
         BigDecimal registrationCoveragePct

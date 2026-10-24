@@ -60,8 +60,7 @@ public class WeeklyUserMetricsCommandServiceImpl implements WeeklyUserMetricsCom
         var breakdown = externalPlanningService.weekBreakdown(
                 command.userId(), week.startDate());
 
-        var sessions = externalExecutionService.fetchWeekSessions(
-                command.userId(), week.startDate(), week.endDate(), divisor);
+        var sessions = externalExecutionService.fetchWeekSessions(plan, divisor);
         var daysSinceLastWorkout = externalExecutionService.daysSinceLastWorkout(
                 command.userId(), week.endDate());
 

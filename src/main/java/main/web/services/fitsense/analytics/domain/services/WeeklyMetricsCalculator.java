@@ -36,6 +36,8 @@ public class WeeklyMetricsCalculator {
         // filtra por counts_toward_adherence, asi que aqui solo se indexa.
         var byWorkout = sessions.stream().collect(Collectors.toMap(
                 WeekSessionInput::plannedWorkoutId, session -> session, (a, b) -> b));
+        // Y por cada dia, UN previsto aunque la semana combine versiones.
+        plan = plan.unoPorDia(byWorkout.keySet());
 
         var adherence = params.adherence();
         int scheduled = plan.scheduledWorkouts();
@@ -49,12 +51,17 @@ public class WeeklyMetricsCalculator {
         int executedVolume = 0;
         int executedReps = 0;
         int executedSeconds = 0;
-        double weightedNumerator = 0.0;
-        double weightedDenominator = 0.0;
+        // ADHERENCIA SEMANAL: A_w = sum(A_s / 100) / m x 100, con m los
+        // previstos. Cada previsto pesa UNO: ni su duracion, ni su volumen, ni
+        // su carga, ni el RPE o la satisfaccion cambian cuanto vale. A_s es el
+        // cumplimiento de la sesion que cuenta (A_s = sum(A_e / 100) / n x 100,
+        // calculado en execution), o 0 si no la hay.
+        double adherenceNumerator = 0.0;
+        int adherenceDenominator = 0;
         // V30: lo observado lleva su propio denominador, que solo suma los
-        // entrenamientos con registro.
+        // entrenamientos con registro. Misma regla de pesos.
         double observedNumerator = 0.0;
-        double observedDenominator = 0.0;
+        int observedDenominator = 0;
 
         var rpes = new ArrayList<Short>();
         var satisfactions = new ArrayList<Short>();
@@ -62,7 +69,8 @@ public class WeeklyMetricsCalculator {
 
         for (var workout : plan.workouts()) {
             var session = byWorkout.get(workout.plannedWorkoutId());
-            double completion = session == null ? 0.0 : session.completion();
+            // Tope de 100: superar un entrenamiento no compensa otro.
+            double completion = session == null ? 0.0 : Math.min(100.0, Math.max(0.0, session.completion()));
 
             // V30. HAY REGISTRO si existe sesion, O si el previsto quedo en
             // SKIPPED: una omision DECLARADA es informacion -la persona nos
@@ -71,21 +79,16 @@ public class WeeklyMetricsCalculator {
             boolean omisionDeclarada = "SKIPPED".equals(workout.status());
             boolean conRegistro = session != null || omisionDeclarada;
 
-            // El peso es la duracion INDICADA, no la real: una sesion de 60
-            // minutos no vale lo mismo que una de 20 al medir cuanto del plan se
-            // cumplio, y usar la real premiaria alargar sesiones facilies.
-            //
-            // SIN CAMBIO EN V30: la metrica primaria del estudio mantiene el
-            // denominador de TODOS los previstos. Lo desconocido sigue entrando
-            // aqui como 0, y eso es deliberado: cambiarlo redefiniria la
-            // metrica a mitad del piloto. Para decidir se usa lo observado.
-            weightedDenominator += workout.expectedDurationMinutes();
-            weightedNumerator += workout.expectedDurationMinutes() * completion;
+            // La metrica primaria tiene el denominador de TODOS los previstos:
+            // lo que no tiene registro entra como 0. Una sesion por debajo del
+            // 30 % (entrenamiento SKIPPED) aporta su cumplimiento real.
+            adherenceDenominator++;
+            adherenceNumerator += completion;
 
             if (conRegistro) {
                 recorded++;
-                observedDenominator += workout.expectedDurationMinutes();
-                observedNumerator += workout.expectedDurationMinutes() * completion;
+                observedDenominator++;
+                observedNumerator += completion;
                 // valid y skipped pasan a contar SOLO lo que tiene registro,
                 // asi que su suma es recorded. Antes sumaban scheduled porque
                 // lo desconocido caia en skipped: ese era el defecto.
@@ -113,8 +116,9 @@ public class WeeklyMetricsCalculator {
             if (workout.skipReason() != null) skipReasons.add(workout.skipReason());
         }
 
-        var weighted = weightedDenominator <= 0 ? null
-                : percentage(weightedNumerator / weightedDenominator);
+        // Sin previstos evaluables no hay adherencia: NULL, nunca 100.
+        var weighted = adherenceDenominator <= 0 ? null
+                : percentage(adherenceNumerator / adherenceDenominator);
         // V30. Sin un solo registro no hay denominador observado: NULL, no 0.
         // Es la diferencia entre "no sabemos" y "no entreno".
         var observed = observedDenominator <= 0 ? null

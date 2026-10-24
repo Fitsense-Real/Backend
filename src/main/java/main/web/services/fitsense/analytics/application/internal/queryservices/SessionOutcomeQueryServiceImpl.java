@@ -44,8 +44,7 @@ public class SessionOutcomeQueryServiceImpl implements SessionOutcomeQueryServic
         var plan = externalPlanningService.fetchWeekPlan(query.userId(), query.weekStartDate());
         if (plan == null || !plan.hasActivePlan()) return List.of();
 
-        var sessions = externalExecutionService.fetchWeekSessions(
-                query.userId(), query.weekStartDate(), query.weekStartDate().plusDays(6),
+        var sessions = externalExecutionService.fetchWeekSessions(plan,
                 params.adjustment().durationToRepsDivisor());
 
         return identifier.identify(plan, sessions, params);

@@ -43,6 +43,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     private final ExternalCatalogService externalCatalogService;
     private final ExternalConfigurationService externalConfigurationService;
     private final JsonSupport jsonSupport;
+    private final ExternalExecutionService externalExecutionService;
 
     /**
      * Que hacer con el veredicto de cobertura 4C antes de generar. Propiedad y
@@ -62,6 +63,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                                                 ExternalCatalogService externalCatalogService,
                                                 ExternalConfigurationService externalConfigurationService,
                                                 JsonSupport jsonSupport,
+                                                ExternalExecutionService externalExecutionService,
                                                 @org.springframework.beans.factory.annotation.Value(
                                                         "${fitsense.coverage.pregeneration:OBSERVE}")
                                                 String coveragePregeneration) {
@@ -78,6 +80,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         this.externalCatalogService = externalCatalogService;
         this.externalConfigurationService = externalConfigurationService;
         this.jsonSupport = jsonSupport;
+        this.externalExecutionService = externalExecutionService;
     }
 
     /**
@@ -388,6 +391,13 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         if (command.reason() == null)
             throw new DomainRuleViolationException(
                     "Indica por que no vas a hacer este entrenamiento: sin la causa el sistema no puede ajustar.");
+        // Con una sesion abierta, omitirlo dejaria el entrenamiento SKIPPED y
+        // la sesion en curso: dos estados que se contradicen, y el cierre
+        // posterior pisaria la omision. Primero se cierra o se abandona.
+        if (workout.getStatus() == WorkoutStatus.IN_PROGRESS
+                && externalExecutionService.hasOpenSession(workout.getId()))
+            throw new DomainRuleViolationException(
+                    "Tienes una sesion abierta de este entrenamiento. Terminala o abandonala antes de omitirlo.");
 
         workout.markSkipped(command.reason());
         plannedWorkoutRepository.save(workout);

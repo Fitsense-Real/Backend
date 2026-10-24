@@ -95,7 +95,7 @@ class PublishAdaptedTest {
 
         servicio = new WeeklyTrainingPlanCommandServiceImpl(
                 planRepository, null, attemptRepository, mapperQueDejaVerLaFila(),
-                null, null, null, null, null, null, new JsonSupport(), "OBSERVE");
+                null, null, null, null, null, null, new JsonSupport(), null, "OBSERVE");
     }
 
     private AdaptationEvidenceMapper mapperQueDejaVerLaFila() {

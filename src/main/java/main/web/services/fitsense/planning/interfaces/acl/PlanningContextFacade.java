@@ -78,7 +78,8 @@ public class PlanningContextFacade {
                         workout.getExpectedDurationMinutes(),
                         workout.assignedExerciseCount(),
                         workout.getStatus().name(),
-                        workout.getSkipReason() == null ? null : workout.getSkipReason().name()));
+                        workout.getSkipReason() == null ? null : workout.getSkipReason().name(),
+                        plan.getId()));
             }
         }
 
