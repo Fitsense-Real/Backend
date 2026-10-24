@@ -175,7 +175,6 @@ class CapacidadesPorObjetivoTest {
             assertTrue(c.noCubiertas().get(Capability.CARDIO).startsWith("no factible"), c.describe());
             assertTrue(c.omitidas().isEmpty(), "no es una omision: no habia con que");
             assertEquals(Set.of(Capability.HYPERTROPHY), c.secundariasIncorporadas());
-            assertNotNull(c.mensaje());
         }
 
         @Test

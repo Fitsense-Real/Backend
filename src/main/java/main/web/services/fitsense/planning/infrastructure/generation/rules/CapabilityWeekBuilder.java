@@ -264,12 +264,8 @@ class CapabilityWeekBuilder {
 
         var borrador = new PlanDraft(GenerationSource.RULE_ENGINE, null,
                 "Semana %d".formatted(context.weekNumber()), null, null, sesiones);
-        var cobertura = CapabilityCoveragePolicy.evaluar(objetivo, nivel, borrador, context.availableExercises(),
-                limites);
-        String justificacion = ("Plan generado por el motor de reglas por capacidades (%s, %s). Principales "
-                + "cubiertas: %s.%s").formatted(CapabilityPrescriptionPolicy.VERSION, objetivo,
-                cobertura.principalesCubiertas(), cobertura.noCubiertas().isEmpty() ? ""
-                        : " No cubiertas: " + cobertura.noCubiertas() + ".");
+        String justificacion = "Plan generado por el motor de reglas segun tu objetivo, nivel, equipamiento "
+                + "y restricciones.";
         return cierre.aplicar(borrador, context, justificacion);
     }
 

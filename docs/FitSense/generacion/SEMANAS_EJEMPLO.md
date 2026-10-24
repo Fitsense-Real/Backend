@@ -1,12 +1,12 @@
 # Semanas generadas por el motor de reglas (catálogo real, PostgreSQL efímero)
 
-Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas validadas con V1–V25 en ENFORCE. La capacidad de cada colocación la calcula `CapabilityPrescriptionPolicy` a partir de su dosis y su clase; ninguna colocación sale «SIN ACREDITAR». Las semanas PARCIALES aparecen como propuesta NO activada.
+Salida de `GeneracionPorObjetivoIT` (regla definitiva: principales disponibles → secundarias → validación → publicación automática). Todas están publicadas y validadas con V1–V25. El «Resultado» lo calcula la prueba a partir de los ejercicios; el backend no lo registra ni decide nada con él.
 
 ### GAIN_MUSCLE · gimnasio, intermedia, 3x30
 
 `GAIN_MUSCLE` · INTERMEDIATE · 30 anos · GYM · 3 dias x 30 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["HYPERTROPHY"] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 13}
+**Resultado: COMPLETO** · principales cubiertas [HYPERTROPHY] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 13}
 
 
 - **MONDAY FULL_BODY** (26 min)
@@ -32,7 +32,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `GAIN_MUSCLE` · INTERMEDIATE · 34 anos · GYM · 3 dias x 45 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["HYPERTROPHY"] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 17}
+**Resultado: COMPLETO** · principales cubiertas [HYPERTROPHY] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 17}
 
 
 - **MONDAY FULL_BODY** (32 min)
@@ -62,7 +62,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `GAIN_MUSCLE` · BEGINNER · 45 anos · HOME · 3 dias x 60 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, band]
 
-**Resultado: COMPLETO** · principales cubiertas ["HYPERTROPHY"] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 21}
+**Resultado: COMPLETO** · principales cubiertas [HYPERTROPHY] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 21}
 
 
 - **MONDAY FULL_BODY** (43 min)
@@ -92,49 +92,11 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
   - 1058 Flexión hindú modificada (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
   - 117 Jalón a una mano de rodillas con banda (back, VERTICAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
 
-### GAIN_MUSCLE · gimnasio, avanzada, 4x45
-
-`GAIN_MUSCLE` · ADVANCED · 28 anos · GYM · 4 dias x 45 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
-
-**Resultado: COMPLETO** · principales cubiertas ["HYPERTROPHY"] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 23}
-
-
-- **MONDAY UPPER_BODY** (32 min)
-  - 567 Zancada hacia adelante con extensión de tríceps (upper arms, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-  - 142 Peso muerto con piernas rectas con banda (back, HIP_HINGE) · 3x10, 90 s · **HYPERTROPHY**
-  - 72 Fondos de pecho asistidos (de rodillas) (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-  - 696 Remo de hombro posterior con mancuerna (shoulders, HORIZONTAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
-  - 1334 Flexión con manos anchas (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-
-- **TUESDAY LOWER_BODY** (34 min)
-  - 182 Sentadilla profunda con barra (upper legs, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-  - 134 Elevación de pantorrillas con banda, versión 2 (lower legs, ANKLE_PLANTAR_FLEXION) · 2x13, 90 s · **HYPERTROPHY**
-  - 975 Plancha inclinada (waist, CORE_STABILITY) · 2x13, 90 s · **HYPERTROPHY**
-  - 1235 Sentadilla completa en Smith (upper legs, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-  - 927 Press doblado con kettlebell (waist, VERTICAL_PUSH) · 3x13, 90 s · **HYPERTROPHY**
-  - 1076 Sentadilla marcha (contra la pared) (upper legs, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-
-- **THURSDAY UPPER_BODY** (35 min)
-  - 895 Salto profundo desde flexión inclinada (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-  - 234 Encogimiento de hombros con barra (back, SCAPULAR_ELEVATION) · 2x10, 90 s · **HYPERTROPHY**
-  - 953 Clean con kettlebell de dos brazos (shoulders, HIP_HINGE) · 3x10, 90 s · **HYPERTROPHY**
-  - 527 Curl de bíceps con zancada y lanzamiento (upper arms, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-  - 855 Flexión de plancha completa (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-  - 483 Remo kayak Thibaudeau en cable (back, HORIZONTAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
-
-- **FRIDAY LOWER_BODY** (34 min)
-  - 507 Sentadilla curtsy (upper legs, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-  - 414 Elevacion de talones de pie con cable (lower legs, ANKLE_PLANTAR_FLEXION) · 2x13, 90 s · **HYPERTROPHY**
-  - 501 Crunch en el suelo (waist, TRUNK_FLEXION) · 2x13, 90 s · **HYPERTROPHY**
-  - 1264 Sentadilla con alcance por encima (upper legs, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-  - 959 Figura 8 con kettlebell (waist, HIP_HINGE) · 3x13, 90 s · **HYPERTROPHY**
-  - 165 Sentadilla frontal con barra (upper legs, KNEE_DOMINANT) · 3x10, 90 s · **HYPERTROPHY**
-
 ### INCREASE_STRENGTH · gimnasio, intermedia, 3x45
 
 `INCREASE_STRENGTH` · INTERMEDIATE · 34 anos · GYM · 3 dias x 45 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["STRENGTH"] · no cubiertas {} · secundarias [] · colocaciones {"STRENGTH": 12}
+**Resultado: COMPLETO** · principales cubiertas [STRENGTH] · no cubiertas {} · secundarias [] · colocaciones {"STRENGTH": 12}
 
 
 - **MONDAY FULL_BODY** (32 min)
@@ -159,7 +121,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `LOSE_WEIGHT` · INTERMEDIATE · 34 anos · GYM · 3 dias x 45 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["CARDIO"] · no cubiertas {} · secundarias ["STRENGTH"] · colocaciones {"CARDIO": 6, "STRENGTH": 6}
+**Resultado: COMPLETO** · principales cubiertas [CARDIO] · no cubiertas {} · secundarias [STRENGTH] · colocaciones {"CARDIO": 6, "STRENGTH": 6}
 
 
 - **MONDAY FULL_BODY** (36 min)
@@ -184,7 +146,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `GENERAL_FITNESS` · INTERMEDIATE · 34 anos · GYM · 3 dias x 45 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["STRENGTH", "MUSCULAR_ENDURANCE", "CARDIO", "MOBILITY"] · no cubiertas {} · secundarias [] · colocaciones {"CARDIO": 3, "MOBILITY": 3, "STRENGTH": 4, "MUSCULAR_ENDURANCE": 6}
+**Resultado: COMPLETO** · principales cubiertas [CARDIO, MOBILITY, MUSCULAR_ENDURANCE, STRENGTH] · no cubiertas {} · secundarias [] · colocaciones {"CARDIO": 3, "MOBILITY": 3, "MUSCULAR_ENDURANCE": 6, "STRENGTH": 4}
 
 
 - **MONDAY FULL_BODY** (35 min)
@@ -211,45 +173,80 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 ### GENERAL_FITNESS · principiante en casa sin suelo, 3x60
 
-**PARCIAL: propuesta NO activada, requiere aceptacion** · cubiertas [STRENGTH, MUSCULAR_ENDURANCE, MOBILITY] · no cubiertas {CARDIO=no factible: sin ejercicios verificados compatibles con las condiciones del participante (un circuito no acredita cardio); los ejercicios en revision de clasificacion no cuentan} · secundarias [HYPERTROPHY]
+`GENERAL_FITNESS` · BEGINNER · 41 anos · HOME · 3 dias x 60 min · impacto=true suelo=false brazos_arriba=true · equipo [body weight, dumbbell, band]
+
+**Resultado: PARCIAL** · principales cubiertas [MOBILITY, MUSCULAR_ENDURANCE, STRENGTH] · no cubiertas {"CARDIO": 0} · secundarias [HYPERTROPHY] · colocaciones {"HYPERTROPHY": 10, "MOBILITY": 3, "MUSCULAR_ENDURANCE": 7, "STRENGTH": 4}
+
 
 - **MONDAY FULL_BODY** (43 min)
-  - 1059 · 3x10, 120 s
-  - 776 · 3x8, 120 s
-  - 705 · 3x8, 120 s
-  - 304 · 3x8, 120 s
-  - 125 · 2x10, 90 s
-  - 1097 · 2x10, 90 s
-  - 1098 · 3x15, 45 s
-  - 1119 · 2x30 s, 15 s
+  - 1102 Paso posterior al alcance superior (waist, KNEE_DOMINANT) · 3x10, 120 s · **STRENGTH**
+  - 142 Peso muerto con piernas rectas con banda (back, HIP_HINGE) · 3x8, 120 s · **STRENGTH**
+  - 704 Press alterno sentado con mancuerna (shoulders, VERTICAL_PUSH) · 3x8, 120 s · **STRENGTH**
+  - 143 Jalón con agarre supino (back, VERTICAL_PULL) · 3x8, 120 s · **STRENGTH**
+  - 1264 Sentadilla con alcance por encima (upper legs, KNEE_DOMINANT) · 2x10, 90 s · **HYPERTROPHY**
+  - 1097 Flexión en pared (chest, HORIZONTAL_PUSH) · 2x10, 90 s · **HYPERTROPHY**
+  - 896 Flexión en inclinada (chest, HORIZONTAL_PUSH) · 3x15, 45 s · **MUSCULAR_ENDURANCE**
+  - 1373 Círculos de muñeca (lower arms, MOBILITY) · 2x10, 30 s · **MOBILITY**
+
 - **WEDNESDAY FULL_BODY** (43 min)
-  - 1102 · 3x13, 90 s
-  - 705 · 3x10, 90 s
-  - 1155 · 3x10, 90 s
-  - 307 · 3x10, 90 s
-  - 898 · 3x15, 45 s
-  - 115 · 3x15, 45 s
-  - 1196 · 3x15, 45 s
-  - 455 · 2x30 s, 15 s
+  - 1102 Paso posterior al alcance superior (waist, KNEE_DOMINANT) · 3x13, 90 s · **HYPERTROPHY**
+  - 136 Press por encima de la cabeza con giro y banda (shoulders, VERTICAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
+  - 1155 Press de pecho sentado con banda (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
+  - 307 Remo de pie (back, HORIZONTAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
+  - 1098 Flexión en pared versión 2 (chest, HORIZONTAL_PUSH) · 3x15, 45 s · **MUSCULAR_ENDURANCE**
+  - 119 Remo sentado a una mano con giro (back, HORIZONTAL_PULL) · 3x15, 45 s · **MUSCULAR_ENDURANCE**
+  - 121 Extensión de cadera inclinada con banda (upper legs, HIP_EXTENSION) · 3x15, 45 s · **MUSCULAR_ENDURANCE**
+  - 881 Estiramiento de isquiotibiales (upper legs, MOBILITY) · 2x30 s, 15 s · **MOBILITY**
+
 - **FRIDAY FULL_BODY** (43 min)
-  - 1059 · 3x13, 90 s
-  - 136 · 3x10, 90 s
-  - 1155 · 3x10, 90 s
-  - 308 · 3x10, 90 s
-  - 1098 · 3x15, 45 s
-  - 119 · 3x15, 45 s
-  - 1205 · 3x15, 45 s
-  - 1173 · 2x30 s, 15 s
+  - 1102 Paso posterior al alcance superior (waist, KNEE_DOMINANT) · 3x13, 90 s · **HYPERTROPHY**
+  - 740 Press de hombro sentado con mancuerna, agarre paralelo (shoulders, VERTICAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
+  - 896 Flexión en inclinada (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
+  - 119 Remo sentado a una mano con giro (back, HORIZONTAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
+  - 1155 Press de pecho sentado con banda (chest, HORIZONTAL_PUSH) · 3x15, 45 s · **MUSCULAR_ENDURANCE**
+  - 301 Remo sentadilla (back, KNEE_DOMINANT) · 3x15, 45 s · **MUSCULAR_ENDURANCE**
+  - 1264 Sentadilla con alcance por encima (upper legs, KNEE_DOMINANT) · 3x15, 45 s · **MUSCULAR_ENDURANCE**
+  - 1188 Estiramiento lumbar sentado (back, MOBILITY) · 2x30 s, 15 s · **MOBILITY**
 
 ### LOSE_WEIGHT · principiante en casa sin suelo
 
-**NO_FACTIBLE**, no se publica: No se pudo generar un plan valido para el usuario 161. NINGUNA_PRINCIPAL_FACTIBLE: Con tus condiciones actuales no se puede cubrir ninguna capacidad principal de LOSE_WEIGHT (CARDIO: sin ejercicios verificados compatibles con las condiciones del participante (un circuito no acredita cardio); los ejercicios en revision de clasificacion no cuentan). Solo podria ofrecerse una alternativa limitada con [STRENGTH], que requiere tu aceptacion y no se publica automaticamente.
+`LOSE_WEIGHT` · BEGINNER · 45 anos · HOME · 3 dias x 45 min · impacto=true suelo=false brazos_arriba=true · equipo [body weight, dumbbell, band]
+
+**Resultado: SOLO_SECUNDARIAS** · principales cubiertas [] · no cubiertas {"CARDIO": 0} · secundarias [STRENGTH] · colocaciones {"STRENGTH": 21}
+
+
+- **MONDAY FULL_BODY** (31 min)
+  - 1103 Sentadilla de baño (waist, KNEE_DOMINANT) · 2x10, 120 s · **STRENGTH**
+  - 142 Peso muerto con piernas rectas con banda (back, HIP_HINGE) · 2x8, 120 s · **STRENGTH**
+  - 898 Flexión invertida en inclinada (chest, HORIZONTAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 135 Remo de deltoides traseros con banda, de pie (shoulders, HORIZONTAL_PULL) · 2x8, 120 s · **STRENGTH**
+  - 148 Peso muerto de piernas rígidas con banda (upper legs, HIP_HINGE) · 2x8, 120 s · **STRENGTH**
+  - 1098 Flexión en pared versión 2 (chest, HORIZONTAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 114 Jalón con agarre cerrado (back, VERTICAL_PULL) · 2x8, 120 s · **STRENGTH**
+
+- **WEDNESDAY FULL_BODY** (31 min)
+  - 1103 Sentadilla de baño (waist, KNEE_DOMINANT) · 2x10, 120 s · **STRENGTH**
+  - 896 Flexión en inclinada (chest, HORIZONTAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 304 Remo de pie con agarre cerrado (back, HORIZONTAL_PULL) · 2x8, 120 s · **STRENGTH**
+  - 1263 Sentadillas búlgaras (upper legs, KNEE_DOMINANT) · 2x8, 120 s · **STRENGTH**
+  - 739 Press de hombro sentado con mancuerna (shoulders, VERTICAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 898 Flexión invertida en inclinada (chest, HORIZONTAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 119 Remo sentado a una mano con giro (back, HORIZONTAL_PULL) · 2x8, 120 s · **STRENGTH**
+
+- **FRIDAY FULL_BODY** (31 min)
+  - 1059 Zancada con giro (waist, KNEE_DOMINANT) · 2x10, 120 s · **STRENGTH**
+  - 1155 Press de pecho sentado con banda (chest, HORIZONTAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 114 Jalón con agarre cerrado (back, VERTICAL_PULL) · 2x8, 120 s · **STRENGTH**
+  - 144 Sentadilla con banda (upper legs, KNEE_DOMINANT) · 2x8, 120 s · **STRENGTH**
+  - 704 Press alterno sentado con mancuerna (shoulders, VERTICAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 898 Flexión invertida en inclinada (chest, HORIZONTAL_PUSH) · 2x8, 120 s · **STRENGTH**
+  - 307 Remo de pie (back, HORIZONTAL_PULL) · 2x8, 120 s · **STRENGTH**
 
 ### LOSE_WEIGHT · principiante sin suelo, con cinta, 3x45
 
 `LOSE_WEIGHT` · BEGINNER · 38 anos · HOME · 3 dias x 45 min · impacto=true suelo=false brazos_arriba=true · equipo [body weight, dumbbell, band, treadmill]
 
-**Resultado: COMPLETO** · principales cubiertas ["CARDIO"] · no cubiertas {} · secundarias ["STRENGTH"] · colocaciones {"CARDIO": 3, "STRENGTH": 15}
+**Resultado: COMPLETO** · principales cubiertas [CARDIO] · no cubiertas {} · secundarias [STRENGTH] · colocaciones {"CARDIO": 3, "STRENGTH": 15}
 
 
 - **MONDAY FULL_BODY** (31 min)
@@ -280,7 +277,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `GENERAL_FITNESS` · INTERMEDIATE · 66 anos · GYM · 3 dias x 45 min · impacto=true suelo=true brazos_arriba=false · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["STRENGTH", "MUSCULAR_ENDURANCE", "CARDIO", "MOBILITY"] · no cubiertas {} · secundarias [] · colocaciones {"CARDIO": 3, "MOBILITY": 3, "STRENGTH": 4, "MUSCULAR_ENDURANCE": 6}
+**Resultado: COMPLETO** · principales cubiertas [CARDIO, MOBILITY, MUSCULAR_ENDURANCE, STRENGTH] · no cubiertas {} · secundarias [] · colocaciones {"CARDIO": 3, "MOBILITY": 3, "MUSCULAR_ENDURANCE": 6, "STRENGTH": 4}
 
 
 - **MONDAY FULL_BODY** (35 min)
@@ -309,7 +306,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `INCREASE_STRENGTH` · INTERMEDIATE · 30 anos · GYM · 3 dias x 20 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["STRENGTH"] · no cubiertas {} · secundarias [] · colocaciones {"STRENGTH": 6}
+**Resultado: COMPLETO** · principales cubiertas [STRENGTH] · no cubiertas {} · secundarias [] · colocaciones {"STRENGTH": 6}
 
 
 - **MONDAY FULL_BODY** (18 min)
@@ -328,7 +325,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `INCREASE_STRENGTH` · INTERMEDIATE · 30 anos · GYM · 3 dias x 75 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["STRENGTH"] · no cubiertas {} · secundarias ["HYPERTROPHY"] · colocaciones {"STRENGTH": 12, "HYPERTROPHY": 12}
+**Resultado: COMPLETO** · principales cubiertas [STRENGTH] · no cubiertas {} · secundarias [HYPERTROPHY] · colocaciones {"HYPERTROPHY": 12, "STRENGTH": 12}
 
 
 - **MONDAY FULL_BODY** (54 min)
@@ -365,7 +362,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `INCREASE_STRENGTH` · ADVANCED · 27 anos · GYM · 5 dias x 60 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["STRENGTH"] · no cubiertas {} · secundarias ["HYPERTROPHY"] · colocaciones {"STRENGTH": 18, "HYPERTROPHY": 14}
+**Resultado: COMPLETO** · principales cubiertas [STRENGTH] · no cubiertas {} · secundarias [HYPERTROPHY] · colocaciones {"HYPERTROPHY": 14, "STRENGTH": 18}
 
 
 - **MONDAY PUSH** (43 min)
@@ -414,7 +411,7 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
 
 `LOSE_WEIGHT` · INTERMEDIATE · 29 anos · GYM · 4 dias x 40 min · impacto=false suelo=true brazos_arriba=true · equipo [body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]
 
-**Resultado: COMPLETO** · principales cubiertas ["CARDIO"] · no cubiertas {} · secundarias ["STRENGTH"] · colocaciones {"CARDIO": 8, "STRENGTH": 4}
+**Resultado: COMPLETO** · principales cubiertas [CARDIO] · no cubiertas {} · secundarias [STRENGTH] · colocaciones {"CARDIO": 8, "STRENGTH": 4}
 
 
 - **MONDAY UPPER_BODY** (29 min)
@@ -436,33 +433,3 @@ Salida de `GeneracionPorObjetivoIT` del 24/10/2026, después de 4D v3.1: semanas
   - 872 Levantamiento de cadera con rodillas flexionadas (waist, HIP_EXTENSION) · 3x10, 150 s · **STRENGTH**
   - 1093 Empujar para correr (cardio, LOCOMOTION_CARDIO) · 3x120 s, 60 s · **CARDIO**
   - 532 Ciclo cross trainer (cardio, LOCOMOTION_CARDIO) · 3x120 s, 60 s · **CARDIO**
-
-### GAIN_MUSCLE · principiante en casa, 3x45
-
-`GAIN_MUSCLE` · BEGINNER · 52 anos · HOME · 3 dias x 45 min · impacto=true suelo=true brazos_arriba=true · equipo [body weight, dumbbell, band]
-
-**Resultado: COMPLETO** · principales cubiertas ["HYPERTROPHY"] · no cubiertas {} · secundarias [] · colocaciones {"HYPERTROPHY": 17}
-
-
-- **MONDAY FULL_BODY** (32 min)
-  - 1102 Paso posterior al alcance superior (waist, KNEE_DOMINANT) · 3x13, 90 s · **HYPERTROPHY**
-  - 776 Elevador (back, HIP_HINGE) · 3x10, 90 s · **HYPERTROPHY**
-  - 1296 Push-up de Superman (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-  - 135 Remo de deltoides traseros con banda, de pie (shoulders, HORIZONTAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
-  - 1138 Flexión de escápula (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-
-- **WEDNESDAY FULL_BODY** (33 min)
-  - 494 Flexión en reloj (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-  - 1156 Remo sentado con banda de espalda recta (back, HORIZONTAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
-  - 121 Extensión de cadera inclinada con banda (upper legs, HIP_EXTENSION) · 3x10, 90 s · **HYPERTROPHY**
-  - 706 Elevación lateral de brazo con mancuerna sentado (shoulders, SHOULDER_RAISE) · 2x10, 90 s · **HYPERTROPHY**
-  - 1139 Crunch inverso (waist, TRUNK_FLEXION) · 2x13, 90 s · **HYPERTROPHY**
-  - 1097 Flexión en pared (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-
-- **FRIDAY FULL_BODY** (31 min)
-  - 933 Flexión de rodillas en apoyo (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**
-  - 308 Remo de pie con toalla (back, HORIZONTAL_PULL) · 3x10, 90 s · **HYPERTROPHY**
-  - 68 Toque de dedos circular con brazos abiertos (upper legs, TRUNK_FLEXION) · 2x10, 90 s · **HYPERTROPHY**
-  - 100 Vuelos invertidos con banda (shoulders, SHOULDER_RAISE) · 2x10, 90 s · **HYPERTROPHY**
-  - 1305 V-sit en el suelo (waist, TRUNK_FLEXION) · 2x13, 90 s · **HYPERTROPHY**
-  - 1097 Flexión en pared (chest, HORIZONTAL_PUSH) · 3x10, 90 s · **HYPERTROPHY**

@@ -24,14 +24,9 @@ import java.util.stream.Collectors;
  *       ({@link CapabilityPrescriptionPolicy#acreditada}); tener ejercicios
  *       disponibles no cuenta.</li>
  * </ol>
- * Resultado de la semana, solo por las PRINCIPALES:
- * <ul>
- *   <li>{@link Resultado#COMPLETO}: todas cubiertas.</li>
- *   <li>{@link Resultado#PARCIAL}: al menos una cubierta y alguna no; las que
- *       faltan quedan nombradas con su motivo.</li>
- *   <li>{@link Resultado#NO_FACTIBLE}: ninguna cubierta.</li>
- * </ul>
- * Las secundarias nunca cambian el resultado: se informan como incorporadas.
+ * El resultado ({@link Resultado}) es solo DESCRIPTIVO: va al log y no decide
+ * la publicacion. Lo unico que decide es {@link Cobertura#omitidas()}: una
+ * principal factible ausente de la semana, que V25 rechaza.
  */
 public final class CapabilityCoveragePolicy {
 
@@ -101,25 +96,12 @@ public final class CapabilityCoveragePolicy {
                             Set<Capability> omitidas, Set<Capability> secundariasIncorporadas,
                             Map<Capability, Integer> colocaciones, Set<MandatorySlot> slotsSinCubrir) {
 
-        public boolean esParcial() {
-            return resultado == Resultado.PARCIAL;
-        }
-
         public String describe() {
             return "version=%s objetivo=%s resultado=%s cubiertas=%s no_cubiertas=%s omitidas=%s secundarias=%s colocaciones=%s slots_sin_cubrir=%s"
                     .formatted(version, objetivo, resultado, principalesCubiertas, noCubiertas, omitidas,
                             secundariasIncorporadas, colocaciones, slotsSinCubrir);
         }
 
-        /** El aviso para el participante. Null si la semana es completa. */
-        public String mensaje() {
-            if (resultado == Resultado.COMPLETO) return null;
-            var faltan = String.join(", ", noCubiertas.keySet().stream().map(CapabilityCoveragePolicy::nombre).toList());
-            if (resultado == Resultado.PARCIAL)
-                return ("Esta semana es una alternativa parcial a tu objetivo: no incluye %s por tus condiciones "
-                        + "actuales. Se completo con lo que si es seguro para ti.").formatted(faltan);
-            return "Con tus condiciones actuales no podemos cubrir ninguna parte principal de tu objetivo.";
-        }
     }
 
     public static Cobertura evaluar(String goalType, String fitnessLevel, PlanDraft borrador,
@@ -179,17 +161,5 @@ public final class CapabilityCoveragePolicy {
                 : cubiertas.containsAll(principales) ? Resultado.COMPLETO : Resultado.PARCIAL;
         return new Cobertura(objetivo, CapabilityPrescriptionPolicy.VERSION, resultado, cubiertas,
                 noCubiertas, omitidas, secundarias, colocaciones, slotsSinCubrir);
-    }
-
-    static String nombre(Capability c) {
-        return switch (c) {
-            case HYPERTROPHY -> "hipertrofia";
-            case STRENGTH -> "fuerza";
-            case POWER -> "potencia";
-            case MUSCULAR_ENDURANCE -> "resistencia muscular";
-            case CARDIO -> "cardio";
-            case MOBILITY -> "movilidad";
-            case BALANCE -> "equilibrio";
-        };
     }
 }

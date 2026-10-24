@@ -16,9 +16,6 @@ import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCom
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanQueryService;
 import main.web.services.fitsense.planning.domain.model.valueobjects.EffortGuidance;
 import main.web.services.fitsense.shared.infrastructure.json.JsonSupport;
-import main.web.services.fitsense.planning.interfaces.rest.resources.CapabilityCoverageResource;
-import main.web.services.fitsense.planning.interfaces.rest.resources.PartialPlanProposalResource;
-import main.web.services.fitsense.planning.domain.exceptions.PartialPlanRequiresAcceptanceException;
 import main.web.services.fitsense.planning.interfaces.rest.resources.PlanSummaryResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.SkipWorkoutResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.WeeklyTrainingPlanResource;
@@ -88,9 +85,8 @@ public class TrainingPlanController {
      * Las transacciones viven dentro de prepare() y persist(), que son cortas.
      */
     @PostMapping("/users/me/plan/generate")
-    @Operation(summary = "Genera el plan de esta semana. Falla si ya existe uno activo. Si la semana es "
-            + "PARCIAL no se activa: responde 409 con la propuesta y lo que falta.")
-    public ResponseEntity<?> generate(
+    @Operation(summary = "Genera el plan de esta semana. Falla si ya existe uno activo.")
+    public ResponseEntity<WeeklyTrainingPlanResource> generate(
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
         var monday = TrainingWeek.containing(LocalDate.now()).startDate();
@@ -99,38 +95,10 @@ public class TrainingPlanController {
         var prepared = commandService.prepare(command);
         var generated = commandService.generate(prepared);
 
-        try {
-            return commandService.persist(prepared, generated)
-                    .map(this::toResource)
-                    .<ResponseEntity<?>>map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
-                    .orElseGet(() -> ResponseEntity.badRequest().build());
-        } catch (PartialPlanRequiresAcceptanceException parcial) {
-            // 4A v6: la semana PARCIAL no se activa. 409 con la propuesta y lo
-            // que falta, para que el participante decida.
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(propuesta(monday, parcial));
-        }
-    }
-
-    private PartialPlanProposalResource propuesta(LocalDate semana, PartialPlanRequiresAcceptanceException parcial) {
-        var generada = parcial.propuesta();
-        var c = generada.cobertura();
-        var nombres = externalCatalogService.fetchNames(generada.draft().workouts().stream()
-                .flatMap(w -> w.exercises().stream()).map(e -> e.exerciseId()).collect(Collectors.toSet()));
-        var cobertura = new CapabilityCoverageResource(c.resultado().name(),
-                c.principalesCubiertas().stream().map(Enum::name).toList(),
-                c.noCubiertas().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().name(),
-                        java.util.Map.Entry::getValue, (a, b) -> a, java.util.TreeMap::new)),
-                c.secundariasIncorporadas().stream().map(Enum::name).toList(), true, c.mensaje());
-        var sesiones = generada.draft().workouts().stream()
-                .map(w -> new PartialPlanProposalResource.ProposedWorkout(w.scheduledDate(), w.focus().name(),
-                        w.name(), w.expectedDurationMinutes(), w.exercises().stream()
-                        .map(e -> new PartialPlanProposalResource.ProposedExercise(e.exerciseId(),
-                                nombres.get(e.exerciseId()), e.prescriptionType().name(), e.plannedSets(),
-                                e.plannedReps(), e.plannedDurationSeconds(), e.targetLoadKg(), e.restSeconds(),
-                                e.notes()))
-                        .toList()))
-                .toList();
-        return new PartialPlanProposalResource("REQUIERE_ACEPTACION", semana, cobertura, sesiones);
+        return commandService.persist(prepared, generated)
+                .map(this::toResource)
+                .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
+                .orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/users/me/plan/{planId}")
@@ -181,8 +149,7 @@ public class TrainingPlanController {
                 EffortGuidance.forLevel(fitnessLevelOf(plan)),
                 // Un plan guardado no se revalida solo: las sesiones abiertas se
                 // comprueban contra la seguridad de HOY (INC-CAT-1374 y otras).
-                publishedPlanSafety.conflictos(plan),
-                coberturaDe(plan));
+                publishedPlanSafety.conflictos(plan));
     }
 
     /**
@@ -199,37 +166,6 @@ public class TrainingPlanController {
             return null;
         }
     }
-
-    /**
-     * La cobertura de capacidades que se guardo al generar (GEN-OUT-1.1). Null
-     * en planes anteriores o adaptados: no se recalcula en la lectura, porque
-     * lo que vale es lo que se registro al publicar.
-     */
-    private CapabilityCoverageResource coberturaDe(WeeklyTrainingPlan plan) {
-        try {
-            var salida = plan.getOutputSnapshot() == null ? null
-                    : jsonSupport.read(plan.getOutputSnapshot(), SnapshotSalida.class);
-            var c = salida == null ? null : salida.capabilityCoverage();
-            if (c == null || c.resultado() == null) return null;
-            boolean parcial = "PARCIAL".equals(c.resultado());
-            String mensaje = parcial ? ("Esta semana es una alternativa parcial a tu objetivo: no incluye %s por "
-                    + "tus condiciones actuales. Se completo con lo que si es seguro para ti.")
-                    .formatted(String.join(", ", c.noCubiertas() == null ? List.of() : c.noCubiertas().keySet()))
-                    : null;
-            return new CapabilityCoverageResource(c.resultado(),
-                    c.principalesCubiertas() == null ? List.of() : List.copyOf(c.principalesCubiertas()),
-                    c.noCubiertas() == null ? Map.of() : Map.copyOf(c.noCubiertas()),
-                    c.secundariasIncorporadas() == null ? List.of() : List.copyOf(c.secundariasIncorporadas()),
-                    parcial, mensaje);
-        } catch (RuntimeException e) {
-            return null;
-        }
-    }
-
-    public record SnapshotSalida(SnapshotCobertura capabilityCoverage) {}
-
-    public record SnapshotCobertura(String resultado, List<String> principalesCubiertas,
-                                    Map<String, String> noCubiertas, List<String> secundariasIncorporadas) {}
 
     /** Solo lo que hace falta de input_snapshot. JsonSupport ignora el resto. */
     public record SnapshotLevel(SnapshotUser user) {

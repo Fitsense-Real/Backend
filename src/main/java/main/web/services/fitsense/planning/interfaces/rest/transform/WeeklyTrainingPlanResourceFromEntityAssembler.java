@@ -4,7 +4,6 @@ import main.web.services.fitsense.catalog.interfaces.acl.EligibleExerciseView;
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
 import main.web.services.fitsense.planning.domain.model.valueobjects.EffortGuidance;
-import main.web.services.fitsense.planning.interfaces.rest.resources.CapabilityCoverageResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.EffortGuidanceResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.PlanSummaryResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.PlannedExerciseResource;
@@ -39,12 +38,6 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
     public static WeeklyTrainingPlanResource toResourceFromEntity(
             WeeklyTrainingPlan entity, Map<Long, EligibleExerciseView> catalogo,
             EffortGuidance guidance, Map<Long, String> conflictos) {
-        return toResourceFromEntity(entity, catalogo, guidance, conflictos, null);
-    }
-
-    public static WeeklyTrainingPlanResource toResourceFromEntity(
-            WeeklyTrainingPlan entity, Map<Long, EligibleExerciseView> catalogo,
-            EffortGuidance guidance, Map<Long, String> conflictos, CapabilityCoverageResource cobertura) {
 
         var workouts = entity.workoutsView().stream()
                 .map(workout -> toWorkoutResource(workout, catalogo, conflictos))
@@ -67,8 +60,7 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
                 workouts,
                 guidance == null ? null : new EffortGuidanceResource(
                         guidance.repsInReserve(), guidance.setsRepsText(),
-                        guidance.durationText(), guidance.loadText()),
-                cobertura);
+                        guidance.durationText(), guidance.loadText()));
     }
 
     public static PlanSummaryResource toSummaryFromEntity(WeeklyTrainingPlan entity) {

@@ -20,7 +20,5 @@ public record WeeklyTrainingPlanResource(
         OffsetDateTime activatedAt,
         List<PlannedWorkoutResource> workouts,
         /** Con que esfuerzo hacer las repeticiones. Sin esto el numero fijo no se entiende. */
-        EffortGuidanceResource effortGuidance,
-        /** Capacidades del objetivo que cubre la semana; null en planes anteriores a 4D v4. */
-        CapabilityCoverageResource capabilityCoverage
+        EffortGuidanceResource effortGuidance
 ) {}

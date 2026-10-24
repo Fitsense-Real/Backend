@@ -181,7 +181,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         var result = pipeline.run(prepared.context(), prepared.divisor());
         if (feasibilityObserver != null)
             feasibilityObserver.despuesDeGenerar(prepared.context(), result.draft());
-        return new GeneratedPlan(result.draft(), result.attempts(), result.cobertura());
+        return new GeneratedPlan(result.draft(), result.attempts());
     }
 
     /**
@@ -208,11 +208,6 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         var command = prepared.command();
         var draft = generated.draft();
         var adjustment = prepared.adjustment();
-
-        // 4A v6: una semana PARCIAL es una alternativa que requiere aceptacion.
-        // No se guarda ni se activa; se devuelve la propuesta con sus motivos.
-        if (generated.cobertura() != null && generated.cobertura().esParcial())
-            throw new PartialPlanRequiresAcceptanceException(command.userId(), generated);
 
         // Se relee el plan previo en vez de arrastrar la entidad de la fase 1:
         // entre fase y fase pasaron ~90 s sin sesion de persistencia abierta. Y
@@ -245,14 +240,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
             plan.recordAdjustment(adjustment.types().get(0).name(), draft.rationale());
 
         materialize(plan, draft, prepared.zone());
-        // GEN-OUT-1.1: el borrador y, junto a el, la cobertura de capacidades
-        // (4A v6): si la semana es COMPLETA o PARCIAL y que principal falta. Es
-        // la constancia de que un plan parcial no se publico como completo.
-        plan.attachOutputSnapshot(generated.cobertura() == null ? jsonSupport.write(draft)
-                : jsonSupport.write(new java.util.LinkedHashMap<>(java.util.Map.of(
-                "schema_version", "GEN-OUT-1.1",
-                "draft", draft,
-                "capability_coverage", generated.cobertura()))));
+        plan.attachOutputSnapshot(jsonSupport.write(draft));
 
         // Reemplazar y vaciar el contexto ANTES de guardar el nuevo:
         // ux_plan_active solo admite un ACTIVE por usuario y semana.

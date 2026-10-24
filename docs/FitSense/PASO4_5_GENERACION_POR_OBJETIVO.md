@@ -9,6 +9,8 @@
 - Los 21 ejercicios en revisión no se reclasificaron.
 - La adaptación P2-D no se modificó.
 
+> **Cierre de la generación (regla definitiva):** principales disponibles → secundarias disponibles → validación → **publicación automática**. Se eliminaron del flujo los estados `COMPLETO` / `PARCIAL` / `NO_FACTIBLE` / `REQUIERE_ACEPTACION`, la respuesta 409, el bloqueo de semanas parciales, la negativa a generar sin principales y el registro de capacidades en `output_snapshot` y en la API. La sección 5 manda sobre lo que digan las demás.
+>
 > **Revisión del 24/10, segunda entrega.** Se aplicaron las decisiones de la revisión:
 > - `GAIN_MUSCLE` corregido con [4D v3.1](ADENDA_4D_v3_1.md): 36 de 36 perfiles.
 > - Solo lo que puede demostrar hipertrofia la acredita.
@@ -107,20 +109,15 @@ Solo para `INCREASE_STRENGTH`, `LOSE_WEIGHT` y `GENERAL_FITNESS`. `GAIN_MUSCLE` 
 
 **Interruptor propio:** `fitsense.capability.enforcement`, por defecto `ENFORCE`, para la IA y el motor de reglas por igual. La validación estricta de la adaptación P2-D lo deja en **OFF**: las semanas que conserva se publicaron con la dosis anterior, y exigirles la nueva las dejaría sin plan. Llevar estas reglas a P2-D es una decisión aparte.
 
-## 5. COMPLETO, PARCIAL y NO_FACTIBLE, sin estados persistentes nuevos
+## 5. Publicación: automática, sin clasificaciones ni aceptación
 
-| Resultado | Qué pasa |
-|---|---|
-| `COMPLETO` | Se publica. El plan lleva `capability_coverage` en `output_snapshot` (`GEN-OUT-1.1`) y `capabilityCoverage` en la API, con `requiresAcceptance = false` |
-| `PARCIAL` | **No se guarda ni se activa** (detalle debajo) |
-| `NO_FACTIBLE` | No se publica. `NoPrimaryCapabilityFeasibleException` si ninguna principal es factible. Si el motor de reglas no encuentra ninguna semana válida, la excepción empieza por `NO_FACTIBLE:` y lleva los motivos de cada validación |
+1. Se incorporan todas las capacidades **principales factibles**. V25 rechaza cualquier semana que omita una principal factible: una secundaria nunca la desplaza.
+2. El tiempo restante, o el de las principales que no son factibles para el perfil, se completa con **secundarias compatibles**.
+3. **Si ninguna principal es factible, se genera con las secundarias**, siempre que la semana sea segura y tenga dosis válidas. Ejemplo: `LOSE_WEIGHT` sin ningún cardio posible recibe una semana de fuerza. No contiene cardio y no se presenta como si lo tuviera: los ejercicios y sus dosis son lo que la ficha muestra.
+4. **El plan válido se publica automáticamente**, sin pantalla de aceptación ni respuesta especial.
+5. **Si no hay ejercicios compatibles o no se puede construir una semana válida**, hay un error de generación sencillo (`EmptyEligibleSetException` o `PlanGenerationFailedException` con los motivos de validación). Nunca se relajan restricciones ni se inventan ejercicios.
 
-**Qué pasa con un `PARCIAL`:**
-- `persist` lanza `PartialPlanRequiresAcceptanceException` con la propuesta: el borrador y su cobertura.
-- `POST /users/me/plan/generate` responde **409** con `PartialPlanProposalResource`: `status = REQUIERE_ACEPTACION`, lo que falta y por qué, el aviso y las sesiones propuestas con sus ejercicios.
-- La tarea semanal lo trata como semana sin plan y lo registra.
-
-**Sin migración y sin estado nuevo:** la generación es determinista (semilla por usuario y semana), así que aceptar la propuesta podrá volver a producir exactamente la misma semana. **Falta conectar esa aceptación**: un endpoint que la active y su pantalla en Flutter.
+**Lo que no se registra:** la cobertura de capacidades no se guarda en `output_snapshot` ni viaja en la API. Solo queda una línea `COBERTURA_SEMANA` en el log para diagnóstico. Lo que lleva cada semana se deduce de sus ejercicios y prescripciones.
 
 ## 6. Prompt de la IA (sin llamadas pagadas)
 
@@ -150,7 +147,7 @@ Para los tres objetivos, `GEN-IN-1.11` / `PR-1.4` añaden:
 - `PromptCapacidadesTest` (2).
 - `CatalogoV15CoherenciaTest` pasa de la caracterización del Paso 2 a la regla nueva para `LOSE_WEIGHT` y `GENERAL_FITNESS`: ahora usan los complementos verificados y nunca los que están en revisión.
 
-**Integración: `mvn verify -Pintegration`, 67 ejecutadas, 0 fallos.** Las 8 saltadas son las P2-D antiguas que exigen `-Dfitsense.pruebas.url`. Esas tres clases, contra un PostgreSQL local: 7/7, sin residuos.
+**Integración: `mvn verify -Pintegration`, 68 ejecutadas, 0 fallos.** Las 8 saltadas son las P2-D antiguas que exigen `-Dfitsense.pruebas.url`. Esas tres clases, contra un PostgreSQL local: 7/7, sin residuos.
 
 **`GeneracionPorObjetivoIT` (15):** el flujo real (`generateWeeklyPlan`) con catálogo real y validadores reales en ENFORCE. Además del resultado, cada semana se comprueba así:
 - ningún ejercicio de alto impacto, suelo, brazos arriba, carga axial o dificultad incompatible con el perfil;
@@ -160,41 +157,21 @@ Para los tres objetivos, `GEN-IN-1.11` / `PR-1.4` añaden:
 | Caso pedido | Prueba | Resultado |
 |---|---|---|
 | 1. Todas las principales disponibles | `Completas` (4 objetivos) | COMPLETO. `GENERAL_FITNESS` con las 4 principales y los 4 slots con dosis de fuerza. La API no pide aceptación |
-| 2. Algunas sí y otras no | `condicionGeneralSinCardio`, `apiDevuelveLaPropuesta` | PARCIAL **no activado**: 0 planes en la base. Cardio no factible y nombrado; fuerza en todos los patrones, resistencia y movilidad presentes. La API responde 409 con la propuesta, `requiresAcceptance` y el aviso |
+| 2. Algunas sí y otras no | `condicionGeneralSinCardio`, `apiPublica` | **Publicado automáticamente** (201, plan activo): fuerza en todos los patrones, resistencia y movilidad; sin cardio, y no se inventa ninguno |
 | 3. Principales que consumen el tiempo | `principalesConsumenElTiempo` (`INCREASE_STRENGTH`, 20 min) | COMPLETO, sin ninguna secundaria |
 | 4. Tiempo restante para secundarias | `tiempoRestanteParaSecundarias` (`INCREASE_STRENGTH`, 75 min) | Hipertrofia incorporada; la fuerza no se desplaza |
 | 5. Principal ausente y secundarias que completan | `secundariasCompletan` | PARCIAL con hipertrofia. Ninguna principal factible se pierde y los slots llevan fuerza |
-| 6. Ninguna principal factible | `perderPesoSinCardio` | `NO_FACTIBLE` explicado, 0 planes en la base |
+| 6. Ninguna principal factible | `perderPesoSinCardio`, `sinEjerciciosCompatibles` | **Semana de fuerza publicada** (la secundaria), sin cardio. Sin ningún ejercicio compatible: error de generación y 0 planes |
 | 7. Un único ejercicio compatible | `unUnicoCardio` | El único cardio posible (1325, cinta) en cada sesión no contigua; COMPLETO |
 | 8. Impacto, suelo, brazos arriba, equipamiento | `mayorConRestricciones` (66 años), `sinAltoImpacto`, perfiles de casa | Cardio solo de bajo impacto; ningún ejercicio incompatible |
 | 9. Validadores que rechazan | unitarias de V1, V24 y V25 | Rechazan lo inseguro, la dosis incorrecta y la principal omitida |
 | 10. `GAIN_MUSCLE` | `Hipertrofia` (30, 45 y 60 min), `ganarMusculo`, `AdaptacionRegresionIT` (18/18) | Completo a 30, 45 y 60 min. Tope y presupuesto respetados; cuatro slots; solo evidencia de hipertrofia |
 
-**Barrido** (`Barrido`, segunda entrega): 144 perfiles, 4 objetivos × 3 niveles × casa/gimnasio × 30/45/60 min × con/sin suelo. Cada semana publicada pasa además las comprobaciones de seguridad y de acreditación de cada colocación. Repetido con tres juegos de semillas (432 generaciones): **0 fallos**.
+**Barrido** (`Barrido`, cierre): 144 perfiles, 4 objetivos × 3 niveles × casa/gimnasio × 30/45/60 min × con/sin suelo. Cada semana publicada pasa las comprobaciones de seguridad y acreditación. **144 de 144 publicadas, 0 fallos.** Lo que contiene cada una lo calcula la prueba (es descriptivo, no una función del backend):
 
-| Objetivo | COMPLETO | PARCIAL (propuesta no activada) | NO_FACTIBLE explicado | Fallo |
+| Objetivo | Todas sus principales | Algunas principales + secundarias | Solo secundarias | Fallo |
 |---|---|---|---|---|
-| `GAIN_MUSCLE` | **36** | 0 | 0 | **0** (antes 24) |
+| `GAIN_MUSCLE` | 36 | 0 | 0 | 0 |
 | `INCREASE_STRENGTH` | 36 | 0 | 0 | 0 |
-| `LOSE_WEIGHT` | 33 | 0 | 3 (principiante en casa sin suelo: ningún cardio posible) | 0 |
+| `LOSE_WEIGHT` | 33 | 0 | 3 (principiante en casa sin suelo: fuerza, ningún cardio posible) | 0 |
 | `GENERAL_FITNESS` | 33 | 3 (mismo perfil: sin cardio) | 0 | 0 |
-
-**Ajuste de pruebas existentes:**
-- `CatalogoElegibleIT` cambia la misma caracterización del Paso 2, ahora con todo el catálogo: ninguna principal factible omitida en toda su matriz.
-- `AdaptacionRegresionIT` › `cardioEnLaSesionCorregidaSePublica` necesitaba un relleno en la semana medida, que ahora puede no existir. Su premisa admite también una estructural cuyo slot está cubierto en otra parte de la semana. El código de P2-D no se tocó.
-
-## 8. Estado de los hallazgos y límites
-
-1. **`GAIN_MUSCLE` a 30 y 60 minutos: CORREGIDO** con [4D v3.1](ADENDA_4D_v3_1.md):
-   - el motor respeta el presupuesto desde la selección;
-   - el tope es de 7 colocaciones con sesiones de 60 minutos o más;
-   - V20 no se relajó.
-2. **`PARCIAL`: ya no se activa** (sección 5). Falta conectar su aceptación explícita con Flutter.
-3. **Evidencia de hipertrofia: CORREGIDA.** En `GAIN_MUSCLE` ya no se eligen ni se acreditan movilidad, cardio, `OTHER`, duración ni ejercicios en revisión.
-
-   En la primera entrega, la etiqueta «HYPERTROPHY (4D v3)» de los ejemplos era el valor que el informe ponía cuando la política **no** acreditaba la colocación; aun así, el motor las elegía y la V24 de 4D v3 las aceptaba. Ahora el informe dice «SIN ACREDITAR» y no aparece ninguna.
-4. **`GENERAL_FITNESS` a 30 min:** en 3 perfiles un patrón se queda sin dosis de fuerza porque no cabe bajo el techo. La fuerza sigue cubierta y el hueco consta en `slots_sin_cubrir`.
-5. **Principiantes con sesiones muy largas sin cardio** (`GENERAL_FITNESS` a 75 min): con 8 colocaciones de 3 series como máximo no se llega al 70 % de V20. Ahora falla como `NO_FACTIBLE:` con los motivos.
-6. **La adaptación P2-D** no aplica V24 extendida, V25 ni la evidencia de hipertrofia (sección 4). La sustitución SUST-SEG-1 de P2-D puede elegir como sustituto de relleno un ejercicio sin evidencia de hipertrofia. No se tocó, porque P2-D quedó fuera de alcance.
-7. **Las dosis nuevas (4D v4) siguen siendo provisionales.** Las pruebas demuestran que el software aplica las reglas, no que las dosis sean eficaces. La intensidad cardiovascular no se valida.
-8. **Prueba con GPT-5-mini:** pendiente de autorizar las llamadas pagadas.
