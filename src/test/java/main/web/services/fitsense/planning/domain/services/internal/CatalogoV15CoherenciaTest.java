@@ -197,11 +197,12 @@ class CatalogoV15CoherenciaTest {
     }
 
     /**
-     * El motor de reglas no elige complementos y, con la misma semilla, produce
-     * EXACTAMENTE la misma semana con y sin ellos en el conjunto elegible.
+     * Objetivos sin cardio ni movilidad en su matriz: el motor de reglas no
+     * elige complementos y, con la misma semilla, produce EXACTAMENTE la misma
+     * semana con y sin ellos en el conjunto elegible.
      */
     @ParameterizedTest
-    @ValueSource(strings = {"LOSE_WEIGHT", "GENERAL_FITNESS", "GAIN_MUSCLE", "INCREASE_STRENGTH"})
+    @ValueSource(strings = {"GAIN_MUSCLE", "INCREASE_STRENGTH"})
     void elMotorDeReglasProduceLaMismaSemana(String objetivo) {
         var generador = new RuleBasedTrainingPlanGenerator(30, new SessionDurationEstimator());
         var dias = List.of((short) 1, (short) 3, (short) 5);
@@ -212,5 +213,28 @@ class CatalogoV15CoherenciaTest {
         var ids = con.workouts().stream().flatMap(w -> w.exercises().stream())
                 .map(PlanDraft.DraftExercise::exerciseId).toList();
         CANDIDATOS_NUEVOS.forEach(c -> assertFalse(ids.contains(c.exerciseId()), c.name()));
+    }
+
+    /**
+     * 4A v6 + 4D v4 (sustituye a la caracterizacion del Paso 2 para estos dos
+     * objetivos): CARDIO es principal de LOSE_WEIGHT y GENERAL_FITNESS, y
+     * MOVILIDAD de GENERAL_FITNESS. El motor de reglas YA NO los omite: usa los
+     * complementos verificados, y nunca los que estan en revision de
+     * clasificacion (902, 903).
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"LOSE_WEIGHT", "GENERAL_FITNESS"})
+    void elMotorDeReglasIncluyeLasPrincipalesVerificadas(String objetivo) {
+        var generador = new RuleBasedTrainingPlanGenerator(30, new SessionDurationEstimator());
+        var dias = List.of((short) 1, (short) 3, (short) 5);
+        var semana = generador.generate(contexto(objetivo, elegiblesPara(objetivo, CANDIDATOS_NUEVOS), 3, dias),
+                List.of());
+        var ids = semana.workouts().stream().flatMap(w -> w.exercises().stream())
+                .map(PlanDraft.DraftExercise::exerciseId).toList();
+        assertTrue(ids.contains(CARDIO.exerciseId()), objetivo + ": falta el cardio verificado " + ids);
+        if ("GENERAL_FITNESS".equals(objetivo))
+            assertTrue(ids.contains(ESTIRAMIENTO_GEMELO.exerciseId()), "falta la movilidad verificada " + ids);
+        assertFalse(ids.contains(CARDIO_2.exerciseId()), "902 esta en revision de clasificacion");
+        assertFalse(ids.contains(ESTIRAMIENTO_MUSLO.exerciseId()), "903 esta en revision de clasificacion");
     }
 }

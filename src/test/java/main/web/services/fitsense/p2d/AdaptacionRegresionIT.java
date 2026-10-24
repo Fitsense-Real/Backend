@@ -712,6 +712,16 @@ class AdaptacionRegresionIT {
             return "SETS_REPS".equals(e.tipo()) && !esSlot(patron(e.id()));
         }
 
+        /** SETS_REPS estructural cuyo slot aparece al menos dos veces en la semana medida. */
+        private boolean slotRepetido(Participante p, Ejercicio e) {
+            if (!"SETS_REPS".equals(e.tipo())) return false;
+            var slot = MandatorySlot.ofMovementPattern(patron(e.id()));
+            if (slot.isEmpty()) return false;
+            long n = p.semana().stream().flatMap(s -> s.ejercicios().stream())
+                    .filter(x -> MandatorySlot.ofMovementPattern(patron(x.id())).equals(slot)).count();
+            return n >= 2;
+        }
+
         /**
          * Para cada slot que falte en la semana medida, una posicion de relleno
          * libre en una sesion cuyo enfoque admita ese slot, y el ejercicio que la
@@ -754,9 +764,14 @@ class AdaptacionRegresionIT {
         @DisplayName("GENERAL_FITNESS: un cardio en una sesion corregida se acepta y se publica; las no senaladas se conservan")
         void cardioEnLaSesionCorregidaSePublica() {
             var p = participante(GoalType.GENERAL_FITNESS, true);
-            var sesion = p.semana().stream().filter(s -> s.ejercicios().stream().anyMatch(this::esRelleno))
+            // Desde 4D v4 la semana de GENERAL_FITNESS puede no tener relleno
+            // (todo son colocaciones de capacidad): vale cualquier colocacion de
+            // trabajo SETS_REPS cuyo slot este cubierto por otra en la semana, asi
+            // que V23 sigue sin poder quejarse por lo que el caso provoca.
+            var reemplazable = (java.util.function.Predicate<Ejercicio>) e -> esRelleno(e) || slotRepetido(p, e);
+            var sesion = p.semana().stream().filter(s -> s.ejercicios().stream().anyMatch(reemplazable))
                     .findFirst().orElseThrow(() -> new AssertionError("premisa: sin sesion con relleno"));
-            var relleno = sesion.ejercicios().stream().filter(this::esRelleno).findFirst().orElseThrow();
+            var relleno = sesion.ejercicios().stream().filter(reemplazable).findFirst().orElseThrow();
             var elegido = new long[1];
             iaPropone(ctx -> {
                 var forzados = new HashMap<Long, Map<Long, CandidateExercise>>();

@@ -54,9 +54,34 @@ public class PlanPromptBuilder {
      * 16 y la 21); el reintento incluye la propuesta rechazada y va despues de
      * los datos, con instruccion de corregirla y no rehacerla.
      * <p>
+     * PR-1.4 (GEN-IN-1.11, 4A v6 + 4D v4): bloque de CAPACIDADES para
+     * INCREASE_STRENGTH, LOSE_WEIGHT y GENERAL_FITNESS. Solo aparece cuando
+     * {@code constraints.capacidades} no es nulo, asi que el texto de
+     * GAIN_MUSCLE no cambia. Describe las mismas reglas que V24 y V25: la dosis
+     * exacta de una capacidad por colocacion y las principales factibles
+     * siempre presentes.
+     * <p>
      * Cambiar cualquier texto de este archivo exige subir la version.
      */
-    public static final String VERSION = "PR-1.3";
+    public static final String VERSION = "PR-1.4";
+
+    /** El bloque de capacidades. Publico para poder probar que solo aparece donde toca. */
+    public static final String BLOQUE_CAPACIDADES = """
+
+            CAPACIDADES DEL OBJETIVO (constraints.capacidades no es null):
+            - Cada ejercicio que pongas debe llevar EXACTAMENTE una de las dosis de su
+              dosis_por_capacidad: series (entre series y series_max), reps o segundos y
+              descanso_segundos tal cual. Esa dosis es la que decide que capacidad
+              trabaja. Una dosis distinta se rechaza.
+            - Primero incluye todas las capacidades de principales_factibles: cada una
+              al menos una vez en la semana. Despues completa el tiempo con las
+              secundarias. Una secundaria nunca puede ocupar el lugar de una principal
+              factible.
+            - Las de no_factibles no se exigen: el participante no las puede hacer con
+              sus condiciones. No las sustituyas por algo inseguro ni por un circuito.
+            - Solo puedes usar los ejercicios de available_exercises: los que no
+              aportan nada al objetivo ya no estan en la lista.
+            """;
 
     private final JsonSupport jsonSupport;
 
@@ -197,6 +222,9 @@ public class PlanPromptBuilder {
         // PrescriptionPrinciples; la version queda en input_snapshot.
         prompt.append('\n').append(
                 PrescriptionPrinciples.textFor(context.profile().goalType()));
+        if (main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                .gobiernaGeneracion(context.profile().goalType()))
+            prompt.append(BLOQUE_CAPACIDADES);
 
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
 

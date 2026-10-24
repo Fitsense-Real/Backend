@@ -181,7 +181,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         var result = pipeline.run(prepared.context(), prepared.divisor());
         if (feasibilityObserver != null)
             feasibilityObserver.despuesDeGenerar(prepared.context(), result.draft());
-        return new GeneratedPlan(result.draft(), result.attempts());
+        return new GeneratedPlan(result.draft(), result.attempts(), result.cobertura());
     }
 
     /**
@@ -240,7 +240,14 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
             plan.recordAdjustment(adjustment.types().get(0).name(), draft.rationale());
 
         materialize(plan, draft, prepared.zone());
-        plan.attachOutputSnapshot(jsonSupport.write(draft));
+        // GEN-OUT-1.1: el borrador y, junto a el, la cobertura de capacidades
+        // (4A v6): si la semana es COMPLETA o PARCIAL y que principal falta. Es
+        // la constancia de que un plan parcial no se publico como completo.
+        plan.attachOutputSnapshot(generated.cobertura() == null ? jsonSupport.write(draft)
+                : jsonSupport.write(new java.util.LinkedHashMap<>(java.util.Map.of(
+                "schema_version", "GEN-OUT-1.1",
+                "draft", draft,
+                "capability_coverage", generated.cobertura()))));
 
         // Reemplazar y vaciar el contexto ANTES de guardar el nuevo:
         // ux_plan_active solo admite un ACTIVE por usuario y semana.

@@ -16,6 +16,7 @@ import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCom
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanQueryService;
 import main.web.services.fitsense.planning.domain.model.valueobjects.EffortGuidance;
 import main.web.services.fitsense.shared.infrastructure.json.JsonSupport;
+import main.web.services.fitsense.planning.interfaces.rest.resources.CapabilityCoverageResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.PlanSummaryResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.SkipWorkoutResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.WeeklyTrainingPlanResource;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -148,7 +150,8 @@ public class TrainingPlanController {
                 EffortGuidance.forLevel(fitnessLevelOf(plan)),
                 // Un plan guardado no se revalida solo: las sesiones abiertas se
                 // comprueban contra la seguridad de HOY (INC-CAT-1374 y otras).
-                publishedPlanSafety.conflictos(plan));
+                publishedPlanSafety.conflictos(plan),
+                coberturaDe(plan));
     }
 
     /**
@@ -165,6 +168,37 @@ public class TrainingPlanController {
             return null;
         }
     }
+
+    /**
+     * La cobertura de capacidades que se guardo al generar (GEN-OUT-1.1). Null
+     * en planes anteriores o adaptados: no se recalcula en la lectura, porque
+     * lo que vale es lo que se registro al publicar.
+     */
+    private CapabilityCoverageResource coberturaDe(WeeklyTrainingPlan plan) {
+        try {
+            var salida = plan.getOutputSnapshot() == null ? null
+                    : jsonSupport.read(plan.getOutputSnapshot(), SnapshotSalida.class);
+            var c = salida == null ? null : salida.capabilityCoverage();
+            if (c == null || c.resultado() == null) return null;
+            boolean parcial = "PARCIAL".equals(c.resultado());
+            String mensaje = parcial ? ("Esta semana es una alternativa parcial a tu objetivo: no incluye %s por "
+                    + "tus condiciones actuales. Se completo con lo que si es seguro para ti.")
+                    .formatted(String.join(", ", c.noCubiertas() == null ? List.of() : c.noCubiertas().keySet()))
+                    : null;
+            return new CapabilityCoverageResource(c.resultado(),
+                    c.principalesCubiertas() == null ? List.of() : List.copyOf(c.principalesCubiertas()),
+                    c.noCubiertas() == null ? Map.of() : Map.copyOf(c.noCubiertas()),
+                    c.secundariasIncorporadas() == null ? List.of() : List.copyOf(c.secundariasIncorporadas()),
+                    parcial, mensaje);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    public record SnapshotSalida(SnapshotCobertura capabilityCoverage) {}
+
+    public record SnapshotCobertura(String resultado, List<String> principalesCubiertas,
+                                    Map<String, String> noCubiertas, List<String> secundariasIncorporadas) {}
 
     /** Solo lo que hace falta de input_snapshot. JsonSupport ignora el resto. */
     public record SnapshotLevel(SnapshotUser user) {

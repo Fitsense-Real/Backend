@@ -3,6 +3,8 @@ package main.web.services.fitsense.planning.application.internal.commandservices
 import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException;
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.exceptions.PlanGenerationFailedException;
+import main.web.services.fitsense.planning.domain.exceptions.NoPrimaryCapabilityFeasibleException;
+import main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy;
 import main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
@@ -86,11 +88,19 @@ public class PlanGenerationPipeline {
         this.breaker = breaker;
     }
 
-    /** @param attempts numero de intentos consumidos, para generation_attempts. */
-    public record Result(PlanDraft draft, short attempts) {}
+    /**
+     * @param attempts  numero de intentos consumidos, para generation_attempts.
+     * @param cobertura capacidades que la semana cubre (COMPLETO / PARCIAL)
+     */
+    public record Result(PlanDraft draft, short attempts, CapabilityCoveragePolicy.Cobertura cobertura) {
+        public Result(PlanDraft draft, short attempts) {
+            this(draft, attempts, null);
+        }
+    }
 
     public Result run(PlanGenerationContext context, int durationToRepsDivisor) {
         registrarCapacidades(context);
+        exigirAlgunaPrincipalFactible(context);
         short attempts = 0;
         // Todos los motivos de rechazo, en orden y sin repetir: los recibe el
         // motor de reglas y, en el reintento, la parte que no es del ultimo.
@@ -125,7 +135,7 @@ public class PlanGenerationPipeline {
                     var draft = normalizer.normalize(aiGenerator.toDraft(output), context).draft();
                     validator.validate(draft, context, durationToRepsDivisor);
                     breaker.registrarRespuestaDelProveedor();
-                    return new Result(draft, attempts);
+                    return new Result(draft, attempts, cobertura(draft, context));
 
                 } catch (AiProviderUnavailableException e) {
                     // El proveedor esta caido: no tiene sentido gastar el segundo
@@ -154,7 +164,7 @@ public class PlanGenerationPipeline {
         try {
             var draft = ruleGenerator.generate(context, problems);
             validator.validate(draft, context, durationToRepsDivisor);
-            return new Result(draft, attempts);
+            return new Result(draft, attempts, cobertura(draft, context));
         } catch (InvalidPlanDraftException e) {
             // El motor de reglas fallando indica que el conjunto elegible o el
             // perfil hacen imposible cualquier plan valido. Es un dato, no un
@@ -164,6 +174,45 @@ public class PlanGenerationPipeline {
             throw new PlanGenerationFailedException(context.userId(),
                     "Ultimos problemas: " + String.join(" | ", e.problems()));
         }
+    }
+
+    /**
+     * 4A v6 · si NINGUNA capacidad principal es factible con el conjunto
+     * elegible, no se genera: una semana solo de secundarias no cumple el
+     * objetivo y no se publica como si lo hiciera. Se informa que solo cabe una
+     * alternativa limitada, sujeta a aceptacion. Con alguna principal factible
+     * se genera, y la semana sale COMPLETA o PARCIAL.
+     */
+    private void exigirAlgunaPrincipalFactible(PlanGenerationContext context) {
+        var profile = context.profile();
+        if (profile == null || GoalCapabilityPolicy.forGoal(profile.goalType()).isEmpty()) return;
+        var limites = context.prescription() == null ? null : context.prescription().repLimits();
+        var f = CapabilityCoveragePolicy.factibilidad(profile.goalType(), profile.fitnessLevel(),
+                context.availableExercises(), limites);
+        if (!CapabilityCoveragePolicy.principalesFactibles(f, profile.goalType()).isEmpty()) return;
+
+        var g = GoalCapabilityPolicy.forGoal(profile.goalType()).get();
+        var motivos = g.primaries().stream().map(c -> c + ": " + (f.containsKey(c) ? f.get(c).motivo() : "sin datos"))
+                .toList();
+        var secundarias = g.secondaries().stream().filter(c -> f.containsKey(c) && f.get(c).factible()).toList();
+        log.warn("NINGUNA_PRINCIPAL_FACTIBLE user={} objetivo={} motivos={} secundarias_factibles={}",
+                context.userId(), profile.goalType(), motivos, secundarias);
+        throw new NoPrimaryCapabilityFeasibleException(context.userId(), ("Con tus condiciones actuales no se "
+                + "puede cubrir ninguna capacidad principal de %s (%s). %s").formatted(profile.goalType(),
+                String.join("; ", motivos), secundarias.isEmpty()
+                        ? "Tampoco hay una alternativa segura con las secundarias."
+                        : "Solo podria ofrecerse una alternativa limitada con " + secundarias
+                        + ", que requiere tu aceptacion y no se publica automaticamente."));
+    }
+
+    private CapabilityCoveragePolicy.Cobertura cobertura(PlanDraft draft, PlanGenerationContext context) {
+        var profile = context.profile();
+        if (profile == null || GoalCapabilityPolicy.forGoal(profile.goalType()).isEmpty()) return null;
+        var cobertura = CapabilityCoveragePolicy.evaluar(profile.goalType(), profile.fitnessLevel(), draft,
+                context.availableExercises(), context.prescription() == null ? null : context.prescription().repLimits());
+        log.info("COBERTURA_SEMANA user={} semana={} origen={} {}", context.userId(), context.weekNumber(),
+                draft.source(), cobertura.describe());
+        return cobertura;
     }
 
     /**

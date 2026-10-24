@@ -49,6 +49,16 @@ public class PlanDraftValidator {
     private final DoseEnforcement doseEnforcement;
 
     /**
+     * 4D v4 / 4A v6 · como se tratan la dosis por capacidad de los objetivos
+     * distintos de GAIN_MUSCLE (V24 extendida) y la cobertura de las capacidades
+     * principales (V25). Propiedad propia, separada de la de 4D v3: la
+     * adaptacion P2-D construye su validador sin ella (queda en OFF) porque las
+     * semanas que conserva se publicaron con la dosis anterior y exigirles la
+     * nueva las dejaria sin plan.
+     */
+    private final DoseEnforcement capabilityEnforcement;
+
+    /**
      * La anotacion Autowired de abajo es obligatoria, no decoracion: con dos
      * constructores publicos y ninguno marcado, Spring no sabe cual usar y el
      * contexto NO arranca.
@@ -61,10 +71,14 @@ public class PlanDraftValidator {
             String coverageEnforcement,
             @org.springframework.beans.factory.annotation.Value(
                     "${fitsense.dose.enforcement:OBSERVE}")
-            String doseEnforcement) {
+            String doseEnforcement,
+            @org.springframework.beans.factory.annotation.Value(
+                    "${fitsense.capability.enforcement:ENFORCE}")
+            String capabilityEnforcement) {
         this.durationEstimator = durationEstimator;
         this.coverageEnforcement = SlotCoverageEnforcement.parse(coverageEnforcement);
         this.doseEnforcement = DoseEnforcement.parse(doseEnforcement);
+        this.capabilityEnforcement = DoseEnforcement.parse(capabilityEnforcement);
     }
 
     /**
@@ -81,11 +95,25 @@ public class PlanDraftValidator {
     public PlanDraftValidator(SessionDurationEstimator durationEstimator,
                               SlotCoverageEnforcement coverageEnforcement,
                               DoseEnforcement doseEnforcement) {
+        this(durationEstimator, coverageEnforcement, doseEnforcement, DoseEnforcement.OFF);
+    }
+
+    /** Con la dosis por capacidad y la cobertura de capacidades (V24 extendida, V25). */
+    public PlanDraftValidator(SessionDurationEstimator durationEstimator,
+                              SlotCoverageEnforcement coverageEnforcement,
+                              DoseEnforcement doseEnforcement,
+                              DoseEnforcement capabilityEnforcement) {
         this.durationEstimator = durationEstimator;
         this.coverageEnforcement = coverageEnforcement == null
                 ? SlotCoverageEnforcement.OBSERVE : coverageEnforcement;
         this.doseEnforcement = doseEnforcement == null
                 ? DoseEnforcement.OBSERVE : doseEnforcement;
+        this.capabilityEnforcement = capabilityEnforcement == null
+                ? DoseEnforcement.OFF : capabilityEnforcement;
+    }
+
+    public DoseEnforcement capabilityEnforcement() {
+        return capabilityEnforcement;
     }
 
     public DoseEnforcement doseEnforcement() {
@@ -126,8 +154,102 @@ public class PlanDraftValidator {
         validateReductionDoesNotIncrease(draft, context, eligible, problems);
         validateMinimumDurationAndRest(draft, context, conservation, problems);
         validateMvpDose(draft, context, eligible, problems);
+        validateCapabilityDose(draft, context, eligible, problems);
+        validateCapabilityCoverage(draft, context, eligible, problems);
 
         if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
+    }
+
+    /**
+     * V24 EXTENDIDA (4D v4) · dosis por capacidad para INCREASE_STRENGTH,
+     * LOSE_WEIGHT y GENERAL_FITNESS. GAIN_MUSCLE sigue en
+     * {@link #validateMvpDose}, sin cambios.
+     * <p>
+     * Cada colocacion tiene que demostrar una capacidad del objetivo con su
+     * dosis EXACTA ({@link CapabilityPrescriptionPolicy}). La capacidad se
+     * deduce de la clase del ejercicio en el catalogo y de la dosis; nunca se
+     * lee del borrador. Una colocacion que no aporta ninguna capacidad del
+     * objetivo -un abdominal en LOSE_WEIGHT, un ejercicio en revision de
+     * clasificacion- se rechaza: no se anaden ejercicios solo para llenar
+     * minutos. Tope de {@value CapabilityPrescriptionPolicy#MAX_COLOC_DIA}
+     * colocaciones por dia.
+     * <p>
+     * No comprueba la intensidad del cardio ni el RIR: no hay columna.
+     */
+    private void validateCapabilityDose(PlanDraft draft, PlanGenerationContext context,
+                                        Map<Long, CandidateExercise> eligible, List<String> problems) {
+        if (!capabilityEnforcement.mide() || context.profile() == null) return;
+        String objetivo = context.profile().goalType();
+        if (!CapabilityPrescriptionPolicy.gobiernaGeneracion(objetivo)) return;
+        String nivel = context.profile().fitnessLevel();
+        var limites = context.prescription() == null ? null : context.prescription().repLimits();
+
+        var incumplimientos = new ArrayList<String>();
+        for (var workout : draft.workouts()) {
+            if (workout == null || workout.exercises() == null) continue;
+            if (workout.exercises().size() > CapabilityPrescriptionPolicy.MAX_COLOC_DIA)
+                incumplimientos.add("V24: el entrenamiento del %s tiene %d colocaciones y el maximo es %d."
+                        .formatted(workout.scheduledDate(), workout.exercises().size(),
+                                CapabilityPrescriptionPolicy.MAX_COLOC_DIA));
+            for (var exercise : workout.exercises()) {
+                var candidate = exercise == null ? null : eligible.get(exercise.exerciseId());
+                if (candidate == null) continue;   // V1
+                var admisibles = CapabilityPrescriptionPolicy.admisibles(candidate, objetivo, nivel);
+                if (admisibles.isEmpty()) {
+                    incumplimientos.add(("V24: el ejercicio %d del %s no aporta ninguna capacidad de %s (clase %s). "
+                            + "Usa un ejercicio de una capacidad del objetivo.")
+                            .formatted(exercise.exerciseId(), workout.scheduledDate(), objetivo,
+                                    CapabilityPrescriptionPolicy.claseDe(candidate)));
+                    continue;
+                }
+                if (CapabilityPrescriptionPolicy.acreditada(exercise, candidate, objetivo, nivel, limites).isPresent())
+                    continue;
+                var opciones = admisibles.stream()
+                        .map(c -> CapabilityPrescriptionPolicy.dosis(c, candidate, objetivo, nivel, limites))
+                        .flatMap(Optional::stream).map(CapabilityPrescriptionPolicy.Dosis::describe).toList();
+                incumplimientos.add(("V24: el ejercicio %d del %s no lleva la dosis de ninguna capacidad de %s. "
+                        + "Usa exactamente una de: %s.").formatted(exercise.exerciseId(), workout.scheduledDate(),
+                        objetivo, opciones.isEmpty() ? "(ninguna aplicable a su tipo)" : opciones));
+            }
+        }
+        if (incumplimientos.isEmpty()) return;
+        if (!capabilityEnforcement.bloquea()) {
+            log.warn("Dosis por capacidad (4D v4) incumplida para el usuario {} y NO se rechaza (modo {}): {}",
+                    context.userId(), capabilityEnforcement, incumplimientos);
+            return;
+        }
+        problems.addAll(incumplimientos);
+    }
+
+    /**
+     * V25 (4A v6) · LAS CAPACIDADES PRINCIPALES FACTIBLES ESTAN EN LA SEMANA.
+     * <p>
+     * Si el conjunto elegible permite prescribir una principal con su dosis y la
+     * semana no la representa con ninguna colocacion acreditada, se rechaza:
+     * una secundaria no desplaza a una principal factible. Las principales NO
+     * factibles no se exigen: la semana sale PARCIAL y lo dice. Las secundarias
+     * no se exigen nunca. Es la misma regla con la que genera el motor de
+     * reglas ({@link CapabilityCoveragePolicy}).
+     */
+    private void validateCapabilityCoverage(PlanDraft draft, PlanGenerationContext context,
+                                            Map<Long, CandidateExercise> eligible, List<String> problems) {
+        if (!capabilityEnforcement.mide() || context.profile() == null) return;
+        var limites = context.prescription() == null ? null : context.prescription().repLimits();
+        var cobertura = CapabilityCoveragePolicy.evaluar(context.profile().goalType(),
+                context.profile().fitnessLevel(), draft, eligible.values(), limites);
+        log.info("COBERTURA_CAPACIDADES usuario {} semana {} origen {}: {}", context.userId(),
+                context.weekNumber(), draft.source(), cobertura.describe());
+        if (cobertura.omitidas().isEmpty()) return;
+        var faltas = cobertura.omitidas().stream()
+                .map(c -> "V25: la semana omite la capacidad principal %s, que es factible con el conjunto elegible. "
+                        .formatted(c) + "Incluye al menos una colocacion con su dosis antes de completar con secundarias.")
+                .toList();
+        if (!capabilityEnforcement.bloquea()) {
+            log.warn("Cobertura de capacidades incumplida para el usuario {} y NO se rechaza (modo {}): {}",
+                    context.userId(), capabilityEnforcement, faltas);
+            return;
+        }
+        problems.addAll(faltas);
     }
 
     /**
@@ -469,6 +591,15 @@ public class PlanDraftValidator {
                                             Map<Long, CandidateExercise> eligible,
                                             List<String> problems) {
         if (!coverageEnforcement.mide()) return;
+        // 4A v6: LOSE_WEIGHT tiene CARDIO como unica principal; sus cuatro
+        // slots resistidos no se le exigen. Los objetivos cuya principal es
+        // estructural (fuerza o hipertrofia) siguen igual.
+        if (context.profile() != null
+                && !GoalFeasibilityPolicy.exigeSlotsResistidos(context.profile().goalType())) {
+            log.info("Cobertura 4C del usuario {} semana {}: no se exige a {} (4A v6)",
+                    context.userId(), context.weekNumber(), context.profile().goalType());
+            return;
+        }
 
         var disponible = SlotCoveragePolicy.ofEligible(context.availableExercises());
         var cubierto = SlotCoveragePolicy.ofDraft(draft, eligible);

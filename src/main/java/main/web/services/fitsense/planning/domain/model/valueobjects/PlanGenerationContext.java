@@ -91,7 +91,7 @@ public record PlanGenerationContext(
      * NON_NULL configurado: el CONTRATO cambia para los cinco, aunque la
      * instruccion solo aparezca en uno.
      */
-    public static final String SCHEMA_VERSION = "GEN-IN-1.10";
+    public static final String SCHEMA_VERSION = "GEN-IN-1.11";
 
     /**
      * Dificultad maxima efectiva: la del perfil, salvo que el ajuste ordene

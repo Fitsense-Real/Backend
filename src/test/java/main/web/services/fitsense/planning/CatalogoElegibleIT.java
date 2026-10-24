@@ -174,12 +174,28 @@ class CatalogoElegibleIT {
                     String.valueOf(complementos.size() - cardio), String.valueOf(rutaCardio),
                     String.valueOf(rutaMovilidad)));
 
-        // El motor de reglas, con datos reales: misma semana con y sin complementos.
+        // El motor de reglas, con datos reales.
         if (!complementos.isEmpty()) {
             var generador = new RuleBasedTrainingPlanGenerator(30, new SessionDurationEstimator());
-            var sin = elegibles.stream().filter(c -> !complementos.contains(c.exerciseId())).toList();
-            assertEquals(generador.generate(contexto(perfil, sin), List.of()),
-                    generador.generate(contexto(perfil, elegibles), List.of()), caso + ": motor de reglas");
+            var con = generador.generate(contexto(perfil, elegibles), List.of());
+            if (!main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                    .gobiernaGeneracion(objetivo) || "INCREASE_STRENGTH".equals(objetivo)) {
+                // Sin cardio ni movilidad en la matriz: la misma semana con y sin complementos.
+                var sin = elegibles.stream().filter(c -> !complementos.contains(c.exerciseId())).toList();
+                assertEquals(generador.generate(contexto(perfil, sin), List.of()), con, caso + ": motor de reglas");
+            } else {
+                // 4A v6 + 4D v4: LOSE_WEIGHT y GENERAL_FITNESS ya no omiten sus
+                // principales: si el cardio o la movilidad son factibles, la
+                // semana los representa con su dosis (sustituye a la
+                // caracterizacion del Paso 2 para estos dos objetivos).
+                var factibles = main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy
+                        .principalesFactibles(main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy
+                                .factibilidad(objetivo, nivel, elegibles, null), objetivo);
+                var cobertura = main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy
+                        .evaluar(objetivo, nivel, con, elegibles, null);
+                assertTrue(cobertura.omitidas().isEmpty(), caso + ": principales omitidas " + cobertura.describe());
+                assertTrue(cobertura.principalesCubiertas().containsAll(factibles), caso + ": " + cobertura.describe());
+            }
         }
         return elegibles;
     }

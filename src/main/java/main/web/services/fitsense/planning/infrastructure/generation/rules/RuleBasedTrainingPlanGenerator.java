@@ -92,6 +92,15 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
 
     @Override
     public PlanDraft generate(PlanGenerationContext context, List<String> previousProblems) {
+        // 4A v6 + 4D v4: INCREASE_STRENGTH, LOSE_WEIGHT y GENERAL_FITNESS se
+        // generan por capacidades. GAIN_MUSCLE sigue exactamente por el camino
+        // de abajo (4D v3), que ya cumple.
+        if (context.profile() != null
+                && main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                .gobiernaGeneracion(context.profile().goalType()))
+            return new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
+                    .construir(this::finalizar);
+
         var profile = context.profile();
         // Division semanal (WeeklySplitPlanner): la misma que recibe la IA como
         // suggested_split y la que usa el validador para sus mensajes.
@@ -248,6 +257,18 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         var capped = applyReductionCaps(draft, context);
         var adjusted = new VolumeReducer(durationToRepsDivisor).apply(capped, context);
         return withRationale(withEstimatedDurations(adjusted, context), context);
+    }
+
+    /**
+     * El cierre comun a los dos caminos: topes de V19, reductor de 20.5 (sin
+     * orden de volumen no hacen nada), duracion estimada y justificacion.
+     */
+    PlanDraft finalizar(PlanDraft draft, PlanGenerationContext context, String justificacion) {
+        var capped = applyReductionCaps(draft, context);
+        var adjusted = new VolumeReducer(durationToRepsDivisor).apply(capped, context);
+        var conDuracion = withEstimatedDurations(adjusted, context);
+        return new PlanDraft(conDuracion.source(), conDuracion.modelName(), conDuracion.planName(),
+                conDuracion.volume(durationToRepsDivisor), justificacion, conDuracion.workouts());
     }
 
     // ------------------------------------------------------------ duracion (V20)
