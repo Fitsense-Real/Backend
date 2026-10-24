@@ -70,10 +70,17 @@ Los umbrales del 80 % y el 30 % **clasifican** entrenamientos (estado, frecuenci
 
 **Cuándo se calcula.** La semana se mide al cerrarse, en el ciclo semanal, con todos sus previstos. No existe un cálculo de semana en curso; la regla temporal no cambió.
 
-**Primaria y observada.**
-- `weighted_adherence_pct` es la métrica primaria: su denominador son **todos** los previstos.
-- `observed_adherence_pct` usa como denominador solo los previstos con registro (sesión u omisión declarada). Con la misma regla de pesos iguales, es la que usa la adaptación para decidir.
-- El nombre de la columna `weighted_adherence_pct` se mantiene para no hacer una migración. Desde esta corrección, su contenido es A_w sin pesos.
+**Oficial y observada: dos indicadores distintos.** Ninguno de los dos pondera; lo que cambia es el denominador.
+
+| | Adherencia semanal oficial | Adherencia observada |
+|---|---|---|
+| Columna | `weighted_adherence_pct` | `observed_adherence_pct` |
+| Denominador | **Todos** los previstos; lo no registrado cuenta 0 | Solo los previstos con registro (sesión u omisión declarada) |
+| Uso | Resultado de la tesis, riesgo, intervención (`trigger_adherence_pct`, `adherence_after_pct`) | Solo interno: decidir si se adapta y con qué alcance |
+
+La observada **no** es la adherencia de la tesis y no debe presentarse como tal.
+
+**`weighted_adherence_pct` es un nombre técnico heredado.** No describe una fórmula ponderada: desde `ef472ee` contiene A_w sin pesos. No se renombra porque haría falta una migración que no aporta al MVP (decisión del 24/10/2026).
 
 ## Indicadores que se conservan aparte
 
@@ -115,6 +122,13 @@ Los registros de ejecución no se modifican. Las filas de `weekly_user_metrics` 
 
 Una semana sin cambios en la cifra cumple tres condiciones: todos sus entrenamientos duran lo mismo (como en los planes del motor de reglas, que copian `session_minutes`), todas sus sesiones empiezan dentro de su semana en UTC y no tiene días repetidos entre versiones.
 
-Recalcular las filas guardadas reescribiría `weekly_user_metrics` (el cálculo es idempotente), pero no `user_interventions`: las intervenciones ya decididas conservarían la cifra con la que se decidieron. Es una decisión metodológica pendiente. No se ejecutó.
+Recalcular las filas guardadas reescribiría `weekly_user_metrics` (el cálculo es idempotente), pero no `user_interventions`: las intervenciones ya decididas conservarían la cifra con la que se decidieron.
+
+**Decisión (24/10/2026):**
+- No se recalculan las semanas históricas por ahora. No se modifica Neon.
+- Las semanas calculadas con la fórmula anterior **no se mezclan** con las nuevas para evaluar los resultados de la tesis.
+- Antes del piloto se ejecuta `adherencia_recalculada.sql` en modo solo lectura para saber si hay datos reales que requieran recalcularse.
+
+**Cómo distinguir las filas.** La fila no guarda qué fórmula la calculó. `calculation_version` es la versión de configuración (MVP-1.8), que no cambió con esta corrección, y `calculated_at` es la fecha del **primer** cálculo, porque la columna no se actualiza al recalcular. Por eso una fecha anterior al despliegue de `ef472ee` no prueba que la cifra sea la vieja. La consulta de comparación, que rehace cada semana desde los datos de ejecución, es la forma fiable de separarlas.
 
 Las migraciones V13 y V14 describen `expected_duration_minutes` como el peso de la adherencia. Son historia y no se modifican; esa descripción quedó superada por este documento.
