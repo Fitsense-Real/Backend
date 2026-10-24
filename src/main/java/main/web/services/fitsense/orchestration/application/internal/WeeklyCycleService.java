@@ -78,7 +78,18 @@ public class WeeklyCycleService {
         // 4. Decidir. Vacio en la primera semana o si no hubo plan.
         var order = adaptationContextFacade.decideForWeek(userId, measuredWeekStart);
 
-        // 5. Generar.
+        // 5. Generar, UNA vez por semana medida. Si la orden de esta semana ya
+        //    produjo su plan, el ciclo se esta repitiendo (otra instancia, un
+        //    relanzamiento manual): adaptar otra vez publicaria una segunda
+        //    version de la semana nueva y otra fila de evidencia por la misma
+        //    decision. Se devuelve el plan que ya salio.
+        var yaPublicado = order.flatMap(view -> adaptationContextFacade.resultingPlanOf(view.interventionId()));
+        if (yaPublicado.isPresent()) {
+            log.info("Ciclo semanal repetido para el usuario {} y la semana medida {}: el plan {} ya se"
+                    + " publico, no se adapta otra vez", userId, measuredWeekStart, yaPublicado.get());
+            return yaPublicado;
+        }
+
         var adjustment = order.map(WeeklyCycleService::toAdjustment).orElse(PlanAdjustment.none());
 
 

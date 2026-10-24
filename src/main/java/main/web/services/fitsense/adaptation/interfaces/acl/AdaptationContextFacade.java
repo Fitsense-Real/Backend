@@ -5,6 +5,7 @@ import main.web.services.fitsense.adaptation.domain.model.valueobjects.Adaptatio
 import main.web.services.fitsense.adaptation.domain.model.commands.LinkResultingPlanCommand;
 import main.web.services.fitsense.adaptation.domain.model.commands.RecordInterventionOutcomeCommand;
 import main.web.services.fitsense.adaptation.domain.services.UserInterventionCommandService;
+import main.web.services.fitsense.adaptation.infrastructure.persistence.jpa.repositories.UserInterventionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +23,29 @@ import java.util.Optional;
 public class AdaptationContextFacade {
 
     private final UserInterventionCommandService commandService;
+    private final UserInterventionRepository interventionRepository;
 
+    /** Para pruebas que construyen el facade a mano: sin consulta del plan producido. */
     public AdaptationContextFacade(UserInterventionCommandService commandService) {
+        this(commandService, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public AdaptationContextFacade(UserInterventionCommandService commandService,
+                                   UserInterventionRepository interventionRepository) {
         this.commandService = commandService;
+        this.interventionRepository = interventionRepository;
+    }
+
+    /**
+     * El plan que ya produjo esa intervencion, si lo produjo. Hace idempotente
+     * el ciclo semanal: un segundo ciclo sobre la misma semana medida no vuelve
+     * a publicar.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Long> resultingPlanOf(Long interventionId) {
+        if (interventionRepository == null || interventionId == null) return Optional.empty();
+        return interventionRepository.findById(interventionId).map(i -> i.getResultingPlanId());
     }
 
     /** Vacio si no habia nada que ajustar: primera semana o semana sin plan. */
