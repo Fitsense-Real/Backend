@@ -67,7 +67,11 @@ public class TrainingPlanController {
     public ResponseEntity<WeeklyTrainingPlanResource> current(
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
-        return queryService.handle(new GetActivePlanQuery(principal.getUserId(), LocalDate.now()))
+        // Si el primer plan empieza el lunes que viene (se genero a mitad de
+        // semana), el vigente de hoy no existe todavia: se devuelve ese.
+        var hoy = LocalDate.now();
+        return queryService.handle(new GetActivePlanQuery(principal.getUserId(), hoy))
+                .or(() -> queryService.handle(new GetActivePlanQuery(principal.getUserId(), hoy.plusWeeks(1))))
                 .map(this::toResource)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> PlanNotFoundException.active(principal.getUserId()));
@@ -85,11 +89,14 @@ public class TrainingPlanController {
      * Las transacciones viven dentro de prepare() y persist(), que son cortas.
      */
     @PostMapping("/users/me/plan/generate")
-    @Operation(summary = "Genera el plan de esta semana. Falla si ya existe uno activo.")
+    @Operation(summary = "Genera el primer plan: esta semana si ninguna de sus sesiones ya paso; si no, la "
+            + "siguiente. Falla si ya existe uno activo.")
     public ResponseEntity<WeeklyTrainingPlanResource> generate(
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
-        var monday = TrainingWeek.containing(LocalDate.now()).startDate();
+        // La fecha local del participante decide; antes era la del servidor y
+        // siempre la semana actual, aunque sus dias ya hubieran pasado.
+        var monday = commandService.firstPlanWeekStart(principal.getUserId());
         var command = GenerateWeeklyPlanCommand.firstPlan(principal.getUserId(), monday);
 
         var prepared = commandService.prepare(command);

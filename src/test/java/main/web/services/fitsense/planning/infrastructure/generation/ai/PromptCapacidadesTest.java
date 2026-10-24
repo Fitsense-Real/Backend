@@ -49,7 +49,15 @@ class PromptCapacidadesTest {
         var bici = s.availableExercises().stream().filter(e -> e.exerciseId() == 8L).findFirst().orElseThrow();
         assertEquals("CARDIO", bici.dosisPorCapacidad().get(0).capacidad());
         assertEquals(Integer.valueOf(120), bici.dosisPorCapacidad().get(0).segundos());
-        assertTrue(new JsonSupport().write(s).contains("\"dosis_por_capacidad\""));
+        // GEN-IN-1.12: la dosis viaja una vez, en capacidades.dosis, y el ejercicio cita su codigo.
+        var texto = new JsonSupport().write(s);
+        assertFalse(texto.contains("\"dosis_por_capacidad\""), "la lista repetida ya no viaja");
+        assertEquals(List.of("CARDIO_1"), bici.dosis());
+        var cardio1 = cap.dosis().stream().filter(d -> d.codigo().equals("CARDIO_1")).findFirst().orElseThrow();
+        assertEquals("CARDIO", cardio1.capacidad());
+        assertEquals(Integer.valueOf(120), cardio1.segundos());
+        assertTrue(texto.contains("\"dosis\":[\"CARDIO_1\"]"), texto);
+        assertEquals(List.of(8L), cap.candidatosEscasos().get("CARDIO"), "pocos candidatos: viajan sus ids");
         assertTrue(new PlanPromptBuilder(new JsonSupport()).build(contexto("LOSE_WEIGHT"), "{}", null)
                 .contains("CAPACIDADES DEL OBJETIVO"));
     }
@@ -63,5 +71,33 @@ class PromptCapacidadesTest {
         assertEquals(ELEGIBLES.size(), s.availableExercises().size(), "GAIN_MUSCLE recibe el conjunto de siempre");
         assertFalse(new PlanPromptBuilder(new JsonSupport()).build(contexto("GAIN_MUSCLE"), "{}", null)
                 .contains("CAPACIDADES DEL OBJETIVO"));
+    }
+
+    @Test
+    @DisplayName("PR-1.5: la regla prioritaria abre el prompt, nombra las principales y la comprobacion va tras los datos")
+    void reglaPrioritaria() {
+        var prompt = new PlanPromptBuilder(new JsonSupport()).build(contexto("LOSE_WEIGHT"), "{\"datos\":1}", null);
+        int regla = prompt.indexOf("REGLA PRIORITARIA DE ESTA SEMANA");
+        assertTrue(regla > 0 && regla < prompt.indexOf("Reglas que el backend verifica"), "va antes de las reglas");
+        assertTrue(prompt.contains("Capacidades principales factibles para esta persona: CARDIO."), prompt);
+        assertTrue(prompt.contains("CARDIO: [8]"), "los candidatos escasos se nombran");
+        int datos = prompt.indexOf("{\"datos\":1}");
+        assertTrue(prompt.indexOf("ANTES DE ESCRIBIR EL JSON, COMPRUEBA") > datos, "la comprobacion va despues de los datos");
+    }
+
+    @Test
+    @DisplayName("PR-1.5: GAIN_MUSCLE no recibe la regla prioritaria ni la comprobacion")
+    void ganarMusculoSinReglaPrioritaria() {
+        var prompt = new PlanPromptBuilder(new JsonSupport()).build(contexto("GAIN_MUSCLE"), "{}", null);
+        assertFalse(prompt.contains("REGLA PRIORITARIA"));
+        assertFalse(prompt.contains("ANTES DE ESCRIBIR EL JSON"));
+    }
+
+    @Test
+    @DisplayName("PR-1.5: en el reintento, el nombre del plan no menciona la correccion")
+    void reintentoSinCorregidaEnElNombre() {
+        var prompt = new PlanPromptBuilder(new JsonSupport()).build(contexto("LOSE_WEIGHT"), "{}",
+                new AiRetryFeedback("{\"plan_name\":\"x\"}", List.of("V25: falta CARDIO"), List.of()));
+        assertTrue(prompt.contains("plan_name y rationale no mencionan el rechazo ni la correccion"));
     }
 }

@@ -90,8 +90,15 @@ public record PlanGenerationContext(
      * campos viajan en null, porque el ObjectMapper de JsonSupport no tiene
      * NON_NULL configurado: el CONTRATO cambia para los cinco, aunque la
      * instruccion solo aparezca en uno.
+     * <p>
+     * GEN-IN-1.12 (24/10/2026): mas corto sin quitar ningun ejercicio. Las
+     * dosis por capacidad viajan una vez, en {@code capacidades.dosis}, y cada
+     * ejercicio cita sus codigos; los campos nulos de cada ejercicio ya no se
+     * envian; {@code capacidades.candidatos_escasos} lista las principales con
+     * pocos candidatos. El prompt de GENERAL_FITNESS en gimnasio bajaba de
+     * 466 000 caracteres.
      */
-    public static final String SCHEMA_VERSION = "GEN-IN-1.11";
+    public static final String SCHEMA_VERSION = "GEN-IN-1.12";
 
     /**
      * Dificultad maxima efectiva: la del perfil, salvo que el ajuste ordene

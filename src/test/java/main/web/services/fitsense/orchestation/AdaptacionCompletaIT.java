@@ -82,6 +82,8 @@ class AdaptacionCompletaIT {
     @Autowired UserRepository usuarios;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
+    @Autowired org.springframework.transaction.PlatformTransactionManager transacciones;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final LocalDate MEDIDA = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
@@ -266,6 +268,56 @@ class AdaptacionCompletaIT {
         assertTrue(String.valueOf(ev.get("rejection_reason")).contains("dolor"), String.valueOf(ev));
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
                 + " AND week_start_date = ?", Integer.class, u, NUEVA));
+    }
+
+    @org.junit.jupiter.api.Test
+    @DisplayName("lo no registrado vence antes del ciclo: SKIPPED sin causa NO es un registro -> INSUFFICIENT_DATA")
+    void vencidosAntesDelCiclo() {
+        long u = participante(GoalType.GAIN_MUSCLE);
+        long planMedido = planning.generateWeeklyPlan(u, MEDIDA, PlanAdjustment.none(), null, null).orElseThrow();
+        var medida = semana(planMedido);
+        ejecutar(u, medida, Escenario.INSUFFICIENT_DATA.dias);
+        // La tarea horaria, ya pasada la semana: cierra como SKIPPED, sin causa, lo no registrado.
+        planComandos.handle(new main.web.services.fitsense.planning.domain.model.commands
+                .ExpireOverdueWorkoutsCommand(NUEVA.atStartOfDay().atOffset(java.time.ZoneOffset.UTC).plusHours(6)));
+        assertEquals(2, jdbc.queryForObject("SELECT count(*) FROM planned_workouts WHERE plan_id = ?"
+                + " AND status = 'SKIPPED' AND skip_reason IS NULL", Integer.class, planMedido));
+
+        ciclo.runFor(u, MEDIDA, NUEVA).orElseThrow();
+        // Cobertura 1 / 3 = 33,33: no hay evidencia para adaptar. Antes salia 100 % y ADAPT_EXPANDED.
+        assertEquals("INSUFFICIENT_DATA", evidencia(u).get("decision"));
+        var m = jdbc.queryForMap("SELECT weighted_adherence_pct, registration_coverage_pct, recorded_workouts"
+                + " FROM weekly_user_metrics WHERE user_id = ? AND week_start_date = ?", u, MEDIDA);
+        assertEquals(0, new BigDecimal("33.33").compareTo((BigDecimal) m.get("weighted_adherence_pct")));
+        assertEquals(0, new BigDecimal("33.33").compareTo((BigDecimal) m.get("registration_coverage_pct")));
+        assertEquals(1, ((Number) m.get("recorded_workouts")).intValue());
+    }
+
+    @org.junit.jupiter.api.Test
+    @DisplayName("primer plan ya generado para la semana nueva y ninguna semana medida: el ciclo lo respeta")
+    void primerPlanAnticipado() {
+        long u = participante(GoalType.GAIN_MUSCLE);
+        long primero = planning.generateWeeklyPlan(u, NUEVA, PlanAdjustment.none(), null, null).orElseThrow();
+        assertEquals(primero, ciclo.runFor(u, MEDIDA, NUEVA).orElseThrow());
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
+                Integer.class, u));
+    }
+
+    @org.junit.jupiter.api.Test
+    @DisplayName("POST generate: ninguna sesion nace vencida; GET current la devuelve aunque empiece el lunes que viene")
+    void generarSinSesionesPasadas() {
+        long u = participante(GoalType.GAIN_MUSCLE);
+        var principal = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
+        var hoy = LocalDate.now(java.time.ZoneId.of("America/Lima"));
+        var lunes = TrainingWeek.containing(hoy).startDate();
+        // Lunes, miercoles y viernes: la actual solo si hoy es lunes.
+        var esperado = hoy.equals(lunes) ? lunes : lunes.plusWeeks(1);
+
+        var creado = planes.generate(principal).getBody();
+        assertEquals(esperado, creado.weekStartDate());
+        assertTrue(creado.workouts().stream().noneMatch(w -> w.scheduledDate().isBefore(hoy)), "ninguna en el pasado");
+        assertEquals(creado.planId(), new org.springframework.transaction.support.TransactionTemplate(transacciones)
+                .execute(tx -> planes.current(principal).getBody().planId()));
     }
 
     // ------------------------------------------------------------------ utilidades

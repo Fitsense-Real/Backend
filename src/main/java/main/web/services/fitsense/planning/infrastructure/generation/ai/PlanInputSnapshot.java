@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy;
@@ -171,7 +173,41 @@ public record PlanInputSnapshot(
             @JsonProperty("principales") List<String> principales,
             @JsonProperty("secundarias") List<String> secundarias,
             @JsonProperty("principales_factibles") List<String> principalesFactibles,
-            @JsonProperty("no_factibles") Map<String, String> noFactibles) {}
+            @JsonProperty("no_factibles") Map<String, String> noFactibles,
+            /**
+             * GEN-IN-1.12: las dosis distintas UNA vez, con un codigo que cada
+             * ejercicio cita en {@code dosis}. Repetirlas en cada ejercicio era
+             * la mitad del prompt (229 000 de 466 000 caracteres con
+             * GENERAL_FITNESS en gimnasio). El codigo empieza por la capacidad.
+             */
+            @JsonProperty("dosis") List<DosisCodificada> dosis,
+            /**
+             * GEN-IN-1.12: para cada principal factible con pocos candidatos,
+             * sus exercise_id. Son las que se omitian (CARDIO y MOBILITY en el
+             * plan 53): con cientos de ejercicios, encontrarlas es lo dificil.
+             */
+            @JsonProperty("candidatos_escasos") Map<String, List<Long>> candidatosEscasos) {
+
+        /** Compatibilidad con GEN-IN-1.11. */
+        public CapacidadesObjetivo(String version, List<String> principales, List<String> secundarias,
+                                   List<String> principalesFactibles, Map<String, String> noFactibles) {
+            this(version, principales, secundarias, principalesFactibles, noFactibles, null, null);
+        }
+    }
+
+    /** GEN-IN-1.12: una dosis de {@code capacidades.dosis}, con su codigo. */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record DosisCodificada(
+            @JsonProperty("codigo") String codigo,
+            @JsonProperty("capacidad") String capacidad,
+            @JsonProperty("series") int series,
+            @JsonProperty("series_max") int seriesMax,
+            @JsonProperty("reps") Integer reps,
+            @JsonProperty("segundos") Integer segundos,
+            @JsonProperty("descanso_segundos") int descansoSegundos) {}
+
+    /** Con cuantos candidatos o menos una principal se lista con sus ids. */
+    static final int CANDIDATOS_ESCASOS = 40;
 
     /** GEN-IN-1.11 · una dosis admitida para un ejercicio, la que exige V24. */
     public record DosisCapacidad(
@@ -261,6 +297,7 @@ public record PlanInputSnapshot(
             @JsonProperty("exercise_status") String exerciseStatus,
             @JsonProperty("skip_reason") String skipReason) {}
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public record AvailableExercise(
             @JsonProperty("exercise_id") Long exerciseId,
             String name,
@@ -339,14 +376,20 @@ public record PlanInputSnapshot(
              * capacidad del objetivo; usa exactamente una. {@code null} con
              * GAIN_MUSCLE (manda {@code clase_dosis}).
              */
-            @JsonProperty("dosis_por_capacidad") List<DosisCapacidad> dosisPorCapacidad) {
+            @JsonIgnore List<DosisCapacidad> dosisPorCapacidad,
+            /**
+             * GEN-IN-1.12: los codigos de {@code constraints.capacidades.dosis}
+             * que admite este ejercicio. Es lo que viaja: la lista completa de
+             * arriba sigue disponible en Java, pero ya no se serializa.
+             */
+            @JsonProperty("dosis") List<String> dosis) {
 
         /** Compatibilidad con GEN-IN-1.10. */
         public AvailableExercise(Long exerciseId, String name, String bodyPart, String equipment, int difficulty,
                                  String prescriptionType, String targetMuscle, Integer minReps,
                                  String movementPattern, String slot, String claseDosis) {
             this(exerciseId, name, bodyPart, equipment, difficulty, prescriptionType, targetMuscle, minReps,
-                    movementPattern, slot, claseDosis, null);
+                    movementPattern, slot, claseDosis, null, null);
         }
     }
 
@@ -385,8 +428,30 @@ public record PlanInputSnapshot(
                 .toList();
     }
 
+    /**
+     * Codigo estable por dosis distinta: la capacidad y un numero, en el orden
+     * de la propia dosis (no del catalogo barajado), para que el mismo
+     * conjunto de dosis de siempre los mismos codigos.
+     */
+    private static Map<DosisCapacidad, String> codigosDeDosis(java.util.Collection<List<DosisCapacidad>> todas) {
+        var distintas = new java.util.TreeSet<DosisCapacidad>(java.util.Comparator
+                .comparing(DosisCapacidad::capacidad)
+                .thenComparingInt(DosisCapacidad::series)
+                .thenComparingInt(DosisCapacidad::seriesMax)
+                .thenComparing(DosisCapacidad::reps, java.util.Comparator.nullsFirst(java.util.Comparator.naturalOrder()))
+                .thenComparing(DosisCapacidad::segundos, java.util.Comparator.nullsFirst(java.util.Comparator.naturalOrder()))
+                .thenComparingInt(DosisCapacidad::descansoSegundos));
+        todas.forEach(distintas::addAll);
+        var codigos = new java.util.LinkedHashMap<DosisCapacidad, String>();
+        var porCapacidad = new java.util.HashMap<String, Integer>();
+        for (var d : distintas)
+            codigos.put(d, d.capacidad() + "_" + porCapacidad.merge(d.capacidad(), 1, Integer::sum));
+        return codigos;
+    }
+
     private static CapacidadesObjetivo capacidades(PlanGenerationContext context,
-            main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams.RepLimits limites) {
+            main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams.RepLimits limites,
+            Map<DosisCapacidad, String> codigos, Map<Long, List<DosisCapacidad>> dosisDe) {
         var profile = context.profile();
         var g = GoalCapabilityPolicy.forGoal(profile.goalType()).orElseThrow();
         var f = CapabilityCoveragePolicy.factibilidad(profile.goalType(), profile.fitnessLevel(),
@@ -400,7 +465,23 @@ public record PlanInputSnapshot(
                 g.candidateSecondariesFor(profile.fitnessLevel()).stream()
                         .filter(c -> CapabilityPrescriptionPolicy.asignables(profile.goalType(), profile.fitnessLevel())
                                 .contains(c)).map(Enum::name).toList(),
-                factibles.stream().map(Enum::name).toList(), noFactibles);
+                factibles.stream().map(Enum::name).toList(), noFactibles,
+                codigos.entrySet().stream().map(e -> new DosisCodificada(e.getValue(), e.getKey().capacidad(),
+                        e.getKey().series(), e.getKey().seriesMax(), e.getKey().reps(), e.getKey().segundos(),
+                        e.getKey().descansoSegundos())).toList(),
+                candidatosEscasos(factibles, dosisDe));
+    }
+
+    private static Map<String, List<Long>> candidatosEscasos(java.util.Set<GoalCapabilityPolicy.Capability> factibles,
+                                                            Map<Long, List<DosisCapacidad>> dosisDe) {
+        var escasos = new java.util.TreeMap<String, List<Long>>();
+        for (var cap : factibles) {
+            var ids = dosisDe.entrySet().stream()
+                    .filter(e -> e.getValue().stream().anyMatch(d -> d.capacidad().equals(cap.name())))
+                    .map(Map.Entry::getKey).sorted().toList();
+            if (!ids.isEmpty() && ids.size() <= CANDIDATOS_ESCASOS) escasos.put(cap.name(), ids);
+        }
+        return escasos;
     }
 
     public static PlanInputSnapshot of(PlanGenerationContext context) {
@@ -422,6 +503,13 @@ public record PlanInputSnapshot(
         boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
         // GEN-IN-1.11: el resto de objetivos, por capacidades (4D v4).
         boolean porCapacidades = CapabilityPrescriptionPolicy.gobiernaGeneracion(profile.goalType());
+
+        // GEN-IN-1.12: las dosis por capacidad de cada candidato se calculan una
+        // vez; la tabla de codigos sale de todas ellas.
+        var dosisDe = new java.util.LinkedHashMap<Long, List<DosisCapacidad>>();
+        if (porCapacidades)
+            context.availableExercises().forEach(c -> dosisDe.put(c.exerciseId(), dosisPorCapacidad(c, profile, limites)));
+        var codigos = codigosDeDosis(dosisDe.values());
 
         var constraints = new Constraints(context.weekNumber(), context.weekStartDate(),
                 context.weekEndDate(), context.effectiveDaysPerWeek(), profile.availableDays(),
@@ -445,7 +533,7 @@ public record PlanInputSnapshot(
                 !dosisFijada && !(porCapacidades
                         && GoalFeasibilityPolicy.exigeSlotsResistidos(profile.goalType())) ? null
                         : slotsExigibles(context),
-                !porCapacidades ? null : capacidades(context, limites));
+                !porCapacidades ? null : capacidades(context, limites, codigos, dosisDe));
 
         var adjustment = context.adjustment() == null ? null : new Adjustment(
                 context.adjustment().types().stream().map(Enum::name).toList(),
@@ -496,7 +584,7 @@ public record PlanInputSnapshot(
         // un plan se puede reproducir al depurar.
         var porGrupo = new java.util.LinkedHashMap<String, java.util.List<AvailableExercise>>();
         context.availableExercises().forEach(candidate -> {
-            var dosis = !porCapacidades ? null : dosisPorCapacidad(candidate, profile, limites);
+            var dosis = !porCapacidades ? null : dosisDe.get(candidate.exerciseId());
             // Por capacidades, un ejercicio sin dosis admisible (en revision de
             // clasificacion, o que no aporta nada al objetivo) no se ofrece: V24
             // lo rechazaria.
@@ -510,7 +598,8 @@ public record PlanInputSnapshot(
                             candidate.targetMuscle(),
                             minRepsOrNull(candidate, limites, profile.fitnessLevel()),
                             candidate.movementPattern(),
-                            etiquetas.slot(), etiquetas.claseDosis(), dosis));
+                            etiquetas.slot(), etiquetas.claseDosis(), dosis,
+                            dosis == null ? null : dosis.stream().map(codigos::get).toList()));
         });
 
         var random = new java.util.Random(

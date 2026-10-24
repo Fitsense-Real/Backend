@@ -6,6 +6,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedPubl
 import main.web.services.fitsense.planning.domain.model.valueobjects.GeneratedPlan;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreparedPlanGeneration;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 /**
@@ -17,6 +18,14 @@ import java.util.Optional;
  * existiera, cualquier llamador podria reintroducir el fallo sin darse cuenta.
  */
 public interface WeeklyTrainingPlanCommandService {
+
+    /**
+     * El lunes de la semana del PRIMER plan, con la fecha local del
+     * participante: la semana actual si ninguna de sus sesiones ya paso, la
+     * siguiente si no. Generar la actual un sabado dejaba todas las sesiones
+     * vencidas al nacer (plan 53).
+     */
+    LocalDate firstPlanWeekStart(Long userId);
 
     /** Fase 1: lee todo lo necesario para generar. Transaccional y corta. */
     PreparedPlanGeneration prepare(GenerateWeeklyPlanCommand command);

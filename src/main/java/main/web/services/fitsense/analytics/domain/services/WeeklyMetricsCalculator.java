@@ -72,11 +72,11 @@ public class WeeklyMetricsCalculator {
             // Tope de 100: superar un entrenamiento no compensa otro.
             double completion = session == null ? 0.0 : Math.min(100.0, Math.max(0.0, session.completion()));
 
-            // V30. HAY REGISTRO si existe sesion, O si el previsto quedo en
-            // SKIPPED: una omision DECLARADA es informacion -la persona nos
-            // dijo que no entreno-. Un previsto que sigue en SCHEDULED y sin
-            // sesion no informa de nada, y hasta V29 se contaba como un 0.
-            boolean omisionDeclarada = "SKIPPED".equals(workout.status());
+            // V30. HAY REGISTRO si existe sesion, O si la persona declaro la
+            // omision (SKIPPED con causa): eso es informacion -nos dijo que no
+            // entreno-. Un previsto sin sesion no informa de nada, siga
+            // SCHEDULED o lo haya cerrado como SKIPPED la tarea de vencimiento.
+            boolean omisionDeclarada = workout.omisionDeclarada();
             boolean conRegistro = session != null || omisionDeclarada;
 
             // La metrica primaria tiene el denominador de TODOS los previstos:

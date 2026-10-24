@@ -25,6 +25,16 @@ public record WeekPlanInput(
                     skipReason, null);
         }
 
+        /**
+         * La persona DIJO que no lo haria: SKIPPED con causa. La causa es
+         * obligatoria al omitir, y la tarea de vencimiento la deja en NULL; sin
+         * esta distincion todo vencido sin registro contaba como declarado, y la
+         * cobertura de registro llegaba siempre al 100 % al cerrar la semana.
+         */
+        public boolean omisionDeclarada() {
+            return "SKIPPED".equals(status) && skipReason != null;
+        }
+
         boolean finished() {
             return "COMPLETED".equals(status) || "PARTIAL".equals(status) || "SKIPPED".equals(status);
         }

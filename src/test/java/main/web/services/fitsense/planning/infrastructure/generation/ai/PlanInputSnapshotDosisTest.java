@@ -250,24 +250,26 @@ class PlanInputSnapshotDosisTest {
     }
 
     /**
-     * El tamano del prompt: los nulos SI se serializan.
-     * <p>
-     * {@code JsonSupport} no configura {@code NON_NULL}, asi que un plan de
-     * LOSE_WEIGHT tambien lleva las dos claves nuevas en null en cada
-     * candidato. Esta prueba lo MIDE en vez de suponerlo, porque de ahi depende
-     * si los otros cuatro objetivos reciben el prompt de hoy o uno mas grande.
+     * El tamano del prompt: desde GEN-IN-1.12 los nulos de cada ejercicio NO
+     * viajan. Hasta 1.11 cada candidato llevaba sus claves en null, y con 842
+     * candidatos eso eran decenas de miles de caracteres sin informacion. Un
+     * lector de 1.11 lee igual el snapshot nuevo: la clave ausente es null.
      */
     @Test
-    @DisplayName("Con los campos en null, las claves igual viajan: el prompt crece para los cinco objetivos")
-    void losNulosSeSerializan() {
+    @DisplayName("GEN-IN-1.12: los campos nulos de un ejercicio no se envian y se leen como null")
+    void losNulosNoViajan() {
         var sinDosis = new PlanInputSnapshot.AvailableExercise(1L, "squat", "upper legs",
                 "body weight", 1, "SETS_REPS", null, 8, "KNEE_DOMINANT", null, null);
 
-        String texto = json.write(new PlanInputSnapshot("GEN-IN-1.10", "P-1.3", "PR-1.3",
+        String texto = json.write(new PlanInputSnapshot("GEN-IN-1.12", "P-1.3", "PR-1.5",
                 null, null, null, null, List.of(sinDosis), null));
 
-        assertTrue(texto.contains("\"slot\":null"), "en:\n" + texto);
-        assertTrue(texto.contains("\"clase_dosis\":null"), "en:\n" + texto);
+        assertFalse(texto.contains("\"slot\""), "en:\n" + texto);
+        assertFalse(texto.contains("\"clase_dosis\""), "en:\n" + texto);
+        assertFalse(texto.contains("\"target_muscle\""), "en:\n" + texto);
+        var leido = json.read(texto, PlanInputSnapshot.class).availableExercises().get(0);
+        assertNull(leido.slot());
+        assertEquals("KNEE_DOMINANT", leido.movementPattern());
     }
 
     private static PlanInputSnapshot.Constraints constraintsConDosis() {

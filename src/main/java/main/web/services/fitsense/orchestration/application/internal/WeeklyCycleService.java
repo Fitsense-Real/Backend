@@ -90,6 +90,14 @@ public class WeeklyCycleService {
             return yaPublicado;
         }
 
+        // Sin orden (primera semana medida o semana sin plan) puede que la
+        // semana nueva YA tenga plan: el primero se genera para el lunes
+        // siguiente cuando se pide a mitad de semana. Se respeta.
+        if (order.isEmpty()) {
+            var existente = planningContextFacade.findActivePlanId(userId, newWeekStart);
+            if (existente.isPresent()) return existente;
+        }
+
         var adjustment = order.map(WeeklyCycleService::toAdjustment).orElse(PlanAdjustment.none());
 
 

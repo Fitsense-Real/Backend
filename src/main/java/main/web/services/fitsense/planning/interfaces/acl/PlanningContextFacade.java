@@ -123,6 +123,14 @@ public class PlanningContextFacade {
                 .orElse(0);
     }
 
+    /** El plan ACTIVO de esa semana, si lo hay. */
+    @Transactional(readOnly = true)
+    public Optional<Long> findActivePlanId(Long userId, LocalDate weekStartDate) {
+        return planRepository.findByUserIdAndWeekStartDateAndStatus(userId, weekStartDate,
+                        main.web.services.fitsense.planning.domain.model.valueobjects.PlanStatus.ACTIVE)
+                .map(WeeklyTrainingPlan::getId);
+    }
+
     /** Cierra la semana: el plan activo pasa a COMPLETED si nadie lo reemplazo. */
     @Transactional
     public void closeWeek(Long userId, LocalDate weekStartDate) {

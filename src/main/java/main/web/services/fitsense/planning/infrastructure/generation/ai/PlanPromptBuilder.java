@@ -61,18 +61,30 @@ public class PlanPromptBuilder {
      * exacta de una capacidad por colocacion y las principales factibles
      * siempre presentes.
      * <p>
+     * PR-1.5 (GEN-IN-1.12, 24/10/2026): tras el plan 53, que salio en el
+     * segundo intento porque el primero omitio CARDIO y MOBILITY (V25). Para
+     * los objetivos por capacidades, la REGLA PRIORITARIA va al principio, con
+     * las principales factibles de ESTA persona y los candidatos de las que
+     * tienen pocos; el orden de construccion es explicito (principales primero,
+     * secundarias despues) y hay una comprobacion antes de responder, despues
+     * de los datos. Las dosis se citan por codigo (capacidades.dosis). El
+     * nombre del plan no menciona correcciones. GAIN_MUSCLE no cambia salvo
+     * esa ultima linea del reintento.
+     * <p>
      * Cambiar cualquier texto de este archivo exige subir la version.
      */
-    public static final String VERSION = "PR-1.4";
+    public static final String VERSION = "PR-1.5";
 
     /** El bloque de capacidades. Publico para poder probar que solo aparece donde toca. */
     public static final String BLOQUE_CAPACIDADES = """
 
             CAPACIDADES DEL OBJETIVO (constraints.capacidades no es null):
-            - Cada ejercicio que pongas debe llevar EXACTAMENTE una de las dosis de su
-              dosis_por_capacidad: series (entre series y series_max), reps o segundos y
-              descanso_segundos tal cual. Esa dosis es la que decide que capacidad
-              trabaja. Una dosis distinta se rechaza.
+            - Cada ejercicio de available_exercises trae en "dosis" los codigos que
+              admite; cada codigo esta definido en constraints.capacidades.dosis. Cada
+              ejercicio que pongas debe llevar EXACTAMENTE una de esas dosis: series
+              (entre series y series_max), reps o segundos y descanso_segundos tal
+              cual. Esa dosis es la que decide que capacidad trabaja: el codigo empieza
+              por la capacidad (CARDIO_1 trabaja CARDIO). Una dosis distinta se rechaza.
             - Primero incluye todas las capacidades de principales_factibles: cada una
               al menos una vez en la semana. Despues completa el tiempo con las
               secundarias. Una secundaria nunca puede ocupar el lugar de una principal
@@ -92,10 +104,17 @@ public class PlanPromptBuilder {
     public String build(PlanGenerationContext context, String inputSnapshotJson,
                         AiRetryFeedback feedback) {
         var prompt = new StringBuilder();
+        boolean porCapacidades = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                .gobiernaGeneracion(context.profile().goalType());
+        var capacidades = porCapacidades ? PlanInputSnapshot.of(context).constraints().capacidades() : null;
 
         prompt.append("""
                 Eres un entrenador que diseña planes semanales de entrenamiento.
                 Devuelve UNICAMENTE el objeto JSON del esquema, sin texto adicional.
+                """);
+        if (capacidades != null) prompt.append(reglaPrioritaria(capacidades));
+
+        prompt.append("""
 
                 Reglas que el backend verifica y que invalidan tu propuesta si no se cumplen:
                 1.  Usa solo exercise_id presentes en available_exercises. No inventes ninguno.
@@ -222,17 +241,61 @@ public class PlanPromptBuilder {
         // PrescriptionPrinciples; la version queda en input_snapshot.
         prompt.append('\n').append(
                 PrescriptionPrinciples.textFor(context.profile().goalType()));
-        if (main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
-                .gobiernaGeneracion(context.profile().goalType()))
+        if (porCapacidades)
             prompt.append(BLOQUE_CAPACIDADES);
 
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
+
+        // La comprobacion va DESPUES de los datos: es lo ultimo que lee el
+        // modelo antes de escribir, y lo que el plan 53 no hizo en su primer intento.
+        if (capacidades != null) prompt.append(comprobacionFinal(capacidades));
 
         // Reintento (19.4). Va AL FINAL, despues de los datos: es lo ultimo que
         // lee el modelo y lo unico que distingue este intento del anterior.
         if (feedback != null && !feedback.isEmpty()) appendRetry(prompt, feedback);
 
         return prompt.toString();
+    }
+
+    /**
+     * Las principales factibles de ESTA persona, nombradas, y los ejercicios
+     * de las que tienen pocos candidatos. Va antes de las reglas generales.
+     */
+    static String reglaPrioritaria(PlanInputSnapshot.CapacidadesObjetivo c) {
+        var texto = new StringBuilder("""
+
+                REGLA PRIORITARIA DE ESTA SEMANA
+                Capacidades principales factibles para esta persona: %s.
+                Construye la semana en este orden:
+                1. Reserva primero, para CADA una de esas capacidades, al menos un ejercicio
+                   con una dosis de esa capacidad (un codigo de "dosis" que empiece por ella).
+                2. Reparte esas colocaciones en la semana respetando duracion, recuperacion y
+                   las demas reglas.
+                3. Solo despues completa con las secundarias (%s).
+                Una semana que omite una principal factible se rechaza entera.
+                """.formatted(String.join(", ", c.principalesFactibles()),
+                c.secundarias() == null || c.secundarias().isEmpty() ? "ninguna" : String.join(", ", c.secundarias())));
+        if (c.candidatosEscasos() != null && !c.candidatosEscasos().isEmpty()) {
+            texto.append("Estas principales tienen pocos ejercicios posibles; elige entre estos exercise_id:\n");
+            c.candidatosEscasos().forEach((cap, ids) -> texto.append("  ").append(cap).append(": ")
+                    .append(ids).append('\n'));
+        }
+        if (c.noFactibles() != null && !c.noFactibles().isEmpty())
+            texto.append("No son factibles y no se exigen: ").append(String.join(", ", c.noFactibles().keySet()))
+                    .append(". No las sustituyas por nada inseguro.\n");
+        return texto.toString();
+    }
+
+    static String comprobacionFinal(PlanInputSnapshot.CapacidadesObjetivo c) {
+        return """
+
+                ANTES DE ESCRIBIR EL JSON, COMPRUEBA:
+                - Cada una de %s tiene al menos una colocacion en la semana con una dosis de
+                  esa capacidad, copiada tal cual de constraints.capacidades.dosis.
+                - Ninguna secundaria ocupa el lugar de una principal factible.
+                - Cada ejercicio lleva una dosis que su lista "dosis" admite.
+                Si algo falla, corrige la semana antes de responder.
+                """.formatted(String.join(", ", c.principalesFactibles()));
     }
 
     private void appendRetry(StringBuilder prompt, AiRetryFeedback feedback) {
@@ -273,6 +336,8 @@ public class PlanPromptBuilder {
                 La lista de motivos solo nombra lo que fallo esta vez: TODAS las
                 reglas siguen valiendo. Antes de responder, repasa tu nueva propuesta
                 contra las reglas 1 a 20 completas, no solo contra los motivos.
+                plan_name y rationale no mencionan el rechazo ni la correccion: el
+                participante solo ve el plan final.
                 """ : """
 
                 Corrige cada motivo. Todas las reglas siguen valiendo, no solo las que

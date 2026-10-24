@@ -61,7 +61,8 @@ public class SessionOutcomeIdentifier {
                         Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(workout -> {
                     var session = byWorkout.get(workout.plannedWorkoutId());
-                    boolean omisionDeclarada = "SKIPPED".equals(workout.status());
+                    // SKIPPED con causa; un vencido sin causa no es un registro.
+                    boolean omisionDeclarada = workout.omisionDeclarada();
                     boolean conRegistro = session != null || omisionDeclarada;
 
                     // Sin registro el cumplimiento es un HUECO, no un cero. La

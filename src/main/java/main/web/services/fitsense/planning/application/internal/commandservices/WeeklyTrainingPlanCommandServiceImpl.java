@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -81,6 +82,33 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         this.externalConfigurationService = externalConfigurationService;
         this.jsonSupport = jsonSupport;
         this.externalExecutionService = externalExecutionService;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalDate firstPlanWeekStart(Long userId) {
+        var profile = externalProfilingService.fetchProfile(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Perfil del usuario", userId));
+        var hoy = LocalDate.now(externalIamService.timezoneOf(userId));
+        return primeraSemana(hoy, profile.availableDays(), profile.daysPerWeek(), profile.fitnessLevel());
+    }
+
+    /**
+     * La semana actual si su primera sesion es hoy o despues; si no, la
+     * siguiente. Usa la MISMA eleccion de dias que el generador
+     * (WeeklySplitPlanner), para no adivinar que dias saldrian.
+     */
+    static LocalDate primeraSemana(LocalDate hoy, java.util.List<Short> diasDisponibles, int diasPorSemana,
+                                   String nivel) {
+        var lunes = main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek.containing(hoy).startDate();
+        if (diasDisponibles == null || diasDisponibles.isEmpty()) return lunes;
+        int tope = "BEGINNER".equals(nivel) ? PlanGenerationContext.MAX_SESSIONS_BEGINNER
+                : PlanGenerationContext.MAX_SESSIONS_OTHERS;
+        int sesiones = Math.min(Math.min(diasPorSemana, tope), diasDisponibles.size());
+        var division = main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner
+                .plan(lunes, diasDisponibles, sesiones, 1);
+        boolean algunaPasada = division.stream().anyMatch(s -> s.date().isBefore(hoy));
+        return algunaPasada ? lunes.plusWeeks(1) : lunes;
     }
 
     /**
