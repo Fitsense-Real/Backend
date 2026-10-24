@@ -252,6 +252,6 @@ public class PlanningContextFacade {
                 workout.getStatus().name(),
                 workout.getExpiresAt(),
                 targets,
-                publishedPlanSafety.conflictos(workout.getPlan().getUserId(), workout));
+                publishedPlanSafety.conflictosParaRegistrar(workout.getPlan().getUserId(), workout));
     }
 }

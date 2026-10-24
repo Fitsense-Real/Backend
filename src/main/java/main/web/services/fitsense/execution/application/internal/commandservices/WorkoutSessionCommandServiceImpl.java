@@ -80,7 +80,8 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
         var target = findTarget(workout, command.plannedExerciseId());
         // Una sesion abierta antes del bloqueo no permite registrar como hecho
         // el ejercicio inseguro; omitirlo, si.
-        rechazarSiInseguro(workout, command.plannedExerciseId(), command.skipReason());
+        rechazarSiInseguro(workout, command.plannedExerciseId(), command.skipReason(),
+                command.actualSets(), command.actualRepsTotal(), command.actualDurationSeconds());
         session.recordExercise(target, command.actualSets(), command.actualRepsTotal(),
                 command.actualDurationSeconds(), command.actualLoadKg(), command.skipReason(),
                 externalConfigurationService.thresholds());
@@ -127,7 +128,12 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
         // Lo que si se rechaza es reportar sobre un entrenamiento que ya tiene
         // sesion contando: eso no es un olvido sino una correccion, y para eso
         // esta el reintento, que crea attempt_number 2 y desplaza al anterior.
-        if ("COMPLETED".equals(workout.status()) || "PARTIAL".equals(workout.status()))
+        //
+        // Tampoco sobre un REPLACED: esa version ya no rige y el mismo dia
+        // existe en la vigente. Reportarlo cerraria la version vieja y dejaria
+        // abierta la nueva, y el dia podria contar dos veces.
+        if ("COMPLETED".equals(workout.status()) || "PARTIAL".equals(workout.status())
+                || "REPLACED".equals(workout.status()))
             throw WorkoutNotAvailableException.closed(
                     command.plannedWorkoutId(), workout.status());
 
@@ -144,9 +150,10 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
 
         for (var reported : command.exercises()) {
             var target = findTarget(workout, reported.plannedExerciseId());
-            // Solo afecta a sesiones aun abiertas: los conflictos de una sesion
-            // cerrada no se calculan, porque el reporte retroactivo es historia.
-            rechazarSiInseguro(workout, reported.plannedExerciseId(), reported.skipReason());
+            // Los conflictos llegan tambien para un SKIPPED: reportarlo es
+            // registrar ahora un ejercicio que hoy no es seguro.
+            rechazarSiInseguro(workout, reported.plannedExerciseId(), reported.skipReason(),
+                    reported.actualSets(), reported.actualRepsTotal(), reported.actualDurationSeconds());
             session.recordExercise(target, reported.actualSets(), reported.actualRepsTotal(),
                     reported.actualDurationSeconds(), reported.actualLoadKg(),
                     reported.skipReason(), thresholds);
@@ -160,9 +167,17 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
 
     // ------------------------------------------------------------------ helpers
 
-    private static void rechazarSiInseguro(PlannedWorkoutView workout, Long plannedExerciseId, Object skipReason) {
+    /**
+     * Un ejercicio inseguro solo se registra como omitido: con causa y sin
+     * trabajo. Basta la causa no: con causa y repeticiones se clasificaria
+     * COMPLETED y la causa se descartaria.
+     */
+    private static void rechazarSiInseguro(PlannedWorkoutView workout, Long plannedExerciseId, Object skipReason,
+                                           Short sets, Integer reps, Integer seconds) {
         var causa = workout.safetyConflicts().get(plannedExerciseId);
-        if (causa != null && skipReason == null)
+        boolean conTrabajo = (sets != null && sets > 0) || (reps != null && reps > 0)
+                || (seconds != null && seconds > 0);
+        if (causa != null && (skipReason == null || conTrabajo))
             throw WorkoutNotAvailableException.unsafeExercise(plannedExerciseId, causa);
     }
 
@@ -210,8 +225,15 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
         return workout;
     }
 
+    /**
+     * Con bloqueo de fila: registrar, cerrar y abandonar la misma sesion a la
+     * vez (un reintento de la app con mala conexion, la tarea de sesiones
+     * colgadas) se ejecutan uno detras de otro. Sin el bloqueo, un registro
+     * concurrente con el cierre quedaba fuera del porcentaje, y un abandono
+     * concurrente pisaba un cierre ya hecho.
+     */
     private WorkoutSession requireOwnedSession(Long userId, Long sessionId) {
-        return sessionRepository.findById(sessionId)
+        return sessionRepository.findByIdForUpdate(sessionId)
                 .filter(session -> session.getUserId().equals(userId))
                 .orElseThrow(() -> new SessionNotFoundException(sessionId));
     }

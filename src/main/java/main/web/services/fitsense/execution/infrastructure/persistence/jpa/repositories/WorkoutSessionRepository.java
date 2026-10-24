@@ -2,7 +2,9 @@ package main.web.services.fitsense.execution.infrastructure.persistence.jpa.repo
 
 import main.web.services.fitsense.execution.domain.model.aggregates.WorkoutSession;
 import main.web.services.fitsense.execution.domain.model.valueobjects.SessionStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,7 +19,13 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
 
     Optional<WorkoutSession> findByUserIdAndStatus(Long userId, SessionStatus status);
 
+    /** Para modificarla: serializa los comandos concurrentes sobre la misma sesion. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT s FROM WorkoutSession s WHERE s.id = :sessionId")
+    Optional<WorkoutSession> findByIdForUpdate(@Param("sessionId") Long sessionId);
+
     /** Tarea diaria: sesiones en curso desde hace demasiado (seccion 22). */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     java.util.List<WorkoutSession> findByStatusAndStartedAtBefore(
             SessionStatus status, OffsetDateTime startedBefore);
 

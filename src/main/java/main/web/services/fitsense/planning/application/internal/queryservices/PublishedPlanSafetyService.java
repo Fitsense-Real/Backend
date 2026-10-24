@@ -51,6 +51,16 @@ public class PublishedPlanSafetyService {
         return conflictos(userId, List.of(workout));
     }
 
+    /**
+     * Para execution: tambien un SKIPPED, porque todavia admite el reporte
+     * retroactivo y reportarlo es registrar ahora lo que se hizo. Los
+     * COMPLETED, PARTIAL y REPLACED no admiten registros nuevos.
+     */
+    public Map<Long, String> conflictosParaRegistrar(Long userId, PlannedWorkout workout) {
+        if (workout == null || !(abierta(workout) || workout.getStatus() == WorkoutStatus.SKIPPED)) return Map.of();
+        return conflictos(userId, List.of(workout));
+    }
+
     private Map<Long, String> conflictos(Long userId, List<PlannedWorkout> workouts) {
         if (workouts.isEmpty()) return Map.of();
         // Sin perfil no hay restricciones contra las que comprobar; tampoco

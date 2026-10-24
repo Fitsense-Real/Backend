@@ -142,7 +142,19 @@ public class PlannedWorkout {
         this.skipReason = outcome == WorkoutStatus.SKIPPED ? reason : null;
     }
 
+    /**
+     * El usuario declara que no lo hara. Solo sobre un entrenamiento sin
+     * desenlace, o sobre uno ya SKIPPED para darle la causa que la tarea de
+     * vencimiento deja en NULL. Un COMPLETED o PARTIAL tiene una sesion que
+     * cuenta: pisarlo con SKIPPED dejaria el plan y la adherencia diciendo
+     * cosas distintas. Un REPLACED pertenece a una version que ya no rige.
+     */
     public void markSkipped(SkipReason reason) {
+        if (status == WorkoutStatus.COMPLETED || status == WorkoutStatus.PARTIAL
+                || status == WorkoutStatus.REPLACED)
+            throw new DomainRuleViolationException(
+                    "Este entrenamiento ya se cerro como %s: no se puede marcar como omitido."
+                            .formatted(status));
         markOutcome(WorkoutStatus.SKIPPED, reason);
     }
 
