@@ -119,8 +119,9 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         // de §5-, no el efecto indirecto de que una dosis mas pesada llegue
         // antes al piso de duracion.
         boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
+        // 4D v3.1: siete colocaciones con sesiones de 60 minutos o mas.
         int topeColocaciones = dosisFijada
-                ? Math.min(MvpDosePolicy.MAX_COLOC_DIA, MAX_EXERCISES_PER_SESSION)
+                ? Math.min(MvpDosePolicy.maxColocaciones(sessionMinutes), MAX_EXERCISES_PER_SESSION)
                 : MAX_EXERCISES_PER_SESSION;
         double presupuestoDia = dosisFijada
                 ? MvpDosePolicy.presupuestoDiarioSegundos(sessionMinutes)
@@ -136,6 +137,11 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 .complementos(context.availableExercises(), profile.goalType());
         var seleccionables = context.availableExercises().stream()
                 .filter(candidate -> !complementos.contains(candidate.exerciseId()))
+                // 4D v3.1: en GAIN_MUSCLE solo se elige lo que puede demostrar
+                // hipertrofia -estructural o resistido verificado-. Movilidad,
+                // cardio, OTHER o en revision de clasificacion no ocupan una
+                // colocacion de la sesion de hipertrofia.
+                .filter(candidate -> !dosisFijada || puedeDemostrarHipertrofia(candidate))
                 .toList();
         var selector = new ExerciseSelector(seleccionables,
                 context.effectiveMaxDifficulty(), recentlyUsed, random);
@@ -177,6 +183,10 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             for (var candidate : picked) {
                 exercises.add(toDraftExercise(candidate, prescription, context));
             }
+            // 4D v3.1: el dia cabe en el presupuesto de §5 DESDE la seleccion.
+            // Con sesiones cortas eso significa menos colocaciones; los slots que
+            // no entran hoy siguen pendientes y los cubre otro dia de la semana.
+            if (dosisFijada) recortarAlPresupuesto(picked, exercises, presupuestoDia, topeColocaciones);
 
             // V20: sin orden de volumen, la sesion llega al minimo de minutos
             // con trabajo, nunca alargando descansos. Orden (plan 29): ejercicios
@@ -357,6 +367,49 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             }
         }
         return hechas;
+    }
+
+    /** Estructural o resistido de REPETICIONES: 4D v3 no tiene dosis de hipertrofia para la duracion. */
+    private static boolean puedeDemostrarHipertrofia(CandidateExercise c) {
+        if (c.defaultPrescription() == PrescriptionType.DURATION) return false;
+        var clase = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.claseDe(c);
+        return clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                || clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.RESISTIDO;
+    }
+
+    /**
+     * Quita colocaciones hasta que el dia quepa en el presupuesto de 4D §5 y en
+     * el tope de colocaciones. Primero relleno; despues estructurales cuyo slot
+     * ya esta en el dia; siempre, si se puede, de un grupo repetido para no
+     * romper V15. Nunca baja de dos.
+     */
+    private void recortarAlPresupuesto(List<CandidateExercise> picked, List<PlanDraft.DraftExercise> exercises,
+                                       double presupuestoSegundos, int tope) {
+        while (exercises.size() > 2
+                && (exercises.size() > tope || costeSegundos4D(exercises) > presupuestoSegundos)) {
+            int quitar = -1;
+            for (int ronda = 0; ronda < 4 && quitar < 0; ronda++)
+                for (int k = picked.size() - 1; k >= 0 && quitar < 0; k--) {
+                    var c = picked.get(k);
+                    final int idx = k;
+                    var slot = MandatorySlot.of(c);
+                    boolean estructural = slot.isPresent();
+                    boolean grupoRepetido = java.util.stream.IntStream.range(0, picked.size())
+                            .filter(j -> j != idx).anyMatch(j -> Objects.equals(picked.get(j).bodyPartCode(), c.bodyPartCode()));
+                    boolean slotRepetido = estructural && java.util.stream.IntStream.range(0, picked.size())
+                            .filter(j -> j != idx).anyMatch(j -> MandatorySlot.of(picked.get(j)).equals(slot));
+                    boolean vale = switch (ronda) {
+                        case 0 -> !estructural && grupoRepetido;
+                        case 1 -> !estructural;
+                        case 2 -> slotRepetido && grupoRepetido;
+                        default -> grupoRepetido;
+                    };
+                    if (vale) quitar = k;
+                }
+            if (quitar < 0) quitar = picked.size() - 1;
+            picked.remove(quitar);
+            exercises.remove(quitar);
+        }
     }
 
     /** La duracion que vera V20, con el estimador de V17. */

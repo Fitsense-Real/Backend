@@ -209,6 +209,11 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         var draft = generated.draft();
         var adjustment = prepared.adjustment();
 
+        // 4A v6: una semana PARCIAL es una alternativa que requiere aceptacion.
+        // No se guarda ni se activa; se devuelve la propuesta con sus motivos.
+        if (generated.cobertura() != null && generated.cobertura().esParcial())
+            throw new PartialPlanRequiresAcceptanceException(command.userId(), generated);
+
         // Se relee el plan previo en vez de arrastrar la entidad de la fase 1:
         // entre fase y fase pasaron ~90 s sin sesion de persistencia abierta. Y
         // se vuelve a comprobar la precondicion, porque en ese hueco pudo

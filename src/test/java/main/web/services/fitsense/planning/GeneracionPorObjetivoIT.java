@@ -141,10 +141,11 @@ class GeneracionPorObjetivoIT {
         assertTrue(violaciones.isEmpty(), p.nombre() + ": ejercicios incompatibles " + violaciones);
         var enRevision = colocaciones(g).stream().map(Fila::exerciseId)
                 .filter(GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION::contains).toList();
-        assertTrue(enRevision.isEmpty() || p.objetivo() == GoalType.GAIN_MUSCLE,
+        assertTrue(enRevision.isEmpty(),
                 p.nombre() + ": ejercicios en revision " + enRevision);
 
-        if (p.objetivo() == GoalType.GAIN_MUSCLE) return;   // 4D v3: V24 propia, ya en ENFORCE
+        // Toda colocacion acredita una capacidad del objetivo, tambien en
+        // GAIN_MUSCLE (4D v3.1: solo estructural o resistido acredita hipertrofia).
         var limites = configuracion.prescriptionParams().repLimits();
         for (var f : colocaciones(g)) {
             var cap = CapabilityPrescriptionPolicy.acreditada(f.ejercicio(), f.candidato(), p.objetivo().name(),
@@ -199,7 +200,7 @@ class GeneracionPorObjetivoIT {
                 t.append("\n- **%s %s** (%d min)\n".formatted(f.fecha().getDayOfWeek(), f.enfoque(), f.minutos()));
             }
             var cap = CapabilityPrescriptionPolicy.acreditada(f.ejercicio(), f.candidato(), p.objetivo().name(),
-                    p.nivel().name(), limites).map(Enum::name).orElse("HYPERTROPHY (4D v3)");
+                    p.nivel().name(), limites).map(Enum::name).orElse("SIN ACREDITAR");
             var e = f.ejercicio();
             String dosis = e.prescriptionType() == PrescriptionType.SETS_REPS
                     ? "%dx%d, %d s".formatted(e.plannedSets(), e.plannedReps(), e.restSeconds())
@@ -297,46 +298,69 @@ class GeneracionPorObjetivoIT {
                 .filter(c -> c == capacidad).isPresent()).map(Fila::exerciseId).collect(Collectors.toSet());
     }
 
+    /** Una semana PARCIAL: no se publica; la propuesta viaja en la excepcion. */
+    private main.web.services.fitsense.planning.domain.exceptions.PartialPlanRequiresAcceptanceException parcial(Perfil p) {
+        long userId = usuario(p);
+        var e = assertThrows(main.web.services.fitsense.planning.domain.exceptions.PartialPlanRequiresAcceptanceException.class,
+                () -> planning.generateWeeklyPlan(userId, SEMANA, PlanAdjustment.none(), null, null));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
+                Integer.class, userId), "un PARCIAL no se activa ni se guarda");
+        var c = e.propuesta().cobertura();
+        var t = new StringBuilder("### ").append(p.nombre()).append("\n\n**PARCIAL: propuesta NO activada, requiere aceptacion** · cubiertas ")
+                .append(c.principalesCubiertas()).append(" · no cubiertas ").append(c.noCubiertas())
+                .append(" · secundarias ").append(c.secundariasIncorporadas()).append("\n\n");
+        for (var w : e.propuesta().draft().workouts()) {
+            t.append("- **%s %s** (%d min)\n".formatted(w.scheduledDate().getDayOfWeek(), w.focus(), w.expectedDurationMinutes()));
+            for (var x : w.exercises())
+                t.append("  - %d · %s\n".formatted(x.exerciseId(), x.prescriptionType() == PrescriptionType.SETS_REPS
+                        ? "%dx%d, %d s".formatted(x.plannedSets(), x.plannedReps(), x.restSeconds())
+                        : "%dx%d s, %d s".formatted(x.plannedSets(), x.plannedDurationSeconds(), x.restSeconds())));
+        }
+        synchronized (EJEMPLOS) { EJEMPLOS.append(t).append("\n"); }
+        return e;
+    }
+
     @Nested
-    @DisplayName("2 · algunas principales factibles y otras no: semana PARCIAL, que lo dice")
+    @DisplayName("2 · algunas principales factibles y otras no: PARCIAL, propuesta sin activar")
     class Parciales {
 
         @Test
-        @DisplayName("GENERAL_FITNESS sin cardio posible (principiante, casa, sin suelo): fuerza, resistencia y movilidad; cardio no cubierto")
+        @DisplayName("GENERAL_FITNESS sin cardio posible: no se activa; la propuesta dice que falta cardio y por que")
         void condicionGeneralSinCardio() {
-            var g = generar(perfil("GENERAL_FITNESS · principiante en casa sin suelo, 3x60", GoalType.GENERAL_FITNESS,
+            var e = parcial(perfil("GENERAL_FITNESS · principiante en casa sin suelo, 3x60", GoalType.GENERAL_FITNESS,
                     FitnessLevel.BEGINNER, 41, TrainingLocation.HOME, CASA, LMV, 60, true, false, true));
-            assertEquals("PARCIAL", g.resultado(), g.cobertura().toString());
-            assertEquals(Set.of("CARDIO"), claves(g.cobertura().get("no_cubiertas")));
-            assertTrue(lista(g.cobertura().get("cubiertas")).containsAll(Set.of("STRENGTH", "MUSCULAR_ENDURANCE")),
-                    g.cobertura().toString());
-            assertTrue(idsDeCapacidad(g, Capability.CARDIO).isEmpty());
-            // Nunca se registra como completo, y la API lo presenta como alternativa.
-            var principal = main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl
-                    .build(usuarios.findById(g.userId()).orElseThrow());
-            var plan = new org.springframework.transaction.support.TransactionTemplate(transacciones)
-                    .execute(tx -> planes.byId(principal, g.planId()).getBody());
-            var cobertura = plan.capabilityCoverage();
-            assertEquals("PARCIAL", cobertura.result());
-            assertTrue(cobertura.requiresAcceptance());
-            assertTrue(cobertura.missingPrimaries().containsKey("CARDIO"));
-            assertTrue(cobertura.message().contains("alternativa parcial"), cobertura.message());
+            var c = e.propuesta().cobertura();
+            assertEquals(main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy.Resultado.PARCIAL,
+                    c.resultado());
+            assertEquals(Set.of(Capability.CARDIO), c.noCubiertas().keySet());
+            assertTrue(c.noCubiertas().get(Capability.CARDIO).startsWith("no factible"));
+            assertTrue(c.principalesCubiertas().containsAll(Set.of(Capability.STRENGTH, Capability.MUSCULAR_ENDURANCE,
+                    Capability.MOBILITY)));
+            assertTrue(c.slotsSinCubrir().isEmpty(), "la fuerza toma todos los patrones disponibles");
+            assertTrue(c.secundariasIncorporadas().contains(Capability.HYPERTROPHY),
+                    "la hipertrofia completa el tiempo que deja libre el cardio");
+            assertTrue(e.getMessage().startsWith("PARCIAL_REQUIERE_ACEPTACION"), e.getMessage());
         }
 
         @Test
-        @DisplayName("lo que deja libre la principal ausente lo completan secundarias (hipertrofia), sin desplazar a las demas")
-        void secundariasCompletan() {
-            var g = generar(perfil("GENERAL_FITNESS · principiante en casa sin suelo, 3x60 (secundarias)",
-                    GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, 41, TrainingLocation.HOME, CASA, LMV, 60,
-                    true, false, true));
-            assertEquals("PARCIAL", g.resultado());
-            assertTrue(lista(g.cobertura().get("secundarias")).contains("HYPERTROPHY"), g.cobertura().toString());
-            assertEquals(Set.of("STRENGTH", "MUSCULAR_ENDURANCE", "MOBILITY"), lista(g.cobertura().get("cubiertas")),
-                    "ninguna principal factible se pierde por completar con secundarias");
-            // La fuerza (principal) toma todos los patrones disponibles antes que la hipertrofia.
-            var slotsSinFuerza = jdbc.queryForObject("SELECT output_snapshot->'capability_coverage'->>'slots_sin_cubrir'"
-                    + " FROM weekly_training_plans WHERE plan_id = ?", String.class, g.planId());
-            assertEquals("[]", slotsSinFuerza.replace(" ", ""), "slots sin dosis de fuerza: " + slotsSinFuerza);
+        @DisplayName("API: POST /plan/generate responde 409 con la propuesta y lo que falta, y no hay plan activo")
+        void apiDevuelveLaPropuesta() {
+            var p = perfil("GENERAL_FITNESS · principiante en casa sin suelo, 3x45 (API)", GoalType.GENERAL_FITNESS,
+                    FitnessLevel.BEGINNER, 41, TrainingLocation.HOME, CASA, LMV, 45, true, false, true);
+            long userId = usuario(p);
+            var principal = main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl
+                    .build(usuarios.findById(userId).orElseThrow());
+            var respuesta = planes.generate(principal);
+            assertEquals(409, respuesta.getStatusCode().value());
+            var body = (main.web.services.fitsense.planning.interfaces.rest.resources.PartialPlanProposalResource) respuesta.getBody();
+            assertEquals("REQUIERE_ACEPTACION", body.status());
+            assertTrue(body.capabilityCoverage().requiresAcceptance());
+            assertTrue(body.capabilityCoverage().missingPrimaries().containsKey("CARDIO"));
+            assertTrue(body.capabilityCoverage().message().contains("alternativa parcial"));
+            assertFalse(body.workouts().isEmpty());
+            assertTrue(body.workouts().stream().flatMap(w -> w.exercises().stream()).allMatch(x -> x.exerciseName() != null));
+            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
+                    Integer.class, userId));
         }
     }
 
@@ -463,12 +487,19 @@ class GeneracionPorObjetivoIT {
                                 try {
                                     long plan = planning.generateWeeklyPlan(userId, SEMANA, PlanAdjustment.none(), null, null)
                                             .orElseThrow();
+                                    // Las mismas comprobaciones que las semanas de ejemplo:
+                                    // nada incompatible y toda colocacion acreditada.
+                                    comprobarSeguridadYDosis(new Generada(p, userId, plan, null, Map.of()));
                                     r = jdbc.queryForObject("SELECT coalesce(output_snapshot->'capability_coverage'->>'resultado','-')"
                                             + " || ' ' || coalesce(output_snapshot->'capability_coverage'->>'no_cubiertas','')"
                                             + " FROM weekly_training_plans WHERE plan_id = ?", String.class, plan);
                                     r = r.replaceAll(": no factible[^\"]*", "");
                                 } catch (NoPrimaryCapabilityFeasibleException e) {
                                     r = "NO_FACTIBLE (no se publica)";
+                                } catch (main.web.services.fitsense.planning.domain.exceptions.PartialPlanRequiresAcceptanceException e) {
+                                    r = "PARCIAL (propuesta, no se activa) " + e.propuesta().cobertura().noCubiertas().keySet();
+                                    assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans"
+                                            + " WHERE user_id = ?", Integer.class, userId));
                                 } catch (RuntimeException e) {
                                     r = "FALLO " + e.getMessage();
                                     fallos.add("%s %s %s %d suelo=%s: %s".formatted(objetivo, nivel, lugar, minutos, suelo,
@@ -489,6 +520,55 @@ class GeneracionPorObjetivoIT {
             // minutos son anteriores y se informan aparte.
             var nuevos = fallos.stream().filter(f -> !f.startsWith("GAIN_MUSCLE")).toList();
             assertTrue(nuevos.isEmpty(), String.join("\n", nuevos));
+        }
+    }
+
+    @Nested
+    @DisplayName("7 · GAIN_MUSCLE con 4D v3.1: 30, 45 y 60 minutos")
+    class Hipertrofia {
+
+        private void comprobarHipertrofia(Generada g, int maxColocaciones) {
+            assertEquals("COMPLETO", g.resultado());
+            var filas = colocaciones(g);
+            var porDia = filas.stream().collect(Collectors.groupingBy(Fila::fecha, Collectors.toList()));
+            double presupuesto = main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy
+                    .presupuestoDiarioSegundos(g.perfil().minutos());
+            porDia.forEach((dia, lista) -> {
+                assertTrue(lista.size() <= maxColocaciones, dia + ": " + lista.size() + " colocaciones");
+                double coste = lista.stream().mapToDouble(f -> f.ejercicio().plannedSets()
+                        * (f.ejercicio().plannedReps() * 3.0 + f.ejercicio().restSeconds())).sum();
+                assertTrue(coste <= presupuesto, dia + ": coste " + coste + " > " + presupuesto);
+            });
+            var slots = filas.stream().map(f -> main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot
+                    .of(f.candidato())).flatMap(Optional::stream).collect(Collectors.toSet());
+            assertEquals(4, slots.size(), "los cuatro slots, repartidos en la semana: " + slots);
+            assertTrue(filas.stream().allMatch(f -> f.ejercicio().prescriptionType() == PrescriptionType.SETS_REPS),
+                    "nada de duracion: 4D v3 no tiene dosis de hipertrofia para ella");
+        }
+
+        @Test
+        @DisplayName("30 min: menos colocaciones por sesion, dentro del presupuesto, slots repartidos")
+        void treinta() {
+            var g = generar(perfil("GAIN_MUSCLE · gimnasio, intermedia, 3x30", GoalType.GAIN_MUSCLE,
+                    FitnessLevel.INTERMEDIATE, 30, TrainingLocation.GYM, GIMNASIO, LMV, 30, true, true, true));
+            comprobarHipertrofia(g, 6);
+        }
+
+        @Test
+        @DisplayName("60 min: hasta siete colocaciones y el minimo de V20 alcanzado")
+        void sesenta() {
+            var g = generar(perfil("GAIN_MUSCLE · casa, principiante, 3x60", GoalType.GAIN_MUSCLE,
+                    FitnessLevel.BEGINNER, 45, TrainingLocation.HOME, CASA, LMV, 60, true, true, true));
+            comprobarHipertrofia(g, 7);
+        }
+
+        @Test
+        @DisplayName("45 min: igual que antes, seis colocaciones como maximo")
+        void cuarentaYCinco() {
+            var g = generar(perfil("GAIN_MUSCLE · gimnasio, avanzada, 4x45", GoalType.GAIN_MUSCLE,
+                    FitnessLevel.ADVANCED, 28, TrainingLocation.GYM, GIMNASIO,
+                    List.of((short) 1, (short) 2, (short) 4, (short) 5), 45, true, true, true));
+            comprobarHipertrofia(g, 6);
         }
     }
 }

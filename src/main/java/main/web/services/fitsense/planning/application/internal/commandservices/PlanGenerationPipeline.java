@@ -172,7 +172,8 @@ public class PlanGenerationPipeline {
             log.error("El motor de reglas tampoco produjo un plan valido para el usuario {}: {}",
                     context.userId(), e.problems());
             throw new PlanGenerationFailedException(context.userId(),
-                    "Ultimos problemas: " + String.join(" | ", e.problems()));
+                    ("NO_FACTIBLE: con estas condiciones no existe una semana que cumpla todas las validaciones "
+                            + "de seguridad, dosis y duracion. Motivos: ") + String.join(" | ", e.problems()));
         }
     }
 

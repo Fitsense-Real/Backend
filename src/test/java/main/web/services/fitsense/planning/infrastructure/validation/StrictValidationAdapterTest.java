@@ -37,8 +37,8 @@ import static org.mockito.Mockito.when;
  * {@code bloqueaDosis4D()} era una afirmacion del adaptador y nadie comprobaba
  * que el validador estuviera de verdad en modo bloqueante.
  * <p>
- * La violacion elegida es el TOPE DE COLOCACIONES -siete ejercicios en un dia,
- * y el maximo de 4D v2 §5 son seis- porque no depende de la tabla de dosis ni
+ * La violacion elegida es el TOPE DE COLOCACIONES -ocho ejercicios en un dia,
+ * y el maximo de 4D v3.1 para 60 minutos son siete- porque no depende de la tabla de dosis ni
  * del catalogo: si cambia el reparto por clase, esta prueba sigue valiendo.
  */
 class StrictValidationAdapterTest {
@@ -57,7 +57,7 @@ class StrictValidationAdapterTest {
         // Spring. El incumplimiento se registra en el log y se descarta.
         var normal = validador(DoseEnforcement.OBSERVE);
 
-        var problemas = problemasDe(normal, sieteEnUnDia());
+        var problemas = problemasDe(normal, ochoEnUnDia());
 
         assertTrue(problemas.stream().noneMatch(p -> p.startsWith("V24:")),
                 () -> "en OBSERVE la dosis no deberia llegar a los problemas: " + problemas);
@@ -74,7 +74,7 @@ class StrictValidationAdapterTest {
         var adaptador = new StrictValidationAdapter(new SessionDurationEstimator(),
                 configuracion(30), "OBSERVE");
 
-        var problemas = adaptador.revisar(sieteEnUnDia(), contexto(), ConservationReport.vacio());
+        var problemas = adaptador.revisar(ochoEnUnDia(), contexto(), ConservationReport.vacio());
 
         // UNO, no «alguno». Con «hay algun V24» el escenario podria estar
         // incumpliendo tambien el presupuesto de tiempo y la prueba pasaria sin
@@ -135,7 +135,7 @@ class StrictValidationAdapterTest {
                 configuracion(30));
 
         assertDoesNotThrow(() ->
-                adaptador.revisar(sieteEnUnDia(), contexto(), ConservationReport.vacio()));
+                adaptador.revisar(ochoEnUnDia(), contexto(), ConservationReport.vacio()));
     }
 
     @Test
@@ -188,9 +188,9 @@ class StrictValidationAdapterTest {
     }
 
     /** Siete colocaciones en un dia: el maximo de 4D v2 §5 son seis. */
-    private static PlanDraft sieteEnUnDia() {
+    private static PlanDraft ochoEnUnDia() {
         var ejercicios = new ArrayList<PlanDraft.DraftExercise>();
-        for (long id = 1; id <= 7; id++) ejercicios.add(prescrito(id));
+        for (long id = 1; id <= 8; id++) ejercicios.add(prescrito(id));
         return borrador(List.of(new PlanDraft.DraftWorkout(LUNES, WorkoutFocus.FULL_BODY,
                 "FULL_BODY - Sesion 1", 45, List.copyOf(ejercicios))));
     }
@@ -232,7 +232,7 @@ class StrictValidationAdapterTest {
 
     private static PlanGenerationContext contexto() {
         var elegibles = new ArrayList<CandidateExercise>();
-        for (long id = 1; id <= 7; id++) elegibles.add(candidato(id));
+        for (long id = 1; id <= 8; id++) elegibles.add(candidato(id));
         return new PlanGenerationContext(USUARIO, (short) 1, LUNES, LUNES.plusDays(6),
                 perfil(), PlanAdjustment.none(), null, List.copyOf(elegibles),
                 SafetyProfile.none(), (PrescriptionParams) null);
@@ -249,8 +249,8 @@ class StrictValidationAdapterTest {
      * mide.
      * <p>
      * SESIONES DE 60 MINUTOS, NO DE 45, Y ES DELIBERADO. 4D permite usar el
-     * {@code FRACCION_UTIL} = 85 %, y siete colocaciones estructurales cuestan
-     * {@code 7 x 3 x (10 x SEG_POR_REP + 90)} = 2520 s = 42 min. Con 45
+     * {@code FRACCION_UTIL} = 85 %, y ocho colocaciones estructurales cuestan
+     * {@code 8 x 3 x (10 x SEG_POR_REP + 90)} = 2880 s = 48 min. Con 45
      * minutos el presupuesto son 38,25 y el escenario incumpliria DOS reglas
      * -el tope y el tiempo-, asi que la prueba pasaria sin demostrar cual.
      * Con 60 el presupuesto son 51 y solo queda el tope, que es lo que se

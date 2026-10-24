@@ -437,7 +437,7 @@ public record PlanInputSnapshot(
                         .toList(),
                 reduceVolumeCapsOrNull(context),
                 !dosisFijada ? null : tablaDosis(),
-                !dosisFijada ? null : MvpDosePolicy.MAX_COLOC_DIA,
+                !dosisFijada ? null : MvpDosePolicy.maxColocaciones(context.effectiveSessionMinutes()),
                 !dosisFijada ? null
                         : MvpDosePolicy.presupuestoDiarioSegundos(context.effectiveSessionMinutes()) / 60.0,
                 // 4C: tambien a los objetivos por capacidades que exigen slots

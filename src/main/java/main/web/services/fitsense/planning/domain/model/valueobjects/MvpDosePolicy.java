@@ -65,6 +65,23 @@ public final class MvpDosePolicy {
     /** 4D v2 §5. Se aplica SIEMPRE, incluso si el tiempo sobra. */
     public static final int MAX_COLOC_DIA = 6;
 
+    /**
+     * <b>4D v3.1 (adenda del 24/10/2026, docs/FitSense/ADENDA_4D_v3_1.md).</b>
+     * Con sesiones de {@value #MINUTOS_SESION_LARGA} minutos o mas, el tope de
+     * colocaciones sube a {@value #MAX_COLOC_DIA_SESION_LARGA}: con seis
+     * colocaciones de 4D el contenido no llega al minimo de V20 (70 %), asi que
+     * esos perfiles no tenian ninguna semana valida. La dosis y el presupuesto
+     * de §5 no cambian y siguen limitando. {@link #MAX_COLOC_DIA} se conserva
+     * como la referencia congelada.
+     */
+    public static final int MAX_COLOC_DIA_SESION_LARGA = 7;
+    public static final int MINUTOS_SESION_LARGA = 60;
+
+    /** El tope de colocaciones del dia para una sesion de esos minutos (4D v3.1). */
+    public static int maxColocaciones(int sessionMinutes) {
+        return sessionMinutes >= MINUTOS_SESION_LARGA ? MAX_COLOC_DIA_SESION_LARGA : MAX_COLOC_DIA;
+    }
+
     /** 4D v2 §6, DISENO, es D22. Objetivo, no condicion de rechazo. */
     public static final double FRAC_SECUNDARIA_OBJETIVO = 0.25;
 

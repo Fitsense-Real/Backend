@@ -180,6 +180,10 @@ public class PlanDraftValidator {
                                         Map<Long, CandidateExercise> eligible, List<String> problems) {
         if (!capabilityEnforcement.mide() || context.profile() == null) return;
         String objetivo = context.profile().goalType();
+        if (MvpDosePolicy.aplicaA(objetivo)) {
+            validateHypertrophyEvidence(draft, context, eligible, problems);
+            return;
+        }
         if (!CapabilityPrescriptionPolicy.gobiernaGeneracion(objetivo)) return;
         String nivel = context.profile().fitnessLevel();
         var limites = context.prescription() == null ? null : context.prescription().repLimits();
@@ -215,6 +219,45 @@ public class PlanDraftValidator {
         if (incumplimientos.isEmpty()) return;
         if (!capabilityEnforcement.bloquea()) {
             log.warn("Dosis por capacidad (4D v4) incumplida para el usuario {} y NO se rechaza (modo {}): {}",
+                    context.userId(), capabilityEnforcement, incumplimientos);
+            return;
+        }
+        problems.addAll(incumplimientos);
+    }
+
+    /**
+     * V24 EN GAIN_MUSCLE (4D v3.1) · solo cuenta como trabajo de hipertrofia lo
+     * que puede demostrarla: un ejercicio estructural o resistido verificado.
+     * Movilidad, cardio, equilibrio, patron {@code OTHER} o sin patron, los de
+     * DURACION (4D v3 no tiene dosis de hipertrofia para ellos) y los
+     * ejercicios en revision de clasificacion no acreditan la capacidad
+     * principal y se rechazan: no pueden ocupar una colocacion de la sesion de
+     * hipertrofia. La dosis la sigue exigiendo {@link #validateMvpDose}.
+     * <p>
+     * Bajo el interruptor de capacidades, asi que la adaptacion P2-D, que
+     * conserva semanas anteriores, no lo aplica.
+     */
+    private void validateHypertrophyEvidence(PlanDraft draft, PlanGenerationContext context,
+                                             Map<Long, CandidateExercise> eligible, List<String> problems) {
+        var incumplimientos = new ArrayList<String>();
+        for (var workout : draft.workouts()) {
+            if (workout == null || workout.exercises() == null) continue;
+            for (var exercise : workout.exercises()) {
+                var candidate = exercise == null ? null : eligible.get(exercise.exerciseId());
+                if (candidate == null) continue;   // V1
+                var clase = CapabilityPrescriptionPolicy.claseDe(candidate);
+                boolean repeticiones = candidate.defaultPrescription() != PrescriptionType.DURATION;
+                if (repeticiones && (clase == CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                        || clase == CapabilityPrescriptionPolicy.Clase.RESISTIDO)) continue;
+                incumplimientos.add(("V24: el ejercicio %d del %s no acredita hipertrofia (clase %s, patron %s%s). "
+                        + "Usa un ejercicio de fuerza estructural o resistido de repeticiones.")
+                        .formatted(exercise.exerciseId(), workout.scheduledDate(), clase, candidate.movementPattern(),
+                                repeticiones ? "" : ", de duracion: 4D v3 no tiene dosis de hipertrofia para ella"));
+            }
+        }
+        if (incumplimientos.isEmpty()) return;
+        if (!capabilityEnforcement.bloquea()) {
+            log.warn("Evidencia de hipertrofia incumplida para el usuario {} y NO se rechaza (modo {}): {}",
                     context.userId(), capabilityEnforcement, incumplimientos);
             return;
         }
@@ -304,10 +347,11 @@ public class PlanDraftValidator {
             // 2: tope de colocaciones, antes que el tiempo. Nueve ejercicios en
             // un dia no se aceptan ni aunque quepan.
             int colocaciones = workout.exercises().size();
-            if (colocaciones > MvpDosePolicy.MAX_COLOC_DIA)
+            int tope = MvpDosePolicy.maxColocaciones(context.profile().sessionMinutes());
+            if (colocaciones > tope)
                 incumplimientos.add(("V24: el entrenamiento del %s tiene %d colocaciones y el maximo "
-                        + "de 4D v2 §5 es %d.")
-                        .formatted(workout.scheduledDate(), colocaciones, MvpDosePolicy.MAX_COLOC_DIA));
+                        + "de 4D v3.1 para sesiones de %d minutos es %d.")
+                        .formatted(workout.scheduledDate(), colocaciones, context.profile().sessionMinutes(), tope));
 
             double costeDia = 0;
             for (var exercise : workout.exercises()) {

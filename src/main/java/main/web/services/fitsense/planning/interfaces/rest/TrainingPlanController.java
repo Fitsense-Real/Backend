@@ -17,6 +17,8 @@ import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanQue
 import main.web.services.fitsense.planning.domain.model.valueobjects.EffortGuidance;
 import main.web.services.fitsense.shared.infrastructure.json.JsonSupport;
 import main.web.services.fitsense.planning.interfaces.rest.resources.CapabilityCoverageResource;
+import main.web.services.fitsense.planning.interfaces.rest.resources.PartialPlanProposalResource;
+import main.web.services.fitsense.planning.domain.exceptions.PartialPlanRequiresAcceptanceException;
 import main.web.services.fitsense.planning.interfaces.rest.resources.PlanSummaryResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.SkipWorkoutResource;
 import main.web.services.fitsense.planning.interfaces.rest.resources.WeeklyTrainingPlanResource;
@@ -86,8 +88,9 @@ public class TrainingPlanController {
      * Las transacciones viven dentro de prepare() y persist(), que son cortas.
      */
     @PostMapping("/users/me/plan/generate")
-    @Operation(summary = "Genera el plan de esta semana. Falla si ya existe uno activo.")
-    public ResponseEntity<WeeklyTrainingPlanResource> generate(
+    @Operation(summary = "Genera el plan de esta semana. Falla si ya existe uno activo. Si la semana es "
+            + "PARCIAL no se activa: responde 409 con la propuesta y lo que falta.")
+    public ResponseEntity<?> generate(
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
         var monday = TrainingWeek.containing(LocalDate.now()).startDate();
@@ -96,10 +99,38 @@ public class TrainingPlanController {
         var prepared = commandService.prepare(command);
         var generated = commandService.generate(prepared);
 
-        return commandService.persist(prepared, generated)
-                .map(this::toResource)
-                .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+        try {
+            return commandService.persist(prepared, generated)
+                    .map(this::toResource)
+                    .<ResponseEntity<?>>map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
+                    .orElseGet(() -> ResponseEntity.badRequest().build());
+        } catch (PartialPlanRequiresAcceptanceException parcial) {
+            // 4A v6: la semana PARCIAL no se activa. 409 con la propuesta y lo
+            // que falta, para que el participante decida.
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(propuesta(monday, parcial));
+        }
+    }
+
+    private PartialPlanProposalResource propuesta(LocalDate semana, PartialPlanRequiresAcceptanceException parcial) {
+        var generada = parcial.propuesta();
+        var c = generada.cobertura();
+        var nombres = externalCatalogService.fetchNames(generada.draft().workouts().stream()
+                .flatMap(w -> w.exercises().stream()).map(e -> e.exerciseId()).collect(Collectors.toSet()));
+        var cobertura = new CapabilityCoverageResource(c.resultado().name(),
+                c.principalesCubiertas().stream().map(Enum::name).toList(),
+                c.noCubiertas().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().name(),
+                        java.util.Map.Entry::getValue, (a, b) -> a, java.util.TreeMap::new)),
+                c.secundariasIncorporadas().stream().map(Enum::name).toList(), true, c.mensaje());
+        var sesiones = generada.draft().workouts().stream()
+                .map(w -> new PartialPlanProposalResource.ProposedWorkout(w.scheduledDate(), w.focus().name(),
+                        w.name(), w.expectedDurationMinutes(), w.exercises().stream()
+                        .map(e -> new PartialPlanProposalResource.ProposedExercise(e.exerciseId(),
+                                nombres.get(e.exerciseId()), e.prescriptionType().name(), e.plannedSets(),
+                                e.plannedReps(), e.plannedDurationSeconds(), e.targetLoadKg(), e.restSeconds(),
+                                e.notes()))
+                        .toList()))
+                .toList();
+        return new PartialPlanProposalResource("REQUIERE_ACEPTACION", semana, cobertura, sesiones);
     }
 
     @GetMapping("/users/me/plan/{planId}")

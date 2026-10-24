@@ -436,9 +436,13 @@ class AdaptacionRegresionIT {
                             || WorkoutFocus.valueOf(s.enfoque()) == WorkoutFocus.FULL_BODY)
                     .flatMap(s -> s.ejercicios().stream())
                     .filter(e -> "SETS_REPS".equals(e.tipo()) && !esSlot(patron(e.id())))
-                    .filter(e -> "waist".equals(jdbc.queryForObject("SELECT bp.code FROM exercises x JOIN body_parts bp"
-                            + " ON bp.body_part_id = x.body_part_id WHERE x.exercise_id = ?", String.class, e.id())))
-                    .findFirst().orElseThrow(() -> new AssertionError("premisa: sin relleno de cintura"));
+                    // De cintura si lo hay (la zona del 1374); si no, cualquier
+                    // relleno: con 4D v3.1 la semana medida puede no traer uno de
+                    // cintura, y en FULL_BODY V15 no rechaza otra zona.
+                    .sorted(Comparator.comparing((Ejercicio e) -> !"waist".equals(jdbc.queryForObject(
+                            "SELECT bp.code FROM exercises x JOIN body_parts bp"
+                            + " ON bp.body_part_id = x.body_part_id WHERE x.exercise_id = ?", String.class, e.id()))))
+                    .findFirst().orElseThrow(() -> new AssertionError("premisa: sin relleno"));
             assertFalse(p.ids().contains(1374L));
             jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1374 WHERE exercise_id = ?"
                     + " AND planned_workout_id IN (SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?)",

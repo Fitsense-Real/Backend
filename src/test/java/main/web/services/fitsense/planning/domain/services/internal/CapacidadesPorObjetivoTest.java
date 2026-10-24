@@ -293,4 +293,45 @@ class CapacidadesPorObjetivoTest {
             assertTrue(p.stream().noneMatch(x -> x.startsWith("V24") || x.startsWith("V25")), p.toString());
         }
     }
+
+    @Nested
+    @DisplayName("4D v3.1 · GAIN_MUSCLE")
+    class Hipertrofia31 {
+
+        @Test
+        @DisplayName("tope de colocaciones: 6 hasta 59 minutos, 7 desde 60; 4D v3 se conserva como referencia")
+        void tope() {
+            assertEquals(6, MvpDosePolicy.maxColocaciones(30));
+            assertEquals(6, MvpDosePolicy.maxColocaciones(59));
+            assertEquals(7, MvpDosePolicy.maxColocaciones(60));
+            assertEquals(6, MvpDosePolicy.MAX_COLOC_DIA);
+        }
+
+        static final CandidateExercise OTRO = sr(1070, "chest", "OTHER");
+        static final CandidateExercise ISOMETRICO = ej(900, "chest", "HORIZONTAL_ADDUCTION", PrescriptionType.DURATION);
+
+        @Test
+        @DisplayName("movilidad, OTHER, duracion o en revision no acreditan hipertrofia y se rechazan; con el interruptor en OFF (P2-D), no")
+        void soloEvidenciaDeHipertrofia() {
+            var elegibles = Stream.concat(TODOS.stream(), Stream.of(OTRO, ISOMETRICO)).toList();
+            var ctx = contexto("GAIN_MUSCLE", elegibles);
+            var d = MvpDosePolicy.dosisPara(MandatorySlot.of(PRESS), "chest").orElseThrow();
+            var press = new PlanDraft.DraftExercise(3L, PrescriptionType.SETS_REPS, d.series(), d.reps(), null, null,
+                    d.descansoSegundos(), null);
+            var relleno = MvpDosePolicy.dosisPara(Optional.empty(), "chest").orElseThrow();
+            var otro = new PlanDraft.DraftExercise(1070L, PrescriptionType.SETS_REPS, relleno.series(), relleno.reps(),
+                    null, null, relleno.descansoSegundos(), null);
+            var movilidad = new PlanDraft.DraftExercise(9L, PrescriptionType.DURATION, (short) 2, null, 30, null,
+                    (short) 15, null);
+            var iso = new PlanDraft.DraftExercise(900L, PrescriptionType.DURATION, (short) 3, null, 40, null,
+                    (short) 45, null);
+            var p = problemas(semana(press, otro, movilidad, iso), ctx, DoseEnforcement.ENFORCE);
+            for (long id : List.of(1070L, 9L, 900L))
+                assertTrue(p.stream().anyMatch(x -> x.startsWith("V24: el ejercicio " + id) && x.contains("no acredita hipertrofia")),
+                        id + " " + p);
+            assertTrue(p.stream().noneMatch(x -> x.startsWith("V24: el ejercicio 3 ")), p.toString());
+            var apagado = problemas(semana(press, otro, movilidad, iso), ctx, DoseEnforcement.OFF);
+            assertTrue(apagado.stream().noneMatch(x -> x.contains("no acredita hipertrofia")), apagado.toString());
+        }
+    }
 }
