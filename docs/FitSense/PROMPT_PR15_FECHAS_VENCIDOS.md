@@ -63,3 +63,23 @@ La adherencia oficial **no cambia**: lo no registrado sigue contando 0.
   - lo no registrado vence antes del ciclo y la decisión es `INSUFFICIENT_DATA`;
   - un primer plan anticipado se respeta;
   - `POST generate` sin sesiones pasadas y `GET current`.
+
+## PR-1.6 (26/10/2026), tras el plan 55 (LOSE_WEIGHT)
+
+El plan se publicó en el tercer intento:
+- **Intento 1:** 9 colocaciones por sesión cuando el máximo es 8 (V24).
+- **Intento 2:** 4 de 7 ejercicios de pecho en una sesión (V15).
+- **Plan publicado:** 1 colocación de CARDIO y 23 de fuerza en toda la semana.
+
+**Defecto corregido.** Para los objetivos por capacidades, el tope de 8 colocaciones por sesión se **validaba pero no se enviaba** a la IA. `constraints.max_colocaciones_dia` ahora viaja también para estos objetivos.
+
+**Prompt.** La regla prioritaria ahora pide:
+- **Cada principal factible en CADA sesión,** antes que las secundarias. Con CARDIO como única principal, dos bloques de CARDIO por sesión si hay ejercicios para ello.
+- **Que no se quite la principal** si no cabe todo: se quitan secundarias.
+- **Que se puedan repetir ejercicios** en días no consecutivos.
+
+Es la misma regla que ya aplica el motor de reglas (`CapabilityWeekBuilder`); no es un criterio nuevo.
+
+La comprobación final añade dos controles: el tope de colocaciones y `max_per_body_part`.
+
+**Pendiente de decisión metodológica.** V25 sigue comprobando solo que cada principal aparezca **en la semana**. Que valide además la principal en cada sesión exige aprobar ese criterio. Hasta entonces es una instrucción a la IA, no una regla del validador.

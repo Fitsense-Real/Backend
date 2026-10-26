@@ -71,9 +71,18 @@ public class PlanPromptBuilder {
      * nombre del plan no menciona correcciones. GAIN_MUSCLE no cambia salvo
      * esa ultima linea del reintento.
      * <p>
+     * PR-1.6 (26/10/2026): tras el plan 55 (LOSE_WEIGHT, tres intentos, 1
+     * colocacion de CARDIO y 23 de fuerza). La regla prioritaria pide la
+     * principal en CADA sesion antes que las secundarias, que es lo que ya hace
+     * el motor de reglas (CapabilityWeekBuilder: con LOSE_WEIGHT, dos bloques de
+     * CARDIO por sesion si hay ejercicios), y recuerda que un ejercicio puede
+     * repetirse en dias no consecutivos. constraints.max_colocaciones_dia ya
+     * viaja tambien para estos objetivos, y la comprobacion final incluye ese
+     * tope y max_per_body_part, los motivos de los rechazos 1 y 2.
+     * <p>
      * Cambiar cualquier texto de este archivo exige subir la version.
      */
-    public static final String VERSION = "PR-1.5";
+    public static final String VERSION = "PR-1.6";
 
     /** El bloque de capacidades. Publico para poder probar que solo aparece donde toca. */
     public static final String BLOQUE_CAPACIDADES = """
@@ -266,14 +275,21 @@ public class PlanPromptBuilder {
 
                 REGLA PRIORITARIA DE ESTA SEMANA
                 Capacidades principales factibles para esta persona: %s.
-                Construye la semana en este orden:
-                1. Reserva primero, para CADA una de esas capacidades, al menos un ejercicio
-                   con una dosis de esa capacidad (un codigo de "dosis" que empiece por ella).
-                2. Reparte esas colocaciones en la semana respetando duracion, recuperacion y
-                   las demas reglas.
-                3. Solo despues completa con las secundarias (%s).
+                Las principales son el eje de CADA sesion, no un ejercicio suelto de la semana.
+                Construye cada sesion en este orden:
+                1. Pon primero, en ESA sesion, al menos una colocacion de cada principal
+                   factible, con una dosis de esa capacidad (un codigo de "dosis" que empiece
+                   por ella).%s
+                2. Solo despues completa el tiempo con las secundarias (%s), sin pasar de
+                   constraints.max_colocaciones_dia ejercicios por sesion.
+                3. Si no cabe todo, quita secundarias, nunca la principal de esa sesion.
+                Un mismo ejercicio puede repetirse en dias que no sean consecutivos.
                 Una semana que omite una principal factible se rechaza entera.
                 """.formatted(String.join(", ", c.principalesFactibles()),
+                c.principalesFactibles().size() == 1 && c.principalesFactibles().contains("CARDIO")
+                        ? "\n   Con CARDIO como unica principal, pon dos bloques de CARDIO por sesion si\n"
+                        + "   hay ejercicios para ello."
+                        : "",
                 c.secundarias() == null || c.secundarias().isEmpty() ? "ninguna" : String.join(", ", c.secundarias())));
         if (c.candidatosEscasos() != null && !c.candidatosEscasos().isEmpty()) {
             texto.append("Estas principales tienen pocos ejercicios posibles; elige entre estos exercise_id:\n");
@@ -290,10 +306,13 @@ public class PlanPromptBuilder {
         return """
 
                 ANTES DE ESCRIBIR EL JSON, COMPRUEBA:
-                - Cada una de %s tiene al menos una colocacion en la semana con una dosis de
-                  esa capacidad, copiada tal cual de constraints.capacidades.dosis.
+                - Cada sesion tiene al menos una colocacion de cada una de %s, con una dosis
+                  de esa capacidad copiada tal cual de constraints.capacidades.dosis.
                 - Ninguna secundaria ocupa el lugar de una principal factible.
                 - Cada ejercicio lleva una dosis que su lista "dosis" admite.
+                - Ninguna sesion pasa de constraints.max_colocaciones_dia ejercicios.
+                - En cada sesion, ningun body_part pasa del max_per_body_part de su
+                  sesion en constraints.suggested_split.
                 Si algo falla, corrige la semana antes de responder.
                 """.formatted(String.join(", ", c.principalesFactibles()));
     }

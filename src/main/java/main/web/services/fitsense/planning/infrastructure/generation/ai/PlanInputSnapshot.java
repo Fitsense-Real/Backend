@@ -525,7 +525,11 @@ public record PlanInputSnapshot(
                         .toList(),
                 reduceVolumeCapsOrNull(context),
                 !dosisFijada ? null : tablaDosis(),
-                !dosisFijada ? null : MvpDosePolicy.maxColocaciones(context.effectiveSessionMinutes()),
+                // El tope de V24 tambien para los objetivos por capacidades: antes
+                // se validaba sin decirselo a la IA (plan 55, intento 1: nueve
+                // colocaciones por dia).
+                dosisFijada ? MvpDosePolicy.maxColocaciones(context.effectiveSessionMinutes())
+                        : porCapacidades ? CapabilityPrescriptionPolicy.MAX_COLOC_DIA : null,
                 !dosisFijada ? null
                         : MvpDosePolicy.presupuestoDiarioSegundos(context.effectiveSessionMinutes()) / 60.0,
                 // 4C: tambien a los objetivos por capacidades que exigen slots

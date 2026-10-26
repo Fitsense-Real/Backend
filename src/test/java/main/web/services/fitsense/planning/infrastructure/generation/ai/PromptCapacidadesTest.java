@@ -80,6 +80,10 @@ class PromptCapacidadesTest {
         int regla = prompt.indexOf("REGLA PRIORITARIA DE ESTA SEMANA");
         assertTrue(regla > 0 && regla < prompt.indexOf("Reglas que el backend verifica"), "va antes de las reglas");
         assertTrue(prompt.contains("Capacidades principales factibles para esta persona: CARDIO."), prompt);
+        assertTrue(prompt.contains("dos bloques de CARDIO por sesion"), "unica principal CARDIO");
+        assertTrue(prompt.contains("Cada sesion tiene al menos una colocacion de cada una de CARDIO"), prompt);
+        assertEquals(Integer.valueOf(8), PlanInputSnapshot.of(contexto("LOSE_WEIGHT")).constraints().maxColocacionesDia(),
+                "el tope de V24 viaja");
         assertTrue(prompt.contains("CARDIO: [8]"), "los candidatos escasos se nombran");
         int datos = prompt.indexOf("{\"datos\":1}");
         assertTrue(prompt.indexOf("ANTES DE ESCRIBIR EL JSON, COMPRUEBA") > datos, "la comprobacion va despues de los datos");
