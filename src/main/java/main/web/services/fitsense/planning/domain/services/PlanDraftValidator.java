@@ -287,6 +287,7 @@ public class PlanDraftValidator {
                         .formatted(c) + "Incluye al menos una colocacion con su dosis antes de completar con secundarias.")
                 .toList());
         faltas.addAll(cardioPorSesion(draft, context, eligible, limites));
+        faltas.addAll(slotsConFuerza(draft, context, eligible, limites));
         if (faltas.isEmpty()) return;
         if (!capabilityEnforcement.bloquea()) {
             log.warn("Cobertura de capacidades incumplida para el usuario {} y NO se rechaza (modo {}): {}",
@@ -348,6 +349,66 @@ public class PlanDraftValidator {
                         .formatted(workout.scheduledDate()));
         }
         return faltas;
+    }
+
+    /**
+     * V25 · INCREASE_STRENGTH: LOS CUATRO SLOTS DE 4C CON DOSIS DE FUERZA EN LA SEMANA.
+     * <p>
+     * Decision del 26/10/2026, tras el plan 58 (fuerza solo en tres slots, la
+     * bisagra de cadera con dosis de hipertrofia). Es la regla con la que
+     * construye el motor de reglas: los slots que la semana aun no cubre van
+     * primero, con dosis de FUERZA. No se valida cuantos por sesion ni
+     * ninguna proporcion frente a la hipertrofia.
+     * <p>
+     * FACTIBILIDAD CONJUNTA. Un slot se exige si hay un ejercicio elegible de
+     * ese slot con dosis de STRENGTH (el conjunto elegible ya aplica
+     * equipamiento, seguridad y bloqueos). Y la semana tiene que poder alojar
+     * todos los exigibles: si sus sesiones admiten menos colocaciones de
+     * fuerza que slots factibles (3 por sesion de menos de 30 minutos, 4 si
+     * no, como el motor de reglas), solo se exigen tantos slots distintos
+     * como quepan. Dos slots pueden ir en la misma sesion, asi que la
+     * recuperacion entre dias no impide cubrirlos.
+     */
+    private List<String> slotsConFuerza(PlanDraft draft, PlanGenerationContext context,
+                                        Map<Long, CandidateExercise> eligible,
+                                        main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams.RepLimits limites) {
+        String objetivo = context.profile().goalType();
+        if (!"INCREASE_STRENGTH".equals(objetivo) || draft == null || draft.workouts() == null) return List.of();
+        String nivel = context.profile().fitnessLevel();
+        var fuerza = GoalCapabilityPolicy.Capability.STRENGTH;
+
+        var factibles = EnumSet.noneOf(MandatorySlot.class);
+        for (var c : eligible.values())
+            if (CapabilityPrescriptionPolicy.admisibles(c, objetivo, nivel).contains(fuerza)
+                    && CapabilityPrescriptionPolicy.dosis(fuerza, c, objetivo, nivel, limites).isPresent())
+                MandatorySlot.of(c).ifPresent(factibles::add);
+        if (factibles.isEmpty()) return List.of();
+
+        var cubiertos = EnumSet.noneOf(MandatorySlot.class);
+        int sesiones = 0;
+        for (var workout : draft.workouts()) {
+            if (workout == null || workout.exercises() == null) continue;
+            sesiones++;
+            for (var e : workout.exercises()) {
+                var c = e == null ? null : eligible.get(e.exerciseId());
+                if (c != null && CapabilityPrescriptionPolicy.acreditada(e, c, objetivo, nivel, limites)
+                        .filter(cap -> cap == fuerza).isPresent())
+                    MandatorySlot.of(c).ifPresent(cubiertos::add);
+            }
+        }
+        int porSesion = context.effectiveSessionMinutes() < 30 ? 3 : 4;
+        int exigibles = Math.min(factibles.size(), sesiones * porSesion);
+        var cubiertosFactibles = EnumSet.copyOf(cubiertos);
+        cubiertosFactibles.retainAll(factibles);
+        if (cubiertosFactibles.size() >= exigibles) return List.of();
+
+        var faltan = EnumSet.copyOf(factibles);
+        faltan.removeAll(cubiertos);
+        return faltan.stream()
+                .map(slot -> ("V25: el slot %s no tiene ninguna colocacion con dosis de STRENGTH en la semana, y es "
+                        + "factible. Cubrelo con un ejercicio de ese slot con dosis STRENGTH, no HYPERTROPHY: un "
+                        + "slot trabajado solo con dosis de hipertrofia no cuenta como fuerza.").formatted(slot))
+                .toList();
     }
 
     /** Zonas con recuperacion trabajadas el dia anterior o el siguiente. */

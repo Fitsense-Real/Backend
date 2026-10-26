@@ -97,8 +97,11 @@ public record PlanGenerationContext(
      * envian; {@code capacidades.candidatos_escasos} lista las principales con
      * pocos candidatos. El prompt de GENERAL_FITNESS en gimnasio bajaba de
      * 466 000 caracteres.
+     * <p>
+     * GEN-IN-1.13 (26/10/2026): {@code slot} viaja tambien en los objetivos por
+     * capacidades que exigen los slots de 4C (INCREASE_STRENGTH, GENERAL_FITNESS).
      */
-    public static final String SCHEMA_VERSION = "GEN-IN-1.12";
+    public static final String SCHEMA_VERSION = "GEN-IN-1.13";
 
     /**
      * Dificultad maxima efectiva: la del perfil, salvo que el ajuste ordene

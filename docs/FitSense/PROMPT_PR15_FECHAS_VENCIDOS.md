@@ -116,3 +116,44 @@ Es factible si existe un ejercicio elegible con dosis de CARDIO que la sesión a
   - Tal como se publicó, se rechaza por el miércoles y el viernes.
   - Con el gateo de oso repetido los tres días, V25 lo acepta.
 - **Regresión de los cuatro objetivos:** pasa, incluido el barrido de 144 perfiles del motor de reglas. Ningún plan del motor de reglas incumple la regla nueva.
+
+## INCREASE_STRENGTH: V25 por slot, PR-1.7 y un defecto del motor de reglas (26/10/2026)
+
+**Origen.** Con el plan 58 se compararon la IA y el motor de reglas para el mismo perfil:
+
+| | Fuerza | Hipertrofia | Bisagra de cadera (LOWER_HIP) con fuerza |
+|---|---:|---:|---|
+| Plan 58 (IA) | 3 colocaciones | 18 colocaciones | No |
+| Motor de reglas (3 semanas) | 12 colocaciones | 6 colocaciones | Sí, los cuatro patrones cada semana |
+
+**V25 (aprobada).** Para `INCREASE_STRENGTH`, cada uno de LOWER_KNEE, LOWER_HIP, UPPER_PUSH y UPPER_PULL necesita al menos una colocación **acreditada como STRENGTH** en la semana, cuando sea factible:
+- **Factible** quiere decir que hay un ejercicio elegible de ese slot con dosis de fuerza.
+- **Factibilidad conjunta:** se exigen tantos slots distintos como quepan, con 3 colocaciones de fuerza por sesión de menos de 30 minutos y 4 en las demás, como el motor de reglas. Dos slots pueden ir en la misma sesión, así que la recuperación entre días no lo impide.
+- **El rechazo** nombra el slot y pide dosis STRENGTH, no HYPERTROPHY.
+- **No se valida** cuántas colocaciones de fuerza van por sesión ni ninguna proporción frente a la hipertrofia.
+
+**PR-1.7 y GEN-IN-1.13.**
+- **Prompt:** con STRENGTH como principal, cada sesión empieza por los estructurales con dosis de fuerza. Se priorizan los slots que la semana aún no cubre, con una referencia de 4 por sesión (3 si dura menos de 30 minutos). La hipertrofia va solo después.
+- **Comprobación final:** pide los cuatro slots con fuerza.
+- **Entrada:** el `slot` de cada ejercicio ahora viaja también a INCREASE_STRENGTH y GENERAL_FITNESS. Antes la IA tenía que deducirlo del patrón de movimiento.
+
+**Defecto del motor de reglas, encontrado por la regresión.**
+- **Qué pasaba:** el motor daba un slot por cubierto al **colocar** el ejercicio, y el recorte por tiempo podía quitar esa colocación después. El slot quedaba como cubierto sin estarlo y no se volvía a pedir.
+- **Dónde se veía:** con INCREASE_STRENGTH en 3 sesiones de 20 minutos, la semana salía sin UPPER_PUSH con fuerza.
+- **Por qué estaba oculto:** V23 no se aplica a los planes del motor de reglas (`ENFORCE_AI_ONLY`).
+- **Corrección:** los slots pendientes se recalculan **después** del recorte, con lo que queda en la sesión.
+- **Resultado:** el barrido de 144 perfiles publica todos los casos sin ningún rechazo por V25.
+
+**Pruebas:**
+- `FuerzaPorSlotTest` (6):
+  - la bisagra solo con hipertrofia se rechaza por LOWER_HIP y solo por él;
+  - cuatro slots con fuerza pasan;
+  - un slot no factible no se exige;
+  - en una sesión de 25 minutos caben 3: cubrir 3 de 4 pasa y cubrir 2 se rechaza;
+  - GENERAL_FITNESS no cambia;
+  - con la regla apagada (P2-D) no se mira.
+- `PromptCapacidadesTest`: la regla de fuerza solo aparece en INCREASE_STRENGTH y el slot viaja.
+- `Plan58FuerzaIT`: el plan 58 real, con el perfil del usuario 25 y el catálogo real.
+  - Tal como se publicó, se rechaza solo por LOWER_HIP.
+  - Con la bisagra del miércoles a 3×6 y 150 s de descanso, V25 lo acepta.
+- **Regresión de los cuatro objetivos:** pasa, con 688 pruebas unitarias y 144 de integración (1 omitida, Replicate).

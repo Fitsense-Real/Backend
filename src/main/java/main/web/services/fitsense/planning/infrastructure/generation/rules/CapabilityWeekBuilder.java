@@ -146,6 +146,7 @@ class CapabilityWeekBuilder {
             var resistidosDia = new ArrayList<CandidateExercise>();
             selector.block(bloqueados);
             selector.slotsPendientes(slotsPorCubrir);
+            var pendientesAlEmpezar = new LinkedHashSet<>(slotsPorCubrir);
 
             // 1 · PRINCIPALES.
             int nResistidos = resistidosPrincipales(minutosSesion);
@@ -247,6 +248,15 @@ class CapabilityWeekBuilder {
 
             // 3 · TECHO: primero lo secundario, despues lo principal repetido.
             recortar(fecha, enfoque, dia, techo);
+
+            // Un slot se da por cubierto al COLOCAR, pero el recorte puede quitar
+            // esa colocacion. Se recalcula con lo que queda: si no, el slot
+            // quedaba como cubierto sin estarlo y no se volvia a pedir (sesiones
+            // de 20 minutos de INCREASE_STRENGTH sin UPPER_PUSH con fuerza).
+            slotsPorCubrir.clear();
+            slotsPorCubrir.addAll(pendientesAlEmpezar);
+            dia.stream().filter(this::cubreSlotPendiente)
+                    .forEach(col -> MandatorySlot.of(col.candidato()).ifPresent(slotsPorCubrir::remove));
 
             dia.forEach(col -> {
                 enSemana.merge(col.capacidad(), 1, Integer::sum);

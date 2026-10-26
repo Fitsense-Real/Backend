@@ -80,9 +80,17 @@ public class PlanPromptBuilder {
      * viaja tambien para estos objetivos, y la comprobacion final incluye ese
      * tope y max_per_body_part, los motivos de los rechazos 1 y 2.
      * <p>
+     * PR-1.7 (26/10/2026): tras el plan 58 (INCREASE_STRENGTH: 3 colocaciones
+     * de fuerza y 18 de hipertrofia; el motor de reglas pone 12 y 6). Con
+     * STRENGTH como principal, cada sesion empieza por los estructurales con
+     * dosis de fuerza, priorizando los slots que la semana aun no cubre; 4 por
+     * sesion (3 si dura menos de 30 minutos) como referencia, igual que el
+     * motor de reglas; la hipertrofia solo despues. La semana debe tener los
+     * cuatro slots con dosis de STRENGTH (V25), y la comprobacion final lo pide.
+     * <p>
      * Cambiar cualquier texto de este archivo exige subir la version.
      */
-    public static final String VERSION = "PR-1.6";
+    public static final String VERSION = "PR-1.7";
 
     /** El bloque de capacidades. Publico para poder probar que solo aparece donde toca. */
     public static final String BLOQUE_CAPACIDADES = """
@@ -121,7 +129,8 @@ public class PlanPromptBuilder {
                 Eres un entrenador que diseña planes semanales de entrenamiento.
                 Devuelve UNICAMENTE el objeto JSON del esquema, sin texto adicional.
                 """);
-        if (capacidades != null) prompt.append(reglaPrioritaria(capacidades));
+        if (capacidades != null) prompt.append(reglaPrioritaria(capacidades))
+                .append(reglaDeFuerza(context, capacidades));
 
         prompt.append("""
 
@@ -257,7 +266,8 @@ public class PlanPromptBuilder {
 
         // La comprobacion va DESPUES de los datos: es lo ultimo que lee el
         // modelo antes de escribir, y lo que el plan 53 no hizo en su primer intento.
-        if (capacidades != null) prompt.append(comprobacionFinal(capacidades));
+        if (capacidades != null) prompt.append(comprobacionFinal(capacidades))
+                .append(comprobacionDeFuerza(context, capacidades));
 
         // Reintento (19.4). Va AL FINAL, despues de los datos: es lo ultimo que
         // lee el modelo y lo unico que distingue este intento del anterior.
@@ -300,6 +310,34 @@ public class PlanPromptBuilder {
             texto.append("No son factibles y no se exigen: ").append(String.join(", ", c.noFactibles().keySet()))
                     .append(". No las sustituyas por nada inseguro.\n");
         return texto.toString();
+    }
+
+    private static boolean fuerzaPrincipal(PlanGenerationContext context, PlanInputSnapshot.CapacidadesObjetivo c) {
+        return "INCREASE_STRENGTH".equals(context.profile().goalType())
+                && c.principalesFactibles() != null && c.principalesFactibles().contains("STRENGTH");
+    }
+
+    /** INCREASE_STRENGTH: la estructura con la que construye el motor de reglas. */
+    static String reglaDeFuerza(PlanGenerationContext context, PlanInputSnapshot.CapacidadesObjetivo c) {
+        if (!fuerzaPrincipal(context, c)) return "";
+        int porSesion = context.effectiveSessionMinutes() < 30 ? 3 : 4;
+        return """
+                Con STRENGTH como principal, en CADA sesion:
+                1. Empieza por ejercicios estructurales (los que traen "slot") con una dosis STRENGTH,
+                   dando prioridad a los slots LOWER_KNEE, LOWER_HIP, UPPER_PUSH y UPPER_PULL que la
+                   semana todavia no cubre con fuerza. Referencia: %d por sesion.
+                2. Solo despues, si queda tiempo, completa con HYPERTROPHY.
+                La semana tiene que cubrir los cuatro slots con dosis STRENGTH: un slot trabajado solo
+                con dosis de HYPERTROPHY no cuenta como cubierto.
+                """.formatted(porSesion);
+    }
+
+    static String comprobacionDeFuerza(PlanGenerationContext context, PlanInputSnapshot.CapacidadesObjetivo c) {
+        if (!fuerzaPrincipal(context, c)) return "";
+        return """
+                - Cada uno de LOWER_KNEE, LOWER_HIP, UPPER_PUSH y UPPER_PULL tiene al menos una colocacion
+                  con dosis STRENGTH en la semana.
+                """;
     }
 
     static String comprobacionFinal(PlanInputSnapshot.CapacidadesObjetivo c) {

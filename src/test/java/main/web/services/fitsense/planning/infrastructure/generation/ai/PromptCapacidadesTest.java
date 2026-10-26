@@ -104,4 +104,18 @@ class PromptCapacidadesTest {
                 new AiRetryFeedback("{\"plan_name\":\"x\"}", List.of("V25: falta CARDIO"), List.of()));
         assertTrue(prompt.contains("plan_name y rationale no mencionan el rechazo ni la correccion"));
     }
+
+    @Test
+    @DisplayName("PR-1.7: con INCREASE_STRENGTH, fuerza estructural primero, 4 por sesion de referencia, y el slot viaja")
+    void reglaDeFuerza() {
+        var prompt = new PlanPromptBuilder(new JsonSupport()).build(contexto("INCREASE_STRENGTH"), "{\"d\":1}", null);
+        assertTrue(prompt.contains("Con STRENGTH como principal, en CADA sesion"), prompt);
+        assertTrue(prompt.contains("Referencia: 4 por sesion"), "45 minutos: cuatro");
+        assertTrue(prompt.indexOf("LOWER_KNEE, LOWER_HIP, UPPER_PUSH y UPPER_PULL tiene al menos una colocacion")
+                > prompt.indexOf("{\"d\":1}"), "la comprobacion de slots va tras los datos");
+        var s = PlanInputSnapshot.of(contexto("INCREASE_STRENGTH"));
+        assertTrue(s.availableExercises().stream().anyMatch(e -> "LOWER_KNEE".equals(e.slot())), "el slot viaja");
+        var lw = new PlanPromptBuilder(new JsonSupport()).build(contexto("LOSE_WEIGHT"), "{}", null);
+        assertFalse(lw.contains("Con STRENGTH como principal"), "solo para INCREASE_STRENGTH");
+    }
 }
