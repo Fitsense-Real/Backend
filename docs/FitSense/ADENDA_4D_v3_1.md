@@ -55,3 +55,31 @@ El plan 60 (`GAIN_MUSCLE`, 60 min, siete colocaciones por sesión) se publicó c
 `Plan60HipertrofiaIT` reproduce las 21 colocaciones con el perfil del usuario 27 y el catálogo real:
 - a 60 minutos el plan es válido, y con ocho en una sesión V24 lo rechaza;
 - a 45 minutos el mismo plan se rechaza en las tres sesiones (máximo 6), y con seis por sesión se acepta.
+
+## 6. V24 mide con la duración efectiva (orden con `forcedSessionMinutes`)
+
+**Defecto.** El prompt de generación y el de corrección P2-D se construyen con `PlanGenerationContext.effectiveSessionMinutes()`: los minutos de la orden si los fija, si no los del perfil. V24 de `GAIN_MUSCLE` usaba siempre los del perfil para el tope y el presupuesto. Con un perfil de 60 y una orden de 45:
+
+| | Prompt | V24 antes | V24 ahora |
+|---|---:|---:|---:|
+| Tope de colocaciones | 6 | 7 | 6 |
+| Presupuesto del día | 38,3 min | 51,0 min | 38,3 min |
+
+**Corrección.** `validateMvpDose` toma `effectiveSessionMinutes()`, como ya hacían V20, V25, el prompt y el motor de reglas. Los límites de 4D v3.1 no cambian. La duración declarada por la IA (`expected_duration_minutes`) no interviene.
+
+**Alcance hoy.** El decisor vigente (`AdaptationOrderDecider` y `sinAjustePorcentual`) nunca fija minutos, así que en el ciclo actual la orden de 45 no ocurre. El defecto era latente: aparece si una orden los fija.
+
+**Pruebas.** Con el código anterior fallan las dos que lo reproducen.
+- `DuracionForzadaIT` (5):
+  - perfil de 60 con orden de 45: el snapshot de generación y el de P2-D dicen 45 minutos y máximo 6;
+  - siete por sesión: V24 rechaza por el tope y por el presupuesto de 45;
+  - seis por sesión: V24 acepta;
+  - sin orden, o con orden sin minutos: rige el perfil (7);
+  - el motor de reglas con la orden de 45 publica como mucho seis por sesión.
+- `AdaptacionCompletaIT` › `ordenDeSesionesMasCortas`: P2-D sobre una semana medida de 7/7/7 con una orden de 45. Antes se publicaba 7/7/7; ahora V24 rechaza las tres sesiones y queda `NO_FACTIBLE`, sin plan.
+
+**Consecuencia para P2-D.** Una orden que acorta todas las sesiones no encaja con una corrección local:
+- las sesiones no señaladas se conservan y V8C no deja tocarlas;
+- `ACORTAR_O_REORGANIZAR` solo retira relleno, y una semana de 60 minutos del motor de reglas tiene siete colocaciones estructurales y ningún relleno.
+
+Con una orden así, P2-D no tiene semana válida. Hoy no ocurre, porque ninguna orden fija minutos.

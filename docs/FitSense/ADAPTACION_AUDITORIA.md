@@ -79,6 +79,12 @@ Los cuatro escenarios se probaron con cada objetivo: `GAIN_MUSCLE`, `INCREASE_ST
 - los complementos de cardio y movilidad de `GENERAL_FITNESS`;
 - las reclasificaciones que rompen 4D, que se rechazan con el identificador del ejercicio.
 
+## Duración forzada por la orden
+
+V24 de `GAIN_MUSCLE` mide con la duración efectiva, la de la orden si fija minutos, igual que el prompt. Antes medía con el perfil: con un perfil de 60 y una orden de 45, P2-D publicaba sesiones de siete colocaciones cuando el tope de 45 minutos es seis. Detalle y pruebas en `ADENDA_4D_v3_1.md`, sección 6.
+
+El decisor actual no fija minutos, así que en el ciclo vigente no ocurre. Si una orden los fijara, P2-D no podría cumplirla con una corrección local y la semana quedaría `NO_FACTIBLE`.
+
 ## Observación: fuerza sin relleno
 
 En `INCREASE_STRENGTH` las sesiones del motor de reglas tienen cuatro ejercicios, todos de los slots de 4C y con la dosis mínima de fuerza (3×6). Con `ACORTAR_O_REORGANIZAR` no hay relleno que retirar ni dosis que bajar sin romper 4D. La semana se publica como `SIN_EFECTO` (`CONSERVED`): la decisión se tomó y la sesión no cambió, y la evidencia lo dice.

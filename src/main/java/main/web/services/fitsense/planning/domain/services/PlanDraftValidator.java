@@ -469,7 +469,12 @@ public class PlanDraftValidator {
         if (context.profile() == null || !MvpDosePolicy.aplicaA(context.profile().goalType())) return;
         if (draft == null || draft.workouts() == null) return;
 
-        double presupuesto = MvpDosePolicy.presupuestoDiarioSegundos(context.profile().sessionMinutes());
+        // La duracion efectiva, la misma con la que se construye el prompt: una
+        // orden que fuerza sesiones mas cortas baja el tope y el presupuesto.
+        // Con el perfil, una orden de 45 en un perfil de 60 dejaba pasar siete
+        // colocaciones que el prompt habia limitado a seis.
+        int minutos = context.effectiveSessionMinutes();
+        double presupuesto = MvpDosePolicy.presupuestoDiarioSegundos(minutos);
         var incumplimientos = new ArrayList<String>();
         int abstenciones = 0;
         int comprobadas = 0;
@@ -480,11 +485,11 @@ public class PlanDraftValidator {
             // 2: tope de colocaciones, antes que el tiempo. Nueve ejercicios en
             // un dia no se aceptan ni aunque quepan.
             int colocaciones = workout.exercises().size();
-            int tope = MvpDosePolicy.maxColocaciones(context.profile().sessionMinutes());
+            int tope = MvpDosePolicy.maxColocaciones(minutos);
             if (colocaciones > tope)
                 incumplimientos.add(("V24: el entrenamiento del %s tiene %d colocaciones y el maximo "
                         + "de 4D v3.1 para sesiones de %d minutos es %d.")
-                        .formatted(workout.scheduledDate(), colocaciones, context.profile().sessionMinutes(), tope));
+                        .formatted(workout.scheduledDate(), colocaciones, minutos, tope));
 
             double costeDia = 0;
             for (var exercise : workout.exercises()) {
@@ -531,7 +536,7 @@ public class PlanDraftValidator {
                         + "de 4D v2 §5 y el presupuesto del dia es %.1f (%.0f %% de %d minutos). "
                         + "Quita una colocacion.")
                         .formatted(workout.scheduledDate(), costeDia / 60.0, presupuesto / 60.0,
-                                MvpDosePolicy.FRACCION_UTIL * 100, context.profile().sessionMinutes()));
+                                MvpDosePolicy.FRACCION_UTIL * 100, minutos));
         }
 
         // Visible siempre que mida, como la linea de cobertura 4C: un filtro que
@@ -540,7 +545,7 @@ public class PlanDraftValidator {
                         + "(duracion o sin patron) · {} incumplimientos · modo {} · {}",
                 context.userId(), context.weekNumber(), context.profile().goalType(),
                 comprobadas, abstenciones, incumplimientos.size(), doseEnforcement,
-                MvpDosePolicy.describeTabla(context.profile().sessionMinutes()));
+                MvpDosePolicy.describeTabla(minutos));
 
         if (incumplimientos.isEmpty()) return;
 

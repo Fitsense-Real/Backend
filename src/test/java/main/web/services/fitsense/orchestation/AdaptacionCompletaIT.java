@@ -84,6 +84,7 @@ class AdaptacionCompletaIT {
     @Autowired JdbcTemplate jdbc;
     @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
     @Autowired org.springframework.transaction.PlatformTransactionManager transacciones;
+    @Autowired main.web.services.fitsense.analytics.interfaces.acl.AnalyticsContextFacade analitica;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final LocalDate MEDIDA = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
@@ -322,7 +323,62 @@ class AdaptacionCompletaIT {
 
     // ------------------------------------------------------------------ utilidades
 
+    /**
+     * Orden con {@code forcedSessionMinutes} = 45 sobre un perfil de 60. El
+     * motor de reglas genero la semana medida con siete colocaciones
+     * estructurales por sesion (el tope de 60 minutos) y ningun relleno. La
+     * orden se pasa directamente a {@code adaptWeeklyPlan}: el decisor actual
+     * nunca fija minutos.
+     * <p>
+     * La IA devuelve la senalada igual. V24 mide con 45 minutos (tope 6) y
+     * rechaza las tres sesiones; no se publica nada. Antes medía con el perfil
+     * (tope 7) y la semana de siete se publicaba con una orden de 45. Sin
+     * relleno, ACORTAR_O_REORGANIZAR tampoco puede bajar a seis (V8C), y las
+     * no senaladas no se tocan: con esta orden P2-D no tiene semana valida.
+     */
+    @org.junit.jupiter.api.Test
+    @DisplayName("P2-D con una orden de 45 minutos sobre un perfil de 60: V24 mide con 45 y no publica siete")
+    void ordenDeSesionesMasCortas() {
+        long u = participante(GoalType.GAIN_MUSCLE, 60);
+        long planMedido = planning.generateWeeklyPlan(u, MEDIDA, PlanAdjustment.none(), null, null).orElseThrow();
+        var medida = semana(planMedido);
+        assertEquals(List.of(7, 7, 7), medida.stream().map(x -> x.ejercicios().size()).toList(),
+                "premisa: siete por sesion a 60 minutos");
+        ejecutar(u, medida, Escenario.ADAPT_LOCALIZED.dias);
+        planning.closeWeek(u, MEDIDA);
+        var metricas = analitica.calculateWeek(u, MEDIDA).orElseThrow();
+
+        var senalada = medida.get(2);
+        var ajuste = new PlanAdjustment(List.of(AdjustmentType.NONE), null, null, null, 0.0, 0.0, null, null, 45,
+                "sesiones de 45 minutos", "LACK_OF_TIME", null, List.of(new PlanAdjustment.TargetedSession(
+                senalada.id(), main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion
+                .ACORTAR_O_REORGANIZAR)));
+        when(ia.interpretar(anyString(), any())).thenAnswer(inv -> List.of(new CorrectedSession(senalada.id(),
+                senalada.fecha().plusWeeks(1), 40,
+                senalada.ejercicios().stream().map(Ejercicio::borrador).toList(), "x")));
+
+        var publicado = planning.adaptWeeklyPlan(u, NUEVA, ajuste, null, null,
+                new main.web.services.fitsense.planning.interfaces.acl.MeasuredWeekView(metricas.weeklyMetricId(),
+                        planMedido, metricas.observedAdherencePct(), metricas.registrationCoveragePct(),
+                        "ADAPT_LOCALIZED"));
+
+        assertTrue(publicado.isEmpty(), "se publico una semana de siete colocaciones con una orden de 45 minutos: "
+                + publicado.map(id -> semana(id).stream().map(x -> x.ejercicios().size()).toList()));
+        var ev = evidencia(u);
+        assertEquals("NO_FACTIBLE", ev.get("status"), String.valueOf(ev));
+        String motivo = String.valueOf(ev.get("rejection_reason"));
+        for (var s : medida)
+            assertTrue(motivo.contains("del " + s.fecha().plusWeeks(1)
+                    + " tiene 7 colocaciones y el maximo de 4D v3.1 para sesiones de 45 minutos es 6"), motivo);
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
+                + " AND week_start_date = ?", Integer.class, u, NUEVA));
+    }
+
     private long participante(GoalType objetivo) {
+        return participante(objetivo, 45);
+    }
+
+    private long participante(GoalType objetivo, int minutos) {
         int n = SECUENCIA.incrementAndGet();
         String email = "adaptacion" + n + "@pruebas.invalid";
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
@@ -331,7 +387,7 @@ class AdaptacionCompletaIT {
         perfiles.handle(new CreateUserProfileCommand(userId, LocalDate.of(1992, 5, 10), BiologicalSex.FEMALE,
                 new BigDecimal("165"), new BigDecimal("68"), null, FitnessLevel.INTERMEDIATE, objetivo,
                 "prueba de adaptacion", TrainingLocation.GYM, (short) 3,
-                List.of((short) 1, (short) 3, (short) 5), (short) 45, EQUIPAMIENTO,
+                List.of((short) 1, (short) 3, (short) 5), (short) minutos, EQUIPAMIENTO,
                 List.of(), "Ninguna", true, true, true, true, true));
         return userId;
     }
