@@ -83,3 +83,36 @@ Es la misma regla que ya aplica el motor de reglas (`CapabilityWeekBuilder`); no
 La comprobación final añade dos controles: el tope de colocaciones y `max_per_body_part`.
 
 **Pendiente de decisión metodológica.** V25 sigue comprobando solo que cada principal aparezca **en la semana**. Que valide además la principal en cada sesión exige aprobar ese criterio. Hasta entonces es una instrucción a la IA, no una regla del validador.
+
+## V25 por sesión para LOSE_WEIGHT (26/10/2026)
+
+La regla se aprobó con un alcance acotado: solo `LOSE_WEIGHT`. Para los demás objetivos, V25 sigue siendo semanal. No se crean mínimos de minutos ni porcentajes.
+
+**La regla.** Cada entrenamiento debe incluir al menos una colocación **acreditada** como CARDIO, es decir, con la dosis de cardio de 4D, siempre que el cardio sea **factible en esa sesión**.
+
+Es factible si existe un ejercicio elegible con dosis de CARDIO que la sesión admita, con el mismo criterio que usa el motor de reglas:
+- **Zonas sin recuperación** (como `cardio`): se admiten siempre.
+- **Zonas con recuperación** (pecho, espalda, hombros y piernas): solo si el enfoque de la sesión admite esa zona y no se trabajó el día anterior ni el siguiente.
+
+**Lo que no cambió:**
+- **Repetición:** un ejercicio puede repetirse en días no consecutivos, así que basta con un solo ejercicio de cardio elegible.
+- **Dos bloques por sesión:** siguen siendo preferencia del prompt y del motor de reglas; no se validan.
+- **El resto de las reglas:** el límite de 8 colocaciones, la seguridad y las dosis siguen igual, y no se fuerza ningún ejercicio incompatible.
+- **Adaptación (P2-D):** su validador tiene las reglas de capacidad apagadas y no se ve afectado.
+
+**El mensaje a la IA** nombra la fecha de la sesión, pide al menos una colocación de cardio (mejor dos) antes que la fuerza y recuerda que puede repetir.
+
+**Pruebas:**
+- `CardioPorSesionTest` (8):
+  - el plan 55 se rechaza por el miércoles y el viernes;
+  - tres sesiones reutilizando un solo cardio pasan;
+  - la dosis decide si una colocación es cardio;
+  - sin cardio elegible no se exige nada;
+  - un enfoque que no admite la zona del único cardio no lo exige;
+  - un día vecino de piernas lo deja fuera por recuperación;
+  - GENERAL_FITNESS no cambia;
+  - con la regla apagada (P2-D) no se mira.
+- `Plan55CardioIT`: el plan 55, con los mismos ejercicios y dosis, pasa por el validador real con el catálogo real.
+  - Tal como se publicó, se rechaza por el miércoles y el viernes.
+  - Con el gateo de oso repetido los tres días, V25 lo acepta.
+- **Regresión de los cuatro objetivos:** pasa, incluido el barrido de 144 perfiles del motor de reglas. Ningún plan del motor de reglas incumple la regla nueva.

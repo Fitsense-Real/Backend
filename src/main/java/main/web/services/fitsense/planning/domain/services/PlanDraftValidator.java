@@ -282,17 +282,89 @@ public class PlanDraftValidator {
                 context.profile().fitnessLevel(), draft, eligible.values(), limites);
         log.info("COBERTURA_CAPACIDADES usuario {} semana {} origen {}: {}", context.userId(),
                 context.weekNumber(), draft.source(), cobertura.describe());
-        if (cobertura.omitidas().isEmpty()) return;
-        var faltas = cobertura.omitidas().stream()
+        var faltas = new ArrayList<String>(cobertura.omitidas().stream()
                 .map(c -> "V25: la semana omite la capacidad principal %s, que es factible con el conjunto elegible. "
                         .formatted(c) + "Incluye al menos una colocacion con su dosis antes de completar con secundarias.")
-                .toList();
+                .toList());
+        faltas.addAll(cardioPorSesion(draft, context, eligible, limites));
+        if (faltas.isEmpty()) return;
         if (!capabilityEnforcement.bloquea()) {
             log.warn("Cobertura de capacidades incumplida para el usuario {} y NO se rechaza (modo {}): {}",
                     context.userId(), capabilityEnforcement, faltas);
             return;
         }
         problems.addAll(faltas);
+    }
+
+    /** Zonas con descanso entre dias seguidos: las mismas que respeta el motor de reglas. */
+    private static final Set<String> ZONAS_CON_RECUPERACION = Set.of("chest", "back", "shoulders", "upper legs");
+
+    /**
+     * V25 · LOSE_WEIGHT: CARDIO EN CADA SESION en la que sea factible.
+     * <p>
+     * Decision del 26/10/2026, tras el plan 55 (una sola colocacion de CARDIO
+     * en la semana). Es la regla con la que ya construye el motor de reglas
+     * ({@code CapabilityWeekBuilder}: con LOSE_WEIGHT, cardio en cada sesion);
+     * los dos bloques por sesion siguen siendo una preferencia, no se validan.
+     * Solo para LOSE_WEIGHT: los demas objetivos siguen con la regla semanal.
+     * <p>
+     * FACTIBLE EN ESA SESION: hay un ejercicio elegible con dosis de CARDIO que
+     * esa sesion admite, con el mismo criterio de enfoque y recuperacion que
+     * usa el motor de reglas. Repetir un ejercicio en dias no consecutivos
+     * esta permitido, asi que con uno solo basta. No se fuerza nada: si no hay
+     * cardio que la sesion admita, esa sesion no se exige.
+     */
+    private List<String> cardioPorSesion(PlanDraft draft, PlanGenerationContext context,
+                                         Map<Long, CandidateExercise> eligible,
+                                         main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams.RepLimits limites) {
+        String objetivo = context.profile().goalType();
+        if (!"LOSE_WEIGHT".equals(objetivo) || draft == null || draft.workouts() == null) return List.of();
+        String nivel = context.profile().fitnessLevel();
+        var cardio = eligible.values().stream()
+                .filter(c -> CapabilityPrescriptionPolicy.admisibles(c, objetivo, nivel)
+                        .contains(GoalCapabilityPolicy.Capability.CARDIO))
+                .filter(c -> CapabilityPrescriptionPolicy.dosis(GoalCapabilityPolicy.Capability.CARDIO, c, objetivo,
+                        nivel, limites).isPresent())
+                .toList();
+        if (cardio.isEmpty()) return List.of();
+
+        var faltas = new ArrayList<String>();
+        for (var workout : draft.workouts()) {
+            if (workout == null || workout.exercises() == null) continue;
+            boolean tieneCardio = workout.exercises().stream().anyMatch(e -> {
+                var c = e == null ? null : eligible.get(e.exerciseId());
+                return c != null && CapabilityPrescriptionPolicy.acreditada(e, c, objetivo, nivel, limites)
+                        .filter(cap -> cap == GoalCapabilityPolicy.Capability.CARDIO).isPresent();
+            });
+            if (tieneCardio) continue;
+            var zonasVecinas = zonasDeDiasVecinos(draft, workout, eligible);
+            boolean factible = cardio.stream().anyMatch(c -> !ZONAS_CON_RECUPERACION.contains(c.bodyPartCode())
+                    || ((workout.focus() == null || workout.focus().accepts(c.bodyPartCode()))
+                    && !zonasVecinas.contains(c.bodyPartCode())));
+            if (factible)
+                faltas.add(("V25: el entrenamiento del %s no incluye CARDIO, la capacidad principal de LOSE_WEIGHT, "
+                        + "y en esa sesion es factible. Pon al menos una colocacion de CARDIO (mejor dos) con su "
+                        + "dosis antes que la fuerza; un ejercicio de cardio puede repetirse en dias no consecutivos.")
+                        .formatted(workout.scheduledDate()));
+        }
+        return faltas;
+    }
+
+    /** Zonas con recuperacion trabajadas el dia anterior o el siguiente. */
+    private static Set<String> zonasDeDiasVecinos(PlanDraft draft, PlanDraft.DraftWorkout workout,
+                                                  Map<Long, CandidateExercise> eligible) {
+        var zonas = new HashSet<String>();
+        if (workout.scheduledDate() == null) return zonas;
+        for (var otro : draft.workouts()) {
+            if (otro == null || otro == workout || otro.scheduledDate() == null || otro.exercises() == null) continue;
+            long distancia = Math.abs(otro.scheduledDate().toEpochDay() - workout.scheduledDate().toEpochDay());
+            if (distancia != 1) continue;
+            for (var e : otro.exercises()) {
+                var c = e == null ? null : eligible.get(e.exerciseId());
+                if (c != null && ZONAS_CON_RECUPERACION.contains(c.bodyPartCode())) zonas.add(c.bodyPartCode());
+            }
+        }
+        return zonas;
     }
 
     /**
