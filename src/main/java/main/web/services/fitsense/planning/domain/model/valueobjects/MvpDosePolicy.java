@@ -297,8 +297,13 @@ public final class MvpDosePolicy {
         return sessionMinutes * FRACCION_UTIL * 60.0;
     }
 
-    /** Para el log y los mensajes de rechazo. */
-    public static String describeTabla() {
+    /**
+     * Para el log y los mensajes de rechazo. El tope es el de 4D v3.1 para
+     * esos minutos, el mismo que exige V24: antes se imprimia
+     * {@link #MAX_COLOC_DIA} y el log del plan 60 (60 min, siete por sesion,
+     * cero incumplimientos) decia «maximo 6».
+     */
+    public static String describeTabla(int sessionMinutes) {
         var h = Capacidad.HYPERTROPHY;
         return ("4D v3 MVP GAIN_MUSCLE: estructural %dx%d descanso %d s · "
                 + "relleno 2x%d descanso %d s · zona pequena %s +%d reps · "
@@ -306,6 +311,6 @@ public final class MvpDosePolicy {
                 .formatted(h.series(), h.reps(), h.descansoSegundos(),
                         h.reps(), h.descansoSegundos(),
                         ZONAS_PEQUENAS.stream().sorted().toList(), EXTRA_REPS_ZONA_PEQUENA,
-                        MAX_COLOC_DIA, FRACCION_UTIL * 100);
+                        maxColocaciones(sessionMinutes), FRACCION_UTIL * 100);
     }
 }

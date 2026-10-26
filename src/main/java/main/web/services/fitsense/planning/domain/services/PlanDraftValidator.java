@@ -540,7 +540,7 @@ public class PlanDraftValidator {
                         + "(duracion o sin patron) · {} incumplimientos · modo {} · {}",
                 context.userId(), context.weekNumber(), context.profile().goalType(),
                 comprobadas, abstenciones, incumplimientos.size(), doseEnforcement,
-                MvpDosePolicy.describeTabla());
+                MvpDosePolicy.describeTabla(context.profile().sessionMinutes()));
 
         if (incumplimientos.isEmpty()) return;
 

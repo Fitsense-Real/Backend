@@ -44,3 +44,14 @@ El motor ya no los elige, y V24 los rechaza en la IA y en el motor por igual. An
 
 - **La fuerza secundaria de `GAIN_MUSCLE`** sigue sin asignarse: el 25 % de 4D v2 §6 aún no tiene denominador.
 - **Si alguna combinación no tiene semana válida**, el motor falla con un `NO_FACTIBLE:` y los motivos de cada validación, no con un error genérico. En el barrido no apareció ninguna.
+
+## 5. Corrección del log de DOSIS_4D (plan 60, 26/10/2026)
+
+El plan 60 (`GAIN_MUSCLE`, 60 min, siete colocaciones por sesión) se publicó con un log que decía «0 incumplimientos · máximo 6 colocaciones/día».
+- **V24 estaba bien:** exige `MvpDosePolicy.maxColocaciones(minutos)`, que es 7 a 60 minutos, y en ENFORCE rechaza la propuesta.
+- **El prompt estaba bien:** `constraints.max_colocaciones_dia` llevaba 7 y el punto 10 de los principios dice que no se pase de ese número.
+- **El texto del log era el error:** `describeTabla()` imprimía la referencia congelada de 4D v3 (`MAX_COLOC_DIA` = 6). Ahora `describeTabla(minutos)` imprime el mismo tope que exige V24.
+
+`Plan60HipertrofiaIT` reproduce las 21 colocaciones con el perfil del usuario 27 y el catálogo real:
+- a 60 minutos el plan es válido, y con ocho en una sesión V24 lo rechaza;
+- a 45 minutos el mismo plan se rechaza en las tres sesiones (máximo 6), y con seis por sesión se acepta.
