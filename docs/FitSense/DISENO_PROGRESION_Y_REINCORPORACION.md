@@ -113,6 +113,8 @@
 
 **Si el incremento mínimo supera el paso permitido**, no se fuerza: esa sesión se mantiene ese ciclo. Según la simulación es raro (el paso mínimo es del 0,8–2,3 %).
 
+**Excepción aprobada (opción 2, 27/10/2026): recuperación imposible dentro del 10 %.** Si la reducción pendiente no admite ningún paso de recuperación ≤ `recovery_step_pct` (típicamente, devolver una serie quitada: 2×10 → 3×10 en una sesión pequeña), el ejercicio reducido **conserva su dosis reducida** y los demás ejercicios de la sesión pueden seguir la progresión ordinaria con sus reglas (≤ 5 %, techo 1,10 × base). La serie no se devuelve de golpe. Prueba: `PendientesProgresionIT.serieNoRecuperableYProgresionDeOtros`.
+
 ### 3.3 Referencias y techo
 
 - **Línea base estable de la sesión:** su volumen en la **generación inicial**, la raíz de su linaje V31. No cambia con adaptaciones ni progresiones. Sirve para calcular el acumulado.

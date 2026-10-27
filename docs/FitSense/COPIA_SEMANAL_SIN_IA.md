@@ -32,7 +32,8 @@ El contador cuenta `pedirRespuesta` (la única llamada del ciclo semanal) y la p
 | 5 | Mantenimiento (sin paso posible y en el techo) | 0 | 0 | La misma rutina; `INCREASE_STRENGTH`: base [84, 84, 72] → [90, 90, 78] y se detiene (techo 92/92/79, el siguiente paso lo supera) |
 | 6 | Datos insuficientes | 0 | 0 | `INSUFFICIENT_DATA`, copia idéntica, sin paso |
 | 7 | Adaptación por fatiga | 1 | 1 | `APLICADA`, `ai_calls = 1` en V32; acortar por falta de tiempo: también 1 |
-| 8 | Repetir el mismo ciclo (copia y adaptación) | 0 | 0 | Mismo plan, 1 plan vigente, sin intento V32 nuevo |
+| 8 | Repetir el mismo ciclo, **en secuencia** (copia y adaptación) | 0 | 0 | Mismo plan, 1 plan vigente, sin intento V32 nuevo |
+| 8b | Dos ciclos **simultáneos** de la misma semana (`PendientesProgresionIT`) | — | — | 1 plan vigente y 1 evidencia publicada. La ejecución que pierde la carrera falla con una excepción (`uq_wum_user_week`, la métrica semanal) antes de publicar; la tarea programada la captura por participante y sigue con los demás |
 | 9 | La copia conserva | — | — | Mismos ejercicios, dosis y orden; fecha +7, mismo enfoque y minutos; sesiones nuevas sin registros; historial de la semana medida intacto |
 | 10 | Invariantes | — | — | Consulta `linaje_v31_v32.sql` y restricciones de V34: sin violaciones |
 
@@ -47,7 +48,7 @@ Los mismos 72 perfiles de referencia y el mismo guion (§14 de `IMPLEMENTACION_P
 | INCREASE_STRENGTH | 180/180 | 144 | **0** | 36 | 64 |
 | GENERAL_FITNESS | 180/180 | 144 | **0** | 36 | 46 |
 
-576 ciclos deterministas (copias, 312 pasos de progresión, 14 recuperaciones, 6 reincorporaciones y mantenimiento): **0 llamadas**. Solo las 144 adaptaciones llaman a la IA. Evidencia: `evidencia/progresion/evaluacion_limpia.md`.
+576 ciclos deterministas (copias, 312 pasos de progresión, 14 recuperaciones, 6 reincorporaciones y mantenimiento): **0 llamadas**. Solo las 144 adaptaciones llaman a la IA: **246 llamadas simuladas** en total, porque una adaptación puede usar hasta 3 intentos. En V32, `ai_calls` cuenta solo llamadas a la IA (0 en una copia), mientras que `generation_attempts` registra también el intento determinista de publicar. Evidencia: `evidencia/progresion/evaluacion_limpia.md`.
 
 ## 4. Regresión
 
@@ -61,3 +62,9 @@ Los mismos 72 perfiles de referencia y el mismo guion (§14 de `IMPLEMENTACION_P
 - **La generación inicial** (primera semana, o una semana sin plan medido) sigue usando la IA de generación. Está fuera del alcance de esta orden.
 - **Pendiente de decisión (no tocado):** la política de recuperación de series (`IMPLEMENTACION_PROGRESION_V34.md` §14).
 - **Disponibilidad M:** sigue sin existir en el backend (§11).
+
+## 6. Revisión posterior (27/10/2026)
+
+- **Adaptación que solo baja la carga** (`PendientesProgresionIT.adaptacionSoloDeCarga`): viernes parcial por fatiga, con 20 kg anotados; la IA propone 16 kg sin tocar la dosis. **Se publica** (la sesión sale con 16 kg), pero el intento queda como `SIN_EFECTO` / `CONSERVED`, porque V8C excluye la carga al clasificar. La semana publicada no coincide con lo que dice la evidencia. **Pendiente de decisión** (no se tocó código).
+- **Reincorporación sin progresión previa:** `LOSE_WEIGHT` / principiante / 30 min reincorpora el relleno sin haber dado ningún paso, porque el menor paso supera el 5 % y la reserva no admite ninguno. **Pendiente de decisión** sobre la regla (diseño §5, condición 2).
+- **`fitsense.ai.enabled`:** en el repositorio vale `${FITSENSE_AI_ENABLED:false}`. Un `true` local viene del entorno de ejecución, no del código.
