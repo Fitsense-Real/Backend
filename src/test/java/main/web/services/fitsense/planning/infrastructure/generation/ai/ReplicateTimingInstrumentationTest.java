@@ -54,7 +54,7 @@ class ReplicateTimingInstrumentationTest {
         var builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
         var properties = new ReplicateProperties(
-                true, "token-de-prueba", URL, "gpt-5-nano", "medium", timeoutSeconds);
+                true, "token-de-prueba", URL, "gpt-5-nano", "medium", timeoutSeconds, 0);
         // promptBuilder y assembler no se usan en call(): se entra por debajo de
         // requestOutput a proposito, para no tener que montar un
         // PlanGenerationContext entero y que la prueba mida solo el HTTP.

@@ -66,7 +66,7 @@ class ReplicateSchemaRoutingTest {
         var builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
         var properties = new ReplicateProperties(
-                true, "token-de-prueba", URL, "gpt-5-nano", "medium", 150);
+                true, "token-de-prueba", URL, "gpt-5-nano", "medium", 150, 0);
         // promptBuilder y assembler van a null: no se usan en call().
         generator = new ReplicateTrainingPlanGenerator(
                 properties, null, null, new JsonSupport(), builder);

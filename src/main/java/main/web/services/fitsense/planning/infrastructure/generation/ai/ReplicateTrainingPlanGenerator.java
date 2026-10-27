@@ -24,9 +24,6 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(ReplicateTrainingPlanGenerator.class);
 
-    /** Espera inicial de la peticion. Replicate no admite mas de 60. */
-    private static final int PREFER_WAIT_SECONDS = 60;
-
     /** Cada cuanto se vuelve a preguntar por una prediccion en curso. */
     private static final Duration POLL_INTERVAL = Duration.ofSeconds(3);
 
@@ -392,7 +389,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         if (actual != null && actual.pending())
             log.warn("La prediccion {} seguia en curso tras {} s de sondeo "
                             + "(el POST ya habia esperado hasta {} s con Prefer: wait)",
-                    pending.id(), properties.timeoutSeconds(), PREFER_WAIT_SECONDS);
+                    pending.id(), properties.timeoutSeconds(), properties.preferWaitSeconds());
 
         return new Sondeo(actual, consultas,
                 actual != null && actual.pending()
@@ -405,7 +402,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             return restClient.post()
                     .uri(properties.baseUrl())
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
-                    .header("Prefer", "wait=" + PREFER_WAIT_SECONDS)
+                    .header("Prefer", "wait=" + properties.preferWaitSeconds())
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(Map.of("input", input))
                     .retrieve()
