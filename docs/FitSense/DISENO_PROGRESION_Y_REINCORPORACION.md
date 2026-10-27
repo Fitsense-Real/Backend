@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Versión | **v0.2 · para revisión.** Sustituye a la v0.1 (`cb45457`), que queda en el historial |
+| Versión | **v0.2.1 · revisión puntual** de la v0.2 (`7c805d2`): cierra las cuatro observaciones del 27/10 en §12, sin rediseñar. Sustituye a la v0.1 (`cb45457`) |
 | Fecha | 27/10/2026 |
 | Estado | Solo investigación y diseño: **sin código de producción, migraciones, contratos de Flutter ni cambios de reglas** |
 | Evidencia | Simulación con 216 sesiones reales: `docs/FitSense/evidencia/progresion/` (`factibilidad.md`, `factibilidad.csv`), generadas por `ProgresionFactibilidadIT` (solo con `-Dfitsense.factibilidad=true`) |
@@ -21,7 +21,8 @@
   3. progresión de volumen;
   4. reincorporación (nunca en el mismo ciclo que una progresión);
   5. mantenimiento.
-- **Cumplir no obliga a subir.** Una adherencia del 100 % es necesaria, pero no basta. Hay techo y, al alcanzarlo, la sesión se mantiene.
+- **Cumplir es necesario, pero no basta, y no exige el 100 %.** El umbral es el aprobado: la sesión completada (A_s ≥ 0,80) y una adherencia semanal observada ≥ 80 %, durante **dos semanas consecutivas** (`good_threshold_pct`, `progression_required_weeks`). Cumplirlo no garantiza un aumento: también tienen que pasar las condiciones de seguridad y factibilidad y la validación. Hay techo y, al alcanzarlo, la sesión se mantiene.
+- **El 5 % y el 10 % son máximos, no metas.** Se aplica el menor incremento discreto válido (por ejemplo, +1,4 %), nunca un aumento forzado hasta el máximo.
 
 ---
 
@@ -264,7 +265,121 @@
 | D-P10 | Rehacer V35 como `progressed_sessions` antes de desplegar, y retirar la restauración automática | Sí; mientras tanto queda apagada |
 | **D-P11** | P2-D valida con la **V24 por capacidades** activa al menos cuando hay un paso (hoy está apagada en P2-D) | Sí. Revisar también si debe activarse en toda la adaptación: hoy P2-D aceptaría cualquier dosis en esos objetivos |
 
-## 11. Para la tesis
+## 12. Revisión puntual (v0.2.1): las cuatro observaciones
+
+**Evidencia:** `ProgresionReservaIT`, solo con `-Dfitsense.factibilidad=true`. Usa las mismas 216 sesiones reales del motor de reglas (72 perfiles; **son perfiles simulados, no participantes**). Resultados completos en `docs/FitSense/evidencia/progresion/reserva_y_v24.md`.
+
+**Cómo se simula la extensión de V24.** Un problema de V24 sobre un ejercicio cuya dosis nueva está dentro del rango de D-P3 se trata como autorizado. Todo lo demás lo decide el validador de producción tal cual.
+
+### 12.1 Cumplimiento (observación 1)
+
+Queda fijado en §0: **dos semanas consecutivas** con la sesión completada (≥ 80 %) y la adherencia semanal observada ≥ 80 %, más las condiciones de seguridad y factibilidad. **No se exige el 100 %**, y cumplir el umbral no garantiza un incremento.
+
+### 12.2 Techo y reincorporación (observación 2)
+
+**El problema, demostrado.** Si los ejercicios conservados progresan sin reservar margen y la reincorporación exige no superar la referencia, la reincorporación queda bloqueada en:
+
+| Objetivo | Sesiones con un relleno retirable | Reincorporación bloqueada (política ingenua) |
+|---|---:|---:|
+| `LOSE_WEIGHT` | 54 | 33 (61 %) |
+| `GAIN_MUSCLE` | 24 | 24 (100 %) |
+| `GENERAL_FITNESS` | 54 | 53 (98 %) |
+| `INCREASE_STRENGTH` | 0 | — (todas sus colocaciones son estructurales; no hay relleno que retirar) |
+
+**Dos políticas de reserva.** Notación: V_base es el volumen de la sesión original y V_ret el del relleno retirado, con su dosis inicial exacta.
+
+| Política | Los conservados pueden progresar hasta | Total tras reincorporar | Pasos medios antes de reincorporar | Reincorporación válida |
+|---|---|---|---|---|
+| **R1 · reserva estricta** | V_base − V_ret, es decir, **sin margen**: ACORTAR conserva las dosis, así que los conservados ya están ahí | ≤ V_base (la referencia) | 0 | 100 % |
+| **R2 · reserva dentro del techo** | 1,10 × V_base − V_ret | ≤ 1,10 × V_base (el techo ordinario aprobado provisionalmente) | `LOSE_WEIGHT` 1,9 · `GAIN_MUSCLE` 4,8 · `GENERAL_FITNESS` 4,6 | 100 % |
+
+**Por qué R2 garantiza la reincorporación:**
+1. Mientras la sesión está sin el relleno, su progresión se limita a 1,10 × V_base − V_ret. Ese margen V_ret queda **reservado**.
+2. La reincorporación, con la dosis inicial exacta (D-P8), suma exactamente V_ret, así que el total queda ≤ 1,10 × V_base.
+
+El volumen nunca impide la reincorporación. La duración, el tope de colocaciones y el presupuesto de 4D los comprueba la validación: en la simulación, ninguno la impidió.
+
+**R2 no supera automáticamente la referencia.** El techo es el mismo que tiene cualquier participante sin adaptaciones (§3.3). Lo que evita es castigar a quien tuvo que acortar.
+
+**Recomendación: R2 (D-P12).** Si se prefiere no superar nunca la referencia en una sesión que tuvo una retirada, R1 es la alternativa segura. Su coste es que, en esas sesiones, no hay progresión antes de reincorporar: la etapa 1 sería solo de consolidación.
+
+**Si la reincorporación no es posible** por otra razón (seguridad, tiempo, colocaciones), el margen reservado **no se libera** y la sesión se mantiene. Así no se invade el espacio del ejercicio retirado.
+
+### 12.3 Impacto por ejercicio (observación 3)
+
+**Regla de elección, sin un porcentaje nuevo:**
+- en cada paso se elige el cambio de **menor magnitud relativa en el ejercicio afectado**;
+- **primero +1 repetición**; +1 serie solo cuando las repeticiones llegaron al máximo de su rango;
+- a igualdad, el de menor incremento en la sesión.
+
+| Objetivo | Sesiones con ≥ 1 paso | Pasos medios hasta parar | Llegan al techo | Mayor cambio en **un ejercicio** | Mayor paso en **la sesión** | Por qué paran |
+|---|---:|---:|---:|---:|---:|---|
+| `LOSE_WEIGHT` | 36 (67 %) | 2,0 | 24 (44 %) | 16,7 % | 5,0 % | techo 24; paso > 5 % 18; sin margen en el rango 12 |
+| `GAIN_MUSCLE` | 54 (100 %) | 5,8 | 30 (56 %) | 10,0 % | 2,6 % | techo 30; paso > 5 % 24 |
+| `INCREASE_STRENGTH` | 54 (100 %) | 3,9 | 36 (67 %) | 16,7 % | 4,2 % | techo 36; paso > 5 % 18 |
+| `GENERAL_FITNESS` | 53 (98 %) | 4,6 | 36 (67 %) | 16,7 % | 3,9 % | techo 36; paso > 5 % 15; sin margen 3 |
+
+**Qué muestran estos datos:**
+- **Ningún paso fue un +1 serie.** El 16,7 % es +1 repetición sobre 6, el mínimo de fuerza. El salto de 2 a 3 series (+50 % en el ejercicio) **no hace falta** con estos rangos, porque siempre hay antes una repetición disponible.
+- **Ningún paso superó el 5 % de la sesión.** Cuando el menor cambio lo superaba («paso > 5 %», en sesiones pequeñas), no se aplicó: la regla de «no forzar» funciona.
+- **Con la V24 de hoy, en cambio:** `GAIN_MUSCLE` 0 %, y los demás solo con +1 serie (§1).
+- **Los rangos propuestos (D-P3) son factibles:** 10–12 repeticiones en `GAIN_MUSCLE` y +2 repeticiones en las dosis por capacidad. La validación completa (V4, V16, V17, V20, V24-presupuesto, V24-tope y V25) no los bloqueó en ninguna sesión.
+
+### 12.4 Autorización de V24 antes de la evidencia V32 (observación 4)
+
+**El problema de la secuencia.** El primer paso se valida antes de que exista su registro en V32. La solución es separar **dos fuentes de autorización** y unirlas en una sola transacción:
+
+1. **Propuesta del ciclo.** El backend calcula **un** paso determinista (sesión de origen, ejercicio, dosis anterior y dosis nueva) **antes** de validar. Lo pasa en el contexto de validación como la única autorización nueva del ciclo. V24 acepta esa dosis **solo** en esa colocación de esa sesión, y **solo** si es exactamente la propuesta y está dentro del rango (D-P3).
+2. **Autorizaciones heredadas.** Son las dosis ya publicadas por pasos anteriores, leídas del linaje V31 + V32 al preparar el contexto (como D8). Una copia idéntica las conserva.
+3. **Mismo cambio, sin ventanas:**
+   - la publicación y la evidencia V32 se escriben **en la misma transacción** (ya probado en `PublicacionAtomicaIT`);
+   - antes de escribir, el mapeador comprueba que la dosis publicada es **exactamente** la propuesta (sesión, ejercicio y dosis); si no coincide, no se publica nada;
+   - la evidencia guarda la propuesta completa (§8);
+   - V35, rehecha, puede añadir un disparador que compruebe que la sesión derivada difiere de su origen **solo** en ese ejercicio.
+4. **La IA no puede usar la autorización.** En una corrección P2-D, V8C solo admite mantener o reducir. Una dosis del rango que no sea la base ni la autorizada se rechaza.
+
+### 12.5 V24 por capacidades en P2-D (D-P11): impacto antes de activarla
+
+| Objetivo | Reducción por fatiga (−2 repeticiones) rechazada con V24 por capacidades **activa** | Rechazada hoy en P2-D (V24 por capacidades **apagada**) |
+|---|---:|---:|
+| `LOSE_WEIGHT` | 39 de 54 (72 %) | 0 % |
+| `GAIN_MUSCLE` | 54 de 54 (100 %, por 4D) | 100 % (4D está activa en P2-D) |
+| `INCREASE_STRENGTH` | 47 de 54 (87 %) | 0 % |
+| `GENERAL_FITNESS` | 54 de 54 (100 %) | 0 % |
+
+**Qué significa:**
+1. **Hoy, en P2-D, los objetivos por capacidades aceptan cualquier dosis.** Es la incoherencia ya señalada.
+2. **Activar la V24 por capacidades tal cual dejaría sin efecto las reducciones de dosis** que permiten `REVISAR_CARGA_Y_RECUPERACION` e `INVESTIGAR_CAMBIO_MINIMO`, en el 72–100 % de las sesiones. Pasarían a `SIN_EFECTO`. Hoy ya ocurre en `GAIN_MUSCLE`.
+3. **Por eso, la extensión autorizada de V24 tiene que cubrir también las reducciones.** Una dosis por **debajo** de la base, dentro de `rep_limits` y del mínimo de series, se acepta **solo** si la registra una intervención de reducción aplicada (V32), igual que una progresión. Con eso, activar la V24 por capacidades en P2-D es coherente y no quita intervenciones.
+4. **Orden recomendado:** primero la extensión (reducción y progresión autorizadas); después activar la V24 por capacidades en P2-D, y medir otra vez con este arnés. **No activarla antes.**
+
+### 12.6 V35 (D-P10)
+
+- **Dónde está aplicada:**
+  - en el repositorio, `V35__restauracion_de_sesiones.sql` (`b6fd9ae`), no desplegada desde este entorno;
+  - en la base local de pruebas `fs-p2d`, que **se aplicó a mano** para las pruebas heredadas de P2-D y no tiene historial de Flyway.
+- **No se puede comprobar desde aquí:** Neon. Hay que confirmar allí, en solo lectura:
+  - `SELECT version FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 3;`
+  - `SELECT count(*) FROM information_schema.columns WHERE table_name = 'plan_adaptation_attempts' AND column_name = 'restored_sessions';`
+- **Si no está aplicada en ningún entorno compartido,** se puede rehacer V35 sin migración de corrección. La base local se recrea.
+
+### 12.7 Decisiones actualizadas
+
+| # | Estado tras la revisión |
+|---|---|
+| D-P1 | **Aprobada:** 80 %, dos semanas consecutivas, por sesión y por semana |
+| D-P2 | **Aprobada** (condiciones observables) |
+| D-P3 | **Factible** con la simulación (§12.3); queda condicionada a la autorización trazable (§12.4) y a cubrir también las reducciones (§12.5) |
+| D-P4 | **Aprobada** como máximos (no metas) |
+| D-P5 | **Aprobada provisionalmente** (techo × 1,10), con la reserva R2 |
+| D-P6 | **Aprobada con ajuste:** ante dolor prevalece la seguridad (`SEGURIDAD_ANTE_DOLOR`), no solo el paso atrás |
+| D-P7 | **Aprobada conceptualmente**, con pruebas |
+| D-P8, D-P9 | **Aprobadas** |
+| D-P10 | **Condicionada** a confirmar que V35 no está aplicada en Neon (§12.6) |
+| D-P11 | **No activar todavía.** Requiere antes la extensión con reducciones autorizadas (§12.5) |
+| **D-P12** (nueva) | Política de reserva: **R2** (recomendada) o R1 |
+
+## 13. Para la tesis
 
 **Qué se puede sostener:**
 - La progresión es **gradual, limitada y condicionada** a un cumplimiento sostenido observable.
