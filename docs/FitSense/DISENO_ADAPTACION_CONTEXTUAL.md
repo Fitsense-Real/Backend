@@ -2,143 +2,179 @@
 
 | | |
 |---|---|
-| Versión | **v0.2 · para revisión.** Sustituye a la v0.1 (`46fb26d`), que queda en el historial |
+| Versión | **v0.3 · para revisión.** Cierra las observaciones a la v0.2 (`6ffcf20`); la v0.1 (`46fb26d`) y la v0.2 quedan en el historial |
 | Fecha | 27/10/2026 |
-| Base | rama `generation`, `46fb26d` |
-| Estado | Solo diseño: **sin código, migraciones, endpoints ni cambios en Flutter** hasta su aprobación |
+| Estado | Aprobación conceptual de la v0.2, condicionada. **Sin código, migraciones, endpoints ni cambios en Flutter** hasta aprobar esta versión |
 
 ## Principio
 
 > **FitSense ayuda a la persona a mantener y cumplir su rutina personalizada; no le cambia la rutina cada vez que tiene una dificultad.**
 
-**Qué hace cada parte:**
-- **La personalización inicial** la hace la IA a partir del perfil: objetivo, nivel, días, tiempo, equipo y restricciones.
+- **La personalización inicial** la hace la IA a partir del perfil.
 - **La adaptación posterior** responde a un problema concreto de ejecución, con el **cambio mínimo** que su causa permite, sobre la sesión afectada. El resto del plan no cambia.
+- **La omisión es un hecho; la causa es información declarada; la intervención es una decisión justificada por ambas.** Una omisión no implica por sí sola reducir el entrenamiento, y la falta de información tampoco autoriza un recorte.
 
-**Cómo se trata cada dato:**
-- La omisión es un hecho.
-- La causa es información declarada.
-- La intervención es una decisión justificada por ambas.
+**El MVP demuestra:**
+1. un plan inicial personalizado con IA;
+2. la medición de la adherencia y la detección de cuándo intervenir;
+3. ajustes mínimos y justificados sobre el plan existente, con su resultado evaluado.
 
-Una omisión **no** implica por sí sola reducir el entrenamiento.
+**Fuera del MVP:** regenerar la semana o la rutina, la progresión automática, los cambios globales del perfil y los cuestionarios adicionales.
 
-**Estabilidad.** Una rutina estable también es personalizada, y para la evaluación permite atribuir cada cambio a una intervención concreta. Si la rutina cambiara cada semana, los resultados de adherencia serían difíciles de interpretar.
+### Cambios respecto de la v0.2
 
-### Qué demuestra el MVP
-
-1. Un plan inicial personalizado, generado con IA.
-2. La medición de la adherencia y la detección de cuándo hace falta intervenir.
-3. Ajustes mínimos y justificados sobre el plan existente, que preservan su estructura y cuyo resultado se evalúa.
-
-**Fuera del MVP:**
-- regenerar automáticamente la semana o la rutina;
-- la progresión de carga o dificultad;
-- cuestionarios extensos;
-- un sistema completo de planificación deportiva.
-
-### Qué se retira de la v0.1
-
-| v0.1 | v0.2 |
+| Observación | Resolución en la v0.3 |
 |---|---|
-| Regenerar la semana si cambian los minutos | **Retirado.** La rutina se conserva; solo se ajusta la sesión afectada, si es factible |
-| Pregunta con tres opciones y sugerencia de cambiar el perfil | **Una** pregunta breve, opcional, con dos opciones; el perfil no se toca |
-| Alcances puntual, temporal y persistente para todas las causas | Solo se distingue lo que **se restaura**; todo lo demás se conserva |
-| Restauraciones encadenadas y una columna de referencia | Restauración de **un paso**, con el linaje V31 que ya existe |
+| D1–D4 | D1 y D4 aprobadas. D2 se precisa sin romper V32 y V33 (§6.1). D3 se aprueba con evidencia positiva (§3.3) |
+| 1. V31 de un paso recupera la versión equivocada | Recorrido V31 + V32 hasta la última adaptación restaurable; inequívoco por las restricciones existentes (§3.2) |
+| 2. Ausencia de causa ≠ recuperación | Se restaura solo con **ejecución registrada y completada, sin señales incompatibles**. Sin información, el ajuste se mantiene y la restauración queda pendiente (§3.3) |
+| 3. Qué significan los minutos | M es la disponibilidad **para este entrenamiento**, no para todos (§1) |
+| 4. Indicador | A_s entre 0 y 1; sesiones bajo el 30 %; n_r = 0 no calculable; tasas de finalización y de realización separadas (§4) |
+| Verificación V32 | Conservar por causa nunca es `APLICADA`; se mantiene la equivalencia de V33 (§6.1) |
+| Versionado | `adaptation_rule_version` en la evidencia V32, enlazada con la intervención (§6.2) |
 
 ---
 
 ## 1. ¿Cuándo adaptar?
 
-**Sin cambios.** Decide el decisor actual (`AdaptationOrderDecider`), con sus umbrales:
+**Sin cambios.** Decide el decisor actual, con sus umbrales:
+- cobertura menor de 50 % → `INSUFFICIENT_DATA`;
+- observada de 80 % o más → `NO_CHANGE`;
+- de 50 % a menos de 80 % → `ADAPT_LOCALIZED`;
+- menos de 50 % → `ADAPT_EXPANDED` (pospuesto).
 
-| Situación | Decisión |
-|---|---|
-| Cobertura de registro menor de 50 % | `INSUFFICIENT_DATA` |
-| Observada de 80 % o más | `NO_CHANGE` |
-| De 50 % a menos de 80 % | `ADAPT_LOCALIZED`: la peor sesión señalada |
-| Menos de 50 % | `ADAPT_EXPANDED`: todas las señaladas (pospuesto) |
+La causa registrada de cada sesión señalada elige la intervención (§2).
 
-Se señalan las sesiones con registro que no llegaron al 80 %. La **causa registrada** de cada una elige la intervención.
+**Lo único nuevo es una pregunta opcional, solo al omitir con «No tuve tiempo».** Si no responde, la omisión queda registrada igual.
 
-**Lo único nuevo: una pregunta opcional para la falta de tiempo.** Cuando la persona elige «No tuve tiempo» al omitir, Flutter muestra una pregunta. Si no responde, la omisión queda registrada igual.
-
-> ¿Normalmente tienes el tiempo que indicaste para entrenar?
+> ¿Sueles tener el tiempo previsto para **este entrenamiento**?
 > - **Sí, fue algo puntual** → `IMPREVISTO`
-> - **No, suelo tener menos** → «¿Cuántos minutos sueles tener?» → `MENOS_TIEMPO_HABITUAL` + minutos M
+> - **No, suelo tener menos** → «¿Cuántos minutos sueles tener disponibles **para este entrenamiento**?» → `MENOS_TIEMPO_HABITUAL` + M
 
-**Reglas de la respuesta:**
-- **Los minutos los escribe la persona.** No se infieren de la sesión omitida.
-- M debe estar en el rango que ya admite el perfil (15 a 180). No hay umbral nuevo.
-- El perfil **no** se modifica: M acota la sesión afectada y nada más.
-- Quien pueda entrenar otro día ya tiene su causa propia, «Cambio de horario» (`SCHEDULE_CHANGE`). La pregunta no la duplica.
+**Qué significa M:**
+- La disponibilidad habitual para **esta sesión de la semana** (por ejemplo, la del viernes).
+- **No** es la disponibilidad general: no cambia el perfil ni las demás sesiones.
+- La escribe la persona; no se infiere de la sesión omitida.
+- Su rango es el que ya admite el perfil, de 15 a 180 minutos.
+
+Sesiones parciales: sin pregunta en el MVP (D4).
 
 ---
 
 ## 2. ¿Qué puede adaptarse?
 
-**Solo la sesión señalada, y solo el cambio mínimo que su intervención permite.** Las demás sesiones se conservan idénticas: lo garantiza V8C.
+Solo la sesión señalada, y solo el cambio mínimo que su intervención permite. Las demás sesiones se conservan idénticas (V8C).
 
-| Causa (y respuesta) | Qué se hace | Qué puede cambiar la IA | Si no es factible | Tras la semana adaptada | Regla |
-|---|---|---|---|---|---|
-| Falta de tiempo · **imprevisto** | **Conservar**, sin llamar a la IA | Nada | No aplica | Nada que restaurar | Nueva |
-| Falta de tiempo · **menos tiempo habitual (M)** | `ACORTAR_O_REORGANIZAR`, con la sesión **≤ M** | Bajar dosis o retirar **un** complemento; conservar los estructurales y la dosis de los que se quedan | `SIN_EFECTO`: la sesión se conserva y consta | **Se conserva**: es una condición declarada, no un imprevisto | Actual + tope M (nuevo) |
-| Falta de tiempo · **sin respuesta** | **Conservar**, sin llamar a la IA | Nada | No aplica | Nada que restaurar | **Cambia** la regla actual (hoy acorta) |
-| Cambio de horario | `REPROGRAMAR_DIAS` | Solo la fecha, dentro de los días disponibles y de la semana | `SIN_EFECTO` (por ejemplo, sin un día libre) | **Se restaura** el día original | Actual + restauración (nueva) |
-| Dolor o molestia | `SEGURIDAD_ANTE_DOLOR` | Retirar o sustituir el ejercicio que dolió, con revisión de seguridad | Sin IA: `NO_FACTIBLE`, no se republica lo que dolió | **Nunca** se restaura el ejercicio | Actual |
-| Fatiga | `REVISAR_CARGA_Y_RECUPERACION` | Solo la dosis | `SIN_EFECTO` | **Se restaura** la dosis | Actual + restauración (nueva) |
-| Muy difícil | `VARIANTE_MAS_SENCILLA_O_CARGA` | Variante del mismo patrón, o la carga | `SIN_EFECTO` | Se conserva: volver atrás sería **subir** la dificultad | Actual |
-| Falta de motivación | `INVESTIGAR_CAMBIO_MINIMO` | Cambios pequeños de dosis | `SIN_EFECTO` | Decisión pendiente **D3** | Actual |
-| Otra, o sin causa | `CAUSA_NO_REGISTRADA` | Nada | No aplica | Nada que restaurar | Actual |
+| Causa (y respuesta) | Intervención | ¿Se llama a la IA? | Qué puede cambiar | Si no es factible | Tras la adaptación | Regla |
+|---|---|---|---|---|---|---|
+| Falta de tiempo · imprevisto | **`CONSERVAR`** | No | Nada | No aplica | Nada que restaurar | Nueva |
+| Falta de tiempo · menos tiempo, con M **≥** la duración prevista | **`CONSERVAR`** | No | Nada: la sesión ya cabe en M | No aplica | Nada que restaurar | Nueva |
+| Falta de tiempo · menos tiempo, con M **<** la duración prevista | `ACORTAR_O_REORGANIZAR` con la sesión ≤ M | Sí | Bajar dosis o retirar **un** complemento; conservar los estructurales y la dosis de los que se quedan | `SIN_EFECTO`: se conserva y consta | **Se conserva**: se basa en una disponibilidad declarada para ese entrenamiento | Actual + tope M (nuevo) |
+| Falta de tiempo · sin respuesta (D1) | **`CONSERVAR`** | No | Nada | No aplica | Nada que restaurar | **Cambia** la regla actual (hoy acorta) |
+| Cambio de horario | `REPROGRAMAR_DIAS` | Sí | Solo la fecha, dentro de los días disponibles y de la semana | `SIN_EFECTO` | **Restaurable** (§3) | Actual + restauración |
+| Dolor o molestia | `SEGURIDAD_ANTE_DOLOR` | Sí | Retirar o sustituir el ejercicio que dolió | Sin IA: `NO_FACTIBLE` | **Nunca** se restaura el ejercicio | Actual |
+| Fatiga | `REVISAR_CARGA_Y_RECUPERACION` | Sí | Solo la dosis | `SIN_EFECTO` | **Restaurable** (§3) | Actual + restauración |
+| Muy difícil | `VARIANTE_MAS_SENCILLA_O_CARGA` | Sí | Variante del mismo patrón, o la carga | `SIN_EFECTO` | Se conserva: volver sería subir la dificultad | Actual |
+| Falta de motivación | `INVESTIGAR_CAMBIO_MINIMO` | Sí | Cambios pequeños de dosis | `SIN_EFECTO` | **Restaurable** (§3), con evidencia positiva (D3) | Actual + restauración |
+| Otra, o sin causa | `CAUSA_NO_REGISTRADA` | Hoy sí; propuesto **no** | Nada | No aplica | Nada que restaurar | Actual (sin llamada) |
 
-**Lo que se mantiene sin cambios:**
-- V8C (solo cambia lo señalado y solo lo permitido), V1–V25 con 4D en ENFORCE, y la sustitución por seguridad de lo heredado.
-- La exención de V20 solo para la sesión que se acorta.
-- La evidencia V32.
+**Lo que se mantiene sin cambios:** V8C, V1–V25 con 4D en ENFORCE, la sustitución por seguridad de lo heredado, la exención de V20 solo para la sesión que se acorta, `SIN_EFECTO` y `NO_FACTIBLE`, y `RESPALDO` cuando no hay IA.
 
-**La única validación nueva:** en el caso «menos tiempo habitual», la duración estimada de la sesión ajustada no supera M. M es el dato que declaró la persona, no un umbral del sistema.
+**Única validación nueva:** con `ACORTAR_O_REORGANIZAR` y un M declarado, la duración estimada no supera M.
 
-**Sin modificación válida** no se fuerza nada. Se registra `SIN_EFECTO` (la IA no encontró un cambio permitido) o `NO_FACTIBLE` (no hay semana publicable), como hoy.
-
-**Sin IA** (solo motor de reglas) sigue siendo `RESPALDO`: la semana se conserva.
+**Sin IA cuando no hay nada que pedir.** Hoy toda sesión señalada se envía a la IA, incluida `CAUSA_NO_REGISTRADA`, que no puede cambiar nada. Con `CONSERVAR` y `CAUSA_NO_REGISTRADA` no se hace la llamada, y la sesión queda registrada como se describe en §6.1.
 
 ---
 
 ## 3. ¿Cómo se conserva la rutina?
 
-### 3.1 La prescripción de referencia
+### 3.1 Qué se restaura
 
-La semana nueva se copia de la medida, como hoy. La **referencia** de una sesión adaptada es la versión **anterior** a la adaptación, y ya está en la base: es el origen V31 (`source_planned_workout_id`) de la sesión adaptada. No hace falta copiar datos ni crear una columna, porque la restauración es de **un solo paso** (§3.2).
+Solo los cambios **restaurables**:
+- el día reprogramado (`REPROGRAMAR_DIAS`);
+- la dosis ajustada por fatiga (`REVISAR_CARGA_Y_RECUPERACION`);
+- la dosis ajustada por motivación (`INVESTIGAR_CAMBIO_MINIMO`).
 
-### 3.2 Restauración
+Todo lo demás se conserva. Restaurar es volver **exactamente** a la prescripción de referencia, con los mismos ejercicios, dosis y día. No se generan ejercicios ni combinaciones nuevas, y nunca se supera la referencia: restaurar **no es progresar**.
 
-**Qué se restaura.** Solo los cambios marcados en la tabla: el día reprogramado y la dosis bajada por fatiga. Todo lo demás se conserva.
+### 3.2 Encontrar la referencia: V31 + V32, sin columna nueva
 
-**Cuándo.** Al derivar la semana siguiente a la adaptada, si se cumplen las dos condiciones:
-1. esa sesión **no** volvió a señalarse por la misma causa;
-2. la referencia supera la revalidación (§3.3).
+**El problema de la v0.2.** El origen inmediato no sirve:
 
-Si volvió a fallar por la misma causa, no se restaura y la nueva decisión parte de la versión adaptada.
+```
+Semana 1 · referencia      3×12
+Semana 2 · fatiga          2×12   origen V31: semana 1
+Semana 3 · copia           2×12   origen V31: semana 2   ← su origen ya está reducido
+```
 
-**Cómo.** Se vuelve **exactamente** a la referencia: los mismos ejercicios, dosis y día. No se generan ejercicios nuevos ni combinaciones nuevas. Restaurar **no es progresar**: nunca se prescribe más que la referencia.
+**Clasificar cada paso.** Cada paso `origen → derivada` del linaje queda clasificado por la evidencia V32 del intento que publicó la derivada. Ese intento cumple dos condiciones:
+- su `resulting_plan_id` es el plan de la derivada;
+- todos sus arreglos contienen identificadores de sesiones del plan de origen (trigger de V32).
 
-### 3.3 Nunca restaurar algo inseguro
+| Tipo de paso | Condición en V32 |
+|---|---|
+| **Adaptado por I** | origen ∈ `applied_sessions`; I = `targeted_interventions[k]` en la posición k del origen dentro de `targeted_sessions` |
+| **Restaurado** | origen ∈ `restored_sessions` (arreglo nuevo, §6.1) |
+| **Sustituido por seguridad** | el origen aparece en las sustituciones de `conservation_report` |
+| **Copia** | origen ∈ `conserved_sessions` o `no_effect_sessions`, sin sustitución |
+
+**El algoritmo.** Para una sesión S de la semana medida, se recorre el linaje hacia atrás:
+- mientras los pasos sean **copias**, se sigue retrocediendo;
+- el primer paso que no es una copia decide el resultado:
+
+| Primer paso que no es una copia | Resultado |
+|---|---|
+| Adaptado por una intervención **restaurable** | **Referencia = el origen de ese paso** (la versión anterior a la adaptación) |
+| Adaptado por una intervención no restaurable, restaurado o sustituido por seguridad | **No hay nada restaurable**: se conserva S |
+| No hay ningún paso así (llega a la generación inicial) | **No hay nada restaurable**: se conserva S |
+
+En el ejemplo: semana 3 ← semana 2 es una copia; semana 2 ← semana 1 está adaptada por fatiga; la referencia es la **semana 1** (3×12), sin importar cuántas semanas de copia haya en medio.
+
+**Por qué el recorrido es inequívoco.** Lo garantizan restricciones que ya existen en la base:
+- **Un solo origen por sesión** (`source_planned_workout_id` es una columna), nunca ella misma (`ck_pw_source_not_self`), del **mismo usuario** y de una semana **estrictamente anterior** (`fn_derivacion_coherente`). El camino hacia atrás es único y termina.
+- **Una sola derivada por origen y plan** (`uq_pw_source_per_plan`).
+- **Clasificación única de cada paso:**
+  - `applied_sessions` y `no_effect_sessions` son disjuntos (`ck_paa_aplicada_o_sin_efecto`);
+  - ambos están contenidos en `targeted_sessions` (`ck_paa_desenlace_subconjunto`);
+  - `conserved_sessions` es disjunto de las señaladas (`ck_paa_conservadas_disjuntas`);
+  - `targeted_interventions` es paralelo a `targeted_sessions` (`ck_paa_pareja`), sin repetidos (`ck_paa_senaladas_unicas`).
+  - El arreglo nuevo `restored_sessions` debe ser disjunto de los cuatro (§6.1).
+- **Varios intentos para la misma semana medida.** Por ejemplo, un `NO_FACTIBLE` y luego un éxito. Solo cuenta el intento cuyo `resulting_plan_id` es el plan de la derivada; un intento sin plan no publica derivadas.
+
+**Lo que falta demostrar con datos.** Las restricciones prueban que el camino es único. Que la clasificación sea **completa** depende de que toda derivada publicada tenga su intento V32: P2-D lo escribe en la misma transacción que publica. La consulta de verificación (§7) lo comprueba sobre datos reales, y la reparación por seguridad (`PublishedPlanSafetyRepairService`, hoy sin uso) debe revisarse antes de activarla. **Un paso que no se pueda clasificar no se restaura.**
+
+### 3.3 Cuándo se restaura: evidencia positiva, no ausencia de causa
+
+La restauración se evalúa al derivar la semana siguiente, **solo** si la sesión adaptada tiene ejecución registrada y completada en la semana medida.
+
+| Ejecución de la sesión adaptada en la semana medida | Resultado |
+|---|---|
+| **Completada** (A_s ≥ 0,80) **y sin señales incompatibles** | **Se evalúa la restauración**: revalidación (§3.4); si pasa, se restaura |
+| Completada **con** señal incompatible | No se restaura; el ajuste se mantiene |
+| Parcial (A_s < 0,80) | No se restaura. Si quedó señalada, la decisión nueva parte de la versión adaptada |
+| Omitida (con cualquier causa) | No se restaura; la decisión nueva parte de la versión adaptada |
+| **Sin información** (sin sesión ni omisión declarada) | **No se restaura**: el ajuste se mantiene y la restauración queda **pendiente** para el ciclo siguiente |
+
+**Señales incompatibles.** Todas salen de datos que ya existen, con umbrales aprobados:
+
+| Intervención restaurable | Señal incompatible |
+|---|---|
+| Fatiga | RPE de la sesión ≥ 8 (el umbral de sobreesfuerzo de MVP-1.8, D5), o un ejercicio de la sesión registrado con causa fatiga o dolor |
+| Motivación | Un ejercicio de la sesión registrado con causa falta de motivación |
+| Cambio de horario | El día original ya no está en los días disponibles **vigentes** (V3 en la revalidación) |
+| Todas | Dolor registrado en la sesión, o cualquier fallo de la revalidación (§3.4) |
+
+**Qué se mantiene mientras la restauración está pendiente.** La sesión ajustada sigue copiándose. El recorrido de §3.2 la sigue encontrando, porque las copias no cortan el camino. No hay plazo ni umbral nuevo: se reevalúa en cada ciclo con la misma regla.
+
+### 3.4 Revalidación: nunca restaurar algo inseguro
 
 La sesión restaurada se valida con el perfil y el catálogo **vigentes**:
-- exclusiones de seguridad (SUST-SEG-1);
-- ejercicios bloqueados por la persona;
+- exclusiones de seguridad (SUST-SEG-1), ejercicios bloqueados y restricciones declaradas;
 - ningún ejercicio que haya dolido desde la referencia;
-- V1–V25.
+- días disponibles vigentes;
+- V1–V25 (V20 sin exención: la sesión restaurada ya no está acortada).
 
-Si no pasa, **no se restaura**: la sesión queda como estaba y se registra el motivo.
-
-### 3.4 Evitar cambios acumulativos
-
-Cada adaptación toca una sola sesión y lo mínimo que permite su causa:
-- Una sesión que se completa no vuelve a cambiar: la decisión es `NO_CHANGE`.
-- Un imprevisto o una falta de tiempo sin respuesta no cambian nada.
-- Los ajustes de día y de fatiga se restauran.
-
-Solo quedan como cambios estables los que tienen una justificación duradera: la menor disponibilidad declarada, el dolor y la variante más sencilla.
+Si no pasa, no se restaura: la sesión se conserva como estaba y el motivo queda en `conservation_report`.
 
 ---
 
@@ -148,89 +184,142 @@ Solo quedan como cambios estables los que tienen una justificación duradera: la
 
 | | |
 |---|---|
-| Unidad | Cada sesión adaptada publicada: su origen V31 está en `applied_sessions` de V32 |
+| Unidad | Cada sesión **adaptada publicada**: su origen V31 está en `applied_sessions`. Las restauradas y las conservadas por su causa se miden aparte, con las mismas fórmulas, como comparación |
 | Momento | Al cerrar la semana de esa sesión (en el ciclo siguiente, junto a `adherence_after_pct`) |
-| Fuente | V32, el linaje V31, `planned_workouts` y `workout_sessions`. **Sin tabla nueva**: una consulta o vista de solo lectura |
+| A_s | **Proporción entre 0 y 1**: `completion_percentage` / 100 de la sesión que cuenta (`counts_toward_adherence`). Sin sesión, A_s = 0 |
+| Fuente | V32, el linaje V31, `planned_workouts` y `workout_sessions`. Consulta o vista de solo lectura, **sin tabla nueva** |
 
-**Clasificación** (con los umbrales que ya existen):
+**Clasificación** (umbrales existentes: 0,80 completada y 0,30 válida):
 
-| Resultado | Condición |
-|---|---|
-| Completada | Sesión que cuenta, con A_s de 80 % o más |
-| Parcial | Sesión que cuenta, con A_s mayor que 0 y menor que 80 % |
-| Omitida | Omitida con causa, o A_s = 0. Se marca si la causa es **la misma** que motivó la adaptación |
-| Sin información | Sin sesión y sin omisión declarada |
-| No aplica | El intento fue `SIN_EFECTO`, `RESPALDO` o `NO_FACTIBLE`, o la sesión se conservó por su causa |
+| Resultado | Condición | ¿Tiene registro? |
+|---|---|---|
+| Completada | A_s ≥ 0,80 | Sí |
+| Parcial válida | 0,30 ≤ A_s < 0,80 | Sí |
+| Parcial no válida | 0 < A_s < 0,30: cuenta con su A_s real, como en la adherencia, pero no es una sesión válida | Sí |
+| Omitida | Omitida con causa, o sesión registrada con A_s = 0. Se marca si la causa es **la misma** que motivó la adaptación | Sí |
+| Sin información | Sin sesión y sin omisión declarada | No |
+| No aplica | No hubo sesión adaptada (`SIN_EFECTO`, `RESPALDO`, `NO_FACTIBLE`) | Fuera de la unidad |
 
-**Fórmulas** (sin pesos, igual que la adherencia):
-- Cumplimiento oficial = Σ A_s / n × 100, sobre **todas** las sesiones adaptadas; sin información cuenta 0.
-- Cumplimiento observado = Σ A_s / n_r × 100, solo las que tienen registro.
-- Repetición de la dificultad = omitidas por la misma causa / n_r.
+**Fórmulas.** n = sesiones adaptadas; n_r = sesiones adaptadas con registro.
 
-**No es una prueba causal.** Que una sesión adaptada se complete es un **resultado observado**, no la demostración de que la IA o la intervención lo produjeron: no hay grupo de control.
+| Indicador | Fórmula | Si el denominador es 0 |
+|---|---|---|
+| Cumplimiento oficial | Σ A_s / n × 100 (sin información cuenta 0) | No calculable (`NULL`) |
+| Cumplimiento observado | Σ A_s / n_r × 100 | No calculable (`NULL`) |
+| Tasa de finalización | completadas / n_r × 100 | No calculable (`NULL`) |
+| Tasa de realización | (completadas + parciales válidas) / n_r × 100 (sesiones con A_s ≥ 0,30) | No calculable (`NULL`) |
+| Repetición de la dificultad | omitidas por la misma causa / n_r × 100 | No calculable (`NULL`) |
+| Cobertura | n_r / n × 100 | No calculable (`NULL`) |
+
+**No es una prueba causal.** Que una sesión adaptada se complete es un **resultado observado**: no demuestra que la IA o la intervención lo hayan producido, porque no hay grupo de control.
 
 ---
 
 ## 5. El ejemplo de A01 con este diseño
 
-**Viernes del 06/11:** 6 ejercicios, 33 minutos, omitido por falta de tiempo. El perfil dice 45 minutos.
+**Viernes del 06/11:** 6 ejercicios, 33 minutos, omitido por falta de tiempo.
 
 | Caso | Entrada | Decisión | Viernes siguiente | Lunes y miércoles |
 |---|---|---|---|---|
-| A | «Fue algo puntual» | Conservar, sin IA | Igual: 6 ejercicios, 33 min | Iguales |
-| B | «Suelo tener menos», M = 30 | `ACORTAR_O_REORGANIZAR`, ≤ 30 min | Retira el complemento 1256 → 5 ejercicios, 28 min (lo que hizo A01). Si no se pudiera llegar a 30 sin tocar los estructurales: `SIN_EFECTO` | Iguales |
-| C | No responde | Conservar, sin IA | Igual | Iguales |
-| D | Cambio de horario (perfil con un día libre) | `REPROGRAMAR_DIAS` | Mismo contenido en otro día; la semana siguiente vuelve al viernes | Iguales |
+| A | «Fue algo puntual» | `CONSERVAR`, sin IA | Igual: 6 ejercicios, 33 min | Iguales |
+| B | «Suelo tener menos», M = 30 para este entrenamiento | `ACORTAR_O_REORGANIZAR`, ≤ 30 min | Retira el complemento 1256 → 28 min (lo que hizo A01). Si no fuera posible sin tocar los estructurales: `SIN_EFECTO` | Iguales |
+| B' | «Suelo tener menos», M = 40 | `CONSERVAR` (33 ya cabe en 40) | Igual | Iguales |
+| C | No responde | `CONSERVAR`, sin IA | Igual | Iguales |
+| D | Fatiga: dosis ajustada; la semana siguiente completada con RPE 6 | Restaurar (revalidada) | Vuelve a la referencia | Iguales |
 
-**A01 sigue siendo válida** como prueba técnica histórica, y sus evidencias no cambian. Documenta la regla anterior: falta de tiempo implicaba acortar. Con la v0.2, ese mismo cambio solo ocurre en el caso B.
+**A01 sigue siendo la prueba técnica histórica** de la regla anterior (`ADAPT-1`, §6.2), con sus evidencias intactas.
 
 ---
 
-## 6. Impacto, mínimo
+## 6. Verificaciones técnicas
+
+### 6.1 V32: conservar no es aplicar
+
+**Invariantes que se mantienen:**
+- **V33:** `APLICADA` ⇔ `applied_sessions` no está vacío.
+- `applied_sessions` y `no_effect_sessions` ⊆ `targeted_sessions`, disjuntos entre sí.
+- `conserved_sessions` es disjunto de las señaladas.
+- `RESPALDO` y `SIN_ORDEN` tienen origen `CONSERVED`.
+
+**Cómo se registra lo nuevo:**
+
+| Situación | Registro |
+|---|---|
+| Sesión conservada por su causa (`CONSERVAR` o `CAUSA_NO_REGISTRADA`) | Sigue **señalada**, con su intervención en `targeted_interventions`. Va en **`no_effect_sessions`**, nunca en `applied_sessions`. Si es la única señalada: `status = SIN_EFECTO`, `ai_calls = 0`, `generation_source = CONSERVED` |
+| Mezcla, en `ADAPT_EXPANDED` (pospuesto) | Las conservadas por su causa van en `no_effect_sessions`; las corregidas en `applied_sessions`. `APLICADA` si al menos una se aplicó |
+| Sesión restaurada | Arreglo nuevo **`restored_sessions`** (con el origen, como los demás), disjunto de los cuatro. No es una adaptación aplicada ni una conservada |
+| Restauración bloqueada | La sesión sigue en `conserved_sessions`; el motivo va en `conservation_report` |
+| Semana `NO_CHANGE` con una restauración | `status = SIN_ORDEN`, origen `CONSERVED`: restaurar es volver a la prescripción anterior, no una generación de la IA |
+
+**Así se distingue «conservada por su causa» de «la IA no encontró un cambio permitido»**, sin un estado nuevo: por la intervención (`CONSERVAR` o `CAUSA_NO_REGISTRADA`) y por `ai_calls`.
+
+**Cambios de esquema (una migración nueva, V35; V34 no se toca):**
+- añadir `CONSERVAR` a `ck_paa_intervenciones`;
+- añadir la columna `restored_sessions`, con sus restricciones de disjunción y pertenencia al plan de origen (trigger de V32);
+- añadir `adaptation_rule_version` (§6.2).
+
+### 6.2 Versionado de la regla de adaptación
+
+**Hoy:** `user_interventions.rule_version` y `weekly_user_metrics.calculation_version` guardan la versión de la **configuración del cálculo** (MVP-1.8): umbrales y parámetros. La lógica de adaptación no cambia esos umbrales, así que subir esa versión mezclaría dos cosas distintas.
+
+**Propuesta:**
+- Columna `plan_adaptation_attempts.adaptation_rule_version`, obligatoria, escrita por P2-D en cada intento.
+- Valores:
+  - `ADAPT-1`: la lógica vigente, la de A01; es el valor para las filas existentes;
+  - `ADAPT-2`: este diseño.
+- **Enlace con la intervención:** el intento y la intervención comparten `weekly_metric_id`, la semana medida. Con varios intentos para la misma semana, el que vale es el que publicó (`resulting_plan_id` = el `resulting_plan_id` de la intervención) o, si ninguno publicó, el último por `attempt_id`.
+- **A01** consta como `ADAPT-1` en su expediente. No se modifica: corrió en una base temporal que ya no existe.
+
+---
+
+## 7. Impacto, mínimo
 
 | Componente | Cambio |
 |---|---|
-| Flutter | La pregunta opcional tras «No tuve tiempo» y el campo de minutos |
-| Backend: contrato | Dos campos opcionales en `POST /api/v1/workouts/{id}/skip`: `lackOfTimeContext` y `availableMinutes` (este, solo con `MENOS_TIEMPO_HABITUAL`, entre 15 y 180) |
-| Backend: decisión | La intervención según causa y respuesta (tabla §2); conservar sin llamar a la IA; restaurar día o dosis (§3) |
-| PostgreSQL | `planned_workouts`: `lack_of_time_context`, `declared_available_minutes`. V32: registrar las sesiones conservadas por su causa y las restauradas (formato a decidir, **D2**) |
-| Prompt | Para la sesión con M: «la sesión debe durar como máximo M minutos». Nada más |
+| Flutter | La pregunta opcional tras «No tuve tiempo» y el campo de minutos «para este entrenamiento» |
+| Backend: contrato | `POST /api/v1/workouts/{id}/skip`: `lackOfTimeContext` y `availableMinutes` opcionales (este, solo con `MENOS_TIEMPO_HABITUAL`, de 15 a 180; si no, 400) |
+| Backend: decisión | Intervención según causa y respuesta; `CONSERVAR` sin llamada a la IA; recorrido y política de restauración (§3) |
+| PostgreSQL | `planned_workouts`: `lack_of_time_context`, `declared_available_minutes`. V35: `CONSERVAR` en `ck_paa_intervenciones`, `restored_sessions` y `adaptation_rule_version` |
+| Prompt | Para la sesión con M: «la sesión debe durar como máximo M minutos». Las sesiones que se conservan no se envían |
 | Validaciones | V8C acepta una restauración solo si es idéntica a la referencia. Nueva: sesión ≤ M. **Sin cambios:** V1–V25 y sus umbrales |
-| Analítica | La consulta del indicador (§4) |
+| Analítica | Consulta del indicador (§4) y **consulta de verificación del linaje**: toda derivada publicada tiene exactamente un intento V32 con su plan, y cada paso se clasifica en un solo tipo |
 
-**No cambia:** la generación inicial, el decisor, los umbrales, V24, V25 ni el linaje V31.
+**No cambia:** la generación inicial, el decisor, los umbrales, V24, V25 ni V31.
 
 ---
 
-## 7. Casos de aceptación
+## 8. Casos de aceptación
 
 | # | Entrada | Esperado | Evidencia |
 |---|---|---|---|
-| 1 | Viernes omitido · imprevisto | Viernes siguiente idéntico; 0 llamadas a la IA | V32 con la sesión conservada por su causa; `ai_calls = 0` |
-| 2 | Viernes omitido · menos tiempo, M = 30 (factible) | Viernes ≤ 30 min; solo se retira un complemento; lunes y miércoles idénticos | V8C y V1–V25 aprobadas; duración ≤ 30; V32 `APLICADA` |
-| 3 | Igual, con M que solo se alcanza tocando estructurales | `SIN_EFECTO`; viernes conservado | V32 `no_effect_sessions` con el motivo |
-| 4 | Viernes omitido · sin respuesta | Viernes idéntico; 0 llamadas | Igual que el caso 1 |
-| 5 | Viernes reprogramado por cambio de horario y completado | La semana siguiente vuelve exactamente al viernes | Sesión idéntica a la referencia V31; restauración registrada |
-| 6 | Dosis bajada por fatiga; la referencia contiene un ejercicio bloqueado después | No se restaura ese contenido; se registra el motivo | V32 con la restauración bloqueada; ningún ejercicio bloqueado publicado |
-| 7 | Sesión adaptada completada / omitida de nuevo por la misma causa | Indicador: completada / omitida con la marca de misma causa | Consulta §4 |
+| 1 | Viernes omitido · imprevisto | Viernes siguiente idéntico; 0 llamadas a la IA | V32 `SIN_EFECTO`, viernes en `no_effect_sessions` con `CONSERVAR`, `ai_calls = 0`, `CONSERVED` |
+| 2 | Viernes omitido · M = 30 (factible) | Viernes ≤ 30 min; solo se retira un complemento; lunes y miércoles idénticos | V32 `APLICADA`; V8C y V1–V25 aprobadas; duración ≤ 30 |
+| 3 | M que solo se alcanza tocando estructurales | `SIN_EFECTO`; viernes conservado | V32 `no_effect_sessions` |
+| 4 | Viernes omitido · sin respuesta | Igual que el caso 1 | Igual que el caso 1 |
+| 5 | Fatiga en la semana 2; copias en la 3 y la 4 **sin información**; completada en la 5 con RPE < 8 | Se mantiene en las semanas 3 y 4; en la 6 se restaura la **semana 1** | Recorrido V31 + V32 hasta la semana 1; `restored_sessions`; sesión idéntica a la referencia |
+| 6 | Fatiga; la semana siguiente, completada con RPE 8 | No se restaura | Señal incompatible registrada |
+| 7 | Cambio de horario; después la persona quita el día original de sus días disponibles | No se restaura | Revalidación V3; motivo en `conservation_report` |
+| 8 | Fatiga; la referencia contiene un ejercicio bloqueado después | No se restaura ese contenido | Motivo en `conservation_report`; ningún ejercicio bloqueado publicado |
+| 9 | Sesión adaptada: completada / al 25 % / omitida por la misma causa / sin registro | Completada / parcial no válida / omitida con la marca / sin información | Consulta §4; con n_r = 0, indicadores `NULL` |
 
 ---
 
-## 8. Decisiones pendientes
+## 9. Decisiones
 
-| # | Decisión | Recomendación |
+| # | Decisión | Estado |
 |---|---|---|
-| D1 | Falta de tiempo sin respuesta: conservar (sin IA) | **Conservar**, según el caso C de la revisión del 27/10. Cambia la regla actual |
-| D2 | Dónde se registran en V32 las sesiones conservadas por su causa y las restauradas | Dos arreglos con el formato de `applied_sessions`, y el motivo de una restauración bloqueada en `conservation_report` |
-| D3 | Falta de motivación: ¿se conserva o se restaura su ajuste de dosis? | Restaurar, igual que la fatiga: es un ajuste para sostener la rutina, no una condición duradera |
-| D4 | ¿Preguntar también al cerrar una sesión **parcial** por falta de tiempo? | No en el MVP: solo al omitir |
+| D1 | Falta de tiempo sin respuesta: conservar sin IA | **Aprobada** (27/10) |
+| D2 | Registro en V32 (§6.1): `no_effect_sessions` + `CONSERVAR` y el arreglo nuevo `restored_sessions`, sin estados nuevos | Aprobada con precisión; **revisar la forma concreta** |
+| D3 | Motivación: restaurable, solo con evidencia positiva (§3.3) | **Aprobada con condición**, incorporada |
+| D4 | Sin pregunta en sesiones parciales | **Aprobada** |
+| D5 | Usar RPE ≥ 8 (umbral de sobreesfuerzo de MVP-1.8) como señal incompatible para la fatiga | **Pendiente** |
+| D6 | `CAUSA_NO_REGISTRADA` deja de llamar a la IA (hoy la llama sin poder cambiar nada) | **Pendiente** |
+| D7 | `adaptation_rule_version` en V32, con `ADAPT-1` para lo existente (§6.2) | **Pendiente** |
 
-## 9. Para la tesis
+## 10. Para la tesis
 
-**Qué se puede sostener:** la adaptación es **mínima** (una sesión, un cambio permitido), **justificada** (por la causa y, en la falta de tiempo, por un dato que declara la persona) y **controlada** (V8C, V24, V25 y la trazabilidad V31/V32). La rutina personalizada se conserva.
+**Qué se puede sostener:** la adaptación es **mínima** (una sesión, un cambio permitido), **justificada** (por la causa y, en la falta de tiempo, por la disponibilidad que declara la persona para ese entrenamiento), **reversible** cuando corresponde y hay evidencia (§3.3) y **trazable** (V31, V32 y `adaptation_rule_version`).
 
-**Qué no se puede sostener:**
-- que una mejor adherencia posterior se deba a la IA;
-- que la disponibilidad declarada sea la real.
+**Qué no se puede sostener:** que una mejor adherencia posterior se deba a la IA, ni que la disponibilidad declarada sea la real.
 
-**Datos:** las adaptaciones con la regla v0.2 deben distinguirse por `rule_version`, para no mezclarlas con las anteriores, A01 incluida.
+**Datos:** se comparan por `adaptation_rule_version`: A01 corresponde a `ADAPT-1` y las pruebas nuevas a `ADAPT-2`.
