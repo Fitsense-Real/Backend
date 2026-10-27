@@ -194,3 +194,20 @@ En todos esos casos no hay exención, y V20 rige como antes.
 - E vuelve a quedar `NO_FACTIBLE` en la primera copia («V20: … dura unos 30 minutos y el mínimo es 31»).
 
 **Pendiente para activar en Neon.** Ejecutar `consultas/linaje_v31_v32.sql` en solo lectura y obtener 0 violaciones. Con un linaje incompleto, D8 no concede la exención y el comportamiento es el de antes, así que falla de forma segura.
+
+---
+
+## Neon · ejecución de `linaje_v31_v32.sql` (27/10/2026)
+
+La ejecutó el responsable del proyecto, en solo lectura. Este entorno no tiene acceso a Neon.
+
+| Consulta | Resultado | Lectura |
+|---|---|---|
+| 1. Violaciones | **Vacía** | No hay ninguna violación |
+| 2. Clasificación de cada paso | **Vacía** | **No hay ningún paso de linaje:** en Neon no se ha publicado nunca una semana derivada (P2-D) |
+
+**Conclusión:**
+- Las premisas se cumplen **sin datos que las pongan a prueba**: no hay historial que D8 pueda heredar ni que pueda estar incompleto. Habilitar D8 en Neon no depende de ningún dato existente.
+- A partir del primer ciclo de adaptación real, la consulta tendrá contenido. Conviene repetirla **antes de analizar los datos del piloto** y, si se habilita la restauración, antes de habilitarla.
+- Comprobación de cordura recomendada, para descartar que la consulta se haya ejecutado contra una base equivocada: `SELECT count(*) FROM weekly_training_plans;` debe devolver los planes ya publicados en Neon (por ejemplo, los planes 53 a 60).
+- No se modificó ningún dato histórico.

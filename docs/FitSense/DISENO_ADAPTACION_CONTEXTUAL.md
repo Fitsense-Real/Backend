@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Versión | **v0.3 · para revisión.** Cierra las observaciones a la v0.2 (`6ffcf20`); la v0.1 (`46fb26d`) y la v0.2 quedan en el historial |
+| Versión | **v0.3 · cerrada.** Incorpora las decisiones aprobadas y las verificaciones (`VERIFICACION_DISENO_V03.md`), sin rediseño. La v0.1 (`46fb26d`), la v0.2 (`6ffcf20`) y la v0.3 de revisión (`6120808`) quedan en el historial |
 | Fecha | 27/10/2026 |
-| Estado | Aprobación conceptual de la v0.2, condicionada. **Sin código, migraciones, endpoints ni cambios en Flutter** hasta aprobar esta versión |
+| Estado | Diseño cerrado. **ADAPT-2 no está autorizado para implementarse**: antes va la prueba de restauración (§8, caso 11). Solo se implementó la corrección D8 (`aeb09ab`) |
 
 ## Principio
 
@@ -159,12 +159,21 @@ La restauración se evalúa al derivar la semana siguiente, **solo** si la sesi�
 
 | Intervención restaurable | Señal incompatible |
 |---|---|
-| Fatiga | RPE de la sesión ≥ 8 (el umbral de sobreesfuerzo de MVP-1.8, D5), o un ejercicio de la sesión registrado con causa fatiga o dolor |
+| Fatiga | Un ejercicio de la sesión registrado con causa fatiga o dolor. **El RPE no se usa** (D5) |
 | Motivación | Un ejercicio de la sesión registrado con causa falta de motivación |
 | Cambio de horario | El día original ya no está en los días disponibles **vigentes** (V3 en la revalidación) |
 | Todas | Dolor registrado en la sesión, o cualquier fallo de la revalidación (§3.4) |
 
 **Qué se mantiene mientras la restauración está pendiente.** La sesión ajustada sigue copiándose. El recorrido de §3.2 la sigue encontrando, porque las copias no cortan el camino. No hay plazo ni umbral nuevo: se reevalúa en cada ciclo con la misma regla.
+
+**Qué demuestra y qué no.** Es una condición operativa **observable** para el MVP: sesión completada, sin fatiga ni dolor declarados y revalidada. No demuestra la recuperación fisiológica.
+
+**Una modificación funcional por ciclo publicado.**
+- Si la sesión señalada termina `APLICADA`, las restauraciones elegibles **esperan**: siguen copiándose y el recorrido las vuelve a encontrar.
+- Con `SIN_EFECTO` o `SIN_ORDEN` se permite **una** restauración validada: la de adaptación más antigua y, a igualdad, la de fecha más temprana.
+- Con `RESPALDO` no se restaura, porque `RESPALDO` es por definición una copia exacta.
+
+**Día de la semana.** Un día reprogramado se restaura al **día de la semana** de la referencia dentro de la semana nueva, nunca a su fecha absoluta. Se revalida con V3 (días disponibles vigentes), V12, V13 y V18. Si el día está ocupado o ya no está disponible, no se restaura.
 
 ### 3.4 Revalidación: nunca restaurar algo inseguro
 
@@ -197,6 +206,8 @@ Si no pasa, no se restaura: la sesión se conserva como estaba y el motivo queda
 | Parcial válida | 0,30 ≤ A_s < 0,80 | Sí |
 | Parcial no válida | 0 < A_s < 0,30: cuenta con su A_s real, como en la adherencia, pero no es una sesión válida | Sí |
 | Omitida | Omitida con causa, o sesión registrada con A_s = 0. Se marca si la causa es **la misma** que motivó la adaptación | Sí |
+
+**La clase se decide primero por la sesión** (la que cuenta para la adherencia) y, solo si no hay sesión, por la omisión declarada. Una sesión cerrada por debajo del 30 % deja su entrenamiento en estado `SKIPPED`, pero es «parcial no válida» con su A_s real (por ejemplo, 0,25), nunca «omitida». Es la misma semántica de la adherencia oficial (`AdherenciaIT`).
 | Sin información | Sin sesión y sin omisión declarada | No |
 | No aplica | No hubo sesión adaptada (`SIN_EFECTO`, `RESPALDO`, `NO_FACTIBLE`) | Fuera de la unidad |
 
@@ -225,7 +236,7 @@ Si no pasa, no se restaura: la sesión se conserva como estaba y el motivo queda
 | B | «Suelo tener menos», M = 30 para este entrenamiento | `ACORTAR_O_REORGANIZAR`, ≤ 30 min | Retira el complemento 1256 → 28 min (lo que hizo A01). Si no fuera posible sin tocar los estructurales: `SIN_EFECTO` | Iguales |
 | B' | «Suelo tener menos», M = 40 | `CONSERVAR` (33 ya cabe en 40) | Igual | Iguales |
 | C | No responde | `CONSERVAR`, sin IA | Igual | Iguales |
-| D | Fatiga: dosis ajustada; la semana siguiente completada con RPE 6 | Restaurar (revalidada) | Vuelve a la referencia | Iguales |
+| D | Fatiga: dosis ajustada; la semana siguiente completada sin fatiga ni dolor declarados | Restaurar (revalidada) | Vuelve a la referencia | Iguales |
 
 **A01 sigue siendo la prueba técnica histórica** de la regla anterior (`ADAPT-1`, §6.2), con sus evidencias intactas.
 
@@ -249,7 +260,9 @@ Si no pasa, no se restaura: la sesión se conserva como estaba y el motivo queda
 | Mezcla, en `ADAPT_EXPANDED` (pospuesto) | Las conservadas por su causa van en `no_effect_sessions`; las corregidas en `applied_sessions`. `APLICADA` si al menos una se aplicó |
 | Sesión restaurada | Arreglo nuevo **`restored_sessions`** (con el origen, como los demás), disjunto de los cuatro. No es una adaptación aplicada ni una conservada |
 | Restauración bloqueada | La sesión sigue en `conserved_sessions`; el motivo va en `conservation_report` |
-| Semana `NO_CHANGE` con una restauración | `status = SIN_ORDEN`, origen `CONSERVED`: restaurar es volver a la prescripción anterior, no una generación de la IA |
+| Semana `NO_CHANGE` con una restauración | `status = SIN_ORDEN`, origen `CONSERVED`: restaurar es volver a la prescripción anterior, no una generación de la IA. Verificado: el ciclo publica una versión nueva con `NO_CHANGE` |
+| Señalada `SIN_EFECTO` con una restauración en otra sesión | `status = SIN_EFECTO`; la restaurada va en `restored_sessions`, no en `applied_sessions` (V33 intacta) |
+| Señalada `APLICADA` | Sin restauración ese ciclo (§3.3) |
 
 **Así se distingue «conservada por su causa» de «la IA no encontró un cambio permitido»**, sin un estado nuevo: por la intervención (`CONSERVAR` o `CAUSA_NO_REGISTRADA`) y por `ai_calls`.
 
@@ -296,10 +309,12 @@ Si no pasa, no se restaura: la sesión se conserva como estaba y el motivo queda
 | 2 | Viernes omitido · M = 30 (factible) | Viernes ≤ 30 min; solo se retira un complemento; lunes y miércoles idénticos | V32 `APLICADA`; V8C y V1–V25 aprobadas; duración ≤ 30 |
 | 3 | M que solo se alcanza tocando estructurales | `SIN_EFECTO`; viernes conservado | V32 `no_effect_sessions` |
 | 4 | Viernes omitido · sin respuesta | Igual que el caso 1 | Igual que el caso 1 |
-| 5 | Fatiga en la semana 2; copias en la 3 y la 4 **sin información**; completada en la 5 con RPE < 8 | Se mantiene en las semanas 3 y 4; en la 6 se restaura la **semana 1** | Recorrido V31 + V32 hasta la semana 1; `restored_sessions`; sesión idéntica a la referencia |
-| 6 | Fatiga; la semana siguiente, completada con RPE 8 | No se restaura | Señal incompatible registrada |
+| 5 | Fatiga en la semana 2; copias en la 3 y la 4 **sin información**; completada en la 5 sin fatiga ni dolor declarados | Se mantiene en las semanas 3 y 4; en la 6 se restaura la **semana 1** | Recorrido V31 + V32 hasta la semana 1; `restored_sessions`; sesión idéntica a la referencia |
+| 6 | Fatiga; la semana siguiente, completada pero con un ejercicio registrado con causa fatiga | No se restaura | Señal incompatible registrada |
 | 7 | Cambio de horario; después la persona quita el día original de sus días disponibles | No se restaura | Revalidación V3; motivo en `conservation_report` |
 | 8 | Fatiga; la referencia contiene un ejercicio bloqueado después | No se restaura ese contenido | Motivo en `conservation_report`; ningún ejercicio bloqueado publicado |
+| 10 | En el mismo ciclo: una sesión señalada se aplica y otra cumple para restaurarse | Solo se modifica la señalada; la restauración espera al ciclo siguiente | V32 `APLICADA` con `restored_sessions` vacío; la otra sesión es copia |
+| 11 | **Prioritaria antes de ADAPT-2.** Restauración real por fatiga en un ciclo `NO_CHANGE` | Se publica la semana con la sesión restaurada | Publicación `SIN_ORDEN`, V8C que solo acepta la sesión idéntica a la referencia, V31, V32 (`restored_sessions`) y V33 |
 | 9 | Sesión adaptada: completada / al 25 % / omitida por la misma causa / sin registro | Completada / parcial no válida / omitida con la marca / sin información | Consulta §4; con n_r = 0, indicadores `NULL` |
 
 ---
@@ -309,14 +324,24 @@ Si no pasa, no se restaura: la sesión se conserva como estaba y el motivo queda
 | # | Decisión | Estado |
 |---|---|---|
 | D1 | Falta de tiempo sin respuesta: conservar sin IA | **Aprobada** (27/10) |
-| D2 | Registro en V32 (§6.1): `no_effect_sessions` + `CONSERVAR` y el arreglo nuevo `restored_sessions`, sin estados nuevos | Aprobada con precisión; **revisar la forma concreta** |
+| D2 | Registro en V32 (§6.1): `no_effect_sessions` + `CONSERVAR` y el arreglo nuevo `restored_sessions`, sin estados nuevos | **Aprobada**, condicionada a las pruebas de invariantes (casos 10 y 11) |
 | D3 | Motivación: restaurable, solo con evidencia positiva (§3.3) | **Aprobada con condición**, incorporada |
 | D4 | Sin pregunta en sesiones parciales | **Aprobada** |
-| D5 | Usar RPE ≥ 8 (umbral de sobreesfuerzo de MVP-1.8) como señal incompatible para la fatiga | **Pendiente** |
-| D6 | `CAUSA_NO_REGISTRADA` deja de llamar a la IA (hoy la llama sin poder cambiar nada) | **Pendiente** |
-| D7 | `adaptation_rule_version` en V32, con `ADAPT-1` para lo existente (§6.2) | **Pendiente** |
+| D5 | El RPE **no** bloquea la restauración: es un RPE global de la sesión, opcional, y su umbral se aplica al promedio semanal como riesgo descriptivo | **Cerrada sin RPE** (27/10) |
+| D6 | `CAUSA_NO_REGISTRADA` deja de llamar a la IA | **Aprobada** |
+| D7 | `adaptation_rule_version` en V32, con `ADAPT-1` para lo existente (§6.2) | **Aprobada**, para V35 |
+| D8 | La copia idéntica de una sesión acortada con autorización hereda la exención de V20 (defecto del comportamiento actual) | **Implementada** (`aeb09ab`). Local cerrado; en Neon, 0 violaciones y sin historial (`VERIFICACION_DISENO_V03.md`) |
 
-## 10. Para la tesis
+## 10. Verificaciones
+
+`VERIFICACION_DISENO_V03.md` recoge las comprobaciones contra el código y PostgreSQL. En resumen:
+- `NO_CHANGE` publica una versión nueva.
+- El linaje V31 + V32 es inequívoco: 0 violaciones y una derivación sin evidencia se detecta (`LinajeIntegridadIT`, `consultas/linaje_v31_v32.sql`).
+- Una sesión al 25 % aporta 0,25.
+- El RPE no es apropiado como bloqueo.
+- Se encontró y corrigió el defecto de V20 (D8).
+
+## 11. Para la tesis
 
 **Qué se puede sostener:** la adaptación es **mínima** (una sesión, un cambio permitido), **justificada** (por la causa y, en la falta de tiempo, por la disponibilidad que declara la persona para ese entrenamiento), **reversible** cuando corresponde y hay evidencia (§3.3) y **trazable** (V31, V32 y `adaptation_rule_version`).
 
