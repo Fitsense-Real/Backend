@@ -11,6 +11,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustm
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgresion;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 
 import java.util.ArrayList;
@@ -166,7 +167,16 @@ public class AdaptedWeekProducer {
         if (correcciones == null)
             return respaldo(context, derivation, adjustment, eligible, exclusiones);
 
-        var adaptada = applier.apply(derivation, correcciones, adjustment);
+        var aplicada = applier.apply(derivation, correcciones, adjustment);
+        // LA DURACION LA DECIDE EL CONTENIDO (correccion 4, 27/10/2026). Una
+        // senalada que vuelve con los mismos ejercicios, series, repeticiones,
+        // segundos y descansos no tiene por que durar otra cosa: conserva la
+        // duracion ya validada y no cuenta como adaptacion. Los minutos solos no
+        // son un cambio de entrenamiento.
+        var normalizadas = new ArrayList<String>();
+        var adaptada = new WeekDerivation(
+                minutosSegunContenido(aplicada.workouts(), context.previousWeek(), adjustment, normalizadas),
+                aplicada.sourcesWithoutDerived());
         // Lo HEREDADO que dejo de ser seguro se repara tambien aqui: una sesion
         // no senalada con el ejercicio no la puede corregir la IA, porque V8C
         // le prohibe tocarla. Lo que trajo la IA no se repara: si no es
@@ -175,7 +185,9 @@ public class AdaptedWeekProducer {
                 exclusiones, eligible, context);
         var informe = conservation.validate(
                 new WeekDerivation(reparada.semana(), adaptada.sourcesWithoutDerived()),
-                context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones(), autorizarDosis);
+                context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones(), autorizarDosis,
+                estricta.divisorDeVolumen());
+        if (!normalizadas.isEmpty()) informe = informe.conCorreccionesDelBackend(normalizadas);
 
         // El origen lo decide si la IA cambio algo DE VERDAD, no si contesto.
         // Una semana de adaptaciones sin efecto es CONSERVED aunque el modelo
@@ -243,15 +255,107 @@ public class AdaptedWeekProducer {
                                           ExclusionesDeSeguridad exclusiones,
                                           PasoProgresion paso) {
 
+        // CARGAS QUE V11 YA NO ADMITE (correccion 3, 27/10/2026). Una carga
+        // sugerida copiada tal cual puede dejar de valer: la persona falto a esa
+        // sesion y no anoto peso, o anoto menos. La copia y el respaldo no la
+        // podian corregir y la semana salia NO_FACTIBLE. Se retira SOLO esa
+        // sugerencia, a null (nunca a cero, nunca una nueva); todo lo demas se
+        // conserva y la semana se revalida entera. Con un paso de progresion no:
+        // V8C exige la sesion identica al paso, y si el paso no sale, la copia
+        // sin paso que se intenta despues ya pasa por aqui.
+        var correcciones = new ArrayList<String>();
+        var origen = paso == null ? sinCargasInvalidas(derivation.workouts(), context, correcciones)
+                : derivation.workouts();
+
         // Conservar no es publicar lo que hoy es inseguro: lo heredado que dejo
         // de ser compatible por seguridad se sustituye, o la semana no sale.
-        var reparada = SafetySubstitutionPolicy.reparar(derivation.workouts(), context.previousWeek(),
+        var reparada = SafetySubstitutionPolicy.reparar(origen, context.previousWeek(),
                 exclusiones, eligible, context);
         var informe = conservation.validateContinuidad(
                 new WeekDerivation(reparada.semana(), derivation.sourcesWithoutDerived()),
                 context.previousWeek(), eligible, exclusiones, reparada.sustituciones(), paso, autorizarDosis);
+        if (!correcciones.isEmpty()) informe = informe.conCorreccionesDelBackend(correcciones);
         return revisarYCerrar(context, reparada.semana(), informe,
                 GenerationSource.CONSERVED, motivo, eligible, reparada.problemas());
+    }
+
+    /**
+     * Las senaladas cuyo contenido temporal (ejercicios con su tipo, series,
+     * repeticiones, segundos y descanso) es el de la semana medida, con la
+     * duracion de la semana medida. Las demas, tal cual: si cambio el contenido,
+     * la duracion declarada la juzga V17 contra el estimador; si es una no
+     * senalada, V8C sigue rechazando que cambie sus minutos.
+     */
+    private static List<DerivedWorkout> minutosSegunContenido(List<DerivedWorkout> semana, PreviousWeekSummary medida,
+                                                              PlanAdjustment adjustment, List<String> notas) {
+        if (medida == null || medida.workouts() == null) return semana;
+        var salida = new ArrayList<DerivedWorkout>();
+        for (var d : semana) {
+            Long origen = d.sourcePlannedWorkoutId();
+            var anterior = medida.workouts().stream().filter(w -> origen.equals(w.plannedWorkoutId())).findFirst();
+            var w = d.workout();
+            if (adjustment.intervencionDe(origen).isEmpty() || anterior.isEmpty()
+                    || w.expectedDurationMinutes() == anterior.get().expectedDurationMinutes()
+                    || !contenidoTemporal(w.exercises()).equals(contenidoMedido(medida, origen))) {
+                salida.add(d);
+                continue;
+            }
+            int minutos = anterior.get().expectedDurationMinutes();
+            notas.add(("DURACION: la sesion %d declara %d min con el mismo contenido que la semana medida;"
+                    + " se conservan sus %d min (los minutos solos no son una adaptacion).")
+                    .formatted(origen, w.expectedDurationMinutes(), minutos));
+            salida.add(new DerivedWorkout(origen, new PlanDraft.DraftWorkout(w.scheduledDate(), w.focus(), w.name(),
+                    minutos, w.exercises())));
+        }
+        return salida;
+    }
+
+    private static Map<String, Long> contenidoTemporal(List<PlanDraft.DraftExercise> ejercicios) {
+        var m = new java.util.TreeMap<String, Long>();
+        for (var e : ejercicios)
+            m.merge(clave(e.exerciseId(), e.prescriptionType() == null ? null : e.prescriptionType().name(),
+                    e.plannedSets(), e.plannedReps(), e.plannedDurationSeconds(), e.restSeconds()), 1L, Long::sum);
+        return m;
+    }
+
+    private static Map<String, Long> contenidoMedido(PreviousWeekSummary medida, Long origen) {
+        var m = new java.util.TreeMap<String, Long>();
+        if (medida.prescriptions() == null) return m;
+        for (var p : medida.prescriptions())
+            if (origen.equals(p.plannedWorkoutId()))
+                m.merge(clave(p.exerciseId(), p.prescriptionType(), p.sets(), p.reps(), p.durationSeconds(),
+                        p.restSeconds()), 1L, Long::sum);
+        return m;
+    }
+
+    private static String clave(Long id, String tipo, Short series, Short reps, Integer segundos, Short descanso) {
+        return id + "|" + tipo + "|" + series + "|" + reps + "|" + segundos + "|" + descanso;
+    }
+
+    /** La semana con la carga sugerida a null en los ejercicios cuya carga rechaza V11, y solo en esos. */
+    private static List<DerivedWorkout> sinCargasInvalidas(List<DerivedWorkout> semana, PlanGenerationContext context,
+                                                           List<String> correcciones) {
+        var salida = new ArrayList<DerivedWorkout>();
+        for (var d : semana) {
+            var w = d.workout();
+            boolean cambio = false;
+            var ejercicios = new ArrayList<PlanDraft.DraftExercise>();
+            for (var e : w.exercises()) {
+                var motivos = PlanDraftValidator.problemasDeCarga(e, context);
+                if (motivos.isEmpty()) {
+                    ejercicios.add(e);
+                    continue;
+                }
+                cambio = true;
+                correcciones.add("V11: carga sugerida de %s kg retirada del ejercicio %d (sesion %d) · %s"
+                        .formatted(e.targetLoadKg(), e.exerciseId(), d.sourcePlannedWorkoutId(), motivos.get(0)));
+                ejercicios.add(new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), e.plannedSets(),
+                        e.plannedReps(), e.plannedDurationSeconds(), null, e.restSeconds(), e.notes()));
+            }
+            salida.add(cambio ? new DerivedWorkout(d.sourcePlannedWorkoutId(), new PlanDraft.DraftWorkout(
+                    w.scheduledDate(), w.focus(), w.name(), w.expectedDurationMinutes(), ejercicios)) : d);
+        }
+        return salida;
     }
 
     /**

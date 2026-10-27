@@ -939,7 +939,8 @@ public class PlanDraftValidator {
         }
     }
 
-    private void validatePrescription(PlanDraft.DraftExercise exercise, List<String> problems) {
+    /** Visibilidad de paquete para {@code SeriesMinimasV9Test}; no la llama nadie mas. */
+    static void validatePrescription(PlanDraft.DraftExercise exercise, List<String> problems) {
         if (exercise.prescriptionType() == null) {
             problems.add("V7: el ejercicio %d no declara prescription_type."
                     .formatted(exercise.exerciseId()));
@@ -961,6 +962,15 @@ public class PlanDraftValidator {
                         .formatted(exercise.exerciseId(), MIN_REPS));
             return;
         }
+
+        // 9 TAMBIEN AQUI, si declara series (correccion 2, 27/10/2026). La base
+        // exige series nulas o >= 2 para cualquier tipo (ck_pwe_min_sets); sin
+        // esto, una DURATION de 1 serie pasaba la validacion y reventaba al
+        // guardar: semana sin plan y sin evidencia, y la IA sin reintento para
+        // corregirla. Sin series (un bloque continuo) sigue siendo valido.
+        if (exercise.plannedSets() != null && exercise.plannedSets() < MIN_SETS)
+            problems.add("V9: el ejercicio %d baja de %d series."
+                    .formatted(exercise.exerciseId(), MIN_SETS));
 
         // 10: piso de los ejercicios de duracion.
         if (exercise.plannedDurationSeconds() == null)
@@ -1016,57 +1026,68 @@ public class PlanDraftValidator {
      */
     private void validateLoads(PlanDraft draft, PlanGenerationContext context,
                                List<String> problems) {
+        draft.workouts().stream()
+                .flatMap(workout -> workout.exercises().stream())
+                .forEach(exercise -> problems.addAll(problemasDeCarga(exercise, context)));
+    }
+
+    /**
+     * V11 para UN ejercicio: lo que tiene de invalido su carga sugerida, o nada.
+     * <p>
+     * Publico para que el respaldo determinista sepa que sugerencias rechaza V11
+     * y retire SOLO esas (correccion 3, 27/10/2026), con la misma regla y no con
+     * una copia que pudiera separarse de ella.
+     */
+    public static List<String> problemasDeCarga(PlanDraft.DraftExercise exercise, PlanGenerationContext context) {
+        if (exercise.targetLoadKg() == null) return List.of();
+        var problems = new ArrayList<String>();
         var previousWeek = context.previousWeek();
         boolean lowerLoad = context.adjustment() != null && context.adjustment().clearsLoad();
         int maxIncreasePct = context.prescription() == null ? 10
                 : context.prescription().maxLoadIncreasePctOrDefault();
 
-        draft.workouts().stream()
-                .flatMap(workout -> workout.exercises().stream())
-                .filter(exercise -> exercise.targetLoadKg() != null)
-                .forEach(exercise -> {
-                    long id = exercise.exerciseId();
-                    BigDecimal target = exercise.targetLoadKg();
+        long id = exercise.exerciseId();
+        BigDecimal target = exercise.targetLoadKg();
 
-                    if (exercise.prescriptionType() == PrescriptionType.DURATION) {
-                        problems.add("V11: el ejercicio %d es por duracion y no lleva peso.".formatted(id));
-                        return;
-                    }
+        if (exercise.prescriptionType() == PrescriptionType.DURATION) {
+            problems.add("V11: el ejercicio %d es por duracion y no lleva peso.".formatted(id));
+            return problems;
+        }
 
-                    var reference = previousWeek == null ? Optional.<PreviousWeekSummary.LoadReference>empty()
-                            : previousWeek.lastLoadFor(id);
-                    if (reference.isEmpty()) {
-                        problems.add(("V11: el ejercicio %d sugiere %s kg y la persona no anoto peso "
-                                + "la semana anterior; debe ir en null.").formatted(id, target));
-                        return;
-                    }
+        var reference = previousWeek == null ? Optional.<PreviousWeekSummary.LoadReference>empty()
+                : previousWeek.lastLoadFor(id);
+        if (reference.isEmpty()) {
+            problems.add(("V11: el ejercicio %d sugiere %s kg y la persona no anoto peso "
+                    + "la semana anterior; debe ir en null.").formatted(id, target));
+            return problems;
+        }
 
-                    BigDecimal used = reference.get().loadKg();
-                    if (target.compareTo(used) <= 0) return;
+        BigDecimal used = reference.get().loadKg();
+        if (target.compareTo(used) <= 0) return problems;
 
-                    if (lowerLoad) {
-                        problems.add("V11: el ajuste pide bajar carga y el ejercicio %d sube de %s a %s kg."
-                                .formatted(id, used, target));
-                        return;
-                    }
-                    if (!reference.get().fullyCompleted())
-                        problems.add(("V11: el ejercicio %d sube de %s a %s kg y la semana anterior no "
-                                + "hizo todas las repeticiones.").formatted(id, used, target));
+        if (lowerLoad) {
+            problems.add("V11: el ajuste pide bajar carga y el ejercicio %d sube de %s a %s kg."
+                    .formatted(id, used, target));
+            return problems;
+        }
+        if (!reference.get().fullyCompleted())
+            problems.add(("V11: el ejercicio %d sube de %s a %s kg y la semana anterior no "
+                    + "hizo todas las repeticiones.").formatted(id, used, target));
 
-                    BigDecimal ceiling = used.multiply(BigDecimal.valueOf(100 + maxIncreasePct))
-                            .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
-                    if (target.compareTo(ceiling) > 0)
-                        problems.add("V11: el ejercicio %d sube de %s a %s kg; el maximo es %s kg (+%d %%)."
-                                .formatted(id, used, target, ceiling, maxIncreasePct));
+        BigDecimal ceiling = used.multiply(BigDecimal.valueOf(100 + maxIncreasePct))
+                .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+        if (target.compareTo(ceiling) > 0)
+            problems.add("V11: el ejercicio %d sube de %s a %s kg; el maximo es %s kg (+%d %%)."
+                    .formatted(id, used, target, ceiling, maxIncreasePct));
 
-                    boolean moreSets = exercise.plannedSets() != null && reference.get().sets() != null
-                            && exercise.plannedSets() > reference.get().sets();
-                    boolean moreReps = exercise.plannedReps() != null && reference.get().reps() != null
-                            && exercise.plannedReps() > reference.get().reps();
-                    if (moreSets || moreReps)
-                        problems.add(("V11: el ejercicio %d sube el peso y tambien series o repeticiones; "
-                                + "solo puede subir una cosa a la vez.").formatted(id));
-                });
+        boolean moreSets = exercise.plannedSets() != null && reference.get().sets() != null
+                && exercise.plannedSets() > reference.get().sets();
+        boolean moreReps = exercise.plannedReps() != null && reference.get().reps() != null
+                && exercise.plannedReps() > reference.get().reps();
+        if (moreSets || moreReps)
+            problems.add(("V11: el ejercicio %d sube el peso y tambien series o repeticiones; "
+                    + "solo puede subir una cosa a la vez.").formatted(id));
+        return problems;
     }
 
     /**

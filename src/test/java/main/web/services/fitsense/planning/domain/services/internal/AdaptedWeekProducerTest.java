@@ -492,6 +492,77 @@ class AdaptedWeekProducerTest {
     }
 
     // =======================================================================
+    // Correccion 4 (27/10/2026): la duracion la decide el contenido
+    // =======================================================================
+
+    @Test
+    @DisplayName("C4 · mismos ejercicios y dosis, solo otros minutos -> SIN_EFECTO y la duracion validada")
+    void soloMinutosEsSinEfecto() {
+        for (var t : List.of(TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION, TipoIntervencion.ACORTAR_O_REORGANIZAR,
+                TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO)) {
+            var r = producer.produce(contexto(senalando(Map.of(102L, t))), derivacion(),
+                    List.of(correccion(102L, L2.plusDays(2), 30, ej(304L, 3, 10))), catalogo());
+            assertTrue(r.publicable(), () -> r.problemas().toString());
+            assertEquals(List.of(102L), r.conservacion().sinEfecto(), t + ": los minutos solos no son adaptacion");
+            assertTrue(r.conservacion().aplicadas().isEmpty(), t.name());
+            assertEquals(GenerationSource.CONSERVED, r.source());
+            assertEquals(45, sesion(r, 102L).expectedDurationMinutes(), "no se publica un tiempo inventado");
+            assertTrue(r.conservacion().correccionesDelBackend().stream().anyMatch(c -> c.startsWith("DURACION")),
+                    r.conservacion().correccionesDelBackend().toString());
+        }
+    }
+
+    @Test
+    @DisplayName("C4 · menos series autorizadas, duracion coherente -> APLICADA con su duracion")
+    void menosSeriesEsAplicada() {
+        var r = producer.produce(contexto(senalando(Map.of(102L, TipoIntervencion.ACORTAR_O_REORGANIZAR))),
+                derivacion(), List.of(correccion(102L, L2.plusDays(2), 32, ej(304L, 2, 10))), catalogo());
+        assertTrue(r.publicable(), () -> r.problemas().toString());
+        assertEquals(List.of(102L), r.conservacion().aplicadas());
+        assertEquals(32, sesion(r, 102L).expectedDurationMinutes());
+        assertTrue(r.conservacion().correccionesDelBackend().isEmpty());
+    }
+
+    @Test
+    @DisplayName("C4 · menos repeticiones autorizadas -> APLICADA")
+    void menosRepeticionesEsAplicada() {
+        var r = producer.produce(contexto(senalando(Map.of(102L, TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION))),
+                derivacion(), List.of(correccion(102L, L2.plusDays(2), 40, ej(304L, 3, 8))), catalogo());
+        assertTrue(r.publicable(), () -> r.problemas().toString());
+        assertEquals(List.of(102L), r.conservacion().aplicadas());
+        assertEquals(40, sesion(r, 102L).expectedDurationMinutes());
+    }
+
+    @Test
+    @DisplayName("C4 · menos descanso en una intervencion que permite cambiar la dosis -> adaptacion real")
+    void menosDescansoEsAplicada() {
+        var r = producer.produce(contexto(senalando(Map.of(102L, TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION))),
+                derivacion(), List.of(correccion(102L, L2.plusDays(2), 40, new PlanDraft.DraftExercise(304L,
+                        PrescriptionType.SETS_REPS, (short) 3, (short) 10, null, null, (short) 60, null))), catalogo());
+        assertTrue(r.publicable(), () -> r.problemas().toString());
+        assertEquals(List.of(102L), r.conservacion().aplicadas());
+    }
+
+    @Test
+    @DisplayName("C4 · cambiar el descanso donde la intervencion no permite tocar la dosis se sigue rechazando")
+    void descansoSinPermisoRechazado() {
+        var r = producer.produce(contexto(senalando(Map.of(102L, TipoIntervencion.REPROGRAMAR_DIAS))),
+                derivacion(), List.of(correccion(102L, L2.plusDays(2), 40, new PlanDraft.DraftExercise(304L,
+                        PrescriptionType.SETS_REPS, (short) 3, (short) 10, null, null, (short) 60, null))), catalogo());
+        assertFalse(r.publicable());
+        assertTrue(r.conservacion().aplicadas().isEmpty());
+    }
+
+    @Test
+    @DisplayName("C4 · el respaldo y la copia no tocan minutos (no hay propuesta de la IA)")
+    void continuidadSinCambiosDeMinutos() {
+        var r = producer.produce(contexto(PlanAdjustment.none()), derivacion(), null, catalogo());
+        assertTrue(r.publicable(), () -> r.problemas().toString());
+        assertEquals(45, sesion(r, 102L).expectedDurationMinutes());
+        assertTrue(r.conservacion().correccionesDelBackend().isEmpty());
+    }
+
+    // =======================================================================
     // Material
     // =======================================================================
 

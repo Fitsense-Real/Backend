@@ -111,6 +111,11 @@ public class StrictValidationAdapter implements StrictPlanValidation {
     }
 
     @Override
+    public int divisorDeVolumen() {
+        return configuracion.durationToRepsDivisor();
+    }
+
+    @Override
     public boolean bloqueaDosis4D() {
         // Se pregunta al validador, no se devuelve true a secas: si alguien
         // cambia como se construye, esto deja de mentir y el productor se niega

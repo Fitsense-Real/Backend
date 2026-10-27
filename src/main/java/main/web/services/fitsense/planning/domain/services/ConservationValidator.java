@@ -8,6 +8,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgres
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SustitucionSeguridad;
@@ -63,6 +64,13 @@ import java.util.stream.Collectors;
 @Service
 public class ConservationValidator {
 
+    /**
+     * El divisor de volumen cuando quien llama no da el de la configuracion: el
+     * valor por omision de {@code fitsense.volume.duration-to-reps-divisor}.
+     * El productor de semanas adaptadas pasa siempre el de la configuracion.
+     */
+    public static final int DIVISOR_POR_OMISION = 30;
+
     private static final String DOLOR = "PAIN_OR_DISCOMFORT";
 
     /**
@@ -107,10 +115,10 @@ public class ConservationValidator {
 
     /**
      * Igual, y con {@code autorizarDosis} (progresion o V24 por capacidades
-     * activas, D-P11) ademas: rechaza toda SUBIDA de dosis de la IA en las
-     * senaladas, y emite para V24 las dosis autorizadas de la semana -las
-     * reducciones aprobadas y las heredadas con linaje-. Con false, lo de
-     * siempre.
+     * activas, D-P11) ademas: emite para V24 las dosis autorizadas de la semana
+     * -las reducciones aprobadas y las heredadas con linaje-. La prohibicion de
+     * que la IA SUBA dosis en las senaladas no depende de este indicador: rige
+     * siempre (correccion 1, 27/10/2026).
      */
     public ConservationReport validate(WeekDerivation derivation,
                                        PreviousWeekSummary previous,
@@ -119,9 +127,23 @@ public class ConservationValidator {
                                        ExclusionesDeSeguridad causas,
                                        List<SustitucionSeguridad> autorizadas,
                                        boolean autorizarDosis) {
+        return validate(derivation, previous, adjustment, eligible, causas, autorizadas, autorizarDosis,
+                DIVISOR_POR_OMISION);
+    }
+
+    /** Igual, con el divisor de volumen de la configuracion activa (el de V8). */
+    public ConservationReport validate(WeekDerivation derivation,
+                                       PreviousWeekSummary previous,
+                                       PlanAdjustment adjustment,
+                                       Map<Long, CandidateExercise> eligible,
+                                       ExclusionesDeSeguridad causas,
+                                       List<SustitucionSeguridad> autorizadas,
+                                       boolean autorizarDosis,
+                                       int divisorVolumen) {
         if (adjustment == null || !adjustment.adapta()) return ConservationReport.vacio();
 
-        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, null, autorizarDosis);
+        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, null, autorizarDosis,
+                divisorVolumen);
     }
 
     /**
@@ -180,7 +202,7 @@ public class ConservationValidator {
                                                   PasoProgresion paso,
                                                   boolean autorizarDosis) {
         return revisar(derivation, previous, PlanAdjustment.none(), eligible, causas, autorizadas,
-                paso, autorizarDosis || paso != null);
+                paso, autorizarDosis || paso != null, DIVISOR_POR_OMISION);
     }
 
     private ConservationReport revisar(WeekDerivation derivation,
@@ -190,7 +212,8 @@ public class ConservationValidator {
                                        ExclusionesDeSeguridad causas,
                                        List<SustitucionSeguridad> autorizadas,
                                        PasoProgresion paso,
-                                       boolean autorizarDosis) {
+                                       boolean autorizarDosis,
+                                       int divisorVolumen) {
 
         // SI SE ORDENO ADAPTAR, LA FALTA DE DATOS ES UN ERROR, NO UN VISTO
         // BUENO. La version anterior devolvia el informe vacio cuando faltaban la
@@ -337,12 +360,25 @@ public class ConservationValidator {
                         if (conLinaje.contains(e.exerciseId()))
                             dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.HEREDADA));
             } else {
-                if (autorizarDosis)
-                    revisarDosisDeLaIa(origen, intervencion, derivada, dosisPorSesion.getOrDefault(origen, Map.of()),
-                            conLinaje, problems, dosisAutorizadas);
+                // LA IA NUNCA SUBE DOSIS, CON CUALQUIER INTERRUPTOR (correccion 1,
+                // 27/10/2026). Antes solo se comprobaba con autorizarDosis, asi que
+                // con la progresion y la V24 por capacidades apagadas -produccion-
+                // la IA real publico 16 subidas. Lo que sigue dependiendo del
+                // interruptor es solo emitir las dosis autorizadas para V24.
+                int antesDeLaDosis = problems.size();
+                revisarDosisDeLaIa(origen, intervencion, derivada, dosisPorSesion.getOrDefault(origen, Map.of()),
+                        conLinaje, problems, autorizarDosis ? dosisAutorizadas : null);
+                boolean dosisRechazada = problems.size() > antesDeLaDosis;
                 revisarSenalada(origen, anterior, derivada, intervencion, diferencias,
                         dolieron, segura, catalogo, cargasPorSesion.getOrDefault(origen, Map.of()),
+                        dosisPorSesion.getOrDefault(origen, Map.of()), divisorVolumen,
                         problems, aplicadas, sinEfecto);
+                // Una sesion con una subida rechazada no se clasifica (como en
+                // revisarSenalada): ni aplicada ni sin efecto.
+                if (dosisRechazada) {
+                    aplicadas.remove(origen);
+                    sinEfecto.remove(origen);
+                }
                 if (intervencion.permiteReducirDuracion()
                         && derivada.workout().scheduledDate() != null)
                     fechasReducibles.add(derivada.workout().scheduledDate());
@@ -423,13 +459,16 @@ public class ConservationValidator {
     }
 
     /**
-     * LA IA NUNCA SUBE DOSIS. En una sesion senalada, toda dosis que la IA deja
+     * LA IA NUNCA SUBE DOSIS, con o sin interruptores. En una sesion senalada, toda dosis que la IA deja
      * mayor en series, repeticiones o segundos que la de la semana medida se
      * rechaza, aunque el tipo de intervencion permita cambiar la dosis y aunque
      * caiga en un rango que V24 aceptaria. Las bajadas aprobadas (sin subir
      * nada, mismo tipo y descanso, en una intervencion que permite cambiar la
      * dosis) quedan como REDUCCION para V24; lo que no cambio y tiene linaje,
      * como HEREDADA. Un ejercicio nuevo (sustituto) no recibe nada: dosis exacta.
+     * <p>
+     * {@code dosisAutorizadas} en null (progresion y capacidades apagadas): se
+     * comprueba igual, y no se emite ninguna autorizacion para V24.
      */
     private static void revisarDosisDeLaIa(Long origen, TipoIntervencion intervencion, DerivedWorkout derivada,
                                            Map<Long, Dosis> dosisAnterior, Set<Long> conLinaje,
@@ -440,7 +479,7 @@ public class ConservationValidator {
             if (antes == null) continue;
             var despues = dosisDe(e);
             if (antes.equals(despues)) {
-                if (conLinaje.contains(e.exerciseId()))
+                if (dosisAutorizadas != null && conLinaje.contains(e.exerciseId()))
                     dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.HEREDADA));
                 continue;
             }
@@ -451,7 +490,8 @@ public class ConservationValidator {
                         resumen(antes), resumen(despues)));
                 continue;
             }
-            if (intervencion.permiteCambiarDosis() && java.util.Objects.equals(antes.tipo(), despues.tipo())
+            if (dosisAutorizadas != null && intervencion.permiteCambiarDosis()
+                    && java.util.Objects.equals(antes.tipo(), despues.tipo())
                     && java.util.Objects.equals(antes.descanso(), despues.descanso()))
                 dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.REDUCCION));
         }
@@ -605,6 +645,7 @@ public class ConservationValidator {
                                  boolean seguridadResuelta,
                                  Map<Long, CandidateExercise> catalogo,
                                  Map<Long, java.math.BigDecimal> cargasAnteriores,
+                                 Map<Long, Dosis> dosisAnterior, int divisorVolumen,
                                  List<String> problems, List<Long> aplicadas,
                                  List<Long> sinEfecto) {
 
@@ -624,7 +665,8 @@ public class ConservationValidator {
                             d.diaNuevo(), intervencion.instruccion()));
 
         if (!d.anadidos().isEmpty() || !d.quitados().isEmpty())
-            revisarSustitucion(origen, intervencion, d, dolieron, catalogo, problems);
+            revisarSustitucion(origen, intervencion, d, dolieron, catalogo, derivada, dosisAnterior,
+                    divisorVolumen, problems);
 
         if (!d.dosisCambiada().isEmpty() && !intervencion.permiteCambiarDosis())
             problems.add(("V8C: la sesion %d esta senalada como %s, que no autoriza cambiar la "
@@ -788,7 +830,8 @@ public class ConservationValidator {
 
     private void revisarSustitucion(Long origen, TipoIntervencion intervencion, Diferencias d,
                                     Set<Long> dolieron, Map<Long, CandidateExercise> catalogo,
-                                    List<String> problems) {
+                                    DerivedWorkout derivada, Map<Long, Dosis> dosisAnterior,
+                                    int divisorVolumen, List<String> problems) {
 
         if (!intervencion.permiteSustituirEjercicio()) {
 
@@ -890,7 +933,27 @@ public class ConservationValidator {
         // de elegibilidad -el ejercicio esta en available_exercises porque paso
         // las restricciones declaradas, y V1 lo comprueba- mas la regla de que el
         // ejercicio que dolio no reaparece.
-        if (intervencion.exigeRevisionDeSeguridad()) return;
+        //
+        // PERO ANTE DOLOR NO SE ANADE TRABAJO (correccion 5, 27/10/2026). Antes se
+        // volvia aqui sin mirar nada mas, y la IA real retiro 3 ejercicios y anadio
+        // 4. Se sustituye o se retira: nunca mas anadidos que retirados, y el
+        // volumen de la sesion (18.1, el de V8) no sube. Que los sustitutos sean
+        // elegibles lo sigue diciendo V1; que no lleven carga nueva, revisarCarga.
+        if (intervencion.exigeRevisionDeSeguridad()) {
+            if (d.anadidos().size() > d.quitados().size())
+                problems.add(("V8C: la sesion %d esta senalada por dolor y anade %d ejercicio(s) %s retirando "
+                        + "%d %s. Ante dolor se sustituye o se retira; no se anade trabajo. %s")
+                        .formatted(origen, d.anadidos().size(), d.anadidos(), d.quitados().size(), d.quitados(),
+                                intervencion.instruccion()));
+            int antes = dosisAnterior.entrySet().stream()
+                    .mapToInt(x -> volumen(x.getKey(), x.getValue(), divisorVolumen)).sum();
+            int despues = derivada.workout().exercises().stream().mapToInt(e -> e.volume(divisorVolumen)).sum();
+            if (despues > antes)
+                problems.add(("V8C: la sesion %d esta senalada por dolor y su volumen sube de %d a %d. Ante "
+                        + "dolor no se aumenta el trabajo: sustituye con la misma dosis o menos.")
+                        .formatted(origen, antes, despues));
+            return;
+        }
 
         var patronesQuitados = new LinkedHashSet<String>();
         for (var quitado : d.quitados()) {
@@ -1061,6 +1124,19 @@ public class ConservationValidator {
                 ejercicio.plannedReps(),
                 ejercicio.plannedDurationSeconds(),
                 ejercicio.restSeconds());
+    }
+
+    /** El volumen de una dosis prescrita con la formula de siempre (18.1, {@code DraftExercise.volume}). */
+    private static int volumen(Long exerciseId, Dosis d, int divisor) {
+        if (d == null || d.tipo() == null) return 0;
+        PrescriptionType tipo;
+        try {
+            tipo = PrescriptionType.valueOf(d.tipo());
+        } catch (IllegalArgumentException e) {
+            return 0;
+        }
+        return new PlanDraft.DraftExercise(exerciseId, tipo, d.series(), d.reps(), d.segundos(), null,
+                d.descanso(), null).volume(divisor);
     }
 
     private static Dosis dosisDe(PreviousWeekSummary.PrescriptionOutcome prescrita) {

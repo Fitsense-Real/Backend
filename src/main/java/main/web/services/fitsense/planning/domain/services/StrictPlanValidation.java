@@ -48,6 +48,17 @@ public interface StrictPlanValidation {
     boolean bloqueaDosis4D();
 
     /**
+     * El divisor de duracion a repeticiones con el que se mide el volumen (18.1),
+     * el mismo que usa V8. V8C lo necesita para que una adaptacion por dolor no
+     * aumente el trabajo (correccion 5, 27/10/2026). Por omision, el de la
+     * propiedad {@code fitsense.volume.duration-to-reps-divisor}; el adaptador
+     * de produccion devuelve el de la configuracion activa.
+     */
+    default int divisorDeVolumen() {
+        return ConservationValidator.DIVISOR_POR_OMISION;
+    }
+
+    /**
      * Si exige la V24 por capacidades (D-P11). Entonces V8C tiene que emitir
      * las reducciones autorizadas, o rechazaria las de fatiga.
      */

@@ -81,7 +81,26 @@ public record ConservationReport(List<String> problems,
                                   * Pasos elegibles que no se dieron, con su motivo
                                   * (revalidacion fallida). La sesion queda como estaba.
                                   */
-                                 List<String> pasosBloqueados) {
+                                 List<String> pasosBloqueados,
+                                 /**
+                                  * Lo que corrigio EL BACKEND, no la IA, y por que (27/10/2026).
+                                  * Dos casos: el respaldo y la copia retiran a null una carga
+                                  * sugerida que V11 ya no admite (correccion 3); y una sesion
+                                  * senalada que vuelve con el mismo contenido y otros minutos
+                                  * conserva la duracion validada (correccion 4). Ninguno es una
+                                  * adaptacion: no cuenta como aplicada.
+                                  */
+                                 List<String> correccionesDelBackend) {
+
+    /** Sin correcciones del backend. */
+    public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
+                              List<Long> conservadas, Set<LocalDate> fechasConDuracionReducible,
+                              List<SustitucionSeguridad> sustituciones, List<Long> progresadas,
+                              List<PasoProgresion> pasos, Set<DosisAutorizada> dosisAutorizadas,
+                              List<String> pasosBloqueados) {
+        this(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible, sustituciones,
+                progresadas, pasos, dosisAutorizadas, pasosBloqueados, List.of());
+    }
 
     /** Sin progresion: el informe de siempre. */
     public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
@@ -109,6 +128,13 @@ public record ConservationReport(List<String> problems,
         pasos = pasos == null ? List.of() : List.copyOf(pasos);
         dosisAutorizadas = dosisAutorizadas == null ? Set.of() : Set.copyOf(dosisAutorizadas);
         pasosBloqueados = pasosBloqueados == null ? List.of() : List.copyOf(pasosBloqueados);
+        correccionesDelBackend = correccionesDelBackend == null ? List.of() : List.copyOf(correccionesDelBackend);
+    }
+
+    /** El mismo informe, con lo que corrigio el backend (no la IA). */
+    public ConservationReport conCorreccionesDelBackend(List<String> correcciones) {
+        return new ConservationReport(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible,
+                sustituciones, progresadas, pasos, dosisAutorizadas, pasosBloqueados, correcciones);
     }
 
     /** El mismo informe, con el motivo de un paso que no se pudo dar. */
@@ -116,7 +142,8 @@ public record ConservationReport(List<String> problems,
         var motivos = new java.util.ArrayList<>(pasosBloqueados);
         motivos.add(motivo);
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
-                fechasConDuracionReducible, sustituciones, progresadas, pasos, dosisAutorizadas, motivos);
+                fechasConDuracionReducible, sustituciones, progresadas, pasos, dosisAutorizadas, motivos,
+                correccionesDelBackend);
     }
 
     /** Si V24 puede aceptar esa dosis en esa colocacion, y de que origen viene. */
@@ -148,6 +175,8 @@ public record ConservationReport(List<String> problems,
                 + (sustituciones.isEmpty() ? ""
                 : ", %d sustituciones por seguridad".formatted(sustituciones.size()))
                 + (progresadas.isEmpty() ? "" : ", %d progresada(s)".formatted(progresadas.size()))
-                + (pasosBloqueados.isEmpty() ? "" : ", %d paso(s) bloqueado(s)".formatted(pasosBloqueados.size()));
+                + (pasosBloqueados.isEmpty() ? "" : ", %d paso(s) bloqueado(s)".formatted(pasosBloqueados.size()))
+                + (correccionesDelBackend.isEmpty() ? ""
+                : ", %d correccion(es) del respaldo".formatted(correccionesDelBackend.size()));
     }
 }

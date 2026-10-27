@@ -435,13 +435,23 @@ class CampanaReplicateRealIT {
                     var idsDespues = n.ejercicios().stream().map(Ej::id).collect(Collectors.toSet());
                     long anadidos = idsDespues.stream().filter(x -> !idsAntes.contains(x)).count();
                     long quitados = idsAntes.stream().filter(x -> !idsDespues.contains(x)).count();
-                    if (anadidos > quitados)
+                    // Correcciones 4 y 5 (27/10/2026): ya son reglas, asi que cuentan como violacion.
+                    if (anadidos > quitados) {
                         observaciones.add(ANADE_MAS + " sesion " + s.id() + ": anade " + anadidos + ", retira " + quitados);
+                        if (String.valueOf(ev.get("intervenciones")).contains("SEGURIDAD_ANTE_DOLOR"))
+                            violaciones.add("ante dolor anade " + anadidos + " y retira " + quitados + " en la sesion " + s.id());
+                    }
+                    if (String.valueOf(ev.get("intervenciones")).contains("SEGURIDAD_ANTE_DOLOR")
+                            && volumen(n.ejercicios()) > volumen(s.ejercicios()))
+                        violaciones.add("ante dolor el volumen sube de " + volumen(s.ejercicios()) + " a "
+                                + volumen(n.ejercicios()) + " en la sesion " + s.id());
                     if ("APLICADA".equals(ev.get("status"))
                             && s.ejercicios().stream().map(Ej::dosis).toList()
                             .equals(n.ejercicios().stream().map(Ej::dosis).toList())
-                            && s.fecha().plusWeeks(1).equals(n.fecha()) && s.minutos() != n.minutos())
+                            && s.fecha().plusWeeks(1).equals(n.fecha()) && s.minutos() != n.minutos()) {
                         observaciones.add(SOLO_MINUTOS + " sesion " + s.id() + ": " + s.minutos() + " -> " + n.minutos() + " min");
+                        violaciones.add("APLICADA solo por minutos en la sesion " + s.id());
+                    }
                 } else if (!progresadas.contains(s.id()) && !sustituidas.contains(s.id())
                         && !identicas(s, n)) {
                     violaciones.add("la sesion NO senalada " + s.id() + " cambio: " + s.ejercicios().stream()
@@ -467,6 +477,15 @@ class CampanaReplicateRealIT {
                     || (e.carga() != null && (p.carga() == null || e.carga().compareTo(p.carga()) > 0)))
                 violaciones.add("dosis subida en la sesion senalada " + medida.id() + ": " + p.dosis() + " -> " + e.dosis());
         }
+    }
+
+    /** El volumen de 18.1 con el divisor por omision (30), el de la configuracion de las pruebas. */
+    private static int volumen(List<Ej> l) {
+        return l.stream().mapToInt(e -> {
+            int series = e.series() == null ? 1 : e.series();
+            return "DURATION".equals(e.tipo()) ? Math.round((float) (series * (e.segundos() == null ? 0 : e.segundos())) / 30)
+                    : series * (e.reps() == null ? 0 : e.reps());
+        }).sum();
     }
 
     private static boolean mayor(Number a, Number b) {
@@ -787,7 +806,7 @@ class CampanaReplicateRealIT {
 
         var observadas = perfiles.stream().flatMap(p -> p.ciclos().stream())
                 .filter(x -> !x.observaciones().isEmpty()).toList();
-        sb.append("\n## Hallazgos cuantificados (no son violaciones de una regla vigente)\n\n");
+        sb.append("\n## Hallazgos cuantificados (desde las correcciones 4 y 5 tambien cuentan como violacion)\n\n");
         for (var tipo : List.of(SOLO_MINUTOS, ANADE_MAS))
             sb.append("- ").append(tipo).append(": ").append(observadas.stream().filter(x -> x.observaciones().stream()
                     .anyMatch(o -> o.startsWith(tipo))).count()).append(" ciclos\n");
