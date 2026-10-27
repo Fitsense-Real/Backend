@@ -25,6 +25,12 @@ import java.util.*;
  *       se sigue retrocediendo;</li>
  *   <li>sin efecto con ACORTAR_O_REORGANIZAR: la sesion no cambio y esa semana
  *       volvio a estar autorizada a acortarse; se sigue retrocediendo;</li>
+ *   <li>sin efecto con OTRA intervencion -tambien el RESPALDO, que deja la
+ *       senalada como sin efecto- y la sesion publicada IDENTICA a la anterior
+ *       (ejercicios en el mismo orden, tipo, series, repeticiones, segundos,
+ *       descanso, carga, enfoque y duracion): sigue siendo la copia de la
+ *       reduccion autorizada; se sigue retrocediendo (27/10/2026). Si cambio
+ *       algo, se corta. Una intervencion por dolor nunca hereda;</li>
  *   <li>aplicada con ACORTAR_O_REORGANIZAR en un intento APLICADA: es el
  *       origen de la reduccion. Autorizada;</li>
  *   <li>un paso de progresion (V34) que no reduce volumen ni duracion
@@ -76,13 +82,22 @@ public class ReduccionAutorizadaResolver {
             if (clase.isEmpty() || informe.isEmpty()) return false;
             if (EvidenciaV32.sustituida(informe.get(), origen)) return false;
 
+            var anterior = plannedWorkoutRepository.findById(origen).orElse(null);
+            if (anterior == null) return false;   // linaje roto
+
             switch (clase.get()) {
                 case APLICADA -> {
                     return intento.getStatus() == AdaptationAttempt.Status.APLICADA
                             && EvidenciaV32.intervencion(intento, origen) == TipoIntervencion.ACORTAR_O_REORGANIZAR;
                 }
                 case SIN_EFECTO -> {
-                    if (EvidenciaV32.intervencion(intento, origen) != TipoIntervencion.ACORTAR_O_REORGANIZAR)
+                    var intervencion = EvidenciaV32.intervencion(intento, origen);
+                    // Antes, cualquier intervencion que no fuera ACORTAR cortaba la herencia aunque
+                    // la sesion saliera identica: tras una senalada por fatiga que acababa en
+                    // respaldo, la copia siguiente incumplia V20 y la semana salia NO_FACTIBLE
+                    // (5 casos con Replicate real). La seguridad no hereda nunca.
+                    if (intervencion == null || intervencion.exigeRevisionDeSeguridad()) return false;
+                    if (intervencion != TipoIntervencion.ACORTAR_O_REORGANIZAR && !identica(actual, anterior))
                         return false;
                 }
                 case PROGRESADA -> {
@@ -97,9 +112,49 @@ public class ReduccionAutorizadaResolver {
                 }
                 case CONSERVADA -> { }
             }
-            actual = plannedWorkoutRepository.findById(origen).orElse(null);
+            actual = anterior;
         }
         return false;
+    }
+
+    /**
+     * La misma prescripcion: enfoque, duracion y ejercicios en el mismo orden con su tipo,
+     * series, repeticiones, segundos, descanso y carga. Se ignora lo administrativo
+     * (identificadores, fechas, estado de ejecucion).
+     */
+    static boolean identica(PlannedWorkout a, PlannedWorkout b) {
+        if (a.getFocusCode() != b.getFocusCode()
+                || !java.util.Objects.equals(a.getExpectedDurationMinutes(), b.getExpectedDurationMinutes()))
+            return false;
+        var x = ordenados(a);
+        var y = ordenados(b);
+        if (x.size() != y.size()) return false;
+        for (int i = 0; i < x.size(); i++) {
+            var e = x.get(i);
+            var f = y.get(i);
+            if (!java.util.Objects.equals(e.getExerciseId(), f.getExerciseId())
+                    || e.getPrescriptionType() != f.getPrescriptionType()
+                    || !java.util.Objects.equals(e.getPlannedSets(), f.getPlannedSets())
+                    || !java.util.Objects.equals(e.getPlannedReps(), f.getPlannedReps())
+                    || !java.util.Objects.equals(e.getPlannedDurationSeconds(), f.getPlannedDurationSeconds())
+                    || !java.util.Objects.equals(e.getRestSeconds(), f.getRestSeconds())
+                    || !mismaCarga(e.getTargetLoadKg(), f.getTargetLoadKg()))
+                return false;
+        }
+        return true;
+    }
+
+    private static java.util.List<main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise>
+    ordenados(PlannedWorkout w) {
+        return w.exercisesView().stream()
+                .sorted(java.util.Comparator.comparing(
+                        main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise::getExerciseOrder,
+                        java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())))
+                .toList();
+    }
+
+    private static boolean mismaCarga(java.math.BigDecimal a, java.math.BigDecimal b) {
+        return a == null ? b == null : b != null && a.compareTo(b) == 0;
     }
 
     private int duracion(Long sesion) {
