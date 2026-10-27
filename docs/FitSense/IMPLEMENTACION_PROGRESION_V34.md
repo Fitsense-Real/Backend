@@ -1,6 +1,6 @@
 # Implementación controlada · progresión y reincorporación condicional (V34)
 
-**Estado:** implementado en el repositorio, **apagado por defecto**, sin desplegar. Neon no se ha tocado.
+**Estado:** implementado, **apagado por defecto**. La **V34 está aplicada en Neon** desde el 27/10/2026 (al arrancar la aplicación contra Neon; verificado, §12). Los interruptores siguen apagados.
 **Diseño de referencia:** `DISENO_PROGRESION_Y_REINCORPORACION.md` v0.2.1 (§3, §4, §5, §12, §13).
 
 ## 1. Interruptores
@@ -134,3 +134,17 @@ Recomendable además: un rol de Neon con solo `SELECT`.
 **Qué limita hoy el tiempo de un paso o de una reincorporación:** V4 (minutos del perfil + 15 %) y, en `GAIN_MUSCLE`, el presupuesto de 4D, en la revalidación completa. En `ProgresionIT`, el viernes reincorporado dura 34 min con un perfil de 45.
 
 **Propuesta para cuando se implemente M** (no hecha, requiere aprobación): el resolutor tomará como límite de cada sesión su M; una reincorporación cuya duración estimada supere M quedará EN ESPERA DE TIEMPO (sin publicarse), y si la retirada se debió a falta de tiempo con M, solo volverá con una M nueva mayor (§5.5 del diseño).
+
+## 12. V34 en Neon (27/10/2026)
+
+Flyway aplicó la V34 al arrancar la aplicación local contra Neon (`Current version 33` → `now at version v34`). Comprobaciones en solo lectura, hechas por la persona responsable:
+
+| Comprobación | Esperado | Resultado |
+|---|---|---|
+| Las cinco restricciones `ck_paa_*` de V34 | 5 filas | 5 |
+| Columna `restored_sessions` | 0 | 0 |
+| `fn_intento_coherente` sin `restored_sessions` | true | true |
+| `fn_intento_coherente` con `progressed_sessions` | true | true |
+| Intentos con `progressed_sessions` no vacío | 0 | 0 |
+
+Con los interruptores apagados, el comportamiento no cambia. Sigue pendiente `EvaluacionLecturaV24IT` (§10) antes de encender nada.
