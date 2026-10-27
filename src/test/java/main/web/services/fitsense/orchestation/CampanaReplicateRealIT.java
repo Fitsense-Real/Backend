@@ -340,6 +340,7 @@ class CampanaReplicateRealIT {
             var medidas = sesionesDe(plan.get());
             ejecutar(u, plan.get(), dias);
             int antes = contar(u);
+            int filasAntes = filasV32(u);
             Optional<Long> siguiente;
             try {
                 siguiente = ciclo.runFor(u, semana, semana.plusWeeks(1));
@@ -350,12 +351,26 @@ class CampanaReplicateRealIT {
             }
             int contadas = contar(u) - antes;
             if (contadas > 3) parar("mas de tres llamadas en un ciclo (" + nombre + ", s" + (k + 2) + ")");
+            if (filasV32(u) == filasAntes) {
+                // El ciclo no dejo evidencia V32 (fallo al publicar): no se lee la fila de la semana anterior.
+                ciclos.add(new Ciclo(nombre, d.objetivo(), k + 2, describir(dias), "-", "SIN_EVIDENCIA", "-", 0,
+                        contadas, null, "el ciclo no registro intento V32" + (siguiente.isEmpty() ? " ni publico semana" : ""),
+                        List.of("ciclo sin evidencia V32 con " + contadas + " llamadas a la IA"), null, null, List.of()));
+                if (siguiente.isEmpty())
+                    return new Perfil(nombre, d.objetivo(), inicial, ciclos, "sin semana publicada en la " + (k + 2));
+                plan = siguiente;
+                continue;
+            }
             ciclos.add(evaluarCiclo(nombre, d.objetivo(), k + 2, dias, u, medidas, siguiente, contadas));
             if (siguiente.isEmpty())
                 return new Perfil(nombre, d.objetivo(), inicial, ciclos, "sin semana publicada en la " + (k + 2));
             plan = siguiente;
         }
         return new Perfil(nombre, d.objetivo(), inicial, ciclos, null);
+    }
+
+    private int filasV32(long u) {
+        return jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE user_id = ?", Integer.class, u);
     }
 
     private int contar(long u) {
