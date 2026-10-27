@@ -8,6 +8,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedPubl
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedWeekResult;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CorrectedSession;
+import main.web.services.fitsense.planning.domain.model.valueobjects.DerivedWorkout;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
@@ -92,6 +93,8 @@ public class AdaptedWeekCommandService {
      * construyen el servicio a mano: entonces no se sustituye nada.
      */
     private final SafetyExclusionResolver safetyExclusions;
+    private final RestauracionResolver restauraciones;
+    private final boolean restauracionHabilitada;
 
     /**
      * Para pruebas que construyen el servicio a mano: sin sustitucion por
@@ -108,7 +111,6 @@ public class AdaptedWeekCommandService {
                 failureRecorder, jsonSupport, null);
     }
 
-    @org.springframework.beans.factory.annotation.Autowired
     public AdaptedWeekCommandService(ReplicateSessionFixGenerator fixGenerator,
                                      WeekDerivationBuilder derivationBuilder,
                                      AdaptedWeekProducer producer,
@@ -117,7 +119,31 @@ public class AdaptedWeekCommandService {
                                      AdaptationFailureRecorder failureRecorder,
                                      JsonSupport jsonSupport,
                                      SafetyExclusionResolver safetyExclusions) {
+        this(fixGenerator, derivationBuilder, producer, planCommandService, evidenceMapper,
+                failureRecorder, jsonSupport, safetyExclusions, null, false);
+    }
+
+    /**
+     * @param restauraciones          V35: elige la restauracion del ciclo, si hay
+     * @param restauracionHabilitada  {@code fitsense.adaptation.restoration.enabled};
+     *                                apagada por defecto hasta aprobarla en Neon
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    public AdaptedWeekCommandService(ReplicateSessionFixGenerator fixGenerator,
+                                     WeekDerivationBuilder derivationBuilder,
+                                     AdaptedWeekProducer producer,
+                                     WeeklyTrainingPlanCommandService planCommandService,
+                                     AdaptationEvidenceMapper evidenceMapper,
+                                     AdaptationFailureRecorder failureRecorder,
+                                     JsonSupport jsonSupport,
+                                     SafetyExclusionResolver safetyExclusions,
+                                     RestauracionResolver restauraciones,
+                                     @org.springframework.beans.factory.annotation.Value(
+                                             "${fitsense.adaptation.restoration.enabled:false}")
+                                     boolean restauracionHabilitada) {
         this.safetyExclusions = safetyExclusions;
+        this.restauraciones = restauraciones;
+        this.restauracionHabilitada = restauracionHabilitada;
 
         this.fixGenerator = fixGenerator;
         this.derivationBuilder = derivationBuilder;
@@ -160,7 +186,7 @@ public class AdaptedWeekCommandService {
         // hubo respuesta usable», y aqui no se pregunto nada.
         var intento = decision.ordenaAdaptar()
                 ? corregir(context, derivation, elegibles, exclusiones)
-                : new Intento(producir(context, derivation, List.of(), elegibles, exclusiones),
+                : new Intento(continuidad(context, derivation, elegibles, exclusiones),
                 null, (short) 0);
 
         if (intento.resultado().publicable())
@@ -232,6 +258,41 @@ public class AdaptedWeekCommandService {
         return exclusiones.vacias()
                 ? producer.produce(context, derivation, correcciones, elegibles)
                 : producer.produce(context, derivation, correcciones, elegibles, exclusiones);
+    }
+
+    /**
+     * Sin orden de adaptar: se conserva la semana y, si hay una restauracion
+     * elegible (V35), se intenta UNA. Si la semana con la restauracion no pasa
+     * V8C y la validacion estricta, se publica la copia de siempre y el motivo
+     * queda en el informe de conservacion. Nunca se restaura a medias.
+     */
+    private AdaptedWeekResult continuidad(PlanGenerationContext context, WeekDerivation derivation,
+                                          Map<Long, CandidateExercise> elegibles,
+                                          ExclusionesDeSeguridad exclusiones) {
+        var restauracion = restauracionHabilitada && restauraciones != null
+                ? restauraciones.candidata(context) : Optional.<RestauracionResolver.Restauracion>empty();
+        if (restauracion.isEmpty())
+            return producir(context, derivation, List.of(), elegibles, exclusiones);
+
+        var r = restauracion.get();
+        var conRestauracion = new WeekDerivation(derivation.workouts().stream()
+                .map(d -> d.sourcePlannedWorkoutId().equals(r.origen())
+                        ? new DerivedWorkout(d.sourcePlannedWorkoutId(), r.contenido()) : d)
+                .toList(), derivation.sourcesWithoutDerived());
+        var restaurada = producer.produce(context, conRestauracion, List.of(), elegibles, exclusiones,
+                Map.of(r.origen(), r.contenido()));
+        if (restaurada.publicable()) {
+            log.info("RESTAURACION usuario {} · sesion {} vuelve a su referencia {} ({})",
+                    context.userId(), r.origen(), r.referencia(), r.intervencion());
+            return restaurada;
+        }
+
+        String motivo = "La sesion %d no se restauro a su referencia %d (%s): %s"
+                .formatted(r.origen(), r.referencia(), r.intervencion(), restaurada.problemas());
+        log.warn("RESTAURACION_BLOQUEADA usuario {} · {}", context.userId(), motivo);
+        var copia = producir(context, derivation, List.of(), elegibles, exclusiones);
+        return new AdaptedWeekResult(copia.estado(), copia.motivo(), copia.semana(), copia.source(),
+                copia.conservacion().conRestauracionBloqueada(motivo), copia.problemas());
     }
 
     private static Map<Long, CandidateExercise> porId(List<CandidateExercise> elegibles) {

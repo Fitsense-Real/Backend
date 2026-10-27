@@ -101,7 +101,7 @@ public class ConservationValidator {
                                        List<SustitucionSeguridad> autorizadas) {
         if (adjustment == null || !adjustment.adapta()) return ConservationReport.vacio();
 
-        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas);
+        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, Map.of());
     }
 
     /**
@@ -135,7 +135,27 @@ public class ConservationValidator {
                                                   Map<Long, CandidateExercise> eligible,
                                                   ExclusionesDeSeguridad causas,
                                                   List<SustitucionSeguridad> autorizadas) {
-        return revisar(derivation, previous, PlanAdjustment.none(), eligible, causas, autorizadas);
+        return validateContinuidad(derivation, previous, eligible, causas, autorizadas, Map.of());
+    }
+
+    /**
+     * Continuidad con una RESTAURACION declarada (V35, diseno v0.3 §3).
+     * <p>
+     * {@code restauraciones} lleva, por sesion de origen, la prescripcion de
+     * referencia ya puesta en la semana nueva. Esa sesion no se compara con la
+     * semana medida sino con su referencia, y solo se acepta si es IDENTICA:
+     * mismos ejercicios y dosis, mismo dia, enfoque y minutos. Cualquier otra
+     * diferencia -una sustitucion por seguridad incluida- es un problema: no se
+     * restaura a medias. Las demas sesiones se revisan como siempre.
+     */
+    public ConservationReport validateContinuidad(WeekDerivation derivation,
+                                                  PreviousWeekSummary previous,
+                                                  Map<Long, CandidateExercise> eligible,
+                                                  ExclusionesDeSeguridad causas,
+                                                  List<SustitucionSeguridad> autorizadas,
+                                                  Map<Long, PlanDraft.DraftWorkout> restauraciones) {
+        return revisar(derivation, previous, PlanAdjustment.none(), eligible, causas, autorizadas,
+                restauraciones == null ? Map.of() : restauraciones);
     }
 
     private ConservationReport revisar(WeekDerivation derivation,
@@ -143,7 +163,8 @@ public class ConservationValidator {
                                        PlanAdjustment adjustment,
                                        Map<Long, CandidateExercise> eligible,
                                        ExclusionesDeSeguridad causas,
-                                       List<SustitucionSeguridad> autorizadas) {
+                                       List<SustitucionSeguridad> autorizadas,
+                                       Map<Long, PlanDraft.DraftWorkout> restauraciones) {
 
         // SI SE ORDENO ADAPTAR, LA FALTA DE DATOS ES UN ERROR, NO UN VISTO
         // BUENO. La version anterior devolvia el informe vacio cuando faltaban la
@@ -174,6 +195,7 @@ public class ConservationValidator {
         var aplicadas = new ArrayList<Long>();
         var sinEfecto = new ArrayList<Long>();
         var conservadas = new ArrayList<Long>();
+        var restauradas = new ArrayList<Long>();
         var fechasReducibles = new LinkedHashSet<LocalDate>();
 
         var origenes = indexarSesiones(previous);
@@ -233,7 +255,20 @@ public class ConservationValidator {
                     dolorDeSesion, preventivo, problems)
                     : true;
 
-            if (intervencion == null) {
+            if (intervencion == null && restauraciones.containsKey(origen)) {
+                // V35: la restauracion se compara con su REFERENCIA, no con la
+                // semana medida. Solo identica, segura y sin sustituciones.
+                var referencia = restauraciones.get(origen);
+                boolean sustituida = admitidas.stream().anyMatch(s -> origen.equals(s.sesionOrigen()));
+                if (!segura)
+                    problems.add(("V8C: la sesion %d no se puede restaurar: consta dolor en la semana"
+                            + " medida.").formatted(origen));
+                else if (sustituida || !identica(referencia, derivada.workout()))
+                    problems.add(("V8C: la restauracion de la sesion %d no coincide exactamente con su"
+                            + " prescripcion de referencia.").formatted(origen));
+                else
+                    restauradas.add(origen);
+            } else if (intervencion == null) {
                 // Si no es segura NO se clasifica como conservada: una sesion
                 // con un problema de seguridad no es una conservacion correcta.
                 revisarNoSenalada(origen, anterior, diferencias, problems,
@@ -264,8 +299,21 @@ public class ConservationValidator {
                     .forEach(s -> problems.add(("V8C: se declara una sustitucion por seguridad en la sesion %d, "
                             + "que no esta en la semana nueva.").formatted(s.sesionOrigen())));
 
+        if (restauradas.size() > 1)
+            problems.add(("V8C: se restauran %d sesiones y el maximo es una por ciclo: %s.")
+                    .formatted(restauradas.size(), restauradas));
+
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
-                fechasReducibles, admitidas);
+                fechasReducibles, admitidas, restauradas, List.of());
+    }
+
+    /** Mismo dia, enfoque, minutos y ejercicios con sus dosis, en el mismo orden. */
+    private static boolean identica(PlanDraft.DraftWorkout referencia, PlanDraft.DraftWorkout derivada) {
+        return referencia != null && derivada != null
+                && java.util.Objects.equals(referencia.scheduledDate(), derivada.scheduledDate())
+                && referencia.focus() == derivada.focus()
+                && referencia.expectedDurationMinutes() == derivada.expectedDurationMinutes()
+                && java.util.Objects.equals(referencia.exercises(), derivada.exercises());
     }
 
     /**

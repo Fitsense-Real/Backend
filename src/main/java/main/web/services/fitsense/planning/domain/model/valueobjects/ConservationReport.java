@@ -61,7 +61,28 @@ public record ConservationReport(List<String> problems,
                                   * sesion no senalada puede cambiar, y por eso consta
                                   * aqui, con su motivo y su regla, y llega a V32.
                                   */
-                                 List<SustitucionSeguridad> sustituciones) {
+                                 List<SustitucionSeguridad> sustituciones,
+                                 /**
+                                  * V35. Las sesiones (del plan de origen) cuya derivada
+                                  * se devolvio EXACTAMENTE a su prescripcion de
+                                  * referencia. A lo sumo una por ciclo; no es una
+                                  * adaptacion aplicada ni una conservada.
+                                  */
+                                 List<Long> restauradas,
+                                 /**
+                                  * Restauraciones elegibles que no se hicieron, con su
+                                  * motivo (revalidacion fallida). La sesion queda como
+                                  * estaba.
+                                  */
+                                 List<String> restauracionesBloqueadas) {
+
+    /** Sin restauraciones: el informe de siempre. */
+    public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
+                              List<Long> conservadas, Set<LocalDate> fechasConDuracionReducible,
+                              List<SustitucionSeguridad> sustituciones) {
+        this(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible, sustituciones,
+                List.of(), List.of());
+    }
 
     /** Sin sustituciones de seguridad: el informe de siempre. */
     public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
@@ -77,6 +98,17 @@ public record ConservationReport(List<String> problems,
         fechasConDuracionReducible = fechasConDuracionReducible == null
                 ? Set.of() : Set.copyOf(fechasConDuracionReducible);
         sustituciones = sustituciones == null ? List.of() : List.copyOf(sustituciones);
+        restauradas = restauradas == null ? List.of() : List.copyOf(restauradas);
+        restauracionesBloqueadas = restauracionesBloqueadas == null
+                ? List.of() : List.copyOf(restauracionesBloqueadas);
+    }
+
+    /** El mismo informe, con el motivo de una restauracion que no se pudo hacer. */
+    public ConservationReport conRestauracionBloqueada(String motivo) {
+        var motivos = new java.util.ArrayList<>(restauracionesBloqueadas);
+        motivos.add(motivo);
+        return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
+                fechasConDuracionReducible, sustituciones, restauradas, motivos);
     }
 
     public static ConservationReport vacio() {
@@ -101,6 +133,9 @@ public record ConservationReport(List<String> problems,
         return "V8C: %d aplicadas, %d sin efecto, %d conservadas, %d problemas"
                 .formatted(aplicadas.size(), sinEfecto.size(), conservadas.size(), problems.size())
                 + (sustituciones.isEmpty() ? ""
-                : ", %d sustituciones por seguridad".formatted(sustituciones.size()));
+                : ", %d sustituciones por seguridad".formatted(sustituciones.size()))
+                + (restauradas.isEmpty() ? "" : ", %d restaurada(s)".formatted(restauradas.size()))
+                + (restauracionesBloqueadas.isEmpty() ? ""
+                : ", %d restauracion(es) bloqueada(s)".formatted(restauracionesBloqueadas.size()));
     }
 }

@@ -99,6 +99,11 @@ public class PlanAdaptationAttempt {
     @Column(name = "conserved_sessions", nullable = false, columnDefinition = "bigint[]")
     private Long[] conservedSessions;
 
+    /** V35: la sesion restaurada a su prescripcion de referencia, si la hubo. */
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "restored_sessions", nullable = false, columnDefinition = "bigint[]")
+    private Long[] restoredSessions;
+
     /**
      * El informe de V8C, entero y sin retocar. Mismo mapeo que
      * {@code WeeklyUserMetrics.riskFactors}, que es el unico jsonb que ya
@@ -145,6 +150,7 @@ public class PlanAdaptationAttempt {
         fila.appliedSessions = ids(intento.appliedSessions());
         fila.noEffectSessions = ids(intento.noEffectSessions());
         fila.conservedSessions = ids(intento.conservedSessions());
+        fila.restoredSessions = ids(intento.restoredSessions());
         fila.conservationReport = intento.conservationReportJson();
         fila.rejectionReason = intento.rejectionReason();
         fila.observedAdherencePct = intento.observedAdherencePct();
@@ -198,6 +204,10 @@ public class PlanAdaptationAttempt {
 
     public Long[] getConservedSessions() {
         return conservedSessions;
+    }
+
+    public Long[] getRestoredSessions() {
+        return restoredSessions;
     }
 
     public String getConservationReport() {

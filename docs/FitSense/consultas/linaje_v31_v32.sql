@@ -12,6 +12,8 @@
 --   SIN_EFECTO  origen en no_effect_sessions (contenido conservado)
 --   SUSTITUIDA  origen en conserved_sessions con sustitucion de seguridad
 --   COPIA       origen en conserved_sessions, sin sustitucion
+--   RESTAURADA  origen en restored_sessions (V35). Se lee con to_jsonb(fila)
+--               para que la consulta funcione tambien en una base sin V35.
 -- =============================================================================
 
 -- 1. VIOLACIONES -------------------------------------------------------------
@@ -35,7 +37,8 @@ clasificacion AS (
     SELECT d.derivada, d.origen,
            (d.origen = ANY (a.applied_sessions))::int
          + (d.origen = ANY (a.no_effect_sessions))::int
-         + (d.origen = ANY (a.conserved_sessions))::int AS clases
+         + (d.origen = ANY (a.conserved_sessions))::int
+         + (coalesce(to_jsonb(a) -> 'restored_sessions', '[]'::jsonb) @> to_jsonb(d.origen))::int AS clases
     FROM derivados d
     JOIN plan_adaptation_attempts a ON a.resulting_plan_id = d.plan_derivado
 )
@@ -72,6 +75,8 @@ SELECT d.planned_workout_id AS derivada, d.source_planned_workout_id AS origen,
        CASE
            WHEN d.source_planned_workout_id = ANY (a.applied_sessions) THEN 'ADAPTADA:'
                || a.targeted_interventions[array_position(a.targeted_sessions, d.source_planned_workout_id)]
+           WHEN coalesce(to_jsonb(a) -> 'restored_sessions', '[]'::jsonb) @> to_jsonb(d.source_planned_workout_id)
+               THEN 'RESTAURADA'
            WHEN d.source_planned_workout_id = ANY (a.no_effect_sessions) THEN 'SIN_EFECTO'
            WHEN d.source_planned_workout_id = ANY (a.conserved_sessions)
                 AND EXISTS (SELECT 1 FROM jsonb_array_elements(coalesce(a.conservation_report -> 'sustituciones', '[]'::jsonb)) s

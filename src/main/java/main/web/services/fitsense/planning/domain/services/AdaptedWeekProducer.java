@@ -109,6 +109,22 @@ public class AdaptedWeekProducer {
                                      List<CorrectedSession> correcciones,
                                      Map<Long, CandidateExercise> eligible,
                                      ExclusionesDeSeguridad exclusiones) {
+        return produce(context, derivation, correcciones, eligible, exclusiones, Map.of());
+    }
+
+    /**
+     * Igual, con una RESTAURACION declarada (V35): la derivada de esa sesion de
+     * origen ya trae su prescripcion de referencia, y V8C la compara con ella.
+     * Solo vale sin orden de adaptar (continuidad, {@code SIN_ORDEN}): con una
+     * orden no se acepta -una modificacion funcional por ciclo- y el respaldo
+     * no la recibe, porque RESPALDO es una copia exacta.
+     */
+    public AdaptedWeekResult produce(PlanGenerationContext context,
+                                     WeekDerivation derivation,
+                                     List<CorrectedSession> correcciones,
+                                     Map<Long, CandidateExercise> eligible,
+                                     ExclusionesDeSeguridad exclusiones,
+                                     Map<Long, PlanDraft.DraftWorkout> restauraciones) {
 
         if (context == null)
             throw new IllegalArgumentException("No se puede adaptar sin contexto.");
@@ -124,7 +140,10 @@ public class AdaptedWeekProducer {
         // datos NO se interpreta como buena adherencia: se interpreta como que
         // no hay motivo para tocar nada.
         if (adjustment == null || !adjustment.adapta())
-            return continuidad(context, derivation, AdaptedWeekResult.Motivo.SIN_ORDEN, eligible, exclusiones);
+            return continuidad(context, derivation, AdaptedWeekResult.Motivo.SIN_ORDEN, eligible, exclusiones,
+                    restauraciones == null ? Map.of() : restauraciones);
+        if (restauraciones != null && !restauraciones.isEmpty())
+            throw new IllegalArgumentException("Con una orden de adaptar no se restaura en el mismo ciclo.");
 
         // Fallo de IA. Antes de conservar hay que mirar si conservar es seguro.
         if (correcciones == null)
@@ -183,7 +202,8 @@ public class AdaptedWeekProducer {
         // Sin dolor, se conserva la semana entera. Las senaladas quedan como
         // conservadas: la adaptacion no ocurrio, y eso es un hecho que hay que
         // registrar, no un plan invalido.
-        return continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, exclusiones);
+        return continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, exclusiones,
+                Map.of());
     }
 
     /**
@@ -203,7 +223,8 @@ public class AdaptedWeekProducer {
                                           WeekDerivation derivation,
                                           AdaptedWeekResult.Motivo motivo,
                                           Map<Long, CandidateExercise> eligible,
-                                          ExclusionesDeSeguridad exclusiones) {
+                                          ExclusionesDeSeguridad exclusiones,
+                                          Map<Long, PlanDraft.DraftWorkout> restauraciones) {
 
         // Conservar no es publicar lo que hoy es inseguro: lo heredado que dejo
         // de ser compatible por seguridad se sustituye, o la semana no sale.
@@ -211,7 +232,7 @@ public class AdaptedWeekProducer {
                 exclusiones, eligible, context);
         var informe = conservation.validateContinuidad(
                 new WeekDerivation(reparada.semana(), derivation.sourcesWithoutDerived()),
-                context.previousWeek(), eligible, exclusiones, reparada.sustituciones());
+                context.previousWeek(), eligible, exclusiones, reparada.sustituciones(), restauraciones);
         return revisarYCerrar(context, reparada.semana(), informe,
                 GenerationSource.CONSERVED, motivo, eligible, reparada.problemas());
     }

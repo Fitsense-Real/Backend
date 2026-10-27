@@ -119,7 +119,8 @@ public class AdaptationEvidenceMapper {
                 decision, status, resultado.source(), hechos.aiCalls(),
                 senaladas, intervenciones, aplicadas, sinEfecto, conservadas,
                 hechos.conservationReportJson(), null,
-                hechos.observedAdherencePct(), hechos.registrationCoveragePct());
+                hechos.observedAdherencePct(), hechos.registrationCoveragePct(),
+                List.copyOf(resultado.conservacion().restauradas()));
     }
 
     /**
