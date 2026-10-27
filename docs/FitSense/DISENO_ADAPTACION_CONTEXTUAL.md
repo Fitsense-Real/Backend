@@ -4,6 +4,7 @@
 |---|---|
 | Versión | **v0.3 · cerrada.** Incorpora las decisiones aprobadas y las verificaciones (`VERIFICACION_DISENO_V03.md`), sin rediseño. La v0.1 (`46fb26d`), la v0.2 (`6ffcf20`) y la v0.3 de revisión (`6120808`) quedan en el historial |
 | Fecha | 27/10/2026 |
+| Sustitución parcial | **§3 (restauración automática) queda sustituida** por `DISENO_PROGRESION_Y_REINCORPORACION.md` (27/10): primero progresión gradual del volumen y después reincorporación del ejercicio retirado. El resto de esta versión se mantiene |
 | Estado | Diseño cerrado. **ADAPT-2 no está autorizado para implementarse**: antes va la prueba de restauración (§8, caso 11). Solo se implementó la corrección D8 (`aeb09ab`) |
 
 ## Principio
