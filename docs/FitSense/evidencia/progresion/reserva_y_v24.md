@@ -20,6 +20,14 @@ Sesiones: 216 · perfiles sin plan: 0
 | INCREASE_STRENGTH | 0 | - | - | - | - |
 | GENERAL_FITNESS | 54 | 53 (98 %) | 0.0 / 54 (100 %) | 4.6 / 54 (100 %) | {} |
 
+## 2b. D-P7: progresion de una sesion acortada bajo el piso de V20
+
+| Objetivo | Acortadas | Bajo el piso de V20 | Pasos medios con D-P7 (herencia de D8 en el paso) | Pasos medios sin D-P7 | Acortadas bajo el piso que no progresan sin D-P7 |
+|---|---:|---:|---:|---:|---:|
+| LOSE_WEIGHT | 54 | 54 (100 %) | 1.9 | 0.0 | 33 (61 %) |
+| GAIN_MUSCLE | 24 | 10 (42 %) | 5.8 | 0.0 | 10 (100 %) |
+| GENERAL_FITNESS | 54 | 22 (41 %) | 5.6 | 0.0 | 22 (100 %) |
+
 ## 3. Reduccion por fatiga (-2 repeticiones) frente a V24 por capacidades
 
 | Objetivo | Sesiones probadas | Rechazada por V24 con capacidades ON (generacion) | Rechazada por V24 en P2-D hoy (capacidades OFF) |

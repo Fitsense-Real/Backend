@@ -91,7 +91,8 @@ class ProgresionReservaIT {
                int pasosP, String bloqueoP, double pctEjercicioMax, double pctSesionMax,
                boolean ingenuaBloqueada, int pasosR1, boolean r1Ok, String r1Motivo,
                int pasosR2, boolean r2Ok, String r2Motivo, int totalR2,
-               boolean reduccionRechazadaConCapacidades, boolean reduccionRechazadaEnP2d) {}
+               boolean reduccionRechazadaConCapacidades, boolean reduccionRechazadaEnP2d,
+               boolean cortaBajoPiso, int pasosR2SinD8) {}
 
     @Test
     @DisplayName("reserva de volumen, impacto por ejercicio y V24 por capacidades en P2-D")
@@ -147,7 +148,8 @@ class ProgresionReservaIT {
             }
             boolean conRelleno = jRet >= 0;
             int vRet = 0, pasosR1 = 0, pasosR2 = 0, totalR2 = 0;
-            boolean ingenua = false, r1Ok = false, r2Ok = false;
+            boolean ingenua = false, r1Ok = false, r2Ok = false, bajoPiso = false;
+            int pasosSinD8 = 0;
             String r1Motivo = "-", r2Motivo = "-";
             if (conRelleno) {
                 var retirado = s0.exercises().get(jRet);
@@ -174,6 +176,11 @@ class ProgresionReservaIT {
                 int techo = (int) Math.floor(vBase * TECHO);
                 var r2 = progresar(semana, iSesion, conservados, rangosC, techo - vRet, ctx, base, fechaCorta, candidatos);
                 pasosR2 = r2.pasos();
+                // D-P7: la acortada, bajo el piso de V20? y cuantos pasos se dan SIN heredar la exencion.
+                var corta = conSesion(semana, iSesion, conservados, ctx).get(iSesion);
+                bajoPiso = corta.expectedDurationMinutes() < PlanDraftValidator.minimumSessionMinutes(ctx);
+                pasosSinD8 = progresar(semana, iSesion, conservados, rangosC, techo - vRet, ctx, base, Set.of(),
+                        candidatos).pasos();
                 var fin2 = reincorporar(semana, iSesion, r2.ejercicios(), retirado, jRet, ctx, base, candidatos);
                 totalR2 = volumen(r2.ejercicios()) + vRet;
                 r2Ok = fin2 == null && totalR2 <= techo;
@@ -195,7 +202,7 @@ class ProgresionReservaIT {
             }
             salida.add(new Res(objetivo.name(), minutos, conRelleno, vBase, vRet, p.pasos(), p.bloqueo(),
                     p.pctEjercicioMax(), p.pctSesionMax(), ingenua, pasosR1, r1Ok, r1Motivo, pasosR2, r2Ok, r2Motivo,
-                    totalR2, redCap, redP2d));
+                    totalR2, redCap, redP2d, bajoPiso, pasosSinD8));
         }
         return salida;
     }
@@ -408,6 +415,20 @@ class ProgresionReservaIT {
                     pct(l.stream().filter(Res::r1Ok).count(), l.size()),
                     l.stream().mapToInt(Res::pasosR2).average().orElse(0),
                     pct(l.stream().filter(Res::r2Ok).count(), l.size()), motivos));
+        }
+
+        sb.append("\n## 2b. D-P7: progresion de una sesion acortada bajo el piso de V20\n\n")
+                .append("| Objetivo | Acortadas | Bajo el piso de V20 | Pasos medios con D-P7 (herencia de D8 en el paso) | Pasos medios sin D-P7 | Acortadas bajo el piso que no progresan sin D-P7 |\n")
+                .append("|---|---:|---:|---:|---:|---:|\n");
+        for (var o : GoalType.values()) {
+            var l = rs.stream().filter(r -> r.objetivo().equals(o.name()) && r.conRelleno()).toList();
+            if (l.isEmpty()) continue;
+            var bajo = l.stream().filter(Res::cortaBajoPiso).toList();
+            sb.append(String.format(Locale.ROOT, "| %s | %d | %s | %.1f | %.1f | %s |\n", o, l.size(),
+                    pct(bajo.size(), l.size()),
+                    bajo.stream().mapToInt(Res::pasosR2).average().orElse(0),
+                    bajo.stream().mapToInt(Res::pasosR2SinD8).average().orElse(0),
+                    pct(bajo.stream().filter(r -> r.pasosR2() > 0 && r.pasosR2SinD8() == 0).count(), bajo.size())));
         }
 
         sb.append("\n## 3. Reduccion por fatiga (-2 repeticiones) frente a V24 por capacidades\n\n")

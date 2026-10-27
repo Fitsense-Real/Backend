@@ -379,7 +379,86 @@ El volumen nunca impide la reincorporación. La duración, el tope de colocacion
 | D-P11 | **No activar todavía.** Requiere antes la extensión con reducciones autorizadas (§12.5) |
 | **D-P12** (nueva) | Política de reserva: **R2** (recomendada) o R1 |
 
-## 13. Para la tesis
+## 13. Las dos cuestiones previas a implementar (27/10)
+
+### 13.1 ¿Qué pasa con el volumen reservado si el ejercicio retirado no puede volver?
+
+La reserva de R2 (D-P12) solo tiene sentido mientras la reincorporación sea **posible**. Cada ciclo se evalúa el estado del ejercicio retirado, con datos que ya existen y sin umbrales nuevos:
+
+| Estado | Cuándo | Reserva | Reevaluación |
+|---|---|---|---|
+| **PENDIENTE** | Es elegible, seguro y cabe (tiempo, colocaciones, presupuesto), pero falta completar la etapa 1 o las 2 semanas de cumplimiento | **Se mantiene**: los conservados progresan hasta 1,10 × V_base − V_ret | Cada ciclo |
+| **EN ESPERA DE TIEMPO** | Es elegible y seguro, pero **no cabe**: con él, la sesión supera los minutos del perfil + 15 % (V4) o la disponibilidad M declarada para ese entrenamiento, o el tope de colocaciones o el presupuesto de 4D | **Se libera**: la progresión de los conservados sigue hasta el techo de la sesión (1,10 × V_base). La falta de tiempo no bloquea el resto | Cada ciclo. Si vuelve a caber **y** el total queda dentro del techo, se reincorpora; si cabe pero supera el techo, no se reincorpora y la sesión se mantiene |
+| **DESCARTADA** | Deja de ser elegible o seguro: fuera del catálogo o de la elegibilidad, bloqueado por la persona, con una exclusión de seguridad o con dolor registrado | **Se libera definitivamente** | No hay reevaluación automática. Volver requiere una reevaluación específica, fuera del MVP |
+
+**Garantías:**
+- Nunca se supera el techo (1,10 × V_base), ni la dosis, ni el tiempo.
+- La progresión de los conservados no se bloquea indefinidamente: si la reincorporación no es posible, la reserva no la frena.
+- El estado y su motivo quedan en `conservation_report` de cada intento, así que es trazable.
+
+**Consecuencia aceptada:** si la reserva se liberó y la persona luego recupera tiempo, el ejercicio solo vuelve si cabe en el techo. Se prefiere mantener lo ya progresado a superar los límites.
+
+### 13.2 V24, V8C y D8 juntos durante un paso
+
+**Un paso** (de recuperación, de progresión o de reincorporación) sobre una sesión **no señalada**, en un ciclo `SIN_ORDEN` con su propuesta P, se valida así. **Todas** las reglas se aplican a la vez:
+
+| Regla | Qué comprueba | Qué no permite |
+|---|---|---|
+| **V8C** | La sesión difiere de la semana medida **exactamente en P**: un ejercicio con otra dosis, o un ejercicio añadido (el retirado, con su dosis inicial). Mismo día, enfoque y orden de los demás; los minutos son los que estima el estimador | Cualquier otra diferencia. **Hoy V8C rechaza todo cambio en una sesión no señalada** (`revisarNoSenalada`): sin esta autorización estrecha, ningún paso pasaría |
+| **V24** | La dosis del ejercicio de P es **exactamente** la de P y está en su rango (D-P3). Cada uno de los demás tiene su dosis base o la **heredada** de un paso o una reducción anteriores registrados en V32. El tope y el presupuesto de 4D se recalculan con la dosis nueva | Una dosis del rango sin propuesta ni herencia; una dosis fuera del rango; una dosis heredada que no coincida exactamente |
+| **D8 + D-P7** | Si la sesión venía de un acortamiento autorizado (el recorrido V31 + V32 pasa solo por copias **y pasos de P** que no reducen la duración), la exención de V20 se mantiene **solo** para esa sesión | Eximir de V20 a una sesión sin un acortamiento autorizado en su linaje, o un paso que reduzca la duración |
+| **V1–V25 restantes** | Igual que siempre, con el perfil y el catálogo vigentes | — |
+
+**Reducciones autorizadas (para activar D-P11 sin perder intervenciones).** Cuando la IA corrige una sesión **señalada** con `REVISAR_CARGA_Y_RECUPERACION` o `INVESTIGAR_CAMBIO_MINIMO`:
+- **V8C**, como hoy, solo admite bajar la dosis en lo que la intervención permite;
+- **V24** acepta esa dosis **inferior** a la base solo en esa colocación, solo dentro de `rep_limits` y del mínimo de series, y solo en la corrección que V8C aprobó;
+- al publicar, queda en V32 (`applied_sessions` y el informe), y las copias siguientes la heredan.
+
+Una subida en una corrección de la IA la rechaza V8C antes de llegar a V24.
+
+**Dependencia medida de D-P7** (simulación, `reserva_y_v24.md` §2b). Sesiones con un relleno retirado cuya versión acortada queda por debajo del piso de V20:
+
+| Objetivo | Acortadas bajo el piso | Pasos medios **con** D-P7 | Pasos medios **sin** D-P7 |
+|---|---:|---:|---:|
+| `LOSE_WEIGHT` | 54 de 54 (100 %) | 1,9 | **0** |
+| `GAIN_MUSCLE` | 10 de 24 (42 %) | 5,8 | **0** |
+| `GENERAL_FITNESS` | 22 de 54 (41 %) | 5,6 | **0** |
+
+Sin D-P7, esas sesiones **no progresan nunca**. Con D-P7, la exención sigue siendo estrecha (solo V20, solo esa sesión, solo con pasos que no reducen la duración), y las demás reglas se aplican igual.
+
+**Qué solo puede probarse con el código reconvertido:**
+- la autorización estrecha de V8C;
+- el conjunto de dosis autorizadas de V24 (propuesta del ciclo, herencia y reducciones);
+- la continuación de D8 a través de un paso.
+
+La simulación filtra esas reglas; la prueba real tiene que ejecutarlas. Son las pruebas multisemana de §9, más:
+1. un paso sobre una sesión heredada de D8 que sigue por debajo del piso;
+2. una dosis del rango sin propuesta (V24 la rechaza);
+3. la IA subiendo una dosis autorizada (V8C la rechaza);
+4. una reducción por fatiga con la V24 por capacidades activa (se acepta).
+
+### 13.3 D-P10 y las bases de datos
+
+- **Neon (27/10, en solo lectura):** el historial de Flyway termina en V33 y `restored_sessions` no existe. **V35 no está aplicada: D-P10 queda cerrada** y V35 se puede rehacer.
+- **Comprobación adicional recomendada** antes de desplegar, en el esquema correcto:
+  - `SELECT current_schema();`
+  - `SELECT conname FROM pg_constraint WHERE conname LIKE 'ck_paa_restaur%' OR conname = 'ck_paa_una_restauracion';` debe devolver 0 filas;
+  - `SELECT position('restored_sessions' IN pg_get_functiondef('fn_intento_coherente'::regproc)) = 0;` debe devolver `true`.
+- **`fs-p2d` (local):** tiene la V35 de restauración aplicada a mano. Se mantiene así mientras el código la usa. Al reconvertir V35 se **recrea** la base desde V1 hasta la V35 nueva (o se revierte V35 a mano y se aplica la nueva), para que coincida con el repositorio.
+- **V34** (propuesta, sin aplicar): sigue pendiente la decisión de orden frente a V35 (renumerar o usar `outOfOrder`).
+
+### 13.4 Estado de las decisiones
+
+| # | Estado |
+|---|---|
+| D-P10 | **Cerrada:** V35 no está en Neon; se rehace como `progressed_sessions` |
+| D-P12 | **Aprobada (R2)**, con los estados de §13.1 |
+| Incrementos por ejercicio | **Aprobados** (primero +1 repetición) |
+| D-P3 | **Aprobada conceptualmente**, sujeta a pruebas integradas |
+| D-P11 | Solo **junto con** la extensión de V24 (reducciones y progresiones autorizadas) |
+| D-P7 | **Necesaria** según la simulación; falta la prueba integrada |
+
+## 14. Para la tesis
 
 **Qué se puede sostener:**
 - La progresión es **gradual, limitada y condicionada** a un cumplimiento sostenido observable.
