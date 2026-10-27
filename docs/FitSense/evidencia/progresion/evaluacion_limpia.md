@@ -1,11 +1,11 @@
 # Evaluación limpia · progresión encendida, 10 semanas
 
-| Objetivo | Perfiles | Inicial válida (V24+V25) | Semanas publicadas | Sin publicar | Pasos: progresión | recuperación | reincorporación | vuelta atrás | Adaptación aplicada | Respaldo | Sin efecto |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| LOSE_WEIGHT | 18 | 18 | 180 | 0 | 56 | 0 | 6 | 0 | 18 | 14 | 4 |
-| GAIN_MUSCLE | 18 | 18 | 180 | 0 | 90 | 0 | 0 | 0 | 12 | 18 | 6 |
-| INCREASE_STRENGTH | 18 | 18 | 180 | 0 | 88 | 2 | 0 | 0 | 4 | 14 | 18 |
-| GENERAL_FITNESS | 18 | 18 | 180 | 0 | 78 | 12 | 0 | 0 | 31 | 5 | 0 |
+| Objetivo | Perfiles | Inicial válida (V24+V25) | Semanas publicadas | Sin publicar | Pasos: progresión | recuperación | reincorporación | vuelta atrás | Adaptación aplicada | Respaldo | Sin efecto | Ciclos sin orden | **Llamadas IA en ellos** | Ciclos con orden | Llamadas IA en ellos |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| LOSE_WEIGHT | 18 | 18 | 180 | 0 | 56 | 0 | 6 | 0 | 18 | 14 | 4 | 144 | **0** | 36 | 64 |
+| GAIN_MUSCLE | 18 | 18 | 180 | 0 | 90 | 0 | 0 | 0 | 12 | 18 | 6 | 144 | **0** | 36 | 72 |
+| INCREASE_STRENGTH | 18 | 18 | 180 | 0 | 88 | 2 | 0 | 0 | 4 | 14 | 18 | 144 | **0** | 36 | 64 |
+| GENERAL_FITNESS | 18 | 18 | 180 | 0 | 78 | 12 | 0 | 0 | 31 | 5 | 0 | 144 | **0** | 36 | 46 |
 
 ## Perfiles con algún fallo (0)
 

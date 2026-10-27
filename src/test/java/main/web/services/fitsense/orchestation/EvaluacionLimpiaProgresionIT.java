@@ -111,7 +111,7 @@ class EvaluacionLimpiaProgresionIT {
     static final List<Dia> GUION = List.of(Dia.HECHO, Dia.HECHO, Dia.HECHO, Dia.FATIGA, Dia.HECHO, Dia.TIEMPO,
             Dia.HECHO, Dia.HECHO, Dia.HECHO, Dia.HECHO);
 
-    record Semana(int n, String decision, String status, String tipoPaso, String motivo) {}
+    record Semana(int n, String decision, String status, String tipoPaso, String motivo, int llamadas) {}
 
     record Perfil(String nombre, GoalType objetivo, String inicial, List<Semana> semanas, String corte) {}
 
@@ -150,10 +150,12 @@ class EvaluacionLimpiaProgresionIT {
             ejecutar(u, plan.get(), GUION.get(k));
             var semana = S1.plusWeeks(k);
             Optional<Long> siguiente;
+            org.mockito.Mockito.clearInvocations(ia);
             try {
                 siguiente = ciclo.runFor(u, semana, semana.plusWeeks(1));
             } catch (RuntimeException e) {
-                semanas.add(new Semana(k + 2, "-", "EXCEPCION", null, e.getClass().getSimpleName() + ": " + e.getMessage()));
+                semanas.add(new Semana(k + 2, "-", "EXCEPCION", null, e.getClass().getSimpleName() + ": " + e.getMessage(),
+                        llamadas()));
                 return new Perfil(nombre, objetivo, inicial, semanas, "excepcion en la semana " + (k + 2));
             }
             var ev = jdbc.queryForMap("SELECT decision, status, conservation_report::text AS informe, rejection_reason"
@@ -161,12 +163,22 @@ class EvaluacionLimpiaProgresionIT {
             String informe = String.valueOf(ev.get("informe")).replace(" ", "");
             var m = Pattern.compile("\"tipo\":\"([A-Z_]+)\"").matcher(informe);
             semanas.add(new Semana(k + 2, (String) ev.get("decision"), (String) ev.get("status"),
-                    m.find() ? m.group(1) : null, (String) ev.get("rejection_reason")));
+                    m.find() ? m.group(1) : null, (String) ev.get("rejection_reason"), llamadas()));
             if (siguiente.isEmpty())
                 return new Perfil(nombre, objetivo, inicial, semanas, "sin semana publicada en la " + (k + 2));
             plan = siguiente;
         }
         return new Perfil(nombre, objetivo, inicial, semanas, null);
+    }
+
+    /** Llamadas a la IA de correccion en el ultimo ciclo. */
+    private int llamadas() {
+        return (int) org.mockito.Mockito.mockingDetails(ia).getInvocations().stream()
+                .filter(i -> i.getMethod().getName().equals("pedirRespuesta")).count();
+    }
+
+    private static boolean determinista(Semana x) {
+        return "NO_CHANGE".equals(x.decision()) || "INSUFFICIENT_DATA".equals(x.decision());
     }
 
     /** La semana inicial con el validador de la generacion (V24 y V25 completas). */
@@ -206,8 +218,8 @@ class EvaluacionLimpiaProgresionIT {
 
     private void escribir(List<Perfil> perfiles) throws Exception {
         var sb = new StringBuilder("# Evaluación limpia · progresión encendida, 10 semanas\n\n");
-        sb.append("| Objetivo | Perfiles | Inicial válida (V24+V25) | Semanas publicadas | Sin publicar | Pasos: progresión | recuperación | reincorporación | vuelta atrás | Adaptación aplicada | Respaldo | Sin efecto |\n")
-                .append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n");
+        sb.append("| Objetivo | Perfiles | Inicial válida (V24+V25) | Semanas publicadas | Sin publicar | Pasos: progresión | recuperación | reincorporación | vuelta atrás | Adaptación aplicada | Respaldo | Sin efecto | Ciclos sin orden | **Llamadas IA en ellos** | Ciclos con orden | Llamadas IA en ellos |\n")
+                .append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n");
         for (var objetivo : GoalType.values()) {
             var l = perfiles.stream().filter(p -> p.objetivo() == objetivo).toList();
             var s = l.stream().flatMap(p -> p.semanas().stream()).toList();
@@ -221,9 +233,15 @@ class EvaluacionLimpiaProgresionIT {
                 sb.append(" | ").append(s.stream().filter(x -> tipo.equals(x.tipoPaso())).count());
             for (var st : List.of("APLICADA", "RESPALDO", "SIN_EFECTO"))
                 sb.append(" | ").append(s.stream().filter(x -> st.equals(x.status())).count());
+            sb.append(" | ").append(s.stream().filter(EvaluacionLimpiaProgresionIT::determinista).count())
+                    .append(" | **").append(s.stream().filter(EvaluacionLimpiaProgresionIT::determinista)
+                            .mapToInt(Semana::llamadas).sum()).append("**")
+                    .append(" | ").append(s.stream().filter(x -> !determinista(x)).count())
+                    .append(" | ").append(s.stream().filter(x -> !determinista(x)).mapToInt(Semana::llamadas).sum());
             sb.append(" |\n");
         }
-        var fallos = perfiles.stream().filter(p -> p.corte() != null || !"VALIDA".equals(p.inicial())).toList();
+        var fallos = perfiles.stream().filter(p -> p.corte() != null || !"VALIDA".equals(p.inicial())
+                || p.semanas().stream().anyMatch(x -> determinista(x) && x.llamadas() > 0)).toList();
         sb.append("\n## Perfiles con algún fallo (").append(fallos.size()).append(")\n\n");
         if (fallos.isEmpty()) sb.append("Ninguno.\n");
         for (var p : fallos) {
@@ -241,6 +259,8 @@ class EvaluacionLimpiaProgresionIT {
         Files.createDirectories(salida.getParent());
         Files.writeString(salida, sb.toString());
         System.out.println(sb);
+        org.junit.jupiter.api.Assertions.assertEquals(List.of(), fallos.stream().map(Perfil::nombre).toList(),
+                "perfiles con fallos o con llamadas a la IA en ciclos sin orden");
     }
 
     // =======================================================================
