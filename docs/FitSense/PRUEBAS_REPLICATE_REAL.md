@@ -254,7 +254,7 @@ Las llamadas incluyen la generación inicial. Hay menos `APLICADA` porque las ad
 | `INVESTIGAR_CAMBIO_MINIMO` | 7 | 3 | 2 | 2 | 0 | 18 |
 | `SEGURIDAD_ANTE_DOLOR` | 7 | 4 | 0 | 0 | 3 (§11.2) | 18 |
 
-**Rechazos por regla (intentos que se reintentaron):** V8C 58, V17 34, V20 27, V11 7, V9 6, V24 6, V23 1, V15 1, V16 1. Ejemplos de V8C nuevos, todos de la IA real:
+**Rechazos por regla en los ciclos (intentos que se reintentaron):** V8C 58, V17 34, V20 27, V11 7, V9 6, V24 1, V15 1, V16 1; y en la generación inicial, V24 5 y V23 1. Ejemplos de V8C nuevos, todos de la IA real:
 - «la sesión 24 está señalada por dolor y su volumen sube de 70 a 128»;
 - «… sube la dosis del ejercicio …»;
 - «la sesión 264 está señalada por dolor y su volumen sube de 91 a 141».
