@@ -89,8 +89,25 @@ public class AdaptationFailureRecorder {
             // falla aqui con la pila util. Las DIFERIDAS siguen disparando al
             // confirmar, y confirmar es lo ultimo que hace execute(...): por eso
             // los dos fallos caen dentro de este try.
-            Long id = transaccionNueva.execute(estado ->
-                    repository.saveAndFlush(PlanAdaptationAttempt.desde(intento)).getId());
+            //
+            // Si otra ejecucion del ciclo ya PUBLICO esta medicion (la que entro
+            // cuando esta perdio el bloqueo de sesion), un fallo tardio de esta
+            // no es un hecho de la semana: no se registra. La fila de la medicion
+            // se bloquea para ver lo que la otra confirmo.
+            Long[] publicado = {null};
+            Long id = transaccionNueva.execute(estado -> {
+                repository.bloquearMedicion(intento.weeklyMetricId());
+                publicado[0] = repository.planPublicadoDeLaMedicion(intento.weeklyMetricId()).orElse(null);
+                if (publicado[0] != null) return null;
+                return repository.saveAndFlush(PlanAdaptationAttempt.desde(intento)).getId();
+            });
+
+            if (publicado[0] != null) {
+                log.warn("V32: la medicion {} del usuario {} ya publico el plan {} en otra ejecucion del ciclo;"
+                                + " el intento {} de esta no se registra.",
+                        intento.weeklyMetricId(), intento.userId(), publicado[0], intento.status());
+                return false;
+            }
 
             if (id == null) {
                 log.error("V32: la transaccion del intento {} del usuario {} termino sin"

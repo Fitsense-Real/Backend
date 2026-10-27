@@ -2,10 +2,13 @@ package main.web.services.fitsense.planning.infrastructure.persistence.jpa.repos
 
 import main.web.services.fitsense.planning.domain.model.aggregates.PlanAdaptationAttempt;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * La evidencia de adaptacion. SOLO SE INSERTA Y SE LEE.
@@ -33,4 +36,23 @@ public interface PlanAdaptationAttemptRepository
 
     /** Los intentos que publicaron ese plan. En un linaje integro, exactamente uno. */
     List<PlanAdaptationAttempt> findByResultingPlanId(Long resultingPlanId);
+
+    /**
+     * BLOQUEA LA FILA DE LA MEDICION hasta el final de la transaccion que llama.
+     * <p>
+     * Es la coordinacion persistente de la publicacion: dos ejecuciones del
+     * ciclo de la misma semana (p. ej. una que perdio el bloqueo de sesion
+     * mientras esperaba a la IA) se ponen en fila aqui, y la segunda, al
+     * entrar, ya VE lo que confirmo la primera. Sin migracion: usa la fila de
+     * weekly_user_metrics que ya existe. Devuelve vacio si la medicion no
+     * existe, y entonces no hay nada que coordinar.
+     */
+    @Query(value = "SELECT weekly_metric_id FROM weekly_user_metrics WHERE weekly_metric_id = :id FOR UPDATE",
+            nativeQuery = true)
+    Optional<Long> bloquearMedicion(@Param("id") Long weeklyMetricId);
+
+    /** El plan que ya publico un intento de esa medicion, si alguno lo hizo. */
+    @Query(value = "SELECT resulting_plan_id FROM plan_adaptation_attempts WHERE weekly_metric_id = :id"
+            + " AND resulting_plan_id IS NOT NULL ORDER BY attempt_id LIMIT 1", nativeQuery = true)
+    Optional<Long> planPublicadoDeLaMedicion(@Param("id") Long weeklyMetricId);
 }

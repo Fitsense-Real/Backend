@@ -306,6 +306,22 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         var command = prepared.command();
 
+        // UNA SOLA PUBLICACION POR MEDICION, AUNQUE EL BLOQUEO DE SESION SE PIERDA.
+        // CicloSemanalBloqueo evita que dos ciclos del mismo participante
+        // corran a la vez, pero si su conexion cae mientras la IA contesta, el
+        // servidor lo suelta y otro ciclo puede empezar: los dos llegaban aqui
+        // y publicaban dos versiones con dos evidencias. La fila de la medicion
+        // se bloquea en ESTA transaccion, y quien entre segundo ve la evidencia
+        // ya confirmada y devuelve ese plan sin escribir nada.
+        attemptRepository.bloquearMedicion(publicacion.weeklyMetricId());
+        var yaPublicado = attemptRepository.planPublicadoDeLaMedicion(publicacion.weeklyMetricId());
+        if (yaPublicado.isPresent()) {
+            log.warn("La medicion {} del usuario {} ya publico el plan {}; esta ejecucion no publica otro"
+                            + " (otra ejecucion del ciclo llego antes).",
+                    publicacion.weeklyMetricId(), command.userId(), yaPublicado.get());
+            return planRepository.findById(yaPublicado.get());
+        }
+
         // Se relee el plan previo, por lo mismo que en persist: entre fases
         // pasaron minutos sin sesion de persistencia abierta.
         var previousActive = planRepository.findByUserIdAndWeekStartDateAndStatus(

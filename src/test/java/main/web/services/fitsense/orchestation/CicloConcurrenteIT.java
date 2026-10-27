@@ -84,6 +84,7 @@ class CicloConcurrenteIT {
     @Autowired UserRepository usuarios;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.application.internal.commandservices.AdaptationFailureRecorder registrador;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
@@ -238,6 +239,89 @@ class CicloConcurrenteIT {
         assertTrue(r.planId().isPresent());
         comprobarUnico(u, "APLICADA");
         assertSinBloqueo(u);
+    }
+
+    @Test
+    @DisplayName("se pierde el bloqueo de A MIENTRAS ESPERA A LA IA y entra B: una decision, una evidencia, una semana")
+    void bloqueoPerdidoDuranteLaIa() throws Exception {
+        bloqueoPerdido(true);
+    }
+
+    @Test
+    @DisplayName("se pierde el bloqueo de A AL EMPEZAR (aun decidiendo) y entra B: una decision, una evidencia, una semana")
+    void bloqueoPerdidoAlEmpezar() throws Exception {
+        bloqueoPerdido(false);
+    }
+
+    private void bloqueoPerdido(boolean esperarIa) throws Exception {
+        long u = conFatiga();
+        retrasoMs.set(4000);
+        clearInvocations(ia);
+        var pool = Executors.newFixedThreadPool(2);
+        var a = pool.submit(() -> ciclo.ejecutar(u, S1, S1.plusWeeks(1)));
+        esperarBloqueo(u);
+        if (esperarIa) esperarLlamadaIa();
+        assertEquals(1, (int) jdbc.queryForObject("SELECT count(pg_terminate_backend(pid)) FROM pg_stat_activity"
+                + " WHERE application_name = 'fitsense-ciclo-semanal-bloqueo'", Integer.class));
+        assertSinBloqueo(u);
+        var b = pool.submit(() -> ciclo.ejecutar(u, S1, S1.plusWeeks(1)));   // B aprovecha el bloqueo libre
+        var ra = resultado(a);
+        var rb = resultado(b);
+        pool.shutdown();
+        var intentos = jdbc.queryForList("SELECT status || '/' || coalesce(resulting_plan_id::text, '-')"
+                + " FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id", String.class, u);
+        System.out.println("CONCURRENTE bloqueo_perdido(" + (esperarIa ? "durante la IA" : "al empezar") + ") A=" + ra
+                + " B=" + rb + " intentos=" + intentos + " versiones=" + versiones(u) + " llamadas=" + llamadasIa());
+        assertEquals(List.of("APLICADA"), intentos.stream().map(x -> x.substring(0, x.indexOf('/'))).toList(),
+                "una sola evidencia V32: " + intentos);
+        assertEquals(1, versiones(u), "una sola version de la semana (ninguna REPLACED)");
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_interventions WHERE user_id = ?",
+                Integer.class, u), "una sola decision");
+        long publicado = jdbc.queryForObject("SELECT resulting_plan_id FROM plan_adaptation_attempts WHERE user_id = ?",
+                Long.class, u);
+        for (var r : List.of(ra, rb))
+            if (r instanceof WeeklyCycleService.ResultadoCiclo rc && rc.planId().isPresent())
+                assertEquals(publicado, rc.planId().get(), "nadie devuelve un plan distinto del publicado");
+        assertSinBloqueo(u);
+    }
+
+    @Test
+    @DisplayName("un fallo TARDIO de la ejecucion que perdio el bloqueo no deja evidencia si otra ya publico")
+    void falloTardioNoSeRegistra() {
+        long u = conFatiga();
+        retrasoMs.set(0);
+        assertEquals(CicloSemanalBloqueo.Estado.EJECUTADO, ciclo.ejecutar(u, S1, S1.plusWeeks(1)).estado());
+        comprobarUnico(u, "APLICADA");
+        var fila = jdbc.queryForMap("SELECT weekly_metric_id, source_plan_id, new_week_start_date, decision,"
+                + " targeted_sessions[1] AS senalada, targeted_interventions[1] AS intervencion"
+                + " FROM plan_adaptation_attempts WHERE user_id = ?", u);
+        long senalada = ((Number) fila.get("senalada")).longValue();
+        // Lo que registraria la otra ejecucion si su IA acabara en NO_FACTIBLE despues.
+        var tardio = new AdaptationAttempt(u, ((Number) fila.get("weekly_metric_id")).longValue(),
+                ((Number) fila.get("source_plan_id")).longValue(),
+                ((java.sql.Date) fila.get("new_week_start_date")).toLocalDate(), null,
+                AdaptationDecision.valueOf((String) fila.get("decision")), AdaptationAttempt.Status.NO_FACTIBLE,
+                null, (short) 1, List.of(senalada), List.of((String) fila.get("intervencion")), List.of(),
+                List.of(), List.of(), "{}", "fallo tardio simulado", null, null);
+        assertFalse(registrador.registrar(tardio), "no se registra: la medicion ya publico");
+        comprobarUnico(u, "APLICADA");
+    }
+
+    /** El resultado, o la excepcion (que tambien es un desenlace aceptable si no publica nada). */
+    private Object resultado(Future<WeeklyCycleService.ResultadoCiclo> f) throws Exception {
+        try {
+            return f.get(60, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            return "EXCEPCION " + e.getCause().getClass().getSimpleName();
+        }
+    }
+
+    private void esperarLlamadaIa() throws InterruptedException {
+        for (int i = 0; i < 400; i++) {
+            if (llamadasIa() > 0) return;
+            Thread.sleep(25);
+        }
+        fail("la IA no llego a llamarse");
     }
 
     @Test

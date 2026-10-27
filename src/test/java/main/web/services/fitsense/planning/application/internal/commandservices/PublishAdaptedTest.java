@@ -146,7 +146,9 @@ class PublishAdaptedTest {
                         publicacion(conservada(), AdaptationDecision.NO_CHANGE, null)));
 
         assertTrue(error.getMessage().contains("replacementReason"), error::getMessage);
-        verifyNoInteractions(attemptRepository);
+        // Solo la guarda de una publicacion por medicion (bloqueo y lectura); ninguna evidencia.
+        verify(attemptRepository, never()).save(any());
+        verify(attemptRepository, never()).saveAndFlush(any());
     }
 
     // =======================================================================

@@ -36,7 +36,7 @@ El contador cuenta `pedirRespuesta` (la única llamada del ciclo semanal) y la p
 | 1 | Semana conservada | 0 | 0 | `NO_CHANGE`, `CONSERVED`, sin paso |
 | 2 | Progresión autorizada | 0 | 0 | `PROGRESION` en V32 |
 | 3 | Recuperación autorizada | 0 | 0 | `RECUPERACION` en V32 |
-| 4 | Reincorporación autorizada | 0 | 0 | `LOSE_WEIGHT`, 2 semanas tras acortar |
+| 4 | Reincorporación autorizada | 0 | 0 | `LOSE_WEIGHT` / intermedio / 45: reincorpora solo después de al menos un paso del viernes tras acortar (1(a), §6.1) |
 | 5 | Mantenimiento (sin paso posible y en el techo) | 0 | 0 | La misma rutina; `INCREASE_STRENGTH`: base [84, 84, 72] → [90, 90, 78] y se detiene (techo 92/92/79, el siguiente paso lo supera) |
 | 6 | Datos insuficientes | 0 | 0 | `INSUFFICIENT_DATA`, copia idéntica, sin paso |
 | 7 | Adaptación por fatiga | 1 | 1 | `APLICADA`, `ai_calls = 1` en V32; acortar por falta de tiempo: también 1 |
@@ -56,7 +56,9 @@ Los mismos 72 perfiles de referencia y el mismo guion (§14 de `IMPLEMENTACION_P
 | INCREASE_STRENGTH | 180/180 | 144 | **0** | 36 | 64 |
 | GENERAL_FITNESS | 180/180 | 144 | **0** | 36 | 46 |
 
-576 ciclos deterministas (copias, 312 pasos de progresión, 14 recuperaciones, 6 reincorporaciones y mantenimiento): **0 llamadas**. Solo las 144 adaptaciones llaman a la IA: **246 llamadas simuladas** en total, porque una adaptación puede usar hasta 3 intentos. En V32, `ai_calls` cuenta solo llamadas a la IA (0 en una copia), mientras que `generation_attempts` registra también el intento determinista de publicar. Evidencia: `evidencia/progresion/evaluacion_limpia.md`.
+576 ciclos deterministas (copias, 312 pasos de progresión, 14 recuperaciones, 0 reincorporaciones y mantenimiento): **0 llamadas**. Solo las 144 adaptaciones llaman a la IA: **246 llamadas simuladas** en total, porque una adaptación puede usar hasta 3 intentos. En V32, `ai_calls` cuenta solo llamadas a la IA (0 en una copia), mientras que `generation_attempts` registra también el intento determinista de publicar. Evidencia: `evidencia/progresion/evaluacion_limpia.md`.
+
+Las reincorporaciones eran 6 antes de la decisión 1(a); con ella son 0, porque esos viernes no habían dado ningún paso propio después del acortamiento (§6.1).
 
 ## 4. Regresión
 
@@ -131,9 +133,16 @@ V11 sigue juzgando aparte la carga frente al último peso anotado.
 6. **`finally`:** `pg_advisory_unlock` en la **misma** conexión y cierre. Si la conexión se perdió, el servidor ya soltó el bloqueo al cerrarse la sesión; se registra y no se lanza nada.
 7. **Sin conexión para el bloqueo:** `SIN_BLOQUEO`; el ciclo **no** se ejecuta (no se corre sin exclusión) y se reintenta.
 
-**Límite declarado:** si la conexión del bloqueo se cae a mitad del ciclo, el servidor suelta el bloqueo y otra ejecución podría empezar mientras esta termina. Queda en el log (`CICLO_BLOQUEO ... se perdio`). La prueba lo provoca a propósito: el ciclo termina bien y el bloqueo queda libre.
+**Bloqueo perdido: lo que el bloqueo solo no garantiza.** Si la conexión del bloqueo se cae a mitad del ciclo, el servidor suelta el bloqueo y otra ejecución puede empezar mientras la primera sigue. La prueba lo provoca (`pg_terminate_backend` de la conexión del bloqueo de A mientras A espera a la IA lenta, y entonces arranca B). **Sin más protección, falló:** las dos ejecuciones publicaron (`intentos=[APLICADA/4, APLICADA/5]`, 2 versiones de la semana, 2 llamadas). Con el corte al empezar, en cambio, ya era seguro (B chocaba con `uq_ui_metric`).
 
-**Pruebas** (`CicloConcurrenteIT`, 6/6, PostgreSQL efímero, IA simulada con retraso para forzar el solape):
+**Corrección, sin migración: coordinación persistente en la publicación.** La transacción que publica (`publishAdapted`) empieza bloqueando la fila de la medición (`SELECT … FROM weekly_user_metrics WHERE weekly_metric_id = ? FOR UPDATE`) y comprueba si algún intento de esa medición ya publicó un plan (`resulting_plan_id IS NOT NULL` en `plan_adaptation_attempts`). Si lo hay, no escribe nada y devuelve ese plan. Dos publicaciones de la misma medición quedan en fila en la base, y la segunda ve lo que confirmó la primera; no depende de que la conexión del bloqueo siga viva. El registrador de fallos (`AdaptationFailureRecorder`) hace lo mismo en su transacción: un `NO_FACTIBLE` tardío de la ejecución que perdió el bloqueo no se registra si la otra ya publicó. El bloqueo de sesión sigue siendo la primera barrera (evita el trabajo y la llamada duplicados en el caso normal); la fila bloqueada es la que garantiza una sola publicación.
+
+**Lo que queda (declarado):**
+- Tras perder el bloqueo, **la llamada a la IA puede repetirse** (la prueba registra 2): las dos ejecuciones llegan a pedir propuesta, pero solo una publica. Con Replicate real sería un coste duplicado, no un dato duplicado.
+- Si las **dos** ejecuciones acaban en `NO_FACTIBLE` (ninguna publica), quedan dos filas de fallo, igual que un reintento posterior; V32 no distingue una de otro sin un identificador de ejecución, que exigiría migración.
+- La regla «una publicación por medición» se aplica a las semanas adaptadas por el ciclo; la generación inicial no pasa por aquí y no cambia.
+
+**Pruebas** (`CicloConcurrenteIT`, 9/9, PostgreSQL efímero, IA simulada con retraso para forzar el solape):
 
 | Prueba | Resultado |
 |---|---|
@@ -142,6 +151,9 @@ V11 sigue juzgando aparte la carga frente al último peso anotado.
 | **Dos instancias** de la aplicación (otro contexto Spring completo, en otro puerto) sobre la misma base | La segunda instancia ve `EN_CURSO` mientras la primera trabaja; después devuelve el mismo plan, sin evidencia nueva |
 | Fallo durante el ciclo (la IA lanza) y fallo que atraviesa el ciclo (`Error`) | El bloqueo se libera en los dos casos; el reintento publica una sola vez |
 | La conexión del bloqueo se corta a mitad (`pg_terminate_backend`) | El ciclo termina sin excepción, publica una vez y el bloqueo queda libre |
+| **Bloqueo de A perdido mientras A espera a la IA (4 s), y B entra** | A y B: `EJECUTADO` con el **mismo** plan. 1 decisión, 1 intento V32 (`APLICADA`), 1 versión de la semana; 2 llamadas a la IA (la residual) |
+| Bloqueo de A perdido al empezar (A aún decidiendo), y B entra | Igual: el mismo plan para los dos, 1 decisión, 1 intento, 1 versión |
+| Fallo tardío (`NO_FACTIBLE`) de una ejecución cuando otra ya publicó | No se registra; sigue habiendo 1 intento V32 |
 | Reintento después del primer ciclo | El mismo plan, 0 llamadas, sin intento V32 nuevo |
 | Personas distintas a la vez | Las dos se ejecutan en paralelo (2,8 s con 2,5 s de IA cada una) |
 
@@ -153,3 +165,9 @@ Además: `PendientesProgresionIT.ciclosSimultaneos` vuelve a exigir 1 evidencia 
 
 - **723 unitarias y 197 de integración, 0 fallos.** 8 omitidas, todas opcionales.
 - `GeneracionReferenciaIT`: **72/72 idénticos.** `CicloConcurrenteIT`: 6/6. `PendientesProgresionIT`: 6/6. `CopiaSinIaIT`: 5/5. `ProgresionIT`: 17/17.
+
+### 7.2 Regresión tras la guarda de publicación (bloqueo perdido)
+
+- **723 unitarias y 200 de integración, 0 fallos.** 8 omitidas, todas opcionales.
+- `GeneracionReferenciaIT`: **72/72 idénticos** (la generación inicial no pasa por la guarda). `CicloConcurrenteIT`: **9/9**, con las tres pruebas nuevas de bloqueo perdido. `PendientesProgresionIT`: 6/6. `CopiaSinIaIT`: 5/5. `ProgresionIT`: 17/17.
+- `PublishAdaptedTest.reemplazarSinMotivoSeRechaza` comprobaba «ninguna interacción» con el repositorio de evidencia; ahora la guarda lo consulta antes, así que la prueba exige lo que de verdad importaba: que no se escriba ninguna evidencia.

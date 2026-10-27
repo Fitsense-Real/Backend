@@ -167,7 +167,7 @@ Base efímera, progresión encendida (con ella la V24 por capacidades y V25 en l
 
 | Objetivo | Perfiles | Inicial válida (V24+V25) | Semanas publicadas | Sin publicar | Progresión | Recuperación | Reincorporación | Adaptación aplicada | Respaldo | Sin efecto |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| LOSE_WEIGHT | 18 | 18 | 180 | 0 | 56 | 0 | 6 | 18 | 14 | 4 |
+| LOSE_WEIGHT | 18 | 18 | 180 | 0 | 56 | 0 | 0 | 18 | 14 | 4 |
 | GAIN_MUSCLE | 18 | 18 | 180 | 0 | 90 | 0 | 0 | 12 | 18 | 6 |
 | INCREASE_STRENGTH | 18 | 18 | 180 | 0 | 88 | 2 | 0 | 4 | 14 | 18 |
 | GENERAL_FITNESS | 18 | 18 | 180 | 0 | 78 | 12 | 0 | 31 | 5 | 0 |
@@ -177,7 +177,7 @@ Base efímera, progresión encendida (con ella la V24 por capacidades y V25 en l
 **Lectura:**
 - `GAIN_MUSCLE`: la reducción por fatiga la rechaza 4D (respaldo), como siempre.
 - `INCREASE_STRENGTH`: no tiene rellenos, así que acortar sale sin efecto.
-- Las reincorporaciones en 10 semanas solo llegan en `LOSE_WEIGHT`; en los demás objetivos la reserva R2 necesita más pasos (en `ProgresionIT`, `GAIN_MUSCLE` reincorpora en la semana 21).
+- **Ninguna reincorporación en 10 semanas** (cifra vigente tras la decisión 1(a)). Antes de 1(a) eran 6, todas en `LOSE_WEIGHT`: esos viernes no habían dado ningún paso propio después del acortamiento, y 1(a) exige al menos uno. En los demás objetivos la reserva R2 necesita más pasos (en `ProgresionIT`, `GAIN_MUSCLE` reincorpora en la semana 21).
 - `LOSE_WEIGHT` de 30 minutos no progresa en 10 semanas: el menor paso supera el 5 % de una sesión pequeña («no se fuerza»).
 
 **Hallazgo (desviación del diseño §3.2):** cuando la IA redujo una **serie** (por ejemplo 3×10 → 2×10 en un ejercicio que ya está en su mínimo de repeticiones), devolverla supera el 10 % del paso de recuperación. El resolutor no la recupera y **sigue con la progresión ordinaria de otros ejercicios** de esa sesión. El diseño dice que la progresión ordinaria solo ocurre «sin reducción pendiente». Pasa en `LOSE_WEIGHT` (0 recuperaciones) y en parte de `INCREASE_STRENGTH`. No viola V24 ni V25. **Resuelto (27/10): se mantiene ese comportamiento (opción 2)**, ya incorporado al diseño (§3.2) y cubierto por `PendientesProgresionIT`.

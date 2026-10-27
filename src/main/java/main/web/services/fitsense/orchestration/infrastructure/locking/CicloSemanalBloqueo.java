@@ -40,9 +40,12 @@ import java.util.function.Supplier;
  * que dos participantes distintos nunca se bloquean entre si.
  * <p>
  * LIMITE DECLARADO: si la conexion del bloqueo se cae A MITAD del ciclo, el
- * servidor suelta el bloqueo y otra ejecucion podria empezar mientras esta
- * termina. Se detecta al final ({@code isValid}) y queda en el log; la conexion
- * usa {@code tcpKeepAlive} para que una caida no pase inadvertida.
+ * servidor suelta el bloqueo y otra ejecucion puede empezar mientras esta
+ * termina. Se detecta al final ({@code isValid}) y queda en el log. Que aun asi
+ * no se publique dos veces lo garantiza la publicacion, no este bloqueo: bloquea
+ * la fila de la medicion y no publica si otro intento ya lo hizo
+ * ({@code WeeklyTrainingPlanCommandServiceImpl.publishAdapted}). Lo que si puede
+ * repetirse en ese caso es la llamada a la IA.
  */
 @Component
 public class CicloSemanalBloqueo {
