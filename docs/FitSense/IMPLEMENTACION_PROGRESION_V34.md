@@ -156,3 +156,28 @@ Flyway aplicó la V34 al arrancar la aplicación local contra Neon (`Current ver
 | Intentos con `progressed_sessions` no vacío | 0 | 0 |
 
 Con los interruptores apagados, el comportamiento no cambia. Sigue pendiente `EvaluacionLecturaV24IT` (§10) antes de encender nada.
+
+## 13. Neon: datos sintéticos de desarrollo (27/10/2026)
+
+`EvaluacionDirectaV24IT` sobre Neon (solo lectura, Flyway 34): 26 perfiles. A publica y B no en 5 de ellos (7, 10, 19, 22 y 25). Todos son **sintéticos**, generados con versiones anteriores de las reglas (planes del 12/10, V25 endurecida el 26/10). Decisión: **no se modifica V24 ni V25** para hacer compatibles esos datos; queda en suspenso la propuesta de separar V25 del interruptor. Lo que importa es si una rutina generada hoy funciona (§14).
+
+## 14. Evaluación limpia: rutinas generadas hoy, 10 semanas (`EvaluacionLimpiaProgresionIT`)
+
+Base efímera, progresión encendida (con ella la V24 por capacidades y V25 en la adaptación), IA simulada que solo hace lo que permite cada intervención. Los 72 perfiles de referencia, con este guion: semanas 1–3 todo hecho; 4, viernes omitido por fatiga; 5, todo hecho; 6, viernes omitido por falta de tiempo; 7–10, todo hecho. Evidencia completa: `evidencia/progresion/evaluacion_limpia.md`.
+
+| Objetivo | Perfiles | Inicial válida (V24+V25) | Semanas publicadas | Sin publicar | Progresión | Recuperación | Reincorporación | Adaptación aplicada | Respaldo | Sin efecto |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| LOSE_WEIGHT | 18 | 18 | 180 | 0 | 56 | 0 | 6 | 18 | 14 | 4 |
+| GAIN_MUSCLE | 18 | 18 | 180 | 0 | 90 | 0 | 0 | 12 | 18 | 6 |
+| INCREASE_STRENGTH | 18 | 18 | 180 | 0 | 88 | 2 | 0 | 4 | 14 | 18 |
+| GENERAL_FITNESS | 18 | 18 | 180 | 0 | 78 | 12 | 0 | 31 | 5 | 0 |
+
+**Respuesta:** sí. Las 72 rutinas generadas hoy pasan V24 y V25 al generarse, y las **720 semanas** siguientes se publicaron todas: ninguna `NO_FACTIBLE` ni rechazada. Cada una pasó V24, la evidencia de hipertrofia y V25 en la validación de la adaptación.
+
+**Lectura:**
+- `GAIN_MUSCLE`: la reducción por fatiga la rechaza 4D (respaldo), como siempre.
+- `INCREASE_STRENGTH`: no tiene rellenos, así que acortar sale sin efecto.
+- Las reincorporaciones en 10 semanas solo llegan en `LOSE_WEIGHT`; en los demás objetivos la reserva R2 necesita más pasos (en `ProgresionIT`, `GAIN_MUSCLE` reincorpora en la semana 21).
+- `LOSE_WEIGHT` de 30 minutos no progresa en 10 semanas: el menor paso supera el 5 % de una sesión pequeña («no se fuerza»).
+
+**Hallazgo (desviación del diseño §3.2):** cuando la IA redujo una **serie** (por ejemplo 3×10 → 2×10 en un ejercicio que ya está en su mínimo de repeticiones), devolverla supera el 10 % del paso de recuperación. El resolutor no la recupera y **sigue con la progresión ordinaria de otros ejercicios** de esa sesión. El diseño dice que la progresión ordinaria solo ocurre «sin reducción pendiente». Pasa en `LOSE_WEIGHT` (0 recuperaciones) y en parte de `INCREASE_STRENGTH`. No viola V24 ni V25. Queda pendiente de decisión.
