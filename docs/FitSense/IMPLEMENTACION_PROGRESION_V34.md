@@ -125,6 +125,14 @@ Recomendable además: un rol de Neon con solo `SELECT`.
 - `GAIN_MUSCLE` con una dosis puesta a mano: A y B la rechazan (4D, como hoy).
 - La fuente no cambió (mismas filas antes y después), y una escritura en esa sesión la rechaza PostgreSQL: `cannot execute UPDATE in a read-only transaction`.
 
+**Sin Docker: `EvaluacionDirectaV24IT`.** Misma evaluación, directa contra Neon (que ya tiene la V34), con la conexión en solo lectura impuesta por el servidor (`options=-c default_transaction_read_only=on`), `readOnlyMode=always` y Hikari `read-only`; Flyway apagado y las tareas programadas sustituidas por simulacros. Antes de evaluar comprueba `transaction_read_only = on`. Ensayada sobre la misma base sembrada: resultado idéntico (7 / 5 / **1** / 0 / 1); con esa opción PostgreSQL rechaza las escrituras (`cannot execute UPDATE in a read-only transaction`).
+```
+mvnw verify -Pintegration -Dtest=NoUnit -Dsurefire.failIfNoSpecifiedTests=false \
+  -Dit.test=EvaluacionDirectaV24IT \
+  -Dfitsense.lectura.directa.url='jdbc:postgresql://HOST/DB?sslmode=require' \
+  -Dfitsense.lectura.usuario=USUARIO -Dfitsense.lectura.clave=CLAVE
+```
+
 **Si Neon muestra filas «A publica, B no»,** las opciones se deciden con los datos delante, sin relajar V24: dejar la progresión apagada para esos participantes o regenerar su semana, por ejemplo. No se ha implementado ninguna.
 
 ## 11. Disponibilidad M por entrenamiento
