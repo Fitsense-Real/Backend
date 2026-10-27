@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -227,6 +228,7 @@ public class ConservationValidator {
 
         var origenes = indexarSesiones(previous);
         var dosisPorSesion = indexarDosis(previous);
+        var cargasPorSesion = indexarCargas(previous);
         var dolorPorSesion = indexarDolor(previous);
         var conDolorDeSesion = indexarDolorDeSesion(previous);
         var catalogo = eligible == null ? Map.<Long, CandidateExercise>of() : eligible;
@@ -339,7 +341,7 @@ public class ConservationValidator {
                     revisarDosisDeLaIa(origen, intervencion, derivada, dosisPorSesion.getOrDefault(origen, Map.of()),
                             conLinaje, problems, dosisAutorizadas);
                 revisarSenalada(origen, anterior, derivada, intervencion, diferencias,
-                        dolieron, segura, catalogo,
+                        dolieron, segura, catalogo, cargasPorSesion.getOrDefault(origen, Map.of()),
                         problems, aplicadas, sinEfecto);
                 if (intervencion.permiteReducirDuracion()
                         && derivada.workout().scheduledDate() != null)
@@ -602,6 +604,7 @@ public class ConservationValidator {
                                  Diferencias d, Set<Long> dolieron,
                                  boolean seguridadResuelta,
                                  Map<Long, CandidateExercise> catalogo,
+                                 Map<Long, java.math.BigDecimal> cargasAnteriores,
                                  List<String> problems, List<Long> aplicadas,
                                  List<Long> sinEfecto) {
 
@@ -634,6 +637,8 @@ public class ConservationValidator {
                     .formatted(origen, intervencion, d.minutosNuevos(),
                             anterior.expectedDurationMinutes()));
 
+        boolean cargaReducida = revisarCarga(origen, intervencion, derivada, cargasAnteriores, problems);
+
         // El enfoque no cambia ni estando senalada: una sesion con otro enfoque
         // no es la misma sesion corregida, es una sesion distinta, y entonces la
         // adaptacion ya no es localizada.
@@ -653,8 +658,65 @@ public class ConservationValidator {
         // puede no encontrar nada mejor- pero no cuenta como adaptacion: queda
         // registrado que no hubo efecto, sin inventar que no existian
         // alternativas.
-        if (d.cambio()) aplicadas.add(origen);
+        if (d.cambio() || cargaReducida) aplicadas.add(origen);
         else sinEfecto.add(origen);
+    }
+
+    /**
+     * LA CARGA SUGERIDA EN UNA SESION SENALADA. Fuera de las senaladas la carga
+     * sigue sin compararse (se recalcula desde el ultimo peso anotado, V11). En
+     * una senalada, un cambio de la IA es una adaptacion real y se juzga:
+     * <ul>
+     *   <li>BAJARLA, desde una carga prescrita, en una intervencion que lo
+     *       permite ({@link TipoIntervencion#permiteReducirCarga()}): cambio
+     *       efectivo; la sesion cuenta como aplicada;</li>
+     *   <li>subirla, o ponerla donde no habia ninguna prescrita: rechazado
+     *       siempre (la IA no aumenta la carga);</li>
+     *   <li>bajarla en una intervencion que no lo permite: rechazado;</li>
+     *   <li>quitar la sugerencia (pasar a null): no es un cambio de dosis ni
+     *       cuenta como efecto.</li>
+     * </ul>
+     * V11 sigue juzgando aparte la carga frente al ultimo peso anotado.
+     *
+     * @return si hubo al menos una reduccion autorizada
+     */
+    private static boolean revisarCarga(Long origen, TipoIntervencion intervencion, DerivedWorkout derivada,
+                                        Map<Long, java.math.BigDecimal> cargasAnteriores, List<String> problems) {
+        boolean reducida = false;
+        for (var e : derivada.workout().exercises()) {
+            if (e.exerciseId() == null || !cargasAnteriores.containsKey(e.exerciseId())) continue;
+            var antes = cargasAnteriores.get(e.exerciseId());
+            var despues = e.targetLoadKg();
+            if (despues == null || (antes != null && antes.compareTo(despues) == 0)) continue;
+            if (antes == null) {
+                problems.add(("V8C: la sesion %d pone una carga de %s kg al ejercicio %d, que no tenia carga"
+                        + " prescrita. La IA no anade ni sube cargas.").formatted(origen, despues, e.exerciseId()));
+            } else if (despues.compareTo(antes) > 0) {
+                problems.add(("V8C: la sesion %d sube la carga del ejercicio %d de %s a %s kg. La IA no sube"
+                        + " cargas.").formatted(origen, e.exerciseId(), antes, despues));
+            } else if (!intervencion.permiteReducirCarga()) {
+                problems.add(("V8C: la sesion %d esta senalada como %s, que no autoriza cambiar la carga, y baja"
+                        + " la del ejercicio %d de %s a %s kg. %s").formatted(origen, intervencion, e.exerciseId(),
+                        antes, despues, intervencion.instruccion()));
+            } else if (despues.signum() <= 0) {
+                problems.add("V8C: la sesion %d deja el ejercicio %d con una carga de %s kg."
+                        .formatted(origen, e.exerciseId(), despues));
+            } else {
+                reducida = true;
+            }
+        }
+        return reducida;
+    }
+
+    /** La carga PRESCRITA de cada ejercicio, por sesion de la semana medida (null si no habia). */
+    private static Map<Long, Map<Long, java.math.BigDecimal>> indexarCargas(PreviousWeekSummary previous) {
+        var porSesion = new LinkedHashMap<Long, Map<Long, java.math.BigDecimal>>();
+        if (previous == null || previous.prescriptions() == null) return porSesion;
+        for (var p : previous.prescriptions()) {
+            if (p.plannedWorkoutId() == null || p.exerciseId() == null) continue;
+            porSesion.computeIfAbsent(p.plannedWorkoutId(), k -> new HashMap<>()).put(p.exerciseId(), p.loadKg());
+        }
+        return porSesion;
     }
 
     /**

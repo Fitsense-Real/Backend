@@ -194,11 +194,11 @@ class CopiaSinIaIT {
     }
 
     @Test
-    @DisplayName("4 y 5: reincorporacion y mantenimiento sin paso posible, siempre con 0 llamadas")
+    @DisplayName("4 y 5: mantenimiento, progresion y reincorporacion despues de acortar, siempre con 0 llamadas")
     void reincorporacionYMantenimiento() throws Exception {
-        // LOSE_WEIGHT, principiante, 30 min: el menor paso supera el 5 % de la sesion (mantenimiento)
-        // y, tras acortar, el relleno vuelve en pocas semanas.
-        long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.BEGINNER, 30);
+        // LOSE_WEIGHT, intermedio, 45 min: tras acortar, el viernes se mantiene, progresa y,
+        // sin margen en la reserva, reincorpora el relleno (decision 1(a): primero un paso).
+        long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, 45);
         long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
         plan = ciclo(u, 0, 1);      // acortar: flujo de IA, 1 llamada
@@ -206,8 +206,9 @@ class CopiaSinIaIT {
         assertEquals("APLICADA", ultimo(u).get("status"), String.valueOf(ultimo(u)));
 
         boolean reincorporado = false, mantenimiento = false;
+        int pasosViernes = 0;
         var traza = new ArrayList<String>();
-        for (int k = 1; k <= 8 && !reincorporado; k++) {
+        for (int k = 1; k <= 12 && !reincorporado; k++) {
             ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
             var antes = semana(plan).stream().map(Map.Entry::getValue).toList();
             plan = ciclo(u, k, 0);  // 0 llamadas en todos los ciclos deterministas
@@ -215,7 +216,11 @@ class CopiaSinIaIT {
             assertEquals("SIN_ORDEN", ev.get("status"), String.valueOf(ev));
             String tipo = informe(ev).contains("\"tipo\":\"REINCORPORACION\"") ? "REINCORPORACION"
                     : "{}".equals(ev.get("progressed_sessions")) ? "SIN_PASO" : "PASO";
-            if (tipo.equals("REINCORPORACION")) reincorporado = true;
+            if (tipo.equals("REINCORPORACION")) {
+                reincorporado = true;
+                assertTrue(pasosViernes > 0, "1(a): reincorpora solo despues de al menos una progresion: " + traza);
+            }
+            if (tipo.equals("PASO") && informe(ev).contains("\"estado_reserva\":\"PENDIENTE\"")) pasosViernes++;
             if (tipo.equals("SIN_PASO")) {
                 mantenimiento = true;   // 5 · se mantiene: misma rutina, nada forzado
                 assertEquals(antes, semana(plan).stream().map(Map.Entry::getValue).toList());

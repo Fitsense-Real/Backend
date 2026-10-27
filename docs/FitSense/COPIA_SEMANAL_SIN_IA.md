@@ -33,7 +33,7 @@ El contador cuenta `pedirRespuesta` (la única llamada del ciclo semanal) y la p
 | 6 | Datos insuficientes | 0 | 0 | `INSUFFICIENT_DATA`, copia idéntica, sin paso |
 | 7 | Adaptación por fatiga | 1 | 1 | `APLICADA`, `ai_calls = 1` en V32; acortar por falta de tiempo: también 1 |
 | 8 | Repetir el mismo ciclo, **en secuencia** (copia y adaptación) | 0 | 0 | Mismo plan, 1 plan vigente, sin intento V32 nuevo |
-| 8b | Dos ciclos **simultáneos** de la misma semana (`PendientesProgresionIT`) | — | — | 1 plan vigente y 1 evidencia publicada. La ejecución que pierde la carrera falla con una excepción (`uq_wum_user_week`, la métrica semanal) antes de publicar; la tarea programada la captura por participante y sigue con los demás |
+| 8b | Dos ciclos **simultáneos** de la misma semana (`PendientesProgresionIT`) | — | — | 1 semana vigente. **La evidencia V32 puede duplicarse** (hallazgo abierto, §6.3) |
 | 9 | La copia conserva | — | — | Mismos ejercicios, dosis y orden; fecha +7, mismo enfoque y minutos; sesiones nuevas sin registros; historial de la semana medida intacto |
 | 10 | Invariantes | — | — | Consulta `linaje_v31_v32.sql` y restricciones de V34: sin violaciones |
 
@@ -63,8 +63,54 @@ Los mismos 72 perfiles de referencia y el mismo guion (§14 de `IMPLEMENTACION_P
 - **Pendiente de decisión (no tocado):** la política de recuperación de series (`IMPLEMENTACION_PROGRESION_V34.md` §14).
 - **Disponibilidad M:** sigue sin existir en el backend (§11).
 
-## 6. Revisión posterior (27/10/2026)
+## 6. Revisión posterior y decisiones (27/10/2026)
 
-- **Adaptación que solo baja la carga** (`PendientesProgresionIT.adaptacionSoloDeCarga`): viernes parcial por fatiga, con 20 kg anotados; la IA propone 16 kg sin tocar la dosis. **Se publica** (la sesión sale con 16 kg), pero el intento queda como `SIN_EFECTO` / `CONSERVED`, porque V8C excluye la carga al clasificar. La semana publicada no coincide con lo que dice la evidencia. **Pendiente de decisión** (no se tocó código).
-- **Reincorporación sin progresión previa:** `LOSE_WEIGHT` / principiante / 30 min reincorpora el relleno sin haber dado ningún paso, porque el menor paso supera el 5 % y la reserva no admite ninguno. **Pendiente de decisión** sobre la regla (diseño §5, condición 2).
-- **`fitsense.ai.enabled`:** en el repositorio vale `${FITSENSE_AI_ENABLED:false}`. Un `true` local viene del entorno de ejecución, no del código.
+### 6.1 Reincorporación: decisión 1(a), implementada
+
+Orden: adaptación → cumplimiento sostenido → **al menos un paso de progresión (o recuperación) de esa sesión después del acortamiento** → evaluación de la reincorporación. Si la sesión nunca pudo dar un paso válido, se mantiene acortada.
+
+- **Código:** `ProgresionResolver.pasosTrasRetirada`. Cuenta los pasos `PROGRESION`/`RECUPERACION` del linaje de la sesión posteriores al `ACORTAR` aplicado; con 0 no se propone la reincorporación. R2, el techo, la duración, la elegibilidad, la seguridad y V24/V25 siguen exigiéndose igual.
+- **Pruebas:**
+  - `PendientesProgresionIT.sinProgresionNoReincorpora` (`LOSE_WEIGHT` / principiante / 30, GYM y CASA): 8 semanas sin pasos tras acortar, ninguna reincorporación, el viernes se mantiene igual y 0 llamadas.
+  - `CopiaSinIaIT` (escenario 4, `LOSE_WEIGHT` / intermedio / 45): mantenimiento, 6 pasos del viernes, mantenimiento y reincorporación en la semana 11.
+  - `ProgresionIT` (`GAIN_MUSCLE`): reincorpora en la semana 21 tras sus pasos.
+- **Efecto en la evaluación de 10 semanas:** las reincorporaciones de `LOSE_WEIGHT` pasan de 6 a 0. Esos viernes no habían dado ningún paso propio tras el acortamiento; los pasos de esas semanas fueron en otras sesiones.
+
+### 6.2 Carga en una sesión señalada: decisión 2(a), implementada
+
+V8C (`ConservationValidator.revisarCarga`) compara la carga prescrita de la semana medida con la propuesta **solo en sesiones señaladas** (en las demás sigue sin compararse):
+
+| Cambio de la IA | Resultado |
+|---|---|
+| Bajar desde una carga prescrita, con `REVISAR_CARGA_Y_RECUPERACION` o `VARIANTE_MAS_SENCILLA_O_CARGA` (`TipoIntervencion.permiteReducirCarga`) | Cambio efectivo: la sesión cuenta como **aplicada** (APLICADA, `applied_sessions`, origen AI; cumple V33) |
+| Subirla | Rechazado |
+| Poner carga donde no había prescrita | Rechazado |
+| Bajarla en otra intervención | Rechazado |
+| Dejarla en 0 | Rechazado |
+| Quitar la sugerencia (pasar a null) | Ni efecto ni rechazo |
+| Cualquier otro cambio sin permiso | Rechazado por V8C como siempre |
+
+V11 sigue juzgando aparte la carga frente al último peso anotado.
+
+- **Pruebas:**
+  - `CargaV8CTest` (10 unitarias).
+  - `PendientesProgresionIT.adaptacionSoloDeCarga`: 20 → 16 kg publicado como APLICADA / AI, `applied_sessions` = la sesión, 1 llamada.
+  - `subidaDeCargaRechazada`: 20 → 24 kg rechazado tras 3 intentos (respaldo) y nunca publicado.
+- **Cambio de comportamiento a tener en cuenta:** antes, cualquier cambio de carga de la IA en una sesión señalada pasaba sin comprobarse (V8C la ignoraba). Ahora una subida o una carga nueva hacen que esa propuesta se rechace y la IA reintente. No depende de los interruptores de progresión: es una corrección de V8C. V24 y V25 no se tocan.
+
+### 6.3 Otros puntos
+
+- **Opción 2 de recuperación:** confirmada en el código y en el diseño (§3.2); prueba `serieNoRecuperableYProgresionDeOtros`.
+- **Ciclos simultáneos: HALLAZGO ABIERTO.** La repetición **secuencial** devuelve el mismo plan, sin duplicar nada. Con dos ejecuciones **simultáneas** de la misma semana, el resultado depende de quién gane la carrera. Se observaron tres:
+  1. la segunda falla con un error de base de datos (`uq_wum_user_week`);
+  2. la segunda devuelve vacío;
+  3. **las dos publican:** queda una sola semana vigente (la otra versión pasa a `REPLACED`), pero hay **dos intentos V32 `SIN_ORDEN` para la misma decisión** (regresión del 27/10).
+
+  Lo garantizado hoy es una sola semana vigente; la evidencia puede duplicarse. No es un efecto de la progresión: es el ciclo existente. La tarea programada recorre a los participantes uno a uno, así que solo ocurre si se lanza el ciclo dos veces a la vez (dos instancias o un relanzamiento manual simultáneo). **Corrección propuesta, sin implementar:** un bloqueo por participante al empezar `runFor` (`pg_advisory_xact_lock`, solo código) o una restricción única de intentos publicados por decisión (migración nueva). Necesita tu decisión.
+- **`fitsense.ai.enabled`:** en el repositorio vale `${FITSENSE_AI_ENABLED:false}`. Un `true` local viene del entorno de ejecución.
+
+### 6.4 Regresión tras las decisiones 1(a) y 2(a)
+
+- **720 unitarias y 191 de integración.** En la primera pasada falló solo `ciclosSimultaneos`, que destapó el hallazgo de §6.3; ajustada la prueba, vuelve a pasar (6/6). 8 omitidas, todas opcionales.
+- `GeneracionReferenciaIT`: **72/72 idénticos.** `ProgresionIT`: 17/17. `CopiaSinIaIT`: 5/5. `PendientesProgresionIT`: 6/6. `CargaV8CTest`: 10/10. Pruebas de V8C (`ConservationValidator*`, `ProgresionV24V8CTest`): 75/75.
+- Evaluación de 10 semanas (72 perfiles): 720/720 publicadas, 0 llamadas a la IA en los 576 ciclos sin orden; las reincorporaciones bajan de 6 a 0 por la regla 1(a).

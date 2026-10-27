@@ -176,6 +176,15 @@ public enum TipoIntervencion {
         return this == ACORTAR_O_REORGANIZAR;
     }
 
+    /**
+     * Si la IA puede BAJAR la carga sugerida de un ejercicio de esta sesion.
+     * Solo las dos intervenciones cuya instruccion habla de carga. Subirla no lo
+     * autoriza ninguna. Permiso derivado: no cambia los booleanos del constructor.
+     */
+    public boolean permiteReducirCarga() {
+        return this == REVISAR_CARGA_Y_RECUPERACION || this == VARIANTE_MAS_SENCILLA_O_CARGA;
+    }
+
     /** Texto para el prompt. Describe permisos y prohibiciones de cada intervencion. */
     public String instruccion() {
         return instruccion;

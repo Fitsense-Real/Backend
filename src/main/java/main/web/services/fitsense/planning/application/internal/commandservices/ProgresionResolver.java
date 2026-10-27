@@ -50,7 +50,9 @@ import java.util.*;
  *       1,10 x V_base - V_ret con la reserva R2 PENDIENTE (D-P12).</li>
  *   <li><b>Reincorporacion</b> (§5): el relleno retirado por ACORTAR, con su
  *       dosis inicial exacta, al final de la sesion, cuando los conservados ya
- *       no pueden progresar dentro de la reserva. Si no se puede publicar, la
+ *       no pueden progresar dentro de la reserva Y despues de la retirada se dio
+ *       al menos un paso de progresion (decision 1(a), 27/10/2026); si no, se
+ *       mantiene. Si no se puede publicar, la
  *       reserva queda EN ESPERA DE TIEMPO y se propone despues la progresion
  *       con el techo entero.</li>
  * </ol>
@@ -221,6 +223,12 @@ public class ProgresionResolver {
         var conReserva = progresiones(s, nueva, context, elegibles, p, base, techo, techo - vRet, PENDIENTE);
         if (!conReserva.isEmpty()) return conReserva;
 
+        // 1(a), 27/10/2026: adaptacion -> cumplimiento sostenido -> AL MENOS UNA
+        // progresion valida despues del acortamiento -> reincorporacion. Sin ningun
+        // paso dado, la sesion se mantiene: la reincorporacion no sirve para saltarse
+        // el limite del 5 % que bloqueo la progresion.
+        if (pasosTrasRetirada(linaje) == 0) return List.of();
+
         var lista = new ArrayList<PasoProgresion>();
         if (v + vRet <= techo) {
             var con = new ArrayList<>(actuales);
@@ -336,6 +344,24 @@ public class ProgresionResolver {
                     .filter(e -> quitados.get(0).equals(e.getExerciseId())).findFirst().orElse(null);
         }
         return null;
+    }
+
+    /**
+     * Los pasos de progresion o de recuperacion dados en el linaje DESPUES de la
+     * retirada por ACORTAR (los tramos se recorren del mas reciente al mas antiguo,
+     * hasta el de la retirada).
+     */
+    private static int pasosTrasRetirada(List<Tramo> linaje) {
+        int pasos = 0;
+        for (var t : linaje) {
+            if (t.clase() == EvidenciaV32.Clase.APLICADA
+                    && EvidenciaV32.intervencion(t.intento(), t.origen().getId()) == TipoIntervencion.ACORTAR_O_REORGANIZAR)
+                return pasos;
+            if (t.clase() == EvidenciaV32.Clase.PROGRESADA && EvidenciaV32.paso(t.informe(), t.origen().getId())
+                    .filter(p -> "PROGRESION".equals(p.tipo()) || "RECUPERACION".equals(p.tipo())).isPresent())
+                pasos++;
+        }
+        return pasos;
     }
 
     private static Set<Long> ids(PlannedWorkout w) {
