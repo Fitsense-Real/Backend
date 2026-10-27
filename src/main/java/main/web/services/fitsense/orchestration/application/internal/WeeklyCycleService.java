@@ -4,6 +4,7 @@ import main.web.services.fitsense.adaptation.interfaces.acl.AdaptationContextFac
 import main.web.services.fitsense.adaptation.interfaces.acl.AdjustmentOrderView;
 import main.web.services.fitsense.analytics.interfaces.acl.AnalyticsContextFacade;
 import main.web.services.fitsense.analytics.interfaces.acl.WeeklyMetricsView;
+import main.web.services.fitsense.orchestration.infrastructure.locking.CicloSemanalBloqueo;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdjustmentType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.interfaces.acl.MeasuredWeekView;
@@ -40,13 +41,51 @@ public class WeeklyCycleService {
     private final PlanningContextFacade planningContextFacade;
     private final AnalyticsContextFacade analyticsContextFacade;
     private final AdaptationContextFacade adaptationContextFacade;
+    /** Exclusion por participante entre hilos e instancias. Null solo en pruebas que construyen a mano. */
+    private final CicloSemanalBloqueo bloqueo;
 
+    /** Para pruebas que construyen el servicio a mano: sin bloqueo. */
     public WeeklyCycleService(PlanningContextFacade planningContextFacade,
                               AnalyticsContextFacade analyticsContextFacade,
                               AdaptationContextFacade adaptationContextFacade) {
+        this(planningContextFacade, analyticsContextFacade, adaptationContextFacade, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public WeeklyCycleService(PlanningContextFacade planningContextFacade,
+                              AnalyticsContextFacade analyticsContextFacade,
+                              AdaptationContextFacade adaptationContextFacade,
+                              CicloSemanalBloqueo bloqueo) {
         this.planningContextFacade = planningContextFacade;
         this.analyticsContextFacade = analyticsContextFacade;
         this.adaptationContextFacade = adaptationContextFacade;
+        this.bloqueo = bloqueo;
+    }
+
+    /**
+     * El resultado explicito de un ciclo.
+     * <ul>
+     *   <li>{@code EJECUTADO}: el ciclo corrio; {@code planId} es el plan de la
+     *       semana nueva (publicado ahora o ya existente), o vacio si no hubo.</li>
+     *   <li>{@code EN_CURSO}: otro ciclo del mismo participante se esta
+     *       ejecutando; este no hizo nada. Reintentar despues es seguro.</li>
+     *   <li>{@code SIN_BLOQUEO}: no se pudo abrir la conexion del bloqueo; no se
+     *       hizo nada para no ejecutar sin exclusion.</li>
+     * </ul>
+     */
+    public record ResultadoCiclo(CicloSemanalBloqueo.Estado estado, Optional<Long> planId) {}
+
+    /**
+     * El ciclo con exclusion por participante (CicloSemanalBloqueo): el bloqueo se
+     * toma antes de cerrar la semana y se suelta al terminar, pase lo que pase.
+     * Dentro, el ciclo vuelve a comprobar si la decision ya produjo su plan.
+     */
+    public ResultadoCiclo ejecutar(Long userId, LocalDate measuredWeekStart, LocalDate newWeekStart) {
+        if (bloqueo == null)
+            return new ResultadoCiclo(CicloSemanalBloqueo.Estado.EJECUTADO,
+                    cicloSinBloqueo(userId, measuredWeekStart, newWeekStart));
+        var r = bloqueo.ejecutar(userId, () -> cicloSinBloqueo(userId, measuredWeekStart, newWeekStart));
+        return new ResultadoCiclo(r.estado(), r.valor() == null ? Optional.empty() : r.valor());
     }
 
     /**
@@ -63,6 +102,11 @@ public class WeeklyCycleService {
      * abarcando, no hay nada que marcar como rollback-only.
      */
     public Optional<Long> runFor(Long userId, LocalDate measuredWeekStart, LocalDate newWeekStart) {
+        // Vacio tambien con EN_CURSO o SIN_BLOQUEO: no se publico nada en esta llamada.
+        return ejecutar(userId, measuredWeekStart, newWeekStart).planId();
+    }
+
+    private Optional<Long> cicloSinBloqueo(Long userId, LocalDate measuredWeekStart, LocalDate newWeekStart) {
         // 1. Cerrar. El plan deja de admitir sesiones nuevas.
         planningContextFacade.closeWeek(userId, measuredWeekStart);
 

@@ -232,7 +232,7 @@ class PendientesProgresionIT {
     }
 
     @Test
-    @DisplayName("dos ciclos SIMULTANEOS de la misma semana: una sola semana vigente (la evidencia puede duplicarse: hallazgo abierto)")
+    @DisplayName("dos ciclos SIMULTANEOS de la misma semana: una sola semana, una sola evidencia")
     void ciclosSimultaneos() throws Exception {
         long u = participante(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, 45);
         long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
@@ -264,13 +264,11 @@ class PendientesProgresionIT {
         System.out.println("PENDIENTE simultaneos resultados=" + planes + " planes vigentes=" + vigentes
                 + " intentos V32=" + intentos + " intervenciones=" + intervenciones);
         assertEquals(1, vigentes, "una sola semana vigente: " + planes);
-        // HALLAZGO ABIERTO (27/10/2026), no corregido: segun quien gane la carrera, las dos
-        // ejecuciones pueden publicar (una version queda REPLACED) y dejar DOS intentos V32 para
-        // la misma decision. Lo que se garantiza hoy es una sola semana vigente; la evidencia
-        // duplicada se registra aqui para el informe (COPIA_SEMANAL_SIN_IA.md §6.3).
-        long publicadas = intentos.stream().filter(x -> !x.equals("NO_FACTIBLE") && !x.equals("RECHAZADA")).count();
-        System.out.println("PENDIENTE simultaneos evidencias_publicadas=" + publicadas);
-        assertTrue(publicadas >= 1 && publicadas <= 2, String.valueOf(intentos));
+        // Con el bloqueo de sesion por participante (CicloSemanalBloqueo): una sola evidencia.
+        assertEquals(1, intentos.stream().filter(x -> !x.equals("NO_FACTIBLE") && !x.equals("RECHAZADA")).count(),
+                "una sola evidencia publicada: " + intentos);
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
+                + " AND week_start_date = ?", Integer.class, u, S1.plusWeeks(1)), "ninguna version REPLACED");
         assertSinViolaciones();
     }
 

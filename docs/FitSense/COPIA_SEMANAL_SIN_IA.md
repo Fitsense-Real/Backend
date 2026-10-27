@@ -1,6 +1,14 @@
 # Copia semanal y mantenimiento sin IA · informe
 
-**Fecha:** 27/10/2026 · **Cambios en producción:** ninguno (solo pruebas y documentación) · Neon sin tocar · progresión apagada por defecto · ninguna llamada pagada a Replicate (IA simulada).
+**Fecha:** 27/10/2026 · Neon sin tocar · progresión apagada por defecto · ninguna llamada pagada a Replicate (IA simulada).
+
+**Cambios en producción** (por orden):
+1. Copia semanal sin IA (§1–§5): **ninguno**; el comportamiento ya existía y solo se añadieron pruebas.
+2. Decisión 1(a), reincorporación tras al menos una progresión: `ProgresionResolver` (§6.1).
+3. Decisión 2(a), reducción de carga como adaptación aplicada: `ConservationValidator` y `TipoIntervencion` (§6.2).
+4. Exclusión del ciclo semanal por participante: `CicloSemanalBloqueo`, `WeeklyCycleService`, `WeeklyCycleScheduler` y `WeeklyCycleController` (§7).
+
+Sin migraciones. V24, V25 y V31–V34 sin cambios.
 
 ## 1. Comportamiento encontrado (antes de cambiar nada)
 
@@ -33,7 +41,7 @@ El contador cuenta `pedirRespuesta` (la única llamada del ciclo semanal) y la p
 | 6 | Datos insuficientes | 0 | 0 | `INSUFFICIENT_DATA`, copia idéntica, sin paso |
 | 7 | Adaptación por fatiga | 1 | 1 | `APLICADA`, `ai_calls = 1` en V32; acortar por falta de tiempo: también 1 |
 | 8 | Repetir el mismo ciclo, **en secuencia** (copia y adaptación) | 0 | 0 | Mismo plan, 1 plan vigente, sin intento V32 nuevo |
-| 8b | Dos ciclos **simultáneos** de la misma semana (`PendientesProgresionIT`) | — | — | 1 semana vigente. **La evidencia V32 puede duplicarse** (hallazgo abierto, §6.3) |
+| 8b | Dos ciclos **simultáneos** de la misma semana | 1 (solo el primero) | 1 | Con el bloqueo (§7): 1 decisión, 1 intento V32, 1 versión de la semana; el segundo devuelve `EN_CURSO` sin llamar a la IA |
 | 9 | La copia conserva | — | — | Mismos ejercicios, dosis y orden; fecha +7, mismo enfoque y minutos; sesiones nuevas sin registros; historial de la semana medida intacto |
 | 10 | Invariantes | — | — | Consulta `linaje_v31_v32.sql` y restricciones de V34: sin violaciones |
 
@@ -101,12 +109,7 @@ V11 sigue juzgando aparte la carga frente al último peso anotado.
 ### 6.3 Otros puntos
 
 - **Opción 2 de recuperación:** confirmada en el código y en el diseño (§3.2); prueba `serieNoRecuperableYProgresionDeOtros`.
-- **Ciclos simultáneos: HALLAZGO ABIERTO.** La repetición **secuencial** devuelve el mismo plan, sin duplicar nada. Con dos ejecuciones **simultáneas** de la misma semana, el resultado depende de quién gane la carrera. Se observaron tres:
-  1. la segunda falla con un error de base de datos (`uq_wum_user_week`);
-  2. la segunda devuelve vacío;
-  3. **las dos publican:** queda una sola semana vigente (la otra versión pasa a `REPLACED`), pero hay **dos intentos V32 `SIN_ORDEN` para la misma decisión** (regresión del 27/10).
-
-  Lo garantizado hoy es una sola semana vigente; la evidencia puede duplicarse. No es un efecto de la progresión: es el ciclo existente. La tarea programada recorre a los participantes uno a uno, así que solo ocurre si se lanza el ciclo dos veces a la vez (dos instancias o un relanzamiento manual simultáneo). **Corrección propuesta, sin implementar:** un bloqueo por participante al empezar `runFor` (`pg_advisory_xact_lock`, solo código) o una restricción única de intentos publicados por decisión (migración nueva). Necesita tu decisión.
+- **Ciclos simultáneos:** antes del bloqueo, dos ejecuciones simultáneas podían publicar las dos: una versión `REPLACED` y **dos intentos V32** para la misma decisión. **Resuelto en §7.**
 - **`fitsense.ai.enabled`:** en el repositorio vale `${FITSENSE_AI_ENABLED:false}`. Un `true` local viene del entorno de ejecución.
 
 ### 6.4 Regresión tras las decisiones 1(a) y 2(a)
@@ -114,3 +117,39 @@ V11 sigue juzgando aparte la carga frente al último peso anotado.
 - **720 unitarias y 191 de integración.** En la primera pasada falló solo `ciclosSimultaneos`, que destapó el hallazgo de §6.3; ajustada la prueba, vuelve a pasar (6/6). 8 omitidas, todas opcionales.
 - `GeneracionReferenciaIT`: **72/72 idénticos.** `ProgresionIT`: 17/17. `CopiaSinIaIT`: 5/5. `PendientesProgresionIT`: 6/6. `CargaV8CTest`: 10/10. Pruebas de V8C (`ConservationValidator*`, `ProgresionV24V8CTest`): 75/75.
 - Evaluación de 10 semanas (72 perfiles): 720/720 publicadas, 0 llamadas a la IA en los 576 ciclos sin orden; las reincorporaciones bajan de 6 a 0 por la regla 1(a).
+
+## 7. Exclusión del ciclo semanal por participante
+
+**Por qué no un bloqueo de transacción.** `WeeklyCycleService.runFor` va sin `@Transactional` a propósito: cada paso abre su transacción corta y la IA puede tardar ~90 s. Un `pg_advisory_xact_lock` se soltaría al terminar la primera transacción, y envolver el ciclo en una transacción larga reintroduciría los cortes por inactividad. El endpoint `-pooler` de Neon (PgBouncer en modo transacción) tampoco conserva un bloqueo de sesión.
+
+**Cómo funciona** (`orchestration/infrastructure/locking/CicloSemanalBloqueo`):
+1. **Conexión propia y directa**, abierta solo para el bloqueo con `DriverManager` (fuera del pool de Hikari) contra el endpoint directo: el `spring.datasource.url` sin `-pooler`, o `fitsense.cycle.lock.url` si se configura. Con `tcpKeepAlive`, tiempo de conexión limitado y `ApplicationName=fitsense-ciclo-semanal-bloqueo`.
+2. **`pg_try_advisory_lock(clave)`**, con una clave propia del ciclo (32 bits altos «FSC1») y el participante (32 bits bajos). Personas distintas nunca se bloquean entre sí.
+3. Se toma **antes** de cerrar, medir, decidir o publicar.
+4. **Ya ocupado:** no se ejecuta nada; resultado explícito `EN_CURSO`. `runFor` devuelve vacío, porque no se publicó nada en esa llamada; `ejecutar` devuelve el estado; la tarea programada lo registra y reintenta, y el endpoint `run-for-me` añade `cycleStatus`.
+5. **Dentro del bloqueo**, el ciclo vuelve a comprobar si la decisión ya produjo su plan y lo devuelve (`resultingPlanOf`).
+6. **`finally`:** `pg_advisory_unlock` en la **misma** conexión y cierre. Si la conexión se perdió, el servidor ya soltó el bloqueo al cerrarse la sesión; se registra y no se lanza nada.
+7. **Sin conexión para el bloqueo:** `SIN_BLOQUEO`; el ciclo **no** se ejecuta (no se corre sin exclusión) y se reintenta.
+
+**Límite declarado:** si la conexión del bloqueo se cae a mitad del ciclo, el servidor suelta el bloqueo y otra ejecución podría empezar mientras esta termina. Queda en el log (`CICLO_BLOQUEO ... se perdio`). La prueba lo provoca a propósito: el ciclo termina bien y el bloqueo queda libre.
+
+**Pruebas** (`CicloConcurrenteIT`, 6/6, PostgreSQL efímero, IA simulada con retraso para forzar el solape):
+
+| Prueba | Resultado |
+|---|---|
+| Misma persona y semana a la vez, IA lenta (3 s) | La segunda: `EN_CURSO` inmediato, 0 llamadas. Total: 1 llamada, 1 decisión, 1 intento V32 (`APLICADA`), 1 versión de la semana |
+| Cinco carreras simultáneas sin IA (copia) | Siempre `[EJECUTADO, EN_CURSO]`: 1 intento `SIN_ORDEN`, 1 versión, ninguna `REPLACED` |
+| **Dos instancias** de la aplicación (otro contexto Spring completo, en otro puerto) sobre la misma base | La segunda instancia ve `EN_CURSO` mientras la primera trabaja; después devuelve el mismo plan, sin evidencia nueva |
+| Fallo durante el ciclo (la IA lanza) y fallo que atraviesa el ciclo (`Error`) | El bloqueo se libera en los dos casos; el reintento publica una sola vez |
+| La conexión del bloqueo se corta a mitad (`pg_terminate_backend`) | El ciclo termina sin excepción, publica una vez y el bloqueo queda libre |
+| Reintento después del primer ciclo | El mismo plan, 0 llamadas, sin intento V32 nuevo |
+| Personas distintas a la vez | Las dos se ejecutan en paralelo (2,8 s con 2,5 s de IA cada una) |
+
+Además: `PendientesProgresionIT.ciclosSimultaneos` vuelve a exigir 1 evidencia y 0 versiones `REPLACED`, y `CicloSemanalBloqueoTest` (3 unitarias) cubre el endpoint directo de Neon, la clave por participante y que sin conexión no se ejecuta el ciclo.
+
+**Para desplegar:** el endpoint directo de Neon debe aceptar conexiones con las mismas credenciales (se deriva solo de la URL actual). Es una conexión más por ciclo en curso; la tarea programada procesa a los participantes de uno en uno.
+
+### 7.1 Regresión tras el bloqueo
+
+- **723 unitarias y 197 de integración, 0 fallos.** 8 omitidas, todas opcionales.
+- `GeneracionReferenciaIT`: **72/72 idénticos.** `CicloConcurrenteIT`: 6/6. `PendientesProgresionIT`: 6/6. `CopiaSinIaIT`: 5/5. `ProgresionIT`: 17/17.
