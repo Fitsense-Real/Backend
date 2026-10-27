@@ -347,18 +347,39 @@ public class ProgresionResolver {
     }
 
     /**
-     * Los pasos de progresion o de recuperacion dados en el linaje DESPUES de la
-     * retirada por ACORTAR (los tramos se recorren del mas reciente al mas antiguo,
-     * hasta el de la retirada).
+     * Las PROGRESIONES de esta sesion dadas en el linaje DESPUES del ultimo
+     * acortamiento (los tramos se recorren del mas reciente al mas antiguo, hasta
+     * el del ACORTAR).
      */
     private static int pasosTrasRetirada(List<Tramo> linaje) {
+        return progresionesTrasAcortar(linaje.stream()
+                .map(t -> new HechoDeLinaje(t.origen().getId(), t.clase(),
+                        EvidenciaV32.intervencion(t.intento(), t.origen().getId()), t.informe()))
+                .toList());
+    }
+
+    /** Un tramo del linaje reducido a lo que decide 1(a). {@code origen} es la sesion de ese tramo. */
+    record HechoDeLinaje(Long origen, EvidenciaV32.Clase clase, TipoIntervencion intervencion,
+                         EvidenciaV32.Informe informe) {}
+
+    /**
+     * 1(a), 27/10/2026: SOLO UNA PROGRESION ordinaria habilita la reincorporacion.
+     * Una RECUPERACION devuelve la dosis que la fatiga quito, no demuestra que se
+     * pueda ir mas alla; tampoco cuentan una reincorporacion ni una vuelta atras.
+     * El paso tiene que ser de la MISMA sesion ({@code EvidenciaV32.paso} filtra por
+     * su origen) y POSTERIOR al ultimo acortamiento aplicado: la cuenta se corta ahi.
+     *
+     * @param hechos del mas reciente al mas antiguo
+     */
+    static int progresionesTrasAcortar(List<HechoDeLinaje> hechos) {
         int pasos = 0;
-        for (var t : linaje) {
-            if (t.clase() == EvidenciaV32.Clase.APLICADA
-                    && EvidenciaV32.intervencion(t.intento(), t.origen().getId()) == TipoIntervencion.ACORTAR_O_REORGANIZAR)
+        for (var h : hechos) {
+            if (h.clase() == EvidenciaV32.Clase.APLICADA
+                    && h.intervencion() == TipoIntervencion.ACORTAR_O_REORGANIZAR)
                 return pasos;
-            if (t.clase() == EvidenciaV32.Clase.PROGRESADA && EvidenciaV32.paso(t.informe(), t.origen().getId())
-                    .filter(p -> "PROGRESION".equals(p.tipo()) || "RECUPERACION".equals(p.tipo())).isPresent())
+            if (h.clase() == EvidenciaV32.Clase.PROGRESADA && h.informe() != null
+                    && EvidenciaV32.paso(h.informe(), h.origen())
+                    .filter(p -> "PROGRESION".equals(p.tipo())).isPresent())
                 pasos++;
         }
         return pasos;

@@ -4,9 +4,10 @@
 
 **Cambios en producción** (por orden):
 1. Copia semanal sin IA (§1–§5): **ninguno**; el comportamiento ya existía y solo se añadieron pruebas.
-2. Decisión 1(a), reincorporación tras al menos una progresión: `ProgresionResolver` (§6.1).
+2. Decisión 1(a), reincorporación tras al menos una PROGRESIÓN ordinaria (la recuperación no cuenta): `ProgresionResolver` (§6.1).
 3. Decisión 2(a), reducción de carga como adaptación aplicada: `ConservationValidator` y `TipoIntervencion` (§6.2).
 4. Exclusión del ciclo semanal por participante: `CicloSemanalBloqueo`, `WeeklyCycleService`, `WeeklyCycleScheduler` y `WeeklyCycleController` (§7).
+5. Una sola publicación por medición aunque se pierda el bloqueo: `WeeklyTrainingPlanCommandServiceImpl.publishAdapted`, `AdaptationFailureRecorder` y `PlanAdaptationAttemptRepository` (§7, «Bloqueo perdido»).
 
 Sin migraciones. V24, V25 y V31–V34 sin cambios.
 
@@ -77,12 +78,15 @@ Las reincorporaciones eran 6 antes de la decisión 1(a); con ella son 0, porque 
 
 ### 6.1 Reincorporación: decisión 1(a), implementada
 
-Orden: adaptación → cumplimiento sostenido → **al menos un paso de progresión (o recuperación) de esa sesión después del acortamiento** → evaluación de la reincorporación. Si la sesión nunca pudo dar un paso válido, se mantiene acortada.
+Orden: acortamiento autorizado → cumplimiento sostenido (dos semanas) → **al menos una PROGRESIÓN ordinaria de esa misma sesión después del último acortamiento** → evaluación de la reincorporación (R2, techo, tiempo, seguridad). Si la sesión nunca pudo dar una progresión válida, se mantiene acortada; no es un fallo.
 
-- **Código:** `ProgresionResolver.pasosTrasRetirada`. Cuenta los pasos `PROGRESION`/`RECUPERACION` del linaje de la sesión posteriores al `ACORTAR` aplicado; con 0 no se propone la reincorporación. R2, el techo, la duración, la elegibilidad, la seguridad y V24/V25 siguen exigiéndose igual.
+**Precisión del 27/10 (tras la revisión):** solo cuenta `PROGRESION`. Una `RECUPERACION` devuelve una dosis que se redujo (p. ej. 2×10 → 3×10 tras la fatiga): el participante recupera su nivel, pero eso no demuestra que pueda añadir otro ejercicio. Tampoco cuentan `REINCORPORACION` ni `VUELTA_ATRAS`.
+
+- **Código:** `ProgresionResolver.progresionesTrasAcortar` (función pura; `pasosTrasRetirada` le pasa el linaje). Cuenta solo los pasos `PROGRESION` de la misma sesión (`EvidenciaV32.paso` filtra por su origen) en el linaje posterior al último `ACORTAR` aplicado; con 0 no se propone la reincorporación. R2, el techo, la duración, la elegibilidad, la seguridad y V24/V25 siguen exigiéndose igual.
 - **Pruebas:**
+  - `ReincorporacionTrasProgresionTest` (7 unitarias): una recuperación sin progresión posterior no habilita; una progresión anterior al acortamiento no cuenta; se cuenta desde el último acortamiento; una progresión de otra sesión no cuenta; reincorporación y vuelta atrás no cuentan; una progresión posterior sí habilita la evaluación (con una recuperación previa, la cuenta es 1, no 2).
   - `PendientesProgresionIT.sinProgresionNoReincorpora` (`LOSE_WEIGHT` / principiante / 30, GYM y CASA): 8 semanas sin pasos tras acortar, ninguna reincorporación, el viernes se mantiene igual y 0 llamadas.
-  - `CopiaSinIaIT` (escenario 4, `LOSE_WEIGHT` / intermedio / 45): mantenimiento, 6 pasos del viernes, mantenimiento y reincorporación en la semana 11.
+  - `CopiaSinIaIT` (escenario 4, `LOSE_WEIGHT` / intermedio / 45): mantenimiento, pasos `PROGRESION` del viernes, mantenimiento y reincorporación; la prueba cuenta solo los pasos de tipo `PROGRESION` antes de la reincorporación.
   - `ProgresionIT` (`GAIN_MUSCLE`): reincorpora en la semana 21 tras sus pasos.
 - **Efecto en la evaluación de 10 semanas:** las reincorporaciones de `LOSE_WEIGHT` pasan de 6 a 0. Esos viernes no habían dado ningún paso propio tras el acortamiento; los pasos de esas semanas fueron en otras sesiones.
 
@@ -137,10 +141,23 @@ V11 sigue juzgando aparte la carga frente al último peso anotado.
 
 **Corrección, sin migración: coordinación persistente en la publicación.** La transacción que publica (`publishAdapted`) empieza bloqueando la fila de la medición (`SELECT … FROM weekly_user_metrics WHERE weekly_metric_id = ? FOR UPDATE`) y comprueba si algún intento de esa medición ya publicó un plan (`resulting_plan_id IS NOT NULL` en `plan_adaptation_attempts`). Si lo hay, no escribe nada y devuelve ese plan. Dos publicaciones de la misma medición quedan en fila en la base, y la segunda ve lo que confirmó la primera; no depende de que la conexión del bloqueo siga viva. El registrador de fallos (`AdaptationFailureRecorder`) hace lo mismo en su transacción: un `NO_FACTIBLE` tardío de la ejecución que perdió el bloqueo no se registra si la otra ya publicó. El bloqueo de sesión sigue siendo la primera barrera (evita el trabajo y la llamada duplicados en el caso normal); la fila bloqueada es la que garantiza una sola publicación.
 
-**Lo que queda (declarado):**
-- Tras perder el bloqueo, **la llamada a la IA puede repetirse** (la prueba registra 2): las dos ejecuciones llegan a pedir propuesta, pero solo una publica. Con Replicate real sería un coste duplicado, no un dato duplicado.
-- Si las **dos** ejecuciones acaban en `NO_FACTIBLE` (ninguna publica), quedan dos filas de fallo, igual que un reintento posterior; V32 no distingue una de otro sin un identificador de ejecución, que exigiría migración.
-- La regla «una publicación por medición» se aplica a las semanas adaptadas por el ciclo; la generación inicial no pasa por aquí y no cambia.
+**Caminos que publican una semana o escriben evidencia (revisados uno a uno):**
+
+| Camino | Qué escribe | Protección |
+|---|---|---|
+| Semana adaptada: corrección de la IA, `RESPALDO`, sin efecto, copia `SIN_ORDEN` (con o sin paso de progresión), `NO_CHANGE`, `INSUFFICIENT_DATA` | Plan + evidencia V32 publicada | Todos pasan por `AdaptedWeekCommandService.publicar` → `publishAdapted`: fila de la medición bloqueada + comprobación de intento ya publicado |
+| `NO_FACTIBLE` / `RECHAZADA` (sin plan) | Evidencia V32 de fallo | `registrarFallo` → `AdaptationFailureRecorder`: la misma guarda en su transacción; no escribe si la medición ya publicó |
+| Generación inicial (primera semana, sin semana medida) | Plan, sin evidencia V32 | `persist` con `replaceExisting = false`: la segunda ejecución recibe `PlanAlreadyExists`, y el índice único de plan activo por semana cubre la carrera. No se publican dos planes |
+| Decisión de adaptación | `user_interventions` | `uq_ui_metric` + `findByWeeklyMetricId` (una decisión por medición) |
+| Reparación por seguridad (`PublishedPlanSafetyRepairService`) | Versión nueva de una semana, sin evidencia V32 | No es parte del ciclo semanal ni lo dispara él (la dispara un aviso de seguridad); crear una versión nueva es su función. Fuera del alcance de esta guarda |
+
+No hay otra escritura de `plan_adaptation_attempts` en el código (`attemptRepository.save` solo en `publishAdapted`; `saveAndFlush` solo en el registrador).
+
+**Riesgos residuales (declarados por separado). El sistema NO es «exactamente una vez» en todas las circunstancias:**
+
+1. **Llamadas duplicadas a la IA si se pierde el bloqueo.** Tras perder la conexión del bloqueo, las dos ejecuciones pueden pedir propuesta (la prueba registra 2 llamadas); solo una publica. Con Replicate real es un **coste duplicado**, no un dato duplicado. Se acepta provisionalmente como riesgo operativo del MVP y se puede vigilar en el log: `CICLO_BLOQUEO ... se perdio` y `La medicion ... ya publico el plan ...; esta ejecucion no publica otro`.
+2. **Dos registros `NO_FACTIBLE` si las dos ejecuciones fallan.** Si ninguna publica, cada una deja su fila de fallo, igual que un reintento posterior; V32 no distingue una de otro sin un identificador de ejecución, que exigiría migración (no autorizada). **Para las métricas:** contar los fallos por medición (`weekly_metric_id`) y no por fila; una medición con varias filas `NO_FACTIBLE` y ninguna publicada es una semana sin plan, no varias.
+3. La generación inicial puede llamar dos veces a la IA en la misma situación de bloqueo perdido; solo se publica un plan.
 
 **Pruebas** (`CicloConcurrenteIT`, 9/9, PostgreSQL efímero, IA simulada con retraso para forzar el solape):
 
@@ -171,3 +188,16 @@ Además: `PendientesProgresionIT.ciclosSimultaneos` vuelve a exigir 1 evidencia 
 - **723 unitarias y 200 de integración, 0 fallos.** 8 omitidas, todas opcionales.
 - `GeneracionReferenciaIT`: **72/72 idénticos** (la generación inicial no pasa por la guarda). `CicloConcurrenteIT`: **9/9**, con las tres pruebas nuevas de bloqueo perdido. `PendientesProgresionIT`: 6/6. `CopiaSinIaIT`: 5/5. `ProgresionIT`: 17/17.
 - `PublishAdaptedTest.reemplazarSinMotivoSeRechaza` comprobaba «ninguna interacción» con el repositorio de evidencia; ahora la guarda lo consulta antes, así que la prueba exige lo que de verdad importaba: que no se escriba ninguna evidencia.
+
+### 7.3 Verificación final (1(a) solo con PROGRESION + guarda de publicación)
+
+- **730 unitarias y 200 de integración, 0 fallos.** 7 omitidas, todas opcionales (la evaluación de 10 semanas se activó en esta ejecución).
+- `CicloConcurrenteIT`: **9/9**. Bloqueo perdido durante la IA y al empezar: el mismo plan para A y B, 1 intento V32, 1 versión, 2 llamadas a la IA (riesgo residual 1).
+- `GeneracionReferenciaIT`: **72/72 idénticos.**
+- `EvaluacionLimpiaProgresionIT` (72 perfiles, 10 semanas): **informe idéntico byte a byte** al de `evidencia/progresion/evaluacion_limpia.md`. 720/720 publicadas, 312 progresiones, 14 recuperaciones, **0 reincorporaciones**, 0 llamadas en los 576 ciclos sin orden. Que la recuperación deje de contar no cambia nada aquí, porque ninguna sesión llegaba a reincorporar.
+- `CopiaSinIaIT` 5/5: el viernes de `LOSE_WEIGHT` / intermedio / 45 da 6 pasos `PROGRESION` y reincorpora en la semana 11. `PendientesProgresionIT` 6/6. `ProgresionIT` 17/17. `ReincorporacionTrasProgresionTest` 7/7.
+
+**Qué queda antes de habilitar la progresión:**
+1. Prueba controlada con Replicate real, con presupuesto e intentos limitados.
+2. Verificación del endpoint directo de Neon para la conexión del bloqueo.
+3. Activación controlada con perfiles sintéticos nuevos, con el interruptor para apagarla.

@@ -169,7 +169,7 @@
 | # | Condición |
 |---|---|
 | 1 | V31 + V32 identifican un complemento retirado por `ACORTAR_O_REORGANIZAR` en el linaje de la sesión. **Nunca** uno retirado por dolor, sustituido por seguridad o cambiado por una variante más sencilla |
-| 2 | La **progresión de los ejercicios conservados** de esa sesión está completa: en su techo de recuperación, o sin margen dentro de su rango. **Y, después del acortamiento, esa sesión dio al menos un paso de progresión o de recuperación** (decisión 1(a), 27/10/2026). Si nunca pudo dar ninguno (por ejemplo, el menor paso supera el 5 %), la sesión se mantiene acortada: la reincorporación no sirve para saltarse el límite que bloqueó la progresión |
+| 2 | La **progresión de los ejercicios conservados** de esa sesión está completa: en su techo de recuperación, o sin margen dentro de su rango. **Y, después del último acortamiento, esa misma sesión dio al menos un paso de PROGRESIÓN ordinaria** (decisión 1(a), 27/10/2026, precisada el mismo día: una RECUPERACIÓN no cuenta, porque devuelve una dosis que se redujo y no demuestra capacidad para ir más allá; tampoco una reincorporación ni una vuelta atrás). Si nunca pudo dar ninguno (por ejemplo, el menor paso supera el 5 %), la sesión se mantiene acortada: la reincorporación no sirve para saltarse el límite que bloqueó la progresión |
 | 3 | Cumplimiento sostenido: 2 semanas completadas, sin fatiga ni dolor, después de terminar el punto 2 |
 | 4 | El ejercicio es elegible y seguro hoy (V1, exclusiones, bloqueos, dolor) |
 | 5 | **Tiempo:** cabe en los minutos de la sesión (V4) y en la M declarada para ese entrenamiento. Si se retiró por falta de tiempo con M declarada, solo con una M nueva mayor |

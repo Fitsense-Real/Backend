@@ -220,7 +220,8 @@ class CopiaSinIaIT {
                 reincorporado = true;
                 assertTrue(pasosViernes > 0, "1(a): reincorpora solo despues de al menos una progresion: " + traza);
             }
-            if (tipo.equals("PASO") && informe(ev).contains("\"estado_reserva\":\"PENDIENTE\"")) pasosViernes++;
+            if (tipo.equals("PASO") && informe(ev).contains("\"tipo\":\"PROGRESION\"")
+                    && informe(ev).contains("\"estado_reserva\":\"PENDIENTE\"")) pasosViernes++;
             if (tipo.equals("SIN_PASO")) {
                 mantenimiento = true;   // 5 · se mantiene: misma rutina, nada forzado
                 assertEquals(antes, semana(plan).stream().map(Map.Entry::getValue).toList());
