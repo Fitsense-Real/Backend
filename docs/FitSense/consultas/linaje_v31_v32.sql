@@ -1,7 +1,7 @@
 -- =============================================================================
 -- Integridad del linaje V31 + V32 (diseño v0.3, §3.2) · SOLO LECTURA
 -- =============================================================================
--- Comprueba las premisas de la restauración: que cada derivación publicada
+-- Comprueba las premisas de la progresión (V35): que cada derivación publicada
 -- tiene su evidencia V32 y que cada paso del linaje se clasifica en un único
 -- tipo. No escribe nada. Cada fila de la primera consulta es una violación:
 -- sin filas, las premisas se cumplen sobre estos datos.
@@ -12,7 +12,7 @@
 --   SIN_EFECTO  origen en no_effect_sessions (contenido conservado)
 --   SUSTITUIDA  origen en conserved_sessions con sustitucion de seguridad
 --   COPIA       origen en conserved_sessions, sin sustitucion
---   RESTAURADA  origen en restored_sessions (V35). Se lee con to_jsonb(fila)
+--   PROGRESADA  origen en progressed_sessions (V35). Se lee con to_jsonb(fila)
 --               para que la consulta funcione tambien en una base sin V35.
 -- =============================================================================
 
@@ -38,7 +38,7 @@ clasificacion AS (
            (d.origen = ANY (a.applied_sessions))::int
          + (d.origen = ANY (a.no_effect_sessions))::int
          + (d.origen = ANY (a.conserved_sessions))::int
-         + (coalesce(to_jsonb(a) -> 'restored_sessions', '[]'::jsonb) @> to_jsonb(d.origen))::int AS clases
+         + (coalesce(to_jsonb(a) -> 'progressed_sessions', '[]'::jsonb) @> to_jsonb(d.origen))::int AS clases
     FROM derivados d
     JOIN plan_adaptation_attempts a ON a.resulting_plan_id = d.plan_derivado
 )
@@ -75,8 +75,8 @@ SELECT d.planned_workout_id AS derivada, d.source_planned_workout_id AS origen,
        CASE
            WHEN d.source_planned_workout_id = ANY (a.applied_sessions) THEN 'ADAPTADA:'
                || a.targeted_interventions[array_position(a.targeted_sessions, d.source_planned_workout_id)]
-           WHEN coalesce(to_jsonb(a) -> 'restored_sessions', '[]'::jsonb) @> to_jsonb(d.source_planned_workout_id)
-               THEN 'RESTAURADA'
+           WHEN coalesce(to_jsonb(a) -> 'progressed_sessions', '[]'::jsonb) @> to_jsonb(d.source_planned_workout_id)
+               THEN 'PROGRESADA'
            WHEN d.source_planned_workout_id = ANY (a.no_effect_sessions) THEN 'SIN_EFECTO'
            WHEN d.source_planned_workout_id = ANY (a.conserved_sessions)
                 AND EXISTS (SELECT 1 FROM jsonb_array_elements(coalesce(a.conservation_report -> 'sustituciones', '[]'::jsonb)) s

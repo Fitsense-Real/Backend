@@ -1,7 +1,5 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import main.web.services.fitsense.planning.domain.model.aggregates.PlanAdaptationAttempt;
 import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationAttempt;
 import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.PlanAdaptationAttemptRepository;
@@ -29,6 +27,9 @@ import java.util.*;
  *       volvio a estar autorizada a acortarse; se sigue retrocediendo;</li>
  *   <li>aplicada con ACORTAR_O_REORGANIZAR en un intento APLICADA: es el
  *       origen de la reduccion. Autorizada;</li>
+ *   <li>un paso de progresion (V35) que no reduce volumen ni duracion
+ *       (D-P7): la sesion sigue acortada por la misma reduccion; se sigue
+ *       retrocediendo;</li>
  *   <li>cualquier otra cosa -otra intervencion, una sustitucion por
  *       seguridad, un paso sin intento o con mas de uno, un origen en mas de
  *       una clase, la generacion inicial-: NO autorizada.</li>
@@ -70,58 +71,39 @@ public class ReduccionAutorizadaResolver {
             if (intentos.size() != 1) return false;   // sin evidencia o ambigua
             var intento = intentos.get(0);
 
-            boolean aplicada = contiene(intento.getAppliedSessions(), origen);
-            boolean sinEfecto = contiene(intento.getNoEffectSessions(), origen);
-            boolean conservada = contiene(intento.getConservedSessions(), origen);
-            if ((aplicada ? 1 : 0) + (sinEfecto ? 1 : 0) + (conservada ? 1 : 0) != 1) return false;
-            if (sustituida(intento, origen)) return false;
+            var clase = EvidenciaV32.clase(intento, origen);
+            var informe = EvidenciaV32.informe(intento, jsonSupport);
+            if (clase.isEmpty() || informe.isEmpty()) return false;
+            if (EvidenciaV32.sustituida(informe.get(), origen)) return false;
 
-            if (aplicada)
-                return intento.getStatus() == AdaptationAttempt.Status.APLICADA
-                        && intervencion(intento, origen) == TipoIntervencion.ACORTAR_O_REORGANIZAR;
-            if (sinEfecto && intervencion(intento, origen) != TipoIntervencion.ACORTAR_O_REORGANIZAR)
-                return false;
-
+            switch (clase.get()) {
+                case APLICADA -> {
+                    return intento.getStatus() == AdaptationAttempt.Status.APLICADA
+                            && EvidenciaV32.intervencion(intento, origen) == TipoIntervencion.ACORTAR_O_REORGANIZAR;
+                }
+                case SIN_EFECTO -> {
+                    if (EvidenciaV32.intervencion(intento, origen) != TipoIntervencion.ACORTAR_O_REORGANIZAR)
+                        return false;
+                }
+                case PROGRESADA -> {
+                    // D-P7: un paso que NO reduce la duracion no interrumpe la
+                    // herencia; una vuelta atras, o un paso sin detalle, si.
+                    var paso = EvidenciaV32.paso(informe.get(), origen);
+                    if (paso.isEmpty() || !Set.of("PROGRESION", "RECUPERACION").contains(paso.get().tipo())
+                            || paso.get().volumenAntes() == null || paso.get().volumenDespues() == null
+                            || paso.get().volumenDespues() < paso.get().volumenAntes()
+                            || actual.getExpectedDurationMinutes() < duracion(origen))
+                        return false;
+                }
+                case CONSERVADA -> { }
+            }
             actual = plannedWorkoutRepository.findById(origen).orElse(null);
         }
         return false;
     }
 
-    private static boolean contiene(Long[] ids, Long id) {
-        return ids != null && Arrays.asList(ids).contains(id);
-    }
-
-    private static TipoIntervencion intervencion(PlanAdaptationAttempt intento, Long origen) {
-        var sesiones = intento.getTargetedSessions();
-        var intervenciones = intento.getTargetedInterventions();
-        if (sesiones == null || intervenciones == null || sesiones.length != intervenciones.length) return null;
-        for (int i = 0; i < sesiones.length; i++)
-            if (origen.equals(sesiones[i])) {
-                try {
-                    return TipoIntervencion.valueOf(intervenciones[i]);
-                } catch (IllegalArgumentException e) {
-                    return null;
-                }
-            }
-        return null;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    record Sustituciones(List<Ref> sustituciones) {
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        record Ref(Long sesionOrigen) {}
-    }
-
-    /** Una sustitucion por seguridad en el paso corta la herencia. Si el informe no se puede leer, tambien. */
-    private boolean sustituida(PlanAdaptationAttempt intento, Long origen) {
-        var json = intento.getConservationReport();
-        if (json == null || json.isBlank()) return false;
-        try {
-            var informe = jsonSupport.read(json, Sustituciones.class);
-            return informe.sustituciones() != null && informe.sustituciones().stream()
-                    .anyMatch(r -> r != null && origen.equals(r.sesionOrigen()));
-        } catch (IllegalStateException e) {
-            return true;
-        }
+    private int duracion(Long sesion) {
+        return plannedWorkoutRepository.findById(sesion).map(w -> (int) w.getExpectedDurationMinutes())
+                .orElse(Integer.MAX_VALUE);
     }
 }

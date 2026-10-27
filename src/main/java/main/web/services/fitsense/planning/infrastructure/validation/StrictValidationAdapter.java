@@ -52,12 +52,31 @@ public class StrictValidationAdapter implements StrictPlanValidation {
     public StrictValidationAdapter(
             SessionDurationEstimator durationEstimator,
             ExternalConfigurationService configuracion,
-            @Value("${fitsense.coverage.enforcement:OBSERVE}") String coverageEnforcement) {
+            @Value("${fitsense.coverage.enforcement:OBSERVE}") String coverageEnforcement,
+            @Value("${fitsense.adaptation.capability-validation.enabled:false}") boolean capacidadesFlag,
+            @Value("${fitsense.adaptation.progression.enabled:false}") boolean progresion) {
 
-        this.validador = new PlanDraftValidator(durationEstimator,
-                SlotCoverageEnforcement.parse(coverageEnforcement),
+        // La progresion exige la V24 por capacidades (diseno §4.5): sin ella, una
+        // dosis progresada de INCREASE_STRENGTH, LOSE_WEIGHT o GENERAL_FITNESS no
+        // la comprobaria nadie.
+        boolean capacidades = capacidadesFlag || progresion;
+
+        // D-P11: la V24 por capacidades entra en la adaptacion SOLO con su
+        // interruptor, y el productor solo la acepta junto con las reducciones
+        // autorizadas. Apagada, el validador es exactamente el de antes.
+        this.validador = capacidades
+                ? new PlanDraftValidator(durationEstimator, SlotCoverageEnforcement.parse(coverageEnforcement),
+                DoseEnforcement.ENFORCE, DoseEnforcement.ENFORCE)
+                : new PlanDraftValidator(durationEstimator, SlotCoverageEnforcement.parse(coverageEnforcement),
                 DoseEnforcement.ENFORCE);
         this.configuracion = configuracion;
+    }
+
+    /** Sin los interruptores de V35: el validador de siempre. */
+    public StrictValidationAdapter(SessionDurationEstimator durationEstimator,
+                                   ExternalConfigurationService configuracion,
+                                   String coverageEnforcement) {
+        this(durationEstimator, configuracion, coverageEnforcement, false, false);
     }
 
     /** Para pruebas: el validador ya construido, sin contenedor. */
@@ -84,6 +103,11 @@ public class StrictValidationAdapter implements StrictPlanValidation {
         } catch (InvalidPlanDraftException e) {
             return List.copyOf(e.problems());
         }
+    }
+
+    @Override
+    public boolean validaCapacidades() {
+        return validador.capabilityEnforcement().bloquea();
     }
 
     @Override

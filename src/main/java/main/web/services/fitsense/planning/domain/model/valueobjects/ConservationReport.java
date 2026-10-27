@@ -63,25 +63,32 @@ public record ConservationReport(List<String> problems,
                                   */
                                  List<SustitucionSeguridad> sustituciones,
                                  /**
-                                  * V35. Las sesiones (del plan de origen) cuya derivada
-                                  * se devolvio EXACTAMENTE a su prescripcion de
-                                  * referencia. A lo sumo una por ciclo; no es una
-                                  * adaptacion aplicada ni una conservada.
+                                  * V35. La sesion (del plan de origen) cuya derivada
+                                  * recibio el paso de progresion del ciclo. A lo sumo
+                                  * una; no es una adaptacion aplicada ni una conservada.
                                   */
-                                 List<Long> restauradas,
+                                 List<Long> progresadas,
+                                 /** El detalle del paso, para V32. */
+                                 List<PasoProgresion> pasos,
                                  /**
-                                  * Restauraciones elegibles que no se hicieron, con su
-                                  * motivo (revalidacion fallida). La sesion queda como
-                                  * estaba.
+                                  * Las dosis distintas de la exacta que V24 puede
+                                  * aceptar en esta semana, y solo esas
+                                  * ({@link DosisAutorizada}). Vacio en la generacion.
                                   */
-                                 List<String> restauracionesBloqueadas) {
+                                 @com.fasterxml.jackson.annotation.JsonIgnore
+                                 Set<DosisAutorizada> dosisAutorizadas,
+                                 /**
+                                  * Pasos elegibles que no se dieron, con su motivo
+                                  * (revalidacion fallida). La sesion queda como estaba.
+                                  */
+                                 List<String> pasosBloqueados) {
 
-    /** Sin restauraciones: el informe de siempre. */
+    /** Sin progresion: el informe de siempre. */
     public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
                               List<Long> conservadas, Set<LocalDate> fechasConDuracionReducible,
                               List<SustitucionSeguridad> sustituciones) {
         this(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible, sustituciones,
-                List.of(), List.of());
+                List.of(), List.of(), Set.of(), List.of());
     }
 
     /** Sin sustituciones de seguridad: el informe de siempre. */
@@ -98,17 +105,23 @@ public record ConservationReport(List<String> problems,
         fechasConDuracionReducible = fechasConDuracionReducible == null
                 ? Set.of() : Set.copyOf(fechasConDuracionReducible);
         sustituciones = sustituciones == null ? List.of() : List.copyOf(sustituciones);
-        restauradas = restauradas == null ? List.of() : List.copyOf(restauradas);
-        restauracionesBloqueadas = restauracionesBloqueadas == null
-                ? List.of() : List.copyOf(restauracionesBloqueadas);
+        progresadas = progresadas == null ? List.of() : List.copyOf(progresadas);
+        pasos = pasos == null ? List.of() : List.copyOf(pasos);
+        dosisAutorizadas = dosisAutorizadas == null ? Set.of() : Set.copyOf(dosisAutorizadas);
+        pasosBloqueados = pasosBloqueados == null ? List.of() : List.copyOf(pasosBloqueados);
     }
 
-    /** El mismo informe, con el motivo de una restauracion que no se pudo hacer. */
-    public ConservationReport conRestauracionBloqueada(String motivo) {
-        var motivos = new java.util.ArrayList<>(restauracionesBloqueadas);
+    /** El mismo informe, con el motivo de un paso que no se pudo dar. */
+    public ConservationReport conPasoBloqueado(String motivo) {
+        var motivos = new java.util.ArrayList<>(pasosBloqueados);
         motivos.add(motivo);
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
-                fechasConDuracionReducible, sustituciones, restauradas, motivos);
+                fechasConDuracionReducible, sustituciones, progresadas, pasos, dosisAutorizadas, motivos);
+    }
+
+    /** Si V24 puede aceptar esa dosis en esa colocacion, y de que origen viene. */
+    public java.util.Optional<DosisAutorizada.Origen> autorizacionDe(LocalDate fecha, PlanDraft.DraftExercise e) {
+        return dosisAutorizadas.stream().filter(d -> d.autoriza(fecha, e)).map(DosisAutorizada::origen).findFirst();
     }
 
     public static ConservationReport vacio() {
@@ -134,8 +147,7 @@ public record ConservationReport(List<String> problems,
                 .formatted(aplicadas.size(), sinEfecto.size(), conservadas.size(), problems.size())
                 + (sustituciones.isEmpty() ? ""
                 : ", %d sustituciones por seguridad".formatted(sustituciones.size()))
-                + (restauradas.isEmpty() ? "" : ", %d restaurada(s)".formatted(restauradas.size()))
-                + (restauracionesBloqueadas.isEmpty() ? ""
-                : ", %d restauracion(es) bloqueada(s)".formatted(restauracionesBloqueadas.size()));
+                + (progresadas.isEmpty() ? "" : ", %d progresada(s)".formatted(progresadas.size()))
+                + (pasosBloqueados.isEmpty() ? "" : ", %d paso(s) bloqueado(s)".formatted(pasosBloqueados.size()));
     }
 }

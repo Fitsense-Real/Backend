@@ -153,11 +153,65 @@ public class PlanDraftValidator {
         appendSplitSuggestion(context, problems);
         validateReductionDoesNotIncrease(draft, context, eligible, problems);
         validateMinimumDurationAndRest(draft, context, conservation, problems);
-        validateMvpDose(draft, context, eligible, problems);
-        validateCapabilityDose(draft, context, eligible, problems);
-        validateCapabilityCoverage(draft, context, eligible, problems);
+        validateMvpDose(draft, context, eligible, conservation, problems);
+        validateCapabilityDose(draft, context, eligible, conservation, problems);
+        // Una colocacion con dosis autorizada sigue acreditando la capacidad de su
+        // dosis base (diseno §4.4). En la generacion no hay autorizaciones: el
+        // borrador se evalua tal cual.
+        validateCapabilityCoverage(conservation.dosisAutorizadas().isEmpty() ? draft
+                : conDosisBase(draft, context, eligible, conservation), context, eligible, problems);
 
         if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
+    }
+
+    /**
+     * El borrador con cada dosis AUTORIZADA y dentro de rango sustituida por la
+     * dosis base que la admite. Solo para evaluar la cobertura (V25); la dosis
+     * que se publica no cambia. Lo que no esta autorizado queda igual.
+     */
+    private PlanDraft conDosisBase(PlanDraft draft, PlanGenerationContext context,
+                                   Map<Long, CandidateExercise> eligible, ConservationReport conservation) {
+        if (context.profile() == null || draft == null || draft.workouts() == null) return draft;
+        String objetivo = context.profile().goalType();
+        String nivel = context.profile().fitnessLevel();
+        var limites = context.prescription() == null ? null : context.prescription().repLimits();
+        var sesiones = new ArrayList<PlanDraft.DraftWorkout>();
+        for (var w : draft.workouts()) {
+            if (w == null || w.exercises() == null) {
+                sesiones.add(w);
+                continue;
+            }
+            var ejercicios = new ArrayList<PlanDraft.DraftExercise>();
+            for (var e : w.exercises()) {
+                var candidato = e == null ? null : eligible.get(e.exerciseId());
+                var origen = candidato == null ? Optional.<DosisAutorizada.Origen>empty()
+                        : conservation.autorizacionDe(w.scheduledDate(), e);
+                PlanDraft.DraftExercise base = null;
+                if (origen.isPresent() && MvpDosePolicy.aplicaA(objetivo)) {
+                    var exigida = MvpDosePolicy.dosisPara(MandatorySlot.of(candidato), candidato.bodyPartCode());
+                    if (exigida.isPresent() && ProgresionDosisPolicy.admite4D(exigida.get(), e, origen.get()))
+                        base = new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), exigida.get().series(),
+                                exigida.get().reps(), e.plannedDurationSeconds(), e.targetLoadKg(),
+                                exigida.get().descansoSegundos(), e.notes());
+                } else if (origen.isPresent()) {
+                    int minReps = limites == null ? 0 : limites.minRepsFor(candidato.bodyPartCode(), nivel);
+                    int maxReps = limites == null || limites.maxReps() == null ? Integer.MAX_VALUE : limites.maxReps();
+                    base = CapabilityPrescriptionPolicy.admisibles(candidato, objetivo, nivel).stream()
+                            .map(c -> CapabilityPrescriptionPolicy.dosis(c, candidato, objetivo, nivel, limites))
+                            .flatMap(Optional::stream)
+                            .filter(d -> ProgresionDosisPolicy.admiteCapacidad(d, e, origen.get(), minReps, maxReps))
+                            .findFirst()
+                            .map(d -> new PlanDraft.DraftExercise(e.exerciseId(), d.tipo(), d.series(), d.reps(),
+                                    d.segundos(), e.targetLoadKg(), d.descanso(), e.notes()))
+                            .orElse(null);
+                }
+                ejercicios.add(base == null ? e : base);
+            }
+            sesiones.add(new PlanDraft.DraftWorkout(w.scheduledDate(), w.focus(), w.name(),
+                    w.expectedDurationMinutes(), ejercicios));
+        }
+        return new PlanDraft(draft.source(), draft.modelName(), draft.planName(), draft.declaredTotalVolume(),
+                draft.rationale(), sesiones);
     }
 
     /**
@@ -177,7 +231,8 @@ public class PlanDraftValidator {
      * No comprueba la intensidad del cardio ni el RIR: no hay columna.
      */
     private void validateCapabilityDose(PlanDraft draft, PlanGenerationContext context,
-                                        Map<Long, CandidateExercise> eligible, List<String> problems) {
+                                        Map<Long, CandidateExercise> eligible, ConservationReport conservation,
+                                        List<String> problems) {
         if (!capabilityEnforcement.mide() || context.profile() == null) return;
         String objetivo = context.profile().goalType();
         if (MvpDosePolicy.aplicaA(objetivo)) {
@@ -207,6 +262,17 @@ public class PlanDraftValidator {
                     continue;
                 }
                 if (CapabilityPrescriptionPolicy.acreditada(exercise, candidate, objetivo, nivel, limites).isPresent())
+                    continue;
+                // Una dosis distinta de la exacta SOLO si V8C la autorizo en esta colocacion
+                // (progresion, reduccion o herencia) y cae en su rango. La generacion no trae
+                // autorizaciones: alli esto nunca acepta nada.
+                var origenAutorizado = conservation.autorizacionDe(workout.scheduledDate(), exercise);
+                if (origenAutorizado.isPresent() && admisibles.stream()
+                        .map(c -> CapabilityPrescriptionPolicy.dosis(c, candidate, objetivo, nivel, limites))
+                        .flatMap(Optional::stream)
+                        .anyMatch(d -> ProgresionDosisPolicy.admiteCapacidad(d, exercise, origenAutorizado.get(),
+                                limites == null ? 0 : limites.minRepsFor(candidate.bodyPartCode(), nivel),
+                                limites == null || limites.maxReps() == null ? Integer.MAX_VALUE : limites.maxReps())))
                     continue;
                 var opciones = admisibles.stream()
                         .map(c -> CapabilityPrescriptionPolicy.dosis(c, candidate, objetivo, nivel, limites))
@@ -463,7 +529,7 @@ public class PlanDraftValidator {
      * </ul>
      */
     private void validateMvpDose(PlanDraft draft, PlanGenerationContext context,
-                                 Map<Long, CandidateExercise> eligible,
+                                 Map<Long, CandidateExercise> eligible, ConservationReport conservation,
                                  List<String> problems) {
         if (!doseEnforcement.mide()) return;
         if (context.profile() == null || !MvpDosePolicy.aplicaA(context.profile().goalType())) return;
@@ -515,14 +581,23 @@ public class PlanDraftValidator {
 
                 var exigida = dosis.get();
                 comprobadas++;
-                costeDia += exigida.costeSegundos(false);
 
                 short series = exercise.plannedSets() == null ? -1 : exercise.plannedSets();
                 short reps = exercise.plannedReps() == null ? -1 : exercise.plannedReps();
                 short descanso = exercise.restSeconds() == null ? -1 : exercise.restSeconds();
 
-                if (series != exigida.series() || reps != exigida.reps()
-                        || descanso != exigida.descansoSegundos())
+                // Progresion autorizada por V8C en esta colocacion y dentro de su rango (D-P3).
+                // La generacion no trae autorizaciones. El presupuesto se cobra con la dosis REAL.
+                var origenAutorizado = conservation.autorizacionDe(workout.scheduledDate(), exercise);
+                boolean autorizada = origenAutorizado.isPresent()
+                        && ProgresionDosisPolicy.admite4D(exigida, exercise, origenAutorizado.get());
+                costeDia += autorizada
+                        ? new MvpDosePolicy.Dosis(series, reps, descanso, exigida.capacidad(), exigida.relleno())
+                        .costeSegundos(false)
+                        : exigida.costeSegundos(false);
+
+                if (!autorizada && (series != exigida.series() || reps != exigida.reps()
+                        || descanso != exigida.descansoSegundos()))
                     incumplimientos.add(("V24: el ejercicio %d del %s lleva %dx%d con %d s de descanso "
                             + "y 4D v2 exige %s. Ajusta la dosis exactamente a la de su capacidad; "
                             + "si no cabe en el dia, quita una colocacion en vez de recortar la dosis.")

@@ -98,6 +98,17 @@ public class AdaptationEvidenceMapper {
                     hechos.conservationReportJson(), motivo(resultado),
                     hechos.observedAdherencePct(), hechos.registrationCoveragePct());
 
+        // V35 (§12.4): la sesion publicada del paso es EXACTAMENTE la propuesta.
+        // Si no, no se registra nada, y la transaccion de publicacion se deshace.
+        for (var paso : resultado.conservacion().pasos()) {
+            var publicada = resultado.semana().stream()
+                    .filter(d -> paso.origen().equals(d.sourcePlannedWorkoutId())).toList();
+            if (paso.contenido() == null || publicada.size() != 1
+                    || !paso.contenido().equals(publicada.get(0).workout()))
+                throw new IllegalArgumentException(("El paso de progresion de la sesion %d no coincide con lo que"
+                        + " se publica.").formatted(paso.origen()));
+        }
+
         // Aplicadas: SOLO cuando la IA cambio algo de verdad y se publico. En
         // un respaldo o en una semana sin efecto no se aplico ninguna, aunque
         // el informe de continuidad las clasifique como conservadas.
@@ -120,7 +131,7 @@ public class AdaptationEvidenceMapper {
                 senaladas, intervenciones, aplicadas, sinEfecto, conservadas,
                 hechos.conservationReportJson(), null,
                 hechos.observedAdherencePct(), hechos.registrationCoveragePct(),
-                List.copyOf(resultado.conservacion().restauradas()));
+                List.copyOf(resultado.conservacion().progresadas()));
     }
 
     /**

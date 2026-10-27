@@ -1,47 +1,48 @@
 -- =============================================================================
--- V35 · Restauracion de una sesion adaptada (diseno v0.3, §3 y §6.1)
+-- V35 · Progresion gradual de una sesion (DISENO_PROGRESION_Y_REINCORPORACION)
 -- =============================================================================
--- Solo agrega. No modifica datos existentes: las filas actuales quedan con
--- restored_sessions = '{}', que cumple todas las restricciones nuevas.
+-- Sustituye a la V35 de restauracion (b6fd9ae), que nunca se aplico en Neon
+-- (comprobado el 27/10: Flyway en V33, sin restored_sessions). La migracion
+-- propuesta V34 (docs/FitSense/migraciones_propuestas) no esta en
+-- db/migration: si se aprueba, entra como V36 o posterior.
 --
--- restored_sessions: sesiones del plan de ORIGEN (como los otros cuatro
--- arreglos) cuya derivada se devolvio exactamente a su prescripcion de
--- referencia. No es una adaptacion aplicada ni una conservada.
+-- Solo agrega. Las filas existentes quedan con progressed_sessions = '{}'.
 --
--- Invariantes nuevos:
---   * sin repetidos;
---   * disjunto de targeted, applied, no_effect y conserved: una sesion tiene
---     un solo desenlace en el intento;
+-- progressed_sessions: sesiones del plan de ORIGEN (como los otros cuatro
+-- arreglos) cuya derivada recibio UN paso de progresion propuesto por el
+-- backend: recuperacion, progresion ordinaria, reincorporacion o vuelta
+-- atras. El detalle del paso (ejercicio, dosis antes y despues, volumenes)
+-- va en conservation_report.pasos.
+--
+-- Invariantes:
+--   * sin repetidos y disjunto de targeted, applied, no_effect y conserved;
 --   * a lo sumo una por intento: una modificacion funcional por ciclo;
---   * nunca con APLICADA ni con RESPALDO: si la IA aplico un cambio, la
---     restauracion espera; RESPALDO es por definicion una copia exacta;
+--   * solo con SIN_ORDEN: la progresion no convive con una adaptacion;
 --   * solo si se publico un plan;
 --   * pertenece al plan de origen (fn_intento_coherente, ampliada).
---
--- V33 (APLICADA <=> applied_sessions no vacio) no cambia: una restauracion
--- nunca entra en applied_sessions.
+-- V33 (APLICADA <=> applied_sessions no vacio) no cambia.
 -- =============================================================================
 
 ALTER TABLE plan_adaptation_attempts
-    ADD COLUMN restored_sessions BIGINT[] NOT NULL DEFAULT '{}';
+    ADD COLUMN progressed_sessions BIGINT[] NOT NULL DEFAULT '{}';
 
-COMMENT ON COLUMN plan_adaptation_attempts.restored_sessions IS
-    'V35: sesiones del plan de origen cuya derivada se restauro exactamente a su prescripcion de referencia (V31 + V32). A lo sumo una; nunca con APLICADA ni RESPALDO.';
+COMMENT ON COLUMN plan_adaptation_attempts.progressed_sessions IS
+    'V35: sesion del plan de origen cuya derivada recibio un paso de progresion del backend (detalle en conservation_report.pasos). A lo sumo una; solo con SIN_ORDEN.';
 
 ALTER TABLE plan_adaptation_attempts
-    ADD CONSTRAINT ck_paa_restauradas_unicas CHECK (fn_sin_duplicados(restored_sessions)),
-    ADD CONSTRAINT ck_paa_restauradas_disjuntas CHECK (
-        NOT (restored_sessions && targeted_sessions)
-        AND NOT (restored_sessions && applied_sessions)
-        AND NOT (restored_sessions && no_effect_sessions)
-        AND NOT (restored_sessions && conserved_sessions)),
-    ADD CONSTRAINT ck_paa_una_restauracion CHECK (cardinality(restored_sessions) <= 1),
-    ADD CONSTRAINT ck_paa_restauracion_sin_cambio_de_ia CHECK (
-        cardinality(restored_sessions) = 0 OR status IN ('SIN_ORDEN', 'SIN_EFECTO')),
-    ADD CONSTRAINT ck_paa_restauracion_publicada CHECK (
-        cardinality(restored_sessions) = 0 OR resulting_plan_id IS NOT NULL);
+    ADD CONSTRAINT ck_paa_progresadas_unicas CHECK (fn_sin_duplicados(progressed_sessions)),
+    ADD CONSTRAINT ck_paa_progresadas_disjuntas CHECK (
+        NOT (progressed_sessions && targeted_sessions)
+        AND NOT (progressed_sessions && applied_sessions)
+        AND NOT (progressed_sessions && no_effect_sessions)
+        AND NOT (progressed_sessions && conserved_sessions)),
+    ADD CONSTRAINT ck_paa_un_paso CHECK (cardinality(progressed_sessions) <= 1),
+    ADD CONSTRAINT ck_paa_paso_sin_orden CHECK (
+        cardinality(progressed_sessions) = 0 OR status = 'SIN_ORDEN'),
+    ADD CONSTRAINT ck_paa_paso_publicado CHECK (
+        cardinality(progressed_sessions) = 0 OR resulting_plan_id IS NOT NULL);
 
--- La misma funcion de V32, con restored_sessions entre los arreglos que deben
+-- La misma funcion de V32, con progressed_sessions entre los arreglos que deben
 -- pertenecer al plan de origen. El resto, identico.
 CREATE OR REPLACE FUNCTION fn_intento_coherente() RETURNS TRIGGER AS $$
 DECLARE
@@ -104,7 +105,7 @@ END IF;
     -- esta sola condicion descarta los tres casos a la vez.
 SELECT array_agg(DISTINCT s.id ORDER BY s.id) INTO ajenas
 FROM unnest(NEW.targeted_sessions || NEW.applied_sessions
-    || NEW.no_effect_sessions || NEW.conserved_sessions || NEW.restored_sessions) AS s(id)
+    || NEW.no_effect_sessions || NEW.conserved_sessions || NEW.progressed_sessions) AS s(id)
 WHERE NOT EXISTS (SELECT 1 FROM planned_workouts w
                   WHERE w.planned_workout_id = s.id
                     AND w.plan_id = NEW.source_plan_id);

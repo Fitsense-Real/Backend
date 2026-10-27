@@ -46,4 +46,12 @@ public interface StrictPlanValidation {
      * 4D. El camino de adaptacion exige true.
      */
     boolean bloqueaDosis4D();
+
+    /**
+     * Si exige la V24 por capacidades (D-P11). Entonces V8C tiene que emitir
+     * las reducciones autorizadas, o rechazaria las de fatiga.
+     */
+    default boolean validaCapacidades() {
+        return false;
+    }
 }

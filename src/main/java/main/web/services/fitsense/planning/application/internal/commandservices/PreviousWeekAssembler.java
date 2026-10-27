@@ -35,12 +35,37 @@ public class PreviousWeekAssembler {
     private final ExternalCatalogService externalCatalogService;
     private final ExternalExecutionService externalExecutionService;
     private final ReduccionAutorizadaResolver reduccionAutorizadaResolver;
+    private final DosisLinajeResolver dosisLinajeResolver;
+    private final boolean dosisHeredadas;
 
     public PreviousWeekAssembler(WeeklyTrainingPlanRepository planRepository,
                                  PlannedWorkoutRepository plannedWorkoutRepository,
                                  ExternalCatalogService externalCatalogService,
                                  ExternalExecutionService externalExecutionService,
                                  ReduccionAutorizadaResolver reduccionAutorizadaResolver) {
+        this(planRepository, plannedWorkoutRepository, externalCatalogService, externalExecutionService,
+                reduccionAutorizadaResolver, null, false, false);
+    }
+
+    /**
+     * @param progresion  {@code fitsense.adaptation.progression.enabled}
+     * @param capacidades {@code fitsense.adaptation.capability-validation.enabled}.
+     *                    Con los dos apagados no se calcula ninguna dosis heredada.
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    public PreviousWeekAssembler(WeeklyTrainingPlanRepository planRepository,
+                                 PlannedWorkoutRepository plannedWorkoutRepository,
+                                 ExternalCatalogService externalCatalogService,
+                                 ExternalExecutionService externalExecutionService,
+                                 ReduccionAutorizadaResolver reduccionAutorizadaResolver,
+                                 DosisLinajeResolver dosisLinajeResolver,
+                                 @org.springframework.beans.factory.annotation.Value(
+                                         "${fitsense.adaptation.progression.enabled:false}") boolean progresion,
+                                 @org.springframework.beans.factory.annotation.Value(
+                                         "${fitsense.adaptation.capability-validation.enabled:false}")
+                                 boolean capacidades) {
+        this.dosisLinajeResolver = dosisLinajeResolver;
+        this.dosisHeredadas = dosisLinajeResolver != null && (progresion || capacidades);
         this.planRepository = planRepository;
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.externalCatalogService = externalCatalogService;
@@ -121,7 +146,8 @@ public class PreviousWeekAssembler {
 
         return new PreviousWeekSummary(adherencePct, averageRpe, totalVolume,
                 bodyPartDistribution, List.copyOf(workouts), List.copyOf(prescriptions),
-                List.copyOf(usedLast7Days), reduccionAutorizadaResolver.resolver(activeWorkouts));
+                List.copyOf(usedLast7Days), reduccionAutorizadaResolver.resolver(activeWorkouts),
+                dosisHeredadas ? dosisLinajeResolver.resolver(activeWorkouts) : Map.of());
     }
 
     private static PreviousWeekSummary.WorkoutOutcome toWorkoutOutcome(PlannedWorkout workout,

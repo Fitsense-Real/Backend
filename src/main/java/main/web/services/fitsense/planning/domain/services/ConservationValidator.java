@@ -3,6 +3,8 @@ package main.web.services.fitsense.planning.domain.services;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport;
 import main.web.services.fitsense.planning.domain.model.valueobjects.DerivedWorkout;
+import main.web.services.fitsense.planning.domain.model.valueobjects.DosisAutorizada;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgresion;
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
@@ -99,9 +101,26 @@ public class ConservationValidator {
                                        Map<Long, CandidateExercise> eligible,
                                        ExclusionesDeSeguridad causas,
                                        List<SustitucionSeguridad> autorizadas) {
+        return validate(derivation, previous, adjustment, eligible, causas, autorizadas, false);
+    }
+
+    /**
+     * Igual, y con {@code autorizarDosis} (progresion o V24 por capacidades
+     * activas, D-P11) ademas: rechaza toda SUBIDA de dosis de la IA en las
+     * senaladas, y emite para V24 las dosis autorizadas de la semana -las
+     * reducciones aprobadas y las heredadas con linaje-. Con false, lo de
+     * siempre.
+     */
+    public ConservationReport validate(WeekDerivation derivation,
+                                       PreviousWeekSummary previous,
+                                       PlanAdjustment adjustment,
+                                       Map<Long, CandidateExercise> eligible,
+                                       ExclusionesDeSeguridad causas,
+                                       List<SustitucionSeguridad> autorizadas,
+                                       boolean autorizarDosis) {
         if (adjustment == null || !adjustment.adapta()) return ConservationReport.vacio();
 
-        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, Map.of());
+        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, null, autorizarDosis);
     }
 
     /**
@@ -135,27 +154,32 @@ public class ConservationValidator {
                                                   Map<Long, CandidateExercise> eligible,
                                                   ExclusionesDeSeguridad causas,
                                                   List<SustitucionSeguridad> autorizadas) {
-        return validateContinuidad(derivation, previous, eligible, causas, autorizadas, Map.of());
+        return validateContinuidad(derivation, previous, eligible, causas, autorizadas, null, false);
     }
 
     /**
-     * Continuidad con una RESTAURACION declarada (V35, diseno v0.3 §3).
+     * Continuidad con, a lo sumo, UN PASO DE PROGRESION declarado (V35).
      * <p>
-     * {@code restauraciones} lleva, por sesion de origen, la prescripcion de
-     * referencia ya puesta en la semana nueva. Esa sesion no se compara con la
-     * semana medida sino con su referencia, y solo se acepta si es IDENTICA:
-     * mismos ejercicios y dosis, mismo dia, enfoque y minutos. Cualquier otra
-     * diferencia -una sustitucion por seguridad incluida- es un problema: no se
-     * restaura a medias. Las demas sesiones se revisan como siempre.
+     * La sesion del paso no se compara solo con la semana medida: tiene que ser
+     * IDENTICA a {@code paso.contenido()} y, respecto de la semana medida,
+     * cambiar SOLO el ejercicio del paso y solo como dice su tipo (sube su
+     * dosis; se reincorpora; vuelve atras). Mismo dia, enfoque y minutos; sin
+     * sustitucion por seguridad; sin dolor. Si no, es un problema: no se
+     * progresa a medias. Las demas sesiones se revisan como siempre.
+     *
+     * @param autorizarDosis emite las dosis autorizadas para V24 (el paso y las
+     *                       heredadas con linaje). Sin paso y con false, lo de
+     *                       siempre.
      */
     public ConservationReport validateContinuidad(WeekDerivation derivation,
                                                   PreviousWeekSummary previous,
                                                   Map<Long, CandidateExercise> eligible,
                                                   ExclusionesDeSeguridad causas,
                                                   List<SustitucionSeguridad> autorizadas,
-                                                  Map<Long, PlanDraft.DraftWorkout> restauraciones) {
+                                                  PasoProgresion paso,
+                                                  boolean autorizarDosis) {
         return revisar(derivation, previous, PlanAdjustment.none(), eligible, causas, autorizadas,
-                restauraciones == null ? Map.of() : restauraciones);
+                paso, autorizarDosis || paso != null);
     }
 
     private ConservationReport revisar(WeekDerivation derivation,
@@ -164,7 +188,8 @@ public class ConservationValidator {
                                        Map<Long, CandidateExercise> eligible,
                                        ExclusionesDeSeguridad causas,
                                        List<SustitucionSeguridad> autorizadas,
-                                       Map<Long, PlanDraft.DraftWorkout> restauraciones) {
+                                       PasoProgresion paso,
+                                       boolean autorizarDosis) {
 
         // SI SE ORDENO ADAPTAR, LA FALTA DE DATOS ES UN ERROR, NO UN VISTO
         // BUENO. La version anterior devolvia el informe vacio cuando faltaban la
@@ -195,7 +220,9 @@ public class ConservationValidator {
         var aplicadas = new ArrayList<Long>();
         var sinEfecto = new ArrayList<Long>();
         var conservadas = new ArrayList<Long>();
-        var restauradas = new ArrayList<Long>();
+        var progresadas = new ArrayList<Long>();
+        var pasos = new ArrayList<PasoProgresion>();
+        var dosisAutorizadas = new LinkedHashSet<DosisAutorizada>();
         var fechasReducibles = new LinkedHashSet<LocalDate>();
 
         var origenes = indexarSesiones(previous);
@@ -255,19 +282,39 @@ public class ConservationValidator {
                     dolorDeSesion, preventivo, problems)
                     : true;
 
-            if (intervencion == null && restauraciones.containsKey(origen)) {
-                // V35: la restauracion se compara con su REFERENCIA, no con la
-                // semana medida. Solo identica, segura y sin sustituciones.
-                var referencia = restauraciones.get(origen);
-                boolean sustituida = admitidas.stream().anyMatch(s -> origen.equals(s.sesionOrigen()));
-                if (!segura)
-                    problems.add(("V8C: la sesion %d no se puede restaurar: consta dolor en la semana"
-                            + " medida.").formatted(origen));
-                else if (sustituida || !identica(referencia, derivada.workout()))
-                    problems.add(("V8C: la restauracion de la sesion %d no coincide exactamente con su"
-                            + " prescripcion de referencia.").formatted(origen));
-                else
-                    restauradas.add(origen);
+            boolean sustituida = admitidas.stream().anyMatch(s -> origen.equals(s.sesionOrigen()));
+            var fecha = derivada.workout().scheduledDate();
+            var conLinaje = previous.dosisConLinaje().getOrDefault(origen, Set.of());
+
+            if (intervencion == null && paso != null && origen.equals(paso.origen())) {
+                // V35: el paso de progresion del ciclo. Estrecho: identico al
+                // paso propuesto y, respecto de la semana medida, solo su cambio.
+                String motivo = !segura ? "consta dolor en la semana medida"
+                        : sustituida ? "la sesion lleva una sustitucion por seguridad"
+                        : !identica(paso.contenido(), derivada.workout())
+                        ? "la sesion no coincide exactamente con el paso propuesto"
+                        : pasoEstrecho(paso, diferencias, dosisPorSesion.getOrDefault(origen, Map.of()),
+                        derivada.workout(), anterior.expectedDurationMinutes());
+                if (motivo != null) {
+                    problems.add("V8C: el paso de progresion de la sesion %d no se admite: %s."
+                            .formatted(origen, motivo));
+                } else {
+                    progresadas.add(origen);
+                    pasos.add(paso);
+                    for (var e : derivada.workout().exercises()) {
+                        if (paso.exerciseId().equals(e.exerciseId())) {
+                            // La reincorporacion vuelve con la dosis inicial EXACTA: nada que autorizar.
+                            if (paso.tipo() != PasoProgresion.Tipo.REINCORPORACION)
+                                dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.PASO));
+                        } else if (conLinaje.contains(e.exerciseId())) {
+                            dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.HEREDADA));
+                        }
+                    }
+                    // D-P7: un paso que no reduce mantiene la exencion de V20 de
+                    // una sesion acortada con una reduccion autorizada.
+                    if (paso.noReduce() && previous.reduccionAutorizada().contains(origen) && fecha != null)
+                        fechasReducibles.add(fecha);
+                }
             } else if (intervencion == null) {
                 // Si no es segura NO se clasifica como conservada: una sesion
                 // con un problema de seguridad no es una conservacion correcta.
@@ -282,7 +329,15 @@ public class ConservationValidator {
                         && admitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
                         && derivada.workout().scheduledDate() != null)
                     fechasReducibles.add(derivada.workout().scheduledDate());
+                // V35: la copia identica conserva las dosis autorizadas con linaje.
+                if (autorizarDosis && conservadas.contains(origen))
+                    for (var e : derivada.workout().exercises())
+                        if (conLinaje.contains(e.exerciseId()))
+                            dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.HEREDADA));
             } else {
+                if (autorizarDosis)
+                    revisarDosisDeLaIa(origen, intervencion, derivada, dosisPorSesion.getOrDefault(origen, Map.of()),
+                            conLinaje, problems, dosisAutorizadas);
                 revisarSenalada(origen, anterior, derivada, intervencion, diferencias,
                         dolieron, segura, catalogo,
                         problems, aplicadas, sinEfecto);
@@ -299,12 +354,109 @@ public class ConservationValidator {
                     .forEach(s -> problems.add(("V8C: se declara una sustitucion por seguridad en la sesion %d, "
                             + "que no esta en la semana nueva.").formatted(s.sesionOrigen())));
 
-        if (restauradas.size() > 1)
-            problems.add(("V8C: se restauran %d sesiones y el maximo es una por ciclo: %s.")
-                    .formatted(restauradas.size(), restauradas));
+        if (paso != null && !vistos.contains(paso.origen()))
+            problems.add("V8C: se declara un paso de progresion en la sesion %d, que no esta en la semana nueva."
+                    .formatted(paso.origen()));
 
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
-                fechasReducibles, admitidas, restauradas, List.of());
+                fechasReducibles, admitidas, progresadas, pasos, dosisAutorizadas, List.of());
+    }
+
+    /**
+     * El paso cambia, respecto de la semana medida, SOLO su ejercicio y solo
+     * como dice su tipo. Devuelve el motivo del rechazo, o null.
+     */
+    private static String pasoEstrecho(PasoProgresion paso, Diferencias d, Map<Long, Dosis> dosisAnterior,
+                                       PlanDraft.DraftWorkout nueva, int minutosAntes) {
+        if (d.diaMovido() || d.focoCambiado())
+            return "cambia el dia o el enfoque";
+        // Los minutos son los que estima el backend para el paso: no bajan en uno
+        // que sube, ni suben en una vuelta atras.
+        if (d.minutosCambiados() && (paso.tipo() == PasoProgresion.Tipo.VUELTA_ATRAS
+                ? d.minutosNuevos() > minutosAntes : d.minutosNuevos() < minutosAntes))
+            return "los minutos cambian en sentido contrario al paso";
+        Long id = paso.exerciseId();
+        return switch (paso.tipo()) {
+            case PROGRESION, RECUPERACION -> {
+                if (!d.anadidos().isEmpty() || !d.quitados().isEmpty() || !d.dosisCambiada().equals(List.of(id)))
+                    yield "debe cambiar solo la dosis del ejercicio %d y cambia %s/%s/%s"
+                            .formatted(id, d.anadidos(), d.quitados(), d.dosisCambiada());
+                var antes = dosisAnterior.get(id);
+                var despues = dosisDe(nueva.exercises().stream().filter(e -> id.equals(e.exerciseId()))
+                        .findFirst().orElseThrow());
+                yield sube(antes, despues) ? null : "la dosis del ejercicio %d no sube".formatted(id);
+            }
+            case REINCORPORACION -> !d.quitados().isEmpty() || !d.dosisCambiada().isEmpty()
+                    || !d.anadidos().equals(List.of(id))
+                    ? "debe solo reincorporar el ejercicio %d".formatted(id) : null;
+            case VUELTA_ATRAS -> {
+                if (!d.anadidos().isEmpty()) yield "una vuelta atras no anade ejercicios";
+                if (d.quitados().equals(List.of(id)) && d.dosisCambiada().isEmpty()) yield null;
+                if (!d.quitados().isEmpty() || !d.dosisCambiada().equals(List.of(id)))
+                    yield "debe cambiar solo el ejercicio %d".formatted(id);
+                var antes = dosisAnterior.get(id);
+                var despues = dosisDe(nueva.exercises().stream().filter(e -> id.equals(e.exerciseId()))
+                        .findFirst().orElseThrow());
+                yield sube(despues, antes) ? null : "la dosis del ejercicio %d no baja".formatted(id);
+            }
+        };
+    }
+
+    /** {@code despues} no baja en nada respecto de {@code antes}, sube en algo, mismo tipo y descanso. */
+    private static boolean sube(Dosis antes, Dosis despues) {
+        if (antes == null || despues == null) return false;
+        return java.util.Objects.equals(antes.tipo(), despues.tipo())
+                && java.util.Objects.equals(antes.descanso(), despues.descanso())
+                && noMenor(antes.series(), despues.series()) && noMenor(antes.reps(), despues.reps())
+                && noMenor(antes.segundos(), despues.segundos()) && !antes.equals(despues);
+    }
+
+    private static boolean noMenor(Number antes, Number despues) {
+        if (antes == null || despues == null) return java.util.Objects.equals(antes, despues);
+        return despues.intValue() >= antes.intValue();
+    }
+
+    private static boolean mayor(Number antes, Number despues) {
+        return antes != null && despues != null && despues.intValue() > antes.intValue();
+    }
+
+    /**
+     * LA IA NUNCA SUBE DOSIS. En una sesion senalada, toda dosis que la IA deja
+     * mayor en series, repeticiones o segundos que la de la semana medida se
+     * rechaza, aunque el tipo de intervencion permita cambiar la dosis y aunque
+     * caiga en un rango que V24 aceptaria. Las bajadas aprobadas (sin subir
+     * nada, mismo tipo y descanso, en una intervencion que permite cambiar la
+     * dosis) quedan como REDUCCION para V24; lo que no cambio y tiene linaje,
+     * como HEREDADA. Un ejercicio nuevo (sustituto) no recibe nada: dosis exacta.
+     */
+    private static void revisarDosisDeLaIa(Long origen, TipoIntervencion intervencion, DerivedWorkout derivada,
+                                           Map<Long, Dosis> dosisAnterior, Set<Long> conLinaje,
+                                           List<String> problems, Set<DosisAutorizada> dosisAutorizadas) {
+        var fecha = derivada.workout().scheduledDate();
+        for (var e : derivada.workout().exercises()) {
+            var antes = dosisAnterior.get(e.exerciseId());
+            if (antes == null) continue;
+            var despues = dosisDe(e);
+            if (antes.equals(despues)) {
+                if (conLinaje.contains(e.exerciseId()))
+                    dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.HEREDADA));
+                continue;
+            }
+            if (mayor(antes.series(), despues.series()) || mayor(antes.reps(), despues.reps())
+                    || mayor(antes.segundos(), despues.segundos())) {
+                problems.add(("V8C: la sesion %d sube la dosis del ejercicio %d (%s -> %s). La IA no puede "
+                        + "subir dosis: solo el backend progresa.").formatted(origen, e.exerciseId(),
+                        resumen(antes), resumen(despues)));
+                continue;
+            }
+            if (intervencion.permiteCambiarDosis() && java.util.Objects.equals(antes.tipo(), despues.tipo())
+                    && java.util.Objects.equals(antes.descanso(), despues.descanso()))
+                dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.REDUCCION));
+        }
+    }
+
+    private static String resumen(Dosis d) {
+        return "%sx%s/%s".formatted(d.series(), d.reps() != null ? d.reps() + "r" : d.segundos() + "s", d.descanso());
     }
 
     /** Mismo dia, enfoque, minutos y ejercicios con sus dosis, en el mismo orden. */

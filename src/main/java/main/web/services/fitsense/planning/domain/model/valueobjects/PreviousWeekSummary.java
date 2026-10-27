@@ -33,11 +33,30 @@ public record PreviousWeekSummary(
          * no viaja al prompt.
          */
         @com.fasterxml.jackson.annotation.JsonIgnore
-        Set<Long> reduccionAutorizada
+        Set<Long> reduccionAutorizada,
+        /**
+         * V35. Por sesion de esta semana, los ejercicios cuya dosis -distinta o
+         * no de la exacta- llego por un paso de progresion o una reduccion de la
+         * IA registrados en V32, con el linaje V31 integro desde ahi. Es lo
+         * unico que V8C puede convertir en una dosis HEREDADA para V24. Vacio
+         * con la progresion y la V24 por capacidades apagadas. No viaja al prompt.
+         */
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        Map<Long, Set<Long>> dosisConLinaje
 ) {
 
     public PreviousWeekSummary {
         reduccionAutorizada = reduccionAutorizada == null ? Set.of() : Set.copyOf(reduccionAutorizada);
+        dosisConLinaje = dosisConLinaje == null ? Map.of() : Map.copyOf(dosisConLinaje);
+    }
+
+    /** Sin dosis heredadas: la forma de D8. */
+    public PreviousWeekSummary(BigDecimal weightedAdherencePct, BigDecimal averageSessionRpe, Integer totalVolume,
+                               Map<String, Integer> bodyPartDistribution, List<WorkoutOutcome> workouts,
+                               List<PrescriptionOutcome> prescriptions, List<Long> exerciseIdsUsedLast7Days,
+                               Set<Long> reduccionAutorizada) {
+        this(weightedAdherencePct, averageSessionRpe, totalVolume, bodyPartDistribution, workouts, prescriptions,
+                exerciseIdsUsedLast7Days, reduccionAutorizada, Map.of());
     }
 
     /** Sin reducciones heredadas: la forma de siempre. */

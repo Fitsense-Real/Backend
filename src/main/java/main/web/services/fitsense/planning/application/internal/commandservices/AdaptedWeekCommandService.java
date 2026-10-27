@@ -93,8 +93,8 @@ public class AdaptedWeekCommandService {
      * construyen el servicio a mano: entonces no se sustituye nada.
      */
     private final SafetyExclusionResolver safetyExclusions;
-    private final RestauracionResolver restauraciones;
-    private final boolean restauracionHabilitada;
+    private final ProgresionResolver progresiones;
+    private final boolean progresionHabilitada;
 
     /**
      * Para pruebas que construyen el servicio a mano: sin sustitucion por
@@ -124,9 +124,9 @@ public class AdaptedWeekCommandService {
     }
 
     /**
-     * @param restauraciones          V35: elige la restauracion del ciclo, si hay
-     * @param restauracionHabilitada  {@code fitsense.adaptation.restoration.enabled};
-     *                                apagada por defecto hasta aprobarla en Neon
+     * @param progresiones          V35: los pasos de progresion candidatos del ciclo
+     * @param progresionHabilitada  {@code fitsense.adaptation.progression.enabled};
+     *                              apagada por defecto hasta aprobarla en Neon
      */
     @org.springframework.beans.factory.annotation.Autowired
     public AdaptedWeekCommandService(ReplicateSessionFixGenerator fixGenerator,
@@ -137,13 +137,13 @@ public class AdaptedWeekCommandService {
                                      AdaptationFailureRecorder failureRecorder,
                                      JsonSupport jsonSupport,
                                      SafetyExclusionResolver safetyExclusions,
-                                     RestauracionResolver restauraciones,
+                                     ProgresionResolver progresiones,
                                      @org.springframework.beans.factory.annotation.Value(
-                                             "${fitsense.adaptation.restoration.enabled:false}")
-                                     boolean restauracionHabilitada) {
+                                             "${fitsense.adaptation.progression.enabled:false}")
+                                     boolean progresionHabilitada) {
         this.safetyExclusions = safetyExclusions;
-        this.restauraciones = restauraciones;
-        this.restauracionHabilitada = restauracionHabilitada;
+        this.progresiones = progresiones;
+        this.progresionHabilitada = progresionHabilitada;
 
         this.fixGenerator = fixGenerator;
         this.derivationBuilder = derivationBuilder;
@@ -186,7 +186,7 @@ public class AdaptedWeekCommandService {
         // hubo respuesta usable», y aqui no se pregunto nada.
         var intento = decision.ordenaAdaptar()
                 ? corregir(context, derivation, elegibles, exclusiones)
-                : new Intento(continuidad(context, derivation, elegibles, exclusiones),
+                : new Intento(continuidad(context, derivation, elegibles, exclusiones, decision, medida),
                 null, (short) 0);
 
         if (intento.resultado().publicable())
@@ -261,38 +261,51 @@ public class AdaptedWeekCommandService {
     }
 
     /**
-     * Sin orden de adaptar: se conserva la semana y, si hay una restauracion
-     * elegible (V35), se intenta UNA. Si la semana con la restauracion no pasa
-     * V8C y la validacion estricta, se publica la copia de siempre y el motivo
-     * queda en el informe de conservacion. Nunca se restaura a medias.
+     * Sin orden de adaptar: se conserva la semana y, con {@code NO_CHANGE} y la
+     * progresion encendida, se intenta UN paso (V35). Los candidatos se prueban
+     * en su orden de prioridad y se publica el primero que pasa V8C y la
+     * validacion estricta; si ninguno pasa, la copia de siempre, con los motivos
+     * en el informe de conservacion. Nunca se progresa a medias, y con
+     * {@code INSUFFICIENT_DATA} no se progresa: sin informacion, se mantiene.
      */
     private AdaptedWeekResult continuidad(PlanGenerationContext context, WeekDerivation derivation,
                                           Map<Long, CandidateExercise> elegibles,
-                                          ExclusionesDeSeguridad exclusiones) {
-        var restauracion = restauracionHabilitada && restauraciones != null
-                ? restauraciones.candidata(context) : Optional.<RestauracionResolver.Restauracion>empty();
-        if (restauracion.isEmpty())
+                                          ExclusionesDeSeguridad exclusiones,
+                                          AdaptationDecision decision, MeasuredWeekView medida) {
+        var candidatos = progresionHabilitada && progresiones != null && decision == AdaptationDecision.NO_CHANGE
+                ? progresiones.candidatos(context, derivation, medida.observedAdherencePct(), elegibles, exclusiones)
+                : List.<main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgresion>of();
+        if (candidatos.isEmpty())
             return producir(context, derivation, List.of(), elegibles, exclusiones);
 
-        var r = restauracion.get();
-        var conRestauracion = new WeekDerivation(derivation.workouts().stream()
-                .map(d -> d.sourcePlannedWorkoutId().equals(r.origen())
-                        ? new DerivedWorkout(d.sourcePlannedWorkoutId(), r.contenido()) : d)
-                .toList(), derivation.sourcesWithoutDerived());
-        var restaurada = producer.produce(context, conRestauracion, List.of(), elegibles, exclusiones,
-                Map.of(r.origen(), r.contenido()));
-        if (restaurada.publicable()) {
-            log.info("RESTAURACION usuario {} · sesion {} vuelve a su referencia {} ({})",
-                    context.userId(), r.origen(), r.referencia(), r.intervencion());
-            return restaurada;
+        var bloqueados = new ArrayList<String>();
+        for (var paso : candidatos) {
+            var conPaso = new WeekDerivation(derivation.workouts().stream()
+                    .map(d -> d.sourcePlannedWorkoutId().equals(paso.origen())
+                            ? new DerivedWorkout(d.sourcePlannedWorkoutId(), paso.contenido()) : d)
+                    .toList(), derivation.sourcesWithoutDerived());
+            var resultado = producer.produce(context, conPaso, List.of(), elegibles, exclusiones, paso);
+            if (resultado.publicable()) {
+                log.info("PROGRESION usuario {} · sesion {} · {} del ejercicio {} ({} -> {}), volumen {} -> {}"
+                                + " (base {}, techo {}{})", context.userId(), paso.origen(), paso.tipo(),
+                        paso.exerciseId(), paso.antes(), paso.despues(), paso.volumenAntes(), paso.volumenDespues(),
+                        paso.volumenBase(), paso.techo(),
+                        paso.estadoReserva() == null ? "" : ", reserva " + paso.estadoReserva());
+                var informe = resultado.conservacion();
+                for (var motivo : bloqueados) informe = informe.conPasoBloqueado(motivo);
+                return new AdaptedWeekResult(resultado.estado(), resultado.motivo(), resultado.semana(),
+                        resultado.source(), informe, resultado.problemas());
+            }
+            bloqueados.add("%s de la sesion %d (ejercicio %d): %s".formatted(paso.tipo(), paso.origen(),
+                    paso.exerciseId(), resultado.problemas()));
         }
 
-        String motivo = "La sesion %d no se restauro a su referencia %d (%s): %s"
-                .formatted(r.origen(), r.referencia(), r.intervencion(), restaurada.problemas());
-        log.warn("RESTAURACION_BLOQUEADA usuario {} · {}", context.userId(), motivo);
+        log.warn("PROGRESION_BLOQUEADA usuario {} · {}", context.userId(), bloqueados);
         var copia = producir(context, derivation, List.of(), elegibles, exclusiones);
+        var informe = copia.conservacion();
+        for (var motivo : bloqueados) informe = informe.conPasoBloqueado(motivo);
         return new AdaptedWeekResult(copia.estado(), copia.motivo(), copia.semana(), copia.source(),
-                copia.conservacion().conRestauracionBloqueada(motivo), copia.problemas());
+                informe, copia.problemas());
     }
 
     private static Map<Long, CandidateExercise> porId(List<CandidateExercise> elegibles) {

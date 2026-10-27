@@ -48,7 +48,10 @@ public class AdaptationWiringConfiguration {
     @Bean
     public AdaptedWeekProducer adaptedWeekProducer(SessionFixApplier applier,
                                                    ConservationValidator conservation,
-                                                   StrictPlanValidation estricta) {
-        return new AdaptedWeekProducer(applier, conservation, estricta);
+                                                   StrictPlanValidation estricta,
+                                                   @org.springframework.beans.factory.annotation.Value(
+                                                           "${fitsense.adaptation.progression.enabled:false}")
+                                                   boolean progresion) {
+        return new AdaptedWeekProducer(applier, conservation, estricta, progresion);
     }
 }

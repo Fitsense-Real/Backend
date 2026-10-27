@@ -99,10 +99,10 @@ public class PlanAdaptationAttempt {
     @Column(name = "conserved_sessions", nullable = false, columnDefinition = "bigint[]")
     private Long[] conservedSessions;
 
-    /** V35: la sesion restaurada a su prescripcion de referencia, si la hubo. */
+    /** V35: la sesion que recibio el paso de progresion del ciclo, si la hubo. */
     @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(name = "restored_sessions", nullable = false, columnDefinition = "bigint[]")
-    private Long[] restoredSessions;
+    @Column(name = "progressed_sessions", nullable = false, columnDefinition = "bigint[]")
+    private Long[] progressedSessions;
 
     /**
      * El informe de V8C, entero y sin retocar. Mismo mapeo que
@@ -150,7 +150,7 @@ public class PlanAdaptationAttempt {
         fila.appliedSessions = ids(intento.appliedSessions());
         fila.noEffectSessions = ids(intento.noEffectSessions());
         fila.conservedSessions = ids(intento.conservedSessions());
-        fila.restoredSessions = ids(intento.restoredSessions());
+        fila.progressedSessions = ids(intento.progressedSessions());
         fila.conservationReport = intento.conservationReportJson();
         fila.rejectionReason = intento.rejectionReason();
         fila.observedAdherencePct = intento.observedAdherencePct();
@@ -206,8 +206,13 @@ public class PlanAdaptationAttempt {
         return conservedSessions;
     }
 
-    public Long[] getRestoredSessions() {
-        return restoredSessions;
+    public Long[] getProgressedSessions() {
+        return progressedSessions;
+    }
+
+    /** La adherencia observada de la semana medida (para el criterio de dos semanas de V35). */
+    public BigDecimal getObservedAdherencePct() {
+        return observedAdherencePct;
     }
 
     public String getConservationReport() {

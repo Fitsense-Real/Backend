@@ -9,6 +9,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.Exclusiones
 import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgresion;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 
@@ -58,10 +59,24 @@ public class AdaptedWeekProducer {
     private final SessionFixApplier applier;
     private final ConservationValidator conservation;
     private final StrictPlanValidation estricta;
+    /**
+     * Si V8C emite las dosis autorizadas para V24 y rechaza las subidas de la
+     * IA: con la progresion encendida o con la V24 por capacidades en la
+     * adaptacion (D-P11: nunca la segunda sin las reducciones autorizadas).
+     */
+    private final boolean autorizarDosis;
 
     public AdaptedWeekProducer(SessionFixApplier applier,
                                ConservationValidator conservation,
                                StrictPlanValidation estricta) {
+        this(applier, conservation, estricta, false);
+    }
+
+    /** @param progresion {@code fitsense.adaptation.progression.enabled} */
+    public AdaptedWeekProducer(SessionFixApplier applier,
+                               ConservationValidator conservation,
+                               StrictPlanValidation estricta,
+                               boolean progresion) {
         if (estricta == null)
             throw new IllegalArgumentException("Sin validacion estricta no se adapta nada.");
 
@@ -79,6 +94,7 @@ public class AdaptedWeekProducer {
         this.applier = applier;
         this.conservation = conservation;
         this.estricta = estricta;
+        this.autorizarDosis = progresion || estricta.validaCapacidades();
     }
 
     /**
@@ -109,22 +125,23 @@ public class AdaptedWeekProducer {
                                      List<CorrectedSession> correcciones,
                                      Map<Long, CandidateExercise> eligible,
                                      ExclusionesDeSeguridad exclusiones) {
-        return produce(context, derivation, correcciones, eligible, exclusiones, Map.of());
+        return produce(context, derivation, correcciones, eligible, exclusiones, null);
     }
 
     /**
-     * Igual, con una RESTAURACION declarada (V35): la derivada de esa sesion de
-     * origen ya trae su prescripcion de referencia, y V8C la compara con ella.
-     * Solo vale sin orden de adaptar (continuidad, {@code SIN_ORDEN}): con una
-     * orden no se acepta -una modificacion funcional por ciclo- y el respaldo
-     * no la recibe, porque RESPALDO es una copia exacta.
+     * Igual, con UN PASO DE PROGRESION declarado (V35): la derivada de esa
+     * sesion ya trae {@code paso.contenido()}, y V8C la compara con el paso y
+     * con la semana medida. Solo vale sin orden de adaptar (continuidad,
+     * {@code SIN_ORDEN}): con una orden no se acepta -una modificacion
+     * funcional por ciclo- y el respaldo no lo recibe, porque RESPALDO es una
+     * copia exacta.
      */
     public AdaptedWeekResult produce(PlanGenerationContext context,
                                      WeekDerivation derivation,
                                      List<CorrectedSession> correcciones,
                                      Map<Long, CandidateExercise> eligible,
                                      ExclusionesDeSeguridad exclusiones,
-                                     Map<Long, PlanDraft.DraftWorkout> restauraciones) {
+                                     PasoProgresion paso) {
 
         if (context == null)
             throw new IllegalArgumentException("No se puede adaptar sin contexto.");
@@ -141,9 +158,9 @@ public class AdaptedWeekProducer {
         // no hay motivo para tocar nada.
         if (adjustment == null || !adjustment.adapta())
             return continuidad(context, derivation, AdaptedWeekResult.Motivo.SIN_ORDEN, eligible, exclusiones,
-                    restauraciones == null ? Map.of() : restauraciones);
-        if (restauraciones != null && !restauraciones.isEmpty())
-            throw new IllegalArgumentException("Con una orden de adaptar no se restaura en el mismo ciclo.");
+                    paso);
+        if (paso != null)
+            throw new IllegalArgumentException("Con una orden de adaptar no se progresa en el mismo ciclo.");
 
         // Fallo de IA. Antes de conservar hay que mirar si conservar es seguro.
         if (correcciones == null)
@@ -158,7 +175,7 @@ public class AdaptedWeekProducer {
                 exclusiones, eligible, context);
         var informe = conservation.validate(
                 new WeekDerivation(reparada.semana(), adaptada.sourcesWithoutDerived()),
-                context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones());
+                context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones(), autorizarDosis);
 
         // El origen lo decide si la IA cambio algo DE VERDAD, no si contesto.
         // Una semana de adaptaciones sin efecto es CONSERVED aunque el modelo
@@ -203,7 +220,7 @@ public class AdaptedWeekProducer {
         // conservadas: la adaptacion no ocurrio, y eso es un hecho que hay que
         // registrar, no un plan invalido.
         return continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, exclusiones,
-                Map.of());
+                null);
     }
 
     /**
@@ -224,7 +241,7 @@ public class AdaptedWeekProducer {
                                           AdaptedWeekResult.Motivo motivo,
                                           Map<Long, CandidateExercise> eligible,
                                           ExclusionesDeSeguridad exclusiones,
-                                          Map<Long, PlanDraft.DraftWorkout> restauraciones) {
+                                          PasoProgresion paso) {
 
         // Conservar no es publicar lo que hoy es inseguro: lo heredado que dejo
         // de ser compatible por seguridad se sustituye, o la semana no sale.
@@ -232,7 +249,7 @@ public class AdaptedWeekProducer {
                 exclusiones, eligible, context);
         var informe = conservation.validateContinuidad(
                 new WeekDerivation(reparada.semana(), derivation.sourcesWithoutDerived()),
-                context.previousWeek(), eligible, exclusiones, reparada.sustituciones(), restauraciones);
+                context.previousWeek(), eligible, exclusiones, reparada.sustituciones(), paso, autorizarDosis);
         return revisarYCerrar(context, reparada.semana(), informe,
                 GenerationSource.CONSERVED, motivo, eligible, reparada.problemas());
     }

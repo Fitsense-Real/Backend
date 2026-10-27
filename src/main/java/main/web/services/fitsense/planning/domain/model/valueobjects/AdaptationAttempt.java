@@ -54,9 +54,9 @@ public record AdaptationAttempt(Long userId,
                                 String rejectionReason,
                                 BigDecimal observedAdherencePct,
                                 BigDecimal registrationCoveragePct,
-                                List<Long> restoredSessions) {
+                                List<Long> progressedSessions) {
 
-    /** Sin restauraciones (V35): la forma de siempre. */
+    /** Sin paso de progresion (V35): la forma de siempre. */
     public AdaptationAttempt(Long userId, Long weeklyMetricId, Long sourcePlanId, LocalDate newWeekStartDate,
                              Long resultingPlanId, AdaptationDecision decision, Status status,
                              GenerationSource generationSource, short aiCalls, List<Long> targetedSessions,
@@ -87,7 +87,7 @@ public record AdaptationAttempt(Long userId,
         appliedSessions = copia(appliedSessions);
         noEffectSessions = copia(noEffectSessions);
         conservedSessions = copia(conservedSessions);
-        restoredSessions = copia(restoredSessions);
+        progressedSessions = copia(progressedSessions);
 
         exigir(userId != null, "el participante");
         exigir(weeklyMetricId != null, "la medicion de la semana");
@@ -109,19 +109,19 @@ public record AdaptationAttempt(Long userId,
         sinRepetidos(appliedSessions, "aplicadas");
         sinRepetidos(noEffectSessions, "sin efecto");
         sinRepetidos(conservedSessions, "conservadas");
-        sinRepetidos(restoredSessions, "restauradas");
+        sinRepetidos(progressedSessions, "progresadas");
 
-        // V35: a lo sumo una restauracion, disjunta de los demas desenlaces, solo
-        // si se publico y nunca con APLICADA ni RESPALDO.
-        if (restoredSessions.size() > 1)
-            throw new IllegalArgumentException("Una modificacion funcional por ciclo: se restauran "
-                    + restoredSessions);
-        if (!restoredSessions.isEmpty() && status != Status.SIN_ORDEN && status != Status.SIN_EFECTO)
-            throw new IllegalArgumentException("Con " + status + " no se restaura: " + restoredSessions);
+        // V35: a lo sumo un paso de progresion, disjunto de los demas desenlaces,
+        // solo sin orden de adaptar (SIN_ORDEN) y con plan publicado.
+        if (progressedSessions.size() > 1)
+            throw new IllegalArgumentException("Una modificacion funcional por ciclo: progresan "
+                    + progressedSessions);
+        if (!progressedSessions.isEmpty() && (status != Status.SIN_ORDEN || resultingPlanId == null))
+            throw new IllegalArgumentException("Con " + status + " no se progresa: " + progressedSessions);
         for (var otra : List.of(targetedSessions, appliedSessions, noEffectSessions, conservedSessions))
-            if (otra.stream().anyMatch(restoredSessions::contains))
-                throw new IllegalArgumentException("Una sesion restaurada tiene otro desenlace: "
-                        + restoredSessions);
+            if (otra.stream().anyMatch(progressedSessions::contains))
+                throw new IllegalArgumentException("Una sesion progresada tiene otro desenlace: "
+                        + progressedSessions);
 
         // ck_paa_intervenciones
         if (targetedInterventions.size() != targetedSessions.size())
