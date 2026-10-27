@@ -34,15 +34,18 @@ public class PreviousWeekAssembler {
     private final PlannedWorkoutRepository plannedWorkoutRepository;
     private final ExternalCatalogService externalCatalogService;
     private final ExternalExecutionService externalExecutionService;
+    private final ReduccionAutorizadaResolver reduccionAutorizadaResolver;
 
     public PreviousWeekAssembler(WeeklyTrainingPlanRepository planRepository,
                                  PlannedWorkoutRepository plannedWorkoutRepository,
                                  ExternalCatalogService externalCatalogService,
-                                 ExternalExecutionService externalExecutionService) {
+                                 ExternalExecutionService externalExecutionService,
+                                 ReduccionAutorizadaResolver reduccionAutorizadaResolver) {
         this.planRepository = planRepository;
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.externalCatalogService = externalCatalogService;
         this.externalExecutionService = externalExecutionService;
+        this.reduccionAutorizadaResolver = reduccionAutorizadaResolver;
     }
 
     public PreviousWeekSummary assemble(Long userId, LocalDate previousWeekStart,
@@ -118,7 +121,7 @@ public class PreviousWeekAssembler {
 
         return new PreviousWeekSummary(adherencePct, averageRpe, totalVolume,
                 bodyPartDistribution, List.copyOf(workouts), List.copyOf(prescriptions),
-                List.copyOf(usedLast7Days));
+                List.copyOf(usedLast7Days), reduccionAutorizadaResolver.resolver(activeWorkouts));
     }
 
     private static PreviousWeekSummary.WorkoutOutcome toWorkoutOutcome(PlannedWorkout workout,

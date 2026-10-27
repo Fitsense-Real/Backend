@@ -136,7 +136,61 @@ En el escenario de A01 pasaría lo mismo: su viernes adaptado dura 28 minutos, a
 | D1, D4 | Aprobadas |
 | D2 | Aprobada condicionada. Las invariantes se mantienen con la política de §A |
 | D3 | Aprobada con la condición de evidencia positiva |
-| D5 | **Recomendación: cerrar sin RPE** (§D5) |
+| D5 | **Cerrada sin RPE** (27/10). La restauración exige la sesión completada (A_s ≥ 0,80), sin fatiga ni dolor declarados, y revalidación completa. Es una condición operativa observable, no una prueba de recuperación fisiológica |
 | D6 | Aprobada |
 | D7 | Aprobada; va en la migración V35 junto con lo demás |
-| **D8** (nueva) | Corrección del defecto de V20 en la copia de una sesión acortada: **pendiente de autorización** |
+| **D8** | **Autorizada (27/10) e implementada**: ver «D8 · Implementación» |
+
+---
+
+## D8 · Implementación
+
+**Autorizada el 27/10 solo para esta corrección.** No incorpora ADAPT-2: la v0.3 sigue siendo solo diseño.
+
+**Qué hace.** La copia idéntica de una sesión acortada con autorización **hereda** su exención de V20. No concede ninguna reducción nueva.
+
+| Pieza | Cambio |
+|---|---|
+| `ReduccionAutorizadaResolver` (nuevo) | Al preparar el contexto, recorre V31 hacia atrás y clasifica cada paso con su intento V32. Marca una sesión de la semana medida solo si se cumplen tres condiciones: (1) el origen de la reducción es un `ACORTAR_O_REORGANIZAR` en `applied_sessions` de un intento `APLICADA`; (2) todos los pasos intermedios son copias (`conserved_sessions`, sin sustitución por seguridad) o «sin efecto» del mismo `ACORTAR`; (3) cada paso tiene exactamente un intento y una sola clase |
+| `PreviousWeekSummary` | Campo nuevo `reduccionAutorizada`: identificadores de esas sesiones. No se serializa y no llega al prompt |
+| `PreviousWeekAssembler` | Lo rellena con el resolutor |
+| `ConservationValidator` (V8C) | Añade la fecha a `fechas_con_duracion_reducible` **solo** si la sesión **no está señalada**, se conservó **idéntica**, está marcada y **no** tiene una sustitución por seguridad en ese paso |
+| `PlanAdaptationAttemptRepository` y `PlanAdaptationAttempt` | `findByResultingPlanId` y los getters de los arreglos de V32 (solo lectura) |
+
+**Qué corta la herencia:**
+- otra intervención, en la semana del recorrido o en la actual;
+- una sustitución por seguridad;
+- un paso sin intento V32, con más de uno o con el origen en más de una clase;
+- la generación inicial.
+
+En todos esos casos no hay exención, y V20 rige como antes.
+
+**Alcance:** la exención afecta solo a V20 y solo a esa sesión. V24, V25, las restricciones y las demás validaciones siguen siendo obligatorias.
+
+**Sin cambios de esquema:** no hay migración. V31, V32 y V33 se leen, no se escriben de otra forma.
+
+### Pruebas
+
+**`HerenciaReduccionV20Test`** (6 pruebas, dominio puro, con el productor, V8C y la validación estricta reales). La semana medida trae el lunes acortado: 5 colocaciones y 30 min, con el piso en 31.
+
+| Caso | Resultado |
+|---|---|
+| Copia con la reducción heredada | Se publica (`SIN_ORDEN`, `CONSERVED`); la exención es **solo** para el lunes |
+| Sin reducción heredada (o con un linaje sin evidencia) | V20 la rechaza |
+| La autorización es de **otra** sesión | V20 rechaza el lunes |
+| Una intervención nueva distinta sobre el lunes | Interrumpe la herencia: V20 la rechaza |
+| V24 en la copia | Sigue rigiendo, sin incumplimientos |
+
+**`LinajeIntegridadIT`** (ciclo de producción, PostgreSQL 16 real):
+
+| Escenario | Resultado |
+|---|---|
+| **E: regresión multisemana** | Acortado a 30 min (piso 31) y, después, **tres ciclos seguidos de copia**, semanas 3, 4 y 5: todas publicadas (`SIN_ORDEN`), con el viernes en 30 min. Ningún `NO_FACTIBLE` |
+| **F: evidencia faltante** | Sobre E, se borra el intento V32 del acortado (tres semanas atrás). La copia siguiente **no** recibe la exención y V20 la rechaza (`NO_FACTIBLE`) |
+| Integridad | 0 violaciones; 27 pasos clasificados (23 `COPIA`, 2 `SIN_EFECTO`, 2 `ADAPTADA`); V33 la impone la base en cada inserción |
+
+**Contraprueba.** Con el cambio de V8C revertido:
+- fallan las 2 pruebas unitarias de la copia autorizada;
+- E vuelve a quedar `NO_FACTIBLE` en la primera copia («V20: … dura unos 30 minutos y el mínimo es 31»).
+
+**Pendiente para activar en Neon.** Ejecutar `consultas/linaje_v31_v32.sql` en solo lectura y obtener 0 violaciones. Con un linaje incompleto, D8 no concede la exención y el comportamiento es el de antes, así que falla de forma segura.

@@ -30,4 +30,7 @@ public interface PlanAdaptationAttemptRepository
 
     /** Todo lo registrado de un participante, para la lectura de la tesis. */
     List<PlanAdaptationAttempt> findByUserIdOrderByIdAsc(Long userId);
+
+    /** Los intentos que publicaron ese plan. En un linaje integro, exactamente uno. */
+    List<PlanAdaptationAttempt> findByResultingPlanId(Long resultingPlanId);
 }

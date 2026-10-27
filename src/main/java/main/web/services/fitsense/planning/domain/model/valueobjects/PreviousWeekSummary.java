@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,8 +25,28 @@ public record PreviousWeekSummary(
         Map<String, Integer> bodyPartDistribution,
         List<WorkoutOutcome> workouts,
         List<PrescriptionOutcome> prescriptions,
-        List<Long> exerciseIdsUsedLast7Days
+        List<Long> exerciseIdsUsedLast7Days,
+        /**
+         * D8. Las sesiones de esta semana cuya duracion reducida viene de un
+         * ACORTAR_O_REORGANIZAR aplicado, heredada por copias identicas (V31 +
+         * V32). Solo sirve para que V8C mantenga la exencion de V20 en su copia;
+         * no viaja al prompt.
+         */
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        Set<Long> reduccionAutorizada
 ) {
+
+    public PreviousWeekSummary {
+        reduccionAutorizada = reduccionAutorizada == null ? Set.of() : Set.copyOf(reduccionAutorizada);
+    }
+
+    /** Sin reducciones heredadas: la forma de siempre. */
+    public PreviousWeekSummary(BigDecimal weightedAdherencePct, BigDecimal averageSessionRpe, Integer totalVolume,
+                               Map<String, Integer> bodyPartDistribution, List<WorkoutOutcome> workouts,
+                               List<PrescriptionOutcome> prescriptions, List<Long> exerciseIdsUsedLast7Days) {
+        this(weightedAdherencePct, averageSessionRpe, totalVolume, bodyPartDistribution, workouts, prescriptions,
+                exerciseIdsUsedLast7Days, Set.of());
+    }
     /**
      * Un dia de entrenamiento. recorded = false significa que no hay sesion que
      * cuente: no se registro, que NO es lo mismo que haberlo hecho al 0 %.

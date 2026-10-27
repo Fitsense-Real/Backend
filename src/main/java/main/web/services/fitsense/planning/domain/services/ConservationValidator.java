@@ -238,6 +238,15 @@ public class ConservationValidator {
                 // con un problema de seguridad no es una conservacion correcta.
                 revisarNoSenalada(origen, anterior, diferencias, problems,
                         segura ? conservadas : new ArrayList<>());
+                // D8. La COPIA IDENTICA de una sesion con una reduccion autorizada
+                // (ACORTAR aplicado, heredado por copias) conserva su exencion de
+                // V20. Solo la copia: una sustitucion por seguridad, cualquier
+                // diferencia o una intervencion nueva la interrumpen.
+                if (conservadas.contains(origen)
+                        && previous.reduccionAutorizada().contains(origen)
+                        && admitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
+                        && derivada.workout().scheduledDate() != null)
+                    fechasReducibles.add(derivada.workout().scheduledDate());
             } else {
                 revisarSenalada(origen, anterior, derivada, intervencion, diferencias,
                         dolieron, segura, catalogo,

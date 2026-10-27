@@ -108,20 +108,29 @@ class LinajeIntegridadIT {
         ejecutar(b, b1, Dia.HECHO, Dia.HECHO, Dia.OMITIDO);
         ciclo.runFor(b, S1, S1.plusWeeks(1)).orElseThrow();
 
-        // E: DEFECTO ACTUAL. Acortar por falta de tiempo deja la sesion bajo el piso de V20
-        //    (exenta solo esa semana); la copia de la semana siguiente lo incumple y no se publica.
+        // E: D8. Acortar por falta de tiempo deja el viernes bajo el piso de V20 (exento esa
+        //    semana). Sus copias heredan la exencion: tres ciclos seguidos de copia se publican.
         long e = participante(GoalType.GAIN_MUSCLE);
         long e1 = planning.generateWeeklyPlan(e, S1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(e, e1, Dia.HECHO, Dia.HECHO, Dia.OMITIDO);
         long e2 = ciclo.runFor(e, S1, S1.plusWeeks(1)).orElseThrow();
-        ejecutar(e, e2, Dia.HECHO, Dia.HECHO, Dia.HECHO);
-        var e3 = ciclo.runFor(e, S1.plusWeeks(1), S1.plusWeeks(2));
-        var motivoE = jdbc.queryForList("SELECT decision, status, rejection_reason FROM plan_adaptation_attempts"
-                + " WHERE user_id = ? ORDER BY attempt_id", e);
-        System.out.println("LINAJE defecto_acortar " + motivoE);
-        assertTrue(e3.isEmpty(), "se esperaba reproducir el defecto: la copia del acortado no se publica");
-        assertTrue(String.valueOf(motivoE.get(motivoE.size() - 1).get("rejection_reason")).startsWith("V20"),
-                motivoE.toString());
+        int piso = 45 * 70 / 100;   // V20: 70 % de 45, en minutos enteros
+        int acortado = duracionViernes(e2);
+        assertTrue(acortado < piso, "premisa: el viernes acortado (" + acortado + ") queda bajo el piso " + piso);
+        long previo = e2;
+        var copias = new ArrayList<Long>();
+        for (int k = 1; k <= 3; k++) {
+            ejecutar(e, previo, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+            var siguiente = ciclo.runFor(e, S1.plusWeeks(k), S1.plusWeeks(k + 1));
+            var ultimo = jdbc.queryForList("SELECT decision, status, rejection_reason FROM plan_adaptation_attempts"
+                    + " WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", e);
+            assertTrue(siguiente.isPresent(), "la copia " + k + " del viernes acortado no se publico: " + ultimo);
+            assertEquals("SIN_ORDEN", ultimo.get(0).get("status"));
+            assertEquals(acortado, duracionViernes(siguiente.get()), "la copia " + k + " no conserva el acortado");
+            copias.add(siguiente.get());
+            previo = siguiente.get();
+        }
+        System.out.println("LINAJE d8_copias planes=" + copias + " viernes=" + acortado + " min (piso " + piso + ")");
 
         // C: sin IA -> RESPALDO. D: dolor sin IA -> NO_FACTIBLE (sin plan).
         configurarIa(false);
@@ -138,7 +147,8 @@ class LinajeIntegridadIT {
                 .stream().map(r -> r.get("user_id") + ":" + r.get("status")).toList();
         System.out.println("LINAJE intentos " + estados);
         assertTrue(estados.containsAll(List.of(a + ":APLICADA", a + ":SIN_ORDEN", b + ":SIN_EFECTO",
-                c + ":RESPALDO", d + ":NO_FACTIBLE")), estados.toString());
+                c + ":RESPALDO", d + ":NO_FACTIBLE", e + ":APLICADA", e + ":SIN_ORDEN")), estados.toString());
+        assertFalse(estados.contains(e + ":NO_FACTIBLE"), "D8: el acortado no debe dejar semanas sin plan");
 
         // 1. Sin violaciones; todos los pasos clasificados.
         var consultas = consultas();
@@ -185,6 +195,24 @@ class LinajeIntegridadIT {
         System.out.println("LINAJE sin evidencia " + sinEvidencia);
         assertTrue(sinEvidencia.stream().anyMatch(r -> "PLAN_DERIVADO_SIN_INTENTO_UNICO".equals(r.get("violacion"))
                 && ((Number) r.get("id")).longValue() == a3), sinEvidencia.toString());
+
+        // F: D8 sin evidencia. Sobre E, tras sus tres copias, falta el intento V32 que publico el
+        //    acortado (tres semanas atras): el linaje no se puede clasificar, no hay exencion y V20
+        //    rechaza la copia siguiente.
+        configurarIa(true);
+        assertEquals(1, jdbc.update("DELETE FROM plan_adaptation_attempts WHERE resulting_plan_id = ?", e2));
+        ejecutar(e, previo, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        assertTrue(ciclo.runFor(e, S1.plusWeeks(4), S1.plusWeeks(5)).isEmpty(),
+                "sin evidencia V32 no debia heredarse la exencion");
+        var motivoF = jdbc.queryForObject("SELECT rejection_reason FROM plan_adaptation_attempts WHERE user_id = ?"
+                + " ORDER BY attempt_id DESC LIMIT 1", String.class, e);
+        System.out.println("LINAJE d8_sin_evidencia " + motivoF);
+        assertTrue(motivoF.startsWith("V20"), motivoF);
+    }
+
+    private int duracionViernes(long planId) {
+        return jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts WHERE plan_id = ?"
+                + " AND extract(isodow FROM scheduled_date) = 5", Integer.class, planId);
     }
 
     private void configurarIa(boolean habilitada) {

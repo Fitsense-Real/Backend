@@ -179,4 +179,28 @@ public class PlanAdaptationAttempt {
     public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public Long[] getTargetedSessions() {
+        return targetedSessions;
+    }
+
+    public String[] getTargetedInterventions() {
+        return targetedInterventions;
+    }
+
+    public Long[] getAppliedSessions() {
+        return appliedSessions;
+    }
+
+    public Long[] getNoEffectSessions() {
+        return noEffectSessions;
+    }
+
+    public Long[] getConservedSessions() {
+        return conservedSessions;
+    }
+
+    public String getConservationReport() {
+        return conservationReport;
+    }
 }
