@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * V35 · LOS PASOS DE PROGRESION CANDIDATOS DE ESTE CICLO
+ * V34 · LOS PASOS DE PROGRESION CANDIDATOS DE ESTE CICLO
  * (DISENO_PROGRESION_Y_REINCORPORACION v0.2.1, §3, §5, §12.3 y §13.1).
  * <p>
  * Solo se llama sin orden de adaptar y con decision {@code NO_CHANGE}. Propone,

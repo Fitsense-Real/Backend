@@ -72,7 +72,7 @@ public class StrictValidationAdapter implements StrictPlanValidation {
         this.configuracion = configuracion;
     }
 
-    /** Sin los interruptores de V35: el validador de siempre. */
+    /** Sin los interruptores de V34: el validador de siempre. */
     public StrictValidationAdapter(SessionDurationEstimator durationEstimator,
                                    ExternalConfigurationService configuracion,
                                    String coverageEnforcement) {

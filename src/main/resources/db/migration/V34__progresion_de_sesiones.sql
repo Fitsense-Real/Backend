@@ -1,10 +1,12 @@
 -- =============================================================================
--- V35 · Progresion gradual de una sesion (DISENO_PROGRESION_Y_REINCORPORACION)
+-- V34 · Progresion gradual de una sesion (DISENO_PROGRESION_Y_REINCORPORACION)
 -- =============================================================================
 -- Sustituye a la V35 de restauracion (b6fd9ae), que nunca se aplico en Neon
--- (comprobado el 27/10: Flyway en V33, sin restored_sessions). La migracion
--- propuesta V34 (docs/FitSense/migraciones_propuestas) no esta en
--- db/migration: si se aprueba, entra como V36 o posterior.
+-- (comprobado el 27/10: Flyway en V33, sin restored_sessions). Usa el V34, el
+-- siguiente numero libre: la correccion propuesta del 1374
+-- (docs/FitSense/migraciones_propuestas/V34__correccion_inc_cat_1374.sql) no
+-- reserva numero -su cabecera dice «con el siguiente numero libre»- y, si se
+-- aprueba, entra como V35 o posterior.
 --
 -- Solo agrega. Las filas existentes quedan con progressed_sessions = '{}'.
 --
@@ -27,7 +29,7 @@ ALTER TABLE plan_adaptation_attempts
     ADD COLUMN progressed_sessions BIGINT[] NOT NULL DEFAULT '{}';
 
 COMMENT ON COLUMN plan_adaptation_attempts.progressed_sessions IS
-    'V35: sesion del plan de origen cuya derivada recibio un paso de progresion del backend (detalle en conservation_report.pasos). A lo sumo una; solo con SIN_ORDEN.';
+    'V34: sesion del plan de origen cuya derivada recibio un paso de progresion del backend (detalle en conservation_report.pasos). A lo sumo una; solo con SIN_ORDEN.';
 
 ALTER TABLE plan_adaptation_attempts
     ADD CONSTRAINT ck_paa_progresadas_unicas CHECK (fn_sin_duplicados(progressed_sessions)),
@@ -151,4 +153,4 @@ RETURN NULL;
 END $$ LANGUAGE plpgsql;
 
 COMMENT ON FUNCTION fn_intento_coherente() IS
-    'V32 + V35: metrica, plan de origen y plan resultante pertenecen al MISMO usuario; el origen es el de la semana medida; las sesiones de los cinco arreglos pertenecen al plan de origen; el origen de generacion coincide con el del plan publicado; la semana nueva es posterior y coincide con la del plan resultante.';
+    'V32 + V34: metrica, plan de origen y plan resultante pertenecen al MISMO usuario; el origen es el de la semana medida; las sesiones de los cinco arreglos pertenecen al plan de origen; el origen de generacion coincide con el del plan publicado; la semana nueva es posterior y coincide con la del plan resultante.';

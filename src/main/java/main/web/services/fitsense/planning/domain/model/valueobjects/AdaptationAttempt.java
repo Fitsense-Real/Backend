@@ -56,7 +56,7 @@ public record AdaptationAttempt(Long userId,
                                 BigDecimal registrationCoveragePct,
                                 List<Long> progressedSessions) {
 
-    /** Sin paso de progresion (V35): la forma de siempre. */
+    /** Sin paso de progresion (V34): la forma de siempre. */
     public AdaptationAttempt(Long userId, Long weeklyMetricId, Long sourcePlanId, LocalDate newWeekStartDate,
                              Long resultingPlanId, AdaptationDecision decision, Status status,
                              GenerationSource generationSource, short aiCalls, List<Long> targetedSessions,
@@ -111,7 +111,7 @@ public record AdaptationAttempt(Long userId,
         sinRepetidos(conservedSessions, "conservadas");
         sinRepetidos(progressedSessions, "progresadas");
 
-        // V35: a lo sumo un paso de progresion, disjunto de los demas desenlaces,
+        // V34: a lo sumo un paso de progresion, disjunto de los demas desenlaces,
         // solo sin orden de adaptar (SIN_ORDEN) y con plan publicado.
         if (progressedSessions.size() > 1)
             throw new IllegalArgumentException("Una modificacion funcional por ciclo: progresan "

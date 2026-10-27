@@ -98,7 +98,7 @@ public class AdaptationEvidenceMapper {
                     hechos.conservationReportJson(), motivo(resultado),
                     hechos.observedAdherencePct(), hechos.registrationCoveragePct());
 
-        // V35 (§12.4): la sesion publicada del paso es EXACTAMENTE la propuesta.
+        // V34 (§12.4): la sesion publicada del paso es EXACTAMENTE la propuesta.
         // Si no, no se registra nada, y la transaccion de publicacion se deshace.
         for (var paso : resultado.conservacion().pasos()) {
             var publicada = resultado.semana().stream()

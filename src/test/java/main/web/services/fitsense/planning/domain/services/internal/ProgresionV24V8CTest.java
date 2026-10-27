@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * V35 · V24 Y V8C CON DOSIS AUTORIZADAS, AISLADAS DE LA GENERACION.
+ * V34 · V24 Y V8C CON DOSIS AUTORIZADAS, AISLADAS DE LA GENERACION.
  * <p>
  * {@code GAIN_MUSCLE} (4D: dosis exacta 3x10 estructural, 2x10 relleno). Con el
  * productor, V8C y la validacion estricta reales: dominio puro, sin Spring, sin
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
  * ({@code reduccionAutorizada}, {@code dosisConLinaje}) se pasa aqui a mano; su
  * recorrido se prueba en {@code ProgresionIT}.
  */
-@DisplayName("V35 · V24 + V8C: solo la dosis autorizada y en rango; la generacion, intacta")
+@DisplayName("V34 · V24 + V8C: solo la dosis autorizada y en rango; la generacion, intacta")
 class ProgresionV24V8CTest {
 
     private static final long USUARIO = 9L;

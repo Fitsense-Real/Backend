@@ -124,7 +124,7 @@ public class AdaptedWeekCommandService {
     }
 
     /**
-     * @param progresiones          V35: los pasos de progresion candidatos del ciclo
+     * @param progresiones          V34: los pasos de progresion candidatos del ciclo
      * @param progresionHabilitada  {@code fitsense.adaptation.progression.enabled};
      *                              apagada por defecto hasta aprobarla en Neon
      */
@@ -262,7 +262,7 @@ public class AdaptedWeekCommandService {
 
     /**
      * Sin orden de adaptar: se conserva la semana y, con {@code NO_CHANGE} y la
-     * progresion encendida, se intenta UN paso (V35). Los candidatos se prueban
+     * progresion encendida, se intenta UN paso (V34). Los candidatos se prueban
      * en su orden de prioridad y se publica el primero que pasa V8C y la
      * validacion estricta; si ninguno pasa, la copia de siempre, con los motivos
      * en el informe de conservacion. Nunca se progresa a medias, y con

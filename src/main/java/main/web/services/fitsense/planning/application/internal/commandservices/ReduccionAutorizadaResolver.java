@@ -27,7 +27,7 @@ import java.util.*;
  *       volvio a estar autorizada a acortarse; se sigue retrocediendo;</li>
  *   <li>aplicada con ACORTAR_O_REORGANIZAR en un intento APLICADA: es el
  *       origen de la reduccion. Autorizada;</li>
- *   <li>un paso de progresion (V35) que no reduce volumen ni duracion
+ *   <li>un paso de progresion (V34) que no reduce volumen ni duracion
  *       (D-P7): la sesion sigue acortada por la misma reduccion; se sigue
  *       retrocediendo;</li>
  *   <li>cualquier otra cosa -otra intervencion, una sustitucion por

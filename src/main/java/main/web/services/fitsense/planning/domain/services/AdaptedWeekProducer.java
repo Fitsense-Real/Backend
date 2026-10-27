@@ -129,7 +129,7 @@ public class AdaptedWeekProducer {
     }
 
     /**
-     * Igual, con UN PASO DE PROGRESION declarado (V35): la derivada de esa
+     * Igual, con UN PASO DE PROGRESION declarado (V34): la derivada de esa
      * sesion ya trae {@code paso.contenido()}, y V8C la compara con el paso y
      * con la semana medida. Solo vale sin orden de adaptar (continuidad,
      * {@code SIN_ORDEN}): con una orden no se acepta -una modificacion

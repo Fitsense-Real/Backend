@@ -99,7 +99,7 @@ public class PlanAdaptationAttempt {
     @Column(name = "conserved_sessions", nullable = false, columnDefinition = "bigint[]")
     private Long[] conservedSessions;
 
-    /** V35: la sesion que recibio el paso de progresion del ciclo, si la hubo. */
+    /** V34: la sesion que recibio el paso de progresion del ciclo, si la hubo. */
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(name = "progressed_sessions", nullable = false, columnDefinition = "bigint[]")
     private Long[] progressedSessions;
@@ -210,7 +210,7 @@ public class PlanAdaptationAttempt {
         return progressedSessions;
     }
 
-    /** La adherencia observada de la semana medida (para el criterio de dos semanas de V35). */
+    /** La adherencia observada de la semana medida (para el criterio de dos semanas de V34). */
     public BigDecimal getObservedAdherencePct() {
         return observedAdherencePct;
     }

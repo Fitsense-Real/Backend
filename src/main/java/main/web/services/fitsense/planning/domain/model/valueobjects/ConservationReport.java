@@ -63,7 +63,7 @@ public record ConservationReport(List<String> problems,
                                   */
                                  List<SustitucionSeguridad> sustituciones,
                                  /**
-                                  * V35. La sesion (del plan de origen) cuya derivada
+                                  * V34. La sesion (del plan de origen) cuya derivada
                                   * recibio el paso de progresion del ciclo. A lo sumo
                                   * una; no es una adaptacion aplicada ni una conservada.
                                   */

@@ -25,6 +25,9 @@ import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +52,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * V35 · PROGRESION Y REINCORPORACION CONDICIONAL, MULTISEMANA, CON EL CICLO REAL.
+ * V34 · PROGRESION Y REINCORPORACION CONDICIONAL, MULTISEMANA, CON EL CICLO REAL.
  * <p>
  * {@link WeeklyCycleService#runFor} sobre PostgreSQL real, con la progresion
  * encendida SOLO en esta prueba ({@code fitsense.adaptation.progression.enabled=true},
@@ -58,9 +61,10 @@ import static org.mockito.Mockito.*;
  * la prueba negativa, intenta subir una dosis). Nada llega a Replicate.
  * <p>
  * Cada semana publicada se comprueba con la consulta de integridad del linaje
- * ({@code linaje_v31_v32.sql}) y las invariantes V31/V32/V33/V35 de la base.
+ * ({@code linaje_v31_v32.sql}) y las invariantes V31/V32/V33/V34 de la base.
  */
 @Testcontainers
+@ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
@@ -88,7 +92,10 @@ class ProgresionIT {
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
     static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
 
-    enum Dia { HECHO, HECHO_CON_FATIGA, FATIGA, TIEMPO, NADA }
+    enum Dia { HECHO, HECHO_CON_FATIGA, HECHO_CON_DOLOR, FATIGA, TIEMPO, NADA }
+
+    /** El ejercicio en el que se declara la fatiga o el dolor; null = el ultimo de la sesion. */
+    private Long marcado = null;
 
     /** Que hace la IA simulada con una sesion senalada. */
     enum Ia { PERMITIDO, SUBE_DOSIS }
@@ -113,6 +120,7 @@ class ProgresionIT {
     void iaSimulada() {
         reset(ia);
         modoIa = Ia.PERMITIDO;
+        marcado = null;
         when(ia.isEnabled()).thenReturn(true);
         when(ia.modelName()).thenReturn("simulado");
         when(ia.pedirRespuesta(any(), any(), any(), any(), anyInt()))
@@ -300,6 +308,160 @@ class ProgresionIT {
         assertSinViolaciones();
     }
 
+
+    // =======================================================================
+    // 5 · Reduccion por fatiga en los cuatro objetivos (D-P11)
+    // =======================================================================
+
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(GoalType.class)
+    @DisplayName("fatiga: la reduccion de la IA se publica (salvo 4D en GAIN_MUSCLE) y su copia hereda la dosis")
+    void reduccionPorFatigaCuatroObjetivos(GoalType objetivo, CapturedOutput salida) throws Exception {
+        long u = participante(objetivo, List.of((short) 1, (short) 3, (short) 5));
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        var referencia = semana(w1);
+        ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.FATIGA);
+        var w2 = ciclo.runFor(u, S1, S1.plusWeeks(1));
+        var ev2 = ultimoIntento(u);
+        assertEquals("{REVISAR_CARGA_Y_RECUPERACION}", ev2.get("targeted_interventions"), String.valueOf(ev2));
+        System.out.println("FATIGA " + objetivo + " " + ev2.get("status") + " ref=" + referencia.get(2).ejercicios()
+                + " -> " + w2.map(p -> semana(p).get(2).ejercicios()).orElse(null));
+        if (objetivo == GoalType.GAIN_MUSCLE) {
+            // 4D intacta: en GAIN_MUSCLE no hay reducciones autorizadas (D-P3), como antes.
+            assertNotEquals("APLICADA", ev2.get("status"), String.valueOf(ev2));
+            w2.ifPresent(p -> assertEquals(referencia.get(2).ejercicios(), semana(p).get(2).ejercicios()));
+            assertSinViolaciones();
+            return;
+        }
+        if (!"APLICADA".equals(ev2.get("status"))) {
+            // Si no hubo reduccion VALIDA posible en esa sesion (minimo de V16 y piso de V20),
+            // se conserva, como con la V24 por capacidades apagada. Lo que se exige es que
+            // D-P11 no sea la causa: ningun rechazo de los intentos viene de V24.
+            var rechazos = salida.getAll().lines()
+                    .filter(l -> l.contains("Intento ") && l.contains(" para el usuario " + u + ":")).toList();
+            assertFalse(rechazos.isEmpty(), "premisa: constan los intentos rechazados");
+            assertTrue(rechazos.stream().noneMatch(l -> l.contains("V24:")),
+                    objetivo + ": la V24 por capacidades rechazo una reduccion: " + rechazos);
+            assertEquals("RESPALDO", ev2.get("status"), String.valueOf(ev2));
+            System.out.println("FATIGA_SIN_REDUCCION_VALIDA " + objetivo + " " + rechazos.get(0)
+                    .replaceAll(".*no pasa", "no pasa"));
+            assertSinViolaciones();
+            return;
+        }
+        var adaptada = semana(w2.orElseThrow());
+        var bajado = cambio(referencia.get(2), adaptada.get(2));
+        var antes = referencia.get(2).ejercicios().stream().filter(e -> e.id() == bajado.id()).findFirst().orElseThrow();
+        assertTrue(noMayor(bajado, antes) && !bajado.equals(antes), "una reduccion: " + antes + " -> " + bajado);
+
+        // La copia de la semana siguiente hereda la dosis reducida (HEREDADA) y se publica.
+        ejecutar(u, w2.get(), Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        long w3 = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2)).orElseThrow();
+        var ev3 = ultimoIntento(u);
+        assertEquals("SIN_ORDEN", ev3.get("status"), String.valueOf(ev3));
+        assertEquals(adaptada.get(2).ejercicios(), semana(w3).get(2).ejercicios(), "la dosis reducida se conserva");
+        assertSinViolaciones();
+    }
+
+    // =======================================================================
+    // 6 · Una dosis arbitraria sin linaje sigue rechazandose
+    // =======================================================================
+
+    @ParameterizedTest(name = "{0}")
+    @EnumSource(GoalType.class)
+    @DisplayName("una dosis publicada sin paso ni reduccion registrados (+1 repeticion a mano): la copia la rechaza V24")
+    void dosisArbitrariaRechazada(GoalType objetivo) throws Exception {
+        long u = participante(objetivo, List.of((short) 1, (short) 3, (short) 5));
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        // Simula un dato historico arbitrario: +1 repeticion al primer ejercicio por repeticiones del lunes.
+        long lunes = semana(w1).get(0).id();
+        int filas = jdbc.update("UPDATE planned_workout_exercises SET planned_reps = planned_reps + 1"
+                + " WHERE planned_exercise_id = (SELECT planned_exercise_id FROM planned_workout_exercises"
+                + " WHERE planned_workout_id = ? AND prescription_type = 'SETS_REPS' ORDER BY exercise_order LIMIT 1)",
+                lunes);
+        assertEquals(1, filas, "premisa");
+        ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        var w2 = ciclo.runFor(u, S1, S1.plusWeeks(1));
+        var ev = ultimoIntento(u);
+        System.out.println("ARBITRARIA " + objetivo + " " + ev.get("status") + " " + ev.get("rejection_reason"));
+        assertTrue(w2.isEmpty(), objetivo + ": se publico una copia con una dosis no autorizada. " + ev);
+        assertEquals("NO_FACTIBLE", ev.get("status"));
+        assertTrue(String.valueOf(ev.get("rejection_reason")).contains("V24"), String.valueOf(ev));
+    }
+
+    // =======================================================================
+    // 7 · Fatiga o dolor despues de un paso
+    // =======================================================================
+
+    /** Hasta el primer paso: devuelve [plan con el paso, sesion progresada, ejercicio progresado]. */
+    private long[] hastaElPrimerPaso(long u) {
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        long w2 = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
+        ejecutar(u, w2, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        long w3 = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2)).orElseThrow();
+        var medida = semana(w2);
+        var nueva = semana(w3);
+        for (int i = 0; i < nueva.size(); i++)
+            if (!medida.get(i).ejercicios().equals(nueva.get(i).ejercicios()))
+                return new long[]{w3, i, cambio(medida.get(i), nueva.get(i)).id()};
+        fail("premisa: tenia que haber un paso en la semana 3");
+        return null;
+    }
+
+    @Test
+    @DisplayName("fatiga en el ejercicio que acaba de progresar: la dosis vuelve atras o la IA la reduce; nunca sube")
+    void fatigaTrasUnPaso() throws Exception {
+        long u = participante(GoalType.GENERAL_FITNESS, List.of((short) 1, (short) 3, (short) 5));
+        var r = hastaElPrimerPaso(u);
+        long w3 = r[0];
+        int i = (int) r[1];
+        marcado = r[2];
+        var progresada = semana(w3).get(i);
+        var antesDelPaso = sesion(origenDe(progresada.id())).ejercicios();
+        var dias = new Dia[]{Dia.HECHO, Dia.HECHO, Dia.HECHO};
+        dias[i] = Dia.HECHO_CON_FATIGA;
+        ejecutar(u, w3, dias);
+        var w4 = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
+        var ev = ultimoIntento(u);
+        System.out.println("FATIGA_TRAS_PASO " + ev.get("decision") + " " + ev.get("status") + " "
+                + ev.get("targeted_interventions") + " " + informe(ev));
+        var despues = semana(w4.orElseThrow()).get(i);
+        var x = despues.ejercicios().stream().filter(e -> e.id() == marcado).findFirst().orElseThrow();
+        var enElPaso = progresada.ejercicios().stream().filter(e -> e.id() == marcado).findFirst().orElseThrow();
+        assertTrue(noMayor(x, enElPaso), "tras la fatiga la dosis no sube: " + enElPaso + " -> " + x);
+        if ("NO_CHANGE".equals(ev.get("decision"))) {
+            assertTrue(informe(ev).contains("\"tipo\":\"VUELTA_ATRAS\""), informe(ev));
+            assertEquals(antesDelPaso, despues.ejercicios(), "vuelve exactamente al paso anterior");
+        } else {
+            assertEquals("{}", ev.get("progressed_sessions"), "con una orden no hay paso: " + ev);
+            assertTrue(noMayor(x, antesDelPaso.stream().filter(e -> e.id() == marcado).findFirst().orElseThrow())
+                    || x.equals(enElPaso), "la IA no sube nada");
+        }
+        assertSinViolaciones();
+    }
+
+    @Test
+    @DisplayName("dolor en el ejercicio que acaba de progresar: manda la seguridad (no se revierte ni se republica)")
+    void dolorTrasUnPaso() throws Exception {
+        long u = participante(GoalType.GENERAL_FITNESS, List.of((short) 1, (short) 3, (short) 5));
+        var r = hastaElPrimerPaso(u);
+        long w3 = r[0];
+        int i = (int) r[1];
+        marcado = r[2];
+        var dias = new Dia[]{Dia.HECHO, Dia.HECHO, Dia.HECHO};
+        dias[i] = Dia.HECHO_CON_DOLOR;
+        ejecutar(u, w3, dias);
+        var w4 = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
+        var ev = ultimoIntento(u);
+        System.out.println("DOLOR_TRAS_PASO " + ev.get("decision") + " " + ev.get("status") + " "
+                + ev.get("targeted_interventions") + " " + ev.get("rejection_reason"));
+        assertEquals("{}", ev.get("progressed_sessions"), "ante dolor no hay paso ni vuelta atras: " + ev);
+        assertFalse(informe(ev).contains("VUELTA_ATRAS"));
+        w4.ifPresent(p -> assertTrue(semana(p).get(i).ejercicios().stream().noneMatch(e -> e.id() == marcado),
+                "el ejercicio que dolio no se republica"));
+        assertSinViolaciones();
+    }
+
     // =======================================================================
     // Comprobaciones
     // =======================================================================
@@ -385,7 +547,7 @@ class ProgresionIT {
         var texto = Files.readString(Path.of("docs/FitSense/consultas/linaje_v31_v32.sql")).lines()
                 .filter(l -> !l.stripLeading().startsWith("--")).collect(Collectors.joining("\n"));
         assertEquals(List.of(), jdbc.queryForList(texto.split(";")[0].strip()));
-        // V35 en la base: a lo sumo una progresada por intento, solo SIN_ORDEN y con plan.
+        // V34 en la base: a lo sumo una progresada por intento, solo SIN_ORDEN y con plan.
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE"
                 + " cardinality(progressed_sessions) > 1 OR (cardinality(progressed_sessions) = 1 AND"
                 + " (status <> 'SIN_ORDEN' OR resulting_plan_id IS NULL))", Integer.class));
@@ -396,8 +558,7 @@ class ProgresionIT {
     // =======================================================================
 
     /**
-     * PERMITIDO: REVISAR_CARGA baja dos repeticiones del primer ejercicio por repeticiones con al menos
-     * ocho; ACORTAR retira el ultimo relleno de la sesion. SUBE_DOSIS: sube dos repeticiones, lo que nunca se permite.
+     * PERMITIDO: REVISAR_CARGA hace una reduccion valida en el primer ejercicio por repeticiones; ACORTAR retira el ultimo relleno de la sesion. SUBE_DOSIS: sube dos repeticiones, lo que nunca se permite.
      */
     private List<CorrectedSession> corregir(PlanGenerationContext ctx) {
         var salida = new ArrayList<CorrectedSession>();
@@ -417,12 +578,24 @@ class ProgresionIT {
                     continue;
                 }
                 Short reps = e.reps();
+                Short series = e.series();
                 if (senalada.intervencion() == TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION && !hecho
-                        && "SETS_REPS".equals(e.tipo()) && reps != null && reps >= 8) {
-                    reps = (short) (modoIa == Ia.SUBE_DOSIS ? reps + 2 : reps - 2);
-                    hecho = true;
+                        && "SETS_REPS".equals(e.tipo()) && reps != null) {
+                    // Una reduccion VALIDA: -2 repeticiones sin bajar del minimo de V16 de su zona
+                    // y nivel; si no cabe, -1 serie. SUBE_DOSIS: +2 repeticiones (nunca permitido).
+                    int minimo = minimoDeRepeticiones(ctx, e.id());
+                    if (modoIa == Ia.SUBE_DOSIS) {
+                        reps = (short) (reps + 2);
+                        hecho = true;
+                    } else if (reps - 2 >= minimo) {
+                        reps = (short) (reps - 2);
+                        hecho = true;
+                    } else if (series != null && series > 1) {
+                        series = (short) (series - 1);
+                        hecho = true;
+                    }
                 }
-                ejercicios.add(new PlanDraft.DraftExercise(e.id(), PrescriptionType.valueOf(e.tipo()), e.series(),
+                ejercicios.add(new PlanDraft.DraftExercise(e.id(), PrescriptionType.valueOf(e.tipo()), series,
                         reps, e.segundos(), null, e.descanso(), null));
             }
             var fecha = s.fecha().plusWeeks(1);
@@ -431,6 +604,12 @@ class ProgresionIT {
             salida.add(new CorrectedSession(id, fecha, minutos, ejercicios, "ajuste simulado"));
         }
         return salida;
+    }
+
+    private static int minimoDeRepeticiones(PlanGenerationContext ctx, long exerciseId) {
+        var limites = ctx.prescription() == null ? null : ctx.prescription().repLimits();
+        var c = ctx.availableExercises().stream().filter(x -> x.exerciseId() == exerciseId).findFirst();
+        return limites == null || c.isEmpty() ? 0 : limites.minRepsFor(c.get().bodyPartCode(), ctx.profile().fitnessLevel());
     }
 
     private boolean esRelleno(long exerciseId) {
@@ -484,9 +663,9 @@ class ProgresionIT {
         for (int i = 0; i < ids.size(); i++) {
             long w = ids.get(i);
             switch (dias[i]) {
-                case HECHO, HECHO_CON_FATIGA -> {
+                case HECHO, HECHO_CON_FATIGA, HECHO_CON_DOLOR -> {
                     long sesion = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
-                    var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets,"
+                    var filas = jdbc.queryForList("SELECT planned_exercise_id, exercise_id, prescription_type, planned_sets,"
                             + " planned_reps, planned_duration_seconds FROM planned_workout_exercises"
                             + " WHERE planned_workout_id = ? ORDER BY exercise_order", w);
                     for (int k = 0; k < filas.size(); k++) {
@@ -495,12 +674,15 @@ class ProgresionIT {
                         int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
                         int total = duracion ? series * ((Number) f.get("planned_duration_seconds")).intValue()
                                 : series * ((Number) f.get("planned_reps")).intValue();
-                        boolean fatiga = dias[i] == Dia.HECHO_CON_FATIGA && k == filas.size() - 1;
-                        if (fatiga) total = total / 2;
+                        boolean esMarcado = marcado == null ? k == filas.size() - 1
+                                : marcado == ((Number) f.get("exercise_id")).longValue();
+                        boolean fatiga = dias[i] == Dia.HECHO_CON_FATIGA && esMarcado;
+                        boolean dolor = dias[i] == Dia.HECHO_CON_DOLOR && esMarcado;
+                        if (fatiga || dolor) total = total / 2;
                         sesiones.handle(new RecordSessionExerciseCommand(u, sesion,
                                 ((Number) f.get("planned_exercise_id")).longValue(), (short) series,
                                 duracion ? null : total, duracion ? total : null, null,
-                                fatiga ? SkipReason.FATIGUE : null));
+                                fatiga ? SkipReason.FATIGUE : dolor ? SkipReason.PAIN_OR_DISCOMFORT : null));
                     }
                     sesiones.handle(new FinishWorkoutSessionCommand(u, sesion, (short) 6, (short) 4, (short) 45));
                 }

@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
- * V35 · QUE DOSIS DE LA SEMANA MEDIDA TIENEN UN ORIGEN AUTORIZADO VERIFICABLE.
+ * V34 · QUE DOSIS DE LA SEMANA MEDIDA TIENEN UN ORIGEN AUTORIZADO VERIFICABLE.
  * <p>
  * Para cada ejercicio de cada sesion se busca, hacia atras por V31, el paso en
  * que su dosis actual aparecio. Las copias de esa dosis se atraviesan (la
  * sesion puede haber cambiado en otra cosa). El paso que la introdujo decide:
  * <ul>
- *   <li>un paso de progresion (V35, {@code progressed_sessions}) cuyo detalle
+ *   <li>un paso de progresion (V34, {@code progressed_sessions}) cuyo detalle
  *       en V32 dice ese ejercicio y exactamente esa dosis: autorizada;</li>
  *   <li>una adaptacion APLICADA de la IA que BAJO esa dosis (ninguna dimension
  *       sube, el descanso igual): autorizada;</li>

@@ -35,7 +35,7 @@ public record PreviousWeekSummary(
         @com.fasterxml.jackson.annotation.JsonIgnore
         Set<Long> reduccionAutorizada,
         /**
-         * V35. Por sesion de esta semana, los ejercicios cuya dosis -distinta o
+         * V34. Por sesion de esta semana, los ejercicios cuya dosis -distinta o
          * no de la exacta- llego por un paso de progresion o una reduccion de la
          * IA registrados en V32, con el linaje V31 integro desde ahi. Es lo
          * unico que V8C puede convertir en una dosis HEREDADA para V24. Vacio

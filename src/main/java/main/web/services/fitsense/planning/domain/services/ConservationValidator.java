@@ -158,7 +158,7 @@ public class ConservationValidator {
     }
 
     /**
-     * Continuidad con, a lo sumo, UN PASO DE PROGRESION declarado (V35).
+     * Continuidad con, a lo sumo, UN PASO DE PROGRESION declarado (V34).
      * <p>
      * La sesion del paso no se compara solo con la semana medida: tiene que ser
      * IDENTICA a {@code paso.contenido()} y, respecto de la semana medida,
@@ -287,7 +287,7 @@ public class ConservationValidator {
             var conLinaje = previous.dosisConLinaje().getOrDefault(origen, Set.of());
 
             if (intervencion == null && paso != null && origen.equals(paso.origen())) {
-                // V35: el paso de progresion del ciclo. Estrecho: identico al
+                // V34: el paso de progresion del ciclo. Estrecho: identico al
                 // paso propuesto y, respecto de la semana medida, solo su cambio.
                 String motivo = !segura ? "consta dolor en la semana medida"
                         : sustituida ? "la sesion lleva una sustitucion por seguridad"
@@ -329,7 +329,7 @@ public class ConservationValidator {
                         && admitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
                         && derivada.workout().scheduledDate() != null)
                     fechasReducibles.add(derivada.workout().scheduledDate());
-                // V35: la copia identica conserva las dosis autorizadas con linaje.
+                // V34: la copia identica conserva las dosis autorizadas con linaje.
                 if (autorizarDosis && conservadas.contains(origen))
                     for (var e : derivada.workout().exercises())
                         if (conLinaje.contains(e.exerciseId()))
