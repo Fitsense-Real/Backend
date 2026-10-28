@@ -42,6 +42,10 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Embedded
     private StudyEnrollment enrollment;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 20)
+    private UserRole role;
+
     @Column(name = "last_login_at")
     private OffsetDateTime lastLoginAt;
 
@@ -55,6 +59,8 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.name = new PersonName(command.firstName(), command.lastName());
         this.timezone = new UserTimezone(command.timezone());
         this.status = UserStatus.ACTIVE;
+        // El registro publico nunca fija el rol: el comando no lo trae.
+        this.role = UserRole.USER;
         this.enrollment = command.acceptsStudyParticipation()
                 ? StudyEnrollment.enrolledNow(consentVersion, participantCode)
                 : StudyEnrollment.notParticipating();
