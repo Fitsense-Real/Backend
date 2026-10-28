@@ -69,7 +69,12 @@ import static org.mockito.Mockito.*;
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
-        "fitsense.adaptation.progression.enabled=true"
+        "fitsense.adaptation.progression.enabled=true",
+        // V36: los escenarios (p. ej. el viernes acortado bajo el piso de 31) estan
+        // calibrados con la semana que genera el catalogo ANTERIOR; V36 cambia la
+        // seleccion. La logica de progresion no depende del catalogo. Ver
+        // CATALOGO_V36.md, seccion 9.
+        "spring.flyway.target=35"
 })
 class ProgresionIT {
 

@@ -43,7 +43,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token="
+        "fitsense.ai.api-token=",
+        // V36: el borrador es el plan 60 tal como se publico con el catalogo ANTERIOR
+        // (872 como estructural a 3x13). Con V36, 872 es TRUNK_FLEXION y V24 le exige
+        // 2x13: ver CATALOGO_V36.md, seccion 8.
+        "spring.flyway.target=35"
 })
 class DuracionForzadaIT {
 

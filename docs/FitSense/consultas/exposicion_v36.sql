@@ -38,7 +38,9 @@ SELECT user_id, plan_id, week_start_date,
                THEN 'D 1296 intermedio: deja de ser elegible sin causa de seguridad'
            WHEN exercise_id = 1333 AND fitness_level = 'BEGINNER'
                THEN 'E 1333 principiante: SUST-SEG-1 por alto impacto'
-           ELSE 'F otros (872, 1059, combinados fuera de PULL, avanzados): copia esperada factible'
+           WHEN exercise_id IN (872, 1059, 527, 609, 725, 760)
+               THEN 'F reclasificado: revisar la dosis (V24) y el reparto (V15) en el detalle 2b'
+           ELSE 'G 1296 o 1333 en avanzado: copia esperada factible'
        END AS caso
   FROM prescripcion
 )
@@ -64,6 +66,21 @@ SELECT p.user_id, p.plan_id, p.week_start_date, pw.scheduled_date, pw.focus_code
    AND (pwe.exercise_id = 1267
         OR (pwe.exercise_id IN (527, 609, 725, 760) AND pw.focus_code = 'PULL')
         OR (pwe.exercise_id = 1296 AND up.fitness_level = 'INTERMEDIATE'))
+ ORDER BY p.user_id, p.week_start_date, pw.scheduled_date;
+
+-- 2b. Reclasificados en planes ACTIVOS, con su dosis. La copia falla por V24 si
+--     la dosis publicada no es la de su nueva clase: el plan 60 llevaba 872 como
+--     estructural a 3x13 y con V36 se le exige 2x13 (relleno). Y por V15 si era el
+--     unico ejercicio de su grupo en la sesion (1059 contaba como waist).
+SELECT p.user_id, p.plan_id, p.week_start_date, pw.scheduled_date, pw.focus_code, pwe.exercise_id,
+       pwe.prescription_type, pwe.planned_sets, pwe.planned_reps, pwe.rest_seconds, up.goal_type, up.fitness_level
+  FROM planned_workout_exercises pwe
+  JOIN planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id
+  JOIN weekly_training_plans p ON p.plan_id = pw.plan_id
+  JOIN user_profiles up ON up.user_id = p.user_id
+ WHERE p.status = 'ACTIVE'
+   AND pwe.exercise_id IN (872, 1059, 527, 609, 725, 760)
+   AND NOT (pwe.exercise_id IN (527, 609, 725, 760) AND pw.focus_code = 'PULL')
  ORDER BY p.user_id, p.week_start_date, pw.scheduled_date;
 
 -- 3. Historico (planes COMPLETED o REPLACED): solo trazabilidad, no se repara.

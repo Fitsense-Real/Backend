@@ -24,7 +24,7 @@
 | 6. Cambios de rutina identificados y explicables | 213 de 216 sesiones de referencia cambian: 77 directas y 136 indirectas por la siembra determinista. 0 cambian de día o enfoque (§6) |
 | 7. Sin relajar reglas ni tocar adaptación o progresión | Sin cambios en `src/main/java`. Solo la migración, pruebas y documentación |
 
-**Incompatibilidad encontrada y no corregida (§8).** Un plan **publicado antes de V36** que contenga 1267, 1296 (en un intermedio) o un combinado en una sesión PULL **no puede copiarse** en el ciclo semanal siguiente. Esa semana quedaría sin plan. Está reproducida en `CatalogoV36IT` y es una decisión previa al despliegue.
+**Incompatibilidad encontrada y no corregida (§8).** Un plan **publicado antes de V36** que contenga 1267, 1296 (en un intermedio), un combinado en una sesión PULL o 872 con dosis de estructural (como el plan 60 real) **no puede copiarse** en el ciclo semanal siguiente. Esa semana quedaría sin plan. Está reproducida en `CatalogoV36IT` y es una decisión previa al despliegue.
 
 ## 2. Migración V36 y matriz antes/después
 
@@ -203,17 +203,18 @@ Evidencia: `evidencia/catalogo_v36/{base_antes,base_v36,pr3_antes,pr3_v36}/`. La
 | Intermedio con 1296 | **NO_FACTIBLE, semana sin plan** | `V1: …1296…`: deja de ser elegible y la dificultad no es causa de seguridad |
 | Combinado (527, 609, 725, 760) en una sesión PULL | **NO_FACTIBLE, semana sin plan** | `V15: … enfoque PULL pero incluye ejercicios de [upper legs]` y `V18` |
 | Principiante con 1296 | Copia publicada | Sustitución obligatoria SUST-SEG-1 por `alto_impacto` |
+| 872 prescrito como estructural (plan 60 real: GAIN_MUSCLE, 3x13 a 90 s) | **Rechazado por V24** | `V24: el ejercicio 872 … lleva 3x13 … y 4D v2 exige 2x13 (relleno …)`: al dejar de ser HIP_EXTENSION, su dosis es la de relleno. Reproducido por `Plan60HipertrofiaIT` y `DuracionForzadaIT` con V36 (§9) |
 | Contiene 872 o 1059 (en los casos probados, sin 1267) | Copia publicada (CONSERVED) | Sin problemas. En el plan con 1267, la copia falló además por V15 en una sesión LOWER_BODY que, con la reclasificación, solo trabaja `upper legs`: un plan con 1059 o 527/609 puede fallar igual si era su único ejercicio fuera de `upper legs` |
 
 Por 19.4, una semana sin plan queda con adherencia NULL, y el ciclo siguiente vuelve a la generación inicial. Se perdería una semana de datos del participante. **No se ha corregido:** la orden pide reportarlo y reproducirlo antes de proponer cambios. No se relaja V8C ni V1.
 
 **Medirlo antes de decidir:**
 - `docs/FitSense/consultas/exposicion_v36.sql`: consulta de **solo lectura** (`BEGIN READ ONLY … ROLLBACK`) para que la ejecutes tú contra Neon con un usuario de lectura.
-- Cuenta participantes y planes ACTIVOS en cada caso, el detalle de los casos que dejarían la semana sin plan y el histórico.
+- Cuenta participantes y planes ACTIVOS en cada caso, el detalle de los casos que dejarían la semana sin plan, los reclasificados con su dosis (para detectar casos como el plan 60) y el histórico.
 - Está probada contra el esquema aislado.
 
 **Opciones (ninguna implementada):**
-1. **Si la consulta devuelve 0 en los casos A, B y D:** desplegar V36 sin más. La incompatibilidad no se manifiesta.
+1. **Si la consulta devuelve 0 en los casos A, B y D, y el detalle 2b no muestra dosis de estructural en 872:** desplegar V36 sin más. La incompatibilidad no se manifiesta.
 2. **Si afecta a pocos participantes:** desplegar y aceptar, documentándolo como incidencia del estudio, que esos participantes pasen una semana sin plan y vuelvan con la generación inicial. La alternativa es aplazar V36 hasta que terminen. Hoy no existe un flujo para sustituir una semana ACTIVA fuera de la reparación de seguridad (`generateWeeklyPlan` falla si ya hay un plan activo), así que regenerarla a mano no es una opción sin código.
 3. **Cambio de código:** tratar la «retirada por corrección de catálogo» como causa con nombre (precedente: `INC-CAT-1374`) para permitir una sustitución en la copia. Afecta a V8C, y la clase de slot del ejercicio quitado era errónea (1267 «KNEE_DOMINANT» en una sesión de tren superior). Exige diseño y aprobación.
 
@@ -221,7 +222,22 @@ Por 19.4, una semana sin plan queda con adherencia NULL, y el ciclo siguiente vu
 
 ## 9. Regresión completa
 
-Ver §9.1 (se completa con el resultado de la ejecución de esta rama).
+**Primera ejecución con V36 (rama `catalogo-v36`):** 816 pruebas unitarias sin fallos. 254 de integración con **4 fallos**, todos causados por V36:
+
+| Prueba | Causa |
+|---|---|
+| `Plan60HipertrofiaIT.sesionDeSesentaMinutos` | El plan 60 real (publicado el 26/10) lleva 872 como estructural a 3x13. Con V36, V24 exige 2x13. **Es un caso más de §8**, no un fallo de la regla |
+| `DuracionForzadaIT.sinMinutosForzadosRigeElPerfil` | El mismo plan 60 como borrador |
+| `HerenciaD8IT.propuestaIdenticaConservaD8` | Falla la premisa del escenario: «el viernes acortado (32) bajo el piso 31». La semana generada cambia por la cascada (§6), y el escenario estaba calibrado con ella |
+| `ProgresionIT.acortadaProgresaYReincorpora` | La misma premisa |
+
+**Qué se hizo.** Esas cuatro clases fijan ahora `spring.flyway.target=35`, con un comentario que lo explica. No se cambió ninguna regla ni ninguna aserción:
+- Las dos primeras validan un plan **publicado con el catálogo anterior**.
+- Las dos últimas prueban D8 y la progresión, que no dependen del catálogo, sobre una semana calibrada con él.
+
+**Alternativa, si se prefiere:** recalibrar sus escenarios sobre el catálogo con V36. Supone tocar los datos de las pruebas, no la lógica.
+
+**Segunda ejecución:** ver §9.1.
 
 ## 10. Decisiones pendientes
 

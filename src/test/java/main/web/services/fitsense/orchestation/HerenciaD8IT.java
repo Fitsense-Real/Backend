@@ -64,7 +64,11 @@ import static org.mockito.Mockito.*;
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
-        "fitsense.adaptation.progression.enabled=false"
+        "fitsense.adaptation.progression.enabled=false",
+        // V36: el escenario (el viernes acortado bajo el piso de 31) esta calibrado con
+        // la semana que genera el catalogo ANTERIOR; V36 cambia la seleccion. La
+        // logica de D8 no depende del catalogo. Ver CATALOGO_V36.md, seccion 9.
+        "spring.flyway.target=35"
 })
 @DisplayName("D8 · la herencia sigue tras una senalada sin cambios; el dolor no la aprovecha")
 class HerenciaD8IT {
