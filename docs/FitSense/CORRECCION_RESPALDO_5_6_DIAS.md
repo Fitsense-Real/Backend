@@ -194,6 +194,14 @@ Un curl con press en un día de tirón cumple V15 y V22 por catálogo, pero no e
 - Stalder press (1267) y superman push-up (1296) en empuje;
 - bisagras catalogadas como `back` (142, 776) abriendo el tirón.
 
+### Regresión y CI (fase 2)
+
+| Prueba | Resultado |
+|---|---|
+| Regresión completa (`mvn verify -Pintegration`, con la réplica P2-D local) | **BUILD SUCCESS**: 829 unitarias (816 más las 13 de `V15GruposPrescribiblesTest`) y 262 de integración, 0 fallos y 13 omitidas (opcionales) |
+| `GeneracionReferenciaIT` | 72 de 72 idénticas |
+| CI en GitHub (`verify`) sobre `97b890e` | en verde |
+
 ### Las propuestas de la IA siguen sometidas a V15
 
 - El pipeline valida cada propuesta de la IA con el mismo `PlanDraftValidator` de producción (`PlanGenerationPipeline`), y V15 no distingue por origen.
