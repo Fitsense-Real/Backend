@@ -106,7 +106,7 @@ D8 conserva su exención si la sesión es idéntica y el linaje continuo (`Reduc
 
 **Simulación de 10 semanas (`EvaluacionLimpiaProgresionIT`, 72 perfiles): informe idéntico al anterior** (312 progresiones, 14 recuperaciones, 0 reincorporaciones, 720/720 publicadas). Es lo esperado: su guion solo tiene semanas completas al 100 % o con una sesión omitida (66,7 %), y la regla nueva solo cambia el resultado entre el 80 % y el 99,99 % o con registros incompletos. La semana con omisión adapta y la siguiente no puede progresar en ninguna de las dos reglas, porque la transición anterior no es una copia. La diferencia queda demostrada en la tabla de arriba, con el ciclo completo.
 
-## 8. Neon: verificación del bloqueo (pendiente de ejecutar fuera de este entorno)
+## 8. Neon: verificación del bloqueo — **verificada el 27/10/2026 (23:06, hora local)**
 
 Desde el entorno de desarrollo **no se puede**: falta `DB_PASSWORD`, y el entorno no alcanza Neon en absoluto (solo permite HTTPS saliente; los nombres `*.neon.tech` ni siquiera se resuelven).
 
@@ -130,3 +130,22 @@ DB_PASSWORD=… mvn -o verify -Pintegration -Dtest=NoUnit -Dsurefire.failIfNoSpe
 6. que la conexión directa es una sesión estable (mismo `pg_backend_pid`).
 
 Solo imprime los nombres de host, nunca la contraseña. La pérdida de conexión durante el ciclo la cubre la guarda de publicación (`CicloConcurrenteIT`, 9/9).
+
+**Resultado** (`NeonBloqueoDirectoIT`, ejecutado por el responsable del proyecto desde su equipo con acceso a Neon; `BUILD SUCCESS`, 1/1):
+
+```
+NEON host configurado: ep-dark-brook-b4emftmn-pooler.c-6.us-east-2.aws.neon.tech
+NEON host del bloqueo: ep-dark-brook-b4emftmn.c-6.us-east-2.aws.neon.tech
+CICLO_BLOQUEO usuario 4294967295: otro ciclo ya esta en curso; no se ejecuta este.
+NEON durante el bloqueo: tomados=1 segunda=EN_CURSO sigue=1 · resultado=EJECUTADO
+NEON backend estable en la conexion directa: true
+```
+
+- El bloqueo va al endpoint **directo**: el host sin `-pooler`, derivado del configurado.
+- Desde otra conexión se ve **tomado**.
+- Una **segunda ejecución** del mismo participante recibe `EN_CURSO` y no se ejecuta.
+- **Sigue tomado** tras varias transacciones.
+- Se **libera** al terminar.
+- La conexión directa es una **sesión estable**: el mismo `pg_backend_pid`, así que no pasa por el pool transaccional.
+- No se escribieron datos.
+
