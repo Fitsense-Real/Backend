@@ -102,6 +102,6 @@ Evidencia en `evidencia/frecuencia/correccion_respaldo/{antes,despues}/`.
 |---|---|
 | `RespaldoCincoSeisDiasIT` | 14 de 14 (6 perfiles de GENERAL_FITNESS × 4 semillas, más los 8 de LOSE_WEIGHT con la imposibilidad demostrada) |
 | `GeneracionReferenciaIT` | **72 de 72 idénticas**. Además, en el barrido, 0 de 216 sesiones de referencia cambian |
-| Regresión completa | Ver la sección de regresión al final del documento |
+| Regresión completa (`mvn verify -Pintegration`, con la réplica P2-D local) | **BUILD SUCCESS**: 816 unitarias (809 más 7 de `V20UmbralRedondeoTest`) y 262 de integración, 0 fallos y 13 omitidas (las 10 opcionales de siempre más las 3 de `EvaluacionFrecuenciaIT`, que son opcionales) |
 
 V15, V20, V22, V24 y V25 son los de producción, sin cambios: la corrección está en el generador.
