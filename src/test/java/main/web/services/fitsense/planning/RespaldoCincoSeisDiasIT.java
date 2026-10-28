@@ -38,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * (EVALUACION_GENERACION_4_6_DIAS.md) se quedaban SIN PLAN: el motor de reglas
  * armaba sesiones de traccion o de piernas con un solo grupo y V15 las
  * rechazaba. El motor de reglas es el respaldo cuando la IA falla: tiene que
- * producir una semana valida con el conjunto elegible que existe, y cuando no
- * puede, la prueba demuestra por que (CORRECCION_RESPALDO_5_6_DIAS.md).
+ * producir una semana valida con el conjunto elegible que existe
+ * (CORRECCION_RESPALDO_5_6_DIAS.md).
  * <p>
  * Se prueba el generador directamente (sin IA, sin Replicate) y su borrador se
  * pasa por el MISMO validador de produccion, sin tocar V15 ni V20. La semana es
@@ -116,19 +116,12 @@ class RespaldoCincoSeisDiasIT {
     }
 
     /**
-     * Los 8 de LOSE_WEIGHT: la traccion ya sale bien, pero las sesiones LEGS no
-     * tienen solucion con las reglas vigentes y NO se fuerzan:
-     * <ul>
-     *   <li>V15 cuenta {@code lower legs} como grupo disponible (hay gemelos
-     *       elegibles) y exige dos grupos en LEGS;</li>
-     *   <li>en LOSE_WEIGHT la fuerza es la unica capacidad resistida (4A v6), y
-     *       su dosis solo existe para estructurales (4D); todo {@code lower legs}
-     *       es RESISTIDO (flexion plantar) y no tiene ninguna capacidad
-     *       admisible.</li>
-     * </ul>
-     * La prueba fija las dos mitades de la contradiccion para que una decision
-     * posterior (V15, la politica de capacidades o la division) la cambie a
-     * sabiendas.
+     * Los 8 de LOSE_WEIGHT. La traccion la resolvio el generador; LEGS era
+     * imposible porque V15 exigia {@code lower legs} y en LOSE_WEIGHT ningun
+     * gemelo es prescribible (todos RESISTIDO, sin capacidad del objetivo).
+     * Con V15 contando solo lo prescribible (V15GruposPrescribiblesTest), la
+     * semana sale valida SIN gemelos forzados: la politica de capacidades no
+     * cambio y la prueba lo comprueba.
      */
     @ParameterizedTest(name = "{0}/{1}/{2}d/{3}")
     @CsvSource({
@@ -141,23 +134,37 @@ class RespaldoCincoSeisDiasIT {
             "LOSE_WEIGHT, ADVANCED, 6, GYM",
             "LOSE_WEIGHT, ADVANCED, 6, CASA",
     })
-    @DisplayName("LOSE_WEIGHT 5-6 dias: solo queda LEGS, imposible sin cambiar una regla")
-    void loseWeightPiernasSinSolucion(GoalType objetivo, FitnessLevel nivel, int dias, String lugar) {
-        var ctx = contexto(objetivo, nivel, dias, lugar);
-        var borrador = reglas.generate(ctx, List.of());
-        var descripcion = describir(borrador, ctx, objetivo);
-        var e = assertThrows(InvalidPlanDraftException.class, () -> validador.validate(borrador, ctx, 30));
-        for (var p : e.problems())
-            assertTrue(p.startsWith("V15:") && p.contains("enfoque LEGS") && p.contains("solo trabaja [upper legs]"),
-                    "queda un problema que no es el de LEGS: " + p + "\n" + descripcion);
+    @DisplayName("LOSE_WEIGHT 5-6 dias, 4 semillas: semana valida, sin gemelos y con la politica intacta")
+    void loseWeightSemanaValida(GoalType objetivo, FitnessLevel nivel, int dias, String lugar) {
+        for (int semilla = 0; semilla < SEMILLAS; semilla++) {
+            var ctx = contexto(objetivo, nivel, dias, lugar);
+            var borrador = reglas.generate(ctx, List.of());
+            var descripcion = describir(borrador, ctx, objetivo);
+            assertEquals(dias, borrador.workouts().size(), "una sesion por dia pedido\n" + descripcion);
+            try {
+                validador.validate(borrador, ctx, 30);
+            } catch (InvalidPlanDraftException e) {
+                fail("el respaldo no pasa la validacion: " + e.problems() + "\n" + descripcion);
+            }
+            var porId = porId(ctx);
+            var complementos = CatalogEligibilityPolicy.complementos(ctx.availableExercises(), objetivo.name());
+            for (var w : borrador.workouts())
+                for (var e : w.exercises()) {
+                    var c = porId.get(e.exerciseId());
+                    assertFalse(CapabilityPrescriptionPolicy.admisibles(c, objetivo.name(), nivel.name()).isEmpty(),
+                            "ejercicio sin capacidad del objetivo: " + e.exerciseId() + "\n" + descripcion);
+                    if (!complementos.contains(e.exerciseId()))
+                        assertNotEquals("lower legs", c.bodyPartCode(), "gemelo forzado\n" + descripcion);
+                }
 
-        var complementos = CatalogEligibilityPolicy.complementos(ctx.availableExercises(), objetivo.name());
-        var gemelos = ctx.availableExercises().stream().filter(c -> "lower legs".equals(c.bodyPartCode()))
-                .filter(c -> !complementos.contains(c.exerciseId())).toList();
-        assertFalse(gemelos.isEmpty(), "V15 los cuenta como grupo disponible");
-        for (var c : gemelos)
-            assertTrue(CapabilityPrescriptionPolicy.admisibles(c, objetivo.name(), nivel.name()).isEmpty(),
-                    "hay un gemelo prescribible y el generador no lo usa: " + c.exerciseId() + " " + c.name());
+            // La politica de capacidades sigue igual: hay gemelos elegibles y ninguno es prescribible.
+            var gemelos = ctx.availableExercises().stream().filter(c -> "lower legs".equals(c.bodyPartCode()))
+                    .filter(c -> !complementos.contains(c.exerciseId())).toList();
+            assertFalse(gemelos.isEmpty());
+            for (var c : gemelos)
+                assertTrue(CapabilityPrescriptionPolicy.admisibles(c, objetivo.name(), nivel.name()).isEmpty(),
+                        "la politica de LOSE_WEIGHT cambio: " + c.exerciseId());
+        }
     }
 
     private PlanGenerationContext contexto(GoalType objetivo, FitnessLevel nivel, int dias, String lugar) {

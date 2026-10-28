@@ -2,7 +2,11 @@
 
 Rama `respaldo-5-6-dias`, a partir de `generation`. Es la recomendación 1 de `EVALUACION_GENERACION_4_6_DIAS.md`, con la opción A: corregir el generador, no limitar las sesiones.
 
-**Lo que no se tocó:**
+Se hizo en dos fases:
+1. **Fase 1 (§1–§3):** corrección del generador.
+2. **Fase 2 (§4):** V15 cuenta como disponibles solo los grupos prescribibles. La autorizó el responsable (opción **a**) después de ver la fase 1.
+
+**Lo que no se tocó en la fase 1:**
 - V15, V20 y V22;
 - el catálogo, la política de frecuencia y las migraciones;
 - la IA, la adaptación y la progresión;
@@ -105,3 +109,94 @@ Evidencia en `evidencia/frecuencia/correccion_respaldo/{antes,despues}/`.
 | Regresión completa (`mvn verify -Pintegration`, con la réplica P2-D local) | **BUILD SUCCESS**: 816 unitarias (809 más 7 de `V20UmbralRedondeoTest`) y 262 de integración, 0 fallos y 13 omitidas (las 10 opcionales de siempre más las 3 de `EvaluacionFrecuenciaIT`, que son opcionales) |
 
 V15, V20, V22, V24 y V25 son los de producción, sin cambios: la corrección está en el generador.
+
+## 4. Fase 2: V15 cuenta solo lo que el objetivo puede prescribir
+
+### El cambio exacto
+
+Está en `PlanDraftValidator.validateFocusCoverage`, en el cálculo de `disponibles`: cuántos grupos del enfoque tienen material.
+
+| | Antes | Ahora |
+|---|---|---|
+| Un grupo está disponible si… | existe **algún elegible** de ese grupo (que no sea complemento de cardio o movilidad) | existe algún elegible de ese grupo que además pase `prescribibleParaV15` |
+
+`prescribibleParaV15`, con las capacidades en **ENFORCE** (como en la generación de producción, con IA o motor de reglas), exige:
+1. dificultad ≤ la máxima vigente del perfil;
+2. que V22 lo admita en el enfoque (en tirón, bíceps; en empuje, tríceps);
+3. al menos una capacidad que el objetivo admite y el ejercicio demuestra, **con una dosis válida** para el nivel. Es `CapabilityPrescriptionPolicy`, la misma fuente que V24 y V25.
+
+Sigue igual, sin cambios:
+- el mínimo (`min(2, disponibles, ejercicios de trabajo)`);
+- la regla de grupos ajenos y la de la mitad;
+- el conteo de grupos cubiertos;
+- los mensajes.
+
+**No es una excepción para LOSE_WEIGHT.** Si el objetivo puede prescribir los dos grupos, se siguen exigiendo los dos. Por ejemplo, GAIN_MUSCLE, GENERAL_FITNESS e INCREASE_STRENGTH sí pueden prescribir gemelos, y una sesión de piernas solo con muslo se sigue rechazando.
+
+**Cuándo se cuenta como antes:**
+- sin capacidades en ENFORCE: es el caso de la adaptación P2-D, que construye su validador sin ellas, y su V15 queda exactamente igual;
+- sin matriz de capacidades para el objetivo.
+
+En ambos casos V24/V25 no limitan lo que se puede poner, así que contar cualquier elegible es lo coherente.
+
+**No cambian:** las capacidades y dosis de LOSE_WEIGHT, la frecuencia, la división semanal, V20, V22, V24, V25, el catálogo, la adaptación, la progresión, los prompts y Replicate.
+
+### Pruebas
+
+**`V15GruposPrescribiblesTest` (unitaria, 13 casos).** Con el código anterior fallan los 4 del defecto y pasan los 9 de protección.
+
+| Caso | Resultado |
+|---|---|
+| LOSE_WEIGHT piernas solo con muslo (propuesta del motor de reglas y de la IA) | ya no se rechaza |
+| LOSE_WEIGHT tren inferior solo con muslo (el abdomen RESISTIDO tampoco es prescribible) | ya no se rechaza |
+| LOSE_WEIGHT tirón solo con espalda, si en brazos solo hay curl (RESISTIDO) | ya no se rechaza |
+| GAIN_MUSCLE, GENERAL_FITNESS, INCREASE_STRENGTH: piernas solo con muslo | **se sigue rechazando** |
+| LOSE_WEIGHT tirón solo con espalda, con un bíceps estructural disponible | **se sigue rechazando** |
+| Propuesta de IA con un grupo ajeno, o con 4 de 6 en un grupo | **se sigue rechazando** |
+| Validador sin capacidades (adaptación) | **igual que antes** |
+| LOSE_WEIGHT sin cardio | **lo rechaza V25** |
+| Un gemelo puesto a la fuerza en LOSE_WEIGHT | **lo rechaza V24** |
+
+**`RespaldoCincoSeisDiasIT`:** los 8 de LOSE_WEIGHT, × 4 semillas, dan semana válida. Además comprueba:
+- ningún gemelo en sesiones de trabajo y ningún ejercicio sin capacidad del objetivo;
+- que la política de LOSE_WEIGHT no cambió: siguen existiendo gemelos elegibles y ninguno es prescribible.
+
+### Resultados
+
+Evidencia en `evidencia/frecuencia/correccion_respaldo/despues_v15/`.
+
+| | Inicio | Tras la fase 1 | Tras la fase 2 |
+|---|---|---|---|
+| Barrido de 72 perfiles: planes válidos | 60 | 64 | **72** |
+| Robustez, 288 generaciones: semanas sin plan | 52 | 32 | **0** |
+| Sesiones de planes que ya eran válidos que cambian | — | 0 | **0** (frente al inicio y frente a la fase 1) |
+| 72 referencias | idénticas | idénticas | **idénticas** (`GeneracionReferenciaIT`, y 0 de 216 sesiones cambian en el barrido) |
+
+### Los 8 planes de LOSE_WEIGHT recuperados (44 sesiones)
+
+| Rasgo | Valor |
+|---|---|
+| División | empuje / tirón / piernas / superior / inferior (5 días) o empuje / tirón / piernas × 2 (6 días), la de la política actual |
+| Cada sesión | 2 ejercicios de fuerza estructural + 2 bloques de cardio. Es la misma estructura que los planes de 4 días de LOSE_WEIGHT intermedio y avanzado que ya eran válidos |
+| Cobertura de capacidades | `COMPLETO` (CARDIO principal, STRENGTH secundaria) |
+| Duración | 79,6 %–80,9 % de lo configurado |
+| Piernas | 2 ejercicios de muslo (sentadilla, bisagra o extensión de cadera), sin gemelo |
+| Tirón | espalda + un ejercicio de `upper arms` con patrón estructural. **En la práctica suele ser un ejercicio combinado** (ver abajo) |
+
+**Hallazgo importante, del catálogo.** En LOSE_WEIGHT, un ejercicio de `upper arms` solo es prescribible si su patrón es estructural. Los curls de verdad son `ELBOW_FLEXION` (RESISTIDO) y no lo son, así que el tirón cubre «bíceps» con:
+- **legítimos:** 452 *cable standing pulldown (with rope)* (`VERTICAL_PULL`);
+- **combinados:** 527 *bicep curl lunge*, 609 *lunge with bicep curl* (`KNEE_DOMINANT`), 725 *biceps curl to shoulder press*, 760 *hammer curl and press* (`VERTICAL_PUSH`).
+
+Un curl con press en un día de tirón cumple V15 y V22 por catálogo, pero no es lo que un entrenador pondría. No lo introduce la fase 2: el generador anterior ya colocaba 760 en tirón. La fase 2 tampoco lo empeora, porque solo deja de exigir grupos imposibles. Es un caso más de las incoherencias patrón/grupo de `EVALUACION_GENERACION_4_6_DIAS.md` §3, y su corrección corresponde a la revisión del catálogo.
+
+**Otras señales que siguen abiertas**, del catálogo o de V15 por `body_part`, no de este cambio:
+- en el tren inferior de 5 días, un ejercicio de muslo y uno catalogado como `waist` (1102, 1103 o 1225), que funcionalmente son de pierna;
+- Stalder press (1267) y superman push-up (1296) en empuje;
+- bisagras catalogadas como `back` (142, 776) abriendo el tirón.
+
+### Las propuestas de la IA siguen sometidas a V15
+
+- El pipeline valida cada propuesta de la IA con el mismo `PlanDraftValidator` de producción (`PlanGenerationPipeline`), y V15 no distingue por origen.
+- Las pruebas unitarias incluyen propuestas sintéticas `GenerationSource.AI`: grupo ajeno, más de la mitad, un solo grupo con dos prescribibles. Todas se siguen rechazando.
+
+**Observación, sin tocar por alcance:** el prompt (`PlanInputSnapshot.suggestedSession`) sigue sugiriendo a la IA 2 grupos mínimos por sesión, sin saber cuáles son prescribibles. En LOSE_WEIGHT/piernas la IA podría proponer un gemelo, que V24 rechazaría, y gastar un intento. No cambia el resultado: el respaldo ya produce plan válido. Si se quiere evitar ese intento, habría que ajustar el prompt, que es un cambio aparte.
