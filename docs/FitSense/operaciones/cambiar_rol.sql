@@ -17,9 +17,10 @@
 --   3. Se leyo su user_id:  SELECT user_id, status, role, last_login_at
 --                             FROM users WHERE email = lower('<correo>');
 --
--- Como se usa: editar las CINCO constantes de abajo y ejecutar el bloque entero.
--- Es atomico: si algo no cuadra, lanza un error y no cambia nada. Despues,
--- guardar la salida (NOTICE) y volver a dejar las constantes vacias.
+-- Como se usa: editar las CUATRO constantes de abajo y ejecutar el bloque entero.
+-- Es atomico: si algo no cuadra, lanza un error y no cambia nada. La salida
+-- (NOTICE ROL_CAMBIADO) es el registro del cambio: guardarla junto con quien lo
+-- ejecuto. No guardar la copia rellenada.
 --
 -- Efecto: inmediato. El backend lee el rol en cada peticion; no hace falta un
 -- token nuevo ni reiniciar.
@@ -29,15 +30,11 @@ DECLARE
     v_email     text   := '';  -- correo de la cuenta
     v_user_id   bigint := 0;   -- su user_id (comprobado en el paso 3)
     v_rol       text   := '';  -- ADMIN para promover, USER para revocar
-    v_operador  text   := '';  -- nombre del responsable que lo ejecuta (queda registrado)
     v_confirma  text   := '';  -- escribir exactamente: CAMBIAR <user_id> A <rol>
     r           record;
 BEGIN
     IF v_rol NOT IN ('USER', 'ADMIN') THEN
         RAISE EXCEPTION 'v_rol debe ser ADMIN o USER';
-    END IF;
-    IF btrim(v_operador) = '' THEN
-        RAISE EXCEPTION 'v_operador es obligatorio: identifica a quien hace el cambio';
     END IF;
     IF v_confirma IS DISTINCT FROM format('CAMBIAR %s A %s', v_user_id, v_rol) THEN
         RAISE EXCEPTION 'Confirmacion ausente o incorrecta: se esperaba «CAMBIAR % A %»', v_user_id, v_rol;
@@ -66,9 +63,9 @@ BEGIN
     END IF;
 
     UPDATE users
-       SET role = v_rol, role_updated_at = now(), role_updated_by = btrim(v_operador), updated_at = now()
+       SET role = v_rol, updated_at = now()
      WHERE user_id = v_user_id;
 
-    RAISE NOTICE 'ROL_CAMBIADO user_id=% de % a % por % el %', v_user_id, r.role, v_rol, btrim(v_operador), now();
+    RAISE NOTICE 'ROL_CAMBIADO user_id=% de % a % el %', v_user_id, r.role, v_rol, now();
 END
 $$;

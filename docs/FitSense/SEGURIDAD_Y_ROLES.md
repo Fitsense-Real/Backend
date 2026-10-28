@@ -1,6 +1,8 @@
 # Seguridad, roles y endpoints
 
-Referencia del sistema de roles (RBAC) del backend, del contrato de la API para Flutter y Angular, y de su puesta en marcha. Rama `seguridad-rbac`, que depende de `generation`.
+Referencia del sistema de roles (RBAC) del backend, del contrato de la API para Flutter y Angular, y de su puesta en marcha. Rama `seguridad-rbac`, que depende de `generation` (secuencia de fusión en §9).
+
+**Alcance MVP:** dos roles, ADMIN hereda USER, USER solo ve lo suyo y ADMIN ve la analítica global. Se reutiliza la autenticación existente, se conservan los endpoints de Flutter y no hay gestión de cuentas desde la API.
 
 ## 1. Modelo de usuarios y roles
 
@@ -13,7 +15,6 @@ Referencia del sistema de roles (RBAC) del backend, del contrato de la API para 
 | Estado de la cuenta | Solo una cuenta `ACTIVE` se autentica. Un JWT aún vigente de una cuenta `INACTIVE` o `DELETED` responde **401** (`BearerAuthorizationRequestFilter`) |
 | Registro público | Siempre crea `USER`: el comando de registro no tiene rol y el constructor de `User` lo fija. Un campo `role` en el cuerpo se ignora |
 | Creación de ADMIN | Solo con el procedimiento de ejecución única `docs/FitSense/operaciones/cambiar_rol.sql` (§7). Ninguna ruta ni ningún código de la aplicación escribe `users.role` |
-| Rastro del cambio | `role_updated_at` y `role_updated_by` (V35). `ck_users_admin_auditado` impide una cuenta ADMIN sin ellos |
 | Revocación | El mismo script con `v_rol = 'USER'`. Vale desde la petición siguiente. Desactivar la cuenta (`status = 'INACTIVE'`) corta todo acceso de inmediato |
 
 **Respuestas de error:**
@@ -59,7 +60,7 @@ Referencia del sistema de roles (RBAC) del backend, del contrato de la API para 
 | GET | `/users/me/interventions` | → lista de `InterventionResource` | Flutter |
 | GET | `/users/me/metrics/weekly` | → lista de `WeeklyMetricsResource` | Flutter |
 | GET | `/users/me/metrics/weekly/{weekStartDate}` | → `WeeklyMetricsResource` | Flutter |
-| GET | `/config/active` | → `PublicCalculationConfigResource` (reducido, §4) | Flutter |
+| GET | `/config/active` | → `CalculationConfigResource` (sin cambios) | Flutter |
 | GET | `/catalog/body-parts`, `/catalog/equipment-types` | → listas | Flutter |
 | GET | `/catalog/exercises?bodyPart&equipment&maxDifficulty&search&limit` | → lista | Flutter |
 | GET | `/catalog/exercises/{exerciseId}` | → `ExerciseDetailResource` | Flutter |
@@ -75,9 +76,15 @@ Referencia del sistema de roles (RBAC) del backend, del contrato de la API para 
 | GET | `/admin/participants` | `status` (`ACTIVE`, `INACTIVE`, `DELETED`), `studyStatus` (`ENROLLED`, `WITHDRAWN`, `NOT_PARTICIPANT`), `page` (desde 0), `size` (1–200, 50 por defecto) | `ParticipantPageResource` | Angular |
 | GET | `/admin/participants/{participantId}` | — | `ParticipantDetailResource` (nombre y correo; acceso registrado aparte) | Angular |
 | GET | `/admin/participants/{participantId}/adherence` | `from`, `to` | `ParticipantAdherenceResource` | Angular |
-| GET | `/admin/config/active` | — | `CalculationConfigResource` (completo) | Angular |
 
-**Ajuste al contrato pedido:** se añadió `GET /admin/config/active`. Tiene una razón concreta: los parámetros internos salieron de `/config/active` (§4), y el panel los necesita para explicar sus cifras (cortes de riesgo, días de abandono). No duplica ninguna ruta.
+**Por qué estos siete y no más.** Son exactamente los del contrato pedido y cada uno alimenta una vista del panel:
+- `overview`: la portada;
+- `adherence`: la distribución de cada indicador;
+- `adherence/trends`: la gráfica semanal;
+- `segments`: la comparación por grupos;
+- `participants`, `participants/{id}` y `participants/{id}/adherence`: el listado, la ficha y la serie de una persona.
+
+No hay endpoints de gestión de cuentas ni de roles. El panel puede leer los umbrales vigentes en `GET /config/active`, que ADMIN también alcanza por la jerarquía.
 
 `participantId` es el `user_id`. Es un identificador interno, no un dato personal. El listado y la analítica usan `participantCode` cuando hace falta un seudónimo visible.
 
@@ -125,18 +132,24 @@ Referencia del sistema de roles (RBAC) del backend, del contrato de la API para 
 - `ADMIN_ACCESS_DENIED userId method path`: un USER intentó entrar.
 - `ADMIN_PERSONAL_DATA_VIEWED adminId participantId`.
 
-Los cambios de rol quedan en la propia fila (`role_updated_at`, `role_updated_by`) y en la salida del script.
+Los cambios de rol quedan registrados en la salida del script (`NOTICE ROL_CAMBIADO`), que el responsable guarda.
 
-## 4. Cambios del contrato para Flutter y Angular
+## 4. Compatibilidad con Flutter y Angular
 
-| Cambio | Antes | Ahora | Acción en la app |
-|---|---|---|---|
-| `role` en el login y en `/users/me` | — | `"USER"` o `"ADMIN"` | Campo nuevo. Angular lo usa para mostrar el panel; la autorización real la decide el backend |
-| `GET /config/active` | `configId`, `description` y `params` completos | `version`, `validFrom`, `retroactiveReportDays`, `sessionCompletedThresholdPct` | **Incompatible** si Flutter leía `params`. Si necesita otro campo, se añade al recurso público |
-| `POST /cycle/run-for-me` | Cualquier USER | 403 | Quitar el botón de la app. El ciclo lo corre el planificador |
-| Cuenta INACTIVE con token vigente | Seguía entrando hasta 7 días | 401 | Tratar el 401 como sesión cerrada |
-| CORS | Cualquier origen, con credenciales | Solo `FITSENSE_CORS_ORIGINS`, sin credenciales | Flutter (nativo) no cambia. Angular envía `Authorization: Bearer …` sin `withCredentials` |
-| Swagger | Público | Apagado | Usar `FITSENSE_API_DOCS_ENABLED=true` en local |
+**Qué se revisó:** la app Flutter accesible, `FitSense-2-0/MobileApp` (rama `main`, último commit `82105e3` del 28/08/2026).
+- Solo llama a `/auth/login`, `/auth/register` y `/auth/me`, con su propio modelo (`id`, `firstName`, `lastName`, `email`, `role`).
+- No usa `/config/active` ni `run-for-me`.
+- Su contrato no coincide del todo con este backend: espera `id` en lugar de `userId` y llama a `/auth/me`, que aquí no existe.
+- Por eso **no** se toma como prueba concluyente del consumidor real. La decisión fue no cambiar ningún contrato existente.
+
+| Punto | Estado | Efecto en Flutter |
+|---|---|---|
+| `GET /config/active` | **Sin cambios** (se revirtió la versión reducida) | Ninguno |
+| `role` en el login y en `/users/me` | Campo **añadido**; los demás campos no cambian | Compatible: un cliente que no lo lee lo ignora. El modelo de `MobileApp` ya declara `role` |
+| `POST /cycle/run-for-me` | 403 en producción (pedido explícito) | Solo afecta si la app lo llamaba; la app revisada no lo hace |
+| Token vigente de una cuenta INACTIVE | 401 (corrección pequeña de un hueco existente) | Tratar el 401 como sesión cerrada, igual que un token vencido |
+| CORS restringido | Solo navegadores | Ninguno: una app nativa no envía `Origin` |
+| Swagger apagado | Solo documentación | Ninguno |
 
 **Angular:**
 - No guarda secretos: solo la URL del backend y el token del usuario que inicia sesión.
@@ -169,7 +182,9 @@ V35 es el siguiente número libre:
 - `db/migration` llega a V34 y ninguna rama remota usa el 35.
 - Las dos V35 anteriores del historial (`b6fd9ae`, `4801e58`) se retiraron antes de aplicarse en Neon (Flyway en V33 el 27/10).
 
-**Qué hace.** Solo agrega: `role` con valor por defecto `USER` (operación de metadatos en PostgreSQL 11 o posterior, sin reescribir la tabla), `role_updated_at`, `role_updated_by` y dos CHECK.
+**Qué hace.** Solo agrega la columna `role`, con valor por defecto `USER`, y el CHECK `ck_users_role` que admite solo USER y ADMIN. En PostgreSQL 11 o posterior es una operación de metadatos, sin reescribir la tabla.
+
+**Por qué solo eso:** las columnas de rastro (`role_updated_at`, `role_updated_by`) y su CHECK se retiraron. No son necesarias para un RBAC seguro: el rol solo lo cambia quien tiene las credenciales de la base, mediante el script de §7, y la salida del script es el registro.
 - Las cuentas existentes quedan USER y no se modifica ningún otro dato.
 - Un backend anterior funciona sobre una base con V35, porque `ddl-auto=validate` ignora columnas extra. Volver de versión no exige deshacer la migración.
 
@@ -179,7 +194,7 @@ V35 es el siguiente número libre:
    SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 3;
    ```
    Confirmar que no existe una V35 y que V34 está o va a estar aplicada (PR de `generation`).
-2. Revisar y fusionar primero el PR de `generation` y después este.
+2. Seguir la secuencia de fusión de §9.
 3. Con autorización explícita, desplegar el backend. Flyway aplica V35 al arrancar, como las migraciones anteriores. **Ese despliegue es la ejecución de la migración en Neon.**
 4. Comprobar:
    ```sql
@@ -200,18 +215,16 @@ Se eligió un procedimiento de ejecución única, `docs/FitSense/operaciones/cam
    ```sql
    SELECT user_id, status, role, last_login_at FROM users WHERE email = lower('<correo>');
    ```
-4. Copiar el script y rellenar sus cinco constantes:
+4. Copiar el script y rellenar sus cuatro constantes:
    - `v_email` y `v_user_id`;
    - `v_rol = 'ADMIN'`;
-   - `v_operador`, con el nombre del responsable;
    - `v_confirma = 'CAMBIAR <user_id> A ADMIN'`.
-5. Ejecutarlo y guardar el `NOTICE` `ROL_CAMBIADO …`.
+5. Ejecutarlo y guardar el `NOTICE` `ROL_CAMBIADO …`, junto con quién lo ejecutó.
 6. No guardar la copia rellenada. El archivo del repositorio queda con las constantes vacías y, tal cual, no hace nada.
 7. Verificar: el ADMIN inicia sesión en Angular y `GET /api/v1/users/me` devuelve `"role":"ADMIN"`.
 
 **El script se niega, sin cambiar nada:**
 - si falta la confirmación o no coincide;
-- si falta el operador;
 - si el correo y el `user_id` no son de la misma cuenta;
 - si la cuenta no está ACTIVE;
 - si nunca inició sesión.
@@ -220,27 +233,28 @@ Se eligió un procedimiento de ejecución única, `docs/FitSense/operaciones/cam
 
 ## 8. Pruebas
 
-- **`SeguridadRolesIT`:** 24 casos. Usa registro, login, JWT y filtro reales sobre PostgreSQL 16, con V1–V35.
-- **`CorsOriginsTest`:** 11 casos.
+- **`SeguridadRolesIT`:** 25 casos. Usa registro, login, JWT y filtro reales sobre PostgreSQL 16, con V1–V35.
+- **`CorsOriginsTest`:** 10 casos.
 
 | Requisito | Caso |
 |---|---|
 | USER accede a lo suyo | `Usuario.susFunciones` |
-| USER recibe 403 en cada ruta ADMIN | `Usuario.prohibidoEnAdmin` (las 8 rutas) |
+| USER recibe 403 en cada ruta ADMIN | `Usuario.prohibidoEnAdmin` (las 7 rutas) |
 | Sin token: 401 | `Usuario.anonimo` |
 | Se deniega por defecto | `Usuario.denegadoPorDefecto` |
 | USER no ve recursos de otro | `Aislamiento.recursosAjenos` (plan, entrenamiento, sesión: 404) |
 | Propiedad del ejercicio | `Aislamiento.propiedadDelEjercicio` (de otro entrenamiento o de otra persona: 422; sesión ajena: 404; nada queda registrado) |
-| ADMIN accede a lo de USER | `Administrador.heredaUsuario`, `loginConRol` |
+| ADMIN accede a lo de USER (rutas) | `Administrador.heredaUsuario`, `loginConRol` |
+| Jerarquía en `@PreAuthorize` | `JerarquiaPorMetodo.metodos`: ADMIN pasa un método `hasRole('USER')`, USER no pasa `hasRole('ADMIN')`, y sin autenticación se rechaza |
 | ADMIN consulta la analítica global | `Administrador.rutasAdmin`, `Analitica.cifras` (medias, medianas, niveles y abandonos comprobados contra datos sembrados; excluye no participantes y ADMIN) |
 | Seudonimización | `Analitica.datosPersonales` |
 | JWT válido de cuenta INACTIVE o DELETED | `CuentasYRoles.cuentaInactiva` (401) |
 | El registro público nunca crea ADMIN | `CuentasYRoles.registroSinAdmin` |
 | El cambio de rol vale en la petición siguiente | `CuentasYRoles.cambioDeRol` (promover y revocar con el mismo token) |
-| La promoción exige autorización explícita | `Promocion.*` (script vacío, confirmación, operador, identidad, titularidad, estado, CHECK en la base) |
+| La promoción exige autorización explícita | `Promocion.*` (script vacío, confirmación, identidad, titularidad, estado; la base solo admite USER y ADMIN) |
 | Ciclo manual bloqueado | `Endurecimiento.cicloManual` (USER y ADMIN: 403) |
 | Swagger cerrado | `Endurecimiento.documentacion` |
-| `config/active` reducido | `Endurecimiento.configuracion` |
+| `config/active` sin cambios de contrato | `Endurecimiento.configuracion` |
 | CORS por origen | `Endurecimiento.cors`, `CorsOriginsTest` |
 | Tareas programadas | `Endurecimiento.tareasProgramadas` |
 | Generación, adaptación y progresión intactas | Regresión completa y `GeneracionReferenciaIT` (72/72) |
@@ -257,3 +271,26 @@ Se eligió un procedimiento de ejecución única, `docs/FitSense/operaciones/cam
 - Es lo esperado: esa réplica no corre Flyway y valida el esquema.
 - Con V35 aplicada a la réplica **local** (`fs-p2d`, no Neon), pasan las 7.
 - Para correrlas contra la rama de pruebas de Neon (FitSenseTests), esa rama necesitará V35 cuando se autorice.
+
+## 9. Secuencia de fusión
+
+**El problema:**
+- Fitsense-Real/Backend#1 es `generation` → `main`.
+- Fitsense-Real/Backend#2 es `seguridad-rbac` → `generation`.
+- Fusionar #2 en `generation` **después** de #1 deja RBAC en `generation`, pero no en `main`.
+
+**Secuencia correcta.** Ninguno de estos pasos está autorizado todavía:
+1. Revisar y fusionar #1 en `main`.
+2. Cambiar la base de #2 a `main`. Como #1 ya estará dentro, el diff de #2 queda reducido a la seguridad. Comprobar el diff.
+3. Si `main` avanzó, traer `main` a `seguridad-rbac` (merge, sin reescribir historia). Esperar a que el CI quede en verde.
+4. Revisar y fusionar #2 en `main`.
+
+**No** fusionar #2 en `generation` antes que #1: obligaría a revisar la seguridad dentro del diff funcional de #1.
+
+## 10. CI
+
+`.github/workflows/ci.yml` se ejecuta en cada PR y en cada push a `main` y `generation`:
+- `mvn -B -ntp verify -Pintegration` en Ubuntu con JDK 21: compilación, pruebas unitarias e integración sobre PostgreSQL 16 efímero (Testcontainers).
+- No usa secretos y no toca Neon ni Replicate.
+- Las pruebas que los necesitan son opcionales y se omiten solas: Replicate real, Neon y la réplica P2-D, que exige `fitsense.pruebas.url`.
+- La guardia `BaseDeProduccionBloqueada` impide conectarse a producción.

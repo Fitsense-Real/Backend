@@ -12,12 +12,23 @@ import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
 import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
 import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
+import main.web.services.fitsense.administration.interfaces.rest.AdminAnalyticsController;
+import main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
+import main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositories.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -63,6 +74,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
         "fitsense.ai.api-token=",
         "fitsense.cors.allowed-origins=http://localhost:4200, https://panel.pruebas.invalid"
 })
+@Import(SeguridadRolesIT.Sondas.class)
 @DisplayName("Seguridad · roles USER/ADMIN, aislamiento de datos y endurecimiento")
 class SeguridadRolesIT {
 
@@ -78,7 +90,27 @@ class SeguridadRolesIT {
     @Autowired OverdueWorkoutScheduler vencidos;
     @Autowired WeeklyCycleScheduler ciclo;
 
+    @Autowired SondaUsuario sondaUsuario;
+    @Autowired AdminAnalyticsController analiticaAdmin;
+    @Autowired UserRepository usuarios;
+
     MockMvc http;
+
+    /** Un metodo protegido con hasRole('USER'): lo que la API real no tiene y la jerarquia debe cubrir. */
+    @TestConfiguration
+    static class Sondas {
+        @Bean
+        SondaUsuario sondaUsuario() {
+            return new SondaUsuario();
+        }
+    }
+
+    static class SondaUsuario {
+        @PreAuthorize("hasRole('USER')")
+        public String soloUsuario() {
+            return "ok";
+        }
+    }
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final String CLAVE = "clave-de-prueba-123";
@@ -92,8 +124,7 @@ class SeguridadRolesIT {
             "/api/v1/admin/analytics/segments?by=GOAL_TYPE",
             "/api/v1/admin/participants",
             "/api/v1/admin/participants/1",
-            "/api/v1/admin/participants/1/adherence",
-            "/api/v1/admin/config/active");
+            "/api/v1/admin/participants/1/adherence");
 
     record Cuenta(long userId, String email, String token) {}
 
@@ -143,16 +174,14 @@ class SeguridadRolesIT {
 
     /** Ejecuta el procedimiento real de docs/FitSense/operaciones con estas constantes. */
     private void cambiarRol(Cuenta c, String rol, String confirma) throws Exception {
-        cambiarRol(c.email(), c.userId(), rol, "Responsable de pruebas", confirma);
+        cambiarRol(c.email(), c.userId(), rol, confirma);
     }
 
-    private void cambiarRol(String email, long userId, String rol, String operador, String confirma)
-            throws Exception {
+    private void cambiarRol(String email, long userId, String rol, String confirma) throws Exception {
         String sql = Files.readString(SCRIPT_ROL);
         sql = constante(sql, "v_email", "'" + email + "'");
         sql = constante(sql, "v_user_id", String.valueOf(userId));
         sql = constante(sql, "v_rol", "'" + rol + "'");
-        sql = constante(sql, "v_operador", "'" + operador + "'");
         sql = constante(sql, "v_confirma", "'" + confirma + "'");
         jdbc.execute(sql);
     }
@@ -346,8 +375,6 @@ class SeguridadRolesIT {
             como(adm, get("/api/v1/admin/participants")).andExpect(status().isOk());
             como(adm, get("/api/v1/admin/participants/" + u.userId())).andExpect(status().isOk());
             como(adm, get("/api/v1/admin/participants/" + u.userId() + "/adherence")).andExpect(status().isOk());
-            como(adm, get("/api/v1/admin/config/active")).andExpect(status().isOk())
-                    .andExpect(jsonPath("$.params.adherence").exists());
         }
 
         @Test
@@ -361,6 +388,41 @@ class SeguridadRolesIT {
             como(adm, get("/api/v1/admin/participants?studyStatus=X")).andExpect(status().isBadRequest());
             como(adm, get("/api/v1/admin/participants/999999999")).andExpect(status().isNotFound());
             como(adm, get("/api/v1/admin/participants/" + adm.userId())).andExpect(status().isNotFound());
+        }
+    }
+
+    @Nested
+    @DisplayName("Jerarquia ROLE_ADMIN > ROLE_USER tambien en @PreAuthorize")
+    class JerarquiaPorMetodo {
+
+        private void autenticar(Cuenta c) {
+            var principal = UserDetailsImpl.build(usuarios.findById(c.userId()).orElseThrow());
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities()));
+        }
+
+        @AfterEach
+        void limpiar() {
+            SecurityContextHolder.clearContext();
+        }
+
+        @Test
+        @DisplayName("ADMIN pasa un metodo hasRole('USER'); USER no pasa uno hasRole('ADMIN')")
+        void metodos() throws Exception {
+            var u = usuario();
+            var adm = admin();
+
+            autenticar(u);
+            assertEquals("ok", sondaUsuario.soloUsuario());
+            assertThrows(AccessDeniedException.class,
+                    () -> analiticaAdmin.overview(null, null));
+
+            autenticar(adm);
+            assertEquals("ok", sondaUsuario.soloUsuario());
+            assertEquals(200, analiticaAdmin.overview(null, null).getStatusCode().value());
+
+            SecurityContextHolder.clearContext();
+            assertThrows(AuthenticationCredentialsNotFoundException.class, () -> sondaUsuario.soloUsuario());
         }
     }
 
@@ -522,7 +584,7 @@ class SeguridadRolesIT {
         }
 
         @Test
-        @DisplayName("se rechaza sin confirmacion, sin operador, con datos que no cuadran o sin titularidad")
+        @DisplayName("se rechaza sin confirmacion, con datos que no cuadran o sin titularidad")
         void rechazos() throws Exception {
             var u = usuario();
             String ok = "CAMBIAR %d A ADMIN".formatted(u.userId());
@@ -532,16 +594,13 @@ class SeguridadRolesIT {
             assertThrows(DataAccessException.class,
                     () -> cambiarRol(u, "ADMIN", "CAMBIAR %d A ADMIN".formatted(u.userId() + 1)));
             assertThat(assertThrows(DataAccessException.class,
-                    () -> cambiarRol(u.email(), u.userId(), "ADMIN", " ", ok)).getMessage(),
-                    containsString("v_operador es obligatorio"));
-            assertThat(assertThrows(DataAccessException.class,
-                    () -> cambiarRol("otro@pruebas.invalid", u.userId(), "ADMIN", "Resp", ok)).getMessage(),
+                    () -> cambiarRol("otro@pruebas.invalid", u.userId(), "ADMIN", ok)).getMessage(),
                     containsString("No hay una cuenta"));
 
             // Registrada pero nunca inicio sesion: no hay prueba de titularidad.
             String email = "sinlogin" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
             long sinLogin = registrar(email, true, "");
-            assertThat(assertThrows(DataAccessException.class, () -> cambiarRol(email, sinLogin, "ADMIN", "Resp",
+            assertThat(assertThrows(DataAccessException.class, () -> cambiarRol(email, sinLogin, "ADMIN",
                     "CAMBIAR %d A ADMIN".formatted(sinLogin))).getMessage(), containsString("nunca inicio sesion"));
 
             jdbc.update("UPDATE users SET status = 'INACTIVE' WHERE user_id = ?", u.userId());
@@ -553,27 +612,20 @@ class SeguridadRolesIT {
         }
 
         @Test
-        @DisplayName("la base rechaza un ADMIN sin rastro de quien lo promovio")
-        void sinAuditoria() throws Exception {
+        @DisplayName("la base solo admite USER y ADMIN")
+        void rolDesconocido() throws Exception {
             var u = usuario();
-            assertThrows(DataIntegrityViolationException.class,
-                    () -> jdbc.update("UPDATE users SET role = 'ADMIN' WHERE user_id = ?", u.userId()));
             assertThrows(DataIntegrityViolationException.class,
                     () -> jdbc.update("UPDATE users SET role = 'ROOT' WHERE user_id = ?", u.userId()));
             assertEquals("USER", rol(u.userId()));
         }
 
         @Test
-        @DisplayName("con todo en regla promueve y deja quien y cuando")
+        @DisplayName("con todo en regla promueve")
         void promocion() throws Exception {
             var u = usuario();
-            cambiarRol(u.email(), u.userId(), "ADMIN", "Investigadora responsable",
-                    "CAMBIAR %d A ADMIN".formatted(u.userId()));
-            var fila = jdbc.queryForMap("SELECT role, role_updated_at, role_updated_by FROM users"
-                    + " WHERE user_id = ?", u.userId());
-            assertEquals("ADMIN", fila.get("role"));
-            assertNotNull(fila.get("role_updated_at"));
-            assertEquals("Investigadora responsable", fila.get("role_updated_by"));
+            cambiarRol(u, "ADMIN", "CAMBIAR %d A ADMIN".formatted(u.userId()));
+            assertEquals("ADMIN", rol(u.userId()));
         }
     }
 
@@ -597,13 +649,13 @@ class SeguridadRolesIT {
         }
 
         @Test
-        @DisplayName("config/active: USER ve solo lo que usa la app")
+        @DisplayName("config/active conserva su contrato para la app")
         void configuracion() throws Exception {
             como(usuario(), get("/api/v1/config/active")).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.configId").isNumber())
                     .andExpect(jsonPath("$.version").isNotEmpty())
-                    .andExpect(jsonPath("$.retroactiveReportDays").isNumber())
-                    .andExpect(jsonPath("$.params").doesNotExist())
-                    .andExpect(jsonPath("$.description").doesNotExist());
+                    .andExpect(jsonPath("$.validFrom").isNotEmpty())
+                    .andExpect(jsonPath("$.params.adherence").exists());
         }
 
         @Test
