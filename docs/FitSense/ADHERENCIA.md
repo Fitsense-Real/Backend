@@ -101,7 +101,8 @@ Todos leen la misma fila de `weekly_user_metrics`:
 | Intervención (`UserIntervention`) | `trigger_adherence_pct` = A_w de la semana medida; `adherence_after_pct` = A_w de la semana siguiente |
 | Decisión de adaptación (`AdaptationOrderDecider`) | La observada y la cobertura; la evidencia de V32 guarda las mismas cifras |
 | Generación (`PreviousWeekSummary`, `PlanInputSnapshot`) | A_w de la semana anterior como contexto |
-| API para Flutter y administración | `GET /api/v1/users/me/metrics/weekly[/{lunes}]` |
+| API para Flutter | `GET /api/v1/users/me/metrics/weekly[/{lunes}]` |
+| Panel de administración (Angular, solo ADMIN) | `/api/v1/admin/analytics/**` y `/api/v1/admin/participants/**`: las mismas columnas, agregadas o por participante, sin recalcular (`SEGURIDAD_Y_ROLES.md` §3) |
 
 ## Qué cambió en el código
 
