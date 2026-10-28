@@ -95,8 +95,8 @@ class CatalogoV36IT {
     static String huellaAprobaciones;
     static String huellaPlanes;
     /** Participantes con un plan publicado ANTES de V36 que contiene el ejercicio. */
-    static long con1267, con872, con1059, con1296, conTiron;
-    static long plan1267, plan872, plan1059, plan1296, planTiron;
+    static long con1267, con872, con1059, con1296, con1296Intermedio, conTiron;
+    static long plan1267, plan872, plan1059, plan1296, plan1296Intermedio, planTiron;
 
     // =======================================================================
     // Antes de V36
@@ -147,18 +147,13 @@ class CatalogoV36IT {
         assertNotEquals(0, con872, "ningun plan del catalogo anterior contiene 872");
         assertNotEquals(0, con1059, "ningun plan del catalogo anterior contiene 1059");
 
-        // 1296 en el plan de un principiante, como si se hubiera publicado con el
-        // nivel 1 anterior: sustituye un empuje horizontal con la misma dosis.
+        // 1296 en el plan de un principiante y de un intermedio, como si se hubiera
+        // publicado con el nivel 1 anterior: sustituye un empuje horizontal con la misma dosis.
         con1296 = participante(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, 3, "GYM");
-        plan1296 = planning.generateWeeklyPlan(con1296, S1, PlanAdjustment.none(), null, null).orElseThrow();
-        long fila = jdbc.queryForObject("SELECT pwe.planned_exercise_id FROM planned_workout_exercises pwe"
-                + " JOIN planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id"
-                + " JOIN exercises x ON x.exercise_id = pwe.exercise_id"
-                + " WHERE pw.plan_id = ? AND x.movement_pattern = 'HORIZONTAL_PUSH'"
-                + " ORDER BY pw.scheduled_date, pwe.exercise_order LIMIT 1", Long.class, plan1296);
-        jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1296 WHERE planned_exercise_id = ?", fila);
-        assertEquals(Map.of(), conflictos(plan1296),
-                "con el catalogo anterior 1296 no choca con nada");
+        plan1296 = con1296(con1296);
+        con1296Intermedio = participante(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, 3, "GYM");
+        plan1296Intermedio = con1296(con1296Intermedio);
+        assertEquals(Map.of(), conflictos(plan1296), "con el catalogo anterior 1296 no choca con nada");
 
         huellaResto = huellaResto();
         huellaRequisitos = huellaRequisitos();
@@ -262,6 +257,13 @@ class CatalogoV36IT {
                 && r1296.informe().contains("alto_impacto"), r1296.informe());
         assertFalse(ejerciciosDe(r1296.plan().get()).contains(1296L));
 
+        // Intermedio: 1296 pasa a nivel 3 y deja de ser elegible, pero la dificultad no es causa de seguridad.
+        assertEquals(Map.of(), conflictos(plan1296Intermedio), "sin causa de seguridad para un intermedio");
+        var r1296i = cicloSiguiente(con1296Intermedio);
+        assertTrue(r1296i.plan().isEmpty(), "1296 intermedio: " + r1296i);
+        assertEquals("NO_FACTIBLE", r1296i.estado());
+        assertTrue(r1296i.motivo().contains("V1: el ejercicio 1296 no esta en available_exercises"), r1296i.motivo());
+
         var r872 = cicloSiguiente(con872);
         assertTrue(r872.plan().isPresent(), "872: " + r872);
         assertEquals("CONSERVED", r872.origen());
@@ -270,6 +272,18 @@ class CatalogoV36IT {
         assertTrue(r1059.plan().isPresent(), "1059: " + r1059);
         assertEquals("CONSERVED", r1059.origen());
         verify(ia, never()).pedirRespuesta(any(), any(), any(), any(), anyInt());
+    }
+
+    /** Genera la semana S1 y pone 1296 en lugar de su primer empuje horizontal, con la misma dosis. */
+    private long con1296(long u) {
+        long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        long fila = jdbc.queryForObject("SELECT pwe.planned_exercise_id FROM planned_workout_exercises pwe"
+                + " JOIN planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id"
+                + " JOIN exercises x ON x.exercise_id = pwe.exercise_id"
+                + " WHERE pw.plan_id = ? AND x.movement_pattern = 'HORIZONTAL_PUSH'"
+                + " ORDER BY pw.scheduled_date, pwe.exercise_order LIMIT 1", Long.class, plan);
+        jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1296 WHERE planned_exercise_id = ?", fila);
+        return plan;
     }
 
     record Ciclo(Optional<Long> plan, String estado, String origen, String motivo, String informe) {}

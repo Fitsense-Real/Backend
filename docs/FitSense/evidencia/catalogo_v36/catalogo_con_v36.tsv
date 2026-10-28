@@ -1,0 +1,1376 @@
+1	lower legs		1	f	f	f	f	f	body weight	SETS_REPS
+2	lower legs		2	f	f	f	f	f	body weight	SETS_REPS
+3	shoulders		3	f	t	f	f	f	body weight	SETS_REPS
+4	shoulders		1	f	f	f	f	f	body weight	SETS_REPS
+5	chest		1	f	t	f	f	f	body weight	SETS_REPS
+6	chest		1	f	t	f	f	f	body weight	SETS_REPS
+7	chest		1	f	t	f	f	f	body weight	SETS_REPS
+8	chest		3	f	t	f	f	f	body weight	SETS_REPS
+9	waist		1	f	t	f	f	f	body weight	DURATION
+10	waist		2	f	t	f	f	f	body weight	DURATION
+11	waist		1	f	t	f	f	f	body weight	SETS_REPS
+12	waist		1	f	t	f	f	f	body weight	SETS_REPS
+13	waist		2	f	t	f	f	f	body weight	DURATION
+14	waist		2	f	f	f	f	f	body weight	SETS_REPS
+15	waist		3	f	f	f	f	f	pull-up bar	SETS_REPS
+16	back		1	f	t	f	f	f	body weight	SETS_REPS
+17	back		1	f	t	f	f	f	body weight	SETS_REPS
+18	back		3	f	f	f	f	f	pull-up bar	SETS_REPS
+19	upper legs		1	f	f	f	f	f	body weight	SETS_REPS
+20	upper legs		2	f	f	f	f	f	body weight	SETS_REPS
+21	upper legs		1	f	t	f	f	f	body weight	SETS_REPS
+22	upper legs		2	f	f	f	f	f	body weight	DURATION
+23	upper legs		3	f	f	f	f	f	body weight	SETS_REPS
+24	upper arms		2	f	f	f	f	f	bench	SETS_REPS
+25	lower legs		2	f	f	f	f	f	dumbbell	SETS_REPS
+26	shoulders		2	f	f	f	f	f	dumbbell	SETS_REPS
+27	shoulders		1	f	f	f	f	f	dumbbell	SETS_REPS
+28	shoulders		1	f	f	f	f	f	dumbbell	SETS_REPS
+29	chest		2	f	f	f	f	f	dumbbell	SETS_REPS
+30	chest		2	f	f	f	f	f	dumbbell	SETS_REPS
+31	back		2	f	f	f	f	f	dumbbell	SETS_REPS
+32	back		2	f	f	f	f	f	dumbbell	SETS_REPS
+33	upper legs		2	f	f	f	f	f	dumbbell	SETS_REPS
+34	upper legs		2	f	f	f	f	f	dumbbell	SETS_REPS
+35	upper legs		2	f	f	f	f	f	dumbbell	SETS_REPS
+36	upper arms		1	f	f	f	f	f	dumbbell	SETS_REPS
+37	upper arms		1	f	f	f	f	f	dumbbell	SETS_REPS
+38	upper arms		2	f	f	f	f	f	dumbbell	SETS_REPS
+39	shoulders		2	f	f	f	f	f	band	SETS_REPS
+40	back		1	f	f	f	f	f	band	SETS_REPS
+41	back		2	f	f	f	f	f	band	SETS_REPS
+42	upper arms		1	f	f	f	f	f	band	SETS_REPS
+43	waist		3	f	t	f	f	f	stability ball	SETS_REPS
+44	shoulders		3	f	f	f	f	f	barbell	SETS_REPS
+45	chest		3	f	f	f	f	f	barbell	SETS_REPS
+46	upper legs		3	f	f	f	f	f	barbell	SETS_REPS
+47	upper arms		2	f	f	f	f	f	ez barbell	SETS_REPS
+48	chest		2	f	f	f	f	f	cable	SETS_REPS
+49	back		2	f	f	f	f	f	cable	SETS_REPS
+50	back		2	f	f	f	f	f	cable	SETS_REPS
+51	upper arms		2	f	f	f	f	f	cable	SETS_REPS
+52	upper legs		2	f	f	f	f	f	leverage machine	SETS_REPS
+53	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+54	cardio	KNEE_DOMINANT	1	f	f	f	f	t	body weight	DURATION
+55	lower legs	MOBILITY	1	f	t	f	f	t	body weight	SETS_REPS
+56	chest	HORIZONTAL_PUSH	2	f	t	f	f	t	body weight	SETS_REPS
+57	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+58	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+59	waist	LOCOMOTION_CARDIO	1	f	t	f	f	t	body weight	SETS_REPS
+60	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+61	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+62	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+63	waist	TRUNK_FLEXION	1	f	t	t	f	t	body weight	SETS_REPS
+64	back	VERTICAL_PULL	2	f	f	t	f	t	pull-up bar	SETS_REPS
+65	back	CORE_STABILITY	3	f	f	t	f	t	pull-up bar	SETS_REPS
+66	back	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+67	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+68	upper legs	TRUNK_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+69	back	TRUNK_EXTENSION	1	f	f	f	f	t	stability ball	SETS_REPS
+70	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	medicine ball	SETS_REPS
+71	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+72	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+73	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+74	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+75	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+76	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+77	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+78	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+79	lower legs		1	f	t	f	f	f	assisted	DURATION
+80	chest		1	f	f	f	f	f	stability ball	DURATION
+81	waist		1	f	f	f	f	f	assisted	SETS_REPS
+82	waist		1	f	f	f	f	f	assisted	SETS_REPS
+83	waist		1	f	t	f	f	f	assisted	SETS_REPS
+84	waist		1	f	t	f	f	f	assisted	SETS_REPS
+85	waist		1	f	t	f	f	f	assisted	DURATION
+86	waist		1	f	t	f	f	f	assisted	SETS_REPS
+87	upper legs		1	f	t	f	f	f	assisted	DURATION
+88	upper legs		1	f	t	f	f	f	assisted	DURATION
+89	upper legs		1	f	t	f	f	f	assisted	SETS_REPS
+90	upper legs		1	f	t	f	f	f	assisted	DURATION
+91	upper legs		1	f	t	f	f	f	assisted	DURATION
+92	upper arms		1	f	f	f	f	f	assisted	SETS_REPS
+93	upper legs	LOCOMOTION_CARDIO	2	t	f	f	f	t	body weight	SETS_REPS
+94	upper legs	BALANCE_CONTROL	1	f	f	f	f	t	balance board	DURATION
+95	lower arms	WRIST_FOREARM	1	f	f	f	f	t	band	SETS_REPS
+96	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	band	SETS_REPS
+97	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	band	SETS_REPS
+98	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	band	SETS_REPS
+99	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	band	SETS_REPS
+100	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	band	SETS_REPS
+101	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	band	SETS_REPS
+102	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	band	SETS_REPS
+103	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	band	SETS_REPS
+104	waist	TRUNK_FLEXION	1	f	t	t	f	t	band	SETS_REPS
+105	waist	CORE_STABILITY	1	f	t	f	f	t	band	SETS_REPS
+106	waist	TRUNK_FLEXION	1	f	t	f	f	t	band	SETS_REPS
+107	waist	CORE_STABILITY	1	f	f	f	f	t	band	SETS_REPS
+108	waist	TRUNK_FLEXION	1	f	t	t	f	t	band	SETS_REPS
+109	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	band	SETS_REPS
+110	waist	TRUNK_FLEXION	1	f	t	f	f	t	band	SETS_REPS
+111	waist	TRUNK_FLEXION	1	f	t	f	f	t	band	SETS_REPS
+112	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	band	SETS_REPS
+113	back	VERTICAL_PULL	1	f	f	t	f	t	band	SETS_REPS
+114	back	VERTICAL_PULL	1	f	f	t	f	t	band	SETS_REPS
+115	back	VERTICAL_PULL	1	f	f	t	f	t	band	SETS_REPS
+116	back	VERTICAL_PULL	1	f	f	t	f	t	band	SETS_REPS
+117	back	VERTICAL_PULL	1	f	t	t	f	t	band	SETS_REPS
+118	back	HORIZONTAL_PULL	2	f	f	f	f	t	band	SETS_REPS
+119	back	HORIZONTAL_PULL	1	f	f	f	f	t	band	SETS_REPS
+120	back	SCAPULAR_ELEVATION	1	f	f	f	f	t	band	SETS_REPS
+121	upper legs	HIP_EXTENSION	1	f	f	f	f	t	band	SETS_REPS
+122	upper legs	HIP_EXTENSION	1	f	t	f	f	t	band	SETS_REPS
+123	upper legs	OTHER	1	f	t	f	f	t	band	SETS_REPS
+124	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	band	SETS_REPS
+125	upper legs	HIP_HINGE	1	f	f	f	f	t	band	SETS_REPS
+126	upper legs	OTHER	1	f	f	f	f	t	band	SETS_REPS
+127	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	band	SETS_REPS
+128	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	band	SETS_REPS
+129	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	band	SETS_REPS
+130	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	band	SETS_REPS
+131	upper arms	ELBOW_FLEXION	2	f	f	t	f	t	band	SETS_REPS
+132	upper arms	ELBOW_EXTENSION	1	f	f	f	f	t	band	SETS_REPS
+133	lower arms	WRIST_FOREARM	1	f	f	f	f	t	band	SETS_REPS
+134	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	band	SETS_REPS
+135	shoulders	HORIZONTAL_PULL	1	f	f	f	f	t	band	SETS_REPS
+136	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	band	SETS_REPS
+137	shoulders	SHOULDER_RAISE	1	f	f	t	f	t	band	SETS_REPS
+138	waist	TRUNK_FLEXION	1	f	f	f	f	t	band	SETS_REPS
+139	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	band	SETS_REPS
+140	waist	TRUNK_FLEXION	1	f	t	t	f	t	band	SETS_REPS
+141	waist	CORE_STABILITY	1	f	f	f	f	t	band	SETS_REPS
+142	back	HIP_HINGE	1	f	f	f	f	t	band	SETS_REPS
+143	back	VERTICAL_PULL	1	f	f	t	f	t	band	SETS_REPS
+144	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	band	SETS_REPS
+145	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	band	SETS_REPS
+146	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	band	SETS_REPS
+147	upper legs	HIP_HINGE	1	f	f	f	f	t	band	SETS_REPS
+148	upper legs	HIP_HINGE	1	f	f	f	f	t	band	SETS_REPS
+149	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+150	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	barbell	SETS_REPS
+151	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+152	chest	HORIZONTAL_PUSH	3	f	f	f	t	t	barbell	SETS_REPS
+153	chest	SHOULDER_EXTENSION	3	f	f	t	t	t	barbell	SETS_REPS
+154	chest	HORIZONTAL_PUSH	3	f	f	f	t	t	barbell	SETS_REPS
+155	chest	SHOULDER_EXTENSION	3	f	f	t	f	t	barbell	SETS_REPS
+156	back	SHOULDER_EXTENSION	3	f	f	t	f	t	barbell	SETS_REPS
+157	back	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+158	back	SHOULDER_EXTENSION	3	f	f	t	t	t	barbell	SETS_REPS
+159	back	SHOULDER_EXTENSION	3	f	f	t	t	t	barbell	SETS_REPS
+160	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+161	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+162	upper legs	VERTICAL_PUSH	3	t	f	t	f	t	barbell	SETS_REPS
+163	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+164	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+165	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+166	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+167	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+168	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+169	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+170	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+171	upper arms	ELBOW_EXTENSION	3	f	f	f	t	t	barbell	SETS_REPS
+172	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+173	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+174	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+175	shoulders	VERTICAL_PUSH	3	t	f	t	f	t	barbell	SETS_REPS
+176	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+177	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	barbell	SETS_REPS
+178	chest	SHOULDER_RAISE	2	f	f	t	f	t	barbell	SETS_REPS
+179	back	HORIZONTAL_PULL	2	f	f	f	f	t	barbell	SETS_REPS
+180	back	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+181	back	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+182	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+183	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+184	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+185	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+186	upper legs	HIP_EXTENSION	3	f	t	f	f	t	barbell	SETS_REPS
+187	upper legs	HIP_EXTENSION	3	f	f	f	f	t	barbell	SETS_REPS
+188	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+189	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+190	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+191	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+192	upper legs	KNEE_DOMINANT	3	t	f	f	f	t	barbell	SETS_REPS
+193	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+194	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+195	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+196	upper legs	HIP_EXTENSION	3	f	f	f	f	t	barbell	SETS_REPS
+197	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+198	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+199	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+200	upper legs	KNEE_DOMINANT	3	f	f	t	f	t	barbell	SETS_REPS
+201	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	barbell	SETS_REPS
+202	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	barbell	SETS_REPS
+203	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+204	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	barbell	SETS_REPS
+205	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+206	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	barbell	SETS_REPS
+207	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	barbell	SETS_REPS
+208	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+209	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	barbell	SETS_REPS
+210	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	barbell	SETS_REPS
+211	upper arms	HORIZONTAL_PUSH	3	f	t	f	f	t	barbell	SETS_REPS
+212	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+213	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+214	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+215	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	barbell	SETS_REPS
+216	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	barbell	SETS_REPS
+217	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	barbell	SETS_REPS
+218	shoulders	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+219	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	barbell	SETS_REPS
+220	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	barbell	SETS_REPS
+221	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	barbell	SETS_REPS
+222	chest	HORIZONTAL_PUSH	3	f	f	f	t	t	barbell	SETS_REPS
+223	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	barbell	SETS_REPS
+224	waist	TRUNK_FLEXION	3	f	t	f	f	t	barbell	SETS_REPS
+225	waist	CORE_STABILITY	3	f	t	t	f	t	barbell	SETS_REPS
+226	waist	CORE_STABILITY	3	f	t	t	f	t	barbell	SETS_REPS
+227	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	barbell	SETS_REPS
+228	waist	TRUNK_ROTATION_LATERAL_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+229	waist	TRUNK_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+230	back	SHOULDER_EXTENSION	3	f	f	t	f	t	barbell	SETS_REPS
+231	back	VERTICAL_PUSH	3	f	f	t	f	t	barbell	SETS_REPS
+232	back	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+233	back	HORIZONTAL_PULL	2	f	f	f	f	t	barbell	SETS_REPS
+234	back	SCAPULAR_ELEVATION	3	f	f	f	f	t	barbell	SETS_REPS
+235	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+236	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+237	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+238	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+239	upper legs	HIP_HINGE	2	f	f	f	f	t	barbell	SETS_REPS
+240	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+241	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+242	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+243	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+244	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+245	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	barbell	SETS_REPS
+246	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+247	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+248	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	barbell	SETS_REPS
+249	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+250	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	barbell	SETS_REPS
+251	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	barbell	SETS_REPS
+252	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	barbell	SETS_REPS
+253	cardio	LOCOMOTION_CARDIO	1	f	t	f	f	t	body weight	DURATION
+254	upper legs	TRUNK_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+255	shoulders		2	f	f	f	f	f	rope	SETS_REPS
+256	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+257	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+258	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+259	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+260	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+261	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+262	shoulders	HIP_HINGE	3	t	f	f	f	t	barbell	SETS_REPS
+263	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	barbell	SETS_REPS
+264	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	barbell	SETS_REPS
+265	shoulders	SHOULDER_RAISE	3	f	f	t	f	t	barbell	SETS_REPS
+266	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	barbell	SETS_REPS
+267	shoulders	KNEE_DOMINANT	3	t	f	t	f	t	barbell	SETS_REPS
+268	shoulders	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+269	shoulders	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+270	shoulders	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+271	shoulders	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+272	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+273	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	barbell	SETS_REPS
+274	waist	TRUNK_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+275	waist	CORE_STABILITY	3	f	f	t	f	t	barbell	SETS_REPS
+276	waist	TRUNK_ROTATION_LATERAL_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+277	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+278	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+279	upper legs	KNEE_DOMINANT	3	f	t	f	f	t	barbell	SETS_REPS
+280	upper legs	KNEE_DOMINANT	3	t	f	f	f	t	barbell	SETS_REPS
+281	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+282	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+283	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+284	upper legs	HIP_HINGE	3	f	f	f	f	t	barbell	SETS_REPS
+285	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+286	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+287	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+288	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+289	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	barbell	SETS_REPS
+290	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+291	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+292	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	barbell	SETS_REPS
+293	cardio	LOCOMOTION_CARDIO	1	t	t	t	f	t	body weight	DURATION
+294	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+295	lower legs	BALANCE_CONTROL	2	t	f	f	f	t	plyo box	SETS_REPS
+296	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	DURATION
+297	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+298	waist	LOCOMOTION_CARDIO	1	f	t	f	f	t	body weight	DURATION
+299	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+300	back	HORIZONTAL_PULL	1	f	f	t	f	t	bench	SETS_REPS
+301	back	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+302	back	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+303	back	HORIZONTAL_PULL	2	f	f	f	f	t	body weight	SETS_REPS
+304	back	HORIZONTAL_PULL	1	f	f	f	f	t	body weight	SETS_REPS
+305	back	HORIZONTAL_PULL	2	f	f	f	f	t	body weight	SETS_REPS
+306	back	HORIZONTAL_PULL	2	f	f	f	f	t	body weight	SETS_REPS
+307	back	HORIZONTAL_PULL	1	f	f	f	f	t	body weight	SETS_REPS
+308	back	HORIZONTAL_PULL	1	f	f	f	f	t	body weight	SETS_REPS
+309	upper legs	HIP_EXTENSION	1	f	f	f	f	t	bench	SETS_REPS
+310	upper legs	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+311	upper legs	KNEE_DOMINANT	2	t	f	f	f	t	body weight	SETS_REPS
+312	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+313	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	bench	SETS_REPS
+314	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+315	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+316	upper arms	VERTICAL_PULL	1	f	f	t	f	t	pull-up bar	SETS_REPS
+317	upper arms	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+318	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+319	upper arms	ELBOW_EXTENSION	1	f	t	f	f	t	body weight	SETS_REPS
+320	upper arms	ELBOW_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+321	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	cable	SETS_REPS
+322	shoulders	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+323	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	cable	SETS_REPS
+324	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+325	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+326	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+327	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	cable	SETS_REPS
+328	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+329	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+330	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+331	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+332	chest		1	f	f	f	f	f	assisted	DURATION
+333	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	cable	SETS_REPS
+334	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	cable	SETS_REPS
+335	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	cable	SETS_REPS
+336	shoulders	HORIZONTAL_PULL	1	f	t	f	f	t	cable	SETS_REPS
+337	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	cable	SETS_REPS
+338	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+339	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	cable	SETS_REPS
+340	chest	HORIZONTAL_PUSH	2	f	f	f	t	t	cable	SETS_REPS
+341	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	cable	SETS_REPS
+342	chest	HORIZONTAL_ADDUCTION	1	f	f	f	f	t	cable	SETS_REPS
+343	chest	HORIZONTAL_ADDUCTION	1	f	f	f	f	t	cable	SETS_REPS
+344	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+345	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+346	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+347	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+348	waist	TRUNK_FLEXION	1	f	t	f	f	t	cable	SETS_REPS
+349	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+350	back	HORIZONTAL_PULL	1	f	t	f	f	t	cable	SETS_REPS
+351	back	HORIZONTAL_PULL	1	f	t	f	f	t	cable	SETS_REPS
+352	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+353	back	ELBOW_EXTENSION	1	f	f	f	f	t	cable	SETS_REPS
+354	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+355	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+356	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+357	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+358	back	SHOULDER_EXTENSION	2	f	f	t	f	t	cable	SETS_REPS
+359	back	HORIZONTAL_PULL	3	f	f	f	f	t	cable	SETS_REPS
+360	upper legs	HIP_HINGE	2	f	f	f	f	t	cable	SETS_REPS
+361	upper legs	HIP_ABDUCTION_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+362	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+363	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+364	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+365	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	cable	SETS_REPS
+366	upper arms	ELBOW_EXTENSION	1	f	f	t	f	t	cable	SETS_REPS
+367	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+368	upper arms	ELBOW_EXTENSION	1	f	t	f	f	t	cable	SETS_REPS
+369	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+370	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+371	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+372	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	cable	SETS_REPS
+373	lower arms	WRIST_FOREARM	2	f	f	f	f	t	cable	SETS_REPS
+374	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	cable	SETS_REPS
+375	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+376	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+377	chest	HORIZONTAL_ADDUCTION	3	f	f	f	t	t	cable	SETS_REPS
+378	chest	HORIZONTAL_ADDUCTION	3	f	f	f	f	t	cable	SETS_REPS
+379	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+380	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	cable	SETS_REPS
+381	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	cable	SETS_REPS
+382	chest	TRUNK_ROTATION_LATERAL_FLEXION	3	f	f	f	f	t	cable	SETS_REPS
+383	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	cable	SETS_REPS
+384	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	cable	SETS_REPS
+385	waist	TRUNK_FLEXION	2	f	t	f	f	t	cable	SETS_REPS
+386	back	VERTICAL_PULL	3	f	f	t	f	t	cable	SETS_REPS
+387	back	HORIZONTAL_PULL	2	f	t	f	f	t	cable	SETS_REPS
+388	back	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+389	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+390	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+391	back	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+392	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+393	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+394	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+395	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+396	upper legs	HIP_HINGE	2	f	f	f	f	t	cable	SETS_REPS
+397	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	cable	SETS_REPS
+398	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	cable	SETS_REPS
+399	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	cable	SETS_REPS
+400	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+401	upper arms	ELBOW_FLEXION	2	f	f	t	f	t	cable	SETS_REPS
+402	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	cable	SETS_REPS
+403	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+404	upper arms	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+405	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+406	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+407	upper arms	SHOULDER_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+408	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+409	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+410	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	cable	SETS_REPS
+411	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+412	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+413	lower arms	WRIST_FOREARM	2	f	f	f	f	t	cable	SETS_REPS
+414	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+415	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	cable	SETS_REPS
+416	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	cable	SETS_REPS
+417	shoulders	OTHER	1	f	f	f	f	t	cable	SETS_REPS
+418	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	cable	SETS_REPS
+419	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	cable	SETS_REPS
+420	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+421	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	cable	SETS_REPS
+422	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+423	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+424	waist	TRUNK_FLEXION	1	f	f	f	f	t	cable	SETS_REPS
+425	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	cable	SETS_REPS
+426	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+427	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+428	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+429	waist	TRUNK_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+430	waist	TRUNK_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+431	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+432	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+433	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+434	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+435	back	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+436	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+437	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+438	back	SCAPULAR_ELEVATION	2	f	f	f	f	t	cable	SETS_REPS
+439	back	KNEE_DOMINANT	2	f	f	f	f	t	cable	SETS_REPS
+440	upper legs	HIP_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+441	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+442	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	cable	SETS_REPS
+443	upper arms	ELBOW_EXTENSION	1	f	f	t	f	t	cable	SETS_REPS
+444	upper arms	ELBOW_EXTENSION	2	f	t	f	f	t	cable	SETS_REPS
+445	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	cable	SETS_REPS
+446	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	cable	SETS_REPS
+447	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+448	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	cable	SETS_REPS
+449	upper arms	KNEE_DOMINANT	2	f	f	f	f	t	cable	SETS_REPS
+450	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+451	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	cable	SETS_REPS
+452	upper arms	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+453	lower legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+454	lower legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+455	lower legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+456	chest	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+457	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	parallel bars	SETS_REPS
+458	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	parallel bars	SETS_REPS
+459	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	parallel bars	SETS_REPS
+460	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+461	chest	HORIZONTAL_PUSH	1	t	t	f	f	t	body weight	SETS_REPS
+462	waist	TRUNK_FLEXION	1	f	f	f	f	t	captains chair	SETS_REPS
+463	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+464	back	VERTICAL_PULL	1	f	f	t	f	t	pull-up bar	SETS_REPS
+465	upper legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+466	chest	MOBILITY	1	f	f	f	f	t	stability ball	DURATION
+467	lower legs		1	f	f	f	f	f	rope	DURATION
+468	back	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+469	lower arms	WRIST_FOREARM	2	f	f	f	f	t	cable	SETS_REPS
+470	shoulders	OTHER	2	f	f	f	f	t	cable	SETS_REPS
+471	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	cable	SETS_REPS
+472	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+473	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+474	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	cable	SETS_REPS
+475	waist	TRUNK_FLEXION	2	f	t	f	f	t	cable	SETS_REPS
+476	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+477	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	cable	SETS_REPS
+478	back	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+479	back	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+480	back	SHOULDER_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+481	back	SHOULDER_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+482	back	HORIZONTAL_PULL	1	f	f	f	f	t	cable	SETS_REPS
+483	back	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+484	back	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+485	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+486	back	HORIZONTAL_PULL	2	f	f	f	f	t	cable	SETS_REPS
+487	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+488	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	cable	SETS_REPS
+489	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+490	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+491	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	cable	SETS_REPS
+492	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	cable	SETS_REPS
+493	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+494	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+495	chest	HORIZONTAL_PUSH	1	f	t	f	t	t	body weight	SETS_REPS
+496	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+497	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+498	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+499	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+500	waist	TRUNK_FLEXION	1	f	t	t	f	t	body weight	SETS_REPS
+501	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+502	waist	ELBOW_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+503	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	SETS_REPS
+504	waist	TRUNK_FLEXION	1	f	f	f	t	t	body weight	SETS_REPS
+505	waist	TRUNK_FLEXION	1	f	f	f	t	t	body weight	SETS_REPS
+506	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+507	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+508	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+509	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+510	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+511	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+512	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+513	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+514	shoulders	VERTICAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+515	chest	HORIZONTAL_PUSH	2	f	t	f	f	t	dumbbell	SETS_REPS
+516	chest	SHOULDER_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+517	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+518	back	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+519	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+520	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+521	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+522	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+523	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+524	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+525	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+526	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+527	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+528	upper arms	TRUNK_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+529	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+530	waist	TRUNK_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+531	waist	TRUNK_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+532	cardio	LOCOMOTION_CARDIO	2	f	f	f	f	t	leverage machine	DURATION
+533	cardio	LOCOMOTION_CARDIO	2	t	t	t	f	t	dumbbell	DURATION
+534	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+535	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+536	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+537	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+538	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+539	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+540	chest	HORIZONTAL_PUSH	2	f	f	f	t	t	dumbbell	SETS_REPS
+541	chest	HORIZONTAL_ADDUCTION	2	f	f	f	t	t	dumbbell	SETS_REPS
+542	chest	HORIZONTAL_PUSH	2	f	f	f	t	t	dumbbell	SETS_REPS
+543	chest	HORIZONTAL_ADDUCTION	3	f	f	f	t	t	dumbbell	SETS_REPS
+544	chest	HORIZONTAL_ADDUCTION	2	f	f	f	t	t	dumbbell	SETS_REPS
+545	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	dumbbell	SETS_REPS
+546	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	dumbbell	SETS_REPS
+547	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+548	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+549	back	SCAPULAR_ELEVATION	2	f	f	f	t	t	dumbbell	SETS_REPS
+550	back	SCAPULAR_ELEVATION	2	f	f	f	t	t	dumbbell	SETS_REPS
+551	upper legs	HIP_HINGE	3	t	f	f	f	t	dumbbell	SETS_REPS
+552	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+553	upper legs	HIP_HINGE	2	f	f	f	f	t	dumbbell	SETS_REPS
+554	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+555	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+556	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+557	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+558	upper arms	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+559	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+560	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+561	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+562	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+563	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+564	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+565	upper arms	HORIZONTAL_PUSH	3	f	f	f	t	t	dumbbell	SETS_REPS
+566	upper arms	ELBOW_EXTENSION	2	f	f	f	t	t	dumbbell	SETS_REPS
+567	upper arms	KNEE_DOMINANT	2	f	f	t	f	t	dumbbell	SETS_REPS
+568	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+569	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+570	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+571	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+572	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+573	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+574	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	dumbbell	SETS_REPS
+575	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+576	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+577	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+578	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+579	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+580	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+581	chest	HORIZONTAL_ADDUCTION	1	f	f	f	f	t	dumbbell	SETS_REPS
+582	chest	HORIZONTAL_ADDUCTION	1	f	f	f	f	t	dumbbell	SETS_REPS
+583	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+584	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	dumbbell	SETS_REPS
+585	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	dumbbell	SETS_REPS
+586	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+587	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+588	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+589	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+590	chest	SHOULDER_RAISE	1	f	f	t	f	t	dumbbell	SETS_REPS
+591	chest	HORIZONTAL_ADDUCTION	1	f	f	f	f	t	dumbbell	SETS_REPS
+592	back	HORIZONTAL_PULL	1	f	f	f	f	t	dumbbell	SETS_REPS
+593	back	SCAPULAR_ELEVATION	1	f	f	f	f	t	dumbbell	SETS_REPS
+594	back	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+595	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+596	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+597	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+598	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+599	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+600	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+601	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+602	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+603	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+604	upper arms	ELBOW_EXTENSION	1	f	f	t	f	t	dumbbell	SETS_REPS
+605	upper arms	ELBOW_EXTENSION	1	f	f	f	f	t	dumbbell	SETS_REPS
+606	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+607	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+608	upper arms	ELBOW_FLEXION	1	f	t	f	f	t	dumbbell	SETS_REPS
+609	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+610	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+611	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+612	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+613	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+614	lower arms	WRIST_FOREARM	2	f	t	t	f	t	dumbbell	SETS_REPS
+615	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+616	lower arms	WRIST_FOREARM	2	f	t	f	f	t	dumbbell	SETS_REPS
+617	shoulders	OTHER	2	f	t	f	f	t	dumbbell	SETS_REPS
+618	shoulders	SHOULDER_RAISE	2	f	t	t	f	t	dumbbell	SETS_REPS
+619	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	dumbbell	SETS_REPS
+620	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	dumbbell	SETS_REPS
+621	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+622	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	dumbbell	SETS_REPS
+623	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	dumbbell	SETS_REPS
+624	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+625	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	dumbbell	SETS_REPS
+626	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	dumbbell	SETS_REPS
+627	chest	SHOULDER_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+628	chest	HORIZONTAL_ADDUCTION	3	f	f	f	f	t	dumbbell	SETS_REPS
+629	chest	HORIZONTAL_ADDUCTION	3	f	f	f	f	t	dumbbell	SETS_REPS
+630	chest	HORIZONTAL_PUSH	3	f	f	f	t	t	dumbbell	SETS_REPS
+631	chest	HORIZONTAL_ADDUCTION	3	f	f	f	f	t	dumbbell	SETS_REPS
+632	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+633	chest	VERTICAL_PUSH	3	f	f	t	f	t	dumbbell	SETS_REPS
+634	chest	SHOULDER_EXTENSION	3	f	f	t	f	t	dumbbell	SETS_REPS
+635	back	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+636	back	HORIZONTAL_PULL	3	f	f	f	f	t	dumbbell	SETS_REPS
+637	upper legs	KNEE_DOMINANT	2	f	t	f	f	t	dumbbell	SETS_REPS
+638	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	dumbbell	SETS_REPS
+639	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	dumbbell	SETS_REPS
+640	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	dumbbell	SETS_REPS
+641	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+642	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+643	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+644	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+645	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+646	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+647	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	dumbbell	SETS_REPS
+648	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+649	upper arms	VERTICAL_PUSH	3	f	f	t	f	t	dumbbell	SETS_REPS
+650	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	dumbbell	SETS_REPS
+651	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+652	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+653	lower arms	WRIST_FOREARM	3	f	f	f	f	t	dumbbell	SETS_REPS
+654	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+655	lower arms	WRIST_FOREARM	3	f	f	f	f	t	dumbbell	SETS_REPS
+656	lower arms	WRIST_FOREARM	3	f	f	f	f	t	dumbbell	SETS_REPS
+657	lower arms	WRIST_FOREARM	3	f	f	f	f	t	dumbbell	SETS_REPS
+658	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+659	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+660	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	dumbbell	SETS_REPS
+661	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	dumbbell	SETS_REPS
+662	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	dumbbell	SETS_REPS
+663	shoulders	HORIZONTAL_PULL	3	f	f	f	f	t	dumbbell	SETS_REPS
+664	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+665	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+666	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+667	chest	VERTICAL_PUSH	3	f	f	t	f	t	dumbbell	SETS_REPS
+668	chest	HORIZONTAL_ADDUCTION	3	f	f	f	f	t	dumbbell	SETS_REPS
+669	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+670	chest	SHOULDER_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+671	chest	HIP_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+672	chest	SHOULDER_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+673	back	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+674	upper legs	VERTICAL_PUSH	3	t	f	t	f	t	dumbbell	SETS_REPS
+675	upper legs	KNEE_DOMINANT	3	t	f	f	f	t	dumbbell	SETS_REPS
+676	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+677	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+678	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+679	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+680	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+681	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+682	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	dumbbell	SETS_REPS
+683	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+684	upper arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+685	upper arms	WRIST_FOREARM	3	f	f	f	f	t	dumbbell	SETS_REPS
+686	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	dumbbell	SETS_REPS
+687	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+688	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+689	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+690	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+691	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+692	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+693	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+694	lower arms	WRIST_FOREARM	2	f	f	f	f	t	dumbbell	SETS_REPS
+695	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+696	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+697	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+698	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+699	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+700	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+701	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+702	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+703	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+704	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	dumbbell	SETS_REPS
+705	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	dumbbell	SETS_REPS
+706	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+707	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+708	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+709	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	dumbbell	SETS_REPS
+710	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+711	back	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+712	back	HORIZONTAL_PULL	1	f	f	f	f	t	dumbbell	SETS_REPS
+713	back	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+714	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+715	upper legs	HIP_HINGE	2	f	f	f	f	t	dumbbell	SETS_REPS
+716	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+717	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+718	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+719	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+720	upper arms	ELBOW_EXTENSION	1	f	f	t	f	t	dumbbell	SETS_REPS
+721	upper arms	ELBOW_EXTENSION	1	f	f	f	f	t	dumbbell	SETS_REPS
+722	upper arms	ELBOW_EXTENSION	1	f	f	f	f	t	dumbbell	SETS_REPS
+723	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+724	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+725	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	dumbbell	SETS_REPS
+726	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+727	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+728	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+729	upper arms	ELBOW_EXTENSION	1	f	f	f	f	t	dumbbell	SETS_REPS
+730	upper arms	WRIST_FOREARM	1	f	f	f	f	t	dumbbell	SETS_REPS
+731	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+732	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+733	lower arms	WRIST_FOREARM	1	f	f	f	f	t	dumbbell	SETS_REPS
+734	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+735	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+736	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+737	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+738	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+739	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	dumbbell	SETS_REPS
+740	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	dumbbell	SETS_REPS
+741	shoulders	SHOULDER_RAISE	3	f	t	f	f	t	dumbbell	SETS_REPS
+742	shoulders	OTHER	3	f	f	t	f	t	dumbbell	SETS_REPS
+743	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+744	shoulders	SHOULDER_RAISE	2	f	f	f	f	t	dumbbell	SETS_REPS
+745	shoulders	SHOULDER_RAISE	2	f	f	t	f	t	dumbbell	SETS_REPS
+746	shoulders	SHOULDER_RAISE	2	f	f	t	f	t	dumbbell	SETS_REPS
+747	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	dumbbell	SETS_REPS
+748	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+749	back	SCAPULAR_ELEVATION	2	f	f	f	f	t	dumbbell	SETS_REPS
+750	back	SHOULDER_RAISE	2	f	t	f	f	t	dumbbell	DURATION
+751	upper legs	HIP_HINGE	3	f	f	f	f	t	dumbbell	SETS_REPS
+752	upper legs	HIP_HINGE	3	f	f	f	f	t	dumbbell	SETS_REPS
+753	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	dumbbell	SETS_REPS
+754	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	dumbbell	SETS_REPS
+755	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+756	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+757	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	dumbbell	SETS_REPS
+758	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+759	upper arms	ELBOW_EXTENSION	1	f	f	t	f	t	dumbbell	SETS_REPS
+760	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+761	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+762	upper arms	ELBOW_EXTENSION	3	f	f	f	f	t	dumbbell	SETS_REPS
+763	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+764	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+765	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+766	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+767	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+768	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+769	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+770	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+771	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	dumbbell	SETS_REPS
+772	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+773	chest	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+774	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+775	back	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+776	back	HIP_HINGE	1	f	f	f	f	t	body weight	SETS_REPS
+777	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+778	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+779	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+780	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+781	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	dumbbell	SETS_REPS
+782	shoulders	OTHER	2	f	f	f	f	t	dumbbell	SETS_REPS
+783	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	dumbbell	SETS_REPS
+784	chest	SHOULDER_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+785	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+786	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+787	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	dumbbell	SETS_REPS
+788	upper legs	HIP_HINGE	2	f	f	f	f	t	dumbbell	SETS_REPS
+789	upper legs	HIP_HINGE	2	f	f	f	f	t	dumbbell	SETS_REPS
+790	upper legs	HIP_HINGE	2	f	f	f	f	t	dumbbell	SETS_REPS
+791	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	dumbbell	SETS_REPS
+792	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+793	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+794	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+795	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+796	upper arms	KNEE_DOMINANT	3	f	f	f	f	t	dumbbell	SETS_REPS
+797	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	dumbbell	SETS_REPS
+798	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	dumbbell	SETS_REPS
+799	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	dumbbell	SETS_REPS
+800	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+801	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+802	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+803	upper arms	ELBOW_EXTENSION	1	f	f	t	f	t	dumbbell	SETS_REPS
+804	back	SHOULDER_RAISE	1	f	f	f	f	t	stability ball	SETS_REPS
+805	back	TRUNK_EXTENSION	1	f	f	t	f	t	stability ball	SETS_REPS
+806	back	TRUNK_EXTENSION	1	f	f	t	f	t	stability ball	SETS_REPS
+807	back	TRUNK_EXTENSION	1	f	f	f	f	t	stability ball	SETS_REPS
+808	back	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+809	back	MOBILITY	1	f	f	f	f	t	stability ball	SETS_REPS
+810	back	MOBILITY	1	f	f	t	f	t	stability ball	DURATION
+811	upper legs	MOBILITY	1	f	f	f	f	t	stability ball	DURATION
+812	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	stability ball	SETS_REPS
+813	waist	CORE_STABILITY	1	f	f	t	f	t	body weight	SETS_REPS
+814	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+815	waist	TRUNK_FLEXION	1	f	t	t	f	t	body weight	SETS_REPS
+816	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+817	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+818	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+819	upper legs	OTHER	2	f	f	f	f	t	dumbbell	DURATION
+820	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	stability ball	SETS_REPS
+821	chest	VERTICAL_PUSH	1	f	t	t	t	t	stability ball	SETS_REPS
+822	back	MOBILITY	1	f	f	f	f	t	stability ball	DURATION
+823	back	MOBILITY	1	f	t	t	f	t	stability ball	DURATION
+824	back	HIP_EXTENSION	1	f	t	f	f	t	stability ball	SETS_REPS
+825	upper legs	OTHER	2	f	f	f	f	t	stability ball	SETS_REPS
+826	upper legs	KNEE_DOMINANT	2	f	t	f	f	t	stability ball	SETS_REPS
+827	upper legs	MOBILITY	1	f	f	f	f	t	stability ball	DURATION
+828	upper arms	MOBILITY	1	f	f	t	f	t	stability ball	DURATION
+829	lower arms	WRIST_FOREARM	3	f	f	f	f	t	barbell	SETS_REPS
+830	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	ez barbell	SETS_REPS
+831	back	SHOULDER_EXTENSION	3	f	f	t	f	t	ez barbell	SETS_REPS
+832	back	HORIZONTAL_PULL	3	f	f	f	f	t	ez barbell	SETS_REPS
+833	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	ez barbell	SETS_REPS
+834	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	ez barbell	SETS_REPS
+835	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	ez barbell	SETS_REPS
+836	upper arms	ELBOW_EXTENSION	3	f	f	t	f	t	ez barbell	SETS_REPS
+837	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+838	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+839	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+840	upper arms	ELBOW_EXTENSION	3	f	f	f	t	t	ez barbell	SETS_REPS
+841	upper arms	ELBOW_EXTENSION	3	f	f	f	t	t	ez barbell	SETS_REPS
+842	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	ez barbell	SETS_REPS
+843	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	ez barbell	SETS_REPS
+844	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+845	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+846	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	ez barbell	SETS_REPS
+847	upper arms	ELBOW_EXTENSION	2	f	f	t	f	t	ez barbell	SETS_REPS
+848	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+849	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+850	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+851	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	ez barbell	SETS_REPS
+852	upper arms	ELBOW_FLEXION	3	f	f	f	f	t	ez barbell	SETS_REPS
+853	cardio	KNEE_DOMINANT	1	f	f	f	f	t	body weight	DURATION
+854	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+855	chest	HORIZONTAL_PUSH	3	f	t	f	f	t	body weight	SETS_REPS
+856	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+857	waist	CORE_STABILITY	3	f	t	f	f	t	body weight	SETS_REPS
+858	waist	CORE_STABILITY	3	f	f	t	f	t	pull-up bar	SETS_REPS
+859	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	DURATION
+860	waist	CORE_STABILITY	1	f	f	f	f	t	body weight	SETS_REPS
+861	waist	CORE_STABILITY	3	f	t	f	f	t	body weight	SETS_REPS
+862	waist	VERTICAL_PULL	1	f	f	t	f	t	pull-up bar	SETS_REPS
+863	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+864	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+865	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+866	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+867	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+868	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+869	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+870	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+871	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+872	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+873	back	CORE_STABILITY	3	f	f	t	f	t	pull-up bar	SETS_REPS
+874	back	VERTICAL_PULL	1	f	f	t	f	t	pull-up bar	SETS_REPS
+875	upper legs	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+876	upper legs	LOCOMOTION_CARDIO	2	t	f	f	f	t	body weight	SETS_REPS
+877	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+878	upper legs	HIP_EXTENSION	1	f	t	f	f	t	body weight	SETS_REPS
+879	upper legs	HIP_EXTENSION	1	f	f	f	f	t	bench	SETS_REPS
+880	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+881	upper legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+882	upper legs	TRUNK_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+883	upper legs	TRUNK_FLEXION	1	f	f	t	f	t	body weight	SETS_REPS
+884	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+885	upper arms	BALANCE_CONTROL	3	f	t	t	t	t	body weight	SETS_REPS
+886	upper arms	VERTICAL_PUSH	3	f	t	t	t	t	body weight	SETS_REPS
+887	chest	HORIZONTAL_ADDUCTION	2	f	f	f	f	t	dumbbell	SETS_REPS
+888	chest	HORIZONTAL_ADDUCTION	3	f	t	f	f	t	barbell	SETS_REPS
+889	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	barbell	SETS_REPS
+890	lower legs		3	f	f	f	f	f	sled machine	SETS_REPS
+891	lower legs		3	f	f	f	f	f	sled machine	SETS_REPS
+892	chest		2	f	f	f	f	f	other	SETS_REPS
+893	cardio	LOCOMOTION_CARDIO	1	t	t	t	f	t	body weight	DURATION
+894	cardio	LOCOMOTION_CARDIO	2	t	f	t	f	t	body weight	DURATION
+895	chest	HORIZONTAL_PUSH	1	t	f	f	f	t	body weight	SETS_REPS
+896	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+897	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	plyo box	SETS_REPS
+898	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+899	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+900	chest	HORIZONTAL_ADDUCTION	1	f	f	f	f	t	body weight	DURATION
+901	chest	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	DURATION
+902	waist	LOCOMOTION_CARDIO	1	f	t	f	f	t	body weight	SETS_REPS
+903	waist	LOCOMOTION_CARDIO	1	f	t	f	f	t	body weight	SETS_REPS
+904	waist	TRUNK_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+905	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+906	waist	TRUNK_FLEXION	1	f	t	t	f	t	body weight	SETS_REPS
+907	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+908	back	TRUNK_EXTENSION	1	f	f	f	f	t	body weight	SETS_REPS
+909	back	TRUNK_EXTENSION	1	f	f	f	f	t	bench	SETS_REPS
+910	back	HORIZONTAL_PULL	1	f	f	f	f	t	pull-up bar	SETS_REPS
+911	back	HORIZONTAL_PULL	1	f	f	f	f	t	pull-up bar	SETS_REPS
+912	back	HORIZONTAL_PULL	1	f	t	f	f	t	bench	SETS_REPS
+913	back	HORIZONTAL_PULL	1	f	f	f	f	t	smith machine	SETS_REPS
+914	back	HORIZONTAL_PULL	1	f	f	f	f	t	suspension straps	SETS_REPS
+915	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	bench	SETS_REPS
+916	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	cable	SETS_REPS
+917	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+918	upper legs	KNEE_DOMINANT	2	t	f	f	f	t	body weight	SETS_REPS
+919	upper legs	KNEE_DOMINANT	2	t	f	f	f	t	body weight	SETS_REPS
+920	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	parallel bars	SETS_REPS
+921	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+922	lower arms	HIP_HINGE	3	t	f	f	f	t	kettlebell	SETS_REPS
+923	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+924	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+925	chest	HORIZONTAL_PUSH	3	f	t	f	f	t	kettlebell	SETS_REPS
+926	waist	TRUNK_ROTATION_LATERAL_FLEXION	3	f	f	t	f	t	kettlebell	SETS_REPS
+927	waist	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+928	back	HORIZONTAL_PULL	3	f	t	f	f	t	kettlebell	SETS_REPS
+929	back	HORIZONTAL_PULL	3	f	f	f	f	t	kettlebell	SETS_REPS
+930	upper arms	HIP_HINGE	3	t	f	f	f	t	kettlebell	SETS_REPS
+931	cardio		3	t	f	f	f	f	rope	DURATION
+932	upper legs		1	f	f	f	f	f	rope	DURATION
+933	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+934	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	parallel bars	SETS_REPS
+935	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+936	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	DURATION
+937	back	VERTICAL_PULL	1	t	f	t	f	t	pull-up bar	SETS_REPS
+938	back	MOBILITY	1	f	t	t	f	t	body weight	DURATION
+939	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+940	shoulders	VERTICAL_PUSH	3	t	f	t	f	t	kettlebell	SETS_REPS
+941	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+942	shoulders	VERTICAL_PUSH	3	t	f	t	f	t	kettlebell	SETS_REPS
+943	shoulders	VERTICAL_PUSH	3	t	f	t	f	t	kettlebell	SETS_REPS
+944	shoulders	VERTICAL_PUSH	3	t	f	t	f	t	kettlebell	SETS_REPS
+945	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+946	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+947	shoulders	VERTICAL_PUSH	3	t	f	t	f	t	kettlebell	SETS_REPS
+948	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+949	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	kettlebell	SETS_REPS
+950	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	kettlebell	SETS_REPS
+951	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+952	shoulders	KNEE_DOMINANT	3	t	f	t	f	t	kettlebell	SETS_REPS
+953	shoulders	HIP_HINGE	3	t	f	f	f	t	kettlebell	SETS_REPS
+954	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	kettlebell	SETS_REPS
+955	chest	HORIZONTAL_PUSH	3	f	t	f	f	t	kettlebell	SETS_REPS
+956	chest	HORIZONTAL_PUSH	3	f	t	f	f	t	kettlebell	SETS_REPS
+957	chest	HORIZONTAL_PUSH	3	t	t	f	f	t	kettlebell	SETS_REPS
+958	waist	TRUNK_ROTATION_LATERAL_FLEXION	3	f	f	t	f	t	kettlebell	SETS_REPS
+959	waist	HIP_HINGE	3	f	f	f	f	t	kettlebell	SETS_REPS
+960	waist	TRUNK_ROTATION_LATERAL_FLEXION	3	f	f	t	f	t	kettlebell	SETS_REPS
+961	back	HORIZONTAL_PULL	3	f	f	f	f	t	kettlebell	SETS_REPS
+962	back	KNEE_DOMINANT	3	f	f	f	f	t	kettlebell	SETS_REPS
+963	back	HORIZONTAL_PULL	3	f	f	f	f	t	kettlebell	SETS_REPS
+964	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	kettlebell	SETS_REPS
+965	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	kettlebell	SETS_REPS
+966	upper legs	HIP_HINGE	3	t	f	f	f	t	kettlebell	SETS_REPS
+967	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	kettlebell	SETS_REPS
+968	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	kettlebell	SETS_REPS
+969	upper legs	HIP_HINGE	3	f	f	f	f	t	kettlebell	SETS_REPS
+970	upper legs	OTHER	3	f	t	t	f	t	kettlebell	SETS_REPS
+971	upper arms	HIP_HINGE	3	t	f	f	f	t	kettlebell	SETS_REPS
+972	upper legs	KNEE_DOMINANT	3	t	t	f	f	t	barbell	SETS_REPS
+973	shoulders	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+974	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	DURATION
+975	waist	CORE_STABILITY	3	f	t	f	f	t	body weight	SETS_REPS
+976	waist	TRUNK_FLEXION	1	f	f	f	f	t	bench	SETS_REPS
+977	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+978	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+979	shoulders	SHOULDER_RAISE	3	f	f	f	f	t	landmine	SETS_REPS
+980	waist	TRUNK_ROTATION_LATERAL_FLEXION	3	f	f	f	f	t	landmine	SETS_REPS
+981	back	HORIZONTAL_PULL	2	f	f	f	f	t	barbell	SETS_REPS
+982	back	HORIZONTAL_PULL	3	f	f	f	f	t	barbell	SETS_REPS
+983	lower arms	WRIST_FOREARM	1	f	f	f	f	t	leverage machine	SETS_REPS
+984	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+985	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+986	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	leverage machine	SETS_REPS
+987	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	leverage machine	SETS_REPS
+988	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+989	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+990	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+991	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+992	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+993	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+994	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+995	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+996	back	TRUNK_EXTENSION	1	f	f	f	f	t	leverage machine	SETS_REPS
+997	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+998	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+999	back	SCAPULAR_ELEVATION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1000	back	SCAPULAR_ELEVATION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1001	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1002	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1003	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	leverage machine	SETS_REPS
+1004	upper legs	HIP_HINGE	1	f	f	f	f	t	leverage machine	SETS_REPS
+1005	upper legs	HIP_EXTENSION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1006	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	leverage machine	SETS_REPS
+1007	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	leverage machine	SETS_REPS
+1008	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	leverage machine	SETS_REPS
+1009	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	leverage machine	SETS_REPS
+1010	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	leverage machine	SETS_REPS
+1011	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1012	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1013	back		2	f	t	f	f	f	rope	SETS_REPS
+1014	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1015	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1016	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1017	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1018	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1019	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	leverage machine	SETS_REPS
+1020	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	leverage machine	SETS_REPS
+1021	shoulders	SHOULDER_RAISE	1	f	f	f	f	t	leverage machine	SETS_REPS
+1022	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	leverage machine	SETS_REPS
+1023	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	leverage machine	SETS_REPS
+1024	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	leverage machine	SETS_REPS
+1025	chest	HORIZONTAL_ADDUCTION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1026	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+1027	waist	TRUNK_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1028	waist	TRUNK_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1029	waist	TRUNK_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1030	waist	TRUNK_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1031	back	HORIZONTAL_PULL	2	f	f	f	f	t	leverage machine	SETS_REPS
+1032	back	VERTICAL_PULL	2	f	f	t	f	t	leverage machine	SETS_REPS
+1033	back	SHOULDER_EXTENSION	1	f	f	t	f	t	leverage machine	SETS_REPS
+1034	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+1035	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1036	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1037	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1038	back	SCAPULAR_ELEVATION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1039	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1040	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1041	back	HORIZONTAL_PULL	1	f	f	f	f	t	leverage machine	SETS_REPS
+1042	upper legs	HIP_EXTENSION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1043	upper legs	HIP_HINGE	1	f	f	f	f	t	leverage machine	SETS_REPS
+1044	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1045	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1046	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	leverage machine	SETS_REPS
+1047	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+1048	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1049	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1050	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1051	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+1052	upper arms	ELBOW_EXTENSION	1	f	f	f	f	t	leverage machine	SETS_REPS
+1053	neck	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1054	cardio	LOCOMOTION_CARDIO	1	f	t	f	f	t	body weight	DURATION
+1055	lower arms	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1056	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	body weight	SETS_REPS
+1057	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	body weight	SETS_REPS
+1058	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1059	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1060	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1061	waist	TRUNK_FLEXION	1	f	f	f	f	t	bench	SETS_REPS
+1062	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1063	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1064	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1065	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1066	back	TRUNK_EXTENSION	1	f	t	f	f	t	body weight	SETS_REPS
+1067	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1068	back	VERTICAL_PULL	1	t	f	t	f	t	pull-up bar	SETS_REPS
+1069	back	VERTICAL_PULL	3	t	f	t	f	t	pull-up bar	SETS_REPS
+1070	back	OTHER	1	f	f	f	f	t	body weight	SETS_REPS
+1071	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1072	back	HORIZONTAL_PULL	2	f	f	f	f	t	body weight	SETS_REPS
+1073	upper legs	HIP_EXTENSION	1	f	t	f	f	t	body weight	SETS_REPS
+1074	upper legs	KNEE_DOMINANT	2	t	f	f	f	t	body weight	SETS_REPS
+1075	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+1076	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1077	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	f	f	f	t	body weight	DURATION
+1078	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	body weight	SETS_REPS
+1079	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	stability ball	SETS_REPS
+1080	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	medicine ball	SETS_REPS
+1081	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	medicine ball	SETS_REPS
+1082	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	medicine ball	SETS_REPS
+1083	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	medicine ball	SETS_REPS
+1084	chest	HORIZONTAL_PUSH	1	t	f	f	f	t	medicine ball	DURATION
+1085	waist	SHOULDER_EXTENSION	2	t	f	t	f	t	medicine ball	SETS_REPS
+1086	back	KNEE_DOMINANT	1	f	f	t	f	t	medicine ball	SETS_REPS
+1087	back	SHOULDER_EXTENSION	1	t	f	t	f	t	medicine ball	SETS_REPS
+1088	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	medicine ball	SETS_REPS
+1089	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	medicine ball	SETS_REPS
+1090	upper arms		3	f	f	f	f	f	olympic barbell	SETS_REPS
+1091	upper arms		3	f	f	f	f	f	olympic barbell	SETS_REPS
+1092	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	leverage machine	SETS_REPS
+1093	cardio	LOCOMOTION_CARDIO	1	f	t	f	f	t	body weight	DURATION
+1094	chest	HORIZONTAL_PUSH	2	t	t	f	f	t	body weight	SETS_REPS
+1095	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1096	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1097	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+1098	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+1099	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1100	chest	HORIZONTAL_PUSH	2	f	t	f	f	t	body weight	SETS_REPS
+1101	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1102	waist	KNEE_DOMINANT	1	f	f	t	f	t	body weight	SETS_REPS
+1103	waist	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1104	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	DURATION
+1105	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1106	waist	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	DURATION
+1107	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1108	back	VERTICAL_PULL	1	f	f	t	f	t	pull-up bar	SETS_REPS
+1109	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1110	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	body weight	SETS_REPS
+1111	upper legs	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1112	upper legs	HIP_EXTENSION	1	f	t	f	f	t	body weight	SETS_REPS
+1113	upper legs	HORIZONTAL_PUSH	1	f	t	f	t	t	body weight	SETS_REPS
+1114	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1115	upper legs	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1116	upper legs		1	f	f	f	f	f	body weight	SETS_REPS
+1117	upper legs	LOCOMOTION_CARDIO	1	f	f	f	f	t	body weight	SETS_REPS
+1118	upper legs	HIP_EXTENSION	1	f	t	f	f	t	body weight	SETS_REPS
+1119	upper arms	MOBILITY	1	f	f	t	f	t	body weight	DURATION
+1120	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1121	upper arms	HORIZONTAL_PUSH	2	f	t	f	f	t	dumbbell	SETS_REPS
+1122	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	stability ball	SETS_REPS
+1123	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	stability ball	SETS_REPS
+1124	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+1125	waist	TRUNK_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+1126	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	medicine ball	SETS_REPS
+1127	lower legs		1	f	f	f	f	f	rope	DURATION
+1128	lower legs		1	f	f	f	f	f	rope	DURATION
+1129	upper legs	HIP_HINGE	3	t	f	f	f	t	barbell	SETS_REPS
+1130	waist		3	f	f	f	f	f	weighted	SETS_REPS
+1131	chest		2	f	t	f	f	f	other	SETS_REPS
+1132	chest		2	f	t	f	f	f	other	SETS_REPS
+1133	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+1134	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+1135	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+1136	lower legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1137	shoulders	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1138	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1139	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1140	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	DURATION
+1141	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1142	waist	TRUNK_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+1143	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1144	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1145	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1146	back	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+1147	back	VERTICAL_PULL	1	f	f	t	f	t	pull-up bar	SETS_REPS
+1148	upper legs	HIP_EXTENSION	1	f	f	f	f	t	bench	SETS_REPS
+1149	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+1150	upper legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1151	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+1152	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	parallel bars	SETS_REPS
+1153	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	gymnastic rings	SETS_REPS
+1154	shoulders	VERTICAL_PUSH	1	f	f	t	f	t	band	SETS_REPS
+1155	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	band	SETS_REPS
+1156	back	HORIZONTAL_PULL	1	f	t	f	f	t	band	SETS_REPS
+1157	upper legs	HIP_EXTENSION	1	f	t	f	f	t	band	SETS_REPS
+1158	upper legs	OTHER	1	f	f	f	f	t	band	SETS_REPS
+1159	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	f	f	f	t	band	SETS_REPS
+1160	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	band	SETS_REPS
+1161	upper legs	HIP_EXTENSION	1	f	f	f	f	t	stability ball	SETS_REPS
+1162	back		2	f	f	f	f	f	rope	SETS_REPS
+1163	upper legs		2	f	f	f	f	f	rope	DURATION
+1164	back	VERTICAL_PULL	1	f	f	t	f	t	leverage machine	SETS_REPS
+1165	chest		1	f	f	f	f	f	other	SETS_REPS
+1166	chest		2	f	f	f	f	f	other	SETS_REPS
+1167	waist		2	f	f	f	f	f	other	SETS_REPS
+1168	waist		2	f	t	f	f	f	other	SETS_REPS
+1169	back		1	f	f	f	f	f	other	DURATION
+1170	back		1	f	f	f	f	f	other	DURATION
+1171	upper legs		1	f	f	f	f	f	other	DURATION
+1172	upper legs		1	f	f	f	f	f	other	DURATION
+1173	neck	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1174	cardio	KNEE_DOMINANT	2	t	f	f	f	t	body weight	SETS_REPS
+1175	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+1176	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+1177	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+1178	lower arms	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1179	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1180	chest	HORIZONTAL_PUSH	2	f	t	f	f	t	body weight	SETS_REPS
+1181	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1182	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	SETS_REPS
+1183	waist	CORE_STABILITY	1	f	t	f	f	t	body weight	SETS_REPS
+1184	waist	HIP_ABDUCTION_ADDUCTION	1	f	f	f	f	t	parallel bars	SETS_REPS
+1185	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+1186	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1187	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1188	back	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1189	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1190	back	MOBILITY	1	f	t	t	f	t	body weight	DURATION
+1191	back	VERTICAL_PULL	1	f	f	t	f	t	pull-up bar	SETS_REPS
+1192	back	MOBILITY	1	f	f	t	f	t	body weight	SETS_REPS
+1193	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+1194	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+1195	upper legs	KNEE_DOMINANT	1	f	t	f	f	t	body weight	SETS_REPS
+1196	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1197	upper legs	KNEE_DOMINANT	1	f	t	f	f	t	body weight	SETS_REPS
+1198	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	t	f	f	t	body weight	SETS_REPS
+1199	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	f	f	f	t	body weight	SETS_REPS
+1200	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	t	f	f	t	body weight	SETS_REPS
+1201	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	t	f	f	t	body weight	DURATION
+1202	upper legs	HIP_EXTENSION	2	f	t	f	f	t	body weight	SETS_REPS
+1203	upper legs		2	f	f	f	f	f	body weight	SETS_REPS
+1204	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	body weight	SETS_REPS
+1205	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1206	upper arms	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1207	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	dumbbell	SETS_REPS
+1208	lower legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1209	upper legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1210	upper legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1211	upper legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1212	upper arms		2	f	f	f	f	f	other	SETS_REPS
+1213	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	smith machine	SETS_REPS
+1214	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	smith machine	SETS_REPS
+1215	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	smith machine	SETS_REPS
+1216	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	smith machine	SETS_REPS
+1217	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	smith machine	SETS_REPS
+1218	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	smith machine	SETS_REPS
+1219	chest	HORIZONTAL_PUSH	2	f	f	f	t	t	smith machine	SETS_REPS
+1220	chest	HORIZONTAL_PUSH	2	f	f	f	t	t	smith machine	SETS_REPS
+1221	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	smith machine	SETS_REPS
+1222	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	smith machine	SETS_REPS
+1223	chest	HORIZONTAL_PULL	2	f	f	f	f	t	smith machine	SETS_REPS
+1224	chest	HORIZONTAL_PUSH	2	f	f	f	t	t	smith machine	SETS_REPS
+1225	waist	HIP_EXTENSION	2	f	f	f	f	t	smith machine	SETS_REPS
+1226	back	SCAPULAR_ELEVATION	2	f	f	f	f	t	smith machine	SETS_REPS
+1227	back	HORIZONTAL_PULL	2	f	f	f	f	t	smith machine	SETS_REPS
+1228	back	HORIZONTAL_PULL	2	f	f	f	f	t	smith machine	SETS_REPS
+1229	back	HORIZONTAL_PULL	3	f	f	f	f	t	smith machine	SETS_REPS
+1230	back	HORIZONTAL_PULL	2	f	f	f	f	t	smith machine	SETS_REPS
+1231	upper legs	HIP_HINGE	2	f	f	f	f	t	smith machine	SETS_REPS
+1232	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1233	upper legs	HIP_HINGE	2	f	f	f	f	t	smith machine	SETS_REPS
+1234	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	smith machine	SETS_REPS
+1235	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1236	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1237	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1238	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1239	upper arms	HORIZONTAL_PUSH	2	f	f	f	f	t	smith machine	SETS_REPS
+1240	upper arms	ELBOW_FLEXION	2	f	f	f	f	t	smith machine	SETS_REPS
+1241	upper arms	HORIZONTAL_PUSH	2	f	f	f	t	t	smith machine	SETS_REPS
+1242	upper arms	ELBOW_EXTENSION	2	f	f	f	f	t	smith machine	SETS_REPS
+1243	lower legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1244	lower legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1245	lower legs		3	f	t	f	f	f	sled machine	SETS_REPS
+1246	lower legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1247	upper legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1248	upper legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1249	upper legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1250	upper legs		3	f	f	f	f	f	sled machine	SETS_REPS
+1251	upper legs		3	f	t	f	f	f	sled machine	SETS_REPS
+1252	waist		2	f	f	f	f	f	other	SETS_REPS
+1253	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+1254	lower legs	ANKLE_PLANTAR_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+1255	lower legs	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1256	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1257	back	MOBILITY	1	f	t	f	f	t	body weight	SETS_REPS
+1258	back	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+1259	back	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	body weight	SETS_REPS
+1260	back	MOBILITY	1	f	f	f	f	t	body weight	DURATION
+1261	back	TRUNK_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+1262	upper legs	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1263	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1264	upper legs	KNEE_DOMINANT	1	f	f	t	f	t	body weight	SETS_REPS
+1265	upper legs	KNEE_DOMINANT	1	f	f	t	f	t	body weight	SETS_REPS
+1266	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	body weight	SETS_REPS
+1267	upper arms	KNEE_DOMINANT	1	f	f	t	f	f	body weight	SETS_REPS
+1268	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	f	f	f	f	t	dumbbell	SETS_REPS
+1269	waist	TRUNK_FLEXION	1	f	f	f	f	t	stability ball	SETS_REPS
+1270	upper legs		1	f	f	f	f	f	rope	DURATION
+1271	shoulders	VERTICAL_PUSH	3	f	f	t	f	t	barbell	SETS_REPS
+1272	upper legs	HIP_HINGE	3	t	f	f	f	t	barbell	SETS_REPS
+1273	upper legs	KNEE_DOMINANT	3	t	f	t	f	t	barbell	SETS_REPS
+1274	lower arms	WRIST_FOREARM	2	f	f	f	f	t	smith machine	SETS_REPS
+1275	lower arms	WRIST_FOREARM	2	f	f	f	f	t	smith machine	SETS_REPS
+1276	lower legs	ANKLE_PLANTAR_FLEXION	3	f	f	f	f	t	smith machine	SETS_REPS
+1277	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	smith machine	SETS_REPS
+1278	lower legs	ANKLE_PLANTAR_FLEXION	2	f	f	f	f	t	smith machine	SETS_REPS
+1279	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	smith machine	SETS_REPS
+1280	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	smith machine	SETS_REPS
+1281	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	smith machine	SETS_REPS
+1282	shoulders	VERTICAL_PUSH	2	f	f	t	f	t	smith machine	SETS_REPS
+1283	shoulders	HORIZONTAL_PULL	2	f	f	f	f	t	smith machine	SETS_REPS
+1284	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	smith machine	SETS_REPS
+1285	chest	HORIZONTAL_PUSH	2	f	f	f	f	t	smith machine	SETS_REPS
+1286	chest	HORIZONTAL_PUSH	2	f	f	f	t	t	smith machine	SETS_REPS
+1287	back	SCAPULAR_ELEVATION	2	f	f	f	f	t	smith machine	SETS_REPS
+1288	upper legs	KNEE_DOMINANT	3	f	f	f	f	t	smith machine	SETS_REPS
+1289	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1290	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1291	upper legs	KNEE_DOMINANT	2	f	f	f	f	t	smith machine	SETS_REPS
+1292	upper legs		2	f	f	f	f	f	other	SETS_REPS
+1293	cardio	LOCOMOTION_CARDIO	2	t	f	t	f	t	body weight	DURATION
+1294	cardio	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	body weight	DURATION
+1295	cardio	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1296	chest	HORIZONTAL_PUSH	3	t	t	t	f	t	body weight	SETS_REPS
+1297	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	suspension straps	SETS_REPS
+1298	waist	CORE_STABILITY	1	f	f	t	f	t	body weight	SETS_REPS
+1299	waist	CORE_STABILITY	3	f	t	f	f	t	body weight	SETS_REPS
+1300	waist	CORE_STABILITY	1	f	f	f	f	t	suspension straps	SETS_REPS
+1301	waist	TRUNK_FLEXION	1	f	f	t	f	t	pull-up bar	SETS_REPS
+1302	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1303	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1304	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1305	waist	TRUNK_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1306	waist	TRUNK_FLEXION	1	f	f	f	f	t	parallel bars	SETS_REPS
+1307	back	HORIZONTAL_PULL	1	f	f	f	f	t	suspension straps	SETS_REPS
+1308	back	TRUNK_FLEXION	1	f	f	f	f	t	body weight	SETS_REPS
+1309	back	MOBILITY	1	f	f	t	f	t	body weight	DURATION
+1310	back	MOBILITY	1	f	t	f	f	t	body weight	SETS_REPS
+1311	upper legs	HIP_ABDUCTION_ADDUCTION	1	f	t	f	f	t	body weight	SETS_REPS
+1312	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	suspension straps	SETS_REPS
+1313	upper legs	CORE_STABILITY	1	f	t	t	f	t	body weight	SETS_REPS
+1314	upper legs	TRUNK_ROTATION_LATERAL_FLEXION	1	f	t	f	f	t	body weight	SETS_REPS
+1315	upper legs	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
+1316	upper arms		1	f	f	f	f	f	bench	SETS_REPS
+1317	upper arms	HORIZONTAL_PUSH	3	f	f	f	f	t	body weight	SETS_REPS
+1318	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	bench	SETS_REPS
+1319	upper arms		1	f	f	f	f	f	bench	SETS_REPS
+1320	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+1321	upper arms	HORIZONTAL_PUSH	1	f	f	f	f	t	body weight	SETS_REPS
+1322	upper arms	MOBILITY	1	f	f	t	f	t	body weight	DURATION
+1323	back	VERTICAL_PULL	2	f	f	t	f	t	cable	SETS_REPS
+1324	cardio	LOCOMOTION_CARDIO	2	f	f	f	f	t	stationary bike	DURATION
+1325	cardio	LOCOMOTION_CARDIO	1	f	f	f	f	t	treadmill	DURATION
+1326	upper arms		3	f	f	f	f	f	weighted	SETS_REPS
+1327	cardio		2	f	f	f	f	f	stationary bike	DURATION
+1328	cardio		2	f	f	f	f	f	other	DURATION
+1329	cardio		2	f	f	f	f	f	other	DURATION
+1330	waist		2	f	t	f	f	f	other	SETS_REPS
+1331	upper legs		2	f	f	f	f	f	other	SETS_REPS
+1332	upper legs		2	f	f	f	f	f	other	SETS_REPS
+1333	cardio	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	DURATION
+1334	chest	HORIZONTAL_PUSH	1	f	t	f	f	t	body weight	SETS_REPS
+1335	chest	HORIZONTAL_PUSH	3	f	f	f	f	t	parallel bars	SETS_REPS
+1336	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1337	back	VERTICAL_PULL	3	f	f	t	f	t	pull-up bar	SETS_REPS
+1338	upper arms	ELBOW_FLEXION	1	f	f	f	f	t	medicine ball	SETS_REPS
+1339	lower arms		3	f	f	f	f	f	weighted	SETS_REPS
+1340	lower legs		3	f	f	f	f	f	weighted	SETS_REPS
+1341	shoulders		3	f	f	f	f	f	weighted	SETS_REPS
+1342	shoulders		2	f	t	f	f	f	weighted	SETS_REPS
+1343	shoulders		3	f	f	f	f	f	weighted	SETS_REPS
+1344	chest		3	f	t	f	f	f	weighted	SETS_REPS
+1345	chest		3	f	f	f	f	f	weighted	SETS_REPS
+1346	chest		3	f	f	f	f	f	weighted	SETS_REPS
+1347	waist		3	f	t	f	f	f	weighted	SETS_REPS
+1348	waist		3	f	t	f	f	f	weighted	SETS_REPS
+1349	waist		3	f	t	f	f	f	weighted	DURATION
+1350	waist		3	f	f	f	f	f	weighted	SETS_REPS
+1351	waist		3	f	t	f	f	f	weighted	SETS_REPS
+1352	waist		3	f	f	f	f	f	weighted	SETS_REPS
+1353	waist		3	f	f	f	f	f	weighted	SETS_REPS
+1354	waist		3	f	f	f	f	f	weighted	SETS_REPS
+1355	waist		2	f	f	f	f	f	weighted	SETS_REPS
+1356	waist		3	f	f	f	f	f	weighted	SETS_REPS
+1357	back		3	f	f	f	f	f	weighted	SETS_REPS
+1358	back		3	f	f	f	f	f	weighted	SETS_REPS
+1359	back		3	f	f	f	f	f	weighted	SETS_REPS
+1360	back		3	f	f	f	f	f	weighted	SETS_REPS
+1361	back		3	f	f	f	f	f	weighted	SETS_REPS
+1362	back		3	f	f	f	f	f	weighted	SETS_REPS
+1363	upper legs		3	f	f	f	f	f	weighted	SETS_REPS
+1364	upper legs		3	f	f	f	f	f	weighted	SETS_REPS
+1365	upper legs		3	f	f	f	f	f	weighted	SETS_REPS
+1366	upper legs		3	f	f	f	f	f	weighted	SETS_REPS
+1367	upper legs		2	f	f	f	f	f	weighted	DURATION
+1368	upper arms		3	f	f	f	f	f	weighted	SETS_REPS
+1369	upper arms		3	f	f	f	f	f	weighted	SETS_REPS
+1370	upper arms		3	f	f	f	f	f	weighted	SETS_REPS
+1371	upper arms		3	f	f	f	f	f	weighted	SETS_REPS
+1372	waist		2	f	t	f	f	f	other	SETS_REPS
+1373	lower arms	MOBILITY	1	f	f	f	f	t	body weight	SETS_REPS
+1374	waist	LOCOMOTION_CARDIO	1	t	f	f	f	t	body weight	SETS_REPS
+1375	upper legs	MOBILITY	1	f	t	f	f	t	body weight	DURATION
+1376	lower arms		3	f	f	f	f	f	weighted	SETS_REPS

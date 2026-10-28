@@ -3,7 +3,7 @@
 --
 -- ESTADO: CANDIDATA A DESPLIEGUE; NO APLICADA EN NEON. Verificada solo en
 -- PostgreSQL 16 aislado. La revision humana doble esta PENDIENTE: ver
--- docs/FitSense/CATALOGO_V36.md y docs/FitSense/catalogo_v36/.
+-- docs/FitSense/CATALOGO_V36.md y docs/FitSense/evidencia/catalogo_v36/.
 --
 -- QUE HACE
 --   Corrige, por exercise_id, las columnas aprobadas de nueve ejercicios cuya
