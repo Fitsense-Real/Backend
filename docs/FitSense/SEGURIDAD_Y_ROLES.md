@@ -244,3 +244,16 @@ Se eligió un procedimiento de ejecución única, `docs/FitSense/operaciones/cam
 | CORS por origen | `Endurecimiento.cors`, `CorsOriginsTest` |
 | Tareas programadas | `Endurecimiento.tareasProgramadas` |
 | Generación, adaptación y progresión intactas | Regresión completa y `GeneracionReferenciaIT` (72/72) |
+
+### Regresión (28/10/2026, rama `seguridad-rbac`)
+
+| Fase | Resultado |
+|---|---|
+| Unitarias | 809 de 809 (799 anteriores más 10 de `CorsOriginsTest`) |
+| Integración | 244 ejecutadas, 0 fallos y 10 omitidas (las opcionales: Replicate real, Neon y lectura, igual que antes) |
+| `GeneracionReferenciaIT` | 72 de 72 planes iniciales idénticos |
+
+**Las 7 pruebas P2-D sobre la réplica preparada** (`InvariantesV33IT`, `PublicacionAtomicaIT`, `DisparadorDiferidoIT`) fallaron en la primera pasada con `missing column [role] in table [users]`.
+- Es lo esperado: esa réplica no corre Flyway y valida el esquema.
+- Con V35 aplicada a la réplica **local** (`fs-p2d`, no Neon), pasan las 7.
+- Para correrlas contra la rama de pruebas de Neon (FitSenseTests), esa rama necesitará V35 cuando se autorice.
