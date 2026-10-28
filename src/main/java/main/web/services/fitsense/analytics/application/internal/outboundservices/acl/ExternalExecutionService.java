@@ -41,7 +41,8 @@ public class ExternalExecutionService {
                         session.executedVolume(),
                         session.executedReps(),
                         session.executedSeconds(),
-                        session.dominantSkipReason()))
+                        session.dominantSkipReason(),
+                        session.dolorEnEjercicio()))
                 .toList();
     }
 

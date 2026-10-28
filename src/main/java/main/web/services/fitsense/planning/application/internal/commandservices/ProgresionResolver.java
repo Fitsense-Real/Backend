@@ -100,6 +100,15 @@ public class ProgresionResolver {
         this.jsonSupport = jsonSupport;
     }
 
+    /**
+     * PROGRESION ORDINARIA: 100 % de cumplimiento REAL en dos semanas consecutivas
+     * (decision del 27/10/2026). Es un umbral PROPIO y no sale de la configuracion:
+     * {@code good_threshold_pct} (80) sigue siendo el de la adaptacion -por debajo
+     * se adapta-, y subirlo haria que cualquier semana por debajo del 100 % pidiera
+     * una adaptacion. La recuperacion y la reincorporacion siguen con el 80 %.
+     */
+    static final double UMBRAL_PROGRESION = 100.0;
+
     /** Los parametros vigentes (V7/V15), leidos en cada ciclo. */
     record Parametros(double umbralBueno, double pasoOrdinarioPct, double pasoRecuperacionPct, int divisor) {}
 
@@ -207,21 +216,27 @@ public class ProgresionResolver {
             if (rec.isPresent()) return List.of(rec.get());
         }
 
-        // 4/5 · Progresion ordinaria, con la reserva R2 si se retiro un relleno.
+        // 4/5 · Progresion ordinaria, con la reserva R2 si se retiro un relleno. SOLO con
+        // las dos semanas al 100 % real (UMBRAL_PROGRESION); la recuperacion de arriba y
+        // la reincorporacion de abajo siguen con el umbral de siempre.
+        boolean perfectas = dosSemanasPerfectas(previa, observada, ultimo);
         var retirado = retirado(linaje, s);
         if (retirado == null)
-            return progresiones(s, nueva, context, elegibles, p, base, techo, techo, null);
+            return perfectas ? progresiones(s, nueva, context, elegibles, p, base, techo, techo, null) : List.of();
 
         var cand = elegibles.get(retirado.getExerciseId());
         boolean descartada = cand == null || exclusiones.incluye(retirado.getExerciseId())
                 || dolio(previa, retirado.getExerciseId());
         var exacta = descartada ? null : exacta(retirado, cand, context);
         if (descartada || exacta == null)
-            return progresiones(s, nueva, context, elegibles, p, base, techo, techo, DESCARTADA);
+            return perfectas ? progresiones(s, nueva, context, elegibles, p, base, techo, techo, DESCARTADA)
+                    : List.of();
 
         int vRet = exacta.volume(p.divisor());
         var conReserva = progresiones(s, nueva, context, elegibles, p, base, techo, techo - vRet, PENDIENTE);
-        if (!conReserva.isEmpty()) return conReserva;
+        // Si aun cabe una progresion pero las semanas no son perfectas, la sesion se
+        // MANTIENE: no se salta a reincorporar porque la progresion este bloqueada.
+        if (!conReserva.isEmpty()) return perfectas ? conReserva : List.of();
 
         // 1(a), 27/10/2026: adaptacion -> cumplimiento sostenido -> AL MENOS UNA
         // progresion valida despues del acortamiento -> reincorporacion. Sin ningun
@@ -237,7 +252,8 @@ public class ProgresionResolver {
                     exacta, v, v + vRet, base, techo, PENDIENTE, nueva, con, context));
         }
         // Si la reincorporacion no cabe (V4, colocaciones, presupuesto) la reserva se libera.
-        lista.addAll(progresiones(s, nueva, context, elegibles, p, base, techo, techo, EN_ESPERA_DE_TIEMPO));
+        if (perfectas)
+            lista.addAll(progresiones(s, nueva, context, elegibles, p, base, techo, techo, EN_ESPERA_DE_TIEMPO));
         return lista;
     }
 
@@ -285,6 +301,41 @@ public class ProgresionResolver {
         if (o == null || !COMPLETADA.equals(o.sessionStatus())) return false;
         if (o.exercises() != null && o.exercises().stream()
                 .anyMatch(x -> FATIGA.equals(x.skipReason()) || DOLOR.equals(x.skipReason()))) return false;
+        return true;
+    }
+
+    /**
+     * Las dos semanas del criterio (la medida y la anterior, la de O) con el 100 % de
+     * cumplimiento REAL: adherencia y cobertura al 100 % y, ademas, TODAS sus sesiones
+     * registradas, completadas al 100 % y con todos sus ejercicios completados, sin
+     * ninguno omitido ni parcial. El porcentaje solo no basta: se guarda con dos
+     * decimales (un 99,996 % queda en 100,00) y una semana sin sesiones no prueba nada.
+     */
+    private boolean dosSemanasPerfectas(PreviousWeekSummary previa, BigDecimal observada, Tramo ultimo) {
+        if (!supera(observada, UMBRAL_PROGRESION)) return false;
+        if (!supera(ultimo.intento().getObservedAdherencePct(), UMBRAL_PROGRESION)
+                || !supera(ultimo.intento().getRegistrationCoveragePct(), UMBRAL_PROGRESION)) return false;
+
+        // La semana medida.
+        if (previa.workouts().isEmpty()) return false;
+        for (var w : previa.workouts())
+            if (!w.recorded() || !COMPLETADA.equals(w.sessionStatus()) || !supera(w.completionPct(), UMBRAL_PROGRESION))
+                return false;
+        for (var x : previa.prescriptions())
+            if (!COMPLETADA.equals(x.exerciseStatus()) || x.skipReason() != null
+                    || !supera(x.completionPct(), UMBRAL_PROGRESION)) return false;
+
+        // La semana anterior: todas las sesiones del plan de O.
+        var anteriores = ultimo.origen().getPlan().workoutsView().stream().map(PlannedWorkout::getId).toList();
+        if (anteriores.isEmpty()) return false;
+        var resultados = externalExecutionService.fetchResultsByWorkout(anteriores);
+        for (var id : anteriores) {
+            var r = resultados.get(id);
+            if (r == null || !COMPLETADA.equals(r.sessionStatus()) || !supera(r.completionPercentage(), UMBRAL_PROGRESION))
+                return false;
+            if (r.exercises() == null || r.exercises().stream().anyMatch(e -> !COMPLETADA.equals(e.status())
+                    || e.skipReason() != null || !supera(e.completionPercentage(), UMBRAL_PROGRESION))) return false;
+        }
         return true;
     }
 

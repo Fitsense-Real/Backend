@@ -215,6 +215,11 @@ public class PlanAdaptationAttempt {
         return observedAdherencePct;
     }
 
+    /** La cobertura de registro de la semana medida (para la progresion al 100 %, 27/10/2026). */
+    public BigDecimal getRegistrationCoveragePct() {
+        return registrationCoveragePct;
+    }
+
     public String getConservationReport() {
         return conservationReport;
     }

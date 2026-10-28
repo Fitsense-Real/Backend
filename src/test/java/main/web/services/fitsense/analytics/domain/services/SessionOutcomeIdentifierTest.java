@@ -83,6 +83,35 @@ class SessionOutcomeIdentifierTest {
     }
 
     @Test
+    @DisplayName("Dolor en un ejercicio y fatiga en dos: la sesion se trata por dolor (no manda la mayoria)")
+    void dolorTienePrioridadSobreLaMayoria() {
+        var sesion = new WeekSessionInput(1L, BigDecimal.valueOf(40), (short) 30, (short) 7,
+                (short) 3, 2, 120, 40, 0, "FATIGUE", true);
+        var r = identificar(List.of(prev(1, 0, "PARTIAL", null)), List.of(sesion));
+        assertEquals("PAIN_OR_DISCOMFORT", r.get(0).skipReason(),
+                "la seguridad no se decide por mayoria: la intervencion sera SEGURIDAD_ANTE_DOLOR");
+        assertTrue(r.get(0).problematic());
+    }
+
+    @Test
+    @DisplayName("Sin ningun ejercicio con dolor, la causa dominante sigue mandando como antes")
+    void sinDolorComoAntes() {
+        var sesion = new WeekSessionInput(1L, BigDecimal.valueOf(40), (short) 30, (short) 7,
+                (short) 3, 2, 120, 40, 0, "FATIGUE", false);
+        var r = identificar(List.of(prev(1, 0, "PARTIAL", null)), List.of(sesion));
+        assertEquals("FATIGUE", r.get(0).skipReason());
+    }
+
+    @Test
+    @DisplayName("Sesion completada por encima del umbral con un dolor: no se senala (el aviso de seguridad va aparte)")
+    void completadaConDolorNoSeSenala() {
+        var sesion = new WeekSessionInput(1L, BigDecimal.valueOf(90), (short) 40, (short) 6,
+                (short) 4, 4, 300, 100, 0, "PAIN_OR_DISCOMFORT", true);
+        var r = identificar(List.of(prev(1, 0, "COMPLETED", null)), List.of(sesion));
+        assertFalse(r.get(0).problematic(), "no hay incumplimiento que adaptar");
+    }
+
+    @Test
     @DisplayName("El motivo de la sesion manda sobre el del previsto")
     void elMotivoDeLaSesionManda() {
         var sesion = new WeekSessionInput(1L, BigDecimal.valueOf(40), (short) 30, (short) 7,

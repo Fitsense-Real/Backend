@@ -4,6 +4,7 @@ import main.web.services.fitsense.analytics.domain.model.valueobjects.SessionOut
 import main.web.services.fitsense.analytics.domain.model.valueobjects.WeekPlanInput;
 import main.web.services.fitsense.analytics.domain.model.valueobjects.WeekSessionInput;
 import main.web.services.fitsense.configuration.domain.model.valueobjects.CalculationParams;
+import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -79,7 +80,17 @@ public class SessionOutcomeIdentifier {
 
                     // El motivo de la sesion manda sobre el del previsto: es el
                     // que registro la persona al cerrarla.
-                    String motivo = session != null && session.dominantSkipReason() != null
+                    //
+                    // SALVO EL DOLOR (27/10/2026). La causa dominante es la mas
+                    // repetida entre los ejercicios, asi que un ejercicio dejado por
+                    // dolor junto a dos por fatiga daba FATIGUE, y la sesion se
+                    // adaptaba sin poder sustituir el que dolio. Si alguno se dejo
+                    // por dolor, la sesion se trata por seguridad. Solo cambia la
+                    // intervencion de esta sesion: la causa dominante que guardan
+                    // las metricas semanales sale de otro sitio y no se toca.
+                    String motivo = session != null && session.dolorEnEjercicio()
+                            ? SkipReason.PAIN_OR_DISCOMFORT.name()
+                            : session != null && session.dominantSkipReason() != null
                             ? session.dominantSkipReason() : workout.skipReason();
 
                     return new SessionOutcome(

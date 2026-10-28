@@ -140,6 +140,7 @@ public class ExecutionContextFacade {
                 session.executedEquivalentVolume(durationToRepsDivisor),
                 session.executedReps(),
                 session.executedSeconds(),
-                session.dominantSkipReason().map(Enum::name).orElse(null));
+                session.dominantSkipReason().map(Enum::name).orElse(null),
+                session.algunEjercicioConDolor());
     }
 }
