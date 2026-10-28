@@ -85,7 +85,7 @@ class EvaluacionFrecuenciaIT {
 
     record Sesion(String perfil, LocalDate fecha, WorkoutFocus foco, int trabajo, int complementos,
                   Map<String, Long> grupos, long segundos, long pisoExacto, int estimadaMin, int pisoActualMin,
-                  List<String> banderas, List<Long> dudosos) {
+                  List<String> banderas, List<Long> dudosos, List<Long> ejercicios) {
         double pct(int minutos) {
             return 100.0 * segundos / (minutos * 60.0);
         }
@@ -134,6 +134,42 @@ class EvaluacionFrecuenciaIT {
                                 semana));
         assertEquals(72, resultados.size());
         escribir("impacto_v20_referencias", resultados, 0);
+    }
+
+    /**
+     * La semilla del motor de reglas depende de usuario y semana: un resultado
+     * de una sola corrida puede ser suerte. Los mismos 72 perfiles de 4-6 dias
+     * con 4 usuarios distintos cada uno (4 semillas) y la misma semana.
+     */
+    @Test
+    @Order(3)
+    @DisplayName("4-6 dias con 4 semillas por perfil: cuantas semanas quedan sin plan y por que")
+    void robustezDeSemillas() throws Exception {
+        var semana = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+        var sb = new StringBuilder("perfil\tsemilla\tresultado\n");
+        var sinPlan = new TreeMap<String, Integer>();
+        int total = 0;
+        for (int semilla = 1; semilla <= 4; semilla++)
+            for (var objetivo : GoalType.values())
+                for (var nivel : FitnessLevel.values())
+                    for (int dias : new int[]{4, 5, 6})
+                        for (var lugar : List.of("GYM", "CASA")) {
+                            var disponibles = new ArrayList<Short>();
+                            for (short d = 1; d <= dias; d++) disponibles.add(d);
+                            String perfil = objetivo + "/" + nivel + "/" + dias + "d/45/" + lugar;
+                            var r = generar(perfil, objetivo, nivel, dias, disponibles, 45, lugar, semana);
+                            total++;
+                            String resultado = r.validacion().startsWith("SIN_PLAN") ? r.validacion() : "VALIDA";
+                            if (!"VALIDA".equals(resultado)) sinPlan.merge(perfil, 1, Integer::sum);
+                            sb.append(perfil).append('\t').append(semilla).append('\t').append(resultado).append('\n');
+                        }
+        assertEquals(288, total);
+        sb.append("\n# sin plan por perfil (de 4): ").append(sinPlan).append('\n');
+        var dir = Boolean.getBoolean("fitsense.evaluacion.capturar")
+                ? Path.of("docs/FitSense/evidencia/frecuencia")
+                : Path.of(System.getProperty("fitsense.evaluacion.dir", "target/evaluacion"));
+        Files.createDirectories(dir);
+        Files.writeString(dir.resolve("robustez_semillas_4_6_dias.tsv"), sb.toString());
     }
 
     // ------------------------------------------------------------------ medicion
@@ -193,7 +229,8 @@ class EvaluacionFrecuenciaIT {
             sesiones.add(new Sesion(etiqueta, fecha, foco, trabajo.size(), ejercicios.size() - trabajo.size(), grupos,
                     segundos, pisoExacto, ESTIMADOR.estimateMinutes(w, p),
                     PlanDraftValidator.minimumSessionMinutes(ctx), banderas(foco, trabajo.size(), grupos,
-                    segundos, pisoExacto, dudosos), dudosos));
+                    segundos, pisoExacto, dudosos), dudosos,
+                    ejercicios.stream().map(PlanDraft.DraftExercise::exerciseId).toList()));
         }
 
         var draft = new PlanDraft(GenerationSource.RULE_ENGINE, null, "evaluacion", null, "r", borrador);
@@ -261,7 +298,7 @@ class EvaluacionFrecuenciaIT {
     private void escribir(String nombre, List<Resultado> resultados, int minutosFijos) throws Exception {
         var tsv = new StringBuilder("perfil\tdias_solicitados\tsesiones\tdivision\tcobertura\tvalidacion\n");
         var sesionesTsv = new StringBuilder("perfil\tfecha\tenfoque\ttrabajo\tcomplementos\tgrupos\tsegundos"
-                + "\tpct_configurado\testimada_min\tpiso_actual_min\tpiso_exacto_s\tbanderas\n");
+                + "\tpct_configurado\testimada_min\tpiso_actual_min\tpiso_exacto_s\tbanderas\tejercicios\n");
         for (var r : resultados) {
             tsv.append(r.perfil()).append('\t').append(r.solicitados()).append('\t').append(r.programados())
                     .append('\t').append(r.division()).append('\t').append(r.cobertura()).append('\t')
@@ -273,10 +310,11 @@ class EvaluacionFrecuenciaIT {
                         .append('\t').append(s.grupos()).append('\t').append(s.segundos()).append('\t')
                         .append(String.format(Locale.ROOT, "%.1f", s.pct(minutos))).append('\t')
                         .append(s.estimadaMin()).append('\t').append(s.pisoActualMin()).append('\t')
-                        .append(s.pisoExacto()).append('\t').append(String.join(",", s.banderas())).append('\n');
+                        .append(s.pisoExacto()).append('\t').append(String.join(",", s.banderas())).append('\t')
+                        .append(s.ejercicios()).append('\n');
         }
         var dir = Boolean.getBoolean("fitsense.evaluacion.capturar")
-                ? Path.of("docs/FitSense/evidencia/frecuencia") : Path.of("target/evaluacion");
+                ? Path.of("docs/FitSense/evidencia/frecuencia") : Path.of(System.getProperty("fitsense.evaluacion.dir", "target/evaluacion"));
         Files.createDirectories(dir);
         Files.writeString(dir.resolve(nombre + "_planes.tsv"), tsv.toString());
         Files.writeString(dir.resolve(nombre + "_sesiones.tsv"), sesionesTsv.toString());
