@@ -259,17 +259,18 @@ Se eligió un procedimiento de ejecución única, `docs/FitSense/operaciones/cam
 | Tareas programadas | `Endurecimiento.tareasProgramadas` |
 | Generación, adaptación y progresión intactas | Regresión completa y `GeneracionReferenciaIT` (72/72) |
 
-### Regresión (28/10/2026, rama `seguridad-rbac`)
+### Regresión (28/10/2026, commit `9988af3`, alcance MVP)
 
 | Fase | Resultado |
 |---|---|
-| Unitarias | 809 de 809 (799 anteriores más 10 de `CorsOriginsTest`) |
-| Integración | 244 ejecutadas, 0 fallos y 10 omitidas (las opcionales: Replicate real, Neon y lectura, igual que antes) |
+| Unitarias | 809 de 809 |
+| Integración | 245 ejecutadas, 0 fallos y 10 omitidas (las opcionales: Replicate real, Neon y lectura) |
 | `GeneracionReferenciaIT` | 72 de 72 planes iniciales idénticos |
+| CI en GitHub (`verify`) | En verde sobre `9988af3`, 6 min 21 s |
 
-**Las 7 pruebas P2-D sobre la réplica preparada** (`InvariantesV33IT`, `PublicacionAtomicaIT`, `DisparadorDiferidoIT`) fallaron en la primera pasada con `missing column [role] in table [users]`.
-- Es lo esperado: esa réplica no corre Flyway y valida el esquema.
-- Con V35 aplicada a la réplica **local** (`fs-p2d`, no Neon), pasan las 7.
+**Las 7 pruebas P2-D sobre la réplica preparada** (`InvariantesV33IT`, `PublicacionAtomicaIT`, `DisparadorDiferidoIT`) usan una base sin Flyway que valida el esquema.
+- En local pasan con la V35 mínima aplicada a la réplica `fs-p2d` (no a Neon).
+- En CI se omiten: necesitan `fitsense.pruebas.url`.
 - Para correrlas contra la rama de pruebas de Neon (FitSenseTests), esa rama necesitará V35 cuando se autorice.
 
 ## 9. Secuencia de fusión
