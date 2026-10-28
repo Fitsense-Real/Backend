@@ -4,7 +4,7 @@
 **Base:** PostgreSQL efímera (Testcontainers) con participantes sintéticos. **Neon sin tocar.** Progresión encendida **solo** en el contexto aislado de la segunda campaña; en producción sigue apagada.
 **Arnés:** `CampanaReplicateRealIT` (opt-in: `-Dfitsense.replicate.real=true`). Evidencia completa (propuesta original de cada llamada, rechazos por regla, plan antes y después, evidencia V32, latencias y métricas): `evidencia/replicate_real/{adaptacion,progresion}/`.
 
-> **Estado (27/10/2026, segunda parte):** los cinco problemas de §4 están **corregidos y verificados** con Replicate real (§8–§12). Aparece uno nuevo, **pendiente de decisión** (§11.1, herencia de D8). Las secciones §1–§7 describen la campaña **anterior** a las correcciones y se conservan como línea base.
+> **Estado (28/10/2026):** los cinco problemas de §4 están **corregidos y verificados** con Replicate real (§8–§12). El hallazgo posterior de la herencia de D8 (§11.1) está **aprobado, corregido y verificado** (§13). No queda nada pendiente de decisión. Las secciones §1–§7 describen la campaña **anterior** a las correcciones y se conservan como línea base.
 
 ## 1. Resumen
 
@@ -263,7 +263,7 @@ La generación inicial no cambia: 11 de 12 por IA y 1 por reglas, las 12 válida
 
 ## 11. Semanas sin plan después de las correcciones (8): causas
 
-### 11.1 NUEVO, pendiente de decisión · D8 no hereda la exención tras una señalada sin cambios (5 casos)
+### 11.1 D8 no heredaba la exención tras una señalada sin cambios (5 casos) — **aprobado y corregido (§13)**
 
 En los cinco el patrón es idéntico:
 1. s4: `ACORTAR` aplicado deja el viernes bajo el mínimo de V20, exento por D8.
@@ -273,7 +273,7 @@ En los cinco el patrón es idéntico:
 
 **Causa:** `ReduccionAutorizadaResolver` corta la herencia ante cualquier sesión `SIN_EFECTO` cuya intervención no sea `ACORTAR`, aunque la sesión publicada sea idéntica. Así está escrito D8 («una intervención nueva la interrumpe»). Antes de C1 casi no se veía, porque en s6 la IA «resolvía» subiendo dosis; ahora s6 acaba en respaldo, que es lo correcto, y el hueco aparece.
 
-**Propuesta (no implementada):** que una sesión `SIN_EFECTO` o conservada por el respaldo, **idéntica** a la que tenía la exención, no interrumpa la herencia. Una sesión que no cambió sigue siendo la copia de la reducción autorizada. Amplía qué sesiones quedan exentas de V20, así que es una decisión tuya.
+**Propuesta:** que una sesión `SIN_EFECTO` o conservada por el respaldo, **idéntica** a la que tenía la exención, no interrumpa la herencia. Aprobada el 27/10/2026 con condiciones; implementada y verificada en §13.
 
 ### 11.2 Dolor sin propuesta válida: `NO_FACTIBLE` por diseño (3 casos)
 
@@ -292,4 +292,78 @@ Tarifa pública de GPT-5 mini (0,25 / 2,00 US$ por millón); la cifra oficial es
 
 Evidencia: `evidencia/replicate_real/despues/` (cada llamada con la propuesta original, los rechazos, el plan antes y después, V32, latencia y tokens). No contiene secretos.
 
-**Pendiente de decisión:** §11.1 (herencia de D8). No se ha desplegado nada ni se ha activado la progresión.
+No se ha desplegado nada ni se ha activado la progresión.
+
+---
+
+# Tercera parte · herencia de D8 (aprobada el 27/10/2026)
+
+## 13. La corrección y su verificación
+
+### 13.1 Regla implementada
+
+Solo en `ReduccionAutorizadaResolver` (más su prueba). El recorrido del linaje hacia atrás (V31 + V32) ya no se corta en un paso `SIN_EFECTO` de una intervención distinta de `ACORTAR` si se cumplen **todas** estas condiciones:
+
+| Condición | Cómo se comprueba |
+|---|---|
+| Existe una autorización D8 válida en el origen | El recorrido tiene que llegar a un `ACORTAR_O_REORGANIZAR` aplicado en un intento `APLICADA`, como antes. Sin él, no hay exención |
+| Linaje continuo desde el acortamiento | Cada paso con su único intento V32 y su sesión de origen. Si falta cualquiera, no hay exención |
+| La sesión publicada es **idéntica** a la anterior | Ejercicios en el mismo orden, tipo, series, repeticiones, segundos, descanso, carga, enfoque y duración. Se ignoran identificadores, fechas y estado de ejecución |
+| Si la intervención cambió la prescripción, no se hereda | Cualquier diferencia de las anteriores (incluida una carga retirada por V11) corta la herencia |
+| Otra sesión que cambia no afecta | La clasificación es por sesión de origen |
+| El dolor no aprovecha D8 | Una intervención con revisión de seguridad (`SEGURIDAD_ANTE_DOLOR`) nunca hereda. Además V8C sigue rechazando conservar el ejercicio que dolió, con o sin exención |
+
+Un `RESPALDO` registra la señalada como `SIN_EFECTO` en V32, así que el mismo caso cubre los dos. Sin cambios en V20 (la exención sigue siendo solo D8), V24 ni V25, ni en la generación inicial. Sin migraciones.
+
+**Fuera del alcance (sin cambios):** dentro de la misma semana, una sesión **señalada** que la IA devuelve idéntica no recibe la exención en V8C (solo la reciben las copias no señaladas). V20 rechaza la propuesta y el respaldo publica la misma sesión. El resultado es el mismo plan, registrado como `RESPALDO` en lugar de `SIN_EFECTO`.
+
+### 13.2 Pruebas
+
+| Prueba | Qué cubre | Con el código anterior |
+|---|---|---|
+| `ReduccionAutorizadaResolverTest` (9) | Positivas: ACORTAR → copia → fatiga con respaldo idéntico → copia (hereda); igual con `SIN_EFECTO`; otra sesión del mismo intento aplicada (hereda). Negativas: sin D8 original; cambia una serie; cambia la carga (incluida la retirada por V11) o el descanso; otro ejercicio, otro orden u otra duración; linaje roto (sin intento o sin sesión de origen); intervención por dolor | Las 3 positivas fallan; las 6 negativas pasan |
+| `HerenciaD8IT` (3), ciclo completo, progresión apagada | El escenario exacto de los cinco casos: s2 `ACORTAR` (viernes bajo el mínimo), s3 copia, s4 fatiga en el viernes con la IA subiendo una serie o devolviéndolo igual (→ `RESPALDO` idéntico), s5 dificultad en el miércoles (la copia del viernes tiene que seguir exenta), s6 copia. Y el dolor: el viernes acortado que dolió, conservado tal cual, no se publica (`NO_FACTIBLE` con motivo) | Las dos positivas fallan en s5 con `NO_FACTIBLE` por V20, el mismo fallo de la campaña real |
+
+**Regresión:**
+- 796 unitarias y 214 de integración, 0 fallos.
+- `GeneracionReferenciaIT`: **72/72 idénticos**.
+- `EvaluacionLimpiaProgresionIT`: informe **idéntico**.
+- `LinajeIntegridadIT` pasa, incluido su caso F: sin la evidencia V32 del acortamiento no hay exención y V20 rechaza la copia.
+- `CicloConcurrenteIT` 9/9; `CorreccionesReplicate{Apagado,Encendido}IT` 5/5 + 5/5.
+
+### 13.3 Campaña con Replicate real (mismos 12 perfiles y guion, progresión apagada, un solo hilo)
+
+119 min, 166 llamadas, 1 error transitorio del proveedor, **0 violaciones** de las comprobaciones independientes. Siguen en 0 las subidas de dosis, las excepciones de persistencia, las semanas perdidas por V11, las `APLICADA` solo por minutos y el trabajo añadido ante dolor.
+
+| | Antes de D8 (§10) | Después de D8 |
+|---|---:|---:|
+| `NO_FACTIBLE` en la semana de dificultad (s7) | **5** | **0** |
+| `NO_FACTIBLE` por dolor sin propuesta válida (s9) | 3 | 6 |
+| Perfiles que completan el guion hasta s9 | 7 de 12 | 12 de 12 |
+| `VARIANTE_MAS_SENCILLA_O_CARGA` | 7 APLICADA, 5 NO_FACTIBLE | 11 APLICADA, 1 RESPALDO, 0 NO_FACTIBLE |
+
+Los `NO_FACTIBLE` por dolor suben porque **más perfiles llegan a la semana 9**: antes, 5 se quedaban en la 7. Hay 12 ciclos de dolor (antes 7): 6 `APLICADA` y 6 `NO_FACTIBLE`. En los 6 la IA no dio una sustitución válida en 3 intentos (más volumen, o V17/V20), y el respaldo no vuelve a publicar el ejercicio que dolió. Es el comportamiento seguro de §11.2.
+
+**Por objetivo (ciclos semanales):**
+
+| Objetivo | Ciclos (antes → después) | APLICADA | SIN_EFECTO | RESPALDO | NO_FACTIBLE (s7 / s9) |
+|---|---|---|---|---|---|
+| LOSE_WEIGHT | 20 → 24 | 9 → 11 | 0 → 0 | 2 → 4 | 2/1 → **0**/3 |
+| GAIN_MUSCLE | 24 → 26 | 8 → 8 | 6 → 6 | 1 → 3 | 1/0 → **0**/1 |
+| INCREASE_STRENGTH | 24 → 27 | 13 → 15 | 0 → 0 | 2 → 3 | 1/0 → **0**/0 |
+| GENERAL_FITNESS | 22 → 25 | 9 → 11 | 1 → 1 | 3 → 4 | 1/2 → **0**/2 |
+
+### 13.4 La excepción solo se conserva cuando corresponde
+
+- **Los 6 perfiles con el patrón** (s4 `ACORTAR` aplicado, s6 señalada en el viernes que acabó en `RESPALDO` o `SIN_EFECTO`): en los seis, el viernes publicado en s6 es **idéntico** al de la semana anterior en ejercicios, orden, series, repeticiones o segundos, descansos, carga y minutos (p. ej. `24 min [53:2x60s/30s, 1176:2x60s/30s, 896:2x6r/90s@20kg, …]` → idéntico). En los seis s7 se publicó.
+- **Los 5 perfiles en que s6 sí cambió el viernes** (`APLICADA`): el viernes nuevo quedó en el mínimo de V20 o por encima (21→23, 24→26, 30→31, 42→43, 22→24 min, con mínimos de 21, 31 y 42), y se publicó por la regla ordinaria, sin necesitar la exención. Para el caso contrario (una sesión modificada que queda bajo el mínimo) **la campaña real no dio ningún ejemplo**. Lo cubren `ReduccionAutorizadaResolverTest` (cambia la dosis, la carga, el descanso, el contenido o la duración → no hereda) y `LinajeIntegridadIT` (sin evidencia, no hay exención).
+- **Dolor:** ninguna sesión con dolor se publicó apoyándose en D8 (los 6 `NO_FACTIBLE` de s9 tienen el motivo «Sin respuesta de la IA no se puede resolver el dolor…»).
+
+### 13.5 Consumo
+
+Esta parte: 178 predicciones, incluida una ejecución de la campaña que se perdió al reiniciarse el contenedor (≈ 12 predicciones, ≈ US$ 0,14). La ejecución válida costó ≈ US$ 3,59.
+
+**Total de la sesión (consulta a Replicate): 600 predicciones, 27,57 M tokens de entrada y 2,61 M de salida, ≈ US$ 12,11** con la tarifa pública de GPT-5 mini. La cifra oficial está en el panel de Replicate, y el saldo seguía por debajo de US$ 5 (por eso la campaña corre con un solo hilo).
+
+Evidencia: `evidencia/replicate_real/despues_d8/`. Progresión apagada, Neon sin cambios, sin migraciones, nada desplegado.
+
