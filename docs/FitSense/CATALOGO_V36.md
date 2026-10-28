@@ -237,7 +237,15 @@ Por 19.4, una semana sin plan queda con adherencia NULL, y el ciclo siguiente vu
 
 **Alternativa, si se prefiere:** recalibrar sus escenarios sobre el catálogo con V36. Supone tocar los datos de las pruebas, no la lógica.
 
-**Segunda ejecución:** ver §9.1.
+### 9.1 Segunda ejecución
+
+Ejecución completa de la rama `catalogo-v36`, con la base P2-D local: **BUILD SUCCESS**.
+- Unitarias: 816 sin fallos.
+- Integración: 254, 0 fallos, 12 omitidas. Las omitidas son opcionales: Replicate real, Neon y evaluaciones manuales.
+
+Incluye `CatalogoV36IT`, `GeneracionReferenciaIT` (oficial, hasta V35) y `GeneracionReferenciaCandidataV36IT`.
+
+Ejecución combinada con el PR #3 (rama local, sin publicar): `CatalogoV36IT` (48 perfiles), `RespaldoCincoSeisDiasIT` 14/14, las dos referencias y `EvaluacionFrecuenciaIT` (barrido y robustez), todas en verde.
 
 ## 10. Decisiones pendientes
 
