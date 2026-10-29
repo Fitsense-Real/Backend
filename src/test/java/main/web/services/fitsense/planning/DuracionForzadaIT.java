@@ -38,64 +38,21 @@ import static org.junit.jupiter.api.Assertions.*;
  * (perfil de 60 minutos, {@code forcedSessionMinutes} = 45). El prompt de la
  * generacion y el de la correccion P2-D se construyen con la duracion
  * efectiva; V24 tiene que medir con la misma.
+ * <p>
+ * Con el catalogo vigente (V36). La comprobacion del plan 60 tal como se
+ * publico, sin orden, esta en {@link DuracionForzadaPlan60IT} (catalogo V35).
  */
 @Testcontainers
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token=",
-        // V36: el borrador es el plan 60 tal como se publico con el catalogo ANTERIOR
-        // (872 como estructural a 3x13). Con V36, 872 es TRUNK_FLEXION y V24 le exige
-        // 2x13: ver CATALOGO_V36.md, seccion 8.
-        "spring.flyway.target=35"
+        "fitsense.ai.api-token="
 })
-class DuracionForzadaIT {
+class DuracionForzadaIT extends DuracionForzadaBase {
 
     @Container
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
-
-    @Autowired WeeklyTrainingPlanCommandService planes;
-    @Autowired UserProfileCommandService perfiles;
-    @Autowired PlanDraftValidator validador;
-    @Autowired JdbcTemplate jdbc;
-    @Autowired main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade planning;
-
-    static final AtomicInteger SECUENCIA = new AtomicInteger();
-
-    static PlanAdjustment forzar(Integer minutos) {
-        return new PlanAdjustment(List.of(AdjustmentType.REDUCE_DURATION), null, null, null, 0.0, 0.0,
-                null, null, minutos, "sesiones mas cortas", null, null);
-    }
-
-    private long participante(int minutosPerfil) {
-        String email = "forzada-" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
-        jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
-                + " VALUES (?, 'x', 'Prueba', now(), now())", email);
-        long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
-        perfiles.handle(new CreateUserProfileCommand(u, LocalDate.now().minusYears(27).minusDays(10),
-                BiologicalSex.FEMALE, new BigDecimal("163"), new BigDecimal("58"), null, FitnessLevel.INTERMEDIATE,
-                GoalType.GAIN_MUSCLE, "Ganar masa muscular", TrainingLocation.GYM, (short) 3,
-                List.of((short) 1, (short) 3, (short) 5), (short) minutosPerfil,
-                List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine", "bench", "smith machine",
-                        "kettlebell", "band"),
-                List.of(), null, false, true, true, true, true));
-        return u;
-    }
-
-    private PlanGenerationContext contexto(int minutosPerfil, PlanAdjustment ajuste) {
-        return planes.prepare(new GenerateWeeklyPlanCommand(participante(minutosPerfil), LUNES, ajuste, false,
-                null, null)).context();
-    }
-
-    private List<String> v24(PlanDraft draft, PlanGenerationContext ctx) {
-        try {
-            validador.validate(draft, ctx, 30);
-            return List.of();
-        } catch (InvalidPlanDraftException e) {
-            return e.problems().stream().filter(p -> p.startsWith("V24")).toList();
-        }
-    }
 
     @Test
     @DisplayName("perfil de 60 y orden de 45: los dos prompts dicen 45 minutos y maximo 6")
@@ -131,13 +88,6 @@ class DuracionForzadaIT {
         var seis = sesiones();
         seis.forEach(s -> s.remove(s.size() - 1));
         assertEquals(List.of(), v24(borrador(seis, 37), contexto(60, forzar(45))));
-    }
-
-    @Test
-    @DisplayName("sin orden, o con una orden sin minutos, rige la duracion del perfil: 7 a 60 minutos")
-    void sinMinutosForzadosRigeElPerfil() {
-        assertEquals(List.of(), v24(borrador(sesiones(), 43), contexto(60, null)));
-        assertEquals(List.of(), v24(borrador(sesiones(), 43), contexto(60, forzar(null))));
     }
 
     @Test

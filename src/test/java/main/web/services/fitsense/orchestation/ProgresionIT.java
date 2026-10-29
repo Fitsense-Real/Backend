@@ -69,12 +69,7 @@ import static org.mockito.Mockito.*;
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
-        "fitsense.adaptation.progression.enabled=true",
-        // V36: los escenarios (p. ej. el viernes acortado bajo el piso de 31) estan
-        // calibrados con la semana que genera el catalogo ANTERIOR; V36 cambia la
-        // seleccion. La logica de progresion no depende del catalogo. Ver
-        // CATALOGO_V36.md, seccion 9.
-        "spring.flyway.target=35"
+        "fitsense.adaptation.progression.enabled=true"
 })
 class ProgresionIT {
 
@@ -261,18 +256,28 @@ class ProgresionIT {
     @Test
     @DisplayName("D-P7 + R2: el viernes acortado bajo el piso progresa con la exencion y, al final, reincorpora")
     void acortadaProgresaYReincorpora() throws Exception {
-        long u = participante(GoalType.GAIN_MUSCLE, List.of((short) 1, (short) 3, (short) 5));
-        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
-        var raiz = semana(w1);
-        ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
-        long plan = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
-        var ev = ultimoIntento(u);
-        assertEquals("{ACORTAR_O_REORGANIZAR}", ev.get("targeted_interventions"), String.valueOf(ev));
-        assertEquals("APLICADA", ev.get("status"), String.valueOf(ev));
-        var acortado = semana(plan).get(2);
+        // Premisa: un viernes que ACORTAR deja bajo el piso. Depende de la semana generada;
+        // si no se da con un participante, se prueba con otro (busqueda de precondicion).
         int piso = 45 * 70 / 100;
-        assertTrue(acortado.minutos() < piso, "premisa: el viernes acortado (" + acortado.minutos()
-                + ") queda bajo el piso " + piso);
+        long u = 0, w1 = 0, plan = 0;
+        List<Sesion> raiz = null;
+        Map<String, Object> ev = null;
+        Sesion candidato = null;
+        var vistos = new ArrayList<Integer>();
+        for (int intento = 0; intento < 10 && (candidato == null || candidato.minutos() >= piso); intento++) {
+            u = participante(GoalType.GAIN_MUSCLE, List.of((short) 1, (short) 3, (short) 5));
+            w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+            raiz = semana(w1);
+            ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
+            plan = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
+            ev = ultimoIntento(u);
+            assertEquals("{ACORTAR_O_REORGANIZAR}", ev.get("targeted_interventions"), String.valueOf(ev));
+            assertEquals("APLICADA", ev.get("status"), String.valueOf(ev));
+            candidato = semana(plan).get(2);
+            vistos.add(candidato.minutos());
+        }
+        var acortado = candidato;
+        assertTrue(acortado.minutos() < piso, "premisa: ningun viernes acortado bajo el piso " + piso + ": " + vistos);
         var retirado = raiz.get(2).ejercicios().stream()
                 .filter(e -> acortado.ejercicios().stream().noneMatch(x -> x.id() == e.id())).findFirst().orElseThrow();
         int base = raiz.get(2).volumen();

@@ -64,11 +64,7 @@ import static org.mockito.Mockito.*;
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
-        "fitsense.adaptation.progression.enabled=false",
-        // V36: el escenario (el viernes acortado bajo el piso de 31) esta calibrado con
-        // la semana que genera el catalogo ANTERIOR; V36 cambia la seleccion. La
-        // logica de D8 no depende del catalogo. Ver CATALOGO_V36.md, seccion 9.
-        "spring.flyway.target=35"
+        "fitsense.adaptation.progression.enabled=false"
 })
 @DisplayName("D8 · la herencia sigue tras una senalada sin cambios; el dolor no la aprovecha")
 class HerenciaD8IT {
@@ -132,8 +128,9 @@ class HerenciaD8IT {
     @DisplayName("el dolor no aprovecha D8: el viernes acortado que dolio, conservado tal cual, no se publica")
     void dolorNoAprovechaD8() throws Exception {
         modo = Modo.IGUAL;
-        long u = participante();
-        long plan = acortado(u);
+        var a = acortado();
+        long u = a.u();
+        long plan = a.plan();
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
         plan = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2)).orElseThrow();   // copia exenta
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
@@ -145,8 +142,9 @@ class HerenciaD8IT {
     }
 
     private void recorrer(Modo enLaFatiga, String estadoFatiga) throws Exception {
-        long u = participante();
-        long plan = acortado(u);
+        var a = acortado();
+        long u = a.u();
+        long plan = a.plan();
         int minutos = viernes(plan);
 
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);                       // s3: copia
@@ -169,13 +167,25 @@ class HerenciaD8IT {
         assertSinViolaciones();
     }
 
-    /** s2: el viernes omitido por falta de tiempo; ACORTAR lo deja bajo el piso de V20. */
-    private long acortado(long u) {
-        long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
-        ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
-        long nuevo = publicar(u, 0, "APLICADA");
-        assertTrue(viernes(nuevo) < PISO, "premisa: el viernes acortado (" + viernes(nuevo) + ") bajo el piso " + PISO);
-        return nuevo;
+    record Acortado(long u, long plan) {}
+
+    /**
+     * s2: el viernes omitido por falta de tiempo; ACORTAR lo deja bajo el piso de V20.
+     * La premisa depende de la semana generada: si el viernes no tiene rellenos
+     * suficientes para bajar del piso, el escenario no se da con ese participante y
+     * se prueba con otro (busqueda de precondicion, como en CatalogoV36IT).
+     */
+    private Acortado acortado() {
+        var vistos = new ArrayList<Integer>();
+        for (int intento = 0; intento < 10; intento++) {
+            long u = participante();
+            long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
+            long nuevo = publicar(u, 0, "APLICADA");
+            if (viernes(nuevo) < PISO) return new Acortado(u, nuevo);
+            vistos.add(viernes(nuevo));
+        }
+        return fail("premisa: ningun viernes acortado bajo el piso " + PISO + " en 10 participantes: " + vistos);
     }
 
     private long publicar(long u, int k, String estado) {

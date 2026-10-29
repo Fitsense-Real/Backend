@@ -1,5 +1,9 @@
 package main.web.services.fitsense.planning;
 
+import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
+import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
+import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
+import main.web.services.fitsense.execution.domain.services.WorkoutSessionCommandService;
 import main.web.services.fitsense.orchestration.application.internal.WeeklyCycleService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
@@ -45,7 +49,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * V36: correccion de nueve ejercicios del catalogo.
+ * V36: correccion de ocho ejercicios del catalogo segun su GIF (1296 queda
+ * fuera, pendiente de decision: su GIF no confirma la fase pliometrica).
  * <p>
  * PostgreSQL 16 efimero con Flyway SOLO hasta V35; se publican planes reales
  * con el catalogo anterior y V36 se aplica despues, con Flyway y la misma
@@ -60,7 +65,7 @@ import static org.mockito.Mockito.*;
         "fitsense.ai.api-token=",
         "spring.flyway.target=35"
 })
-@DisplayName("V36: correccion de nueve ejercicios del catalogo")
+@DisplayName("V36: correccion de ejercicios del catalogo segun su GIF")
 class CatalogoV36IT {
 
     @Container
@@ -78,9 +83,9 @@ class CatalogoV36IT {
     @Autowired WeeklyTrainingPlanRepository planes;
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlatformTransactionManager tm;
+    @Autowired WorkoutSessionCommandService sesiones;
 
-    static final List<Long> NUEVE = List.of(527L, 609L, 725L, 760L, 872L, 1059L, 1267L, 1296L, 1333L);
-    static final String NUEVE_SQL = "527, 609, 725, 760, 872, 1059, 1267, 1296, 1333";
+    static final String OCHO_SQL = "527, 609, 725, 760, 872, 1059, 1267, 1333";
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
     static final List<String> GIMNASIO = GeneracionReferenciaIT.GIMNASIO;
     static final List<String> CASA = GeneracionReferenciaIT.CASA;
@@ -95,8 +100,8 @@ class CatalogoV36IT {
     static String huellaAprobaciones;
     static String huellaPlanes;
     /** Participantes con un plan publicado ANTES de V36 que contiene el ejercicio. */
-    static long con1267, con872, con1059, con1296, con1296Intermedio, conTiron;
-    static long plan1267, plan872, plan1059, plan1296, plan1296Intermedio, planTiron;
+    static long con1267, con872, con1059, conTiron;
+    static long plan1267, plan872, plan1059, planTiron;
 
     // =======================================================================
     // Antes de V36
@@ -147,14 +152,6 @@ class CatalogoV36IT {
         assertNotEquals(0, con872, "ningun plan del catalogo anterior contiene 872");
         assertNotEquals(0, con1059, "ningun plan del catalogo anterior contiene 1059");
 
-        // 1296 en el plan de un principiante y de un intermedio, como si se hubiera
-        // publicado con el nivel 1 anterior: sustituye un empuje horizontal con la misma dosis.
-        con1296 = participante(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, 3, "GYM");
-        plan1296 = con1296(con1296);
-        con1296Intermedio = participante(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, 3, "GYM");
-        plan1296Intermedio = con1296(con1296Intermedio);
-        assertEquals(Map.of(), conflictos(plan1296), "con el catalogo anterior 1296 no choca con nada");
-
         huellaResto = huellaResto();
         huellaRequisitos = huellaRequisitos();
         huellaAprobaciones = huellaAprobaciones();
@@ -184,7 +181,6 @@ class CatalogoV36IT {
                 + "872|t|1|f|t|f|TRUNK_FLEXION|waist|body weight|abs|glutes|Encogimiento invertido\n"
                 + "1059|t|1|f|f|f|KNEE_DOMINANT|upper legs|body weight|quads|abs|Zancada con giro\n"
                 + "1267|f|1|f|f|t|KNEE_DOMINANT|upper arms|body weight|triceps|shoulders|Stalder press\n"
-                + "1296|t|3|t|t|t|HORIZONTAL_PUSH|chest|body weight|pectorals|core|Push-up de Superman\n"
                 + "1333|t|1|t|f|f|LOCOMOTION_CARDIO|cardio|body weight|cardiovascular system|quadriceps|"
                 + "Carrera con zancadas amplias",
                 String.join("\n", jdbc.queryForList("SELECT e.exercise_id || '|' || CASE WHEN e.is_active THEN 't'"
@@ -194,11 +190,30 @@ class CatalogoV36IT {
                         + " || '|' || eq.code || '|' || e.target_muscle || '|' || e.synergist_muscle || '|' || e.name_es"
                         + " FROM exercises e JOIN body_parts bp ON bp.body_part_id = e.body_part_id"
                         + " JOIN equipment_types eq ON eq.equipment_id = e.equipment_id"
-                        + " WHERE e.exercise_id IN (" + NUEVE_SQL + ") ORDER BY e.exercise_id", String.class)));
+                        + " WHERE e.exercise_id IN (" + OCHO_SQL + ") ORDER BY e.exercise_id", String.class)));
         assertEquals(0, cuenta("SELECT count(*) FROM exercise_equipment_requirements WHERE exercise_id = 1333"),
                 "1333 ya no exige rueda abdominal");
-        assertEquals(9, cuenta("SELECT count(*) FROM exercises WHERE exercise_id IN (" + NUEVE_SQL + ")"),
+        assertEquals(8, cuenta("SELECT count(*) FROM exercises WHERE exercise_id IN (" + OCHO_SQL + ")"),
                 "ningun registro se elimina");
+        assertEquals(1, cuenta("SELECT count(*) FROM exercises WHERE exercise_id = 1296 AND difficulty_level = 1"
+                + " AND NOT high_impact AND is_active"), "1296 sin cambios: pendiente de decision");
+        assertEquals(1, cuenta("SELECT count(*) FROM exercise_equipment_requirements r JOIN equipment_types q"
+                + " ON q.equipment_id = r.equipment_id WHERE r.exercise_id = 725"), "725 sin banco: convencion de sentados");
+
+        // Instrucciones: describen el GIF y ya no el puente de gluteo ni la rueda.
+        for (long id : List.of(872L, 1333L)) {
+            var f = jdbc.queryForMap("SELECT instructions_es, jsonb_array_length(instruction_steps_es) AS pasos,"
+                    + " (SELECT string_agg(t.p, ' ' ORDER BY t.n) FROM jsonb_array_elements_text(instruction_steps_es)"
+                    + " WITH ORDINALITY t(p, n)) AS unidos FROM exercises WHERE exercise_id = ?", id);
+            assertEquals(5, ((Number) f.get("pasos")).intValue(), id + " pasos");
+            assertEquals(f.get("unidos"), f.get("instructions_es"), id + ": texto = pasos unidos");
+            String texto = (String) f.get("instructions_es");
+            assertFalse(texto.matches("(?is).*(rodillo|rueda|línea recta desde las rodillas).*"), id + ": " + texto);
+        }
+        assertTrue(jdbc.queryForObject("SELECT instructions_es FROM exercises WHERE exercise_id = 872", String.class)
+                .contains("rodillas hacia el pecho"));
+        assertTrue(jdbc.queryForObject("SELECT instructions_es FROM exercises WHERE exercise_id = 1333", String.class)
+                .contains("zancada larga"));
 
         assertEquals(huellaResto, huellaResto(), "el resto del catalogo no cambia");
         assertEquals(huellaRequisitos, huellaRequisitos(), "los requisitos del resto no cambian");
@@ -212,14 +227,8 @@ class CatalogoV36IT {
 
     @Test
     @Order(3)
-    @DisplayName("planes publicados: 1296 se marca por alto impacto; 1267 sigue visible y no es causa de seguridad")
+    @DisplayName("planes sinteticos publicados con V35: V36 no los altera; 1267 inactivo no es causa de seguridad")
     void planesPublicados() {
-        var conflictos1296 = conflictos(plan1296);
-        assertEquals(List.of("alto_impacto"), List.copyOf(new LinkedHashSet<>(conflictos1296.values())),
-                "la proteccion vigente marca 1296 en las sesiones abiertas del principiante");
-        assertEquals(Set.of(1296L), idsDe(conflictos1296.keySet()));
-
-        // Inactivo NO es causa de seguridad (SafetyConflictPolicy): 1267 se sigue mostrando.
         var conflictos1267 = conflictos(plan1267);
         assertFalse(idsDe(conflictos1267.keySet()).contains(1267L));
         assertTrue(ejerciciosDe(plan1267).contains(1267L));
@@ -227,17 +236,15 @@ class CatalogoV36IT {
     }
 
     /**
-     * INCOMPATIBILIDAD REPORTADA, no corregida: la copia semanal (V31) de una
-     * semana publicada ANTES de V36 se valida con el catalogo corregido. Un
-     * ejercicio que deja de ser elegible sin causa de seguridad (1267 inactivo)
-     * o que cambia de grupo dentro de una sesion PULL hace la copia no factible
-     * y, por 19.4, la semana nueva queda sin plan. 1296 en un principiante si
-     * tiene causa (alto impacto) y la sustitucion obligatoria SUST-SEG-1 lo
-     * resuelve. 872 y 1059 se conservan. Ver CATALOGO_V36.md, seccion 8.
+     * EVIDENCIA DEL CAMBIO V35 -> V36, sin compatibilidad retroactiva (decision del
+     * responsable: los planes existentes son sinteticos). La copia semanal (V31) de una
+     * semana publicada con V35 se valida con el catalogo de V36: con 1267 o con un
+     * combinado en PULL no es factible; con 872 o 1059 se conserva. Lo que se exige a
+     * V36 es la continuidad de los planes NUEVOS: {@link #continuidadDePlanesNuevos()}.
      */
     @Test
     @Order(4)
-    @DisplayName("semana siguiente de planes publicados antes de V36: lo que hoy hace la copia semanal")
+    @DisplayName("evidencia V35 -> V36: la copia de planes sinteticos de V35 con 1267 o un combinado en PULL")
     void semanaSiguiente() {
         var r1267 = cicloSiguiente(con1267);
         assertTrue(r1267.plan().isEmpty(), "1267: " + r1267);
@@ -250,20 +257,6 @@ class CatalogoV36IT {
         assertTrue(rTiron.motivo().contains("tiene enfoque PULL pero incluye ejercicios de [upper legs]")
                 || rTiron.motivo().contains("tiene enfoque PULL pero incluye ejercicios de [shoulders]"), rTiron.motivo());
 
-        var r1296 = cicloSiguiente(con1296);
-        assertTrue(r1296.plan().isPresent(), "1296: " + r1296);
-        assertEquals("CONSERVED", r1296.origen());
-        assertTrue(r1296.informe().contains("\"quitado\": 1296") && r1296.informe().contains("SUST-SEG-1")
-                && r1296.informe().contains("alto_impacto"), r1296.informe());
-        assertFalse(ejerciciosDe(r1296.plan().get()).contains(1296L));
-
-        // Intermedio: 1296 pasa a nivel 3 y deja de ser elegible, pero la dificultad no es causa de seguridad.
-        assertEquals(Map.of(), conflictos(plan1296Intermedio), "sin causa de seguridad para un intermedio");
-        var r1296i = cicloSiguiente(con1296Intermedio);
-        assertTrue(r1296i.plan().isEmpty(), "1296 intermedio: " + r1296i);
-        assertEquals("NO_FACTIBLE", r1296i.estado());
-        assertTrue(r1296i.motivo().contains("V1: el ejercicio 1296 no esta en available_exercises"), r1296i.motivo());
-
         var r872 = cicloSiguiente(con872);
         assertTrue(r872.plan().isPresent(), "872: " + r872);
         assertEquals("CONSERVED", r872.origen());
@@ -274,21 +267,9 @@ class CatalogoV36IT {
         verify(ia, never()).pedirRespuesta(any(), any(), any(), any(), anyInt());
     }
 
-    /** Genera la semana S1 y pone 1296 en lugar de su primer empuje horizontal, con la misma dosis. */
-    private long con1296(long u) {
-        long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
-        long fila = jdbc.queryForObject("SELECT pwe.planned_exercise_id FROM planned_workout_exercises pwe"
-                + " JOIN planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id"
-                + " JOIN exercises x ON x.exercise_id = pwe.exercise_id"
-                + " WHERE pw.plan_id = ? AND x.movement_pattern = 'HORIZONTAL_PUSH'"
-                + " ORDER BY pw.scheduled_date, pwe.exercise_order LIMIT 1", Long.class, plan);
-        jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1296 WHERE planned_exercise_id = ?", fila);
-        return plan;
-    }
-
     record Ciclo(Optional<Long> plan, String estado, String origen, String motivo, String informe) {}
 
-    /** El ciclo real de la semana S1 a la S1+1, sin registros de ejecucion (INSUFFICIENT_DATA). */
+    /** El ciclo real de la semana S1 a la S1+1. */
     private Ciclo cicloSiguiente(long u) {
         var plan = ciclo.runFor(u, S1, S1.plusWeeks(1));
         var f = jdbc.queryForMap("SELECT status, generation_source, coalesce(rejection_reason, '') AS motivo,"
@@ -304,7 +285,7 @@ class CatalogoV36IT {
 
     @Test
     @Order(5)
-    @DisplayName("conjunto elegible: 1267 nunca; 1296 solo avanzado con impacto; 1333 sin rueda y sin principiantes")
+    @DisplayName("conjunto elegible: 1267 nunca; 1333 sin rueda y sin principiantes; 725 y 760 con brazos arriba")
     void elegibilidad() {
         var libre = SafetyProfile.Declaradas.sinLimitaciones();
         var sinImpacto = new SafetyProfile.Declaradas(false, true, true, true, true);
@@ -315,12 +296,10 @@ class CatalogoV36IT {
             for (var equipo : List.of(todo, GIMNASIO, CASA, List.of("body weight"))) {
                 var ids = elegibles(nivel, 30, equipo, libre);
                 assertFalse(ids.containsKey(1267L), "1267 para " + nivel);
-                assertEquals("ADVANCED".equals(nivel), ids.containsKey(1296L), "1296 para " + nivel);
                 assertEquals(!"BEGINNER".equals(nivel), ids.containsKey(1333L), "1333 para " + nivel + " " + equipo);
             }
-        assertFalse(elegibles("ADVANCED", 30, GIMNASIO, sinImpacto).containsKey(1296L), "declaro sin impacto");
         assertFalse(elegibles("ADVANCED", 30, GIMNASIO, sinImpacto).containsKey(1333L), "declaro sin impacto");
-        assertFalse(elegibles("ADVANCED", SafetyProfile.EDAD_SIN_IMPACTO, GIMNASIO, libre).containsKey(1296L),
+        assertFalse(elegibles("INTERMEDIATE", SafetyProfile.EDAD_SIN_IMPACTO, GIMNASIO, libre).containsKey(1333L),
                 "edad sin impacto");
 
         var avanzado = elegibles("ADVANCED", 30, GIMNASIO, libre);
@@ -347,7 +326,7 @@ class CatalogoV36IT {
 
     @Test
     @Order(6)
-    @DisplayName("planes nuevos: ningun 1267; 527/609/725/760 nunca en PULL; 1296 y 1333 solo donde se admiten")
+    @DisplayName("planes nuevos: ningun 1267; 527/609/725/760 nunca en PULL; 1333 nunca en principiantes")
     void generacion() {
         int planesGenerados = 0;
         for (var objetivo : GoalType.values())
@@ -372,12 +351,79 @@ class CatalogoV36IT {
                             assertNotEquals(1267L, id, perfil);
                             if (List.of(527L, 609L, 725L, 760L).contains(id))
                                 assertNotEquals("PULL", foco, id + " en " + perfil);
-                            if (id == 1296L) assertEquals(FitnessLevel.ADVANCED, nivel, perfil);
                             if (id == 1333L) assertNotEquals(FitnessLevel.BEGINNER, nivel, perfil);
                         }
                     }
         assertEquals(RESPALDO_INTEGRADO ? 48 : 36, planesGenerados);
         verify(ia, never()).pedirRespuesta(any(), any(), any(), any(), anyInt());
+    }
+
+    // =======================================================================
+    // Continuidad semanal de planes nuevos (V36)
+    // =======================================================================
+
+    /**
+     * Lo que se exige a V36: un plan NUEVO generado con el catalogo corregido
+     * continua a la semana siguiente con el ciclo vigente, sin NO_FACTIBLE por el
+     * catalogo. La mitad de los perfiles cumple todas sus sesiones (NO_CHANGE) y la
+     * otra mitad no registra nada (INSUFFICIENT_DATA); las dos ramas copian (V31) y
+     * validan la copia con V36. Progresion apagada (valor por defecto). Sin IA.
+     */
+    @Test
+    @Order(7)
+    @DisplayName("continuidad: los planes nuevos de V36 publican la semana siguiente con el ciclo vigente")
+    void continuidadDePlanesNuevos() {
+        var fallos = new ArrayList<String>();
+        int ciclos = 0;
+        for (var objetivo : GoalType.values())
+            for (var nivel : FitnessLevel.values())
+                for (int dias : new int[]{3, 4, 5, 6})
+                    for (var lugar : List.of("GYM", "CASA")) {
+                        if (dias >= 5 && !RESPALDO_INTEGRADO
+                                && (objetivo == GoalType.GENERAL_FITNESS || objetivo == GoalType.LOSE_WEIGHT))
+                            continue;
+                        boolean cumple = ciclos % 2 == 0;
+                        String perfil = objetivo + "/" + nivel + "/" + dias + "d/" + lugar
+                                + (cumple ? " cumple" : " sin registros");
+                        long u = participante(objetivo, nivel, dias, lugar);
+                        long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null)
+                                .orElseThrow(() -> new AssertionError("sin plan inicial: " + perfil));
+                        if (cumple) cumplirTodo(u, plan);
+                        var r = cicloSiguiente(u);
+                        ciclos++;
+                        if (r.plan().isEmpty() || !"SIN_ORDEN".equals(r.estado()) || !"CONSERVED".equals(r.origen()))
+                            fallos.add(perfil + " -> " + r.estado() + " " + r.motivo());
+                        else {
+                            var ids = ejerciciosDe(r.plan().get());
+                            if (ids.contains(1267L)) fallos.add(perfil + " -> la copia lleva 1267");
+                            if (cuenta("SELECT count(*) FROM planned_workouts pw JOIN planned_workout_exercises pwe"
+                                    + " ON pwe.planned_workout_id = pw.planned_workout_id WHERE pw.plan_id = "
+                                    + r.plan().get() + " AND pw.focus_code = 'PULL'"
+                                    + " AND pwe.exercise_id IN (527, 609, 725, 760)") > 0)
+                                fallos.add(perfil + " -> combinado en PULL");
+                        }
+                    }
+        assertEquals(List.of(), fallos, "semanas siguientes no publicadas");
+        assertEquals(RESPALDO_INTEGRADO ? 96 : 72, ciclos);
+        verify(ia, never()).pedirRespuesta(any(), any(), any(), any(), anyInt());
+    }
+
+    /** Cumple todas las sesiones del plan con lo prescrito. */
+    private void cumplirTodo(long u, long plan) {
+        for (long w : jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
+                + " ORDER BY scheduled_date", Long.class, plan)) {
+            long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+            for (var f : jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets,"
+                    + " planned_reps, planned_duration_seconds FROM planned_workout_exercises"
+                    + " WHERE planned_workout_id = ?", w)) {
+                boolean duracion = "DURATION".equals(f.get("prescription_type"));
+                int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
+                int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
+                sesiones.handle(new RecordSessionExerciseCommand(u, s, ((Number) f.get("planned_exercise_id")).longValue(),
+                        (short) series, duracion ? null : total, duracion ? total : null, null, null));
+            }
+            sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 6, (short) 4, (short) 45));
+        }
     }
 
     // =======================================================================
@@ -438,7 +484,7 @@ class CatalogoV36IT {
 
     private String huellaResto() {
         return jdbc.queryForObject("SELECT count(*) || ':' || md5(string_agg(e::text, '|' ORDER BY exercise_id))"
-                + " FROM exercises e WHERE exercise_id NOT IN (" + NUEVE_SQL + ")", String.class);
+                + " FROM exercises e WHERE exercise_id NOT IN (" + OCHO_SQL + ")", String.class);
     }
 
     private String huellaRequisitos() {
