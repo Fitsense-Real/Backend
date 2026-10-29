@@ -1,5 +1,5 @@
 -- =====================================================================
--- FitSense MVP 1.0 - V36: correccion de ejercicios del catalogo segun su GIF
+-- FitSense MVP 1.0 - V36: correccion de nueve ejercicios del catalogo segun su GIF
 --
 -- ESTADO: CANDIDATA A DESPLIEGUE; NO APLICADA EN NEON. Verificada solo en
 -- PostgreSQL 16 aislado. Dictamen tecnico asistido por IA aprobado por el
@@ -7,7 +7,7 @@
 -- V27/V28 sigue PENDIENTE. Ver docs/FitSense/CATALOGO_V36.md.
 --
 -- QUE HACE
---   Corrige, por exercise_id, las columnas aprobadas de OCHO ejercicios cuya
+--   Corrige, por exercise_id, las columnas aprobadas de NUEVE ejercicios cuya
 --   clasificacion no corresponde a su GIF original (dictamen aprobado por el
 --   responsable del proyecto el 28/10/2026; GIF cotejados fotograma a
 --   fotograma). No borra filas de exercises ni toca planes publicados,
@@ -15,6 +15,10 @@
 --
 --   id    columna                 antes                 despues
 --   1267  is_active               true                  false
+--   1296  difficulty_level        1                     3      (palanca larga, avanzado)
+--         high_impact             false                 false  (sin cambio: no hay fase de vuelo)
+--         instructions_es y       flexion con elevacion flexion de palanca larga
+--         instruction_steps_es    alterna de brazo/pierna
 --   1333  equipment_id            ab wheel              body weight
 --         requisito (grupo 1)     ab wheel              (ninguno: peso corporal)
 --         high_impact             false                 true   (fase de vuelo en el GIF)
@@ -52,10 +56,12 @@
 --   instructions_en (texto de la fuente) no se toca: la app muestra
 --   instructions_es y solo cae al ingles si falta.
 --
---   NO INCLUYE 1296 (Superman push-up): el dictamen condicionaba nivel 3 y
---   alto impacto a una fase pliometrica, y el GIF no la tiene (manos y pies no
---   se despegan del suelo en ninguno de sus 12 fotogramas). Queda pendiente de
---   decision; ver CATALOGO_V36.md.
+--   1296 (Superman push-up): el dictamen inicial lo suponia pliometrico; el
+--   cotejo fotograma a fotograma mostro que manos y pies no se despegan del
+--   suelo en ninguno de sus 12 fotogramas. Es una flexion de palanca larga, con
+--   los brazos extendidos por delante de la cabeza: nivel 3 SIN alto impacto
+--   (decision del responsable del proyecto, 29/10/2026). Conserva
+--   HORIZONTAL_PUSH, chest/pectorals, suelo y brazos arriba.
 --
 --   NO INCLUYE banco en 725: los ejercicios sentados con mancuernas del
 --   catalogo (704, 723, 726, 739, 740), tambien sentados en banco en su GIF,
@@ -95,6 +101,8 @@ BEGIN
         VALUES
             (1267::BIGINT, '3291', TRUE, 1::SMALLINT, FALSE, FALSE, TRUE, 'KNEE_DOMINANT', 'upper arms',
              'body weight', 'triceps', 'shoulders', 'Stalder press'),
+            (1296, '0803', TRUE, 1, FALSE, TRUE, TRUE, 'HORIZONTAL_PUSH', 'chest',
+             'body weight', 'pectorals', 'core', 'Push-up de Superman'),
             (1333, '3637', TRUE, 1, FALSE, TRUE, TRUE, 'LOCOMOTION_CARDIO', 'cardio',
              'ab wheel', 'cardiovascular system', 'quadriceps', 'Rodar con rueda'),
             (872, '0484', TRUE, 1, FALSE, TRUE, FALSE, 'HIP_EXTENSION', 'waist',
@@ -144,10 +152,12 @@ BEGIN
         RAISE EXCEPTION 'V36: los requisitos de 1333 son % y se esperaba 1:ab wheel', coalesce(requisitos, '(ninguno)');
     END IF;
 
-    -- Instrucciones anteriores: 872 describia un puente de gluteo y 1333 una rueda abdominal.
+    -- Instrucciones anteriores: 872 describia un puente de gluteo, 1333 una rueda abdominal y
+    -- 1296 una flexion con elevacion alterna de brazo y pierna.
     SELECT string_agg(x.exercise_id::TEXT, ', ' ORDER BY x.exercise_id) INTO distintos
     FROM (VALUES (872::BIGINT, 'ef12845248c82aed4d3345b997a19ce6', 'c1ed1449189cc51999ba09508abb5f07'),
-                 (1333, '2a51dd4140fe4cd5c534d1b709862218', '6590dd4e1120596a46f3a3faceb52623'))
+                 (1333, '2a51dd4140fe4cd5c534d1b709862218', '6590dd4e1120596a46f3a3faceb52623'),
+                 (1296, '6640e58730fcea1ecc41f71ce87d49d2', '608cc66e8a15cf34cd42c87e40fdea66'))
              AS x (exercise_id, md5_texto, md5_pasos)
     WHERE NOT EXISTS (SELECT 1 FROM public.exercises e
                       WHERE e.exercise_id = x.exercise_id
@@ -161,6 +171,18 @@ END $$;
 -- 1267 Stalder press: habilidad gimnastica con inversion. Fuera del catalogo
 -- elegible; la fila y su historial se conservan.
 UPDATE public.exercises SET is_active = FALSE WHERE exercise_id = 1267;
+
+-- 1296 Superman push-up: flexion de palanca larga (brazos extendidos al frente), sin
+-- fase de vuelo. Avanzado; high_impact sigue en false.
+UPDATE public.exercises
+SET difficulty_level     = 3,
+    instruction_steps_es = jsonb_build_array(
+        'Colócate boca abajo en posición de plancha, apoyado en las puntas de los pies, con los brazos totalmente extendidos por delante de la cabeza y las manos apoyadas en el suelo.',
+        'Activa el abdomen y los glúteos para mantener el cuerpo en línea recta desde la cabeza hasta los talones.',
+        'Baja el pecho hacia el suelo de forma controlada, sin despegar las manos ni los pies.',
+        'Empuja con los brazos y los hombros para volver a elevar el tronco a la posición inicial, sin arquear la zona lumbar.',
+        'Repite el número de repeticiones indicado. Es un ejercicio de palanca larga y muy exigente: mantén siempre el apoyo de manos y pies, sin saltos.')
+WHERE exercise_id = 1296;
 
 -- 1333 Wheel run: el GIF es una carrera con zancadas amplias, sin rueda.
 DELETE FROM public.exercise_equipment_requirements WHERE exercise_id = 1333;
@@ -198,7 +220,7 @@ WHERE exercise_id = 872;
 UPDATE public.exercises e
 SET instructions_es = (SELECT string_agg(t.paso, ' ' ORDER BY t.n)
                        FROM jsonb_array_elements_text(e.instruction_steps_es) WITH ORDINALITY AS t (paso, n))
-WHERE e.exercise_id IN (872, 1333);
+WHERE e.exercise_id IN (872, 1296, 1333);
 
 -- 1059: zancada; el giro queda como sinergista.
 UPDATE public.exercises
@@ -231,6 +253,8 @@ BEGIN
         VALUES
             (1267::BIGINT, FALSE, 1::SMALLINT, FALSE, FALSE, TRUE, 'KNEE_DOMINANT', 'upper arms',
              'body weight', 'triceps', 'shoulders', 'Stalder press'),
+            (1296, TRUE, 3, FALSE, TRUE, TRUE, 'HORIZONTAL_PUSH', 'chest',
+             'body weight', 'pectorals', 'core', 'Push-up de Superman'),
             (1333, TRUE, 1, TRUE, FALSE, FALSE, 'LOCOMOTION_CARDIO', 'cardio',
              'body weight', 'cardiovascular system', 'quadriceps', 'Carrera con zancadas amplias'),
             (872, TRUE, 1, FALSE, TRUE, FALSE, 'TRUNK_FLEXION', 'waist',
@@ -273,12 +297,12 @@ BEGIN
         RAISE EXCEPTION 'V36: 1333 conserva requisitos de equipamiento';
     END IF;
     IF EXISTS (SELECT 1 FROM public.exercises e
-               WHERE e.exercise_id IN (872, 1333)
+               WHERE e.exercise_id IN (872, 1296, 1333)
                  AND (jsonb_array_length(e.instruction_steps_es) <> 5
                       OR e.instructions_es IS DISTINCT FROM
                          (SELECT string_agg(t.paso, ' ' ORDER BY t.n)
                           FROM jsonb_array_elements_text(e.instruction_steps_es) WITH ORDINALITY AS t (paso, n))
-                      OR e.instructions_es ~* 'rodillo|rueda|l[ií]nea recta desde las rodillas')) THEN
-        RAISE EXCEPTION 'V36: instrucciones finales inesperadas en 872 o 1333';
+                      OR e.instructions_es ~* 'rodillo|rueda|l[ií]nea recta desde las rodillas|levanta simult|salta|vuelo')) THEN
+        RAISE EXCEPTION 'V36: instrucciones finales inesperadas en 872, 1296 o 1333';
     END IF;
 END $$;

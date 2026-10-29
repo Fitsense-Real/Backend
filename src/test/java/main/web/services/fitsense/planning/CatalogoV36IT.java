@@ -51,8 +51,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
- * V36: correccion de ocho ejercicios del catalogo segun su GIF (1296 queda
- * fuera, pendiente de decision: su GIF no confirma la fase pliometrica).
+ * V36: correccion de nueve ejercicios del catalogo segun su GIF. 1296 pasa a
+ * avanzado SIN alto impacto: el cotejo fotograma a fotograma mostro una flexion
+ * de palanca larga sin fase de vuelo.
  * <p>
  * PostgreSQL 16 efimero con Flyway SOLO hasta V35; se publican planes reales
  * con el catalogo anterior y V36 se aplica despues, con Flyway y la misma
@@ -89,7 +90,7 @@ class CatalogoV36IT {
     @Autowired ApprovedDifficultyRepository aprobaciones;
     @Autowired ApprovedDifficultyGate filtroAprobaciones;
 
-    static final String OCHO_SQL = "527, 609, 725, 760, 872, 1059, 1267, 1333";
+    static final String NUEVE_SQL = "527, 609, 725, 760, 872, 1059, 1267, 1296, 1333";
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
     static final List<String> GIMNASIO = GeneracionReferenciaIT.GIMNASIO;
     static final List<String> CASA = GeneracionReferenciaIT.CASA;
@@ -187,6 +188,7 @@ class CatalogoV36IT {
                 + "872|t|1|f|t|f|TRUNK_FLEXION|waist|body weight|abs|glutes|Encogimiento invertido\n"
                 + "1059|t|1|f|f|f|KNEE_DOMINANT|upper legs|body weight|quads|abs|Zancada con giro\n"
                 + "1267|f|1|f|f|t|KNEE_DOMINANT|upper arms|body weight|triceps|shoulders|Stalder press\n"
+                + "1296|t|3|f|t|t|HORIZONTAL_PUSH|chest|body weight|pectorals|core|Push-up de Superman\n"
                 + "1333|t|1|t|f|f|LOCOMOTION_CARDIO|cardio|body weight|cardiovascular system|quadriceps|"
                 + "Carrera con zancadas amplias",
                 String.join("\n", jdbc.queryForList("SELECT e.exercise_id || '|' || CASE WHEN e.is_active THEN 't'"
@@ -196,18 +198,16 @@ class CatalogoV36IT {
                         + " || '|' || eq.code || '|' || e.target_muscle || '|' || e.synergist_muscle || '|' || e.name_es"
                         + " FROM exercises e JOIN body_parts bp ON bp.body_part_id = e.body_part_id"
                         + " JOIN equipment_types eq ON eq.equipment_id = e.equipment_id"
-                        + " WHERE e.exercise_id IN (" + OCHO_SQL + ") ORDER BY e.exercise_id", String.class)));
+                        + " WHERE e.exercise_id IN (" + NUEVE_SQL + ") ORDER BY e.exercise_id", String.class)));
         assertEquals(0, cuenta("SELECT count(*) FROM exercise_equipment_requirements WHERE exercise_id = 1333"),
                 "1333 ya no exige rueda abdominal");
-        assertEquals(8, cuenta("SELECT count(*) FROM exercises WHERE exercise_id IN (" + OCHO_SQL + ")"),
+        assertEquals(9, cuenta("SELECT count(*) FROM exercises WHERE exercise_id IN (" + NUEVE_SQL + ")"),
                 "ningun registro se elimina");
-        assertEquals(1, cuenta("SELECT count(*) FROM exercises WHERE exercise_id = 1296 AND difficulty_level = 1"
-                + " AND NOT high_impact AND is_active"), "1296 sin cambios: pendiente de decision");
         assertEquals(1, cuenta("SELECT count(*) FROM exercise_equipment_requirements r JOIN equipment_types q"
                 + " ON q.equipment_id = r.equipment_id WHERE r.exercise_id = 725"), "725 sin banco: convencion de sentados");
 
         // Instrucciones: describen el GIF y ya no el puente de gluteo ni la rueda.
-        for (long id : List.of(872L, 1333L)) {
+        for (long id : List.of(872L, 1296L, 1333L)) {
             var f = jdbc.queryForMap("SELECT instructions_es, jsonb_array_length(instruction_steps_es) AS pasos,"
                     + " (SELECT string_agg(t.p, ' ' ORDER BY t.n) FROM jsonb_array_elements_text(instruction_steps_es)"
                     + " WITH ORDINALITY t(p, n)) AS unidos FROM exercises WHERE exercise_id = ?", id);
@@ -220,6 +220,11 @@ class CatalogoV36IT {
                 .contains("rodillas hacia el pecho"));
         assertTrue(jdbc.queryForObject("SELECT instructions_es FROM exercises WHERE exercise_id = 1333", String.class)
                 .contains("zancada larga"));
+        // 1296: palanca larga con apoyo continuo, sin la elevacion alterna anterior ni fase de vuelo.
+        String i1296 = jdbc.queryForObject("SELECT instructions_es FROM exercises WHERE exercise_id = 1296", String.class);
+        assertTrue(i1296.contains("brazos totalmente extendidos por delante de la cabeza")
+                && i1296.contains("sin despegar las manos ni los pies"), i1296);
+        assertFalse(i1296.matches("(?is).*(levanta simult|brazo derecho y la pierna izquierda|vuelo|salta ).*"), i1296);
 
         assertEquals(huellaResto, huellaResto(), "el resto del catalogo no cambia");
         assertEquals(huellaRequisitos, huellaRequisitos(), "los requisitos del resto no cambian");
@@ -301,7 +306,7 @@ class CatalogoV36IT {
 
     @Test
     @Order(5)
-    @DisplayName("conjunto elegible: 1267 nunca; 1333 sin rueda y sin principiantes; 725 y 760 con brazos arriba")
+    @DisplayName("conjunto elegible: 1267 nunca; 1296 solo avanzados y sin alto impacto; 1333 sin rueda ni principiantes")
     void elegibilidad() {
         var libre = SafetyProfile.Declaradas.sinLimitaciones();
         var sinImpacto = new SafetyProfile.Declaradas(false, true, true, true, true);
@@ -312,11 +317,22 @@ class CatalogoV36IT {
             for (var equipo : List.of(todo, GIMNASIO, CASA, List.of("body weight"))) {
                 var ids = elegibles(nivel, 30, equipo, libre);
                 assertFalse(ids.containsKey(1267L), "1267 para " + nivel);
+                assertEquals("ADVANCED".equals(nivel), ids.containsKey(1296L), "1296 para " + nivel + " " + equipo);
                 assertEquals(!"BEGINNER".equals(nivel), ids.containsKey(1333L), "1333 para " + nivel + " " + equipo);
             }
         assertFalse(elegibles("ADVANCED", 30, GIMNASIO, sinImpacto).containsKey(1333L), "declaro sin impacto");
         assertFalse(elegibles("INTERMEDIATE", SafetyProfile.EDAD_SIN_IMPACTO, GIMNASIO, libre).containsKey(1333L),
                 "edad sin impacto");
+        // 1296 no es de alto impacto: un avanzado que declara «sin impacto», o de la edad sin impacto,
+        // lo sigue recibiendo si cumple lo demas (suelo y brazos arriba).
+        assertTrue(elegibles("ADVANCED", 30, GIMNASIO, sinImpacto).containsKey(1296L), "1296 sin impacto declarado");
+        assertTrue(elegibles("ADVANCED", SafetyProfile.EDAD_SIN_IMPACTO, GIMNASIO, libre).containsKey(1296L),
+                "1296 en la edad sin impacto");
+        assertFalse(elegibles("ADVANCED", 30, GIMNASIO, sinBrazosArriba).containsKey(1296L),
+                "1296 respeta la restriccion de brazos arriba");
+        var c1296 = elegibles("ADVANCED", 30, GIMNASIO, libre).get(1296L);
+        assertEquals("HORIZONTAL_PUSH", c1296.movementPattern());
+        assertEquals(3, c1296.difficulty());
 
         var avanzado = elegibles("ADVANCED", 30, GIMNASIO, libre);
         var c872 = avanzado.get(872L);
@@ -342,7 +358,7 @@ class CatalogoV36IT {
 
     @Test
     @Order(6)
-    @DisplayName("planes nuevos: ningun 1267; 527/609/725/760 nunca en PULL; 1333 nunca en principiantes")
+    @DisplayName("planes nuevos: ningun 1267; 527/609/725/760 nunca en PULL; 1296 solo avanzados; 1333 nunca en principiantes")
     void generacion() {
         int planesGenerados = 0;
         for (var objetivo : GoalType.values())
@@ -367,6 +383,7 @@ class CatalogoV36IT {
                             assertNotEquals(1267L, id, perfil);
                             if (List.of(527L, 609L, 725L, 760L).contains(id))
                                 assertNotEquals("PULL", foco, id + " en " + perfil);
+                            if (id == 1296L) assertEquals(FitnessLevel.ADVANCED, nivel, perfil);
                             if (id == 1333L) assertNotEquals(FitnessLevel.BEGINNER, nivel, perfil);
                         }
                     }
@@ -500,7 +517,7 @@ class CatalogoV36IT {
 
     private String huellaResto() {
         return jdbc.queryForObject("SELECT count(*) || ':' || md5(string_agg(e::text, '|' ORDER BY exercise_id))"
-                + " FROM exercises e WHERE exercise_id NOT IN (" + OCHO_SQL + ")", String.class);
+                + " FROM exercises e WHERE exercise_id NOT IN (" + NUEVE_SQL + ")", String.class);
     }
 
     private String huellaRequisitos() {
