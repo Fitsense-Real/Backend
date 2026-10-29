@@ -74,6 +74,8 @@ class CapabilityWeekBuilder {
     private final Set<Long> complementos;
     private final Map<Capability, Integer> enSemana = new EnumMap<>(Capability.class);
     private final Set<Long> usadosEnSemana = new HashSet<>();
+    /** El trabajo resistido prescribible del objetivo: de aqui sale el cambio de {@link #asegurarGrupos}. */
+    private List<CandidateExercise> resistidos = List.of();
 
     CapabilityWeekBuilder(PlanGenerationContext context, SessionDurationEstimator estimador, long semilla) {
         this.context = context;
@@ -115,7 +117,7 @@ class CapabilityWeekBuilder {
                 .filter(c -> CapabilityPrescriptionPolicy.admisibles(c, objetivo, nivel).stream()
                         .anyMatch(cap -> CapabilityPrescriptionPolicy.dosis(cap, c, objetivo, nivel, limites).isPresent()))
                 .toList();
-        var resistidos = verificados.stream()
+        resistidos = verificados.stream()
                 .filter(c -> !complementos.contains(c.exerciseId()))
                 .filter(c -> {
                     var clase = CapabilityPrescriptionPolicy.claseDe(c);
@@ -249,6 +251,11 @@ class CapabilityWeekBuilder {
             // 3 · TECHO: primero lo secundario, despues lo principal repetido.
             recortar(fecha, enfoque, dia, techo);
 
+            // 4 · GRUPOS DEL ENFOQUE. Solo si la sesion se quedo con un unico
+            // grupo de trabajo pudiendo tener dos: se cambia una colocacion de
+            // un grupo repetido por otra del grupo que falta.
+            asegurarGrupos(fecha, enfoque, dia, bloqueados, piso, techo);
+
             // Un slot se da por cubierto al COLOCAR, pero el recorte puede quitar
             // esa colocacion. Se recalcula con lo que queda: si no, el slot
             // quedaba como cubierto sin estarlo y no se volvia a pedir (sesiones
@@ -280,6 +287,102 @@ class CapabilityWeekBuilder {
     }
 
     // --------------------------------------------------------------- reglas
+
+    /**
+     * V15 pide al menos dos grupos distintos del enfoque cuando el conjunto
+     * elegible los tiene. Las sesiones de una division de 5-6 dias (PUSH, PULL,
+     * LEGS) llevan 2-3 colocaciones resistidas, y la seleccion por patron de 4C
+     * podia llenarlas con un solo grupo: un PULL de remo, remo y bisagra (solo
+     * {@code back}) o un LEGS de sentadilla y bisagra (solo {@code upper legs}).
+     * Era la causa de las 12 semanas sin respaldo de la evaluacion del
+     * 28/10/2026 (EVALUACION_GENERACION_4_6_DIAS.md).
+     * <p>
+     * Solo actua cuando la sesion incumple ese minimo, asi que una semana que
+     * ya lo cumplia sale identica. Cambia UNA colocacion de un grupo repetido
+     * (antes las que no cubren un patron de fuerza unico de la sesion) por un
+     * ejercicio del grupo que falta que:
+     * <ul>
+     *   <li>sea trabajo resistido prescribible para el objetivo y el nivel, con
+     *       una dosis de sus capacidades (sin capacidad del objetivo no entra:
+     *       no se pone un ejercicio solo para cubrir la cuota);</li>
+     *   <li>pertenezca al enfoque y respete V22 (en PULL, biceps; en PUSH,
+     *       triceps);</li>
+     *   <li>no repita el dia anterior si los dias estan pegados (V18) ni algo
+     *       que la sesion ya tiene;</li>
+     *   <li>deje la sesion bajo el techo, con la mitad de V15 y sin bajar del
+     *       piso de V20 (si baja, se suben series como en el paso 2).</li>
+     * </ul>
+     * Si ningun ejercicio cumple todo, no se fuerza nada: la sesion queda como
+     * estaba y el validador dira por que.
+     */
+    private void asegurarGrupos(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia,
+                                Set<Long> bloqueados, int piso, int techo) {
+        if (enfoque == WorkoutFocus.FULL_BODY) return;   // ya lo resuelve el selector
+        var trabajo = dia.stream().filter(col -> !complementos.contains(col.candidato().exerciseId())).toList();
+        var cubiertos = trabajo.stream().map(col -> col.candidato().bodyPartCode())
+                .filter(enfoque::accepts).collect(Collectors.toSet());
+        if (trabajo.size() < 2 || cubiertos.size() >= 2) return;
+
+        var enDia = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
+        for (var grupo : enfoque.bodyPartCodes()) {
+            if (cubiertos.contains(grupo)) continue;
+            var candidatos = resistidos.stream()
+                    .filter(c -> grupo.equals(c.bodyPartCode()))
+                    .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                    .filter(c -> !bloqueados.contains(c.exerciseId()) && !enDia.contains(c.exerciseId()))
+                    .sorted(Comparator.comparing(CandidateExercise::exerciseId))
+                    .toList();
+            if (candidatos.isEmpty()) continue;
+            // Lo no usado esta semana ni la anterior primero, como el resto del generador.
+            var ordenados = new ArrayList<CandidateExercise>();
+            for (var preferencia : List.<java.util.function.Predicate<CandidateExercise>>of(
+                    c -> !usadosEnSemana.contains(c.exerciseId()) && !recientes.contains(c.exerciseId()),
+                    c -> !usadosEnSemana.contains(c.exerciseId()),
+                    c -> true)) {
+                var opciones = new ArrayList<>(candidatos.stream().filter(preferencia)
+                        .filter(c -> !ordenados.contains(c)).toList());
+                Collections.shuffle(opciones, random);
+                ordenados.addAll(opciones);
+            }
+            for (int k : quitablesPorGrupo(dia)) {
+                var quitado = dia.get(k);
+                for (var c : ordenados) {
+                    var col = colocar(c, quitado.capacidad(), quitado.principal());
+                    if (col == null) continue;
+                    var con = new ArrayList<>(dia);
+                    con.set(k, col);
+                    if (minutos(fecha, enfoque, con) > techo || !respetaMitad(enfoque, con)) continue;
+                    if (piso > 0 && minutos(fecha, enfoque, con) < piso) ampliarSeries(fecha, enfoque, con, piso, techo);
+                    if (piso > 0 && minutos(fecha, enfoque, con) < piso) continue;
+                    dia.clear();
+                    dia.addAll(con);
+                    return;
+                }
+            }
+        }
+    }
+
+    /**
+     * Las colocaciones de trabajo que se pueden cambiar sin dejar su grupo
+     * vacio, de la ultima a la primera: primero las que no son fuerza que cubre
+     * un patron de 4C, despues el resto.
+     */
+    private List<Integer> quitablesPorGrupo(List<Colocacion> dia) {
+        var porGrupo = new HashMap<String, Integer>();
+        dia.stream().filter(col -> !complementos.contains(col.candidato().exerciseId()))
+                .forEach(col -> porGrupo.merge(col.candidato().bodyPartCode(), 1, Integer::sum));
+        var primero = new ArrayList<Integer>();
+        var despues = new ArrayList<Integer>();
+        for (int k = dia.size() - 1; k >= 0; k--) {
+            var col = dia.get(k);
+            if (complementos.contains(col.candidato().exerciseId())) continue;
+            if (porGrupo.getOrDefault(col.candidato().bodyPartCode(), 0) < 2) continue;
+            boolean fuerzaDeSlot = col.capacidad() == Capability.STRENGTH && MandatorySlot.of(col.candidato()).isPresent();
+            (fuerzaDeSlot ? despues : primero).add(k);
+        }
+        primero.addAll(despues);
+        return primero;
+    }
 
     /**
      * Si una colocacion da el slot por cubierto en la semana. Con la fuerza
@@ -448,7 +551,8 @@ class CapabilityWeekBuilder {
      * necesita recuperacion solo entra si la sesion ya la entrena y el dia
      * anterior no la trabajo. Un ejercicio que cuenta para V15 (no es
      * complemento) solo entra si el enfoque admite su zona y no rompe la regla
-     * de la mitad. Prefiere lo que no se uso esta semana ni la anterior.
+     * de la mitad, ni la de V22 (biceps en PULL, triceps en PUSH). Prefiere lo
+     * que no se uso esta semana ni la anterior.
      */
     private Optional<CandidateExercise> elegirComplemento(List<CandidateExercise> pool, WorkoutFocus enfoque,
                                                          List<Colocacion> dia, Set<Long> bloqueados,
@@ -468,7 +572,15 @@ class CapabilityWeekBuilder {
                 c -> !usadosEnSemana.contains(c.exerciseId()),
                 c -> true)) {
             var opciones = validos.stream().filter(preferencia).toList();
-            if (!opciones.isEmpty()) return Optional.of(opciones.get(random.nextInt(opciones.size())));
+            if (opciones.isEmpty()) continue;
+            var elegido = opciones.get(random.nextInt(opciones.size()));
+            if (ExerciseSelector.allowedIn(enfoque, elegido)) return Optional.of(elegido);
+            // V22 para TODO lo que entra, complementos incluidos: V15 no los
+            // cuenta, pero V22 si, y rechaza un estiramiento de triceps en PULL
+            // (PULL solo admite biceps, PUSH solo triceps). Se vuelve a elegir
+            // solo en ese caso, para que una sesion que ya era valida salga igual.
+            var admitidas = opciones.stream().filter(c -> ExerciseSelector.allowedIn(enfoque, c)).toList();
+            if (!admitidas.isEmpty()) return Optional.of(admitidas.get(random.nextInt(admitidas.size())));
         }
         return Optional.empty();
     }
