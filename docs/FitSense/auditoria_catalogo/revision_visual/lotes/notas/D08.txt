@@ -4,3 +4,7 @@
 648|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador
 676|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador
 677|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Pecho sobre banco inclinado
+689|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo con los brazos sobre el balon
+688|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador
+792|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador de pie
+795|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador de pie
