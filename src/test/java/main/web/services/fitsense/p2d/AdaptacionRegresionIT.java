@@ -660,6 +660,13 @@ class AdaptacionRegresionIT {
                                         || Objects.equals(x.targetMuscle(), o.targetMuscle()))
                                 .sorted(Comparator.comparing((CandidateExercise x) ->
                                                 !Objects.equals(x.bodyPartCode(), o.bodyPartCode()))
+                                        // Si hay que cambiar de zona, la menos representada en la sesion
+                                        // nueva, como haria la IA para respetar V15 (desde V37, 142 ya no
+                                        // tiene alternativa de su zona: 776 esta inactivo).
+                                        .thenComparing(x -> nuevos.stream().filter(n -> Objects.equals(
+                                                porId.get(n.exerciseId()) == null ? null
+                                                        : porId.get(n.exerciseId()).bodyPartCode(),
+                                                x.bodyPartCode())).count())
                                         .thenComparing(x -> !Objects.equals(x.movementPattern(), o.movementPattern()))
                                         .thenComparing(x -> !Objects.equals(x.targetMuscle(), o.targetMuscle())))
                                 .findFirst().orElseThrow(() -> new AssertionError(
@@ -893,6 +900,15 @@ class AdaptacionRegresionIT {
                     .orElseThrow(() -> new AssertionError("sin sustituto del mismo patron"));
         }
 
+        private boolean tieneSustituto(Participante p, long ejercicio) {
+            try {
+                sustitutoDe(p, ejercicio);
+                return true;
+            } catch (AssertionError e) {
+                return false;
+            }
+        }
+
         private Optional<Long> sustituirConVariante(Participante p, Sesion sesion, Ejercicio x, long z) {
             iaPropone(ctx -> {
                 var nuevo = new PlanDraft.DraftExercise(z, PrescriptionType.SETS_REPS, x.series(), x.reps(),
@@ -920,7 +936,11 @@ class AdaptacionRegresionIT {
         void sinBloqueoLaVarianteSePublica() {
             var p = participante(GoalType.GAIN_MUSCLE, true);
             var sesion = p.semana().get(0);
-            var x = estructural(sesion);
+            // Premisa (V37): el primer estructural de la sesion que tiene sustituto del mismo patron.
+            // Con 776 inactivo, 142 (back/HIP_HINGE) ya no tiene alternativa de su misma zona.
+            var x = sesion.ejercicios().stream().filter(e -> "SETS_REPS".equals(e.tipo()) && esSlot(patron(e.id())))
+                    .filter(e -> tieneSustituto(p, e.id())).findFirst()
+                    .orElseThrow(() -> new AssertionError("premisa: ningun estructural con sustituto"));
             long z = sustitutoDe(p, x.id());
 
             long nuevo = sustituirConVariante(p, sesion, x, z)

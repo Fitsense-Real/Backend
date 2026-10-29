@@ -1,0 +1,428 @@
+exercise_id	gravedad_max	reglas	name_en	name_es	body_part	pattern	dif	gif
+53	BAJA	D3_IMPACTO_EN_NIVEL_1	astride jumps (male)	Saltos con las piernas separadas	cardio	LOCOMOTION_CARDIO	1	videos/3220-f9lVSSI.gif
+54	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO,G1_PATRON_ZONA_INCOHERENTE	back and forth step	Paso hacia adelante y atrás	cardio	KNEE_DOMINANT	1	videos/3672-fNGumX0.gif
+55	BAJA	N3_MOVILIDAD_POR_REPETICIONES	ankle circles	Círculos de tobillo	lower legs	MOBILITY	1	videos/1368-uL9CsKm.gif
+56	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO	archer push up	Flexión arquero	chest	HORIZONTAL_PUSH	2	videos/3294-A9qxk2F.gif
+57	BAJA	N2_INSTRUCCIONES_DUPLICADAS	3/4 sit-up	Abdominal 3/4	waist	TRUNK_FLEXION	1	videos/0001-2gPfomN.gif
+59	MEDIA	G1_PATRON_ZONA_INCOHERENTE,N3_CARDIO_POR_REPETICIONES	air bike	Bicicleta de aire	waist	LOCOMOTION_CARDIO	1	videos/0003-1ZFqTDN.gif
+61	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	arm slingers hanging bent knee legs	Brazos sueltos colgantes con rodillas flexionadas	waist	TRUNK_FLEXION	1	videos/2355-uWpxD4v.gif
+62	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	arm slingers hanging straight legs	Cables sujetando antebrazo con piernas rectas	waist	TRUNK_FLEXION	1	videos/2333-PXTIwgu.gif
+64	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO	archer pull up	Dominada arco	back	VERTICAL_PULL	2	videos/3293-72BC5Za.gif
+65	MEDIA	G1_PATRON_ZONA_INCOHERENTE	back lever	Plancha trasera	back	CORE_STABILITY	3	videos/3297-GaSzzuh.gif
+68	ALTA	G1_PATRON_ZONA_INCOHERENTE,S1_SUELO_SIN_BANDERA	arms apart circular toe touch (male)	Toque de dedos circular con brazos abiertos	upper legs	TRUNK_FLEXION	1	videos/3214-RtyAsy1.gif
+74	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N4_SUSPENSION_SIN_APARATO	assisted parallel close grip pull-up	Dominada paralela con agarre estrecho asistida	back	VERTICAL_PULL	1	videos/0015-vrhHa6D.gif
+75	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N4_SUSPENSION_SIN_APARATO	assisted pull-up	Dominada asistida	back	VERTICAL_PULL	1	videos/0017-kiJ4Z2K.gif
+76	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N4_SUSPENSION_SIN_APARATO	assisted standing chin-up	Dominada asistida de pie	back	VERTICAL_PULL	1	videos/1431-7OeHptV.gif
+77	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N4_SUSPENSION_SIN_APARATO	assisted standing pull-up	Dominada asistida de pie	back	VERTICAL_PULL	1	videos/1432-f4xtKBj.gif
+93	MEDIA	G1_PATRON_ZONA_INCOHERENTE,N3_CARDIO_POR_REPETICIONES	backward jump	Salto hacia atrás	upper legs	LOCOMOTION_CARDIO	2	videos/1473-SaDOwk7.gif
+95	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	band reverse wrist curl	Curl de antebrazo invertido con banda	lower arms	WRIST_FOREARM	1	videos/0994-Ezpnw9d.gif
+108	ALTA	S6_IMPACTO_SIN_BANDERA	band jack knife sit-up	Sit-up tipo Jackknife con banda	waist	TRUNK_FLEXION	1	videos/0981-KCBKjma.gif
+113	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	band assisted pull-up	Dominada asistida con banda	back	VERTICAL_PULL	1	videos/0970-r1XNRYB.gif
+115	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	band fixed back close grip pulldown	Jalón cercano con banda y agarre estrecho	back	VERTICAL_PULL	1	videos/3117-4LoWllp.gif
+117	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO	band kneeling one arm pulldown	Jalón a una mano de rodillas con banda	back	VERTICAL_PULL	1	videos/0983-pmnrOp0.gif
+119	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	band one arm twisting seated row	Remo sentado a una mano con giro	back	HORIZONTAL_PULL	1	videos/0990-DKBwJrL.gif
+123	BAJA	G5_PATRON_OTHER	band lying hip internal rotation	Rotación interna de cadera tumbado con banda	upper legs	OTHER	1	videos/0984-vIICElP.gif
+124	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	band one arm single leg split squat	Sentadilla dividida a una pierna con banda y una mano	upper legs	KNEE_DOMINANT	2	videos/0987-arsYEd3.gif
+126	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,G5_PATRON_OTHER	band seated hip internal rotation	Rotación interna de cadera sentado con banda	upper legs	OTHER	1	videos/0996-9gbyYKk.gif
+130	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	band concentration curl	Curl de concentración con banda	upper arms	ELBOW_FLEXION	1	videos/0976-kmVVAfu.gif
+133	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	band wrist curl	Curl de muñeca con banda	lower arms	WRIST_FOREARM	1	videos/1016-vUTfFHw.gif
+142	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	band straight leg deadlift	Peso muerto con piernas rectas con banda	back	HIP_HINGE	1	videos/1010-KUaoUV8.gif
+145	MEDIA	G4_EJERCICIO_COMBINADO	band squat row	Sentadilla con remo en banda	upper legs	KNEE_DOMINANT	1	videos/1003-w1NOByi.gif
+149	ALTA	S1_SUELO_SIN_BANDERA	barbell floor calf raise	Elevacion de talones en piso con barra	lower legs	ANKLE_PLANTAR_FLEXION	3	videos/1370-2IHEa2T.gif
+153	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell decline pullover	Pullover declinado con barra	chest	SHOULDER_EXTENSION	3	videos/1255-9sgNE2O.gif
+154	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell decline wide-grip press	Press declinado con agarre ancho	chest	HORIZONTAL_PUSH	3	videos/0036-hl8DUh8.gif
+155	MEDIA	G3_NOMBRE_ZONA_INCOHERENTE	barbell front raise and pullover	Elevación frontal y pullover con barra	chest	SHOULDER_EXTENSION	3	videos/0040-33AzZeV.gif
+156	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell bent arm pullover	Pullover con barra	back	SHOULDER_EXTENSION	3	videos/1316-cA9FuWG.gif
+158	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell decline bent arm pullover	Pullover con barra en declinado	back	SHOULDER_EXTENSION	3	videos/0034-hMEptv0.gif
+159	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell decline wide-grip pullover	Pullover declinado con agarre ancho	back	SHOULDER_EXTENSION	3	videos/0037-Hj4FOCd.gif
+160	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO	barbell bench front squat	Sentadilla frontal en banco con barra	upper legs	KNEE_DOMINANT	3	videos/0024-Y7YcmIJ.gif
+161	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO	barbell bench squat	Sentadilla en banco con barra	upper legs	KNEE_DOMINANT	3	videos/0026-W9pFVv1.gif
+162	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G4_EJERCICIO_COMBINADO	barbell clean and press	Limpieza y press con barra	upper legs	VERTICAL_PUSH	3	videos/0028-SGY8Zui.gif
+171	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell decline close grip to skull press	Press en declinado con agarre cerrado	upper arms	ELBOW_EXTENSION	3	videos/0035-LMGXZn8.gif
+178	MEDIA	E2_INSTRUCCIONES_OTRO_EQUIPO,G1_PATRON_ZONA_INCOHERENTE	barbell incline shoulder raise	Elevación de hombro en banco inclinado	chest	SHOULDER_RAISE	2	videos/0050-xi0yckC.gif
+179	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell incline row	Remo inclinado con barra	back	HORIZONTAL_PULL	2	videos/0049-dmgMp3n.gif
+183	BAJA	N2_INSTRUCCIONES_DUPLICADAS	barbell full squat (back pov)	Sentadilla completa con barra (vista trasera)	upper legs	KNEE_DOMINANT	3	videos/1461-DhMl549.gif
+184	BAJA	N2_INSTRUCCIONES_DUPLICADAS	barbell full squat (side pov)	Sentadilla completa con barra (vista lateral)	upper legs	KNEE_DOMINANT	3	videos/1462-iYzB0Cz.gif
+196	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying lifting (on hip)	Levantamiento acostado en cadera	upper legs	HIP_EXTENSION	3	videos/0058-SNFfUff.gif
+202	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell incline reverse-grip press	Press inclinado con agarre invertido	upper arms	HORIZONTAL_PUSH	2	videos/0048-641mIfk.gif
+204	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying back of the head tricep extension	Extensión de tríceps acostado por detrás de la cabeza con barra	upper arms	ELBOW_EXTENSION	3	videos/1720-yg8Totb.gif
+205	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying close-grip press	Press acostado con agarre cerrado	upper arms	HORIZONTAL_PUSH	3	videos/0055-EcaV7aL.gif
+206	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying close-grip triceps extension	Extensión de tríceps acostado con agarre cerrado	upper arms	ELBOW_EXTENSION	3	videos/0056-HJ63mSO.gif
+207	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying extension	Extensión acostado con barra	upper arms	ELBOW_EXTENSION	3	videos/0057-EMpUwRI.gif
+208	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying preacher curl	Curl predicador acostado con barra	upper arms	ELBOW_FLEXION	3	videos/0059-SYJ4Bkt.gif
+209	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying triceps extension	Extensión de tríceps acostado	upper arms	ELBOW_EXTENSION	3	videos/0061-iZop9xO.gif
+210	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell lying triceps extension skull crusher	Extensión de tríceps acostado con barra	upper arms	ELBOW_EXTENSION	3	videos/0060-h8LFzo9.gif
+213	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell revers wrist curl v. 2	Curl de muñeca invertido v. 2 con barra	lower arms	WRIST_FOREARM	3	videos/0079-qDnGfDb.gif
+214	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell reverse wrist curl	Curl de muñeca invertido con barra	lower arms	WRIST_FOREARM	3	videos/0082-LsZkfU6.gif
+215	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	barbell seated calf raise	Elevación de gemelos sentado con barra	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/0088-ktsFQAZ.gif
+216	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	barbell seated calf raise	Elevacion de talones sentado con barra	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/1371-ipvgBnC.gif
+219	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated behind head military press	Press militar sentado con barra detrás de la cabeza	shoulders	VERTICAL_PUSH	2	videos/0086-ngPpyRS.gif
+220	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated bradford rocky press	Press Bradford sentado	shoulders	VERTICAL_PUSH	2	videos/0087-0dCyly0.gif
+221	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated overhead press	Press militar sentado con barra	shoulders	VERTICAL_PUSH	2	videos/0091-kTbSH9h.gif
+227	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated twist	Giro sentado con barra	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	videos/0094-dFSNDOA.gif
+229	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell sitted alternate leg raise	Elevación de piernas alternas sentado con barra	waist	TRUNK_FLEXION	3	videos/2799-G7xoEzr.gif
+230	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell pullover	Pullover con barra	back	SHOULDER_EXTENSION	3	videos/0073-i6LWjok.gif
+231	MEDIA	E2_INSTRUCCIONES_OTRO_EQUIPO,G1_PATRON_ZONA_INCOHERENTE,G4_EJERCICIO_COMBINADO,S7_CARGA_AXIAL_SIN_BANDERA	barbell pullover to press	Press desde pull-over con barra	back	VERTICAL_PUSH	3	videos/0022-znLogoF.gif
+236	BAJA	N1_NOMBRE_DUPLICADO	barbell rear lunge	Zancada trasera con barra	upper legs	KNEE_DOMINANT	3	videos/0078-VaP75jl.gif
+237	BAJA	N1_NOMBRE_DUPLICADO	barbell rear lunge v. 2	Zancada trasera con barra v. 2	upper legs	KNEE_DOMINANT	3	videos/0077-62Nw60O.gif
+239	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated good morning	Buenos días sentado con barra	upper legs	HIP_HINGE	2	videos/0090-d960PgE.gif
+240	BAJA	N1_NOMBRE_DUPLICADO	barbell side split squat	Sentadilla dividida lateral con barra	upper legs	KNEE_DOMINANT	3	videos/0098-W31mMjd.gif
+241	BAJA	N1_NOMBRE_DUPLICADO	barbell side split squat v. 2	Sentadilla dividida lateral con barra v. 2	upper legs	KNEE_DOMINANT	3	videos/0097-HUEqZ1y.gif
+244	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell preacher curl	Curl de predicador con barra	upper arms	ELBOW_FLEXION	3	videos/0070-qOgPVf6.gif
+245	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell prone incline curl	Curl inclinado prono con barra	upper arms	ELBOW_FLEXION	2	videos/0072-WLvTAv5.gif
+248	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell reverse grip skullcrusher	Extensión de tríceps acostado con barra agarre invertido	upper arms	ELBOW_EXTENSION	3	videos/1721-yRLPCLu.gif
+249	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell reverse preacher curl	Curl de predicador invertido con barra	upper arms	ELBOW_FLEXION	3	videos/0081-4LIG9xr.gif
+250	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated close grip behind neck triceps extension	Extensión de tríceps sentado con barra y agarre estrecho detrás de cuello	upper arms	ELBOW_EXTENSION	2	videos/1718-4CBIBOM.gif
+251	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated close-grip concentration curl	Curl de concentración cerrado sentado con barra	upper arms	ELBOW_FLEXION	2	videos/0089-1V1gj1u.gif
+252	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell seated overhead triceps extension	Extensión de tríceps sentado por encima de la cabeza con barra	upper arms	ELBOW_EXTENSION	2	videos/0092-5uFK1xr.gif
+254	ALTA	G1_PATRON_ZONA_INCOHERENTE,S1_SUELO_SIN_BANDERA	basic toe touch (male)	Toque de dedos básico	upper legs	TRUNK_FLEXION	1	videos/3212-BbfB8Gb.gif
+257	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	barbell wrist curl	Curl de muñeca con barra	lower arms	WRIST_FOREARM	3	videos/0126-82LxxkW.gif
+258	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	barbell wrist curl v. 2	Curl de muñeca versión 2 con barra	lower arms	WRIST_FOREARM	3	videos/0125-6kSxYnw.gif
+262	MEDIA	G1_PATRON_ZONA_INCOHERENTE,S7_CARGA_AXIAL_SIN_BANDERA	barbell skier	Esquiador con barra	shoulders	HIP_HINGE	3	videos/0100-4Leypho.gif
+267	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G4_EJERCICIO_COMBINADO	barbell thruster	Thruster con barra	shoulders	KNEE_DOMINANT	3	videos/3305-f7Y9eDZ.gif
+268	BAJA	N1_NOMBRE_DUPLICADO	barbell upright row	Remo vertical con barra	shoulders	HORIZONTAL_PULL	3	videos/0120-UDlhcO8.gif
+269	BAJA	N1_NOMBRE_DUPLICADO	barbell upright row v. 2	Remo vertical con barra v. 2	shoulders	HORIZONTAL_PULL	3	videos/0119-83HoW9X.gif
+270	BAJA	N1_NOMBRE_DUPLICADO	barbell upright row v. 3	Remo vertical con barra v. 3	shoulders	HORIZONTAL_PULL	3	videos/0121-fI18Rbc.gif
+274	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	barbell sitted alternate leg raise (female)	Elevación de piernas alternas sentado con barra (femenino)	waist	TRUNK_FLEXION	3	videos/2800-BCs0G2F.gif
+293	BAJA	D3_IMPACTO_EN_NIVEL_1	burpee	Burpee	cardio	LOCOMOTION_CARDIO	1	videos/1160-dK9394r.gif
+298	MEDIA	G1_PATRON_ZONA_INCOHERENTE	bridge - mountain climber (cross body)	Puente con escalador cruzado	waist	LOCOMOTION_CARDIO	1	videos/2466-9c6T1YX.gif
+300	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	bench pull-ups	Dominadas en banco	back	HORIZONTAL_PULL	1	videos/3019-mExgrF9.gif
+301	MEDIA	G1_PATRON_ZONA_INCOHERENTE	bodyweight squatting row	Remo sentadilla	back	KNEE_DOMINANT	1	videos/3168-3xK09Sk.gif
+302	MEDIA	G1_PATRON_ZONA_INCOHERENTE	bodyweight squatting row (with towel)	Remo sentadilla con toalla	back	KNEE_DOMINANT	1	videos/3167-BReCuOn.gif
+303	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	bodyweight standing close-grip one arm row	Remo a una mano de pie con agarre cerrado	back	HORIZONTAL_PULL	2	videos/3156-v2DfH14.gif
+305	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	bodyweight standing one arm row	Remo a una mano de pie	back	HORIZONTAL_PULL	2	videos/3162-xbkPfaw.gif
+310	MEDIA	G1_PATRON_ZONA_INCOHERENTE	bent knee lying twist (male)	Giro acostado con rodillas flexionadas	upper legs	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/3639-6sYyrRX.gif
+314	ALTA	E1_NOMBRE_EQUIPO_NO_EXIGIDO,S1_SUELO_SIN_BANDERA	bench dip on floor	Fondos en banco en el piso	upper arms	HORIZONTAL_PUSH	1	videos/1399-9RT8oQW.gif
+315	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	biceps leg concentration curl	Curl de concentración de bíceps con pierna	upper arms	ELBOW_FLEXION	1	videos/1770-sJFIDIp.gif
+316	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	biceps narrow pull-ups	Dominadas con agarre estrecho	upper arms	VERTICAL_PULL	1	videos/0139-50BETrz.gif
+318	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	body-up	Levantamiento de cuerpo	upper arms	HORIZONTAL_PUSH	1	videos/0137-U6G2gk9.gif
+323	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO	cable bench press	Press de banca con cable	chest	HORIZONTAL_PUSH	2	videos/0151-7xI5MXA.gif
+327	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable assisted inverse leg curl	Curl de piernas inverso asistido por cable	upper legs	KNEE_DOMINANT	1	videos/3235-zHEpuuc.gif
+330	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable concentration curl	Curl de concentración en cable	upper arms	ELBOW_FLEXION	2	videos/1631-NvfE43H.gif
+331	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable concentration extension (on knee)	Extensión de concentración en rodilla con cable	upper arms	ELBOW_EXTENSION	2	videos/0152-Db7eEgw.gif
+334	BAJA	N2_INSTRUCCIONES_DUPLICADAS	cable front raise	Elevación frontal con cable	shoulders	SHOULDER_RAISE	2	videos/0162-u2X71Np.gif
+335	BAJA	N2_INSTRUCCIONES_DUPLICADAS	cable front shoulder raise	Elevación frontal de hombro con cable	shoulders	SHOULDER_RAISE	2	videos/0164-mTT3KLn.gif
+339	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable decline one arm press	Press a una mano en declinado en polea	chest	HORIZONTAL_PUSH	3	videos/1260-KHGNa16.gif
+340	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable decline press	Press en declinado en polea	chest	HORIZONTAL_PUSH	2	videos/1261-2Pya1cP.gif
+342	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable incline fly	Aleteo inclinado con cable	chest	HORIZONTAL_ADDUCTION	1	videos/0171-tBWXbIT.gif
+345	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable lying fly	Aleteo acostado con cable	chest	HORIZONTAL_ADDUCTION	2	videos/0185-lJJ7Yq8.gif
+349	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable decline seated wide-grip row	Remo sentado en declinado con agarre amplio	back	HORIZONTAL_PULL	1	videos/0159-kesXOpB.gif
+353	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	cable incline pushdown	Extensión en banco inclinado con cable	back	ELBOW_EXTENSION	1	videos/0172-1PK5Uo3.gif
+358	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable lying extension pullover (with rope attachment)	Pullover extensiones acostado con cuerda	back	SHOULDER_EXTENSION	2	videos/0184-Q2Eu1Ax.gif
+369	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable lying bicep curl	Curl de bíceps tumbado en cable	upper arms	ELBOW_FLEXION	2	videos/1634-otqIxU4.gif
+370	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable lying close-grip curl	Curl acostado con agarre estrecho	upper arms	ELBOW_FLEXION	2	videos/0182-61GrD55.gif
+371	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable lying triceps extension v. 2	Extensión de tríceps acostado v.2	upper arms	ELBOW_EXTENSION	2	videos/0186-uxJcFUU.gif
+373	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable reverse wrist curl	Flexión de muñeca con agarre inverso en polea	lower arms	WRIST_FOREARM	2	videos/0210-eYmsEPR.gif
+377	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable one arm decline chest fly	Aperturas de pecho a una mano en declinado con polea	chest	HORIZONTAL_ADDUCTION	3	videos/1262-w4dLzSx.gif
+379	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable one arm incline fly on exercise ball	Aperturas inclinadas a una mano en balón	chest	HORIZONTAL_ADDUCTION	2	videos/1264-P14Dz9D.gif
+380	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable one arm incline press	Press inclinado a una mano en polea	chest	HORIZONTAL_PUSH	2	videos/1265-GKEH6jj.gif
+381	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable one arm incline press on exercise ball	Press inclinado a una mano en balón	chest	HORIZONTAL_PUSH	2	videos/1266-6t00BsF.gif
+382	MEDIA	G1_PATRON_ZONA_INCOHERENTE	cable one arm lateral bent-over	Elevación lateral a una mano en flexión	chest	TRUNK_ROTATION_LATERAL_FLEXION	3	videos/0191-dB07vDu.gif
+391	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	cable pushdown (straight arm) v. 2	Extensión de tríceps con cable (brazo recto) v.2	back	ELBOW_EXTENSION	2	videos/0199-PskORrA.gif
+398	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable one arm reverse preacher curl	Curl de predicador invertido a una mano en cable	upper arms	ELBOW_FLEXION	3	videos/1635-ZXnjcOQ.gif
+400	ALTA	S4_BRAZOS_ARRIBA_SIN_BANDERA	cable overhead curl	Curl por encima de la cabeza en cable	upper arms	ELBOW_FLEXION	2	videos/1636-wDUqY2u.gif
+403	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable preacher curl	Curl predicador con cable	upper arms	ELBOW_FLEXION	2	videos/0195-P2lNrGL.gif
+411	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable reverse preacher curl	Curl de bíceps en predicador con agarre inverso en polea	upper arms	ELBOW_FLEXION	2	videos/0209-IwX5NqK.gif
+416	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable seated rear lateral raise	Elevación lateral trasera sentado en polea	shoulders	SHOULDER_RAISE	1	videos/0215-x825CZm.gif
+417	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,G5_PATRON_OTHER	cable seated shoulder internal rotation	Rotación interna de hombro sentado en polea	shoulders	OTHER	1	videos/0216-YPoVrBi.gif
+421	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable seated chest press	Cuerda con polea press de pecho sentado	chest	HORIZONTAL_PUSH	1	videos/2144-nIR4Rwl.gif
+427	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO	cable side bend crunch (bosu ball)	Crunch lateral con polea en bosu	waist	TRUNK_ROTATION_LATERAL_FLEXION	2	videos/0221-qatbkEd.gif
+435	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable seated one arm alternate row	Remo a una mano alterno sentado en polea	back	HORIZONTAL_PULL	2	videos/0214-vpp9Ku2.gif
+439	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G4_EJERCICIO_COMBINADO	cable squat row (with rope attachment)	Remo de sentadilla con cable y cuerda	back	KNEE_DOMINANT	2	videos/1717-f7fnAIB.gif
+441	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable rope hammer preacher curl	Curl de predicador martillo a una mano con cuerda en cable	upper arms	ELBOW_FLEXION	2	videos/1639-PcPe0P5.gif
+443	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable rope incline tricep extension	Extensión de tríceps con cuerda en banco inclinado	upper arms	ELBOW_EXTENSION	1	videos/1725-ZujAdR9.gif
+445	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable rope one arm hammer preacher curl	Curl de predicador martillo a una mano con cuerda en cable	upper arms	ELBOW_FLEXION	3	videos/1640-4hATdoB.gif
+447	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable seated one arm concentration curl	Curl de concentración sentado a una mano en cable	upper arms	ELBOW_FLEXION	2	videos/1642-rZ80Gbp.gif
+448	ALTA	E2_INSTRUCCIONES_OTRO_EQUIPO,S4_BRAZOS_ARRIBA_SIN_BANDERA	cable seated overhead curl	Curl por encima de la cabeza sentado en cable	upper arms	ELBOW_FLEXION	1	videos/1643-DpWMFP5.gif
+449	MEDIA	G1_PATRON_ZONA_INCOHERENTE	cable squatting curl	Curl de sentadilla en cable	upper arms	KNEE_DOMINANT	2	videos/1644-3XFdb1Z.gif
+458	ALTA	G3_NOMBRE_ZONA_INCOHERENTE,S3_SUSPENSION_SIN_BANDERA,S6_IMPACTO_SIN_BANDERA	chest dip (on dip-pull-up cage)	Fondos en jaula de dip/pull-up	chest	HORIZONTAL_PUSH	3	videos/1430-XgWyAiA.gif
+461	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO,D3_IMPACTO_EN_NIVEL_1	clap push up	Flexión con palmada	chest	HORIZONTAL_PUSH	1	videos/1273-wigSg76.gif
+464	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	chin-ups (narrow parallel grip)	Dominadas con agarre estrecho	back	VERTICAL_PULL	1	videos/0253-G70mEAJ.gif
+468	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cambered bar lying row	Remo acostado con barra cambered	back	HORIZONTAL_PULL	3	videos/0248-R5swFnc.gif
+469	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable wrist curl	Curl de muñeca en polea	lower arms	WRIST_FOREARM	2	videos/0247-LrV4s90.gif
+470	BAJA	G5_PATRON_OTHER	cable standing shoulder external rotation	Rotación externa de hombro de pie en polea	shoulders	OTHER	2	videos/0235-FWdVhcW.gif
+471	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	cable supine reverse fly	Aleteo inverso en supino	shoulders	SHOULDER_RAISE	2	videos/0240-PQcUlDi.gif
+489	BAJA	N2_INSTRUCCIONES_DUPLICADAS	cable triceps pushdown (v-bar)	Extensión de tríceps en polea con barra en V	upper arms	ELBOW_EXTENSION	2	videos/0241-gAwDzB3.gif
+490	BAJA	N2_INSTRUCCIONES_DUPLICADAS	cable triceps pushdown (v-bar) (with arm blaster)	Jalón de tríceps en cable con V y blaster	upper arms	ELBOW_EXTENSION	2	videos/2405-OxJk1fg.gif
+495	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	decline push-up	Flexión declinada	chest	HORIZONTAL_PUSH	1	videos/0279-i5cEhka.gif
+497	BAJA	N2_INSTRUCCIONES_DUPLICADAS	cocoons	Cocoons	waist	TRUNK_FLEXION	1	videos/0260-SLKj2pX.gif
+502	MEDIA	G1_PATRON_ZONA_INCOHERENTE,N2_INSTRUCCIONES_DUPLICADAS	curl-up	Curl abdominal	waist	ELBOW_FLEXION	1	videos/3016-g2oKspu.gif
+504	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	decline crunch	Crunch declinado	waist	TRUNK_FLEXION	1	videos/0277-9Ap7miY.gif
+505	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	decline sit-up	Abdominal sit-up declinado	waist	TRUNK_FLEXION	1	videos/0282-QLL2gdc.gif
+512	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	dumbbell arnold press	Prensa Arnold con mancuerna	shoulders	VERTICAL_PUSH	2	videos/2137-Xy4jlWA.gif
+513	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	dumbbell arnold press v. 2	Press Arnold con mancuerna v. 2	shoulders	VERTICAL_PUSH	2	videos/0287-eOrFCnx.gif
+514	ALTA	S4_BRAZOS_ARRIBA_SIN_BANDERA	dumbbell bench seated press	Press sentado de banca con mancuerna	shoulders	VERTICAL_PUSH	1	videos/0290-3d7wHyd.gif
+524	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell alternate seated hammer curl	Curl martillo sentado alterno con mancuerna	upper arms	ELBOW_FLEXION	1	videos/1648-6em2Dxj.gif
+527	MEDIA	G3_NOMBRE_ZONA_INCOHERENTE	dumbbell bicep curl lunge with bowling motion	Curl de bíceps con zancada y lanzamiento	upper legs	KNEE_DOMINANT	2	videos/1651-1VpF8db.gif
+528	MEDIA	G1_PATRON_ZONA_INCOHERENTE	dumbbell bicep curl on exercise ball with leg raised	Curl de bíceps sentado en balón con pierna elevada	upper arms	TRUNK_FLEXION	2	videos/1652-2NImIAG.gif
+534	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell finger curls	Curl de dedos con mancuerna	lower arms	WRIST_FOREARM	2	videos/1437-mtXengz.gif
+535	BAJA	N1_NOMBRE_DUPLICADO	dumbbell cuban press	Press cubano con mancuerna	shoulders	VERTICAL_PUSH	2	videos/0299-QfAKy1G.gif
+536	BAJA	N1_NOMBRE_DUPLICADO	dumbbell cuban press v. 2	Prensa cubana con mancuerna v. 2	shoulders	VERTICAL_PUSH	2	videos/2136-BqgCRif.gif
+537	BAJA	N1_NOMBRE_DUPLICADO	dumbbell front raise	Elevación frontal con mancuerna	shoulders	SHOULDER_RAISE	2	videos/0310-3eGE2JC.gif
+538	BAJA	N1_NOMBRE_DUPLICADO	dumbbell front raise v. 2	Elevación frontal con mancuerna v. 2	shoulders	SHOULDER_RAISE	2	videos/0309-Rr7S3yg.gif
+549	BAJA	N1_NOMBRE_DUPLICADO	dumbbell decline shrug	Encogimiento declinado con mancuerna	back	SCAPULAR_ELEVATION	2	videos/0305-cwsAI4G.gif
+550	BAJA	N1_NOMBRE_DUPLICADO	dumbbell decline shrug v. 2	Encogimiento declinado con mancuerna v. 2	back	SCAPULAR_ELEVATION	2	videos/0304-bRlbdjK.gif
+558	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell biceps curl squat	Curl de bíceps con sentadilla	upper arms	KNEE_DOMINANT	2	videos/1655-niXESDw.gif
+560	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	dumbbell close grip press	Press de agarre estrecho con mancuerna	upper arms	HORIZONTAL_PUSH	2	videos/1731-7jGOBF3.gif
+561	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	dumbbell close-grip press	Press de agarre cerrado con mancuerna	upper arms	HORIZONTAL_PUSH	2	videos/0296-RxayqAZ.gif
+562	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell concentration curl	Curl de concentración con mancuerna	upper arms	ELBOW_FLEXION	2	videos/0297-gvsWLQw.gif
+563	BAJA	N1_NOMBRE_DUPLICADO	dumbbell cross body hammer curl	Curl martillo cruzado con mancuerna	upper arms	ELBOW_FLEXION	2	videos/0298-Qyk5J3p.gif
+564	BAJA	N1_NOMBRE_DUPLICADO	dumbbell cross body hammer curl v. 2	Curl martillo cruzado con mancuerna versión 2	upper arms	ELBOW_FLEXION	2	videos/1657-HDYiZcY.gif
+567	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell forward lunge triceps extension	Zancada hacia adelante con extensión de tríceps	upper arms	KNEE_DOMINANT	2	videos/1732-XalXcvM.gif
+568	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	dumbbell hammer curl	Curl martillo con mancuerna	upper arms	ELBOW_FLEXION	2	videos/0313-slDvUAU.gif
+570	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	dumbbell hammer curl v. 2	Curl martillo v. 2 con mancuerna	upper arms	ELBOW_FLEXION	2	videos/0312-2NpxjC1.gif
+578	BAJA	N2_INSTRUCCIONES_DUPLICADAS	dumbbell lateral raise	Elevación lateral con mancuerna	shoulders	SHOULDER_RAISE	2	videos/0334-DsgkuIt.gif
+582	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell incline fly on exercise ball	Aperturas inclinadas con mancuerna en balón	chest	HORIZONTAL_ADDUCTION	1	videos/1278-HYe1ZqR.gif
+590	MEDIA	G1_PATRON_ZONA_INCOHERENTE	dumbbell incline shoulder raise	Elevación de hombros inclinada con mancuerna	chest	SHOULDER_RAISE	1	videos/0328-6e2DcYX.gif
+594	MEDIA	G1_PATRON_ZONA_INCOHERENTE	dumbbell incline y-raise	Elevación Y con mancuerna en banco inclinado	back	SHOULDER_RAISE	1	videos/3541-PbzNu7c.gif
+596	BAJA	N2_INSTRUCCIONES_DUPLICADAS	dumbbell incline biceps curl	Curl de bíceps en banco inclinado con mancuerna	upper arms	ELBOW_FLEXION	1	videos/0315-F3xgbjF.gif
+597	BAJA	N1_NOMBRE_DUPLICADO	dumbbell incline curl	Curl inclinado con mancuerna	upper arms	ELBOW_FLEXION	1	videos/0318-ae9UoXQ.gif
+598	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	dumbbell incline curl v. 2	Curl inclinado con mancuerna v. 2	upper arms	ELBOW_FLEXION	1	videos/0317-RaflbWD.gif
+609	MEDIA	G3_NOMBRE_ZONA_INCOHERENTE	dumbbell lunge with bicep curl	Curl de bíceps en zancada con mancuerna	upper legs	KNEE_DOMINANT	2	videos/1658-Mz6lLcW.gif
+617	BAJA	G5_PATRON_OTHER	dumbbell lying external shoulder rotation	Rotación externa de hombro acostado con mancuerna	shoulders	OTHER	2	videos/0863-bmBf7LN.gif
+623	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell one arm lateral raise with support	Elevación lateral a una mano con mancuerna con apoyo	shoulders	SHOULDER_RAISE	3	videos/0356-Yg7MJAT.gif
+625	BAJA	N1_NOMBRE_DUPLICADO	dumbbell lying one arm press	Press a una mano acostado con mancuerna	chest	HORIZONTAL_PUSH	3	videos/0343-zGSIWQi.gif
+626	BAJA	N1_NOMBRE_DUPLICADO	dumbbell lying one arm press v. 2	Press a una mano acostado con mancuerna v.2	chest	HORIZONTAL_PUSH	3	videos/0342-K3dIO25.gif
+635	MEDIA	G3_NOMBRE_ZONA_INCOHERENTE	dumbbell lying rear delt row	Remo acostado para deltoide posterior	back	HORIZONTAL_PULL	2	videos/1328-XUUD0Fs.gif
+653	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell one arm reverse wrist curl	Curl de muñeca invertido a una mano con mancuerna	lower arms	WRIST_FOREARM	3	videos/0358-BwSNDGt.gif
+654	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell one arm seated neutral wrist curl	Curl de muñeca sentado con mancuerna, palma neutra	lower arms	WRIST_FOREARM	2	videos/1415-YtaCTYl.gif
+655	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell one arm wrist curl	Curl de muñeca a una mano con mancuerna	lower arms	WRIST_FOREARM	3	videos/0364-q8aHNoF.gif
+656	BAJA	N2_INSTRUCCIONES_DUPLICADAS	dumbbell over bench one arm reverse wrist curl	Curl de antebrazo invertido con mancuerna sobre banco una mano	lower arms	WRIST_FOREARM	3	videos/1441-4Jc36XM.gif
+657	BAJA	N2_INSTRUCCIONES_DUPLICADAS	dumbbell over bench one arm wrist curl	Curl de muñeca a una mano sobre banco con mancuerna	lower arms	WRIST_FOREARM	3	videos/0367-KI1DjNN.gif
+660	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell one arm reverse fly (with support)	Aleteo inverso a una mano con mancuerna con apoyo	shoulders	SHOULDER_RAISE	3	videos/0359-e25F58f.gif
+661	BAJA	N1_NOMBRE_DUPLICADO	dumbbell one arm shoulder press	Press de hombro a una mano con mancuerna	shoulders	VERTICAL_PUSH	3	videos/0361-84RyJf8.gif
+662	BAJA	N1_NOMBRE_DUPLICADO	dumbbell one arm shoulder press v. 2	Press de hombro a una mano con mancuerna, versión 2	shoulders	VERTICAL_PUSH	3	videos/0360-1TkiAFK.gif
+664	ALTA	S6_IMPACTO_SIN_BANDERA	dumbbell push press	Push press con mancuerna	shoulders	VERTICAL_PUSH	2	videos/1700-FS63wTN.gif
+665	BAJA	N2_INSTRUCCIONES_DUPLICADAS	dumbbell raise	Elevación frontal con mancuerna	shoulders	SHOULDER_RAISE	2	videos/0376-c9MnDRp.gif
+667	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell one arm reverse grip press	Press de una mano con agarre invertido	chest	VERTICAL_PUSH	3	videos/1622-Ze7MoIb.gif
+671	MEDIA	G1_PATRON_ZONA_INCOHERENTE	dumbbell pullover hip extension on exercise ball	Pullover con mancuerna y extensión de cadera en balón	chest	HIP_EXTENSION	2	videos/1294-lI7easp.gif
+674	MEDIA	G1_PATRON_ZONA_INCOHERENTE	dumbbell one arm snatch	Arrancada con mancuerna a una mano	upper legs	VERTICAL_PUSH	3	videos/3888-6pTkI99.gif
+679	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell one arm seated hammer curl	Curl martillo sentado a una mano	upper arms	ELBOW_FLEXION	2	videos/1669-jK2hZ6n.gif
+684	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell over bench neutral wrist curl	Curl de muñeca neutro sobre banco con mancuerna	upper arms	WRIST_FOREARM	2	videos/0365-BKa8dmT.gif
+685	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell over bench one arm neutral wrist curl	Curl de muñeca neutro a una mano sobre banco con mancuerna	upper arms	WRIST_FOREARM	3	videos/0366-IvV6C9M.gif
+687	BAJA	N2_INSTRUCCIONES_DUPLICADAS	dumbbell peacher hammer curl	Curl martillo predicador con mancuerna	upper arms	ELBOW_FLEXION	2	videos/0370-F1KxjBa.gif
+690	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell pronate-grip triceps extension	Extensión de tríceps con agarre pronado	upper arms	ELBOW_EXTENSION	2	videos/0373-bpJL2Qs.gif
+693	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell reverse wrist curl	Curl de muñeca invertido con mancuerna	lower arms	WRIST_FOREARM	2	videos/0385-BLCvwr2.gif
+694	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated one arm rotate	Rotación de hombro a una mano sentado con mancuerna	lower arms	WRIST_FOREARM	2	videos/0399-7f2jsqP.gif
+695	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated calf raise	Elevacion de talones sentado con mancuerna	lower legs	ANKLE_PLANTAR_FLEXION	1	videos/1379-r29jP7S.gif
+702	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell scott press	Press de Scott con mancuerna	shoulders	VERTICAL_PUSH	2	videos/2397-5vfAI0I.gif
+703	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated alternate front raise	Elevación frontal alterna sentada con mancuerna	shoulders	SHOULDER_RAISE	1	videos/0387-gH5fRsC.gif
+704	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated alternate press	Press alterno sentado con mancuerna	shoulders	VERTICAL_PUSH	1	videos/0388-QT5Q0nK.gif
+705	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated alternate shoulder	Press de hombro alterno sentado	shoulders	VERTICAL_PUSH	1	videos/3546-q7qkONO.gif
+706	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated bent arm lateral raise	Elevación lateral de brazo con mancuerna sentado	shoulders	SHOULDER_RAISE	1	videos/2317-JzQbv7J.gif
+707	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated front raise	Elevación frontal sentado con mancuerna	shoulders	SHOULDER_RAISE	1	videos/0392-Ys97II0.gif
+708	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	dumbbell seated lateral raise	Elevación lateral sentado con mancuerna	shoulders	SHOULDER_RAISE	1	videos/0396-hxyTtWj.gif
+709	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	dumbbell seated lateral raise v. 2	Elevación lateral sentado con mancuerna, versión 2	shoulders	SHOULDER_RAISE	1	videos/0395-hrrS0Ed.gif
+721	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated bent over alternate kickback	Patada de tríceps alterna sentada con mancuerna, tronco inclinado	upper arms	ELBOW_EXTENSION	1	videos/1730-x0lwvfq.gif
+722	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated bent over triceps extension	Extensión de tríceps sentado con mancuerna, tronco inclinado	upper arms	ELBOW_EXTENSION	1	videos/1737-4ievMJ9.gif
+723	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated bicep curl	Curl de bíceps sentado con mancuerna	upper arms	ELBOW_FLEXION	1	videos/1677-xiA6lRr.gif
+725	MEDIA	E2_INSTRUCCIONES_OTRO_EQUIPO,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell seated biceps curl to shoulder press	Curl de bíceps sentado con press de hombro	shoulders	VERTICAL_PUSH	1	videos/3547-OeL23VY.gif
+726	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated curl	Curl sentado con mancuerna	upper arms	ELBOW_FLEXION	1	videos/0391-TiaZTxx.gif
+727	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated hammer curl	Curl martillo sentado	upper arms	ELBOW_FLEXION	1	videos/1678-IGtBdNT.gif
+728	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated inner biceps curl	Curl de bíceps interior sentado con mancuerna	upper arms	ELBOW_FLEXION	1	videos/0393-KXyoEtA.gif
+729	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated kickback	Extensión de tríceps sentado con mancuerna	upper arms	ELBOW_EXTENSION	1	videos/0394-en550rk.gif
+730	MEDIA	E2_INSTRUCCIONES_OTRO_EQUIPO,G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell seated neutral wrist curl	Curl de muñeca neutro sentado con mancuerna	upper arms	WRIST_FOREARM	1	videos/0397-uJmK7Z1.gif
+732	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated one arm kickback	Extensión de tríceps a una mano sentado con mancuerna	upper arms	ELBOW_EXTENSION	2	videos/0398-VQ3sNCn.gif
+733	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated palms up wrist curl	Curl de muñeca con palma arriba sentado con mancuerna	lower arms	WRIST_FOREARM	1	videos/0401-2dImyQ8.gif
+734	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated one leg calf raise	Elevación de talones sentado con mancuerna, una pierna	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/0400-Ia7tumC.gif
+735	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated one leg calf raise - hammer grip	Elevacion de talones sentado a una pierna con mancuerna (agarre martillo)	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/1380-FxhcxUW.gif
+736	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated one leg calf raise - palm up	Elevacion de talones sentado a una pierna con mancuerna - palma arriba	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/1381-VW88JNd.gif
+739	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated shoulder press	Press de hombro sentado con mancuerna	shoulders	VERTICAL_PUSH	1	videos/0405-znQUdHY.gif
+740	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated shoulder press (parallel grip)	Press de hombro sentado con mancuerna, agarre paralelo	shoulders	VERTICAL_PUSH	1	videos/0404-f1jf47L.gif
+742	BAJA	G5_PATRON_OTHER	dumbbell single arm overhead carry	Porteo unilateral por encima de la cabeza con mancuerna	shoulders	OTHER	3	videos/3548-mWBtgmb.gif
+750	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell side plank with rear fly	Plancha lateral con mancuerna y fly posterior	back	SHOULDER_RAISE	2	videos/3664-X6ytgYZ.gif
+753	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell single leg split squat	Sentadilla dividida a una pierna con mancuerna	upper legs	KNEE_DOMINANT	3	videos/0410-qx4fgX7.gif
+757	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated revers grip concentration curl	Curl de concentración a una mano con agarre inverso sentado	upper arms	ELBOW_FLEXION	1	videos/0403-lyKCLmK.gif
+758	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated reverse grip one arm overhead tricep extension	Extensión de tríceps unilateral por encima de la cabeza, agarre inverso, sentado	upper arms	ELBOW_EXTENSION	2	videos/1738-5fKX7wi.gif
+759	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell seated triceps extension	Extensión de tríceps sentado con mancuerna	upper arms	ELBOW_EXTENSION	1	videos/2188-kont8Ut.gif
+760	MEDIA	G3_NOMBRE_ZONA_INCOHERENTE	dumbbell standing alternate hammer curl and press	Curl martillo alterno de pie y press	shoulders	VERTICAL_PUSH	2	videos/3560-LeaZOIz.gif
+769	BAJA	N1_NOMBRE_DUPLICADO	dumbbell standing one arm curl (over incline bench)	Curl a una mano con mancuerna de pie sobre banco inclinado	upper arms	ELBOW_FLEXION	2	videos/0422-BIb1tGo.gif
+770	BAJA	N1_NOMBRE_DUPLICADO	dumbbell standing one arm curl over incline bench	Curl a una mano de pie sobre banco inclinado	upper arms	ELBOW_FLEXION	2	videos/1680-EmlJR2y.gif
+775	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	elbow lift - reverse push-up	Elevación de codo y push-up invertido	back	HORIZONTAL_PUSH	1	videos/1772-wbUYILZ.gif
+776	MEDIA	G1_PATRON_ZONA_INCOHERENTE	elevator	Elevador	back	HIP_HINGE	1	videos/3292-zYmNaoY.gif
+777	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	elbow dips	Fondos entre codos	upper arms	HORIZONTAL_PUSH	1	videos/3287-LkoAWAE.gif
+782	BAJA	G5_PATRON_OTHER	dumbbell upright shoulder external rotation	Rotación externa de hombro con mancuerna de pie	shoulders	OTHER	2	videos/0864-x306lCW.gif
+783	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell w-press	Press en W con mancuerna	shoulders	VERTICAL_PUSH	2	videos/0438-vmwLyCg.gif
+796	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	dumbbell step up single leg balance with bicep curl	Curl de bíceps con mancuerna en balance de una pierna	upper arms	KNEE_DOMINANT	3	videos/1684-76vfTdU.gif
+797	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbell tate press	Press Tate con mancuerna	upper arms	ELBOW_EXTENSION	2	videos/0436-s5PdDyY.gif
+803	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	dumbbells seated triceps extension	Extensión de tríceps sentado con mancuerna (dúo)	upper arms	ELBOW_EXTENSION	1	videos/2189-FQXdXzY.gif
+804	MEDIA	E2_INSTRUCCIONES_OTRO_EQUIPO,G1_PATRON_ZONA_INCOHERENTE	exercise ball alternating arm ups	Elevaciones alternas en balón	back	SHOULDER_RAISE	1	videos/1332-EyLrNC2.gif
+808	MEDIA	G1_PATRON_ZONA_INCOHERENTE	exercise ball back extension with rotation	Extensión de espalda en balón con giro	back	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/1336-WVD66ff.gif
+809	BAJA	N3_MOVILIDAD_POR_REPETICIONES	exercise ball hug	Abrazos con balón	back	MOBILITY	1	videos/1338-d7z1Y7V.gif
+810	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	exercise ball lat stretch	Estiramiento lateral en balón	back	MOBILITY	1	videos/1339-sM84pE4.gif
+813	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N4_SUSPENSION_SIN_APARATO	flag	Bandera	waist	CORE_STABILITY	1	videos/3303-pQ0Mx1Z.gif
+816	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	exercise ball on the wall calf raise	Elevacion de talones con balón de ejercicio en la pared	lower legs	ANKLE_PLANTAR_FLEXION	1	videos/1382-xo6sENf.gif
+817	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	exercise ball on the wall calf raise (tennis ball between ankles)	Elevación de gemelos con balón entre tobillos	lower legs	ANKLE_PLANTAR_FLEXION	1	videos/3241-FY3UdNT.gif
+818	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	exercise ball on the wall calf raise (tennis ball between knees)	Elevación de gemelos con balón entre rodillas	lower legs	ANKLE_PLANTAR_FLEXION	1	videos/3240-j74M6Zn.gif
+819	BAJA	G5_PATRON_OTHER	farmers walk	Camina de granjero	upper legs	OTHER	2	videos/2133-qPEzJjA.gif
+820	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	exercise ball supine triceps extension	Extensión de tríceps acostado en supino con balón	upper arms	ELBOW_EXTENSION	2	videos/1746-Gm2Uv1z.gif
+821	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	exercise ball pike push up	Flexión Pike en balón	chest	VERTICAL_PUSH	1	videos/1296-sVvXT5J.gif
+824	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	exercise ball prone leg raise	Elevación de piernas en balón boca abajo	back	HIP_EXTENSION	1	videos/1343-lCKm4Rs.gif
+825	ALTA	G5_PATRON_OTHER,S1_SUELO_SIN_BANDERA	exercise ball one leg prone lower body rotation	Rotación de tronco con una pierna en balón	upper legs	OTHER	2	videos/1416-M72BExt.gif
+828	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	exercise ball seated triceps stretch	Estiramiento de tríceps sentado en balón	upper arms	MOBILITY	1	videos/1745-7ePTw4B.gif
+829	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	finger curls	Curl de dedos con mancuerna	lower arms	WRIST_FOREARM	3	videos/0455-awG04cF.gif
+831	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez bar lying bent arms pullover	Pull-over acostado con barra EZ	back	SHOULDER_EXTENSION	3	videos/3010-nDK1HJ0.gif
+834	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez bar lying close grip triceps extension behind head	Extensión de tríceps acostado con barra EZ agarre estrecho detrás de la cabeza	upper arms	ELBOW_EXTENSION	3	videos/1748-6CKUx7o.gif
+835	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez bar seated close grip concentration curl	Curl de concentración sentado con barra EZ	upper arms	ELBOW_FLEXION	2	videos/1682-Dsfz0Id.gif
+837	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez barbell close grip preacher curl	Curl predicador con barra EZ, agarre cerrado	upper arms	ELBOW_FLEXION	3	videos/1627-hacCyUv.gif
+840	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez barbell decline close grip face press	Press de cara con agarre cerrado en declinada con barra EZ	upper arms	ELBOW_EXTENSION	3	videos/0448-DgZQ11d.gif
+841	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez barbell decline triceps extension	Extensión de tríceps en declinado con barra EZ	upper arms	ELBOW_EXTENSION	3	videos/2186-CQHoDm0.gif
+842	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez barbell incline triceps extension	Extensión de tríceps en banco inclinado con barra EZ	upper arms	ELBOW_EXTENSION	2	videos/0449-KyLtiLT.gif
+845	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez barbell reverse grip preacher curl	Curl predicador con agarre inverso con barra EZ	upper arms	ELBOW_FLEXION	3	videos/0452-vBNyir7.gif
+846	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez barbell seated curls	Curl sentado con barra EZ	upper arms	ELBOW_FLEXION	2	videos/1458-jtFKbt5.gif
+847	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	ez barbell seated triceps extension	Extensión de tríceps sentado con barra EZ	upper arms	ELBOW_EXTENSION	2	videos/0453-iaapw0g.gif
+848	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	ez barbell spider curl	Curl araña con barra EZ	upper arms	ELBOW_FLEXION	3	videos/0454-Ye5Qxb0.gif
+849	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	ez barbell spider curl	Curl Spider con barra EZ	upper arms	ELBOW_FLEXION	3	videos/1628-2kattbR.gif
+853	MEDIA	G1_PATRON_ZONA_INCOHERENTE	half knee bends (male)	Media sentadilla	cardio	KNEE_DOMINANT	1	videos/3221-ia6kIIl.gif
+854	BAJA	D3_IMPACTO_EN_NIVEL_1	high knee against wall	Rodillas altas contra la pared	cardio	LOCOMOTION_CARDIO	1	videos/3636-ealLwvX.gif
+858	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO	front lever	Plancha frontal	waist	CORE_STABILITY	3	videos/3296-PkCN2lv.gif
+862	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,G1_PATRON_ZONA_INCOHERENTE	gorilla chin	Dominada gorila	waist	VERTICAL_PULL	1	videos/0467-bmwlYvD.gif
+864	BAJA	N2_INSTRUCCIONES_DUPLICADAS	half sit-up (male)	Abdominal medio	waist	TRUNK_FLEXION	1	videos/3202-iQ241UP.gif
+865	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	hanging leg hip raise	Levantamiento de piernas colgado	waist	TRUNK_FLEXION	1	videos/1764-VEcJRo2.gif
+866	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N2_INSTRUCCIONES_DUPLICADAS	hanging leg raise	Elevación de piernas colgado	waist	TRUNK_FLEXION	1	videos/0472-I3tsCnC.gif
+867	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	hanging oblique knee raise	Levantamiento de rodilla oblicua colgado	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/1761-BaE7O6U.gif
+868	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	hanging pike	Pike colgado	waist	TRUNK_FLEXION	1	videos/0473-nuBF9MO.gif
+869	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	hanging straight leg hip raise	Elevación de cadera con piernas rectas colgado	waist	TRUNK_FLEXION	1	videos/0474-pj0X0tF.gif
+870	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N2_INSTRUCCIONES_DUPLICADAS	hanging straight leg raise	Elevación de piernas rectas colgado	waist	TRUNK_FLEXION	1	videos/0475-4Ml7QFO.gif
+871	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	hanging straight twisting leg hip raise	Elevación de cadera con giro de piernas rectas colgado	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/0476-Q6bvyen.gif
+873	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO,G1_PATRON_ZONA_INCOHERENTE	front lever reps	Repeticiones en plancha frontal	back	CORE_STABILITY	3	videos/3295-hbY9wqG.gif
+874	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	gironda sternum chin	Dominada Gironda al esternón	back	VERTICAL_PULL	1	videos/0466-IL0JUxR.gif
+875	MEDIA	G1_PATRON_ZONA_INCOHERENTE	flutter kicks	Patadas flutter	upper legs	TRUNK_FLEXION	1	videos/0459-UVo2Qs2.gif
+876	MEDIA	G1_PATRON_ZONA_INCOHERENTE,N3_CARDIO_POR_REPETICIONES	forward jump	Salto hacia adelante	upper legs	LOCOMOTION_CARDIO	2	videos/1472-uZKq7lo.gif
+882	ALTA	G1_PATRON_ZONA_INCOHERENTE,S1_SUELO_SIN_BANDERA	hands clasped circular toe touch (male)	Toque de dedos circular con manos entrelazadas	upper legs	TRUNK_FLEXION	1	videos/3218-B5xca8s.gif
+883	ALTA	G1_PATRON_ZONA_INCOHERENTE,S1_SUELO_SIN_BANDERA	hands reversed clasped circular toe touch (male)	Toque circular con manos entrelazadas	upper legs	TRUNK_FLEXION	1	videos/3215-yq3GAJX.gif
+889	MEDIA	S7_CARGA_AXIAL_SIN_BANDERA	frankenstein squat	Sentadilla Frankenstein	upper legs	KNEE_DOMINANT	3	videos/3194-bdWcbaU.gif
+893	BAJA	D3_IMPACTO_EN_NIVEL_1	jack burpee	Burpee con salto	cardio	LOCOMOTION_CARDIO	1	videos/0501-mr7pkqP.gif
+895	BAJA	D3_IMPACTO_EN_NIVEL_1,E2_INSTRUCCIONES_OTRO_EQUIPO	incline push up depth jump	Salto profundo desde flexión inclinada	chest	HORIZONTAL_PUSH	1	videos/0492-CB8WET1.gif
+896	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	incline push-up	Flexión en inclinada	chest	HORIZONTAL_PUSH	1	videos/0493-B1EVP9F.gif
+898	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	incline reverse grip push-up	Flexión invertida en inclinada	chest	HORIZONTAL_PUSH	1	videos/0494-XaaRnRn.gif
+901	MEDIA	E2_INSTRUCCIONES_OTRO_EQUIPO,G1_PATRON_ZONA_INCOHERENTE	isometric wipers	Limpias isométricas	chest	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/0500-11wrviz.gif
+902	MEDIA	G1_PATRON_ZONA_INCOHERENTE,N1_NOMBRE_DUPLICADO,N3_CARDIO_POR_REPETICIONES	inchworm	Gusano caminando	waist	LOCOMOTION_CARDIO	1	videos/1471-ZgsNQ6d.gif
+903	MEDIA	G1_PATRON_ZONA_INCOHERENTE,N1_NOMBRE_DUPLICADO,N3_CARDIO_POR_REPETICIONES	inchworm v. 2	Inchworm v. 2	waist	LOCOMOTION_CARDIO	1	videos/3698-TV87DNB.gif
+907	BAJA	N2_INSTRUCCIONES_DUPLICADAS	janda sit-up	Sit-up Janda	waist	TRUNK_FLEXION	1	videos/0508-1GPHRyK.gif
+910	BAJA	N1_NOMBRE_DUPLICADO	inverted row	Remo invertido	back	HORIZONTAL_PULL	1	videos/0499-bZGHsAZ.gif
+913	BAJA	N1_NOMBRE_DUPLICADO	inverted row v. 2	Remo invertido versión 2	back	HORIZONTAL_PULL	1	videos/0497-uX3sUBz.gif
+916	ALTA	E1_NOMBRE_EQUIPO_NO_EXIGIDO,E2_INSTRUCCIONES_OTRO_EQUIPO,G3_NOMBRE_ZONA_INCOHERENTE,S3_SUSPENSION_SIN_BANDERA	inverse leg curl (on pull-up cable machine)	Curl de piernas invertido en polea	upper legs	KNEE_DOMINANT	1	videos/2400-0rHfvy9.gif
+918	BAJA	N1_NOMBRE_DUPLICADO	jump squat	Sentadilla con salto	upper legs	KNEE_DOMINANT	2	videos/0514-LIlE5Tn.gif
+919	BAJA	N1_NOMBRE_DUPLICADO	jump squat v. 2	Sentadilla con salto versión 2	upper legs	KNEE_DOMINANT	2	videos/0513-TDYiji6.gif
+921	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	incline close-grip push-up	Flexión en inclinada con agarre cerrado	upper arms	HORIZONTAL_PUSH	1	videos/0490-1YB40kg.gif
+922	MEDIA	G1_PATRON_ZONA_INCOHERENTE	kettlebell alternating hang clean	Hang clean alterno con kettlebell	lower arms	HIP_HINGE	3	videos/0518-I4tibZG.gif
+927	MEDIA	G1_PATRON_ZONA_INCOHERENTE	kettlebell bent press	Press doblado con kettlebell	waist	VERTICAL_PUSH	3	videos/0524-kjE55n5.gif
+930	MEDIA	G1_PATRON_ZONA_INCOHERENTE	kettlebell bottoms up clean from the hang position	Clean con kettlebell desde hang	upper arms	HIP_HINGE	3	videos/0525-4KJEpzb.gif
+937	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO,D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,D3_IMPACTO_EN_NIVEL_1,S9_IMPACTO_SIN_EVIDENCIA_TEXTUAL	kipping muscle up	Muscle up kipping	back	VERTICAL_PULL	1	videos/0558-pM07UxU.gif
+939	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	kick out sit	Abdominal patada	upper legs	KNEE_DOMINANT	1	videos/0555-v7p5bYl.gif
+941	ALTA	S6_IMPACTO_SIN_BANDERA	kettlebell double push press	Push press doble con kettlebell	shoulders	VERTICAL_PUSH	3	videos/0528-I4KkPdl.gif
+943	MEDIA	G4_EJERCICIO_COMBINADO	kettlebell one arm clean and jerk	Clean y jerk a una mano con kettlebell	shoulders	VERTICAL_PUSH	3	videos/0537-vzAxBtt.gif
+944	BAJA	S9_IMPACTO_SIN_EVIDENCIA_TEXTUAL	kettlebell one arm jerk	Jerk a una mano con kettlebell	shoulders	VERTICAL_PUSH	3	videos/0538-S37C94C.gif
+949	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	kettlebell seated press	Press sentado con kettlebell	shoulders	VERTICAL_PUSH	2	videos/0546-BkxB8LW.gif
+950	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	kettlebell seated two arm military press	Press militar sentado con kettlebell	shoulders	VERTICAL_PUSH	2	videos/1438-ZEkjZDi.gif
+952	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G4_EJERCICIO_COMBINADO	kettlebell thruster	Thruster con kettlebell	shoulders	KNEE_DOMINANT	3	videos/0550-yWxMvB5.gif
+953	MEDIA	G1_PATRON_ZONA_INCOHERENTE	kettlebell two arm clean	Clean con kettlebell de dos brazos	shoulders	HIP_HINGE	3	videos/0552-7Ba7bQ2.gif
+959	MEDIA	G1_PATRON_ZONA_INCOHERENTE	kettlebell figure 8	Figura 8 con kettlebell	waist	HIP_HINGE	3	videos/0532-L4ay0PW.gif
+962	ALTA	G1_PATRON_ZONA_INCOHERENTE,S6_IMPACTO_SIN_BANDERA	kettlebell sumo high pull	Jalón alto sumo con kettlebell	back	KNEE_DOMINANT	3	videos/0548-8ARQ9Hw.gif
+966	BAJA	S9_IMPACTO_SIN_EVIDENCIA_TEXTUAL	kettlebell hang clean	Clean en hang con kettlebell	upper legs	HIP_HINGE	3	videos/0535-LHWF7us.gif
+970	BAJA	G5_PATRON_OTHER	kettlebell turkish get up (squat style)	Turkish get up estilo sentadilla con kettlebell	upper legs	OTHER	3	videos/0551-Ha7SZ3y.gif
+971	MEDIA	G1_PATRON_ZONA_INCOHERENTE	kettlebell double alternating hang clean	Clean doble alterno desde hang con kettlebell	upper arms	HIP_HINGE	3	videos/0526-a4F9Oyc.gif
+973	MEDIA	G1_PATRON_ZONA_INCOHERENTE	left hook. boxing	Giro izquierdo. boxeo	shoulders	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/2271-hoXt6wv.gif
+974	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO	l-sit on floor	L-sit en el suelo	waist	CORE_STABILITY	1	videos/3419-UpWmA5E.gif
+982	MEDIA	E1_NOMBRE_EQUIPO_NO_EXIGIDO	lever one arm bent over row	Remo a una mano con palanca	back	HORIZONTAL_PULL	3	videos/0589-Fhdtwf3.gif
+988	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	lever chest press	Press de pecho con palanca	chest	HORIZONTAL_PUSH	1	videos/0577-T0yTjgW.gif
+989	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	lever chest press	Press de pecho con palanca	chest	HORIZONTAL_PUSH	1	videos/0576-DOoWcnA.gif
+991	BAJA	N1_NOMBRE_DUPLICADO	lever incline chest press	Press de pecho inclinado con palanca	chest	HORIZONTAL_PUSH	1	videos/1299-jHAnWmT.gif
+992	BAJA	N1_NOMBRE_DUPLICADO	lever incline chest press v. 2	Press de pecho inclinado en palanca v.2	chest	HORIZONTAL_PUSH	1	videos/1479-o17Jfkt.gif
+995	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N4_SUSPENSION_SIN_APARATO	lever assisted chin-up	Dominada asistida con palanca	back	VERTICAL_PULL	1	videos/0572-MaMuGH6.gif
+999	BAJA	N1_NOMBRE_DUPLICADO	lever gripless shrug	Encogimiento de hombros sin agarre con palanca	back	SCAPULAR_ELEVATION	1	videos/0580-f91FwXG.gif
+1000	BAJA	N1_NOMBRE_DUPLICADO	lever gripless shrug v. 2	Encogimiento de hombros en palanca sin agarre v.2	back	SCAPULAR_ELEVATION	1	videos/1439-cbuFJrn.gif
+1017	MEDIA	G3_NOMBRE_ZONA_INCOHERENTE	lever seated squat calf raise on leg press machine	Elevacion de talones sentado sobre prensa de piernas	lower legs	ANKLE_PLANTAR_FLEXION	1	videos/1385-IeDEXTe.gif
+1022	BAJA	N1_NOMBRE_DUPLICADO	lever shoulder press	Press de hombro con palanca	shoulders	VERTICAL_PUSH	1	videos/0603-67n3r98.gif
+1023	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	lever shoulder press v. 2	Press de hombros con palanca v.2	shoulders	VERTICAL_PUSH	1	videos/0869-vqsbmL0.gif
+1024	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	lever shoulder press v. 3	Prensa de hombro con palanca v. 3	shoulders	VERTICAL_PUSH	1	videos/2318-dNFYIU1.gif
+1027	BAJA	N1_NOMBRE_DUPLICADO	lever seated crunch	Crunch sentado en palanca	waist	TRUNK_FLEXION	1	videos/1452-Wgaz7pm.gif
+1029	BAJA	N1_NOMBRE_DUPLICADO	lever seated crunch v. 2	Crunch sentado en palanca v. 2	waist	TRUNK_FLEXION	1	videos/3760-eXFXCY0.gif
+1048	BAJA	N1_NOMBRE_DUPLICADO	lever preacher curl	Curl de predicador con palanca	upper arms	ELBOW_FLEXION	1	videos/0592-b6hQYMb.gif
+1049	BAJA	N1_NOMBRE_DUPLICADO	lever preacher curl v. 2	Curl de bíceps predicador en palanca v.2	upper arms	ELBOW_FLEXION	1	videos/1614-ye84CTU.gif
+1055	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	modified push up to lower arms	Flexión modificada para bajar brazos	lower arms	HORIZONTAL_PUSH	1	videos/1421-arvaszz.gif
+1057	ALTA	S1_SUELO_SIN_BANDERA	one leg floor calf raise	Elevacion de talones a una pierna en piso	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/1387-0jp9Rlz.gif
+1058	ALTA	S5_INVERSION_SIN_BANDERA	modified hindu push-up (male)	Flexión hindú modificada	chest	HORIZONTAL_PUSH	1	videos/3217-epOSYUZ.gif
+1059	MEDIA	G4_EJERCICIO_COMBINADO	lunge with twist	Zancada con giro	upper legs	KNEE_DOMINANT	1	videos/1688-K9VL0Jq.gif
+1063	BAJA	N2_INSTRUCCIONES_DUPLICADAS	negative crunch	Crunch negativo	waist	TRUNK_FLEXION	1	videos/0634-szIn2UK.gif
+1068	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO,D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,D3_IMPACTO_EN_NIVEL_1,S9_IMPACTO_SIN_EVIDENCIA_TEXTUAL	muscle up	Muscle up	back	VERTICAL_PULL	1	videos/0631-yJUHKTn.gif
+1069	BAJA	S9_IMPACTO_SIN_EVIDENCIA_TEXTUAL	muscle-up (on vertical bar)	Muscle-up en barra vertical	back	VERTICAL_PULL	3	videos/1401-Af0EW2I.gif
+1070	BAJA	G5_PATRON_OTHER	one arm against wall	Un brazo contra la pared	back	OTHER	1	videos/1355-ZZTGMKh.gif
+1077	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	monster walk	Camino monstruo	upper legs	HIP_ABDUCTION_ADDUCTION	1	videos/0628-O95afRA.gif
+1078	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	one arm dip	Dips a una mano	upper arms	HORIZONTAL_PUSH	2	videos/0639-FAoIFMw.gif
+1084	BAJA	D3_IMPACTO_EN_NIVEL_1	medicine ball chest push with run release	Press de pecho con balón medicinal y carrera	chest	HORIZONTAL_PUSH	1	videos/1312-pX9Elbe.gif
+1085	MEDIA	G1_PATRON_ZONA_INCOHERENTE	one arm slam (with medicine ball)	Golpe con balón medicinal a una mano	waist	SHOULDER_EXTENSION	2	videos/0640-jCrtE9b.gif
+1086	ALTA	G1_PATRON_ZONA_INCOHERENTE,S6_IMPACTO_SIN_BANDERA	medicine ball catch and overhead throw	Captura y lanzamiento por encima de la cabeza con balón medicinal	back	KNEE_DOMINANT	1	videos/1353-PsVS1QP.gif
+1087	BAJA	D3_IMPACTO_EN_NIVEL_1	medicine ball overhead slam	Golpe vertical con balón medicinal	back	SHOULDER_EXTENSION	1	videos/1354-oHg8eop.gif
+1089	ALTA	E2_INSTRUCCIONES_OTRO_EQUIPO,S6_IMPACTO_SIN_BANDERA	medicine ball supine chest throw	Lanzamiento de pecho en supino con balón medicinal	upper arms	HORIZONTAL_PUSH	1	videos/1750-Al3tP0D.gif
+1097	BAJA	N1_NOMBRE_DUPLICADO	push-up (wall)	Flexión en pared	chest	HORIZONTAL_PUSH	1	videos/0659-LEH9jxP.gif
+1098	BAJA	N1_NOMBRE_DUPLICADO	push-up (wall) v. 2	Flexión en pared versión 2	chest	HORIZONTAL_PUSH	1	videos/0658-NCmbLCw.gif
+1100	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO	raise single arm push-up	Flexión unilateral con brazo elevado	chest	HORIZONTAL_PUSH	2	videos/0666-13TpY4H.gif
+1102	MEDIA	G1_PATRON_ZONA_INCOHERENTE	posterior step to overhead reach	Paso posterior al alcance superior	waist	KNEE_DOMINANT	1	videos/1687-ErqK3UL.gif
+1103	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	potty squat	Sentadilla de baño	waist	KNEE_DOMINANT	1	videos/3119-75Bgtjy.gif
+1105	BAJA	N2_INSTRUCCIONES_DUPLICADAS	prisoner half sit-up (male)	Abdominal medio estilo prisionero	waist	TRUNK_FLEXION	1	videos/3203-mgejmGP.gif
+1106	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	push-up to side plank	Flexión a plancha lateral	waist	HORIZONTAL_PUSH	1	videos/0664-KhHJ338.gif
+1107	BAJA	N2_INSTRUCCIONES_DUPLICADAS	quarter sit-up	Abdominal corto	waist	TRUNK_FLEXION	1	videos/3201-enxnJcM.gif
+1108	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	pull up (neutral grip)	Dominada con agarre neutro	back	VERTICAL_PULL	1	videos/0651-0V2YQjW.gif
+1111	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	outside leg kick push-up	Flexión con patada de pierna externa	upper legs	HORIZONTAL_PUSH	1	videos/0642-jNU1gFQ.gif
+1113	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	pike-to-cobra push-up	Flexión pike a cobra	upper legs	HORIZONTAL_PUSH	1	videos/3662-XPUDTt7.gif
+1115	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	push-up inside leg kick	Flexión con patada interna	upper legs	HORIZONTAL_PUSH	1	videos/0661-0br45wL.gif
+1117	MEDIA	G1_PATRON_ZONA_INCOHERENTE,N3_CARDIO_POR_REPETICIONES	quick feet v. 2	Pies rápidos v. 2	upper legs	LOCOMOTION_CARDIO	1	videos/3552-mweqJin.gif
+1122	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	push-up (on stability ball)	Flexión sobre pelota de estabilidad	chest	HORIZONTAL_PUSH	1	videos/0655-Y4BRNQF.gif
+1123	BAJA	N1_NOMBRE_DUPLICADO,N2_INSTRUCCIONES_DUPLICADAS	push-up (on stability ball)	Flexión sobre pelota de estabilidad	chest	HORIZONTAL_PUSH	1	videos/0656-tgryw5Y.gif
+1133	BAJA	D3_IMPACTO_EN_NIVEL_1,N2_INSTRUCCIONES_DUPLICADAS	run	Correr	cardio	LOCOMOTION_CARDIO	1	videos/0685-oLrKqDH.gif
+1134	BAJA	D3_IMPACTO_EN_NIVEL_1,N2_INSTRUCCIONES_DUPLICADAS	run (equipment)	Correr con equipamiento	cardio	LOCOMOTION_CARDIO	1	videos/0684-y5p0H8a.gif
+1135	ALTA	D3_IMPACTO_EN_NIVEL_1,S1_SUELO_SIN_BANDERA	scissor jumps (male)	Saltos tijera	cardio	LOCOMOTION_CARDIO	1	videos/3219-Eh2v5Iu.gif
+1142	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	seated leg raise	Elevación de piernas sentado	waist	TRUNK_FLEXION	1	videos/0689-Hgs6Nl1.gif
+1146	MEDIA	G1_PATRON_ZONA_INCOHERENTE	scapula dips	Fondos de escápula	back	HORIZONTAL_PUSH	1	videos/3012-7xeukSt.gif
+1147	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	scapular pull-up	Dominada de escápula	back	VERTICAL_PULL	1	videos/0688-uTBt1HV.gif
+1154	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	resistance band seated shoulder press	Press de hombro sentado con banda	shoulders	VERTICAL_PUSH	1	videos/3122-S93zLTG.gif
+1155	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	resistance band seated chest press	Press de pecho sentado con banda	chest	HORIZONTAL_PUSH	1	videos/3124-4x5Okof.gif
+1158	BAJA	G5_PATRON_OTHER	resistance band leg extension	Extensión de piernas con banda	upper legs	OTHER	1	videos/3007-Y1MsI1l.gif
+1159	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	resistance band seated hip abduction	Abducción de cadera sentada con banda	upper legs	HIP_ABDUCTION_ADDUCTION	1	videos/3006-0xDpB4L.gif
+1160	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	resistance band seated biceps curl	Curl de bíceps sentado con banda	upper arms	ELBOW_FLEXION	1	videos/3123-XFc3vpY.gif
+1161	ALTA	S1_SUELO_SIN_BANDERA	reverse hyper extension (on stability ball)	Extensión de espalda invertida en balón suizo	upper legs	HIP_EXTENSION	1	videos/0675-vM5YS2g.gif
+1174	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	semi squat jump (male)	Sentadilla media con salto	cardio	KNEE_DOMINANT	2	videos/3222-6FMU51h.gif
+1175	BAJA	D3_IMPACTO_EN_NIVEL_1	short stride run	Carrera de zancada corta	cardio	LOCOMOTION_CARDIO	1	videos/3656-CcWEoWV.gif
+1176	BAJA	D3_IMPACTO_EN_NIVEL_1	skater hops	Saltos estilo patinador	cardio	LOCOMOTION_CARDIO	1	videos/3361-zfNHMN9.gif
+1177	MEDIA	D3_IMPACTO_EN_NIVEL_1,E1_NOMBRE_EQUIPO_NO_EXIGIDO	ski step	Paso de esquí	cardio	LOCOMOTION_CARDIO	1	videos/3671-5MRH8H2.gif
+1180	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO	single arm push-up	Flexión unilateral	chest	HORIZONTAL_PUSH	2	videos/0725-MUic5zN.gif
+1184	MEDIA	G1_PATRON_ZONA_INCOHERENTE	side hip (on parallel bars)	Cadera lateral en paralelas	waist	HIP_ABDUCTION_ADDUCTION	1	videos/0709-jTkSc6o.gif
+1185	ALTA	S1_SUELO_SIN_BANDERA	side-to-side toe touch (male)	Toque de dedos de lado a lado	waist	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/3213-WCAvOfC.gif
+1186	BAJA	N2_INSTRUCCIONES_DUPLICADAS	sit-up v. 2	Elevación de tronco versión 2	waist	TRUNK_FLEXION	1	videos/0735-Bn6TXyO.gif
+1191	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1	side-to-side chin	Chin de lado a lateral	back	VERTICAL_PULL	1	videos/0720-isAAZWA.gif
+1192	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO,D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N3_MOVILIDAD_POR_REPETICIONES,N4_SUSPENSION_SIN_APARATO	skin the cat	Skin the cat	back	MOBILITY	1	videos/3304-MSfvriJ.gif
+1195	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO,N1_NOMBRE_DUPLICADO	self assisted inverse leg curl	Curl invertido de piernas asistido	upper legs	KNEE_DOMINANT	1	videos/0697-GwYwElT.gif
+1196	BAJA	N1_NOMBRE_DUPLICADO	self assisted inverse leg curl	Curl de piernas invertido asistido	upper legs	KNEE_DOMINANT	1	videos/1766-ZSY3MsL.gif
+1201	MEDIA	G3_NOMBRE_ZONA_INCOHERENTE	side plank hip adduction	Aductores de cadera en puente lateral	upper legs	HIP_ABDUCTION_ADDUCTION	1	videos/1775-VO2qeJg.gif
+1214	BAJA	N1_NOMBRE_DUPLICADO	smith reverse calf raises	Elevación de talones invertida con Smith	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/0763-ywaNfuh.gif
+1215	BAJA	N1_NOMBRE_DUPLICADO	smith reverse calf raises	Elevaciones de talones invertidas en Smith	lower legs	ANKLE_PLANTAR_FLEXION	2	videos/1394-Lsqrgh4.gif
+1220	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	smith decline reverse-grip press	Press declinado con agarre invertido en smith	chest	HORIZONTAL_PUSH	2	videos/0754-MY9P1WA.gif
+1223	MEDIA	G1_PATRON_ZONA_INCOHERENTE	smith incline shoulder raises	Elevaciones de hombros inclinadas en smith	chest	HORIZONTAL_PULL	2	videos/0759-ayAHcEm.gif
+1225	MEDIA	G1_PATRON_ZONA_INCOHERENTE	smith hip raise	Levantamiento de cadera en smith	waist	HIP_EXTENSION	2	videos/0756-CqhoytW.gif
+1242	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	smith machine incline tricep extension	Extensión de tríceps en banco inclinado con Smith	upper arms	ELBOW_EXTENSION	2	videos/1752-o8aOcrz.gif
+1257	BAJA	N3_MOVILIDAD_POR_REPETICIONES	sphinx	Esfinge	back	MOBILITY	1	videos/1362-DIVyqrU.gif
+1259	MEDIA	G1_PATRON_ZONA_INCOHERENTE	standing archer	Arquero de pie	back	TRUNK_ROTATION_LATERAL_FLEXION	2	videos/3669-JF8AkMX.gif
+1261	MEDIA	G1_PATRON_ZONA_INCOHERENTE	standing pelvic tilt	Inclinación pélvica de pie	back	TRUNK_FLEXION	1	videos/1364-cuKYxhu.gif
+1262	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	spider crawl push up	Flexión con desplazamiento de araña	upper legs	HORIZONTAL_PUSH	1	videos/0778-P9GFBME.gif
+1272	ALTA	S4_BRAZOS_ARRIBA_SIN_BANDERA	snatch pull	Tracción snatch	upper legs	HIP_HINGE	3	videos/0776-dG5Smob.gif
+1274	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	smith seated wrist curl	Curl de muñeca sentado en Smith	lower arms	WRIST_FOREARM	2	videos/1426-B6dAO1t.gif
+1288	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	smith single leg split squat	Sentadilla dividida a una pierna con Smith	upper legs	KNEE_DOMINANT	3	videos/0768-wWFspEi.gif
+1289	ALTA	S6_IMPACTO_SIN_BANDERA	smith sprint lunge	Zancada rápida con Smith	upper legs	KNEE_DOMINANT	2	videos/0769-HsjbB1z.gif
+1294	MEDIA	G1_PATRON_ZONA_INCOHERENTE	swing 360	Balanceo 360	cardio	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/3318-tnaj0mT.gif
+1295	MEDIA	G1_PATRON_ZONA_INCOHERENTE,G3_NOMBRE_ZONA_INCOHERENTE	walking high knees lunge	Zancada con rodillas altas en caminata	cardio	KNEE_DOMINANT	1	videos/3655-J9zIWig.gif
+1297	ALTA	S1_SUELO_SIN_BANDERA	suspended push-up	Push-up suspendido	chest	HORIZONTAL_PUSH	1	videos/0806-IaGQCrC.gif
+1298	MEDIA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,N4_SUSPENSION_SIN_APARATO	straddle maltese	Maltés en apertura	waist	CORE_STABILITY	1	videos/3314-HfqciZF.gif
+1301	ALTA	D2_SUSPENSION_O_INVERSION_EN_NIVEL_1,S1_SUELO_SIN_BANDERA	suspended reverse crunch	Crunch invertido suspendido	waist	TRUNK_FLEXION	1	videos/0807-R1WYG5D.gif
+1305	ALTA	D1_HABILIDAD_AVANZADA_NIVEL_BAJO	v-sit on floor	V-sit en el suelo	waist	TRUNK_FLEXION	1	videos/3420-ZuXu4Eq.gif
+1306	ALTA	S1_SUELO_SIN_BANDERA,S3_SUSPENSION_SIN_BANDERA	vertical leg raise (on parallel bars)	Elevación de piernas vertical en paralelas	waist	TRUNK_FLEXION	1	videos/0826-ZNgOYQU.gif
+1308	ALTA	G1_PATRON_ZONA_INCOHERENTE,S1_SUELO_SIN_BANDERA	two toe touch (male)	Toque de dos dedos de los pies	back	TRUNK_FLEXION	1	videos/3231-p195zsJ.gif
+1310	BAJA	N3_MOVILIDAD_POR_REPETICIONES	upward facing dog	Perro mirando hacia arriba	back	MOBILITY	1	videos/1366-01qpYSe.gif
+1313	MEDIA	G1_PATRON_ZONA_INCOHERENTE	swimmer kicks v. 2 (male)	Patadas de nadador v. 2 (hombre)	upper legs	CORE_STABILITY	1	videos/3433-SP3hUez.gif
+1314	MEDIA	G1_PATRON_ZONA_INCOHERENTE	twist hip lift	Elevación de cadera con giro	upper legs	TRUNK_ROTATION_LATERAL_FLEXION	1	videos/1466-AX1kB0o.gif
+1317	BAJA	E2_INSTRUCCIONES_OTRO_EQUIPO	triceps dip	Dip de tríceps	upper arms	HORIZONTAL_PUSH	3	videos/0814-X6C6i5Y.gif
+1320	ALTA	E2_INSTRUCCIONES_OTRO_EQUIPO,S1_SUELO_SIN_BANDERA	triceps dips floor	Dip de tríceps en piso	upper arms	HORIZONTAL_PUSH	1	videos/0815-7aVz15j.gif
+1333	ALTA	D3_IMPACTO_EN_NIVEL_1,E1_NOMBRE_EQUIPO_NO_EXIGIDO,E2_INSTRUCCIONES_OTRO_EQUIPO,S1_SUELO_SIN_BANDERA,S4_BRAZOS_ARRIBA_SIN_BANDERA	wheel run	Carrera con zancadas amplias	cardio	LOCOMOTION_CARDIO	1	videos/3637-km2Ljzj.gif
+1373	BAJA	N3_MOVILIDAD_POR_REPETICIONES	wrist circles	Círculos de muñeca	lower arms	MOBILITY	1	videos/1428-2zNKRUB.gif
+1374	MEDIA	D3_IMPACTO_EN_NIVEL_1,G1_PATRON_ZONA_INCOHERENTE,N3_CARDIO_POR_REPETICIONES	wind sprints	Sprints con viento	waist	LOCOMOTION_CARDIO	1	videos/0858-Qoujh3Q.gif

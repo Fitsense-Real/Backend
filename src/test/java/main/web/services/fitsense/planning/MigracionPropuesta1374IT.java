@@ -32,13 +32,17 @@ import static org.junit.jupiter.api.Assertions.*;
  * entero en una transaccion, con los disparadores diferidos comprobados al
  * COMMIT. No esta en db/migration: esta prueba la lee de
  * docs/FitSense/migraciones_propuestas/.
+ * <p>
+ * Se ejecuta con Flyway hasta la 36: V37 ya corrige 1374 (colgado de la barra,
+ * TRUNK_FLEXION), y esta propuesta historica se escribio para el estado anterior.
  */
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token="
+        "fitsense.ai.api-token=",
+        "spring.flyway.target=36"
 })
 class MigracionPropuesta1374IT {
 
