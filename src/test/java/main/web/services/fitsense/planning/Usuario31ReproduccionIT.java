@@ -17,6 +17,8 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -190,6 +192,7 @@ class Usuario31ReproduccionIT {
 
     @Test
     @Order(1)
+    @DisabledIfSystemProperty(named = "fitsense.u31.propuesta", matches = ".+")
     @DisplayName("catalogo actual: se reproducen los tres rechazos, el plan 63 es valido y 776 y 1320 siguen elegibles")
     void catalogoActual() {
         var r = informe("actual");
@@ -201,6 +204,7 @@ class Usuario31ReproduccionIT {
 
     @Test
     @Order(2)
+    @DisabledIfSystemProperty(named = "fitsense.u31.propuesta", matches = ".+")
     @DisplayName("catalogo corregido: mismos rechazos de la IA; el plan 63 ya no es publicable; el motor sigue publicando")
     void catalogoCorregido() {
         // 776: GIF = suspension invertida en anillas.  1320: sentado en el suelo.
@@ -220,6 +224,23 @@ class Usuario31ReproduccionIT {
                 "V1: el ejercicio 1320 no esta en available_exercises",
                 "V15: el entrenamiento del " + DOMINGO + " dedica 4 de 7 ejercicios a upper legs");
         assertTrue(r.get(5).startsWith("corregido RULE_ENGINE: | SATURDAY UPPER_BODY"), r.get(5));
+        assertFalse(r.get(5).contains(" 776[") || r.get(5).contains(" 1320["), r.get(5));
+    }
+
+    /**
+     * Opt-in ({@code -Dfitsense.u31.propuesta=<nombre>}): el mismo informe con el
+     * catalogo que haya cargado Flyway (p. ej. la propuesta V37 por
+     * {@code -Dspring.flyway.locations}). Los rechazos de la IA no deben cambiar
+     * y 776 y 1320 no deben ser elegibles para este perfil.
+     */
+    @Test
+    @Order(3)
+    @EnabledIfSystemProperty(named = "fitsense.u31.propuesta", matches = ".+")
+    @DisplayName("catalogo propuesto (Flyway): mismos rechazos de la IA y sin 776 ni 1320")
+    void catalogoPropuesto() {
+        var r = informe(System.getProperty("fitsense.u31.propuesta").toLowerCase());
+        contiene(r.get(0), "776=NO", "1320=NO");
+        for (int i = 1; i <= 3; i++) assertTrue(r.get(i).contains(i == 1 ? "V23" : "V15"), r.get(i));
         assertFalse(r.get(5).contains(" 776[") || r.get(5).contains(" 1320["), r.get(5));
     }
 }
