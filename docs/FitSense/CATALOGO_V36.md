@@ -176,7 +176,7 @@ Tablas completas en `evidencia/catalogo_v36/resultados_comparacion.md`.
 |---|---|---|---|
 | `catalogo-v36` (PR #4), local | 816/816 | 255, 0 fallos, 12 omitidas (opcionales) | **BUILD SUCCESS** |
 | Combinación PR #3 + V36 (local, sin publicar) | 829/829 | 270, 1 fallo, 10 omitidas | El único fallo es la continuidad de los 8 LOSE_WEIGHT de 5–6 días: el defecto del PR #3 (§8) |
-| CI del PR #4 | — | — | Ver el PR (se ejecuta con cada push) |
+| CI del PR #4 (`verify`, commit 7641812) | — | — | **En verde** |
 
 ## 11. Pendientes y efecto real en el MVP
 
