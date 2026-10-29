@@ -1,0 +1,6 @@
+522|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador, no plano
+523|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador, no plano
+559|PENDIENTE_CRITERIO|BAJA|requires_floor|false|true o false (criterio bosu)|Sentado sobre un bosu apoyado en el suelo, pies en el suelo
+648|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador
+676|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador
+677|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Pecho sobre banco inclinado

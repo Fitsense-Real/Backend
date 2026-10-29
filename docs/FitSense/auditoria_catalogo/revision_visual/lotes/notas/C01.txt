@@ -1,0 +1,35 @@
+179|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+468|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+156|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+158|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+159|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+230|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+358|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+831|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+345|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+377|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+303|CONFIRMADO|MEDIA|equipment|body weight|espaldera (no modelada)|Rema agarrado a una espaldera
+305|CONFIRMADO|MEDIA|equipment|body weight|espaldera (no modelada)|Rema agarrado a una espaldera
+435|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco
+154|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+339|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+340|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+380|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+1220|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+153|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+667|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+214|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+257|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+213|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+258|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+373|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+667|CONFIRMADO|MEDIA|movement_pattern|VERTICAL_PUSH|HORIZONTAL_PUSH|Press tumbado en banco; cuenta para UPPER_PUSH igual
+667|CONFIRMADO|BAJA|requires_overhead|true|false|Press tumbado, no por encima de la cabeza (restriccion de mas)
+469|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+534|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+653|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+654|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+655|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+693|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+656|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo detras del banco, antebrazo sobre el banco
+657|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo detras del banco, antebrazo sobre el banco

@@ -1,0 +1,17 @@
+466|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo con el brazo sobre el balon
+95|PENDIENTE_CRITERIO|BAJA|equipment|band|band + cajon (convencion de los sentados)|Sentado en un cajon
+133|PENDIENTE_CRITERIO|BAJA|equipment|band|band + cajon (convencion de los sentados)|Sentado en un cajon
+733|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+493|CONFIRMADO|MEDIA|equipment|body weight|bench + step platform|Manos en un banco, puntas en un step
+695|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+816|CONFIRMADO|MEDIA|equipment|stability ball|stability ball + dumbbell|Lleva mancuernas
+817|CONFIRMADO|MEDIA|equipment|stability ball|stability ball + dumbbell|Lleva mancuernas
+818|CONFIRMADO|MEDIA|equipment|stability ball|stability ball + dumbbell|Lleva mancuernas
+1253|CONFIRMADO|BAJA|equipment|body weight|escalon (no modelado)|Sobre una escalera
+55|CONFIRMADO|BAJA|requires_floor|true|false|De pie (restriccion de mas)
+1136|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo con piernas extendidas
+417|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo junto a la polea
+99|PROBABLE|ALTA|requires_overhead|false|true|Elevacion frontal hasta la altura de la cabeza o por encima
+416|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco
+703|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+706|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco

@@ -1,0 +1,11 @@
+465|PENDIENTE_CRITERIO|BAJA|equipment|body weight|bench (convencion de los sentados)|Sentado en un banco
+881|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado boca arriba en el suelo
+1193|CONFIRMADO|BAJA|requires_floor|true|false|Sentado en un taburete (restriccion de mas)
+141|CONFIRMADO|ALTA|requires_overhead|false|true|Lleva la banda por encima de la cabeza
+296|CONFIRMADO|MEDIA|equipment|body weight|bench|Antebrazo apoyado en un banco
+296|PROBABLE|BAJA|requires_floor|true|false|Plancha lateral inclinada de pie sobre el banco (restriccion de mas)
+126|PENDIENTE_CRITERIO|BAJA|equipment|band|band + cajon (convencion de los sentados)|Sentado en un cajon
+1158|PENDIENTE_CRITERIO|BAJA|equipment|band|band + bench (convencion de los sentados)|Sentado en un banco
+860|CONFIRMADO|ALTA|requires_floor|false|true|Plancha maltesa con manos en el suelo
+860|CONFIRMADO|ALTA|difficulty_level|1|3|Maltesa completa: habilidad gimnastica de elite
+1182|CONFIRMADO|MEDIA|equipment|body weight|step platform o cajon|Pies apoyados en un cajon

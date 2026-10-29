@@ -1,0 +1,4 @@
+607|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo, pecho sobre el balon
+131|CONFIRMADO|BAJA|requires_overhead|true|false|Brazo a la altura del hombro (restriccion de mas)
+397|CONFIRMADO|MEDIA|equipment|cable|cable + banco Scott (no modelado)|Banco de predicador
+401|PENDIENTE_CRITERIO|BAJA|requires_overhead|true|false o true|Brazos a la altura de la cabeza, no por encima
