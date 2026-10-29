@@ -839,13 +839,21 @@ public class PlanDraftValidator {
      *       ({@link CapabilityPrescriptionPolicy}, lo mismo que exigen V24/V25).</li>
      * </ul>
      * No es una excepcion por objetivo: si el objetivo puede prescribir los dos
-     * grupos, se siguen exigiendo los dos. Sin capacidades en ENFORCE (la
-     * adaptacion P2-D construye su validador sin ellas), o sin matriz para el
-     * objetivo, V24/V25 no limitan lo que se puede poner y V15 cuenta como antes.
+     * grupos, se siguen exigiendo los dos. Sin matriz para el objetivo, V15 cuenta
+     * como antes.
+     * <p>
+     * NO DEPENDE DEL MODO DE CAPACIDADES DEL VALIDADOR. La generacion valida con
+     * capacidades en ENFORCE y la adaptacion P2-D (copia semanal, correccion,
+     * respaldo, reparacion de seguridad) con su propio validador, sin ellas salvo
+     * con progresion. Si este criterio dependiera del modo, la copia de una semana
+     * valida exigiria un grupo que el objetivo no puede prescribir y la semana 2
+     * quedaria sin plan (8 planes de LOSE_WEIGHT de 5-6 dias). Lo unico que cambia
+     * es el MINIMO de grupos de V15: la regla de grupos ajenos, la de la mitad y
+     * las dosis (V24) y capacidades (V25) siguen con el modo de cada validador.
      */
     private boolean prescribibleParaV15(CandidateExercise candidate, WorkoutFocus focus,
                                         PlanGenerationContext context) {
-        if (!capabilityEnforcement.bloquea() || context.profile() == null) return true;
+        if (context.profile() == null) return true;
         String objetivo = context.profile().goalType();
         if (GoalCapabilityPolicy.forGoal(objetivo).isEmpty()) return true;
         if (candidate.difficulty() > context.effectiveMaxDifficulty()) return false;

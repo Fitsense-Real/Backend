@@ -69,7 +69,7 @@ class V15GruposPrescribiblesTest {
                 DoseEnforcement.OFF, DoseEnforcement.ENFORCE);
     }
 
-    /** Como lo construye la adaptacion P2-D: sin capacidades. Su V15 no cambia. */
+    /** Como lo construye la adaptacion P2-D (copia semanal): sin capacidades. */
     static PlanDraftValidator sinCapacidades() {
         return new PlanDraftValidator(new SessionDurationEstimator(), SlotCoverageEnforcement.OFF,
                 DoseEnforcement.OFF);
@@ -185,12 +185,40 @@ class V15GruposPrescribiblesTest {
         }
 
         @Test
-        @DisplayName("sin capacidades (como la adaptacion P2-D) V15 sigue exactamente como antes")
-        void sinCapacidadesComoAntes() {
-            var p = v15(sinCapacidades(), "LOSE_WEIGHT", CATALOGO, GenerationSource.AI, WorkoutFocus.LEGS,
-                    List.of(SENTADILLA, PESO_MUERTO, CARDIO));
+        @DisplayName("copia semanal (validador sin capacidades): el mismo criterio que la generacion")
+        void copiaSemanalMismoCriterio() {
+            // Antes, este validador exigia gemelos a LOSE_WEIGHT y la semana 2 quedaba sin plan.
+            var sesion = List.of(SENTADILLA, PESO_MUERTO, CARDIO);
+            assertEquals(List.of(), v15(sinCapacidades(), "LOSE_WEIGHT", CATALOGO, GenerationSource.RULE_ENGINE,
+                    WorkoutFocus.LEGS, sesion));
+            assertEquals(v15(produccion(), "LOSE_WEIGHT", CATALOGO, GenerationSource.RULE_ENGINE, WorkoutFocus.LEGS,
+                    sesion), v15(sinCapacidades(), "LOSE_WEIGHT", CATALOGO, GenerationSource.RULE_ENGINE,
+                    WorkoutFocus.LEGS, sesion));
+        }
+
+        @org.junit.jupiter.params.ParameterizedTest(name = "{0}, generacion={1}")
+        @org.junit.jupiter.params.provider.CsvSource({
+                "GAIN_MUSCLE, true", "GAIN_MUSCLE, false",
+                "INCREASE_STRENGTH, true", "INCREASE_STRENGTH, false",
+                "GENERAL_FITNESS, true", "GENERAL_FITNESS, false"})
+        @DisplayName("los demas objetivos, en generacion y en copia, siguen exigiendo los dos grupos prescribibles")
+        void demasObjetivosSiguenExigiendo(String objetivo, boolean generacion) {
+            var v = generacion ? produccion() : sinCapacidades();
+            var p = v15(v, objetivo, CATALOGO, GenerationSource.RULE_ENGINE, WorkoutFocus.LEGS,
+                    List.of(SENTADILLA, PESO_MUERTO, SENTADILLA_2));
             assertEquals(1, p.size(), p.toString());
             assertTrue(p.get(0).contains("Debe cubrir al menos 2"), p.get(0));
+        }
+
+        @Test
+        @DisplayName("copia semanal: un grupo ajeno y un grupo por encima de la mitad se siguen rechazando")
+        void copiaSemanalConservaLasOtrasReglas() {
+            var ajeno = v15(sinCapacidades(), "LOSE_WEIGHT", CATALOGO, GenerationSource.RULE_ENGINE,
+                    WorkoutFocus.LEGS, List.of(SENTADILLA, PESO_MUERTO, REMO));
+            assertTrue(ajeno.stream().anyMatch(x -> x.contains("incluye ejercicios de [back]")), ajeno.toString());
+            var tiron = v15(sinCapacidades(), "LOSE_WEIGHT", CATALOGO, GenerationSource.RULE_ENGINE,
+                    WorkoutFocus.PULL, List.of(REMO, JALON));
+            assertTrue(tiron.stream().anyMatch(x -> x.contains("Debe cubrir al menos 2")), tiron.toString());
         }
 
         @Test

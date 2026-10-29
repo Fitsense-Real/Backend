@@ -208,3 +208,45 @@ Un curl con press en un día de tirón cumple V15 y V22 por catálogo, pero no e
 - Las pruebas unitarias incluyen propuestas sintéticas `GenerationSource.AI`: grupo ajeno, más de la mitad, un solo grupo con dos prescribibles. Todas se siguen rechazando.
 
 **Observación, sin tocar por alcance:** el prompt (`PlanInputSnapshot.suggestedSession`) sigue sugiriendo a la IA 2 grupos mínimos por sesión, sin saber cuáles son prescribibles. En LOSE_WEIGHT/piernas la IA podría proponer un gemelo, que V24 rechazaría, y gastar un intento. No cambia el resultado: el respaldo ya produce plan válido. Si se quiere evitar ese intento, habría que ajustar el prompt, que es un cambio aparte.
+
+## 5. Fase 3: el mismo V15 en la generación y en la copia semanal
+
+**Defecto.** Los 8 planes de LOSE_WEIGHT (intermedio y avanzado, 5–6 días, gimnasio y casa) que recuperó la fase 2 se generaban válidos. Pero en el ciclo semanal real la semana 2 terminaba en `NO_FACTIBLE`: «V15: … enfoque LEGS y solo trabaja [upper legs]».
+
+**Causa.** La fase 2 contaba como disponibles solo los grupos prescribibles cuando el validador tenía las capacidades en ENFORCE. Así ocurre en la generación, pero no en la adaptación P2-D: `StrictValidationAdapter` construye su validador sin capacidades, salvo con progresión o con `fitsense.adaptation.capability-validation.enabled`. Por eso la copia volvía a exigir gemelos, que LOSE_WEIGHT no puede prescribir. Los mismos 8 fallaban con el catálogo V35 y con V36: no es un problema del catálogo.
+
+**Cambio, autorizado (orden de corrección final, punto 2).** `PlanDraftValidator.prescribibleParaV15` deja de depender del modo de capacidades del validador. Basta con que haya perfil y matriz de capacidades del objetivo. Es la misma función para la generación y para la copia; no se duplica el criterio.
+
+**Lo que no cambia:**
+- `fitsense.adaptation.capability-validation.enabled` sigue apagado y no se toca `StrictValidationAdapter`;
+- V24 por capacidades y V25 siguen con el modo de cada validador;
+- la regla de grupos ajenos y la de la mitad;
+- los umbrales de adaptación, D8, V8C, la recuperación y la progresión.
+
+El cambio solo afecta al **mínimo** de grupos de V15. Solo deja de exigir un grupo que el objetivo no puede prescribir con dosis válida. Si hay dos grupos prescribibles, se siguen exigiendo los dos.
+
+**Flujos que usan el validador de la adaptación**, todos cubiertos por la regresión:
+
+| Flujo | Efecto |
+|---|---|
+| Copia semanal (NO_CHANGE, INSUFFICIENT_DATA) | Copia los 8 planes de LOSE_WEIGHT que antes no podía. El resto, igual |
+| Corrección de la IA (ADAPT_LOCALIZED, ADAPT_EXPANDED) y su respaldo | Una propuesta de LOSE_WEIGHT con piernas solo de muslo ya no se rechaza por V15. Sigue sujeta a V24 y al resto de reglas |
+| Reparación de seguridad de planes publicados (`PublishedPlanSafetyRepairService`) | Mismo criterio de V15 que la generación |
+| Progresión (encendida solo en pruebas) | Ya usaba capacidades: sin cambio |
+| Generación inicial | Sin cambio: ya usaba el criterio. Barrido, referencias y robustez **idénticos** a la fase 2 |
+
+**Pruebas:**
+- **`V15GruposPrescribiblesTest`** (17 escenarios, 36 casos):
+  - la copia aplica el mismo criterio que la generación;
+  - GAIN_MUSCLE, INCREASE_STRENGTH y GENERAL_FITNESS siguen exigiendo los dos grupos, tanto en la generación como en la copia;
+  - en la copia se sigue rechazando un grupo ajeno, y un tirón con un solo grupo cuando el bíceps es prescribible.
+- **`ContinuidadSemanalIT`** (nueva, ciclo real, sin IA):
+  - **los 8 LOSE_WEIGHT:** semana 1 válida para el validador de la generación y con cobertura de capacidades COMPLETA; semana 2 publicada (SIN_ORDEN, CONSERVED), también válida y COMPLETA;
+  - **96 perfiles** (4 objetivos × 3 niveles × 3–6 días × gimnasio/casa, la mitad cumpliendo todo y la otra mitad sin registros): **96/96 publican la semana 2**;
+  - **sin el cambio, las dos pruebas fallan** con el NO_FACTIBLE descrito.
+
+**Resultados:**
+- Barrido 72/72.
+- Robustez 288/288 VALIDA.
+- 72 referencias idénticas.
+- Regresión completa: **BUILD SUCCESS**, con 836 unitarias y 264 de integración, 0 fallos y 10 omitidas (opcionales).
