@@ -38,7 +38,7 @@ def tsv(p):
 out = []
 P = out.append
 P('# Simulación V36 / V37 / V37 + V37.1\n')
-P('Bases PostgreSQL 16 aisladas (Testcontainers). V37 y V37.1 se cargan con `spring.flyway.locations`, sin estar en `db/migration`. Motor de reglas, sin IA ni Replicate.\n')
+P('Bases PostgreSQL 16 aisladas (Testcontainers). V36 se fija con `spring.flyway.target=36`; V37 es el catálogo vigente (`db/migration`); V37.1 (pendiente) se añade con `spring.flyway.locations`, sin estar en `db/migration`. Motor de reglas, sin IA ni Replicate.\n')
 
 # 1. Referencias
 P('## 1. Generación de referencia (72 perfiles)\n')
@@ -92,7 +92,7 @@ for c in CAT:
     P(f"| {NOM[c]} | {sum(1 for r in b if r['validacion'] == 'VALIDA')} | {sum(1 for r in b if r['validacion'] != 'VALIDA')} | "
       f"{sum(1 for r in rb if r['resultado'] == 'VALIDA')} | {sum(1 for r in rb if r['resultado'] != 'VALIDA')} |")
 P('\n**Capacidades y duración del barrido** (sesiones con su duración estimada respecto a los minutos configurados):\n')
-P('| Catálogo | Planes con cobertura COMPLETO | Sesiones | % mínimo | % medio | Sesiones bajo el 70 % |\n|---|---:|---:|---:|---:|---:|')
+P('| Catálogo | Planes con cobertura COMPLETO | Sesiones | % mínimo (estimación de la evaluación) | % medio | Sesiones bajo el 70 % en la estimación (V20 las aprueba con su propia medida) |\n|---|---:|---:|---:|---:|---:|')
 for c in CAT:
     b = tsv(f'{SIM}/{c}/barrido_4_6_dias_planes.tsv')
     se = tsv(f'{SIM}/{c}/barrido_4_6_dias_sesiones.tsv')
