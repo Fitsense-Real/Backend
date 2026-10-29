@@ -1,0 +1,357 @@
+exercise_id	source_code	name_en	bloque	columna	antes	despues	evidencia
+68	3214	arms apart circular toe touch (male)	A1	requires_overhead	false	true	De pie, brazos arriba; no es de suelo
+74	0015	assisted parallel close grip pull-up	A1	requires_kneeling	false	true	Rodillas en la almohadilla de asistencia
+75	0017	assisted pull-up	A1	requires_kneeling	false	true	Rodillas en la almohadilla de asistencia
+103	0989	band one arm twisting chest press	A1	requires_floor	false	true	Sentado en el suelo con piernas extendidas
+119	0990	band one arm twisting seated row	A1	requires_floor	false	true	Sentado en el suelo con piernas extendidas
+141	1015	band vertical pallof press	A1	requires_overhead	false	true	Lleva la banda por encima de la cabeza
+173	1411	barbell palms down wrist curl over a bench	A1	requires_floor	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+173	1411	barbell palms down wrist curl over a bench	A1	requires_kneeling	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+174	1412	barbell palms up wrist curl over a bench	A1	requires_floor	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+174	1412	barbell palms up wrist curl over a bench	A1	requires_kneeling	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+187	3562	barbell glute bridge two legs on bench (male)	A1	requires_floor	false	true	Tumbado en el suelo con las piernas sobre el banco
+224	0071	barbell press sit-up	A1	requires_overhead	false	true	Press de la barra por encima de la cabeza
+229	2799	barbell sitted alternate leg raise	A1	requires_floor	false	true	Sentado en el suelo con la barra arriba
+229	2799	barbell sitted alternate leg raise	A1	requires_overhead	false	true	Barra sostenida por encima de la cabeza
+254	3212	basic toe touch (male)	A1	requires_overhead	false	true	De pie, brazos arriba
+269	0119	barbell upright row v. 2	A1	requires_overhead	false	true	La barra sube por encima de la cabeza
+270	0121	barbell upright row v. 3	A1	requires_overhead	false	true	La barra sube por encima de la cabeza
+274	2800	barbell sitted alternate leg raise (female)	A1	requires_floor	false	true	Sentado en el suelo con la barra arriba
+274	2800	barbell sitted alternate leg raise (female)	A1	requires_overhead	false	true	Barra sostenida por encima de la cabeza
+309	0130	bench hip extension	A1	requires_kneeling	false	true	Una rodilla y las manos en el banco, patada de gluteo
+316	0139	biceps narrow pull-ups	A1	requires_floor	false	true	Tumbado bajo la barra, talones en el suelo (igual que 912)
+318	0137	body-up	A1	requires_floor	false	true	Plancha en el suelo pasando de antebrazos a manos
+327	3235	cable assisted inverse leg curl	A1	requires_kneeling	false	true	Rodillas en la almohadilla (curl nordico asistido)
+328	0149	cable alternate triceps extension	A1	requires_overhead	false	true	Extension de triceps por encima de la cabeza
+331	0152	cable concentration extension (on knee)	A1	requires_floor	false	true	Una rodilla en el suelo
+331	0152	cable concentration extension (on knee)	A1	requires_kneeling	false	true	Una rodilla en el suelo
+351	0167	cable high row (kneeling)	A1	requires_overhead	false	true	Tira desde polea alta con brazos por encima de la cabeza
+353	0172	cable incline pushdown	A1	requires_overhead	false	true	Tumbado en banco inclinado, tira desde polea por encima de la cabeza
+371	0186	cable lying triceps extension v. 2	A1	requires_floor	false	true	Tumbado en el suelo
+387	0193	cable one arm straight back high row (kneeling)	A1	requires_overhead	false	true	Polea alta, brazo por encima de la cabeza al inicio
+393	0208	cable reverse-grip straight back seated high row	A1	requires_overhead	false	true	Jalon desde polea alta: manos por encima de la cabeza al inicio
+417	0216	cable seated shoulder internal rotation	A1	requires_floor	false	true	Sentado en el suelo junto a la polea
+427	0221	cable side bend crunch (bosu ball)	A1	requires_floor	false	true	Tumbado sobre el bosu en el suelo
+431	0230	cable standing lift	A1	requires_overhead	false	true	Lleva las manos por encima de la cabeza en diagonal
+434	0213	cable seated high row (v-bar)	A1	requires_overhead	false	true	Polea alta: manos por encima de la cabeza al inicio
+456	1271	chest and front of shoulder stretch	A1	requires_overhead	false	true	Palo o banda por encima de la cabeza
+466	1272	chest stretch with exercise ball	A1	requires_floor	false	true	De rodillas en el suelo con el brazo sobre el balon
+466	1272	chest stretch with exercise ball	A1	requires_kneeling	false	true	De rodillas en el suelo con el brazo sobre el balon
+477	0862	cable twist (up-down)	A1	requires_overhead	false	true	Empieza con las manos por encima de la cabeza
+481	0237	cable straight arm pulldown (with rope)	A1	requires_overhead	false	true	Brazos por encima de la cabeza al inicio (polea alta)
+514	0290	dumbbell bench seated press	A1	requires_overhead	false	true	Press sentado por encima de la cabeza
+573	0323	dumbbell incline one arm lateral raise	A1	requires_overhead	false	true	El brazo llega por encima de la cabeza
+605	1733	dumbbell incline two arm extension	A1	requires_overhead	false	true	Extension de triceps con mancuernas por encima de la cabeza
+606	0333	dumbbell kickback	A1	requires_kneeling	false	true	Rodilla y mano en el banco
+607	1734	dumbbell kickbacks on exercise ball	A1	requires_floor	false	true	De rodillas en el suelo, pecho sobre el balon
+607	1734	dumbbell kickbacks on exercise ball	A1	requires_kneeling	false	true	De rodillas en el suelo, pecho sobre el balon
+656	1441	dumbbell over bench one arm reverse wrist curl	A1	requires_floor	false	true	De rodillas en el suelo detras del banco, antebrazo sobre el banco
+656	1441	dumbbell over bench one arm reverse wrist curl	A1	requires_kneeling	false	true	De rodillas en el suelo detras del banco, antebrazo sobre el banco
+657	0367	dumbbell over bench one arm wrist curl	A1	requires_floor	false	true	De rodillas en el suelo detras del banco, antebrazo sobre el banco
+657	0367	dumbbell over bench one arm wrist curl	A1	requires_kneeling	false	true	De rodillas en el suelo detras del banco, antebrazo sobre el banco
+658	0368	dumbbell over bench revers wrist curl	A1	requires_floor	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+658	0368	dumbbell over bench revers wrist curl	A1	requires_kneeling	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+659	0369	dumbbell over bench wrist curl	A1	requires_floor	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+659	0369	dumbbell over bench wrist curl	A1	requires_kneeling	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+684	0365	dumbbell over bench neutral wrist curl	A1	requires_floor	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+684	0365	dumbbell over bench neutral wrist curl	A1	requires_kneeling	false	true	De rodillas en el suelo detras del banco, antebrazos sobre el banco
+689	1673	dumbbell preacher curl over exercise ball	A1	requires_floor	false	true	De rodillas en el suelo con los brazos sobre el balon
+689	1673	dumbbell preacher curl over exercise ball	A1	requires_kneeling	false	true	De rodillas en el suelo con los brazos sobre el balon
+776	3292	elevator	A1	requires_hanging	false	true	Suspension invertida en anillas, cabeza abajo
+776	3292	elevator	A1	requires_inversion	false	true	Suspension invertida en anillas, cabeza abajo
+776	3292	elevator	A1	requires_overhead	false	true	Suspension implica brazos arriba (V25)
+782	0864	dumbbell upright shoulder external rotation	A1	requires_overhead	false	true	La mancuerna sube por encima de la cabeza
+804	1332	exercise ball alternating arm ups	A1	requires_floor	false	true	Prono sobre balon con manos en el suelo
+809	1338	exercise ball hug	A1	requires_floor	false	true	Sentado en el suelo abrazando el balon
+810	1339	exercise ball lat stretch	A1	requires_floor	false	true	De rodillas en el suelo con los brazos sobre el balon
+810	1339	exercise ball lat stretch	A1	requires_kneeling	false	true	De rodillas en el suelo con los brazos sobre el balon
+812	1744	exercise ball dip	A1	requires_floor	false	true	Sentado en el suelo con las manos sobre el balon
+822	1341	exercise ball lower back stretch (pyramid)	A1	requires_floor	false	true	Rodillas y manos en el suelo sobre el balon
+822	1341	exercise ball lower back stretch (pyramid)	A1	requires_kneeling	false	true	Rodillas y manos en el suelo sobre el balon
+825	1416	exercise ball one leg prone lower body rotation	A1	requires_floor	false	true	Manos en el suelo, piernas sobre el balon
+860	3315	full maltese	A1	requires_floor	false	true	Plancha maltesa con manos en el suelo
+879	3523	glute bridge two legs on bench (male)	A1	requires_floor	false	true	Tumbado en el suelo con los pies sobre el banco
+880	3193	glute-ham raise	A1	requires_kneeling	false	true	Rodillas en la almohadilla del GHD
+881	1511	hamstring stretch	A1	requires_floor	false	true	Tumbado boca arriba en el suelo
+882	3218	hands clasped circular toe touch (male)	A1	requires_overhead	false	true	De pie, brazos arriba
+884	1418	hug keens to chest	A1	requires_floor	false	true	Tumbado boca arriba en el suelo
+888	0458	floor fly (with barbell)	A1	requires_kneeling	false	true	Rueda la barra desde de rodillas en el suelo
+910	0499	inverted row	A1	requires_floor	false	true	Tumbado bajo la barra con talones en el suelo (igual que 912, que si la lleva)
+911	2300	inverted row bent knees	A1	requires_floor	false	true	Tumbado bajo la barra, rodillas flexionadas (igual que 912)
+913	0497	inverted row v. 2	A1	requires_hanging	false	true	Colgado cabeza abajo de la barra con las piernas enganchadas
+913	0497	inverted row v. 2	A1	requires_inversion	false	true	Colgado cabeza abajo de la barra con las piernas enganchadas
+913	0497	inverted row v. 2	A1	requires_overhead	false	true	Suspension implica brazos arriba (V25)
+914	0498	inverted row with straps	A1	requires_floor	false	true	Remo con correas desde tumbado en el suelo (igual que 912)
+915	0496	inverse leg curl (bench support)	A1	requires_kneeling	false	true	Rodillas en el banco (curl nordico)
+916	2400	inverse leg curl (on pull-up cable machine)	A1	requires_kneeling	false	true	Rodillas sobre la almohadilla (curl nordico)
+949	0546	kettlebell seated press	A1	requires_floor	false	true	Sentado en el suelo con piernas abiertas
+979	3237	landmine lateral raise	A1	requires_overhead	false	true	La barra sube por encima de la cabeza
+1041	1313	lever unilateral row	A1	requires_kneeling	false	true	Una rodilla en la almohadilla de la maquina
+1055	1421	modified push up to lower arms	A1	requires_kneeling	false	true	De rodillas en el suelo
+1058	3217	modified hindu push-up (male)	A1	requires_inversion	false	true	Posicion de pica, cabeza bajo la cadera con peso en brazos
+1070	1355	one arm against wall	A1	requires_overhead	false	true	Brazo apoyado en la pared por encima de la cabeza
+1082	1304	medicine ball chest push multiple response	A1	requires_floor	false	true	De rodillas en el suelo, cae sobre las manos
+1082	1304	medicine ball chest push multiple response	A1	requires_kneeling	false	true	De rodillas en el suelo, cae sobre las manos
+1083	1305	medicine ball chest push single response	A1	requires_floor	false	true	De rodillas en el suelo; cae sobre las manos
+1083	1305	medicine ball chest push single response	A1	requires_kneeling	false	true	De rodillas en el suelo; cae sobre las manos
+1089	1750	medicine ball supine chest throw	A1	requires_floor	false	true	Tumbado boca arriba en el suelo
+1123	0656	push-up (on stability ball)	A1	requires_floor	false	true	Pies sobre el balon, manos en el suelo (flexion completa)
+1124	1707	prone twist on stability ball	A1	requires_floor	false	true	Manos y pies en el suelo sobre el balon
+1125	0650	pull-in (on stability ball)	A1	requires_floor	false	true	Manos en el suelo, pies en el balon
+1136	1390	seated calf stretch (male)	A1	requires_floor	false	true	Sentado en el suelo con piernas extendidas
+1152	0672	reverse dip	A1	requires_floor	false	true	Tumbado y sentado en el suelo
+1161	0675	reverse hyper extension (on stability ball)	A1	requires_floor	false	true	Manos en el suelo sobre el balon
+1185	3213	side-to-side toe touch (male)	A1	requires_overhead	false	true	De pie, brazos por encima de la cabeza; no es de suelo
+1188	0690	seated lower back stretch	A1	requires_overhead	false	true	Sentado con un brazo extendido por encima de la cabeza
+1195	0697	self assisted inverse leg curl	A1	requires_kneeling	false	true	Rodillas en la almohadilla, cae hasta las manos
+1196	1766	self assisted inverse leg curl	A1	requires_floor	false	true	De rodillas en el suelo, cae hasta apoyar las manos
+1196	1766	self assisted inverse leg curl	A1	requires_kneeling	false	true	De rodillas en el suelo, cae hasta apoyar las manos
+1197	0696	self assisted inverse leg curl (on floor)	A1	requires_kneeling	false	true	De rodillas sobre un step
+1199	0710	side hip abduction	A1	requires_floor	false	true	Tumbado de lado en el suelo
+1225	0756	smith hip raise	A1	requires_floor	false	true	Tumbado en el suelo
+1237	0760	smith leg press	A1	requires_floor	false	true	Tumbado en el suelo bajo la barra de la multipower
+1294	3318	swing 360	A1	requires_hanging	false	true	Colgado de la barra balanceandose
+1294	3318	swing 360	A1	requires_overhead	false	true	Suspension implica brazos arriba (V25)
+1297	0806	suspended push-up	A1	requires_floor	false	true	Pies en el suelo, posicion de flexion
+1298	3314	straddle maltese	A1	requires_floor	false	true	Manos en el suelo, cuerpo suspendido sobre los brazos
+1301	0807	suspended reverse crunch	A1	requires_floor	false	true	Manos en el suelo, pies en las correas
+1308	3231	two toe touch (male)	A1	requires_overhead	false	true	De pie, brazos arriba
+1320	0815	triceps dips floor	A1	requires_floor	false	true	Sentado en el suelo, manos en el suelo detras de la cadera
+1374	0858	wind sprints	A1	requires_hanging	false	true	Colgado de la barra elevando rodillas
+1374	0858	wind sprints	A1	requires_overhead	false	true	Suspension implica brazos arriba (V25)
+461	1273	clap push up	A2	difficulty_level	1	3	Flexion con palmada; ya la excluye el alto impacto para principiantes
+776	3292	elevator	A2	difficulty_level	1	3	Habilidad gimnastica en anillas
+813	3303	flag	A2	difficulty_level	1	3	Bandera humana en un poste
+860	3315	full maltese	A2	difficulty_level	1	3	Maltesa completa: habilidad gimnastica de elite
+913	0497	inverted row v. 2	A2	difficulty_level	1	3	Remo invertido colgado
+937	0558	kipping muscle up	A2	difficulty_level	1	3	Muscle-up con impulso; el alto impacto ya lo excluye para principiantes
+974	3419	l-sit on floor	A2	difficulty_level	1	3	L-sit; un principiante con suelo permitido puede recibirlo
+1068	0631	muscle up	A2	difficulty_level	1	3	Muscle-up; el alto impacto ya lo excluye para principiantes
+1294	3318	swing 360	A2	difficulty_level	1	3	Balanceo gimnastico colgado
+1298	3314	straddle maltese	A2	difficulty_level	1	3	Maltesa en straddle: habilidad gimnastica de elite
+776	3292	elevator	A3	equipment	body weight	gymnastic rings	Anillas visibles en todos los fotogramas
+776	3292	elevator	A3	requisitos		1:gymnastic rings	Anillas visibles en todos los fotogramas
+913	0497	inverted row v. 2	A3	equipment	smith machine	pull-up bar	Barra fija
+913	0497	inverted row v. 2	A3	requisitos	1:smith machine,1:suspension straps	1:pull-up bar	Barra fija
+937	0558	kipping muscle up	A3	equipment	pull-up bar	gymnastic rings	
+937	0558	kipping muscle up	A3	requisitos	1:pull-up bar	1:gymnastic rings	
+1068	0631	muscle up	A3	equipment	pull-up bar	gymnastic rings	
+1068	0631	muscle up	A3	requisitos	1:pull-up bar	1:gymnastic rings	
+1192	3304	skin the cat	A3	equipment	body weight	gymnastic rings	Exige anillas y no las exige
+1192	3304	skin the cat	A3	requisitos		1:gymnastic rings	Exige anillas y no las exige
+1294	3318	swing 360	A3	equipment	body weight	pull-up bar	
+1294	3318	swing 360	A3	requisitos		1:pull-up bar	
+1301	0807	suspended reverse crunch	A3	equipment	pull-up bar	suspension straps	
+1301	0807	suspended reverse crunch	A3	requisitos	1:pull-up bar	1:suspension straps	
+1374	0858	wind sprints	A3	equipment	body weight	pull-up bar	
+1374	0858	wind sprints	A3	requisitos		1:pull-up bar	
+1374	0858	wind sprints	A4	high_impact	true	false	Correccion completa de 1374 (colgado de la barra, no cardio)
+1374	0858	wind sprints	A4	movement_pattern	LOCOMOTION_CARDIO	TRUNK_FLEXION	Correccion completa de 1374 (colgado de la barra, no cardio)
+59	0003	air bike	B1	movement_pattern	LOCOMOTION_CARDIO	TRUNK_ROTATION_LATERAL_FLEXION	Abdominal bicicleta en el suelo; cuenta como CARDIO
+142	1010	band straight leg deadlift	B1	body_part	back	upper legs	Peso muerto piernas rectas
+142	1010	band straight leg deadlift	B1	target_muscle	spine	hamstrings	Peso muerto piernas rectas
+316	0139	biceps narrow pull-ups	B1	movement_pattern	VERTICAL_PULL	HORIZONTAL_PULL	Remo invertido bajo la barra, talones en el suelo
+382	0191	cable one arm lateral bent-over	B1	body_part	chest	shoulders	Elevacion lateral inclinado con polea
+382	0191	cable one arm lateral bent-over	B1	movement_pattern	TRUNK_ROTATION_LATERAL_FLEXION	SHOULDER_RAISE	Elevacion lateral inclinado con polea
+382	0191	cable one arm lateral bent-over	B1	target_muscle	pectorals	delts	Elevacion lateral inclinado con polea
+391	0199	cable pushdown (straight arm) v. 2	B1	movement_pattern	ELBOW_EXTENSION	SHOULDER_EXTENSION	Brazos rectos de la horizontal a la cadera
+393	0208	cable reverse-grip straight back seated high row	B1	movement_pattern	HORIZONTAL_PULL	VERTICAL_PULL	Sigue contando para UPPER_PULL
+449	1644	cable squatting curl	B1	movement_pattern	KNEE_DOMINANT	ELBOW_FLEXION	Sentadilla isometrica; cuenta como LOWER_KNEE
+502	3016	curl-up	B1	movement_pattern	ELBOW_FLEXION	TRUNK_FLEXION	Encogimiento abdominal en el suelo
+528	1652	dumbbell bicep curl on exercise ball with leg raised	B1	movement_pattern	TRUNK_FLEXION	ELBOW_FLEXION	Curl sentado en balon con una pierna elevada
+633	1290	dumbbell one arm press on exercise ball	B1	movement_pattern	VERTICAL_PUSH	HORIZONTAL_PUSH	Press tumbado sobre balon
+649	1621	dumbbell one arm hammer press on exercise ball	B1	movement_pattern	VERTICAL_PUSH	HORIZONTAL_PUSH	Press tumbado sobre balon
+667	1622	dumbbell one arm reverse grip press	B1	movement_pattern	VERTICAL_PUSH	HORIZONTAL_PUSH	Press tumbado en banco; cuenta para UPPER_PUSH igual
+684	0365	dumbbell over bench neutral wrist curl	B1	body_part	upper arms	lower arms	Curl de muneca
+684	0365	dumbbell over bench neutral wrist curl	B1	target_muscle	biceps	forearms	Curl de muneca
+685	0366	dumbbell over bench one arm neutral wrist curl	B1	body_part	upper arms	lower arms	Curl de muneca
+685	0366	dumbbell over bench one arm neutral wrist curl	B1	target_muscle	biceps	forearms	Curl de muneca
+730	0397	dumbbell seated neutral wrist curl	B1	body_part	upper arms	lower arms	Curl de muneca
+730	0397	dumbbell seated neutral wrist curl	B1	target_muscle	biceps	forearms	Curl de muneca
+853	3221	half knee bends (male)	B1	movement_pattern	KNEE_DOMINANT	LOCOMOTION_CARDIO	Marcha con rodillas altas; cuenta como LOWER_KNEE
+884	1418	hug keens to chest	B1	movement_pattern	KNEE_DOMINANT	MOBILITY	Abraza las rodillas: estiramiento; hoy cuenta como LOWER_KNEE
+1103	3119	potty squat	B1	body_part	waist	upper legs	Sentadilla con brazos al frente
+1103	3119	potty squat	B1	target_muscle	abs	quads	Sentadilla con brazos al frente
+66	1405	back pec stretch	B2	equipment	body weight	bench	Manos apoyadas en un banco
+66	1405	back pec stretch	B2	requisitos		1:bench	Manos apoyadas en un banco
+96	0999	band single leg calf raise	B2	requisitos	1:band	1:band,2:step platform	Antepie sobre un step
+97	1000	band single leg reverse calf raise	B2	requisitos	1:band	1:band,2:step platform	Antepie sobre un step
+124	0987	band one arm single leg split squat	B2	requisitos	1:band	1:band,2:bench,2:plyo box	Pie trasero sobre un cajon
+127	1001	band single leg split squat	B2	requisitos	1:band	1:band,2:bench,2:plyo box	Pie trasero sobre un cajon
+153	1255	barbell decline pullover	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+154	0036	barbell decline wide-grip press	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+155	0040	barbell front raise and pullover	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en banco
+156	1316	barbell bent arm pullover	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+158	0034	barbell decline bent arm pullover	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+159	0037	barbell decline wide-grip pullover	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+160	0024	barbell bench front squat	B2	requisitos	1:barbell	1:barbell,2:bench	Sentadilla hasta el banco
+161	0026	barbell bench squat	B2	requisitos	1:barbell	1:barbell,2:bench	Sentadilla hasta el banco
+171	0035	barbell decline close grip to skull press	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en un banco que no se exige
+178	0050	barbell incline shoulder raise	B2	requisitos	1:barbell	1:barbell,2:bench	Banco inclinado
+179	0049	barbell incline row	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+196	0058	barbell lying lifting (on hip)	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+199	0068	barbell one leg squat	B2	requisitos	1:barbell	1:barbell,2:bench	Pie trasero en un banco
+202	0048	barbell incline reverse-grip press	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+204	1720	barbell lying back of the head tricep extension	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en un banco que no se exige
+205	0055	barbell lying close-grip press	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+206	0056	barbell lying close-grip triceps extension	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en un banco que no se exige
+207	0057	barbell lying extension	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en un banco que no se exige
+208	0059	barbell lying preacher curl	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o recostado en un banco que no se exige
+209	0061	barbell lying triceps extension	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en un banco que no se exige
+210	0060	barbell lying triceps extension skull crusher	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en un banco que no se exige
+212	1751	barbell pin presses	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en banco en un rack
+214	0082	barbell reverse wrist curl	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+224	0071	barbell press sit-up	B2	requisitos	1:barbell	1:barbell,2:bench	Banco declinado
+230	0073	barbell pullover	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+231	0022	barbell pullover to press	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en banco
+237	0077	barbell rear lunge v. 2	B2	requisitos	1:barbell	1:barbell,2:step platform	Sobre un step
+243	0099	barbell single leg split squat	B2	requisitos	1:barbell	1:barbell,2:bench	Pie trasero sobre el banco
+245	0072	barbell prone incline curl	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o recostado en un banco que no se exige
+248	1721	barbell reverse grip skullcrusher	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado en un banco que no se exige
+257	0126	barbell wrist curl	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+260	0108	barbell standing leg calf raise	B2	requisitos	1:barbell	1:barbell,2:step platform	Antepie sobre un step
+280	2798	barbell squat jump step rear lunge	B2	requisitos	1:barbell	1:barbell,2:step platform	Salta sobre un step
+295	1374	box jump down with one leg stabilization	B2	equipment	plyo box	bench	Baja desde un banco
+295	1374	box jump down with one leg stabilization	B2	requisitos	1:plyo box	1:bench	Baja desde un banco
+296	3544	bodyweight incline side plank	B2	equipment	body weight	bench	Antebrazo apoyado en un banco
+296	3544	bodyweight incline side plank	B2	requisitos		1:bench	Antebrazo apoyado en un banco
+314	1399	bench dip on floor	B2	equipment	body weight	bench	Manos en un banco, pies en el suelo
+314	1399	bench dip on floor	B2	requisitos		1:bench	Manos en un banco, pies en el suelo
+323	0151	cable bench press	B2	requisitos	1:cable	1:cable,2:bench	Tumbado en banco
+338	0158	cable decline fly	B2	requisitos	1:cable	1:cable,2:bench	Banco declinado
+339	1260	cable decline one arm press	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o apoyado en un banco que no se exige
+340	1261	cable decline press	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o apoyado en un banco que no se exige
+342	0171	cable incline fly	B2	requisitos	1:cable	1:cable,2:bench	Banco inclinado
+345	0185	cable lying fly	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o apoyado en un banco que no se exige
+353	0172	cable incline pushdown	B2	requisitos	1:cable	1:cable,2:bench	Banco inclinado
+358	0184	cable lying extension pullover (with rope attachment)	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o apoyado en un banco que no se exige
+366	0173	cable incline triceps extension	B2	requisitos	1:cable	1:cable,2:bench	Banco inclinado
+369	1634	cable lying bicep curl	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o recostado en un banco que no se exige
+370	0182	cable lying close-grip curl	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o recostado en un banco que no se exige
+377	1262	cable one arm decline chest fly	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o apoyado en un banco que no se exige
+380	1265	cable one arm incline press	B2	requisitos	1:cable	1:cable,2:bench	Tumbado o apoyado en un banco que no se exige
+427	0221	cable side bend crunch (bosu ball)	B2	requisitos	1:cable	1:cable,2:bosu ball	
+443	1725	cable rope incline tricep extension	B2	requisitos	1:cable	1:cable,2:bench	Banco inclinado
+468	0248	cambered bar lying row	B2	requisitos	1:barbell	1:barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+471	0240	cable supine reverse fly	B2	requisitos	1:cable	1:cable,2:bench	Tumbado en un banco
+493	0284	donkey calf raise	B2	equipment	body weight	bench	El implemento principal debe estar entre los requisitos (V23/V29)
+493	0284	donkey calf raise	B2	requisitos		1:bench,2:step platform	Manos en un banco, puntas en un step
+495	0279	decline push-up	B2	equipment	body weight	bench	El implemento principal debe estar entre los requisitos (V23/V29)
+495	0279	decline push-up	B2	requisitos		1:bench	Pies sobre el banco
+560	1731	dumbbell close grip press	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Tumbado o apoyado en un banco que no se exige
+561	0296	dumbbell close-grip press	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Tumbado o apoyado en un banco que no se exige
+606	0333	dumbbell kickback	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	
+636	0292	dumbbell one arm bent-over row	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Mano apoyada en un banco
+637	0339	dumbbell lying femoral	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Tumbado boca abajo en un banco
+667	1622	dumbbell one arm reverse grip press	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Tumbado o apoyado en un banco que no se exige
+677	1667	dumbbell one arm reverse spider curl	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Pecho sobre banco inclinado
+690	0373	dumbbell pronate-grip triceps extension	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Tumbado en un banco que no se exige
+696	0377	dumbbell rear delt row_shoulder	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	
+699	0379	dumbbell rear lateral raise (support head)	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Pecho apoyado en un banco inclinado
+700	0383	dumbbell reverse fly	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Pecho apoyado en un banco inclinado
+701	0386	dumbbell rotation reverse fly	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Pecho apoyado en un banco inclinado
+718	1675	dumbbell reverse spider curl	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Banco inclinado
+738	0417	dumbbell standing calf raise	B2	requisitos	1:dumbbell	1:dumbbell,2:step platform	Antepie sobre un step
+741	0408	dumbbell side lying one hand raise	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Tumbado de lado en un banco
+753	0410	dumbbell single leg split squat	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Pie trasero en un banco
+777	3287	elbow dips	B2	equipment	body weight	parallel bars	Fondos en paralelas
+777	3287	elbow dips	B2	requisitos		1:parallel bars	Fondos en paralelas
+786	2796	dumbbell step-up lunge	B2	requisitos	1:dumbbell,2:plyo box,2:step platform	1:dumbbell,2:bench,2:plyo box,2:step platform	El GIF usa un banco, que no figura entre las alternativas
+791	2803	dumbbell supported squat	B2	requisitos	1:dumbbell	1:dumbbell,2:bench,2:plyo box	Se sienta en un cajon en cada repeticion
+797	0436	dumbbell tate press	B2	requisitos	1:dumbbell	1:dumbbell,2:bench	Tumbado o recostado en un banco que no se exige
+816	1382	exercise ball on the wall calf raise	B2	requisitos	1:stability ball	1:stability ball,2:dumbbell	Lleva mancuernas
+817	3241	exercise ball on the wall calf raise (tennis ball between ankles)	B2	requisitos	1:stability ball	1:stability ball,2:dumbbell	Lleva mancuernas
+818	3240	exercise ball on the wall calf raise (tennis ball between knees)	B2	requisitos	1:stability ball	1:stability ball,2:dumbbell	Lleva mancuernas
+830	0445	ez barbell anti gravity press	B2	requisitos	1:ez barbell	1:ez barbell,2:bench	Prono sobre banco inclinado
+831	3010	ez bar lying bent arms pullover	B2	requisitos	1:ez barbell	1:ez barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+834	1748	ez bar lying close grip triceps extension behind head	B2	requisitos	1:ez barbell	1:ez barbell,2:bench	Tumbado o recostado en un banco que no se exige
+840	0448	ez barbell decline close grip face press	B2	requisitos	1:ez barbell	1:ez barbell,2:bench	Tumbado o recostado en un banco que no se exige
+841	2186	ez barbell decline triceps extension	B2	requisitos	1:ez barbell	1:ez barbell,2:bench	Tumbado o recostado en un banco que no se exige
+842	0449	ez barbell incline triceps extension	B2	requisitos	1:ez barbell	1:ez barbell,2:bench	Tumbado o recostado en un banco que no se exige
+848	0454	ez barbell spider curl	B2	requisitos	1:ez barbell	1:ez barbell,2:bench	Tumbado o apoyado en un banco que no se exige
+875	0459	flutter kicks	B2	equipment	body weight	bench	El implemento principal debe estar entre los requisitos (V23/V29)
+875	0459	flutter kicks	B2	requisitos		1:bench	Tumbado en un banco
+895	0492	incline push up depth jump	B2	equipment	body weight	bench	El implemento principal debe estar entre los requisitos (V23/V29)
+895	0492	incline push up depth jump	B2	requisitos		1:bench,2:step platform	Pies en un banco, manos en un step
+896	0493	incline push-up	B2	equipment	body weight	step platform	Manos en un step
+896	0493	incline push-up	B2	requisitos		1:step platform	Manos en un step
+898	0494	incline reverse grip push-up	B2	equipment	body weight	smith machine	Manos en la barra de la multipower
+898	0494	incline reverse grip push-up	B2	requisitos		1:smith machine	Manos en la barra de la multipower
+921	0490	incline close-grip push-up	B2	equipment	body weight	smith machine	Manos en la barra de la multipower
+921	0490	incline close-grip push-up	B2	requisitos		1:smith machine	Manos en la barra de la multipower
+981	0574	lever bent over row	B2	requisitos	1:barbell	1:barbell,2:landmine	Barra anclada (remo T)
+1019	0590	lever one arm shoulder press	B2	equipment	leverage machine	barbell	Barra anclada al suelo
+1019	0590	lever one arm shoulder press	B2	requisitos	1:leverage machine	1:barbell,2:landmine	Barra anclada al suelo
+1022	0603	lever shoulder press	B2	equipment	leverage machine	barbell	Barra anclada al suelo con disco
+1022	0603	lever shoulder press	B2	requisitos	1:leverage machine	1:barbell,2:landmine	Barra anclada al suelo con disco
+1056	1386	one leg donkey calf raise	B2	equipment	body weight	bench	Manos en un banco
+1056	1386	one leg donkey calf raise	B2	requisitos		1:bench	Manos en un banco
+1062	0865	lying leg-hip raise	B2	equipment	body weight	bench	Tumbado en un banco
+1062	0865	lying leg-hip raise	B2	requisitos		1:bench	Tumbado en un banco
+1063	0634	negative crunch	B2	equipment	body weight	bench	Banco declinado
+1063	0634	negative crunch	B2	requisitos		1:bench	Banco declinado
+1064	1495	oblique crunch v. 2	B2	equipment	body weight	bench	Piernas sobre un banco
+1064	1495	oblique crunch v. 2	B2	requisitos		1:bench	Piernas sobre un banco
+1078	0639	one arm dip	B2	equipment	body weight	bench	Manos en un banco
+1078	0639	one arm dip	B2	requisitos		1:bench	Manos en un banco
+1110	1476	one leg squat	B2	equipment	body weight	bench	El implemento principal debe estar entre los requisitos (V23/V29)
+1110	1476	one leg squat	B2	requisitos		1:bench,1:plyo box	Pie trasero sobre un cajon
+1134	0684	run (equipment)	B2	equipment	body weight	treadmill	Carrera en cinta
+1134	0684	run (equipment)	B2	requisitos		1:treadmill	Carrera en cinta
+1142	0689	seated leg raise	B2	equipment	body weight	bench	Sentado en el borde de un banco
+1142	0689	seated leg raise	B2	requisitos		1:bench	Sentado en el borde de un banco
+1146	3012	scapula dips	B2	equipment	body weight	bench	
+1146	3012	scapula dips	B2	requisitos		1:bench	
+1182	3699	shoulder tap	B2	equipment	body weight	plyo box	El implemento principal debe estar entre los requisitos (V23/V29)
+1182	3699	shoulder tap	B2	requisitos		1:plyo box,1:step platform	Pies apoyados en un cajon
+1197	0696	self assisted inverse leg curl (on floor)	B2	equipment	body weight	step platform	
+1197	0696	self assisted inverse leg curl (on floor)	B2	requisitos		1:step platform	
+1214	0763	smith reverse calf raises	B2	requisitos	1:smith machine	1:smith machine,2:step platform	Antepies sobre un step
+1220	0754	smith decline reverse-grip press	B2	requisitos	1:smith machine	1:smith machine,2:bench	Tumbado o apoyado en un banco que no se exige
+1222	0758	smith incline reverse-grip press	B2	requisitos	1:smith machine	1:smith machine,2:bench	Banco en la multipower
+1223	0759	smith incline shoulder raises	B2	requisitos	1:smith machine	1:smith machine,2:bench	Banco inclinado
+1242	1752	smith machine incline tricep extension	B2	requisitos	1:smith machine	1:smith machine,2:bench	Tumbado o recostado en un banco que no se exige
+1255	1398	standing calves calf stretch	B2	equipment	body weight	bench	Pie apoyado en un banco
+1255	1398	standing calves calf stretch	B2	requisitos		1:bench	Pie apoyado en un banco
+1284	0764	smith reverse-grip press	B2	requisitos	1:smith machine	1:smith machine,2:bench	Banco en la multipower
+1288	0768	smith single leg split squat	B2	requisitos	1:smith machine	1:smith machine,2:bench	Pie trasero en un banco
+1303	2802	twisted leg raise	B2	equipment	body weight	parallel bars	Apoyo en la estacion de fondos
+1303	2802	twisted leg raise	B2	requisitos		1:captains chair,1:parallel bars	Apoyo en la estacion de fondos
+1304	2801	twisted leg raise (female)	B2	equipment	body weight	parallel bars	Apoyo en la estacion de fondos
+1304	2801	twisted leg raise (female)	B2	requisitos		1:captains chair,1:parallel bars	Apoyo en la estacion de fondos
+1317	0814	triceps dip	B2	equipment	body weight	parallel bars	Fondos en paralelas
+1317	0814	triceps dip	B2	requisitos		1:parallel bars	Fondos en paralelas
+1321	0816	triceps press	B2	equipment	body weight	smith machine	Manos en la barra de la multipower
+1321	0816	triceps press	B2	requisitos		1:smith machine	Manos en la barra de la multipower
+55	1368	ankle circles	B3	requires_floor	true	false	De pie (restriccion de mas)
+131	0986	band one arm overhead biceps curl	B3	requires_overhead	true	false	Brazo a la altura del hombro (restriccion de mas)
+224	0071	barbell press sit-up	B3	requires_floor	true	false	En banco (restriccion de mas)
+316	0139	biceps narrow pull-ups	B3	requires_hanging	true	false	No cuelga (restriccion de mas)
+316	0139	biceps narrow pull-ups	B3	requires_overhead	true	false	No cuelga (restriccion de mas)
+617	0863	dumbbell lying external shoulder rotation	B3	requisitos	1:dumbbell,2:bench	1:dumbbell	Tumbado en el suelo, no en banco
+633	1290	dumbbell one arm press on exercise ball	B3	requires_overhead	true	false	Press tumbado (restriccion de mas)
+637	0339	dumbbell lying femoral	B3	requires_floor	true	false	En banco (restriccion de mas)
+649	1621	dumbbell one arm hammer press on exercise ball	B3	requires_overhead	true	false	Press tumbado (restriccion de mas)
+667	1622	dumbbell one arm reverse grip press	B3	requires_overhead	true	false	Press tumbado, no por encima de la cabeza (restriccion de mas)
+741	0408	dumbbell side lying one hand raise	B3	requires_floor	true	false	En banco (restriccion de mas)
+875	0459	flutter kicks	B3	requires_floor	true	false	En banco, no en el suelo (restriccion de mas)
+977	3418	l-pull-up	B3	requisitos	1:pull-up bar	1:captains chair,1:pull-up bar	Dominada en la estacion
+1062	0865	lying leg-hip raise	B3	requires_floor	true	false	En banco (restriccion de mas)
+1063	0634	negative crunch	B3	requires_floor	true	false	En banco (restriccion de mas)
+1093	3638	push to run	B3	requires_floor	true	false	De pie elevando rodillas (restriccion de mas)
+1095	1689	push and pull bodyweight	B3	requires_floor	true	false	De pie, sin suelo (restriccion de mas)
+1152	0672	reverse dip	B3	equipment	parallel bars	body weight	No usa paralelas (restriccion de mas)
+1152	0672	reverse dip	B3	requisitos	1:parallel bars		No usa paralelas (restriccion de mas)
+1156	3144	resistance band seated straight back row	B3	requires_floor	true	false	Sentado en un asiento inclinado, no en el suelo
+1181	0691	seated side crunch (wall)	B3	requires_floor	true	false	Sentadilla isometrica contra la pared (restriccion de mas)
+1193	2567	seated piriformis stretch	B3	requires_floor	true	false	Sentado en un taburete (restriccion de mas)
+1278	1396	smith toe raise	B3	axial_load	true	false	Sentado, la carga va sobre los muslos
+1298	3314	straddle maltese	B3	requires_hanging	true	false	No cuelga
+1298	3314	straddle maltese	B3	requires_overhead	true	false	No cuelga
+1301	0807	suspended reverse crunch	B3	requires_hanging	true	false	No cuelga (restriccion de mas)
+1301	0807	suspended reverse crunch	B3	requires_overhead	true	false	No cuelga (restriccion de mas)
+1303	2802	twisted leg raise	B3	requires_floor	true	false	De pie en la estacion (restriccion de mas)
+1304	2801	twisted leg raise (female)	B3	requires_floor	true	false	De pie en la estacion (restriccion de mas)
+1309	1365	upper back stretch	B3	requires_overhead	true	false	Brazos a la altura del hombro (restriccion de mas)
+1311	1427	straight leg outer hip abductor	B3	requires_floor	true	false	De pie (restriccion de mas)
+1322	0817	triceps stretch	B3	requires_overhead	true	false	Brazo cruzado ante el pecho (restriccion de mas)
