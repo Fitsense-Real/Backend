@@ -1,256 +1,189 @@
-# V36 · Corrección de nueve ejercicios del catálogo
+# V36 · Corrección del catálogo según los GIF originales
 
-**Fecha:** 28/10/2026 · **Rama:** `catalogo-v36` (desde `generation`, separada del PR #3).
+**Fecha:** 29/10/2026 · **Rama:** `catalogo-v36` → `generation` (PR #4) · **Migración:** `V36__catalog_review_gif_corrections.sql`.
 
-**Estado:** implementada y validada en PostgreSQL 16 aislado. **Pendiente** de:
-- la revisión humana doble;
-- la decisión sobre los planes ya publicados (§8).
+**Estado:** lista para aprobación final, con estos pendientes (§11):
+- revisión humana doble e independiente;
+- decisión sobre 1296;
+- defecto de continuidad del PR #3 (no causado por V36).
 
-**Lo que NO se hizo:**
-- no se ejecutó en Neon ni se desplegó;
-- no se llamó a Replicate;
-- no se sobrescribió la referencia oficial;
-- no se tocó V15, V20, V22, V24, V25, V35, adaptación, progresión, D8, adherencia ni roles.
+**No se ha hecho:** no se ha ejecutado en Neon ni desplegado, no se ha llamado a Replicate y nada se ha fusionado.
+
+**No cambia:** V15, V20, V22, V24, V25, V35, adaptación, progresión, D8, adherencia, seguridad, roles, prompts ni `src/main/java`.
 
 ## 1. Resumen
 
-| Criterio de la orden | Resultado |
+| Criterio de cierre | Resultado |
 |---|---|
-| 1. Clasificaciones correctas y justificadas | Aplicadas por V36 y justificadas con el GIF (§2). La **revisión humana doble está pendiente** (§3) |
-| 2. Los ejercicios problemáticos dejan de aparecer en contextos inadecuados | 1267: 0 colocaciones (antes 51 en el barrido). Combinados en PULL: 0 (antes 31). 1296 y 1333 en principiantes: 0. Dificultad por encima del nivel: 0 |
-| 3. Las 72 referencias candidatas siguen siendo válidas | **72/72 VALIDA**. La oficial se conserva y se sigue verificando con el catálogo anterior |
-| 4. El barrido de 4–6 días no presenta fallos nuevos | Base: 60/72 antes y después (los 12 sin plan son el defecto del respaldo que corrige el PR #3). Con el PR #3: **72/72** antes y después |
-| 5. 288 generaciones de robustez sin perfiles factibles sin plan | Con el PR #3: **0 sin plan** antes y después. Base: los mismos 52 fallos (perfil, semilla) antes y después; ninguno nuevo |
-| 6. Cambios de rutina identificados y explicables | 213 de 216 sesiones de referencia cambian: 77 directas y 136 indirectas por la siembra determinista. 0 cambian de día o enfoque (§6) |
-| 7. Sin relajar reglas ni tocar adaptación o progresión | Sin cambios en `src/main/java`. Solo la migración, pruebas y documentación |
+| El catálogo representa correctamente los ejercicios | 8 de 9 corregidos y cotejados con su GIF. **1296 detenido:** el GIF contradice la condición del dictamen (§3) |
+| Las rutinas nuevas se generan | 72/72 referencias VALIDA. Barrido 4–6 días: 72/72 con el PR #3 (60/72 en la base, por el defecto que corrige el PR #3). Robustez: 0/288 sin plan con el PR #3 |
+| Las rutinas nuevas continúan sin incompatibilidades **nuevas del catálogo** | 72/72 continúan en la base con V36. En la combinación con el PR #3, 8 planes de LOSE_WEIGHT de 5–6 días no continúan **por un defecto del PR #3**, reproducido sin V36 (§8) |
+| La evidencia de V28 se mantiene íntegra y bien interpretada | V28 intacta. 872 ya no cuenta para LOWER_HIP: los aprobados pasan de 4 a 3. Anexo de rectificación (§5) |
 
-**Incompatibilidad encontrada y no corregida (§8).** Un plan **publicado antes de V36** que contenga 1267, 1296 (en un intermedio), un combinado en una sesión PULL o 872 con dosis de estructural (como el plan 60 real) **no puede copiarse** en el ciclo semanal siguiente. Esa semana quedaría sin plan. Está reproducida en `CatalogoV36IT` y es una decisión previa al despliegue.
+## 2. Migración V36 definitiva
 
-## 2. Migración V36 y matriz antes/después
-
-`src/main/resources/db/migration/V36__catalog_review_nine_exercises.sql`. El número 36 estaba libre (`generation` termina en V35) y no hay otra V36 en ninguna rama remota.
-
-| Id | Columna | Antes (V35) | Después (V36) |
+| Id | Columna | V35 | V36 |
 |---:|---|---|---|
-| 1267 | `is_active` | true | **false** (no se borra: fila, id e historial se conservan) |
-| 1296 | `difficulty_level` | 1 | **3** |
-| 1296 | `high_impact` | false | **true** |
-| 1333 | `equipment_id` | ab wheel | **body weight** |
-| 1333 | requisito de equipamiento | `1:ab wheel` | **ninguno** (peso corporal) |
-| 1333 | `high_impact` | false | **true** |
-| 1333 | `requires_floor` | true | **false** |
-| 1333 | `requires_overhead` | true | **false** |
+| 1267 | `is_active` | true | **false** (no se borra) |
+| 1333 | `equipment_id` / requisito | ab wheel / `1:ab wheel` | **body weight / ninguno** |
+| 1333 | `high_impact` · `requires_floor` · `requires_overhead` | false · true · true | **true · false · false** |
 | 1333 | `name_es` | Rodar con rueda | **Carrera con zancadas amplias** |
-| 872 | `movement_pattern` | HIP_EXTENSION | **TRUNK_FLEXION** |
+| 1333 | `instructions_es`, `instruction_steps_es` | Rueda abdominal | **Carrera** (§4) |
+| 872 | `movement_pattern` | HIP_EXTENSION | **TRUNK_FLEXION** (`waist/abs` y nivel 1 sin cambio) |
 | 872 | `name_es` | Levantamiento de cadera con rodillas flexionadas | **Encogimiento invertido** |
-| 1059 | `body_part` / `target_muscle` | waist / abs | **upper legs / quads** |
-| 1059 | `synergist_muscle` | quadriceps | **abs** (conserva el giro) |
-| 527 | `body_part` / `target_muscle` | upper arms / biceps | **upper legs / quads** |
-| 527 | `synergist_muscle` | forearms | **biceps** (conserva el curl) |
-| 609 | `body_part` / `target_muscle` | upper arms / biceps | **upper legs / quads** |
-| 609 | `synergist_muscle` | quadriceps | **biceps** (conserva el curl) |
-| 725 | `body_part` / `target_muscle` | upper arms / biceps | **shoulders / delts** |
-| 725 | `synergist_muscle` | shoulders | **biceps** (conserva el curl) |
-| 760 | `body_part` / `target_muscle` | upper arms / biceps | **shoulders / delts** |
-| 760 | `synergist_muscle` | forearms | **biceps** (conserva el curl) |
+| 872 | `instructions_es`, `instruction_steps_es` | Puente de glúteo | **Encogimiento invertido** (§4) |
+| 1059 | `body_part` / `target_muscle` / `synergist_muscle` | waist / abs / quadriceps | **upper legs / quads / abs** |
+| 527 | ídem | upper arms / biceps / forearms | **upper legs / quads / biceps** |
+| 609 | ídem | upper arms / biceps / quadriceps | **upper legs / quads / biceps** |
+| 725 | ídem | upper arms / biceps / shoulders | **shoulders / delts / biceps** |
+| 760 | ídem | upper arms / biceps / forearms | **shoulders / delts / biceps** |
 
-**Sin cambio, comprobado:**
-- los patrones `KNEE_DOMINANT` (1059, 527, 609) y `VERTICAL_PUSH` (725, 760);
-- `requires_overhead=true` en 725 y 760, que la restricción declarada de brazos arriba sigue excluyendo;
-- `HORIZONTAL_PUSH` de 1296, y `LOCOMOTION_CARDIO`, `DURATION` y dificultad 1 de 1333: su impacto alto ya lo excluye de principiantes;
-- nombres e instrucciones de los demás, y `secondary_muscles`.
+**Sin cambios:**
+- **1296** (§3).
+- **Banco en 725** (§6).
+- Patrones de 1059, 527 y 609 (`KNEE_DOMINANT`) y de 725 y 760 (`VERTICAL_PUSH`, con brazos arriba).
+- `instructions_en`, el texto de la fuente: la app muestra `instructions_es`.
 
-**Fallo controlado.**
-- **Precondición:** cada columna que cambia debe tener exactamente su valor anterior, y 1333 un único requisito `1:ab wheel`. Si no, aborta con `RAISE EXCEPTION` y lista los ids afectados, sin aplicar nada.
-- **Poscondición:** el estado final de las nueve filas se verifica antes del COMMIT. Los disparadores diferidos de V23 se comprueban en el COMMIT.
+**Controles de la migración:**
+- **Precondición estricta:** valores anteriores exactos, la huella MD5 de las instrucciones y el requisito único de 1333.
+- **Poscondición:** el estado final y que `instructions_es` sea los pasos unidos, como en los 1324 ejercicios con pasos.
+- **Fallo controlado verificado en PostgreSQL aislado:** aplicarla dos veces o alterar antes las instrucciones la aborta sin aplicar nada.
+- **Nada más se mueve:** las otras 1368 filas, los requisitos y el historial V27/V28 dan huellas idénticas antes y después.
 
-**Verificación en PostgreSQL 16 aislado** (V1–V35 aplicadas con `psql -1`, como Flyway):
+## 3. Cotejo de los GIF
 
-| Prueba | Resultado |
-|---|---|
-| Aplicar V36 | OK: 1+1+1(DELETE)+1+1+1+2+2 filas |
-| Resto del catálogo (1367 filas) | Huella MD5 idéntica antes y después |
-| Requisitos del resto (1337 filas) | Huella idéntica |
-| Aplicarla dos veces | Aborta: «no tienen la clasificación anterior esperada: 527, …, 1333» |
-| 1296 alterado a mano antes | Aborta: «…: 1296»; 1267 sigue activo (no se aplicó nada) |
-| Requisito extra en 1333 | Aborta: «los requisitos de 1333 son 1:ab wheel,1:body weight» |
+Detalle en `evidencia/catalogo_v36/revision_humana/VERIFICACION_GIF_V36.md`, reproducible con `cotejo_gif_v36.py`. Lo hizo el asistente de desarrollo (IA) sobre los GIF originales; no es una revisión humana.
 
-## 3. Revisión humana
+**1267, 1333, 872, 1059, 527, 609, 725 y 760 coinciden con el dictamen:**
+- **1333:** fase de vuelo en los fotogramas 5–8 y 22–26, así que el alto impacto queda confirmado.
+- **872:** encogimiento invertido; la cadera no se extiende.
+- **725:** sentado en un banco con respaldo.
 
-**Pendiente.** No hay revisores ni resultados inventados. El expediente está preparado con el procedimiento de V27/V28: dos revisores identificados e independientes, material ciego, criterio v5 con huella y consolidación.
+**1296 lo contradice:**
+- Es una flexión de **palanca larga**, con los brazos extendidos al frente.
+- Manos y pies no se despegan del suelo en ninguno de los 12 fotogramas (y=107–109 en todos), así que no hay fase pliométrica.
+- Según la orden, **se detiene su corrección**.
+- **Propuesta pendiente:** nivel 3 sin alto impacto, con instrucciones de palanca larga. Mientras no se decida, 1296 sigue como en V35, elegible para principiantes.
 
-- `evidencia/catalogo_v36/revision_humana/REVISION_HUMANA_V36.md`: procedimiento, entregas y tabla de consolidación (anterior, propuesta, R1, R2, consenso, justificación).
-- `evidencia/catalogo_v36/revision_humana/material_ciego_v36.md`: fichas en orden aleatorio, GIF y 10 preguntas, sin la clasificación anterior ni la propuesta.
-- `evidencia/catalogo_v36/revision_humana/formulario_revisor_v36.csv`: un formulario por revisor.
+## 4. Instrucciones finales (`instruction_steps_es`)
 
-**Discrepancias que la revisión debe resolver** (detalle en el expediente):
+**1333 · Carrera con zancadas amplias**
+1. Ponte de pie con el tronco ligeramente inclinado hacia delante y los brazos flexionados a unos 90 grados.
+2. Impúlsate con una pierna y avanza con una zancada larga, llevando la rodilla contraria hacia delante y arriba.
+3. En cada zancada los dos pies se despegan del suelo un instante: aterriza suave sobre la parte delantera del pie, con la rodilla ligeramente flexionada.
+4. Coordina los brazos con las piernas: adelanta el brazo contrario a la pierna que avanza.
+5. Encadena zancadas de forma continua durante el tiempo indicado, con el tronco firme y la respiración regular, en una superficie plana y con espacio libre delante.
 
-1. **872 frente a V28.** V28 aprobó 872 como nivel 1 de LOWER_HIP con material de **texto**, y sus instrucciones describen un **puente de glúteo** (V28 anota un 92,8 % de coincidencia con 1073 *low glute bridge*). El GIF es un encogimiento invertido. V36 no toca `exercise_difficulty_approvals`. Si V36 se confirma, LOWER_HIP queda con 3 aprobados en vez de 4. No afecta a Java, porque el filtro de aprobación no está activo.
-2. **Instrucciones contradictorias** (no son columnas aprobadas; V36 no las cambia): 1333 sigue hablando de un rodillo, 872 de un puente de glúteo y 1296 de una flexión con elevación alterna. El participante vería un nombre y un GIF que no corresponden al texto. **Recomendación:** corregir `instructions_es` e `instruction_steps_es` de 1333, 872 y 1296 en la misma V36, si se autoriza, antes de desplegar.
-3. **Banco en 725** no exigido, **rodilla casi en el suelo** en 527 y 609 sin `requires_kneeling`, y `axial_load` distinto entre 527 y 609. No están aprobados; se dejan anotados.
+**872 · Encogimiento invertido**
+1. Túmbate boca arriba con las rodillas flexionadas, los pies apoyados en el suelo y los brazos a los lados, con las palmas hacia abajo.
+2. Activa el abdomen y despega los pies del suelo, llevando las rodillas hacia el pecho sin estirar las piernas.
+3. Al final del recorrido, enrolla la pelvis y despega ligeramente la cadera del suelo con la fuerza del abdomen, sin impulsarte con las piernas.
+4. Baja la cadera y después los pies de forma controlada hasta volver a apoyarlos en el suelo.
+5. Mantén la cabeza y los hombros apoyados durante todo el ejercicio y repite el número de repeticiones indicado.
 
-## 4. Pruebas
+**1296:** sin cambio (§3).
 
-| Prueba | Qué demuestra |
-|---|---|
-| `CatalogoV36IT` (nueva, 6 pruebas) | Flyway hasta V35, publica planes reales y después aplica V36 con la configuración de Flyway de la aplicación. Comprueba: <br>1. Matriz exacta de las nueve filas; resto del catálogo, requisitos, historial V27/V28 y planes publicados sin cambios (huellas). <br>2. Planes publicados: 1296 se marca `alto_impacto` para el principiante; 1267 no es causa de seguridad y se sigue mostrando. <br>3. Ciclo semanal siguiente (§8). <br>4. Conjunto elegible por nivel, equipamiento, edad y restricciones: 1267 nunca; 1296 solo avanzado con impacto permitido y menos de 60 años; 1333 sin rueda y nunca para principiantes ni con «sin impacto». 872 deja de pertenecer a un slot obligatorio; 1059, 527 y 609 son LOWER_KNEE y `upper legs`; 725 y 760 son UPPER_PUSH y `shoulders`, y respetan «sin brazos arriba». <br>5. Planes nuevos (36 perfiles en la base, 48 con el PR #3): ningún 1267; 527, 609, 725 y 760 nunca en PULL; 1296 solo en avanzados; 1333 nunca en principiantes. <br>Sin llamadas a la IA (`never()`) |
-| `GeneracionReferenciaIT` | **La referencia oficial, intacta.** Ahora fija `spring.flyway.target=35`: las 72 generaciones con el catálogo anterior siguen idénticas a `progresion/generacion_referencia.txt`, lo que demuestra que el código de generación no cambió |
-| `GeneracionReferenciaCandidataV36IT` (nueva) | Las 72 generaciones con V36 coinciden con la candidata `catalogo_v36/generacion_referencia_candidata_v36.txt`. Se captura aparte con `-Dfitsense.generacion.capturar.v36=true` |
-| `GeneracionReferenciaBase` | Lógica común de las dos anteriores (antes estaba en `GeneracionReferenciaIT`) |
+## 5. 872 frente a V28
 
-## 5. Las 72 referencias: oficial frente a candidata
+Rectificación completa en `revision_humana/ANEXO_872_V28.md`.
 
-| Medida | Oficial (antes de V36) | Candidata (V36) |
+- **V28 queda intacta:** migración, evento `APPROVED` de nivel 1, revisores (Juan y Daniel) y resultados.
+- **El evento de V28 no prueba la nueva identidad.** Se revisó sobre un texto de puente de glúteo.
+- **LOWER_HIP pasa de 4 a 3 aprobados** (122, 776, 878). La vista de V27 toma el patrón del catálogo, y 872 ya es `TRUNK_FLEXION`.
+- **La aprobación de nivel no se transfiere.** El filtro global de aprobación humana sigue **apagado**.
+- **Nivel operativo:** 872 sigue en nivel 1.
+- **Eventos:** ninguno nuevo, ni de revisión ni de revocación.
+- **Pendiente:** la revisión humana de 872 como encogimiento invertido.
+- **Condición para encender el filtro en el futuro:** registrar antes esa revisión o un REVOKED, con el contrato de V27.
+
+`CatalogoV36IT` comprueba los conteos, la integridad de V28 y el filtro apagado.
+
+## 6. Banco del ejercicio 725
+
+- **Lo que muestra el GIF:** un banco con respaldo.
+- **Lo que permite el modelo:** exigirlo sin cambiar nada, con un grupo 2 de `exercise_equipment_requirements` (como 514 y 720).
+- **Por qué no se aplica:**
+  - los otros sentados con mancuerna (704, 723, 726, 739 y 740) también aparecen en banco en su GIF y ninguno lo exige;
+  - la convención de V24 lo añadió solo cuando el nombre dice «bench».
+- **Qué pasaría si se exigiera solo en 725:** un perfil de casa perdería 725 y conservaría 739, que tiene la misma postura.
+- **Alternativa mínima:** fijar la convención para los 52 ejercicios activos «seated» sin implemento de apoyo, en una migración posterior.
+
+## 7. Las 72 referencias
+
+- **Oficial desde V36:** `evidencia/progresion/generacion_referencia.txt`, protegida por `GeneracionReferenciaIT`.
+- **V35, como evidencia:** `generacion_referencia_v35.txt`. `GeneracionReferenciaV35IT` comprueba con Flyway hasta V35 que se sigue reproduciendo, es decir, que el código de generación no cambió.
+
+| Medida | V35 | V36 |
 |---|---:|---:|
-| Perfiles con plan VALIDA | 72/72 | **72/72** |
-| Sesiones | 216 | 216 |
+| Perfiles VALIDA | 72/72 | **72/72** |
+| Cobertura de capacidades | COMPLETO 72 | **COMPLETO 72** |
 | Sesiones con otro día o enfoque | — | **0** |
-| Sesiones con otros minutos estimados | — | 26 (entre −4 y +4 min) |
-| Colocaciones | 1155 | 1153 |
-| Sesiones con algún ejercicio o dosis distinta | — | 213 (en los 72 perfiles) |
-| · directas (contienen alguno de los nueve, antes o después) | — | 77 |
-| · indirectas | — | 136 |
-| Cobertura de capacidades | COMPLETO 72 | COMPLETO 72 |
-| Sesiones por debajo del 70 % exacto (V20, sin cambiar) | 17 | 18 |
+| Sesiones con otros ejercicios o dosis | — | 194 de 216 (70 perfiles) |
+| · directas (contienen alguno de los nueve) | — | 75 |
+| · indirectas (selección determinista) | — | 119 |
+| Sesiones con otros minutos estimados | — | 23 (±4 min) |
+| Por debajo del 70 % exacto (V20, sin cambiar) | 17 | 16 |
+| Colocaciones que la clasificación correcta no admite | 51 de 1267 en el barrido; 21–31 combinados en PULL | **0** |
 
-**Seguridad y nivel, juzgando los dos planes con la clasificación corregida:**
+**Por qué cambian sesiones que no contenían ninguno de los nueve.** El motor siembra con `userId × 1 000 003 + díaDeLaSemana` y sortea sobre listas ordenadas de candidatos. 1267 era elegible para los 72 perfiles: al desactivarlo, todas las listas pierden un elemento y la misma semilla elige otros índices. No se modificó el algoritmo.
 
-| Exposición | Oficial | Candidata |
-|---|---:|---:|
-| Alto impacto en principiante (1296) | 3 | **0** |
-| Dificultad por encima del nivel (1296 en principiante e intermedio) | 6 | **0** |
+**Comparado con la simulación anterior (213 sesiones):** ahora son 194, porque 1296 no cambia.
 
-**Dosis.** Las mismas familias en proporciones casi iguales; ninguna dosis nueva. Por ejemplo, `3x10r/90` pasa de 263 a 270 y `3x6r/150` de 187 a 185.
+Tablas completas en `evidencia/catalogo_v36/resultados_comparacion.md`.
 
-**Patrones.** HIP_EXTENSION baja de 43 a 29 (872 deja de contar como cadera). Al motor le quedan los extensores de cadera reales, y HIP_HINGE sube de 88 a 102. Las tablas completas están en `evidencia/catalogo_v36/resultados_comparacion.md`. El detalle sesión por sesión, marcado DIRECTO o INDIRECTO, está en `referencias_sesiones_cambiadas.tsv`.
-
-## 6. Cambios directos e indirectos
-
-**Directos (77 sesiones).** La sesión contenía uno de los nueve y ya no lo contiene, o lo contiene ahora. Ejemplos:
-- 1296 sale de los principiantes;
-- 872 deja de ocupar el hueco de cadera;
-- 1059 deja de contar como core;
-- 1333 entra como cardio en intermedios y avanzados.
-
-**Indirectos (136 sesiones).** El motor de reglas siembra su generador pseudoaleatorio con `userId × 1 000 003 + díaDeLaSemana` (`RuleBasedTrainingPlanGenerator.seedFor`). Después sortea sobre listas ordenadas de candidatos elegibles.
-
-- 1267 (peso corporal, nivel 1, sin restricciones declaradas) **era elegible para los 72 perfiles**. Al desactivarlo, todas sus listas pierden un elemento.
-- Las reclasificaciones de 1059, 527, 609, 725 y 760 mueven candidatos entre grupos.
-- Con listas distintas, la misma semilla produce otros índices. Los ejercicios elegidos cambian aunque la sesión nunca tuviera uno de los nueve.
-
-**Lo que no cambia:**
-- 0 sesiones cambian de día o enfoque;
-- la división de los 72 es la misma;
-- todas las dosis salen de la misma tabla;
-- la cobertura sigue COMPLETA en los 72;
-- los 72 planes son válidos.
-
-Es la misma cascada que vio la simulación anterior (213 de 216), ahora con la migración real.
-
-## 7. Barrido de 4–6 días y robustez
-
-La base (`generation`) aún no tiene el PR #3. Por eso se validó **por separado y combinado** en un entorno aislado: una rama local `respaldo-5-6-dias` + `catalogo-v36` fusionada **sin publicar**. La fusión no tuvo conflictos.
-
-**Dependencia:** los 5–6 días de GENERAL_FITNESS y LOSE_WEIGHT necesitan el PR #3, con o sin V36. `CatalogoV36IT` los incluye solo cuando la prueba del respaldo está en el árbol.
+## 8. Barrido, robustez y continuidad
 
 | Medida | Base sin V36 | Base + V36 | PR #3 sin V36 | PR #3 + V36 |
 |---|---:|---:|---:|---:|
-| Perfiles con plan VALIDA | 60/72 | 60/72 | 72/72 | **72/72** |
-| Perfiles sin plan | 12 | 12 | 0 | **0** |
-| Sesiones = días pedidos (frecuencias actuales) | 44/60 | 44/60 | 56/72 | 56/72 |
-| Robustez (288): sin plan | 52 | 52 (los mismos) | 0 | **0** |
-| 1267 colocado | 44 | 0 | 51 | **0** |
-| Alto impacto en principiante | 4 | 0 | 4 | **0** |
-| Dificultad por encima del nivel | 6 | 0 | 7 | **0** |
-| Trabajo fuera de grupo en PULL (combinados) | 21 | 0 | 31 | **0** |
-| Bandera «ejercicio en revisión» de la evaluación | 96 | 15 | 104 | 19 |
-| Sesiones por debajo del 70 % exacto | 55 | 48 | 66 | 59 |
-| `MENOS_DE_3_DE_TRABAJO` / `MENOS_DE_2_DE_PIERNA` / `WAIST_IGUALA_O_SUPERA_PIERNA` / `MAS_DE_LA_MITAD_SIN_V15` | 16 / 8 / 12 / 10 | iguales | 60 / 12 / 16 / 10 | iguales |
+| Barrido 4–6 días: perfiles VALIDA | 60/72 | 60/72 | 72/72 | **72/72** |
+| Sesiones = días pedidos | 44/60 | 44/60 | 56/72 | 56/72 |
+| Robustez 288: sin plan | 52 | 52 (los mismos) | 0 | **0** |
+| 1267 colocado / combinados en PULL | 44 / 21 | 0 / 0 | 51 / 31 | **0 / 0** |
+| Dificultad o impacto inadmisibles | 0 | 0 | 0 | 0 |
+| Cobertura de capacidades | COMPLETO 60 | COMPLETO 60 | COMPLETO 72 | **COMPLETO 72** |
 
-**Detalle:**
-- La bandera «en revisión» es la lista fija de la evaluación (`DUDOSOS`), que incluye 1333 y 1059. No es una regla del sistema.
-- Las sesiones cambian de ejercicios (270/270 y 336/336) por la misma cascada, pero **0 cambian de enfoque**.
-- **Sin incompatibilidades nuevas entre catálogo y capacidades.** Cobertura COMPLETA en todos los planes generados; las banderas de reparto no varían.
-- V15, V20, V22, V24 y V25 se aplican sin cambios: todos los planes que validan lo hacen con las reglas actuales.
+**Continuidad semanal de planes nuevos** (`CatalogoV36IT.continuidadDePlanesNuevos`):
+- **Qué hace:** genera con V36 los perfiles de 4 objetivos × 3 niveles × 3–6 días × gimnasio/casa y ejecuta el ciclo real. La mitad cumple todas sus sesiones y la otra mitad no registra nada.
+- **Base + V36:** **72/72 publican la semana siguiente**, SIN_ORDEN/CONSERVED, sin 1267 ni combinados en PULL y sin llamadas a la IA.
+- **PR #3 + V36:** 88/96. Fallan los 8 de LOSE_WEIGHT intermedio/avanzado de 5–6 días, con NO_FACTIBLE: «V15: … enfoque LEGS y solo trabaja [upper legs]».
+- **El defecto no viene del catálogo.** Con el PR #3 **sin V36** fallan exactamente los mismos 8.
 
-**Dónde aparecen los nueve en el barrido** (PR #3 sin V36 → PR #3 + V36):
+**Causa:**
+- El PR #3 hizo que V15 cuente como disponibles solo los grupos prescribibles, pero solo en la generación.
+- La copia semanal valida con `StrictValidationAdapter`, que activa las capacidades solo con `fitsense.adaptation.capability-validation.enabled` o con la progresión (las dos apagadas).
+- Por eso la copia sigue exigiendo gemelos a LOSE_WEIGHT, que no los puede prescribir.
 
-| Ejercicio | Antes | Después |
+**Propuesta, que toca la validación de la adaptación y necesita autorización:** aplicar el filtro de grupos prescribibles de V15 siempre que el objetivo tenga política de capacidades, no solo con capacidades en ENFORCE.
+- Solo deja de exigir grupos que el objetivo no puede prescribir.
+- No relaja ninguna otra regla.
+
+## 9. Pruebas
+
+| Prueba | Catálogo | Qué demuestra |
 |---|---|---|
-| 527 | PULL 10, UPPER_BODY 7 | LEGS 1, LOWER_BODY 1 |
-| 609 | PULL 5, UPPER_BODY 2 | LOWER_BODY 2 |
-| 725 | PULL 9, UPPER_BODY 6 | PUSH 1, UPPER_BODY 3 |
-| 760 | PULL 7, UPPER_BODY 1 | 0 |
-| 872 | LOWER_BODY 27 | LOWER_BODY 1 |
-| 1059 | LOWER_BODY 25 | LEGS 4, LOWER_BODY 4 |
-| 1267 | PUSH 17, UPPER_BODY 34 | **0** |
-| 1296 | PUSH 3, UPPER_BODY 5 (incluye principiantes) | PUSH 1 (avanzado) |
-| 1333 | 0 (nadie declara rueda) | LOWER_BODY 2, PULL 2 (como cardio), UPPER_BODY 5; solo intermedio y avanzado |
+| `CatalogoV36IT` (7) | V35 → V36 con Flyway | <br>1. Matriz exacta, instrucciones, 1296 sin cambios y 725 sin banco. <br>2. Huellas intactas del resto, de los requisitos, de V27/V28 y de los planes publicados. <br>3. Conteo de aprobaciones de LOWER_HIP (4 → 3) y filtro apagado. <br>4. Elegibilidad por nivel, edad, equipamiento y restricciones. <br>5. Planes nuevos: ningún 1267, ningún combinado en PULL y 1333 nunca en principiantes. <br>6. Continuidad de planes nuevos (§8). <br>7. Evidencia V35→V36 de planes sintéticos (1267 y combinados en PULL no copiables) |
+| `GeneracionReferenciaIT` | V36 | Referencia oficial |
+| `GeneracionReferenciaV35IT` | V35 | Referencia histórica: el código de generación no cambió |
+| `DuracionForzadaIT` | V36 | Comportamiento vigente de la duración forzada |
+| `DuracionForzadaPlan60IT`, `Plan60HipertrofiaIT` | V35 | **Históricas:** validan el plan 60 tal como se publicó (872 como estructural a 3x13). Con V36, V24 le exige la dosis de relleno |
+| `HerenciaD8IT`, `ProgresionIT` | **V36** | Comportamiento vigente. Su premisa (un viernes acortado bajo el piso de 31 min) dependía de la semana generada; ahora se busca un participante que la cumpla, hasta 10. No cambia ninguna aserción de comportamiento ni el doble de la IA |
 
-Evidencia: `evidencia/catalogo_v36/{base_antes,base_v36,pr3_antes,pr3_v36}/`. La comparación se reproduce con `comparar_v36.py`.
+**Planes sintéticos de V35.** Por decisión del responsable no hay compatibilidad retroactiva. Los planes 60 y 61 y los casos de la prueba 7 quedan como evidencia del cambio. `consultas/exposicion_v36.sql` queda como diagnóstico opcional.
 
-## 8. Planes ya publicados · incompatibilidad con la copia semanal
+## 10. Regresión y CI
 
-**V36 no elimina ni altera ningún plan publicado.** `CatalogoV36IT` lo comprueba con una huella de `weekly_training_plans`, `planned_workouts` y `planned_workout_exercises` antes y después.
+| Ejecución | Unitarias | Integración | Resultado |
+|---|---|---|---|
+| `catalogo-v36` (PR #4), local | 816/816 | 255, 0 fallos, 12 omitidas (opcionales) | **BUILD SUCCESS** |
+| Combinación PR #3 + V36 (local, sin publicar) | 829/829 | 270, 1 fallo, 10 omitidas | El único fallo es la continuidad de los 8 LOSE_WEIGHT de 5–6 días: el defecto del PR #3 (§8) |
+| CI del PR #4 | — | — | Ver el PR (se ejecuta con cada push) |
 
-**Lectura y ejecución.** `PublishedPlanSafetyService` marca 1296 en las sesiones abiertas del principiante como `alto_impacto`, y execution se niega a registrarlo. Es la protección vigente, sin cambios. 1267 no se marca: un ejercicio inactivo **no es causa de seguridad** (`SafetyConflictPolicy`), así que se sigue mostrando y ejecutando en la semana ya publicada.
+## 11. Pendientes y efecto real en el MVP
 
-**Semana siguiente.** El ciclo semanal (`WeeklyCycleService` → copia V31) copia la semana medida y la valida con el catálogo **actual**. Resultado, con el ciclo real y sin IA:
-
-| Caso (plan publicado antes de V36) | Resultado | Motivo |
+| Pendiente | Causa | Efecto en el MVP |
 |---|---|---|
-| Contiene 1267 | **NO_FACTIBLE, semana sin plan** | `V1: el ejercicio 1267 no esta en available_exercises` |
-| Intermedio con 1296 | **NO_FACTIBLE, semana sin plan** | `V1: …1296…`: deja de ser elegible y la dificultad no es causa de seguridad |
-| Combinado (527, 609, 725, 760) en una sesión PULL | **NO_FACTIBLE, semana sin plan** | `V15: … enfoque PULL pero incluye ejercicios de [upper legs]` y `V18` |
-| Principiante con 1296 | Copia publicada | Sustitución obligatoria SUST-SEG-1 por `alto_impacto` |
-| 872 prescrito como estructural (plan 60 real: GAIN_MUSCLE, 3x13 a 90 s) | **Rechazado por V24** | `V24: el ejercicio 872 … lleva 3x13 … y 4D v2 exige 2x13 (relleno …)`: al dejar de ser HIP_EXTENSION, su dosis es la de relleno. Reproducido por `Plan60HipertrofiaIT` y `DuracionForzadaIT` con V36 (§9) |
-| Contiene 872 o 1059 (en los casos probados, sin 1267) | Copia publicada (CONSERVED) | Sin problemas. En el plan con 1267, la copia falló además por V15 en una sesión LOWER_BODY que, con la reclasificación, solo trabaja `upper legs`: un plan con 1059 o 527/609 puede fallar igual si era su único ejercicio fuera de `upper legs` |
-
-Por 19.4, una semana sin plan queda con adherencia NULL, y el ciclo siguiente vuelve a la generación inicial. Se perdería una semana de datos del participante. **No se ha corregido:** la orden pide reportarlo y reproducirlo antes de proponer cambios. No se relaja V8C ni V1.
-
-**Medirlo antes de decidir:**
-- `docs/FitSense/consultas/exposicion_v36.sql`: consulta de **solo lectura** (`BEGIN READ ONLY … ROLLBACK`) para que la ejecutes tú contra Neon con un usuario de lectura.
-- Cuenta participantes y planes ACTIVOS en cada caso, el detalle de los casos que dejarían la semana sin plan, los reclasificados con su dosis (para detectar casos como el plan 60) y el histórico.
-- Está probada contra el esquema aislado.
-
-**Opciones (ninguna implementada):**
-1. **Si la consulta devuelve 0 en los casos A, B y D, y el detalle 2b no muestra dosis de estructural en 872:** desplegar V36 sin más. La incompatibilidad no se manifiesta.
-2. **Si afecta a pocos participantes:** desplegar y aceptar, documentándolo como incidencia del estudio, que esos participantes pasen una semana sin plan y vuelvan con la generación inicial. La alternativa es aplazar V36 hasta que terminen. Hoy no existe un flujo para sustituir una semana ACTIVA fuera de la reparación de seguridad (`generateWeeklyPlan` falla si ya hay un plan activo), así que regenerarla a mano no es una opción sin código.
-3. **Cambio de código:** tratar la «retirada por corrección de catálogo» como causa con nombre (precedente: `INC-CAT-1374`) para permitir una sustitución en la copia. Afecta a V8C, y la clase de slot del ejercicio quitado era errónea (1267 «KNEE_DOMINANT» en una sesión de tren superior). Exige diseño y aprobación.
-
-**Recomendación:** medir primero. Opción 1 si sale 0. Si no, opción 2 para un número pequeño, u opción 3 si se esperan más correcciones de catálogo durante el estudio.
-
-## 9. Regresión completa
-
-**Primera ejecución con V36 (rama `catalogo-v36`):** 816 pruebas unitarias sin fallos. 254 de integración con **4 fallos**, todos causados por V36:
-
-| Prueba | Causa |
-|---|---|
-| `Plan60HipertrofiaIT.sesionDeSesentaMinutos` | El plan 60 real (publicado el 26/10) lleva 872 como estructural a 3x13. Con V36, V24 exige 2x13. **Es un caso más de §8**, no un fallo de la regla |
-| `DuracionForzadaIT.sinMinutosForzadosRigeElPerfil` | El mismo plan 60 como borrador |
-| `HerenciaD8IT.propuestaIdenticaConservaD8` | Falla la premisa del escenario: «el viernes acortado (32) bajo el piso 31». La semana generada cambia por la cascada (§6), y el escenario estaba calibrado con ella |
-| `ProgresionIT.acortadaProgresaYReincorpora` | La misma premisa |
-
-**Qué se hizo.** Esas cuatro clases fijan ahora `spring.flyway.target=35`, con un comentario que lo explica. No se cambió ninguna regla ni ninguna aserción:
-- Las dos primeras validan un plan **publicado con el catálogo anterior**.
-- Las dos últimas prueban D8 y la progresión, que no dependen del catálogo, sobre una semana calibrada con él.
-
-**Alternativa, si se prefiere:** recalibrar sus escenarios sobre el catálogo con V36. Supone tocar los datos de las pruebas, no la lógica.
-
-### 9.1 Segunda ejecución
-
-Ejecución completa de la rama `catalogo-v36`, con la base P2-D local: **BUILD SUCCESS**.
-- Unitarias: 816 sin fallos.
-- Integración: 254, 0 fallos, 12 omitidas. Las omitidas son opcionales: Replicate real, Neon y evaluaciones manuales.
-
-Incluye `CatalogoV36IT`, `GeneracionReferenciaIT` (oficial, hasta V35) y `GeneracionReferenciaCandidataV36IT`.
-
-Ejecución combinada con el PR #3 (rama local, sin publicar): `CatalogoV36IT` (48 perfiles), `RespaldoCincoSeisDiasIT` 14/14, las dos referencias y `EvaluacionFrecuenciaIT` (barrido y robustez), todas en verde.
-
-## 10. Decisiones pendientes
-
-1. **Revisión humana doble** (§3), incluida la discrepancia de 872 con V28.
-2. **Instrucciones** de 1333, 872 y 1296: ¿se corrigen en V36 antes de desplegar? Lo recomiendo.
-3. **Planes publicados** (§8): ejecutar `exposicion_v36.sql` en Neon (solo lectura) y elegir la opción 1, 2 o 3.
-4. **Referencia oficial:** si se aprueba V36, pasar la candidata a oficial con una decisión explícita. Hasta entonces conviven las dos.
-5. **Orden de integración:** el barrido de 5–6 días depende del PR #3. V36 se puede integrar antes o después: la fusión no tuvo conflictos y los resultados combinados están arriba.
+| Revisión humana doble e independiente | Hacen falta dos revisores y no hay formularios entregados | Ninguno técnico. Afecta a la trazabilidad académica. El expediente está listo |
+| Decisión sobre 1296 | El GIF contradice la condición del dictamen | 1296 sigue de nivel 1: un principiante puede recibir una flexión de palanca larga. Recomiendo nivel 3 sin impacto |
+| Continuidad de LOSE_WEIGHT 5–6 días | Defecto del PR #3 (§8), no de V36 | Esos participantes se quedarían sin semana 2 si se integra el PR #3 tal cual. Necesita autorización para tocar la validación de la adaptación |
+| Fusión del PR #3 en `generation` | Pendiente de tu aprobación (orden, punto 2) | Hasta entonces, el PR #4 se valida sobre la base y la combinación solo en local |
+| Convención de banco para «sentados» | Coherencia del catálogo | Ninguno inmediato |

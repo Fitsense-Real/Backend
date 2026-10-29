@@ -5,7 +5,7 @@ import csv, re, sys, collections, statistics, os
 
 SP, REPO = sys.argv[1], sys.argv[2]
 COMPL = {'LOCOMOTION_CARDIO', 'MOBILITY', 'BALANCE_CONTROL'}
-NUEVE = {527, 609, 725, 760, 872, 1059, 1267, 1296, 1333}
+NUEVE = {527, 609, 725, 760, 872, 1059, 1267, 1296, 1333}  # 1296 se revisa pero V36 no lo cambia
 MAXDIF = {'BEGINNER': 1, 'INTERMEDIATE': 2, 'ADVANCED': 3}
 
 
@@ -44,8 +44,8 @@ L = []
 p = L.append
 
 # ---------------------------------------------------------------- 72 referencias
-A = refs(f'{REPO}/docs/FitSense/evidencia/progresion/generacion_referencia.txt')
-B = refs(f'{REPO}/docs/FitSense/evidencia/catalogo_v36/generacion_referencia_candidata_v36.txt')
+A = refs(f'{REPO}/docs/FitSense/evidencia/progresion/generacion_referencia_v35.txt')
+B = refs(f'{REPO}/docs/FitSense/evidencia/progresion/generacion_referencia.txt')
 assert A.keys() == B.keys() and len(A) == 72
 tot = cambiadas = directas = estructura = 0
 minutos_cambiados = []
@@ -96,8 +96,8 @@ def seguridad_real(R, cat, etiqueta):
     return c
 
 
-p('## R1. 72 referencias: oficial (antes de V36) frente a candidata (V36)\n')
-p(f'| Medida | Oficial | Candidata |\n|---|---:|---:|')
+p('## R1. 72 referencias: V35 (historica) frente a V36 (oficial)\n')
+p(f'| Medida | V35 | V36 |\n|---|---:|---:|')
 p(f'| Perfiles con plan VALIDA | {validas_a}/72 | {validas_b}/72 |')
 p(f'| Sesiones | {tot} | {tot} |')
 p(f'| Sesiones con otro dia o enfoque | — | {estructura} |')
@@ -108,18 +108,18 @@ p(f'| · directas (contienen alguno de los 9, antes o despues) | — | {directas
 p(f'| · indirectas (seleccion determinista) | — | {cambiadas - directas} |')
 p('')
 p('Distribucion de dosis (series x reps o segundos / descanso), las 10 mas frecuentes:\n')
-p('| Dosis | Oficial | Candidata |\n|---|---:|---:|')
+p('| Dosis | V35 | V36 |\n|---|---:|---:|')
 for d, _ in (dosis_ant + dosis_nue).most_common(10):
     p(f'| {d} | {dosis_ant[d]} | {dosis_nue[d]} |')
 p('')
 p('Patrones de movimiento de las colocaciones (cada plan con su catalogo):\n')
-p('| Patron | Oficial | Candidata |\n|---|---:|---:|')
+p('| Patron | V35 | V36 |\n|---|---:|---:|')
 for d in sorted(set(pat_ant) | set(pat_nue), key=lambda x: (-(pat_ant[x] + pat_nue[x]), x)):
     p(f'| {d} | {pat_ant[d]} | {pat_nue[d]} |')
 p('')
 sa_, sb_ = seguridad_real(A, ANTES, 'oficial'), seguridad_real(B, V36, 'candidata')
 p('Colocaciones que la clasificacion CORRECTA no admite (se juzgan los dos planes con los datos de V36):\n')
-p('| Exposicion | Oficial | Candidata |\n|---|---:|---:|')
+p('| Exposicion | V35 | V36 |\n|---|---:|---:|')
 for d in sorted(set(sa_) | set(sb_)):
     p(f'| {d} | {sa_[d]} | {sb_[d]} |')
 if not (sa_ or sb_): p('| (ninguna) | 0 | 0 |')
