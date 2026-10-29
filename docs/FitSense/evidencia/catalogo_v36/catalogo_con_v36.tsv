@@ -1293,7 +1293,7 @@
 1293	cardio	LOCOMOTION_CARDIO	2	t	f	t	f	t	body weight	DURATION
 1294	cardio	TRUNK_ROTATION_LATERAL_FLEXION	1	f	f	f	f	t	body weight	DURATION
 1295	cardio	KNEE_DOMINANT	1	f	f	f	f	t	body weight	SETS_REPS
-1296	chest	HORIZONTAL_PUSH	1	f	t	t	f	t	body weight	SETS_REPS
+1296	chest	HORIZONTAL_PUSH	3	f	t	t	f	t	body weight	SETS_REPS
 1297	chest	HORIZONTAL_PUSH	1	f	f	f	f	t	suspension straps	SETS_REPS
 1298	waist	CORE_STABILITY	1	f	f	t	f	t	body weight	SETS_REPS
 1299	waist	CORE_STABILITY	3	f	t	f	f	t	body weight	SETS_REPS

@@ -2,7 +2,7 @@
 
 **Estado (29/10/2026):**
 - **Dictamen técnico asistido por IA:** aprobado por el responsable del proyecto (`APROBACION_DICTAMEN_V36.md`).
-- **Cotejo de los GIF:** hecho (`VERIFICACION_GIF_V36.md`). Ocho coinciden con el dictamen; 1296 lo contradice y su corrección se detuvo.
+- **Cotejo de los GIF:** hecho (`VERIFICACION_GIF_V36.md`). Ocho coinciden con el dictamen. En 1296 la evidencia corrigió la hipótesis del dictamen; tras decidirlo el responsable, pasa a nivel 3 sin alto impacto.
 - **Rectificación de 872 frente a V28:** `ANEXO_872_V28.md`.
 - **Dos revisiones humanas independientes:** **PENDIENTES**. No hay formularios entregados.
 
@@ -30,8 +30,9 @@ Este expediente no inventa revisores ni resultados: las columnas R1 y R2 quedan 
 | Ej. | Atributo | Anterior | V36 | R1 | R2 | Consenso | Justificación visual y funcional |
 |---:|---|---|---|---|---|---|---|
 | 1267 | activo | sí | **no** | | | | Desde el pino, baja a apoyo con piernas abiertas y vuelve: habilidad gimnástica con inversión y control corporal avanzado. Nivel 1 y `KNEE_DOMINANT` eran incorrectos |
-| 1296 | dificultad | 1 | **1 (sin cambio)** | | | | **Corrección detenida.** El dictamen proponía nivel 3 condicionado a una fase pliométrica. El GIF muestra una flexión de palanca larga (brazos extendidos al frente) sin despegar manos ni pies. Propuesta pendiente: nivel 3 sin impacto |
+| 1296 | dificultad | 1 | **3** | | | | Flexión de palanca larga (brazos extendidos al frente), de alta exigencia. El GIF no muestra la fase pliométrica que suponía el dictamen. Decisión del responsable, 29/10/2026 |
 | 1296 | alto impacto | no | **no (sin cambio)** | | | | No hay fase de vuelo en ninguno de los 12 fotogramas |
+| 1296 | instrucciones (es) | Elevación alterna de brazo y pierna | **Flexión de palanca larga** (5 pasos) | | | | Las anteriores describían otro ejercicio |
 | 1333 | implemento | ab wheel | **peso corporal** | | | | El GIF es una carrera con zancadas amplias; no hay rueda. V24 asignó el implemento por el nombre |
 | 1333 | alto impacto | no | **sí** | | | | Carrera con fase de vuelo |
 | 1333 | suelo / brazos arriba | sí / sí | **no / no** | | | | De pie, brazos en braceo de carrera |
@@ -49,6 +50,6 @@ Este expediente no inventa revisores ni resultados: las columnas R1 y R2 quedan 
 ## Puntos que la revisión humana debe resolver expresamente
 
 1. **872 y V28:** ver `ANEXO_872_V28.md`. Falta la revisión humana de la nueva identidad (encogimiento invertido). La aprobación de V28 no la cubre.
-2. **1296:** confirmar qué muestra el GIF y decidir la propuesta pendiente (nivel 3 sin alto impacto, con instrucciones nuevas).
-3. **Banco en 725:** convención de los ejercicios sentados (`VERIFICACION_GIF_V36.md`).
+2. **1296:** confirmar que el GIF muestra una flexión de palanca larga sin fase de vuelo, y el nivel 3.
+3. **Banco en 725:** aplazado por decisión del responsable; convención de los ejercicios sentados (`VERIFICACION_GIF_V36.md`).
 4. **Rodilla en 527 y 609:** la rodilla de atrás llega casi al suelo y `requires_kneeling=false`. Además, `axial_load` difiere entre los dos. No está en los cambios aprobados.

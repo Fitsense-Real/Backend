@@ -14,9 +14,9 @@
 | Condición | Resultado |
 |---|---|
 | GIF de 1267, 1333, 872, 1059, 527, 609, 725 y 760 | Coinciden con el dictamen (`VERIFICACION_GIF_V36.md`) |
-| GIF de 1296 | **Lo contradice:** no hay fase pliométrica. Corrección detenida; propuesta en `VERIFICACION_GIF_V36.md` |
+| GIF de 1296 | **Corrige la hipótesis inicial del dictamen.** No hay fase pliométrica: manos y pies no se despegan del suelo en ninguno de los 12 fotogramas. La corrección se detuvo y se presentó la evidencia. El responsable aprobó el 29/10/2026 (orden de corrección final, punto 1) **nivel 3 sin alto impacto**, `HORIZONTAL_PUSH` e instrucciones de flexión de palanca larga. Aplicado en V36 |
 | Alto impacto de 1333 | Confirmado: hay fase de vuelo |
-| Banco de 725 | Modelable con las relaciones existentes, pero **no se aplica** por coherencia con 704, 723, 726, 739 y 740 (`VERIFICACION_GIF_V36.md`) |
+| Banco de 725 | Modelable con las relaciones existentes, pero **no se aplica** por coherencia con 704, 723, 726, 739 y 740. El responsable **aplazó** la revisión general (orden de corrección final, punto 6): queda como inconsistencia documentada para una futura corrección del catálogo |
 | Rectificación de 872 frente a V28 | `ANEXO_872_V28.md` |
 
 ## Estado de la revisión humana
