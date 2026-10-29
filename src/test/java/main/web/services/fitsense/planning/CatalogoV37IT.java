@@ -22,14 +22,14 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * PROPUESTA V37 (auditoria del catalogo), sin aplicarla en ninguna base real.
- * Sobre una base V1-V36 desechable ejecuta los SQL de
- * {@code docs/FitSense/auditoria_catalogo/v37/} (no estan en db/migration) y
- * comprueba:
+ * V37 (auditoria del catalogo, bloque A aprobado el 29/10/2026). Sobre una base
+ * Flyway hasta la 36 ejecuta el archivo de V37 de db/migration y, despues, la
+ * propuesta V37.1 (pendiente, solo en docs/FitSense/auditoria_catalogo/v37/separables),
+ * y comprueba:
  * <ul>
- *   <li>cada fila de {@code correcciones_v37.tsv} queda con su valor «despues»;</li>
+ *   <li>cada fila de {@code correcciones_v37.tsv} queda con su valor «despues» (776 inactivo);</li>
  *   <li>ningun otro ejercicio ni requisito cambia;</li>
- *   <li>V27/V28 intactas: {@code exercise_difficulty_approvals} identica;</li>
+ *   <li>V27/V28 intactas: {@code exercise_difficulty_approvals} identica, con el evento de 776;</li>
  *   <li>suspension implica brazos arriba en todo el catalogo;</li>
  *   <li>si el estado anterior no es el esperado (reaplicar, o una edicion manual), aborta sin cambios.</li>
  * </ul>
@@ -39,16 +39,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token="
+        "fitsense.ai.api-token=",
+        "spring.flyway.target=36"
 })
-class CatalogoV37PropuestaIT {
+class CatalogoV37IT {
 
     @Container
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
     static final Path DIR = Path.of("docs/FitSense/auditoria_catalogo/v37");
-    static final Path A = DIR.resolve("migracion/V37__catalog_safety_corrections.sql");
+    static final Path A = Path.of("src/main/resources/db/migration/V37__catalog_safety_corrections.sql");
     static final Path B = DIR.resolve("separables/V37_1__catalog_classification_equipment.sql");
 
     @Autowired JdbcTemplate jdbc;
@@ -114,7 +115,7 @@ class CatalogoV37PropuestaIT {
 
     @Test
     @Order(1)
-    @DisplayName("V37 (bloque A) aplica exactamente su matriz, nada mas, y deja V28 intacta")
+    @DisplayName("V37 aplica exactamente su matriz (776 inactivo), nada mas, y deja V28 intacta")
     void bloqueA() throws Exception {
         var antes = huella();
         var aprob = aprobaciones();
@@ -132,10 +133,13 @@ class CatalogoV37PropuestaIT {
                 + " WHERE exercise_id IN (122, 776, 872, 878) AND decision = 'APPROVED'", Integer.class));
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM exercises WHERE requires_hanging AND NOT"
                 + " requires_overhead", Integer.class));
-        // 776: el caso que motivo el anexo
-        assertEquals(List.of(true, true, true, 3), jdbc.queryForObject("SELECT requires_hanging, requires_overhead,"
-                + " requires_inversion, difficulty_level FROM exercises WHERE exercise_id = 776",
-                (rs, n) -> List.of(rs.getBoolean(1), rs.getBoolean(2), rs.getBoolean(3), rs.getInt(4))));
+        // 776: desactivado, con sus caracteristicas reales documentadas (ANEXO_776_V28.md)
+        assertEquals(List.of(false, true, true, true, 3, "gymnastic rings"), jdbc.queryForObject(
+                "SELECT e.is_active, e.requires_hanging, e.requires_overhead, e.requires_inversion, e.difficulty_level,"
+                        + " q.code FROM exercises e JOIN equipment_types q ON q.equipment_id = e.equipment_id"
+                        + " WHERE e.exercise_id = 776",
+                (rs, n) -> List.of(rs.getBoolean(1), rs.getBoolean(2), rs.getBoolean(3), rs.getBoolean(4), rs.getInt(5),
+                        rs.getString(6))));
     }
 
     @Test

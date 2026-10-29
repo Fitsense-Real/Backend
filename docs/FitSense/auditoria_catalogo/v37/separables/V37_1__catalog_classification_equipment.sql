@@ -1,10 +1,11 @@
 -- =====================================================================
--- FitSense MVP 1.0 - V37.1: grupo, patron, implemento y restricciones de mas (PROPUESTA)
+-- FitSense MVP 1.0 - V37.1: grupo, patron, implemento y restricciones de mas
 --
--- ESTADO: PROPUESTA. NO esta en src/main/resources/db/migration y NO se ha
--- aplicado en Neon. Solo se ejecuta en bases PostgreSQL aisladas para simular
--- su impacto. Generada por docs/FitSense/auditoria_catalogo/v37/generar_v37.py
--- desde revision_visual/matriz_revision_visual_completa.tsv (solo CONFIRMADO).
+-- ESTADO: PROPUESTA PENDIENTE (no aprobada). NO esta en src/main/resources/db/migration
+-- y NO se ha aplicado en ninguna base real. Depende de la correccion de V20 y de los
+-- criterios pendientes de grupo y patron. Solo se ejecuta en bases aisladas para simular.
+-- Generada por docs/FitSense/auditoria_catalogo/v37/generar_v37.py desde
+-- revision_visual/matriz_revision_visual_completa.tsv (solo CONFIRMADO).
 -- Revision visual asistida por IA; la doble revision humana sigue PENDIENTE.
 --
 -- 154 ejercicios, 208 cambios de columna. Detalle con evidencia:
@@ -239,7 +240,7 @@ SELECT e.exercise_id, x.columna, x.valor
        ('requires_inversion', e.requires_inversion::text), ('high_impact', e.high_impact::text),
        ('axial_load', e.axial_load::text), ('difficulty_level', e.difficulty_level::text),
        ('movement_pattern', e.movement_pattern), ('target_muscle', e.target_muscle), ('body_part', bp.code),
-       ('equipment', eq.code),
+       ('equipment', eq.code), ('is_active', e.is_active::text),
        ('requisitos', coalesce((SELECT string_agg(r.group_no || ':' || q.code, ',' ORDER BY r.group_no || ':' || q.code)
                                   FROM public.exercise_equipment_requirements r
                                   JOIN public.equipment_types q ON q.equipment_id = r.equipment_id

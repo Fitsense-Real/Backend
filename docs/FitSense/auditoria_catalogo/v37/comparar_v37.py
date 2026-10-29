@@ -15,8 +15,8 @@ import sys
 SIM = sys.argv[1]
 AQUI = os.path.dirname(os.path.abspath(__file__))
 CAT = ['v36', 'v37', 'v37b']
-NOM = {'v36': 'V36 (vigente)', 'v37': 'V37 (bloque A)', 'v37b': 'V37 + V37.1'}
-OFICIAL = 'docs/FitSense/evidencia/progresion/generacion_referencia.txt'
+NOM = {'v36': 'V36', 'v37': 'V37 (vigente)', 'v37b': 'V37 + V37.1 (pendiente)'}
+OFICIAL = 'docs/FitSense/evidencia/progresion/generacion_referencia_v36.txt'
 
 
 def lineas(p):
@@ -44,7 +44,7 @@ P('Bases PostgreSQL 16 aisladas (Testcontainers). V37 y V37.1 se cargan con `spr
 P('## 1. Generación de referencia (72 perfiles)\n')
 ref = {c: [sesiones(l) for l in lineas(f'{SIM}/{c}/generacion_referencia.txt')] for c in CAT}
 of = [sesiones(l) for l in lineas(OFICIAL)]
-P(f"- V36 simulado frente a la referencia oficial: **{'idéntico' if ref['v36'] == of else 'DISTINTO'}** ({len(ref['v36'])} perfiles).")
+P(f"- V36 simulado frente a la referencia de V36 (`generacion_referencia_v36.txt`): **{'idéntico' if ref['v36'] == of else 'DISTINTO'}** ({len(ref['v36'])} perfiles).")
 P('\n| Catálogo | Perfiles | Válidos | Sin plan | Perfiles distintos de V36 | Sesiones distintas de V36 |\n|---|---:|---:|---:|---:|---:|')
 for c in CAT:
     r = ref[c]
@@ -53,6 +53,27 @@ for c in CAT:
     dp = sum(1 for a, b in zip(ref['v36'], r) if a != b)
     ds = sum(sum(1 for x, y in zip(a[1], b[1]) if x != y) + abs(len(a[1]) - len(b[1])) for a, b in zip(ref['v36'], r))
     P(f'| {NOM[c]} | {len(r)} | {val} | {sin} | {dp} | {ds} |')
+def ids_ses(ses):
+    return [int(e.split(':')[0]) for e in ses.split(' ')[3:] if ':' in e]
+
+
+fuera, dentro = collections.Counter(), collections.Counter()
+pares = collections.Counter()
+for (p, a, _), (_, b, _) in zip(ref['v36'], ref['v37']):
+    for x, y in zip(a, b):
+        if x == y:
+            continue
+        sa, sb = ids_ses(x), ids_ses(y)
+        quit_, pone = [i for i in sa if i not in sb], [i for i in sb if i not in sa]
+        fuera.update(quit_); dentro.update(pone)
+        for q, n in zip(quit_, pone):
+            pares[(q, n)] += 1
+if ref['v37']:
+    P('\n**Ejercicios que desaparecen de las referencias (V36 a V37)** (sesiones en que salen):\n')
+    P(', '.join(f'{k} ({v})' for k, v in fuera.most_common()))
+    P('\n**Los que entran** (sesiones): ' + ', '.join(f'{k} ({v})' for k, v in dentro.most_common(25)))
+    P('\n**Sustituciones más frecuentes en la misma posición** (sale → entra: sesiones): '
+      + ', '.join(f'{a}→{b}: {v}' for (a, b), v in pares.most_common(20)))
 noval = {c: [(p, v) for p, _, v in ref[c] if v != 'VALIDA'] for c in CAT}
 for c in CAT:
     if noval[c]:
@@ -70,6 +91,15 @@ for c in CAT:
     rob[c] = rb
     P(f"| {NOM[c]} | {sum(1 for r in b if r['validacion'] == 'VALIDA')} | {sum(1 for r in b if r['validacion'] != 'VALIDA')} | "
       f"{sum(1 for r in rb if r['resultado'] == 'VALIDA')} | {sum(1 for r in rb if r['resultado'] != 'VALIDA')} |")
+P('\n**Capacidades y duración del barrido** (sesiones con su duración estimada respecto a los minutos configurados):\n')
+P('| Catálogo | Planes con cobertura COMPLETO | Sesiones | % mínimo | % medio | Sesiones bajo el 70 % |\n|---|---:|---:|---:|---:|---:|')
+for c in CAT:
+    b = tsv(f'{SIM}/{c}/barrido_4_6_dias_planes.tsv')
+    se = tsv(f'{SIM}/{c}/barrido_4_6_dias_sesiones.tsv')
+    pct = [float(r['pct_configurado']) for r in se if r.get('pct_configurado')]
+    if pct:
+        P(f"| {NOM[c]} | {sum(1 for r in b if r['cobertura'].startswith('COMPLETO'))} de {len(b)} | {len(pct)} | {min(pct):.1f} | "
+          f"{sum(pct) / len(pct):.1f} | {sum(1 for x in pct if x < 70)} |")
 for c in CAT:
     sin = collections.Counter(r['perfil'] for r in rob[c] if r['resultado'] != 'VALIDA')
     if sin:
@@ -130,6 +160,47 @@ if cambios:
     P('| Perfil | Plan V36 | Plan V37 | 4C V36 | 4C V37 |\n|---|---|---|---|---|')
     for x in cambios:
         P('| ' + ' | '.join(x) + ' |')
+
+# 4b. Cumplimiento por dimension
+CASA = {'body weight', 'dumbbell', 'band'}
+GYM = {'body weight', 'dumbbell', 'barbell', 'cable', 'leverage machine', 'bench', 'band', 'stationary bike', 'treadmill',
+       'kettlebell', 'ez barbell', 'smith machine'}
+flag = collections.defaultdict(set)
+nivel3, reqs_gif = set(), {}
+for r in csv.DictReader(open(os.path.join(AQUI, 'correcciones_v37.tsv')), delimiter='\t'):
+    i = int(r['exercise_id'])
+    if r['bloque'].startswith('A') and r['columna'].startswith('requires_') and r['despues'] == 'true':
+        flag[r['columna']].add(i)
+    if r['columna'] == 'difficulty_level' and r['despues'] == '3':
+        nivel3.add(i)
+    if r['columna'] == 'requisitos':
+        g = {}
+        for x in [x for x in r['despues'].split(',') if x]:
+            a, b = x.split(':', 1); g.setdefault(a, set()).add(b)
+        reqs_gif[i] = list(g.values())
+RESTR = {'SIN_SUELO': ['requires_floor'], 'SIN_RODILLAS': ['requires_kneeling'], 'SIN_SUSPENSION': ['requires_hanging'],
+         'SIN_BRAZOS_ARRIBA': ['requires_overhead'], 'COMO_USUARIO_31': ['requires_floor', 'requires_hanging'],
+         'TODAS': ['requires_floor', 'requires_kneeling', 'requires_hanging', 'requires_overhead']}
+P('\n### Cumplimiento por dimensión (planes generados de los 192 perfiles)\n')
+P('Se cuentan los planes que contienen al menos un ejercicio que el perfil no puede hacer **según la revisión visual**, no según las banderas del catálogo cargado.\n')
+P('| Catálogo | Banderas de seguridad | Dificultad (nivel 3 en principiante o intermedio) | Equipamiento real observado en el GIF | 4C robusta | Capacidades: pool ROBUSTO |\n|---|---:|---:|---:|---:|---:|')
+for c in CAT:
+    r = imp[c]
+    if not r:
+        continue
+    fb = fd = fe = 0
+    for x in r:
+        objetivo, nivel, lugar, rr = x['perfil'].split('/')
+        ids = [int(y) for y in x['ejercicios_plan'].strip('[]').split(', ') if y]
+        ban = set().union(*[flag[f] for f in RESTR.get(rr, [])]) if RESTR.get(rr) else set()
+        fb += any(i in ban for i in ids)
+        fd += nivel != 'ADVANCED' and any(i in nivel3 for i in ids)
+        eq = CASA if lugar == 'CASA' else GYM
+        fe += any(i in reqs_gif and not all(gr & eq for gr in reqs_gif[i]) for i in ids)
+    rob4 = sum(1 for x in r if 'veredicto=ROBUSTO' in x['cobertura_4c'])
+    cap = sum(1 for x in r if x['capacidades'] == 'ROBUSTO')
+    P(f'| {NOM[c]} | {fb} | {fd} | **{fe}** | {rob4} de {len(r)} | {cap} de {len(r)} |')
+P('\nEl equipamiento real es el problema que V37 **no** corrige: lo corrige V37.1 (bloque B2), pendiente de la corrección de V20.')
 
 # 5. Usuario 31
 P('\n## 5. Usuario 31 (respuestas guardadas de Replicate y plan 63)\n')

@@ -2,7 +2,7 @@
 
 **Fecha:** 29/10/2026.
 
-**Estado:** propuesta para aprobación del responsable del proyecto. Sigue el mismo esquema que `ANEXO_872_V28.md`.
+**Estado:** **aprobado** por el responsable del proyecto en la orden «Aprobación condicionada de V37» (29/10/2026), que **desactiva 776** en V37. Sigue el mismo esquema que `ANEXO_872_V28.md`.
 
 **Alcance:** documental.
 - No modifica V28.
@@ -38,35 +38,28 @@ El material de la revisión era **texto** (`revision-LOWER_HIP.txt`, SHA-256 `81
 | Implemento | peso corporal | **anillas** (`gymnastic rings`) | Se ven en todos los fotogramas |
 | `movement_pattern` | `HIP_HINGE` | **pendiente de criterio** | No es una bisagra de pie. Las opciones están en el §5 |
 
-## 3. Texto de rectificación propuesto
+## 3. Texto de rectificación
 
-> Durante la auditoría integral del catálogo se identificó una discrepancia de identidad funcional en el ejercicio 776 (`source_code 3292`). La evaluación histórica de V28 lo aprobó con nivel 1 dentro de `LOWER_HIP`, como `HIP_HINGE`, a partir de instrucciones textuales que describen una bisagra de cadera de pie. La animación original muestra una suspensión invertida en anillas de gimnasia, que exige colgarse, elevar los brazos e invertir el cuerpo, y corresponde a una habilidad avanzada. En consecuencia, se propone adoptar para la generación futura las banderas de suspensión, brazos arriba e inversión, el nivel 3 y las anillas como implemento. Se conservan íntegros los registros de V28 como trazabilidad histórica, pero no se interpretan como aprobación de la identidad observada ni como evidencia vigente de que exista un ejercicio de `LOWER_HIP` sin suelo para perfiles de casa. Esta corrección no altera retroactivamente las valoraciones de los revisores.
+> Durante la auditoría integral del catálogo se identificó una discrepancia de identidad funcional en el ejercicio 776 (`source_code 3292`). La evaluación histórica de V28 lo aprobó con nivel 1 dentro de `LOWER_HIP`, como `HIP_HINGE`, a partir de instrucciones textuales que describen una bisagra de cadera de pie. La animación original muestra una suspensión invertida en anillas de gimnasia, que exige colgarse, elevar los brazos e invertir el cuerpo, y corresponde a una habilidad avanzada. En consecuencia, el ejercicio se desactiva y deja de estar disponible para la generación. Su registro se corrige para describir el movimiento real: banderas de suspensión, brazos arriba e inversión, nivel 3 y anillas como implemento. Se conservan íntegros los registros de V28 como trazabilidad histórica, pero no se interpretan como aprobación de la identidad observada ni como evidencia vigente de que exista un ejercicio de `LOWER_HIP` sin suelo para perfiles de casa. Esta corrección no altera retroactivamente las valoraciones de los revisores.
 
-## 4. Cómo se aplicaría (propuesta V37, bloque A)
+## 4. Cómo se aplica (V37)
 
-| Condición | Cómo se cumple |
-|---|---|
-| V28 intacta: migración, evento, revisores y resultados | La propuesta V37 no toca V28 ni `exercise_difficulty_approvals`. La base de prueba tiene los mismos 4 eventos antes y después |
-| Nivel operativo | `difficulty_level` de 776 pasa de 1 a 3 en `exercises`. El evento de V28 conserva su nivel 1 como registro histórico |
-| No transferir la aprobación a la nueva identidad | El filtro global de aprobación humana sigue **apagado**: el evento de V28 no tiene efecto en la selección |
-| Seguridad | Con V37, 776 deja de ser elegible para perfiles sin suspensión, sin brazos arriba, sin anillas o de nivel 1–2. Lo comprueban `ImpactoRestriccionesIT` y `Usuario31ReproduccionIT` |
+| Condición | Cómo se cumple | Comprobación |
+|---|---|---|
+| 776 desactivado | `is_active` pasa de true a false (bloque A5 de `correcciones_v37.tsv`) | `CatalogoV37IT` |
+| Características reales documentadas | Además de desactivarlo, V37 registra suspensión, brazos arriba e inversión en `true`, nivel 3 y anillas (`gymnastic rings`) como implemento y requisito | `CatalogoV37IT` |
+| No mantenerlo activo solo con nivel 3 | Está inactivo: no es elegible para ningún perfil, de ningún nivel | `Usuario31V37IT`, `ImpactoRestriccionesIT` |
+| V28 intacta: migración, evento, revisores y resultados | V37 no toca V28 ni `exercise_difficulty_approvals`. La tabla es idéntica antes y después, con los 4 eventos `APPROVED` (122, 776, 872, 878) | `CatalogoV37IT` |
+| No transferir la aprobación a la nueva identidad | El filtro global de aprobación humana sigue **apagado**. Con 776 inactivo, el evento de V28 no tiene efecto | — |
+| Sin eventos falsos | Ninguna revisión, consenso, revocación ni aprobación nueva | — |
 
-## 5. Decisión pendiente: patrón de 776
+## 5. Patrón
 
-V37 **no** cambia el patrón, porque la clasificación correcta no es única:
+Con la desactivación, el patrón de 776 deja de usarse. V37 conserva `HIP_HINGE` en el registro inactivo para no reescribir la identidad que evaluó V28. Si alguna vez se reactivara, haría falta una revisión nueva del patrón: el GIF no es una bisagra.
 
-| Opción | Consecuencia |
-|---|---|
-| a) Mantener `HIP_HINGE` | Sigue contando para `LOWER_HIP` en perfiles avanzados con anillas y suspensión, aunque no es una bisagra |
-| b) `OTHER` | No cuenta para ningún slot ni capacidad. Es la opción más prudente para un movimiento gimnástico sin patrón de fuerza claro |
-| c) `VERTICAL_PULL` | El tirón en suspensión cuenta como `UPPER_PULL` para avanzados |
-| d) Desactivarlo (como 1267) | Desaparece del catálogo. Coherente con el precedente de habilidades gimnásticas avanzadas sin progresión |
-
-**Recomendación técnica:** opción d) o b). Lo decide el responsable del proyecto.
-
-**Impacto en `LOWER_HIP`:** con el bloque A, 776 sale de la cobertura de todos los perfiles sin suspensión, sin anillas o de nivel 1–2. V28 lo aprobó precisamente por ser «el único sin suelo». La simulación (§ correspondiente del informe) mide cuántos perfiles quedan con `LOWER_HIP` frágil o vacío.
+**Impacto en `LOWER_HIP`:** 776 sale de la cobertura de todos los perfiles. V28 lo había aprobado por ser «el único sin suelo». La simulación definitiva (`resultados_simulacion.md`) mide cuántos perfiles quedan con `LOWER_HIP` frágil o vacío.
 
 ## 6. Pendiente, sin inventar evidencia
 
 - **Revisión humana independiente de la identidad observada:** PENDIENTE.
-- **Condición para encender en el futuro el filtro de aprobaciones:** igual que con 872. Antes habrá que registrar, con el contrato de V27 y la aprobación del equipo, una revisión de 776 o un evento `REVOKED`. Hoy no se registra nada.
+- **Condición para encender en el futuro el filtro de aprobaciones:** 776 está inactivo y la selección solo considera ejercicios activos, así que su evento de V28 no lo vuelve elegible. Aun así, conviene registrar más adelante, con el contrato de V27 y la aprobación del equipo, una revisión de 776 o un evento `REVOKED`. Hoy no se registra nada.

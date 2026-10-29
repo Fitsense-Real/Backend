@@ -1,13 +1,16 @@
 -- =====================================================================
--- FitSense MVP 1.0 - V37: correcciones de seguridad y dificultad (PROPUESTA)
+-- FitSense MVP 1.0 - V37: correcciones de seguridad y dificultad
 --
--- ESTADO: PROPUESTA. NO esta en src/main/resources/db/migration y NO se ha
--- aplicado en Neon. Solo se ejecuta en bases PostgreSQL aisladas para simular
--- su impacto. Generada por docs/FitSense/auditoria_catalogo/v37/generar_v37.py
--- desde revision_visual/matriz_revision_visual_completa.tsv (solo CONFIRMADO).
+-- ESTADO: CANDIDATA A DESPLIEGUE; NO APLICADA EN NEON. Aprobada por el responsable
+-- del proyecto el 29/10/2026 (bloque A: seguridad, dificultad, aparato de suspension,
+-- 1374 y desactivacion de 776) para implementarla y probarla en entornos aislados.
+-- Aplicarla en Neon y desplegar requiere una autorizacion aparte. Cuidado: cualquier
+-- arranque del backend contra una base con Flyway activo la aplicaria.
+-- Generada por docs/FitSense/auditoria_catalogo/v37/generar_v37.py desde
+-- revision_visual/matriz_revision_visual_completa.tsv (solo CONFIRMADO).
 -- Revision visual asistida por IA; la doble revision humana sigue PENDIENTE.
 --
--- 102 ejercicios, 148 cambios de columna. Detalle con evidencia:
+-- 102 ejercicios, 149 cambios de columna. Detalle con evidencia:
 -- docs/FitSense/auditoria_catalogo/v37/correcciones_v37.tsv
 --
 -- Comprueba el estado anterior de CADA columna (y source_code y name_en) antes
@@ -79,6 +82,7 @@ INSERT INTO v37_cambios VALUES
     (689, '1673', 'dumbbell preacher curl over exercise ball', 'requires_kneeling', 'false', 'true'),
     (776, '3292', 'elevator', 'difficulty_level', '1', '3'),
     (776, '3292', 'elevator', 'equipment', 'body weight', 'gymnastic rings'),
+    (776, '3292', 'elevator', 'is_active', 'true', 'false'),
     (776, '3292', 'elevator', 'requires_hanging', 'false', 'true'),
     (776, '3292', 'elevator', 'requires_inversion', 'false', 'true'),
     (776, '3292', 'elevator', 'requires_overhead', 'false', 'true'),
@@ -179,7 +183,7 @@ SELECT e.exercise_id, x.columna, x.valor
        ('requires_inversion', e.requires_inversion::text), ('high_impact', e.high_impact::text),
        ('axial_load', e.axial_load::text), ('difficulty_level', e.difficulty_level::text),
        ('movement_pattern', e.movement_pattern), ('target_muscle', e.target_muscle), ('body_part', bp.code),
-       ('equipment', eq.code),
+       ('equipment', eq.code), ('is_active', e.is_active::text),
        ('requisitos', coalesce((SELECT string_agg(r.group_no || ':' || q.code, ',' ORDER BY r.group_no || ':' || q.code)
                                   FROM public.exercise_equipment_requirements r
                                   JOIN public.equipment_types q ON q.equipment_id = r.equipment_id
@@ -209,6 +213,8 @@ UPDATE public.exercises e
        requires_inversion = coalesce((SELECT c.despues::boolean FROM v37_cambios c WHERE c.exercise_id = e.exercise_id AND c.columna = 'requires_inversion'), e.requires_inversion),
        high_impact = coalesce((SELECT c.despues::boolean FROM v37_cambios c WHERE c.exercise_id = e.exercise_id AND c.columna = 'high_impact'), e.high_impact)
  WHERE e.exercise_id IN (SELECT exercise_id FROM v37_cambios WHERE columna IN ('requires_floor', 'requires_kneeling', 'requires_hanging', 'requires_overhead', 'requires_inversion', 'high_impact'));
+UPDATE public.exercises e SET is_active = c.despues::boolean FROM v37_cambios c
+ WHERE c.exercise_id = e.exercise_id AND c.columna = 'is_active';
 UPDATE public.exercises e SET difficulty_level = c.despues::smallint FROM v37_cambios c
  WHERE c.exercise_id = e.exercise_id AND c.columna = 'difficulty_level';
 UPDATE public.exercises e SET movement_pattern = c.despues FROM v37_cambios c

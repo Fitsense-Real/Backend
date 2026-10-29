@@ -30,6 +30,12 @@ APARATO_A = {776: 'gymnastic rings', 937: 'gymnastic rings', 1068: 'gymnastic ri
              1374: 'pull-up bar', 1294: 'pull-up bar', 913: 'pull-up bar', 1301: 'suspension straps'}
 # A4: el resto de la correccion de 1374 (no es cardio ni tiene fase de vuelo).
 EXTRA_A = {(1374, 'movement_pattern'): 'TRUNK_FLEXION', (1374, 'high_impact'): 'false'}
+# A5: 776 se desactiva (decision del responsable, 29/10/2026). Conserva sus banderas,
+# nivel y aparato reales (A1-A3) para que el registro describa el movimiento del GIF.
+DESACTIVAR_A = {776: 'Suspension invertida en anillas: habilidad gimnastica, no la bisagra de pie evaluada en V28.'
+                     ' Desactivado por decision del responsable (29/10/2026). Ver ANEXO_776_V28.md'}
+REPO = os.path.abspath(os.path.join(AQUI, '..', '..', '..', '..'))
+OFICIAL = os.path.join(REPO, 'src', 'main', 'resources', 'db', 'migration')
 # B2: implemento segun el GIF, solo con codigos que existen en equipment_types.
 # 'add': grupo nuevo (AND); los codigos de un grupo son alternativas (OR).
 # 'set': requisitos completos nuevos (sustituyen a los actuales).
@@ -120,6 +126,8 @@ def main():
             antes = r[9]
         elif col == 'requisitos':
             antes = reqs_de(r)
+        elif col == 'is_active':
+            antes = 'true' if r[2] == 't' else 'false'
         else:
             raise ValueError(col)
         if antes == despues:
@@ -189,6 +197,8 @@ def main():
             pon(i, 'equipment', 'body weight', b, 'Sin requisitos = peso corporal (V23)')
     for (i, col), v in EXTRA_A.items():
         pon(i, col, v, 'A4', 'Correccion completa de 1374 (colgado de la barra, no cardio)')
+    for i, ev in DESACTIVAR_A.items():
+        pon(i, 'is_active', 'false', 'A5', ev)
 
     # hanging => overhead tras los cambios
     for (i, col), (a, d, b, e) in list(cambios.items()):
@@ -205,11 +215,11 @@ def main():
         fh.write('exercise_id\tname_en\tatributo\tactual\tsegun_gif\tmotivo\tevidencia\n')
         for i, a, ac, sg, m, e in sorted(no_incl):
             fh.write('\t'.join([str(i), cat[i][3], a, ac, sg, m, e]) + '\n')
-    escribir_sql(cat, cambios, ('A1', 'A2', 'A3', 'A4'), os.path.join(AQUI, 'migracion'),
-                 'V37__catalog_safety_corrections.sql', 'V37', 'correcciones de seguridad y dificultad')
+    escribir_sql(cat, cambios, ('A1', 'A2', 'A3', 'A4', 'A5'), OFICIAL,
+                 'V37__catalog_safety_corrections.sql', 'V37', 'correcciones de seguridad y dificultad', ESTADO_V37)
     escribir_sql(cat, cambios, ('B1', 'B2', 'B3'), os.path.join(AQUI, 'separables'),
                  'V37_1__catalog_classification_equipment.sql', 'V37.1',
-                 'grupo, patron, implemento y restricciones de mas')
+                 'grupo, patron, implemento y restricciones de mas', ESTADO_V37_1)
     from collections import Counter
     print(Counter(v[2] for v in cambios.values()), 'ejercicios:',
           {b: len({k[0] for k, v in cambios.items() if v[2].startswith(b)}) for b in 'AB'}, 'no incluidas:', len(no_incl))
@@ -219,20 +229,34 @@ def q(s):
     return "'" + s.replace("'", "''") + "'"
 
 
-def escribir_sql(cat, cambios, bloques, carpeta, nombre, etiqueta, titulo):
+ESTADO_V37 = [
+    'ESTADO: CANDIDATA A DESPLIEGUE; NO APLICADA EN NEON. Aprobada por el responsable',
+    'del proyecto el 29/10/2026 (bloque A: seguridad, dificultad, aparato de suspension,',
+    '1374 y desactivacion de 776) para implementarla y probarla en entornos aislados.',
+    'Aplicarla en Neon y desplegar requiere una autorizacion aparte. Cuidado: cualquier',
+    'arranque del backend contra una base con Flyway activo la aplicaria.',
+    'Generada por docs/FitSense/auditoria_catalogo/v37/generar_v37.py desde',
+    'revision_visual/matriz_revision_visual_completa.tsv (solo CONFIRMADO).',
+    'Revision visual asistida por IA; la doble revision humana sigue PENDIENTE.']
+ESTADO_V37_1 = [
+    'ESTADO: PROPUESTA PENDIENTE (no aprobada). NO esta en src/main/resources/db/migration',
+    'y NO se ha aplicado en ninguna base real. Depende de la correccion de V20 y de los',
+    'criterios pendientes de grupo y patron. Solo se ejecuta en bases aisladas para simular.',
+    'Generada por docs/FitSense/auditoria_catalogo/v37/generar_v37.py desde',
+    'revision_visual/matriz_revision_visual_completa.tsv (solo CONFIRMADO).',
+    'Revision visual asistida por IA; la doble revision humana sigue PENDIENTE.']
+
+
+def escribir_sql(cat, cambios, bloques, carpeta, nombre, etiqueta, titulo, estado):
     os.makedirs(carpeta, exist_ok=True)
     sel = sorted(((i, col, a, d, b) for (i, col), (a, d, b, e) in cambios.items() if b in bloques),
                  key=lambda x: (x[0], x[1]))
     ids = sorted({x[0] for x in sel})
     L = []
     L.append('-- =====================================================================')
-    L.append(f'-- FitSense MVP 1.0 - {etiqueta}: {titulo} (PROPUESTA)')
+    L.append(f'-- FitSense MVP 1.0 - {etiqueta}: {titulo}')
     L.append('--')
-    L.append('-- ESTADO: PROPUESTA. NO esta en src/main/resources/db/migration y NO se ha')
-    L.append('-- aplicado en Neon. Solo se ejecuta en bases PostgreSQL aisladas para simular')
-    L.append('-- su impacto. Generada por docs/FitSense/auditoria_catalogo/v37/generar_v37.py')
-    L.append('-- desde revision_visual/matriz_revision_visual_completa.tsv (solo CONFIRMADO).')
-    L.append('-- Revision visual asistida por IA; la doble revision humana sigue PENDIENTE.')
+    L.extend('-- ' + x for x in estado)
     L.append('--')
     L.append(f'-- {len(ids)} ejercicios, {len(sel)} cambios de columna. Detalle con evidencia:')
     L.append('-- docs/FitSense/auditoria_catalogo/v37/correcciones_v37.tsv')
@@ -275,6 +299,9 @@ END $$;
             f" AND c.columna = '{c}'), e.{c})" for c in flags)
         L.append(f"UPDATE public.exercises e\n   SET {sets}\n WHERE e.exercise_id IN (SELECT exercise_id FROM v37_cambios"
                  f" WHERE columna IN ({', '.join(q(c) for c in flags)}));")
+    if any(x[1] == 'is_active' for x in sel):
+        L.append("UPDATE public.exercises e SET is_active = c.despues::boolean FROM v37_cambios c\n"
+                 " WHERE c.exercise_id = e.exercise_id AND c.columna = 'is_active';")
     if any(x[1] == 'difficulty_level' for x in sel):
         L.append("UPDATE public.exercises e SET difficulty_level = c.despues::smallint FROM v37_cambios c\n"
                  " WHERE c.exercise_id = e.exercise_id AND c.columna = 'difficulty_level';")
@@ -336,7 +363,7 @@ SELECT e.exercise_id, x.columna, x.valor
        ('requires_inversion', e.requires_inversion::text), ('high_impact', e.high_impact::text),
        ('axial_load', e.axial_load::text), ('difficulty_level', e.difficulty_level::text),
        ('movement_pattern', e.movement_pattern), ('target_muscle', e.target_muscle), ('body_part', bp.code),
-       ('equipment', eq.code),
+       ('equipment', eq.code), ('is_active', e.is_active::text),
        ('requisitos', coalesce((SELECT string_agg(r.group_no || ':' || q.code, ',' ORDER BY r.group_no || ':' || q.code)
                                   FROM public.exercise_equipment_requirements r
                                   JOIN public.equipment_types q ON q.equipment_id = r.equipment_id

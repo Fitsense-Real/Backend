@@ -147,6 +147,7 @@ exercise_id	source_code	name_en	bloque	columna	antes	despues	evidencia
 1374	0858	wind sprints	A3	requisitos		1:pull-up bar	
 1374	0858	wind sprints	A4	high_impact	true	false	Correccion completa de 1374 (colgado de la barra, no cardio)
 1374	0858	wind sprints	A4	movement_pattern	LOCOMOTION_CARDIO	TRUNK_FLEXION	Correccion completa de 1374 (colgado de la barra, no cardio)
+776	3292	elevator	A5	is_active	true	false	Suspension invertida en anillas: habilidad gimnastica, no la bisagra de pie evaluada en V28. Desactivado por decision del responsable (29/10/2026). Ver ANEXO_776_V28.md
 59	0003	air bike	B1	movement_pattern	LOCOMOTION_CARDIO	TRUNK_ROTATION_LATERAL_FLEXION	Abdominal bicicleta en el suelo; cuenta como CARDIO
 142	1010	band straight leg deadlift	B1	body_part	back	upper legs	Peso muerto piernas rectas
 142	1010	band straight leg deadlift	B1	target_muscle	spine	hamstrings	Peso muerto piernas rectas
