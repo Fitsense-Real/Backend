@@ -236,7 +236,7 @@ El cambio solo afecta al **mínimo** de grupos de V15. Solo deja de exigir un gr
 | Generación inicial | Sin cambio: ya usaba el criterio. Barrido, referencias y robustez **idénticos** a la fase 2 |
 
 **Pruebas:**
-- **`V15GruposPrescribiblesTest`** (17 escenarios, 36 casos):
+- **`V15GruposPrescribiblesTest`** (20 casos, 0 fallos):
   - la copia aplica el mismo criterio que la generación;
   - GAIN_MUSCLE, INCREASE_STRENGTH y GENERAL_FITNESS siguen exigiendo los dos grupos, tanto en la generación como en la copia;
   - en la copia se sigue rechazando un grupo ajeno, y un tirón con un solo grupo cuando el bíceps es prescribible.
