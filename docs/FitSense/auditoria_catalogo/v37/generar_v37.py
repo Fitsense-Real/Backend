@@ -243,7 +243,7 @@ def escribir_sql(cat, cambios, bloques, carpeta, nombre, etiqueta, titulo):
     L.append('-- =====================================================================')
     L.append('')
     L.append('CREATE TEMP TABLE v37_cambios (exercise_id BIGINT, source_code TEXT, name_en TEXT, columna TEXT,')
-    L.append('                               antes TEXT, despues TEXT) ON COMMIT DROP;')
+    L.append('                               antes TEXT, despues TEXT);')
     L.append('INSERT INTO v37_cambios VALUES')
     vals = [f'    ({i}, {q(cat[i][1])}, {q(cat[i][3])}, {q(col)}, {q(a)}, {q(d)})' for i, col, a, d, b in sel]
     L.append(',\n'.join(vals) + ';')
@@ -315,6 +315,10 @@ BEGIN
         RAISE EXCEPTION '{etiqueta}: hay ejercicios con suspension y sin brazos arriba';
     END IF;
 END $$;
+
+-- Flyway ejecuta las migraciones en la misma sesion: los objetos temporales se borran aqui.
+DROP VIEW pg_temp.v37_valor;
+DROP TABLE pg_temp.v37_cambios;
 """)
     with open(os.path.join(carpeta, nombre), 'w') as fh:
         fh.write('\n'.join(L))

@@ -16,7 +16,7 @@
 -- =====================================================================
 
 CREATE TEMP TABLE v37_cambios (exercise_id BIGINT, source_code TEXT, name_en TEXT, columna TEXT,
-                               antes TEXT, despues TEXT) ON COMMIT DROP;
+                               antes TEXT, despues TEXT);
 INSERT INTO v37_cambios VALUES
     (68, '3214', 'arms apart circular toe touch (male)', 'requires_overhead', 'false', 'true'),
     (74, '0015', 'assisted parallel close grip pull-up', 'requires_kneeling', 'false', 'true'),
@@ -240,3 +240,7 @@ BEGIN
         RAISE EXCEPTION 'V37: hay ejercicios con suspension y sin brazos arriba';
     END IF;
 END $$;
+
+-- Flyway ejecuta las migraciones en la misma sesion: los objetos temporales se borran aqui.
+DROP VIEW pg_temp.v37_valor;
+DROP TABLE pg_temp.v37_cambios;
