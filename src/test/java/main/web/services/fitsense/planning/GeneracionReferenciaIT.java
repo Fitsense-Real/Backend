@@ -14,10 +14,11 @@ import java.nio.file.Path;
  * catalogo vigente, deben ser identicos -ejercicios, dosis, estructura y resultado
  * de la validacion- a {@code docs/FitSense/evidencia/progresion/generacion_referencia.txt}.
  * <p>
- * Referencia oficial desde V36 (promovida por decision del responsable del
- * proyecto, 28/10/2026). La anterior se conserva como evidencia en
- * {@link GeneracionReferenciaV35IT}; las 213 sesiones que cambiaron estan
- * explicadas en {@code docs/FitSense/CATALOGO_V36.md}.
+ * Referencia oficial desde V37 (aprobada por el responsable del proyecto,
+ * 29/10/2026). Las anteriores se conservan como evidencia en
+ * {@link GeneracionReferenciaV36IT} y {@link GeneracionReferenciaV35IT}; las
+ * sesiones que cambiaron estan explicadas en {@code docs/FitSense/CATALOGO_V37.md}
+ * y {@code docs/FitSense/CATALOGO_V36.md}.
  * <p>
  * Para regenerarla (solo si se aprueba un cambio de la generacion):
  * {@code -Dfitsense.generacion.capturar=true}.
