@@ -110,7 +110,7 @@ Los rechazos de Replicate se deben a la selección de la IA, no al catálogo. No
 En `docs/FitSense/auditoria_catalogo/v37/separables/V37_1__…sql`, generada y probada, pero **no aprobada**: 154 ejercicios.
 
 1. **B2, implemento observado y no exigido** (151 cambios). Corrige los 93 perfiles anteriores. Hoy deja sin plan a LOSE_WEIGHT principiante de casa con 4 o 5 días: les falta 1 minuto para el mínimo de V20. **Depende de corregir antes el defecto de duración de V20.** No se usarán ejercicios sin su implemento para cumplir el tiempo mínimo.
-2. **B1, grupo y patrón confirmados** (25 cambios: 1103, 142, 382, 684, 685, 730 y 13 patrones). Afecta a V15 y 4C.
+2. **B1, grupo y patrón confirmados** (25 cambios: 1103, 142, 382, 684, 685, 730 y 13 patrones). Afecta a V15 y 4C. **142 tiene prioridad:** sustituye a 776 y, por estar clasificado como `back`, se coloca en días de tren superior (§7 bis).
 3. **B3, restricciones de más** (32 cambios).
 4. **Decisiones funcionales** (`DECISIONES_PENDIENTES.md`):
    - convención de los sentados (74);
@@ -130,6 +130,34 @@ Secuencia acordada después de V37:
 3. criterios de grupo y patrón;
 4. regresión;
 5. solo entonces, Replicate.
+
+## 7 bis. Verificación del ejercicio 142 antes de fusionar (29/10/2026)
+
+142 «band straight leg deadlift» sustituye a 776 en 39 sesiones de las referencias. La auditoría confirmó su grupo como incorrecto: `back/spine`, cuando debería ser `upper legs/hamstrings` (bloque B1, pendiente para V37.1).
+
+**Qué muestra el GIF:** peso muerto con piernas rectas, de pie, con la banda bajo los pies.
+
+**Seguridad y equipamiento: correctos.**
+- No hay suelo, rodillas, suspensión, brazos arriba, inversión ni impacto.
+- `axial_load = true` es una restricción de más, no un riesgo.
+- Exige banda, que es exactamente su requisito.
+
+**`LOWER_HIP`: cobertura real.**
+- Su patrón `HIP_HINGE` es correcto: es una bisagra de cadera.
+- En 32 de los 68 perfiles de referencia que lo usan, es la única cobertura de `LOWER_HIP`, y es legítima.
+- V23 cuenta por patrón, no por grupo, así que la cobertura no está falseada.
+
+**V15: sin incumplimientos.**
+- Las 73 sesiones de referencia y las 66 del barrido de 4 a 6 días que lo contienen cumplen la regla de la mitad.
+- La cumplen tanto con su grupo actual (`back`) como si se reclasificara (`upper legs`).
+
+**Defecto de colocación (pendiente para V37.1).**
+- Por estar clasificado como `back`, el motor lo coloca en días UPPER_BODY (42) y PULL (24) del barrido, cuando es un ejercicio de pierna.
+- **No es una regresión de V37.** En V36 ya pasaba con 776 (UPPER_BODY 24, PULL 18) y con el propio 142 (23 y 9).
+- Las sesiones UPPER/PULL con un ejercicio de patrón de pierna bajan de 87 (V36) a 85 (V37).
+- Se corrige con la reclasificación de 142 del bloque B1 de V37.1, junto con la decisión sobre los remos en sentadilla (301, 302), que tienen el mismo efecto.
+
+**Conclusión:** la discrepancia es solo de clasificación muscular. No hay incumplimiento de seguridad ni cobertura estructural falseada. V37 no se amplía ni se modifica V15.
 
 ## 8. Anexo · lista final de ejercicios y atributos modificados
 
