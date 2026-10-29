@@ -35,8 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * <p>
  * Cada subclase fija el catalogo (la version de Flyway) y la referencia:
  * {@link GeneracionReferenciaIT} protege la referencia OFICIAL con el catalogo
- * anterior a V36; {@link GeneracionReferenciaCandidataV36IT} compara la
- * referencia CANDIDATA con el catalogo corregido por V36.
+ * vigente; {@link GeneracionReferenciaV35IT} conserva la de V35 como evidencia.
  */
 abstract class GeneracionReferenciaBase {
 

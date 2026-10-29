@@ -4,6 +4,8 @@ import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutS
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.services.WorkoutSessionCommandService;
+import main.web.services.fitsense.catalog.application.internal.queryservices.ApprovedDifficultyGate;
+import main.web.services.fitsense.catalog.infrastructure.persistence.jpa.repositories.ApprovedDifficultyRepository;
 import main.web.services.fitsense.orchestration.application.internal.WeeklyCycleService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
@@ -84,6 +86,8 @@ class CatalogoV36IT {
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlatformTransactionManager tm;
     @Autowired WorkoutSessionCommandService sesiones;
+    @Autowired ApprovedDifficultyRepository aprobaciones;
+    @Autowired ApprovedDifficultyGate filtroAprobaciones;
 
     static final String OCHO_SQL = "527, 609, 725, 760, 872, 1059, 1267, 1333";
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
@@ -115,6 +119,8 @@ class CatalogoV36IT {
                 + " WHERE success ORDER BY installed_rank DESC LIMIT 1", String.class));
         assertEquals(1, cuenta("SELECT count(*) FROM exercises WHERE exercise_id = 1267 AND is_active"));
         assertEquals("HIP_EXTENSION", patron(872));
+        // V28: cuatro aprobaciones humanas de LOWER_HIP (122, 776, 872, 878).
+        assertEquals(Map.of("HIP_EXTENSION", 3L, "HIP_HINGE", 1L), aprobaciones.countApprovedByMovementPattern());
 
         // Planes reales publicados con el catalogo anterior que contienen 1267 y 872:
         // principiantes de 4 dias (tren superior / inferior), donde el barrido los encontro.
@@ -218,6 +224,16 @@ class CatalogoV36IT {
         assertEquals(huellaResto, huellaResto(), "el resto del catalogo no cambia");
         assertEquals(huellaRequisitos, huellaRequisitos(), "los requisitos del resto no cambian");
         assertEquals(huellaAprobaciones, huellaAprobaciones(), "el historial de V27/V28 no cambia");
+
+        // 872 frente a V28 (ANEXO_872_V28.md): el evento historico sigue intacto, pero ya no
+        // cuenta como aprobacion de LOWER_HIP; LOWER_HIP queda con 3 (122, 776, 878). La
+        // aprobacion de nivel no se transfiere a la nueva identidad: el filtro global de
+        // aprobaciones esta apagado y no admite nada.
+        assertEquals(Map.of("HIP_EXTENSION", 2L, "HIP_HINGE", 1L, "TRUNK_FLEXION", 1L),
+                aprobaciones.countApprovedByMovementPattern());
+        assertEquals(1, cuenta("SELECT count(*) FROM exercise_difficulty_approvals WHERE exercise_id = 872"
+                + " AND decision = 'APPROVED' AND approved_difficulty_level = 1"), "V28 intacta");
+        assertFalse(filtroAprobaciones.isEnabled(), "el filtro global de aprobacion humana sigue apagado");
         assertEquals(huellaPlanes, huellaPlanes(), "los planes publicados no se alteran");
     }
 
