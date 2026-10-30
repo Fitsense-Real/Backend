@@ -250,9 +250,10 @@ public class SessionFixPromptBuilder {
         var resultados = resultadosPorSesion(previous);
 
         var bloque = new StringBuilder("\nSESIONES SENALADAS (");
-        bloque.append(adjustment.targetedSessions().size()).append("):\n");
+        // Solo las que permiten cambiar algo: CONSERVAR y CAUSA_NO_REGISTRADA no se envian (D1, D6).
+        bloque.append(adjustment.sesionesParaIA().size()).append("):\n");
 
-        for (var senalada : adjustment.targetedSessions()) {
+        for (var senalada : adjustment.sesionesParaIA()) {
             Long id = senalada.plannedWorkoutId();
             var intervencion = senalada.intervencion();
             var resultado = resultados.get(id);
@@ -288,6 +289,11 @@ public class SessionFixPromptBuilder {
 
             bloque.append("  QUE PUEDES CAMBIAR AQUI: ")
                     .append(intervencion.instruccion()).append('\n');
+            if (senalada.minutosDisponibles() != null)
+                bloque.append("  LIMITE DE TIEMPO: la persona declaro que suele tener ")
+                        .append(senalada.minutosDisponibles())
+                        .append(" minutos para este entrenamiento. La sesion corregida debe durar como maximo ")
+                        .append(senalada.minutosDisponibles()).append(" minutos.\n");
 
             if (intervencion.exigeRevisionDeSeguridad()) {
                 var dolieron = prescritos.stream()

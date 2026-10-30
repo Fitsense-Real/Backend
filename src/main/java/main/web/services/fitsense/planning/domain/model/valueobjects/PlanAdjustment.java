@@ -62,7 +62,8 @@ public record PlanAdjustment(
      *                         origen del que debe derivar su sesion nueva.
      * @param intervencion     que se permite cambiar dentro de ella.
      */
-    public record TargetedSession(Long plannedWorkoutId, TipoIntervencion intervencion) {
+    public record TargetedSession(Long plannedWorkoutId, TipoIntervencion intervencion,
+                                  Integer minutosDisponibles) {
         public TargetedSession {
             if (plannedWorkoutId == null)
                 throw new IllegalArgumentException(
@@ -70,6 +71,14 @@ public record PlanAdjustment(
             if (intervencion == null)
                 throw new IllegalArgumentException(
                         "Una sesion senalada tiene que decir que se permite cambiar en ella.");
+            // Los minutos declarados solo acotan un recorte: con cualquier otra intervencion
+            // no significarian nada y se descartan para no viajar sin sentido.
+            if (intervencion != TipoIntervencion.ACORTAR_O_REORGANIZAR) minutosDisponibles = null;
+        }
+
+        /** Sin minutos declarados: lo de siempre. */
+        public TargetedSession(Long plannedWorkoutId, TipoIntervencion intervencion) {
+            this(plannedWorkoutId, intervencion, null);
         }
     }
 
@@ -139,6 +148,31 @@ public record PlanAdjustment(
                 .filter(s -> plannedWorkoutId.equals(s.plannedWorkoutId()))
                 .map(TargetedSession::intervencion)
                 .findFirst();
+    }
+
+    /**
+     * Los minutos que la persona declaro tener para ESA sesion (DISENO_ADAPTACION_CONTEXTUAL v0.3,
+     * §1), si se senalo para acortar con un maximo. La sesion corregida no puede pasar de ahi.
+     */
+    public Optional<Integer> minutosDisponiblesDe(Long plannedWorkoutId) {
+        if (plannedWorkoutId == null) return Optional.empty();
+        return targetedSessions.stream()
+                .filter(s -> plannedWorkoutId.equals(s.plannedWorkoutId()))
+                .map(TargetedSession::minutosDisponibles)
+                .filter(java.util.Objects::nonNull)
+                .findFirst();
+    }
+
+    /** Las sesiones senaladas que hay que enviar a la IA: las que permiten cambiar algo. */
+    public List<TargetedSession> sesionesParaIA() {
+        return targetedSessions.stream().filter(s -> s.intervencion().requiereIA()).toList();
+    }
+
+    /** La misma orden con otras sesiones senaladas (las mismas, con su intervencion afinada). */
+    public PlanAdjustment conSesiones(List<TargetedSession> sesiones) {
+        return new PlanAdjustment(types, targetVolume, targetVolumeMin, targetVolumeMax, targetVolumeChangePct,
+                loadChangePct, maxDifficultyLevel, forcedDaysPerWeek, forcedSessionMinutes, reason,
+                dominantSkipReason, distributionHint, sesiones);
     }
 
     public boolean has(AdjustmentType type) {

@@ -283,7 +283,7 @@ class HerenciaD8IT {
                     }
                     sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 6, (short) 4, (short) 45));
                 }
-                case TIEMPO -> planes.skip(principal, w, new SkipWorkoutResource(SkipReason.LACK_OF_TIME));
+                case TIEMPO -> saltoPorFaltaDeTiempo(principal, w);
                 case FATIGA -> planes.skip(principal, w, new SkipWorkoutResource(SkipReason.FATIGUE));
                 case DIFICIL -> planes.skip(principal, w, new SkipWorkoutResource(SkipReason.TOO_DIFFICULT));
                 case DOLOR -> planes.skip(principal, w, new SkipWorkoutResource(SkipReason.PAIN_OR_DISCOMFORT));
@@ -295,5 +295,19 @@ class HerenciaD8IT {
         var texto = Files.readString(Path.of("docs/FitSense/consultas/linaje_v31_v32.sql")).lines()
                 .filter(l -> !l.stripLeading().startsWith("--")).collect(Collectors.joining("\n"));
         assertEquals(List.of(), jdbc.queryForList(texto.split(";")[0].strip()));
+    }
+
+    /**
+     * ADAPT-2 (DISENO_ADAPTACION_CONTEXTUAL v0.3): una omision por falta de tiempo SIN contexto ya
+     * no se acorta (D1). Este escenario prueba lo que pasa tras un recorte, asi que la persona
+     * declara que suele tener menos tiempo del que dura la sesion (un minuto menos).
+     */
+    private org.springframework.http.ResponseEntity<Void> saltoPorFaltaDeTiempo(
+            main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl principal, long w) {
+        int minutos = jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts"
+                + " WHERE planned_workout_id = ?", Integer.class, w);
+        return planes.skip(principal, w, new SkipWorkoutResource(SkipReason.LACK_OF_TIME,
+                main.web.services.fitsense.shared.domain.model.valueobjects.ContextoFaltaDeTiempo.MENOS_TIEMPO_HABITUAL,
+                Math.max(15, minutos - 1)));
     }
 }

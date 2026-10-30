@@ -147,7 +147,8 @@ public class ReplicateSessionFixGenerator {
     }
 
     private static Set<Long> senaladas(PlanGenerationContext context) {
-        return context.adjustment().targetedSessions().stream()
+        // Solo las enviadas a la IA: corregir una conservada por su causa es salirse del contrato.
+        return context.adjustment().sesionesParaIA().stream()
                 .map(PlanAdjustment.TargetedSession::plannedWorkoutId)
                 .collect(Collectors.toSet());
     }

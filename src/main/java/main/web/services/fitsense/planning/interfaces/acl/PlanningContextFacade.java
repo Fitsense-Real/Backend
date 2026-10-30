@@ -9,6 +9,7 @@ import main.web.services.fitsense.planning.domain.model.commands.StartPlannedWor
 import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
 import main.web.services.fitsense.planning.domain.model.queries.GetPlannedWorkoutByIdQuery;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
+import main.web.services.fitsense.planning.domain.services.FaltaDeTiempoPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutStatus;
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService;
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanQueryService;
@@ -197,12 +198,29 @@ public class PlanningContextFacade {
                                           BigDecimal previousAdherencePct,
                                           BigDecimal previousAverageRpe,
                                           MeasuredWeekView medida) {
-        var command = new GenerateWeeklyPlanCommand(userId, weekStartDate, adjustment, true,
+        var command = new GenerateWeeklyPlanCommand(userId, weekStartDate, afinarPorCausa(adjustment), true,
                 previousAdherencePct, previousAverageRpe);
 
         var prepared = commandService.prepare(command);
         return adaptedWeekCommandService.adaptar(prepared, medida)
                 .map(WeeklyTrainingPlan::getId);
+    }
+
+    /**
+     * Afina la intervencion de cada sesion senalada con lo que la persona declaro al omitirla
+     * ({@link FaltaDeTiempoPolicy}). Hoy solo la falta de tiempo tiene informacion adicional.
+     */
+    PlanAdjustment afinarPorCausa(PlanAdjustment adjustment) {
+        if (adjustment == null || !adjustment.adapta()) return adjustment;
+        var afinadas = adjustment.targetedSessions().stream()
+                .map(s -> queryService.handle(new GetPlannedWorkoutByIdQuery(s.plannedWorkoutId()))
+                        .map(w -> FaltaDeTiempoPolicy.afinar(s, w.getStatus(), w.getSkipReason(),
+                                w.getLackOfTimeContext(),
+                                w.getDeclaredAvailableMinutes() == null ? null : w.getDeclaredAvailableMinutes().intValue(),
+                                w.getExpectedDurationMinutes() == null ? 0 : w.getExpectedDurationMinutes()))
+                        .orElse(s))
+                .toList();
+        return afinadas.equals(adjustment.targetedSessions()) ? adjustment : adjustment.conSesiones(afinadas);
     }
 
     /**

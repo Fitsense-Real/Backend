@@ -154,7 +154,8 @@ public class TrainingPlanController {
                                      @Valid @RequestBody SkipWorkoutResource resource) {
 
         commandService.handle(new SkipPlannedWorkoutCommand(
-                principal.getUserId(), plannedWorkoutId, resource.reason()));
+                principal.getUserId(), plannedWorkoutId, resource.reason(), resource.lackOfTimeContext(),
+                resource.availableMinutes()));
         return ResponseEntity.noContent().build();
     }
 

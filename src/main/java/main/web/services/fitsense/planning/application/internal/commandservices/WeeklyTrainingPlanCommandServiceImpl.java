@@ -443,7 +443,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
             throw new DomainRuleViolationException(
                     "Tienes una sesion abierta de este entrenamiento. Terminala o abandonala antes de omitirlo.");
 
-        workout.markSkipped(command.reason());
+        workout.markSkipped(command.reason(), command.lackOfTimeContext(), command.availableMinutes());
         plannedWorkoutRepository.save(workout);
     }
 
