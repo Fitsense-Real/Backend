@@ -30,6 +30,8 @@ class ReferenciasHistoricasInmutablesTest {
             "generacion_referencia_v37_motor_e14da35.txt, e46769755875be4dc99b439ecd3837b954b67ffc383221fd4168cb7b908d8d23",
             // catalogo V37, motor con V20 exacto (4a45221): la oficial hasta V38 + V39
             "generacion_referencia_v37_motor_v20.txt, 00951b534160a896c61ec6006e35d0e134be3eef215a3599efb409bc18b559e5",
+            // catalogo V39, motor con V20 exacto, D1 y E1/E2: la oficial hasta V40
+            "generacion_referencia_v39_motor_e1e2.txt, 8ee26d789a824e97bcc2280fd981c9977fb23cd0db711b4d6b5113f07ca62077",
     })
     void intacta(String archivo, String sha256) throws Exception {
         var bytes = Files.readAllBytes(Path.of("docs/FitSense/evidencia/progresion", archivo));
