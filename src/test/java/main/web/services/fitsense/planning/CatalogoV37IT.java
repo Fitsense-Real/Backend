@@ -24,8 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * V37 (auditoria del catalogo, bloque A aprobado el 29/10/2026). Sobre una base
  * Flyway hasta la 36 ejecuta el archivo de V37 de db/migration y, despues, la
- * propuesta V37.1 (pendiente, solo en docs/FitSense/auditoria_catalogo/v37/separables),
- * y comprueba:
+ * propuesta V37.1 (la copia historica de docs/FitSense/auditoria_catalogo/v37/separables, que
+ * desde el 30/10/2026 es la V38 oficial con otros nombres de objetos temporales), y comprueba:
  * <ul>
  *   <li>cada fila de {@code correcciones_v37.tsv} queda con su valor «despues» (776 inactivo);</li>
  *   <li>ningun otro ejercicio ni requisito cambia;</li>

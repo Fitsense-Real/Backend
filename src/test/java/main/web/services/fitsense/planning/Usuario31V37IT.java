@@ -16,12 +16,16 @@ import static org.junit.jupiter.api.Assertions.*;
  * rechazos de Replicate se repiten igual (son de seleccion de la IA), el plan 63
  * ya no es publicable y el motor de reglas publica un plan sin ningun ejercicio
  * que el perfil excluye segun la revision visual (bloque A de correcciones_v37.tsv).
+ * <p>
+ * Desde el 30/10/2026 V38 y V39 son oficiales: esta prueba es evidencia del catalogo V37 y
+ * se fija en {@code spring.flyway.target=37} (con V39, 301 exige espaldera y deja de ser elegible).
  */
 @Testcontainers
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token="
+        "fitsense.ai.api-token=",
+        "spring.flyway.target=37"
 })
 class Usuario31V37IT extends Usuario31Base {
 

@@ -14,10 +14,12 @@ import java.nio.file.Path;
  * catalogo vigente, deben ser identicos -ejercicios, dosis, estructura y resultado
  * de la validacion- a {@code docs/FitSense/evidencia/progresion/generacion_referencia.txt}.
  * <p>
- * Referencia oficial desde V37 (aprobada por el responsable del proyecto,
- * 29/10/2026), regenerada con V20 exacto en segundos (aprobado el 30/10/2026: 13
- * perfiles cambian, IMPLEMENTACION_V20.md §2.4). La anterior, la del motor de e14da35,
- * se conserva como {@code generacion_referencia_v37_motor_e14da35.txt}. Las anteriores se conservan como evidencia en
+ * Referencia oficial del catalogo V39 (V38 + V39, decisiones F y G del 30/10/2026) con el
+ * motor de E1/E2. Las 72 diferencias frente a V37 estan revisadas en
+ * {@code docs/FitSense/evidencia/v39/DIFERENCIAS_REFERENCIAS_V39.md}. Las anteriores se
+ * conservan intactas: {@code generacion_referencia_v37_motor_v20.txt} (V37 con V20 exacto,
+ * protegida tambien por {@link GeneracionReferenciaV37IT}) y
+ * {@code generacion_referencia_v37_motor_e14da35.txt}. Las anteriores se conservan como evidencia en
  * {@link GeneracionReferenciaV36IT} y {@link GeneracionReferenciaV35IT}; las
  * sesiones que cambiaron estan explicadas en {@code docs/FitSense/CATALOGO_V37.md}
  * y {@code docs/FitSense/CATALOGO_V36.md}.

@@ -71,6 +71,40 @@ class ImpactoRestriccionesIT {
     @Autowired JdbcTemplate jdbc;
 
     static final Path CORRECCIONES = Path.of("docs/FitSense/auditoria_catalogo/v37/correcciones_v37.tsv");
+    static final Path CAMBIOS_V38 = Path.of("docs/FitSense/auditoria_catalogo/v38/cambios_v38.tsv");
+
+    /**
+     * Implementos que exige cada ejercicio SEGUN SU GIF (requisitos de V37.1 y de la etapa C de
+     * V38), con independencia del catalogo cargado: asi la comprobacion no depende de los
+     * atributos que se estan corrigiendo. Grupos separados por coma ("1:x,2:y"): cada grupo
+     * tiene que estar entre el equipamiento del perfil.
+     */
+    private static Map<Long, String> requisitosSegunEvidencia() throws Exception {
+        var m = new HashMap<Long, String>();
+        var c37 = Files.readAllLines(CORRECCIONES);
+        for (var l : c37.subList(1, c37.size())) {
+            var c = l.split("\t", -1);
+            if (c[4].equals("requisitos")) m.put(Long.parseLong(c[0]), c[6]);
+        }
+        var c38 = Files.readAllLines(CAMBIOS_V38);
+        for (var l : c38.subList(1, c38.size())) {
+            var c = l.split("\t", -1);
+            if (c[4].equals("requisitos")) m.put(Long.parseLong(c[1]), c[6]);
+        }
+        return m;
+    }
+
+    private static boolean cumple(String requisitos, Collection<String> equipo) {
+        if (requisitos == null || requisitos.isBlank()) return true;
+        var grupos = new HashMap<String, Set<String>>();
+        for (var x : requisitos.split(",")) {
+            var p = x.split(":", 2);
+            grupos.computeIfAbsent(p[0], k -> new HashSet<>()).add(p[1]);
+        }
+        var tiene = new HashSet<>(equipo);
+        tiene.add("body weight");
+        return grupos.values().stream().allMatch(g -> g.stream().anyMatch(tiene::contains));
+    }
 
     /** allowHighImpact, allowFloor, allowKneeling, allowHanging, allowOverhead. */
     record Restriccion(String nombre, boolean impacto, boolean suelo, boolean rodillas, boolean colgar,
@@ -106,7 +140,8 @@ class ImpactoRestriccionesIT {
         var conf = confirmados();
         var semana = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
         var sb = new StringBuilder("perfil\telegibles\tcobertura_4c\tcapacidades\tlower_hip\tplan\tviolaciones_elegibles"
-                + "\tviolaciones_plan\tejercicios_plan\n");
+                + "\tviolaciones_plan\tejercicios_plan\tequipo_ausente_segun_gif\n");
+        var evidencia = requisitosSegunEvidencia();
         int n = 0;
         for (var objetivo : GoalType.values())
             for (var nivel : FitnessLevel.values())
@@ -155,7 +190,10 @@ class ImpactoRestriccionesIT {
                         sb.append(perfil).append('\t').append(eleg.size()).append('\t').append(cobertura.describe())
                                 .append('\t').append(pool).append('\t').append(hip).append('\t').append(plan)
                                 .append('\t').append(violElegibles).append('\t').append(violPlan).append('\t')
-                                .append(enPlan).append('\n');
+                                .append(enPlan).append('\t')
+                                .append(enPlan.stream().filter(id -> !cumple(evidencia.get(id),
+                                        "GYM".equals(lugar) ? GeneracionReferenciaBase.GIMNASIO : GeneracionReferenciaBase.CASA))
+                                        .distinct().sorted().toList()).append('\n');
                     }
         assertEquals(192, n);
         var dir = Path.of(System.getProperty("fitsense.impacto.dir"));

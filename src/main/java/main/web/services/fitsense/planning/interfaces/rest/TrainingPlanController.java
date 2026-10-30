@@ -21,7 +21,9 @@ import main.web.services.fitsense.planning.interfaces.rest.resources.SkipWorkout
 import main.web.services.fitsense.planning.interfaces.rest.resources.WeeklyTrainingPlanResource;
 import main.web.services.fitsense.planning.interfaces.rest.transform.WeeklyTrainingPlanResourceFromEntityAssembler;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
+import main.web.services.fitsense.planning.application.internal.queryservices.PlanLimitationsService;
 import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
+import main.web.services.fitsense.planning.interfaces.rest.resources.PlanLimitationsResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,17 +51,20 @@ public class TrainingPlanController {
     private final ExternalCatalogService externalCatalogService;
     private final JsonSupport jsonSupport;
     private final PublishedPlanSafetyService publishedPlanSafety;
+    private final PlanLimitationsService planLimitations;
 
     public TrainingPlanController(WeeklyTrainingPlanQueryService queryService,
                                   WeeklyTrainingPlanCommandService commandService,
                                   ExternalCatalogService externalCatalogService,
                                   JsonSupport jsonSupport,
-                                  PublishedPlanSafetyService publishedPlanSafety) {
+                                  PublishedPlanSafetyService publishedPlanSafety,
+                                  PlanLimitationsService planLimitations) {
         this.queryService = queryService;
         this.commandService = commandService;
         this.externalCatalogService = externalCatalogService;
         this.jsonSupport = jsonSupport;
         this.publishedPlanSafety = publishedPlanSafety;
+        this.planLimitations = planLimitations;
     }
 
     @GetMapping("/users/me/plan/current")
@@ -106,6 +111,17 @@ public class TrainingPlanController {
                 .map(this::toResource)
                 .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    /**
+     * Solo lectura: mide el conjunto elegible de la proxima generacion y no escribe nada.
+     * La app lo usa para explicar por que falta algo (por ejemplo, traccion sin banda).
+     */
+    @GetMapping("/users/me/plan/limitations")
+    @Operation(summary = "Lo que el plan no puede cubrir con el equipamiento y las restricciones declarados")
+    public ResponseEntity<PlanLimitationsResource> limitations(
+            @AuthenticationPrincipal UserDetailsImpl principal) {
+        return ResponseEntity.ok(planLimitations.limitationsFor(principal.getUserId()));
     }
 
     @GetMapping("/users/me/plan/{planId}")

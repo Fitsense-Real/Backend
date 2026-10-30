@@ -19,7 +19,8 @@ Cada archivo es la salida de **un catálogo con un motor**.
 | `generacion_referencia_v37_motor_e14da35.txt` | V37 | anterior a V20 exacto (`e14da35`, CI verde de `generation`) | **histórica, intacta**. Copia byte a byte de la oficial hasta V20 exacto | `ReferenciasHistoricasInmutablesTest` | `e4676975…8d23` |
 | `generacion_referencia_v35_motor_v20.txt` | V35 | vigente, con V20 exacto | regresión del motor actual sobre V35 | `GeneracionReferenciaV35IT` | `c104c75f…1f73` |
 | `generacion_referencia_v36_motor_v20.txt` | V36 | vigente, con V20 exacto | regresión del motor actual sobre V36 | `GeneracionReferenciaV36IT` | `2ccd9e24…cd12` |
-| `generacion_referencia.txt` | V37 | vigente, con V20 exacto | **oficial**. Regenerada con 13 cambios aprobados | `GeneracionReferenciaIT` | `00951b53…59e5` |
+| `generacion_referencia_v37_motor_v20.txt` | V37 | V20 exacto (sin E1/E2). Copia byte a byte de la oficial hasta `4a45221` | **congelada** el 30/10/2026 (decisión G). Con E1/E2 y D1 el motor la reproduce igual | `GeneracionReferenciaV37IT` y `ReferenciasHistoricasInmutablesTest` | `00951b53…59e5` |
+| `generacion_referencia.txt` | V39 (V38 + V39) | vigente: V20 exacto + D1 + E1/E2 | **oficial**. 72/72 válidos; diferencias en `../v39/DIFERENCIAS_REFERENCIAS_V39.md` | `GeneracionReferenciaIT` | `8ee26d78…2077` |
 
 Las tres nuevas (`*_motor_v20.txt` y la oficial) son **salidas del motor actual**, no las históricas. Las tres históricas guardan lo que producía el motor anterior y no se ejecutan contra el motor actual: solo se comprueba que no cambian.
 
@@ -54,9 +55,16 @@ El efecto del catálogo tiene el mismo tamaño con los dos motores. Las explicac
 | Referencia | Propiedad |
 |---|---|
 | oficial | `-Dfitsense.generacion.capturar=true` |
+| V37 con el motor vigente | `-Dfitsense.generacion.v37.capturar=true` (no debería cambiar: es la prueba de que E1/E2 y D1 no tocan V37) |
 | V36 con el motor vigente | `-Dfitsense.generacion.v36.capturar=true` |
 | V35 con el motor vigente | `-Dfitsense.generacion.capturar.v35=true` |
 
 Las históricas no se regeneran nunca. Si un cambio futuro del motor modifica la generación:
 1. La referencia vigente se copia antes como `*_motor_<commit>.txt`.
 2. Su huella se añade a `ReferenciasHistoricasInmutablesTest`.
+
+
+## V39 (30/10/2026)
+
+- **Motor:** E1/E2 solo actúa en sesiones que incumplen V15, y D1 solo con 853/1117 revisados como cardio de duración. Sobre V35, V36 y V37 no cambia nada: `GeneracionReferenciaV35IT`, `V36IT` y `V37IT` pasan con sus referencias.
+- **Catálogo:** V38 + V39 cambian los 72 perfiles. No se aceptaron a ciegas: la revisión está en `../v39/DIFERENCIAS_REFERENCIAS_V39.md`, con los ejercicios cuyo grupo o patrón parecen incoherentes (1225, 439, 959, 962…), pendientes de decisión.

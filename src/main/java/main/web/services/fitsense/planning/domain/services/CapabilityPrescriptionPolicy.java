@@ -78,7 +78,7 @@ public final class CapabilityPrescriptionPolicy {
 
     public static Clase claseDe(CandidateExercise c) {
         if (c == null) return Clase.SIN_CAPACIDAD;
-        if (c.exerciseId() != null && GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION.contains(c.exerciseId()))
+        if (GoalFeasibilityPolicy.enRevision(c))
             return Clase.EN_REVISION;
         String patron = c.movementPattern() == null ? null : c.movementPattern().trim().toUpperCase(Locale.ROOT);
         if (patron == null || patron.isBlank() || "OTHER".equals(patron)) return Clase.SIN_CAPACIDAD;

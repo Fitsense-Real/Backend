@@ -73,6 +73,7 @@ class AdaptacionRegresionIT {
     @Autowired UserProfileCommandService perfiles;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
 
     static final LocalDate SEMANA_MEDIDA = LocalDate.of(2026, 11, 2);
     static final LocalDate SEMANA_NUEVA = SEMANA_MEDIDA.plusWeeks(1);
@@ -654,7 +655,7 @@ class AdaptacionRegresionIT {
                                 .filter(x -> x.defaultPrescription() == o.defaultPrescription())
                                 .filter(x -> MandatorySlot.of(x).equals(slot))
                                 .filter(x -> !usados.contains(x.exerciseId()))
-                                .filter(x -> !GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION.contains(x.exerciseId()))
+                                .filter(x -> !GoalFeasibilityPolicy.enRevision(x))
                                 .filter(x -> !CatalogEligibilityPolicy.esComplemento(x, ctx.profile().goalType()))
                                 .filter(x -> !"upper arms".equals(o.bodyPartCode())
                                         || Objects.equals(x.targetMuscle(), o.targetMuscle()))
@@ -754,7 +755,7 @@ class AdaptacionRegresionIT {
                             .filter(x -> enfoque.accepts(x.bodyPartCode()))
                             .filter(x -> x.defaultPrescription() == PrescriptionType.SETS_REPS)
                             .filter(x -> !p.ids().contains(x.exerciseId()))
-                            .filter(x -> !GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION.contains(x.exerciseId()))
+                            .filter(x -> !GoalFeasibilityPolicy.enRevision(x))
                             .findFirst();
                     if (hueco.isPresent() && ejercicio.isPresent()) {
                         forzados.computeIfAbsent(s.id(), k -> new HashMap<>()).put(hueco.get().id(), ejercicio.get());
@@ -896,7 +897,15 @@ class AdaptacionRegresionIT {
                             + " AND movement_pattern = ? AND body_part_id = ? AND difficulty_level <= 2"
                             + " AND exercise_id <> ? ORDER BY exercise_id", Long.class,
                     fila.get("movement_pattern"), fila.get("body_part_id"), ejercicio);
-            return candidatos.stream().filter(id -> !p.ids().contains(id)).findFirst()
+            // Solo los que el participante puede recibir de verdad (equipamiento, dificultad y
+            // restricciones), con el mismo conjunto que vera la IA: desde V39, por ejemplo, 301
+            // exige espaldera y ya no es un sustituto valido para este perfil.
+            var elegibles = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                            .GenerateWeeklyPlanCommand(p.userId(), SEMANA_MEDIDA, null, true, null, null))
+                    .context().availableExercises().stream()
+                    .map(main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId)
+                    .collect(Collectors.toSet());
+            return candidatos.stream().filter(id -> !p.ids().contains(id)).filter(elegibles::contains).findFirst()
                     .orElseThrow(() -> new AssertionError("sin sustituto del mismo patron"));
         }
 
@@ -919,10 +928,13 @@ class AdaptacionRegresionIT {
                     sesion.id(), TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)));
         }
 
-        private Ejercicio estructural(Sesion s) {
-            return s.ejercicios().stream().filter(e -> "SETS_REPS".equals(e.tipo()) && esSlot(patron(e.id())))
-                    .findFirst().orElseThrow();
+        /** El primer estructural de la sesion que tiene un sustituto elegible del mismo patron y zona. */
+        private Ejercicio estructuralConSustituto(Participante p, Sesion sesion) {
+            return sesion.ejercicios().stream().filter(e -> "SETS_REPS".equals(e.tipo()) && esSlot(patron(e.id())))
+                    .filter(e -> tieneSustituto(p, e.id())).findFirst()
+                    .orElseThrow(() -> new AssertionError("premisa: ningun estructural con sustituto"));
         }
+
 
         /** El elegible para la sustitucion, comprobado con el mismo contexto que vera la IA. */
         private boolean elegible(Participante p, long id) {
@@ -938,9 +950,7 @@ class AdaptacionRegresionIT {
             var sesion = p.semana().get(0);
             // Premisa (V37): el primer estructural de la sesion que tiene sustituto del mismo patron.
             // Con 776 inactivo, 142 (back/HIP_HINGE) ya no tiene alternativa de su misma zona.
-            var x = sesion.ejercicios().stream().filter(e -> "SETS_REPS".equals(e.tipo()) && esSlot(patron(e.id())))
-                    .filter(e -> tieneSustituto(p, e.id())).findFirst()
-                    .orElseThrow(() -> new AssertionError("premisa: ningun estructural con sustituto"));
+            var x = estructuralConSustituto(p, sesion);
             long z = sustitutoDe(p, x.id());
 
             long nuevo = sustituirConVariante(p, sesion, x, z)
@@ -954,7 +964,7 @@ class AdaptacionRegresionIT {
         void unBloqueadoNoEntraEnUnaAdaptacionNueva() {
             var p = participante(GoalType.GAIN_MUSCLE, true);
             var sesion = p.semana().get(0);
-            var x = estructural(sesion);
+            var x = estructuralConSustituto(p, sesion);
             long z = sustitutoDe(p, x.id());
             jdbc.update("UPDATE user_profiles SET blocked_exercise_ids = ARRAY[?]::bigint[] WHERE user_id = ?",
                     z, p.userId());

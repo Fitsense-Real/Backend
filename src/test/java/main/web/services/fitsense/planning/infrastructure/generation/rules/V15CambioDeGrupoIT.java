@@ -49,9 +49,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>el grupo es otro y la sesion respeta la mitad de V15;</li>
  *   <li>el plan se publica con el validador de produccion (V15, V18, V23, V24, V25).</li>
  * </ul>
- * Con V37 el paso no se activa en estos perfiles (el relleno no rompe V15); con V37 + V37.1
+ * Con V37 el paso no se activa en estos perfiles (el relleno no rompe V15); con V38 (la antigua V37.1)
  * si (GENERAL_FITNESS 4 dias en gimnasio). La prueba exige al menos un cambio solo cuando
- * V37.1 esta aplicada y comprueba las propiedades de todos los que haya.
+ * V38 (la V37.1) esta aplicada y comprueba las propiedades de todos los que haya.
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -85,7 +85,7 @@ class V15CambioDeGrupoIT {
     @DisplayName("GENERAL_FITNESS 4d gimnasio y 6d casa: cada cambio conserva la capacidad, la dosis y V15")
     void cambiosDeGrupo() {
         boolean v371 = jdbc.queryForObject(
-                "SELECT count(*) FROM flyway_schema_history WHERE version = '37.1' AND success", Integer.class) > 0;
+                "SELECT count(*) FROM flyway_schema_history WHERE version IN ('37.1', '38') AND success", Integer.class) > 0;
         var fallos = new ArrayList<String>();
         int cambios = 0;
         for (var nivel : List.of(FitnessLevel.BEGINNER, FitnessLevel.INTERMEDIATE, FitnessLevel.ADVANCED))
@@ -122,8 +122,8 @@ class V15CambioDeGrupoIT {
                                     .filter(w -> w.scheduledDate().equals(c.fecha())).findFirst().orElseThrow();
                             if (sesion.exercises().stream().noneMatch(e -> e.exerciseId().equals(c.elegido())))
                                 fallos.add(id + ": el elegido no esta en la sesion");
-                            if (sesion.exercises().stream().anyMatch(e -> e.exerciseId().equals(c.rechazado())))
-                                fallos.add(id + ": el rechazado sigue en la sesion");
+                            // El rechazado puede volver despues por otro paso (otro relleno, o E2) cuando
+                            // el reparto ya lo admite: no se comprueba su ausencia.
                         }
                         // El validador de produccion decide: V15, V18, V23, V24, V25 y V20.
                         try {

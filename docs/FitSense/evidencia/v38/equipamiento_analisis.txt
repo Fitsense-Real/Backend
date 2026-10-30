@@ -1,0 +1,21 @@
+== Ejercicios por implemento nuevo
+wall bars [301, 302, 303, 304, 305, 306, 307, 308, 813]
+anchor point [1072]
+ghd bench [880]
+hyperextension bench [58]
+squat rack [235]
+step platform [1253]
+preacher bench [244, 249, 397, 398, 403, 411, 441, 445, 522, 523, 648, 676, 687, 688, 792, 795, 802, 837, 845, 849]
+== Slots 4C elegibles (activos, sin alto impacto) antes -> despues de exigir el implemento
+solo peso corporal nivel<=1: UPPER_PULL 3->0, UPPER_PUSH 28->28, LOWER_KNEE 20->17, LOWER_HIP 4->4
+solo peso corporal nivel<=2: UPPER_PULL 7->0, UPPER_PUSH 31->31, LOWER_KNEE 21->18, LOWER_HIP 5->5
+solo peso corporal nivel<=3: UPPER_PULL 7->0, UPPER_PUSH 34->34, LOWER_KNEE 22->19, LOWER_HIP 5->5
+casa (pc+mancuerna+banda) nivel<=1: UPPER_PULL 11->8, UPPER_PUSH 38->38, LOWER_KNEE 22->19, LOWER_HIP 11->11
+casa (pc+mancuerna+banda) nivel<=2: UPPER_PULL 21->14, UPPER_PUSH 56->56, LOWER_KNEE 32->29, LOWER_HIP 17->17
+casa (pc+mancuerna+banda) nivel<=3: UPPER_PULL 22->15, UPPER_PUSH 62->62, LOWER_KNEE 34->31, LOWER_HIP 18->18
+casa + espaldera nivel<=1: UPPER_PULL 11->11, UPPER_PUSH 38->38, LOWER_KNEE 22->21, LOWER_HIP 11->11
+casa + espaldera nivel<=2: UPPER_PULL 21->20, UPPER_PUSH 56->56, LOWER_KNEE 32->31, LOWER_HIP 17->17
+casa + espaldera nivel<=3: UPPER_PULL 22->21, UPPER_PUSH 62->62, LOWER_KNEE 34->33, LOWER_HIP 18->18
+casa + anclaje nivel<=1: UPPER_PULL 11->8, UPPER_PUSH 38->38, LOWER_KNEE 22->19, LOWER_HIP 11->11
+casa + anclaje nivel<=2: UPPER_PULL 21->15, UPPER_PUSH 56->56, LOWER_KNEE 32->29, LOWER_HIP 17->17
+casa + anclaje nivel<=3: UPPER_PULL 22->16, UPPER_PUSH 62->62, LOWER_KNEE 34->31, LOWER_HIP 18->18

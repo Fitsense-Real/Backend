@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.planning.CatalogoElegibleIT
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.05 s -- in main.web.services.fitsense.planning.CatalogoElegibleIT
