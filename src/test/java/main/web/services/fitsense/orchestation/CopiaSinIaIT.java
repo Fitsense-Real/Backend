@@ -196,9 +196,14 @@ class CopiaSinIaIT {
     @Test
     @DisplayName("4 y 5: mantenimiento, progresion y reincorporacion despues de acortar, siempre con 0 llamadas")
     void reincorporacionYMantenimiento() throws Exception {
-        // LOSE_WEIGHT, intermedio, 45 min: tras acortar, el viernes se mantiene, progresa y,
-        // sin margen en la reserva, reincorpora el relleno (decision 1(a): primero un paso).
-        long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, 45);
+        // LOSE_WEIGHT intermedio: tras acortar, el viernes se mantiene, progresa y, sin margen en la
+        // reserva, reincorpora el relleno (decision 1(a): primero un paso). Hace falta que +1
+        // repeticion quepa en el 5 % (progression_increase_pct) del viernes acortado. A 45 min
+        // (dos 3x6 y cardio) es 3/48 = 6,25 % y la sesion se mantiene siempre; hasta V40 cabia
+        // porque 1225 (abdominal clasificado como fuerza de cadera, 3x10) ocupaba el viernes.
+        // Corregido el dato, el escenario es el de 60 min (3/60 = 5 %). La regla y las aserciones
+        // no cambian.
+        long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, 60);
         long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
         plan = ciclo(u, 0, 1);      // acortar: flujo de IA, 1 llamada

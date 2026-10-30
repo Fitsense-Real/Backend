@@ -57,6 +57,11 @@ El movimiento predomina en el tronco. No se dejó como excepción.
 
 La regla actúa correctamente y no se ha tocado. Se cambió únicamente el perfil del escenario a GENERAL_FITNESS intermedio en casa de 30 min, que cumple la premisa (16,8 % y 2,8 %). Las aserciones son las mismas.
 
+**El CI encontró dos fallos más** que el análisis de impacto previo no había anticipado. Los dos se reprodujeron en local y se diagnosticaron:
+
+- **`CopiaSinIaIT.reincorporacionYMantenimiento`.** Tiene la misma causa aritmética. Tras acortar, el viernes de LOSE_WEIGHT intermedio de 45 min no puede dar ningún paso: +1 repetición = 3/48 = 6,25 %, por encima del 5 %. La regla 1(a) exige un paso antes de reincorporar, así que la sesión se mantiene siempre. Antes cabía solo por 1225 a 3×10. El escenario pasa a LOSE_WEIGHT intermedio de 60 min (3/60 = 5 %): progresa y reincorpora en el ciclo 11. Las aserciones son las mismas.
+- **`DuracionForzadaIT.seisPasaConLaOrdenDe45`.** Reutiliza las sesiones publicadas del plan 60, con 1225 a 3×13 como fuerza de zona pequeña. Con V40, V24 le exige 2×13 de hipertrofia. Es el mismo caso que 872 con V36. Se fija en `spring.flyway.target=39`, como el precedente: la prueba trata de la duración forzada, no de 1225.
+
 ## 4. CI
 
 Suite completa (`mvn verify -Pintegration`) en GitHub Actions sobre el último commit del PR #8. No se duplicó en local. El resultado y el commit verificado constan en el PR.
