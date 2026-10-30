@@ -47,9 +47,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>LOSE_WEIGHT principiante, 6 dias en casa: el relleno del miercoles se llevaba
  *       el tercer cardio y el jueves, pegado, se quedaba sin cardio por V18 (V25).
  *       Ahora el relleno no se lleva el ultimo cardio del dia siguiente pegado.</li>
- *   <li>LOSE_WEIGHT principiante, 4 y 5 dias en casa: con V37 publican; con V37.1
- *       (implemento real) siguen sin plan por composicion: 3 cardios de casa y V18.
- *       Se reproduce el fallo, no se tapa.</li>
+ *   <li>LOSE_WEIGHT principiante, 4 y 5 dias en casa: con V37.1 se quedaban sin plan
+ *       (3 cardios de casa y V18). Desde D1 (853 y 1117 como cardio revisado) publican.</li>
  * </ul>
  * El catalogo se elige con {@code -Dspring.flyway.locations}: por omision V37; con
  * {@code classpath:db/migration,filesystem:docs/FitSense/auditoria_catalogo/v37/separables},
@@ -105,30 +104,21 @@ class V20ComposicionCasosIT {
     }
 
     @Test
-    @DisplayName("LOSE_WEIGHT principiante 4d y 5d casa: con V37 publica; con V37.1 sigue sin plan por V20")
+    @DisplayName("LOSE_WEIGHT principiante 4d y 5d casa: publican con V37 y, desde D1 (853 y 1117 cardio), tambien con V37.1")
     void loseWeightCuatroCincoDiasCasa() {
-        boolean v371 = jdbc.queryForObject(
-                "SELECT count(*) FROM flyway_schema_history WHERE version = '37.1' AND success", Integer.class) > 0;
+        // Hasta D1 (30/10/2026) con V37.1 se quedaban sin plan por V20: solo tres cardios de casa
+        // y V18. Con 853 fuera de revision (y 1117 con V38) hay cardio para los dias pegados.
         var fallos = new ArrayList<String>();
         for (int dias : new int[]{4, 5}) {
             var caso = new Caso(GoalType.LOSE_WEIGHT, FitnessLevel.BEGINNER, dias, "CASA");
             long u = participante(caso);
-            if (!v371) {
-                try {
-                    planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null)
-                            .orElseThrow(() -> new AssertionError("sin plan: " + caso));
-                    revisarBorrador(caso, u, fallos);
-                } catch (PlanGenerationFailedException e) {
-                    fallos.add(caso + " -> " + e.getMessage());
-                }
-                continue;
+            try {
+                planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null)
+                        .orElseThrow(() -> new AssertionError("sin plan: " + caso));
+                revisarBorrador(caso, u, fallos);
+            } catch (PlanGenerationFailedException e) {
+                fallos.add(caso + " -> " + e.getMessage());
             }
-            // V37.1: el fallo conocido. Solo V20, y en sesiones de tren inferior.
-            var e = assertThrows(PlanGenerationFailedException.class,
-                    () -> planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null), caso.toString());
-            assertTrue(e.getMessage().contains("V20:") && e.getMessage().contains("minimo es 1890 s"),
-                    caso + ": " + e.getMessage());
-            assertFalse(e.getMessage().matches("(?s).*V(15|18|23|24|25):.*"), caso + ": " + e.getMessage());
         }
         assertEquals(List.of(), fallos);
     }

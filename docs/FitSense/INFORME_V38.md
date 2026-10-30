@@ -191,7 +191,24 @@ Fuente: `evidencia/v38/comparativa_v38.md`. Base: V37 + V37.1.
 
 ### 6.1 Suite completa
 
-_(se completa al terminar)_
+**Con el catálogo oficial (V37 + código de D1): BUILD SUCCESS.**
+- 854 pruebas unitarias y 290 de integración, **0 fallos**.
+- Omitidas: 28 por ser opt-in, entre ellas `CatalogoV38IT`, que solo corre con la candidata.
+- Las referencias oficial, V36 y V35 quedan idénticas: D1 no cambia nada sin los datos de V38.
+
+**Con la V38 candidata** (`-Dspring.flyway.locations=…/v37/separables,…/v38/candidata`):
+- 854 unitarias sin fallos.
+- 290 de integración con **10 fallos en 4 clases, todos explicados**:
+
+| Prueba | Causa | Clase de fallo |
+|---|---|---|
+| `GeneracionReferenciaIT` | Las 72 referencias cambian con el catálogo nuevo | Esperado. Las referencias no se actualizan sin aprobación (G) |
+| `ContinuidadSemanalIT` (96 perfiles) | 8 perfiles sin plan inicial por V15 (§5) | Composición (E) |
+| `V20ComposicionCasosIT.perfilesQueRompiaElSetentaExacto` | GENERAL_FITNESS principiante 6d casa, V15 (§5) | Composición (E) |
+| `Usuario31V37IT` | El perfil del usuario 31 (GENERAL_FITNESS) se queda sin plan por V15 (§5). Además, la prueba fija el catálogo V37 | Composición (E) y premisa ligada a V37 |
+| `V20ComposicionCasosIT.loseWeightCuatroCincoDiasCasa` | Esperaba que LW 4d y 5d casa **siguieran sin plan** con V37.1; desde D1 lo tienen | **Premisa superada y actualizada**. Ahora pasa con V37 y con V37.1 (2/2) |
+
+**Ninguna regresión fuera de V15 de composición**: adaptación, progresión, copia semanal, IA simulada, V18, V20, V23, V24 y V25 pasan con la candidata. Con el prototipo E1/E2, la continuidad y los casos expresos pasan (§3).
 
 ## 7. Riesgos residuales y revisión humana
 
