@@ -91,7 +91,7 @@ class AdaptacionPorCausasIT {
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine",
             "bench", "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine");
 
-    enum Dia { HECHO, FATIGA, TIEMPO, PUNTUAL, SIN_TIEMPO, HABITUAL_ALCANZA, HABITUAL_NO_ALCANZA, HABITUAL_INVIABLE, OTRA, NADA }
+    enum Dia { HECHO, FATIGA, TIEMPO, PUNTUAL, SIN_TIEMPO, HABITUAL_ALCANZA, HABITUAL_NO_ALCANZA, HABITUAL_INVIABLE, OTRA, PARCIAL_DOLOR, NADA }
 
     record Ej(long id, String tipo, Short series, Short reps, Integer segundos, Short descanso) {}
 
@@ -165,6 +165,42 @@ class AdaptacionPorCausasIT {
         var a = semana(w1);
         var b = semana(w2);
         for (int i = 0; i < a.size(); i++) assertEquals(a.get(i).getValue(), b.get(i).getValue(), "se conserva todo");
+        assertSinViolaciones();
+    }
+
+    @Test
+    @DisplayName("Varias causas: viernes omitido por falta de tiempo y miercoles con dolor; la seguridad no queda sin resolver")
+    void dolorYFaltaDeTiempoEnLaMismaSemana() throws Exception {
+        long u = participante(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, 45);
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        ejecutar(u, w1, Dia.HECHO, Dia.PARCIAL_DOLOR, Dia.TIEMPO);
+        long dolio = semana(w1).get(1).getValue().get(semana(w1).get(1).getValue().size() - 1).id();
+        var plan = ciclo.runFor(u, S1, S1.plusWeeks(1));
+        var ev = ultimo(u);
+        assertTrue(plan.isPresent(), "la semana se publica: " + ev);
+        // La seguridad va primero: se corrige el miercoles del dolor; el viernes se conserva.
+        assertEquals("{SEGURIDAD_ANTE_DOLOR}", ev.get("targeted_interventions"), String.valueOf(ev));
+        assertEquals("APLICADA", ev.get("status"), String.valueOf(ev));
+        assertFalse(semana(plan.get()).get(1).getValue().stream().anyMatch(e -> e.id() == dolio),
+                "el ejercicio que dolio no vuelve");
+        assertEquals(semana(w1).get(2).getValue(), semana(plan.get()).get(2).getValue(), "viernes conservado");
+        assertSinViolaciones();
+    }
+
+    @Test
+    @DisplayName("Semana cumplida con dolor en un ejercicio: no hay adaptacion por adherencia, pero la seguridad se resuelve")
+    void cumplidaConDolor() throws Exception {
+        long u = participante(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, 45);
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        ejecutar(u, w1, Dia.HECHO, Dia.PARCIAL_DOLOR, Dia.HECHO);
+        var plan = ciclo.runFor(u, S1, S1.plusWeeks(1));
+        var ev = ultimo(u);
+        assertTrue(plan.isPresent(), "la semana se publica: " + ev);
+        // Solo la sesion del dolor; lunes y viernes se conservan identicos (no es adaptacion por adherencia).
+        assertEquals("{SEGURIDAD_ANTE_DOLOR}", ev.get("targeted_interventions"), String.valueOf(ev));
+        assertEquals("APLICADA", ev.get("status"), String.valueOf(ev));
+        assertEquals(semana(w1).get(0).getValue(), semana(plan.get()).get(0).getValue());
+        assertEquals(semana(w1).get(2).getValue(), semana(plan.get()).get(2).getValue());
         assertSinViolaciones();
     }
 
@@ -243,6 +279,14 @@ class AdaptacionPorCausasIT {
                             rs.getObject(3, Short.class), rs.getObject(4, Short.class), rs.getObject(5, Integer.class), null,
                             rs.getObject(6, Short.class), null), String.valueOf(rs.getString(7))), id);
             int quitar = -1;
+            if (senalada.intervencion() == TipoIntervencion.SEGURIDAD_ANTE_DOLOR) {
+                // Retirar sin reemplazo el ejercicio que dolio: lo permite la intervencion.
+                var dolio = jdbc.queryForList("SELECT pwe.exercise_id FROM workout_session_exercises wse"
+                        + " JOIN planned_workout_exercises pwe ON pwe.planned_exercise_id = wse.planned_exercise_id"
+                        + " WHERE pwe.planned_workout_id = ? AND wse.skip_reason = 'PAIN_OR_DISCOMFORT'", Long.class, id);
+                for (int k = 0; k < actuales.size() && quitar < 0; k++)
+                    if (dolio.contains(actuales.get(k).getKey().exerciseId())) quitar = k;
+            }
             if (senalada.intervencion() == TipoIntervencion.ACORTAR_O_REORGANIZAR)
                 for (int k = actuales.size() - 1; k >= 0 && quitar < 0; k--)
                     if (MandatorySlot.ofMovementPattern(actuales.get(k).getValue()).isEmpty()) quitar = k;
@@ -374,6 +418,28 @@ class AdaptacionPorCausasIT {
                                 minutos(w) - 3));
                 case HABITUAL_INVIABLE -> planes.skip(UserDetailsImpl.build(usuarios.findById(u).orElseThrow()), w,
                         new SkipWorkoutResource(SkipReason.LACK_OF_TIME, ContextoFaltaDeTiempo.MENOS_TIEMPO_HABITUAL, 15));
+                case PARCIAL_DOLOR -> {
+                    // Todo hecho salvo el ultimo ejercicio, dejado por dolor.
+                    long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+                    var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets,"
+                            + " planned_reps, planned_duration_seconds FROM planned_workout_exercises"
+                            + " WHERE planned_workout_id = ? ORDER BY exercise_order", w);
+                    for (int k = 0; k < filas.size(); k++) {
+                        var f = filas.get(k);
+                        long pe = ((Number) f.get("planned_exercise_id")).longValue();
+                        if (k == filas.size() - 1) {
+                            sesiones.handle(new RecordSessionExerciseCommand(u, s, pe, (short) 0, null, null, null,
+                                    SkipReason.PAIN_OR_DISCOMFORT));
+                            continue;
+                        }
+                        boolean duracion = "DURATION".equals(f.get("prescription_type"));
+                        int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
+                        int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
+                        sesiones.handle(new RecordSessionExerciseCommand(u, s, pe, (short) series,
+                                duracion ? null : total, duracion ? total : null, null, null));
+                    }
+                    sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 6, (short) 4, (short) 45));
+                }
                 case OTRA -> planes.skip(UserDetailsImpl.build(usuarios.findById(u).orElseThrow()), w,
                         new SkipWorkoutResource(SkipReason.OTHER));
                 case NADA -> { }
