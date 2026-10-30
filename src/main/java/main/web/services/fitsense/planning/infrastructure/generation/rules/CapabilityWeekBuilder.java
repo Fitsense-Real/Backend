@@ -215,7 +215,7 @@ class CapabilityWeekBuilder {
 
             // 2 · SECUNDARIAS, hasta el piso de V20 y sin pasar del techo.
             if (piso > 0) {
-                while (dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA && minutos(fecha, enfoque, dia) < piso) {
+                while (dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA && corto(fecha, enfoque, dia, piso)) {
                     var extra = siguienteRelleno(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
                             gruposBloqueados, slotsPorCubrir);
                     if (extra == null) break;
@@ -233,7 +233,7 @@ class CapabilityWeekBuilder {
             }
             // Si con el tope de colocaciones no se llega al piso, se suben series
             // hasta 3 (la ampliacion que admite la politica), nunca descansos.
-            if (piso > 0 && minutos(fecha, enfoque, dia) < piso) ampliarSeries(fecha, enfoque, dia, piso, techo);
+            if (piso > 0 && corto(fecha, enfoque, dia, piso)) ampliarSeries(fecha, enfoque, dia, piso, techo);
 
             // Equilibrio: oportunista, una vez por semana y solo si cabe.
             if (asignable(Capability.BALANCE) && enSemana.getOrDefault(Capability.BALANCE, 0) == 0
@@ -352,8 +352,8 @@ class CapabilityWeekBuilder {
                     var con = new ArrayList<>(dia);
                     con.set(k, col);
                     if (minutos(fecha, enfoque, con) > techo || !respetaMitad(enfoque, con)) continue;
-                    if (piso > 0 && minutos(fecha, enfoque, con) < piso) ampliarSeries(fecha, enfoque, con, piso, techo);
-                    if (piso > 0 && minutos(fecha, enfoque, con) < piso) continue;
+                    if (piso > 0 && corto(fecha, enfoque, con, piso)) ampliarSeries(fecha, enfoque, con, piso, techo);
+                    if (piso > 0 && corto(fecha, enfoque, con, piso)) continue;
                     dia.clear();
                     dia.addAll(con);
                     return;
@@ -482,6 +482,21 @@ class CapabilityWeekBuilder {
                     .or(() -> selector.pickAdditional(enfoque, actuales, false, filtro));
             if (extra.isPresent()) {
                 var col = colocar(extra.get(), secundaria, false);
+                if (col != null) return col;
+            }
+        }
+        // EXPERIMENTO V20-A (rama v20-duracion, NO aprobado para produccion):
+        // con -Dfitsense.experimento.v20a=true, LOSE_WEIGHT tiene ademas
+        // MUSCULAR_ENDURANCE como secundaria oportunista (GoalCapabilityPolicy) y,
+        // cuando la fuerza estructural ya no cabe (V15), completa con trabajo
+        // resistido de los grupos del enfoque con su dosis de resistencia. Sin la
+        // propiedad, asignable(MUSCULAR_ENDURANCE) es falso y nada cambia.
+        if ("LOSE_WEIGHT".equals(objetivo) && asignable(Capability.MUSCULAR_ENDURANCE)) {
+            var actuales = new ArrayList<>(resistidosDia);
+            var extra = selector.pickAdditional(enfoque, actuales, true)
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false));
+            if (extra.isPresent()) {
+                var col = colocar(extra.get(), Capability.MUSCULAR_ENDURANCE, false);
                 if (col != null) return col;
             }
         }
@@ -649,9 +664,9 @@ class CapabilityWeekBuilder {
     /** Sube series, de una en una y de la primera a la ultima, hasta el piso o el techo. */
     private void ampliarSeries(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, int piso, int techo) {
         boolean cambio = true;
-        while (cambio && minutos(fecha, enfoque, dia) < piso) {
+        while (cambio && corto(fecha, enfoque, dia, piso)) {
             cambio = false;
-            for (int k = 0; k < dia.size() && minutos(fecha, enfoque, dia) < piso; k++) {
+            for (int k = 0; k < dia.size() && corto(fecha, enfoque, dia, piso); k++) {
                 var col = dia.get(k);
                 var e = col.ejercicio();
                 var dosis = CapabilityPrescriptionPolicy.dosis(col.capacidad(), col.candidato(), objetivo, nivel, limites);
@@ -679,6 +694,18 @@ class CapabilityWeekBuilder {
             case CARDIO -> 4;
             case MOBILITY -> 5;
         })).toList();
+    }
+
+    /**
+     * Si el dia no llega al piso de V20. Con el experimento del 70 % exacto
+     * compara segundos (el mismo calculo que el validador); si no, minutos.
+     */
+    private boolean corto(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, int piso) {
+        if (!PlanDraftValidator.v20Exacto()) return minutos(fecha, enfoque, dia) < piso;
+        if (context.prescription() == null) return false;
+        return estimador.estimateSeconds(new PlanDraft.DraftWorkout(fecha, enfoque, nombre(enfoque), 0,
+                dia.stream().map(Colocacion::ejercicio).toList()), context.prescription())
+                < PlanDraftValidator.minimumSessionSeconds(context);
     }
 
     private int minutos(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia) {

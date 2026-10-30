@@ -1,6 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
+import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
 import main.web.services.fitsense.planning.domain.services.TrainingPlanGenerator;
 import org.springframework.stereotype.Component;
@@ -194,7 +195,11 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // series en pequenos -> ejercicios sin topes -> 3 series en esos.
             if (minimumMinutes > 0 && context.prescription() != null) {
                 var date = dates.get(i);
-                java.util.function.BooleanSupplier falta = () -> durationEstimator.estimateMinutes(
+                java.util.function.BooleanSupplier falta = () -> PlanDraftValidator.v20Exacto()
+                        ? durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(date, focus, nameOf(focus),
+                                sessionMinutes, exercises), context.prescription())
+                                < PlanDraftValidator.minimumSessionSeconds(context)
+                        : durationEstimator.estimateMinutes(
                         new PlanDraft.DraftWorkout(date, focus, nameOf(focus), sessionMinutes, exercises),
                         context.prescription()) < minimumMinutes;
 
@@ -341,7 +346,10 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
 
         int hechas = 0;
         boolean seguir = true;
-        while (seguir && duracionDe(date, focus, sessionMinutes, exercises, context) < minimumMinutes) {
+        while (seguir && (PlanDraftValidator.v20Exacto()
+                ? durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(date, focus, nameOf(focus),
+                        sessionMinutes, exercises), context.prescription()) < PlanDraftValidator.minimumSessionSeconds(context)
+                : duracionDe(date, focus, sessionMinutes, exercises, context) < minimumMinutes)) {
             seguir = false;
 
             // picked y exercises van en paralelo (mismo indice): se recorre al

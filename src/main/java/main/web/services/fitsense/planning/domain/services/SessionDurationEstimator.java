@@ -38,6 +38,18 @@ public class SessionDurationEstimator {
                 totalSeconds(workout, params), params);
     }
 
+    /**
+     * Los segundos que suma el estimador ANTES de redondear al minuto
+     * (calentamiento, trabajo, descansos y transiciones). Lo usa el experimento
+     * de V20 al 70 % exacto ({@link PlanDraftValidator#v20Exacto()}).
+     */
+    public long estimateSeconds(PlanDraft.DraftWorkout workout, PrescriptionParams params) {
+        int n = workout.exercises().size();
+        if (n <= 0) return 0;
+        return (long) params.warmupMinutesOrDefault() * 60 + totalSeconds(workout, params)
+                + (long) (n - 1) * params.transitionSecondsOrDefault();
+    }
+
     private int estimateMinutes(int exerciseCount, long workAndRestSeconds,
                                 PrescriptionParams params) {
         if (exerciseCount <= 0) return 0;

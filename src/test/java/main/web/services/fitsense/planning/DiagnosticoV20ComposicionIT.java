@@ -140,6 +140,105 @@ class DiagnosticoV20ComposicionIT {
         Files.writeString(dir.resolve("diagnostico_v20_candidatos.tsv"), candidatos.toString());
     }
 
+    /**
+     * Traza del cardio (orden de prototipado, punto 1): para LOSE_WEIGHT principiante
+     * en casa, el repertorio de cardio PRESCRIBIBLE (clase CARDIO con dosis, igual que
+     * CapabilityWeekBuilder), y por cada dia: los que usa, los que bloquea V18 (dia
+     * anterior pegado), los que ya estan en la sesion y los que quedan validos.
+     * Y el desglose de los ejercicios libres del enfoque: elegibles frente a
+     * prescribibles por las capacidades de LOSE_WEIGHT.
+     */
+    @Test
+    @DisplayName("traza del cardio y de lo prescribible en las sesiones cortas de LOSE_WEIGHT en casa")
+    void trazaCardio() throws Exception {
+        var semana = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+        var out = new StringBuilder();
+        int n = 100;
+        for (int dias : new int[]{3, 4, 5, 6}) {
+            n++;
+            String perfil = "LOSE_WEIGHT/BEGINNER/" + dias + "d/45/CASA";
+            String email = "trazav20_" + n + "@pruebas.invalid";
+            jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
+                    + " VALUES (?, 'x', 'Prueba', now(), now())", email);
+            long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
+            var disponibles = new ArrayList<Short>();
+            for (short d = 1; d <= dias; d++) disponibles.add(d);
+            perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1992, 1, 15), BiologicalSex.FEMALE,
+                    new BigDecimal("165"), new BigDecimal("70"), null, FitnessLevel.BEGINNER, GoalType.LOSE_WEIGHT,
+                    "evaluacion", TrainingLocation.HOME, (short) dias, disponibles, (short) 45,
+                    GeneracionReferenciaBase.CASA, List.of(), "Ninguna", true, true, true, true, true));
+            var ctx = planComandos.prepare(new GenerateWeeklyPlanCommand(u, semana, null, true, null, null)).context();
+            var limites = ctx.prescription() == null ? null : ctx.prescription().repLimits();
+            int maxDif = ctx.effectiveMaxDifficulty();
+            var cardio = ctx.availableExercises().stream()
+                    .filter(c -> c.difficulty() <= maxDif)
+                    .filter(c -> main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.claseDe(c)
+                            == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.CARDIO)
+                    .toList();
+            out.append("== ").append(perfil).append('\n');
+            for (var c : cardio) {
+                var d = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.dosis(
+                        main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy.Capability.CARDIO, c,
+                        "LOSE_WEIGHT", "BEGINNER", limites);
+                out.append("cardio_elegible ").append(c.exerciseId()).append(' ').append(c.name()).append(" | ")
+                        .append(c.bodyPartCode()).append(' ').append(c.defaultPrescription()).append(" | dosis=")
+                        .append(d.map(x -> x.describe()).orElse("NINGUNA (repeticiones: sin dosis de cardio)"))
+                        .append('\n');
+            }
+            var prescribible = cardio.stream().filter(c -> main.web.services.fitsense.planning.domain.services
+                    .CapabilityPrescriptionPolicy.dosis(main.web.services.fitsense.planning.domain.model.valueobjects
+                            .GoalCapabilityPolicy.Capability.CARDIO, c, "LOSE_WEIGHT", "BEGINNER", limites).isPresent())
+                    .map(CandidateExercise::exerciseId).collect(Collectors.toCollection(TreeSet::new));
+            out.append("cardio_prescribible ").append(prescribible).append('\n');
+            var borrador = motor.generate(ctx, List.of());
+            Set<Long> anterior = Set.of();
+            LocalDate fechaAnterior = null;
+            for (var w : borrador.workouts()) {
+                boolean pegado = fechaAnterior != null && fechaAnterior.plusDays(1).equals(w.scheduledDate());
+                var ids = w.exercises().stream().map(PlanDraft.DraftExercise::exerciseId)
+                        .collect(Collectors.toCollection(TreeSet::new));
+                var usados = new TreeSet<>(ids); usados.retainAll(prescribible);
+                var bloqueados = new TreeSet<Long>(pegado ? anterior : Set.of()); bloqueados.retainAll(prescribible);
+                var validos = new TreeSet<>(prescribible); validos.removeAll(usados); validos.removeAll(bloqueados);
+                out.append(w.scheduledDate().getDayOfWeek()).append(' ').append(w.focus())
+                        .append(" segundos=").append(segundos(w, ctx.prescription()))
+                        .append(" pegado_al_anterior=").append(pegado)
+                        .append(" cardio_usado=").append(usados).append(" bloqueado_V18=").append(bloqueados)
+                        .append(" cardio_aun_valido=").append(validos).append('\n');
+                anterior = ids;
+                fechaAnterior = w.scheduledDate();
+            }
+            // Elegibles frente a prescribibles en el primer dia de tren inferior
+            var inferior = borrador.workouts().stream().filter(w -> w.focus() == WorkoutFocus.LOWER_BODY).findFirst();
+            if (inferior.isPresent()) {
+                var w = inferior.get();
+                var enSesion = w.exercises().stream().map(PlanDraft.DraftExercise::exerciseId).collect(Collectors.toSet());
+                var complementos = CatalogEligibilityPolicy.complementos(ctx.availableExercises(), "LOSE_WEIGHT");
+                var libres = ctx.availableExercises().stream().filter(c -> !enSesion.contains(c.exerciseId()))
+                        .filter(c -> w.focus().accepts(c.bodyPartCode())).toList();
+                var tabla = new TreeMap<String, Integer>();
+                for (var c : libres) {
+                    var clase = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.claseDe(c);
+                    var caps = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                            .admisibles(c, "LOSE_WEIGHT", "BEGINNER").stream()
+                            .filter(cap -> main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                                    .dosis(cap, c, "LOSE_WEIGHT", "BEGINNER", limites).isPresent()).toList();
+                    String k = (complementos.contains(c.exerciseId()) ? "complemento" : "trabajo") + " | "
+                            + c.bodyPartCode() + " | " + clase + " | " + c.defaultPrescription()
+                            + " | dificultad<=" + maxDif + ":" + (c.difficulty() <= maxDif)
+                            + " | prescribible_LOSE_WEIGHT=" + (caps.isEmpty() ? "NO" : caps);
+                    tabla.merge(k, 1, Integer::sum);
+                }
+                out.append("libres_del_enfoque ").append(w.scheduledDate().getDayOfWeek()).append(" total=")
+                        .append(libres.size()).append('\n');
+                tabla.forEach((k, v) -> out.append("  ").append(v).append('\t').append(k).append('\n'));
+            }
+        }
+        var dir = Path.of(System.getProperty("fitsense.v20.diagnostico.dir"));
+        Files.createDirectories(dir);
+        Files.writeString(dir.resolve("traza_cardio.txt"), out.toString());
+    }
+
     /** Los mismos segundos que suma SessionDurationEstimator antes de redondear al minuto. */
     static int segundos(PlanDraft.DraftWorkout w,
                         main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams p) {

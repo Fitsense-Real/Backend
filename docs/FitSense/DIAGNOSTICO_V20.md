@@ -78,3 +78,7 @@ Cadena que lo bloquea, en `CapabilityWeekBuilder` y `ExerciseSelector`:
 1. Confirmar el punto 5 de §2 (cardio disponible y bloqueado por V18) con una traza del constructor.
 2. Prototipar B, y A si se autoriza, en esta rama. Medir con el barrido de 4 a 6 días, la robustez, la continuidad y los 192 perfiles con restricciones, con V37 y con V37 + V37.1.
 3. Después, corregir el redondeo de V20 y volver a medir.
+
+## 6. Continuación
+
+Los prototipos A y B, la traza del cardio y la regla del 70 % exacto están en `PROTOTIPOS_V20.md`.
