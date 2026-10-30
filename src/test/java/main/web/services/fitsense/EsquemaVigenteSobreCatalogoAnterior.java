@@ -4,6 +4,7 @@ import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import java.util.List;
@@ -34,11 +35,18 @@ public class EsquemaVigenteSobreCatalogoAnterior {
         return flyway -> {
             flyway.migrate();
             var actual = flyway.info().current();
+            var jdbc = new JdbcTemplate(flyway.getConfiguration().getDataSource());
+            // Una clase puede crear su contexto mas de una vez contra el mismo contenedor: lo ya
+            // aplicado queda anotado y no se repite.
+            jdbc.execute("CREATE TABLE IF NOT EXISTS public.test_esquema_vigente (version TEXT PRIMARY KEY)");
             for (var m : SOLO_ESQUEMA) {
                 var partes = m.split(":", 2);
                 if (actual != null && actual.getVersion().isAtLeast(partes[0])) continue;
+                if (jdbc.queryForObject("SELECT count(*) FROM public.test_esquema_vigente WHERE version = ?",
+                        Integer.class, partes[0]) > 0) continue;
                 new ResourceDatabasePopulator(new ClassPathResource(partes[1]))
                         .execute(flyway.getConfiguration().getDataSource());
+                jdbc.update("INSERT INTO public.test_esquema_vigente VALUES (?)", partes[0]);
             }
         };
     }

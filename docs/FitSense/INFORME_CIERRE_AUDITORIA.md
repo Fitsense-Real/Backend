@@ -32,6 +32,15 @@
 - **Corrección:** se cambió el texto y la prueba quedó igual (`194f270`). La suite unitaria pasa en local (864 pruebas).
 - **Efecto secundario:** como fallaba en las unitarias, el CI de esos commits no llegó a las de integración.
 
+**Fallo en el CI de `d41347f` (37 errores en las pruebas de integración):**
+- Las otras pruebas de integración pasaron, incluidas las de adaptación y la multisemana.
+- **Causa:** V42 es la primera migración desde V35 que añade columnas que las entidades mapean. Con `ddl-auto=validate`, las 15 clases fijadas a un catálogo anterior con `spring.flyway.target` no cargaban el contexto.
+- **Corrección (solo en pruebas):** `EsquemaVigenteSobreCatalogoAnterior` aplica, después del target, las migraciones de solo esquema posteriores (V42, que no toca el catálogo). Es idempotente.
+  - Las aserciones no cambian.
+  - La aplicación sigue validando el esquema completo.
+  - Las 15 clases (37 pruebas) pasan en local.
+- Una migración futura que cambie datos del catálogo no debe añadirse a esa lista.
+
 **Resultado sobre el último commit:** ver §8.
 
 ## 3. Simulaciones finales (una vez, sobre el candidato `194f270`)
