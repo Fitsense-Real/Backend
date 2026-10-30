@@ -98,7 +98,8 @@ public enum TipoIntervencion {
      * sesion ya cabe. Se conserva SIN llamar a la IA y queda registrada como sin efecto (D2).
      */
     CONSERVAR(false, false, false,
-            "Conservar la sesion tal como esta. No se envia a la IA.");
+            "Conservar la sesion tal como esta: no sustituir ni retirar ejercicios, y no "
+                    + "cambiar la dosis ni el dia. No se envia a la IA.");
 
     private final boolean permiteSustituirEjercicio;
     private final boolean permiteCambiarDosis;
