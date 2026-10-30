@@ -1,0 +1,55 @@
+etapa	exercise_id	source_code	name_en	columna	antes	despues	evidencia	decision
+A	1117	3552	quick feet v. 2	default_prescription	SETS_REPS	DURATION	GIF 3552: apoyos rapidos alternos sin vuelo; instrucciones 'durante el tiempo'; locomocion continua	D1
+A	1117	3552	quick feet v. 2	body_part	upper legs	cardio	Como 853, 1054 y 1093: locomocion cardiovascular	D1
+A	1117	3552	quick feet v. 2	target_muscle	quads	cardiovascular system	Idem	D1
+B	1102	1687	posterior step to overhead reach	movement_pattern	KNEE_DOMINANT	MOBILITY	GIF 1687: paso atras de pie con alcance por encima de la cabeza; sin flexion de rodilla significativa	D4
+B	1106	0664	push-up to side plank	body_part	waist	chest	GIF 0664: flexion completa y giro a plancha lateral, dinamico	D7
+B	1106	0664	push-up to side plank	target_muscle	abs	pectorals	Idem; la estabilidad lateral queda como componente secundario	D7
+B	1106	0664	push-up to side plank	default_prescription	DURATION	SETS_REPS	Ejecucion dinamica por repeticiones, no isometrica	D7
+B	1106	0664	push-up to side plank	difficulty_level	1	2	PROVISIONAL (D7): empuje + apoyo a una mano con rotacion; pendiente del instrumento de dificultad y revision humana	D7
+B	1111	0642	outside leg kick push-up	body_part	upper legs	chest	GIF 0642: flexion de brazos; el movimiento de pierna es accesorio	D5
+B	1111	0642	outside leg kick push-up	target_muscle	glutes	pectorals	Idem	D5
+B	1113	3662	pike-to-cobra push-up	body_part	upper legs	chest	GIF 3662: flexion de brazos; el movimiento de pierna es accesorio	D5
+B	1113	3662	pike-to-cobra push-up	target_muscle	glutes	pectorals	Idem	D5
+B	1115	0661	push-up inside leg kick	body_part	upper legs	chest	GIF 0661: flexion de brazos; el movimiento de pierna es accesorio	D5
+B	1115	0661	push-up inside leg kick	target_muscle	glutes	pectorals	Idem	D5
+B	1262	0778	spider crawl push up	body_part	upper legs	chest	GIF 0778: flexion de brazos; el movimiento de pierna es accesorio	D5
+B	1262	0778	spider crawl push up	target_muscle	glutes	pectorals	Idem	D5
+B	558	1655	dumbbell biceps curl squat	body_part	upper arms	upper legs	GIF 1655: sentadilla/zancada completa (cuadriceps y gluteo resaltados) con el gesto de brazo encima; precedente V36 (527, 609)	D6
+B	558	1655	dumbbell biceps curl squat	target_muscle	biceps	quads	Idem; patron KNEE_DOMINANT ya coherente	D6
+B	567	1732	dumbbell forward lunge triceps extension	body_part	upper arms	upper legs	GIF 1732: sentadilla/zancada completa (cuadriceps y gluteo resaltados) con el gesto de brazo encima; precedente V36 (527, 609)	D6
+B	567	1732	dumbbell forward lunge triceps extension	target_muscle	triceps	quads	Idem; patron KNEE_DOMINANT ya coherente	D6
+C	301	3168	bodyweight squatting row	requisitos		1:body weight,2:wall bars	GIF 3168: Agarrado a una espaldera	D3
+C	302	3167	bodyweight squatting row (with towel)	requisitos		1:body weight,2:wall bars	GIF 3167: Toalla en la espaldera	D3
+C	303	3156	bodyweight standing close-grip one arm row	requisitos		1:body weight,2:wall bars	GIF 3156: Espaldera	D3
+C	304	3158	bodyweight standing close-grip row	requisitos		1:body weight,2:wall bars	GIF 3158: Espaldera	D3
+C	305	3162	bodyweight standing one arm row	requisitos		1:body weight,2:wall bars	GIF 3162: Espaldera	D3
+C	306	3161	bodyweight standing one arm row (with towel)	requisitos		1:body weight,2:wall bars	GIF 3161: Toalla en la espaldera	D3
+C	307	3166	bodyweight standing row	requisitos		1:body weight,2:wall bars	GIF 3166: Espaldera	D3
+C	308	3165	bodyweight standing row (with towel)	requisitos		1:body weight,2:wall bars	GIF 3165: Toalla en la espaldera	D3
+C	813	3303	flag	requisitos		1:body weight,2:wall bars	GIF 3303: Bandera humana en poste o espaldera	D3
+C	1072	1773	one arm towel row	requisitos		1:body weight,2:anchor point	GIF 1773: Toalla atada a un poste o puerta	D3
+C	880	3193	glute-ham raise	requisitos		1:body weight,2:ghd bench	GIF 3193: Banco GHD con los pies trabados	D3
+C	58	0002	45° side bend	requisitos		1:body weight,2:hyperextension bench	GIF 0002: Banco romano a 45 grados	D3
+C	235	0074	barbell rack pull	requisitos	1:barbell	1:barbell,2:squat rack	GIF 0074: Barra desde los soportes de un rack	D3
+C	1253	1490	standing calf raise (on a staircase)	requisitos		1:body weight,2:step platform	GIF 1490: Antepie en el borde de un escalon	D3
+C	244	0070	barbell preacher curl	requisitos	1:barbell	1:barbell,2:preacher bench	GIF 0070: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	249	0081	barbell reverse preacher curl	requisitos	1:barbell	1:barbell,2:preacher bench	GIF 0081: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	397	1633	cable one arm preacher curl	requisitos	1:cable	1:cable,2:preacher bench	GIF 1633: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	398	1635	cable one arm reverse preacher curl	requisitos	1:cable	1:cable,2:preacher bench	GIF 1635: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	403	0195	cable preacher curl	requisitos	1:cable	1:cable,2:preacher bench	GIF 0195: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	411	0209	cable reverse preacher curl	requisitos	1:cable	1:cable,2:preacher bench	GIF 0209: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	441	1639	cable rope hammer preacher curl	requisitos	1:cable	1:cable,2:preacher bench	GIF 1639: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	445	1640	cable rope one arm hammer preacher curl	requisitos	1:cable	1:cable,2:preacher bench	GIF 1640: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	522	1646	dumbbell alternate hammer preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 1646: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	523	1647	dumbbell alternate preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 1647: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	648	1663	dumbbell one arm hammer preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 1663: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	676	1414	dumbbell one arm reverse preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 1414: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	687	0370	dumbbell peacher hammer curl	requisitos	1:dumbbell	1:dumbbell,2:preacher bench	GIF 0370: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	688	0372	dumbbell preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 0372: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	792	0428	dumbbell standing preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 0428: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	795	2293	dumbbell standing zottman preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 2293: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	802	2294	dumbbell zottman preacher curl	requisitos	1:dumbbell,2:bench	1:dumbbell,2:preacher bench	GIF 2294: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	837	1627	ez barbell close grip preacher curl	requisitos	1:ez barbell	1:ez barbell,2:preacher bench	GIF 1627: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	845	0452	ez barbell reverse grip preacher curl	requisitos	1:ez barbell	1:ez barbell,2:preacher bench	GIF 0452: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
+C	849	1628	ez barbell spider curl	requisitos	1:ez barbell	1:ez barbell,2:preacher bench	GIF 1628: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)	D3
