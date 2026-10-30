@@ -194,23 +194,22 @@ Los `optionalEquipmentCodes` (`band`, `wall bars`, `anchor point`) solo se muest
 | `GeneracionPorObjetivoIT`: prueba nueva `casaSinSueloConV39` | — | Comprueba la mejora: LOSE_WEIGHT en casa sin suelo queda COMPLETO, sin cardio de suelo |
 | `AdaptacionRegresionIT` (`Bloqueos`) | El sustituto se elegía por SQL sin mirar el equipamiento. Con V39 elegía 301, que el perfil ya no puede recibir | El sustituto se elige entre los elegibles reales del participante (`prepare`) |
 
-## 8. Revisión humana (F)
+## 8. Revisión del catálogo (F)
 
-- **Estado: pendiente.** El paquete está en `auditoria_catalogo/v38/REVISION_HUMANA_V39.md` y `revision_humana_v39.tsv`.
-  - Son 43 filas en tres prioridades. La prioridad 1 es movimiento, equipamiento y dificultad: 13 filas.
-  - Las columnas de revisor y veredicto están **vacías**: no se ha inventado ningún revisor.
-- Hasta que se complete, los datos de V39 cuentan como **revisados por IA y pendientes de confirmación humana**.
+- **El responsable del proyecto aprobó la revisión técnica** de los 43 ejercicios el 30/10/2026 (`auditoria_catalogo/v38/FitSense_V39_Dictamen_Tecnico_Aprobado_2026-10-30.xlsx`):
+  - 35 dictámenes aceptados;
+  - 6 ajustes, aplicados (§12);
+  - 2 pendientes de verificación visual: 1113 y 849.
+- **No es una doble revisión humana independiente.** No se registran revisores ni consenso.
 - **1106:** dificultad 2 provisional. No hay ningún evento en `exercise_difficulty_approvals`.
-- Si la revisión cambia algo:
-  1. corregir `cambios_v38.tsv`;
-  2. regenerar con `generar_v38.py` (como V40 si V39 ya se aplicó en algún entorno);
-  3. repetir las pruebas afectadas.
+- Detalle: `auditoria_catalogo/v38/REVISION_HUMANA_V39.md`.
 
 ## 9. Pendientes que siguen abiertos y si bloquean la integración
 
 | Pendiente | ¿Bloquea integrar en `generation`? | Por qué |
 |---|---|---|
-| Doble revisión humana de las 43 filas | **No para `generation`; sí antes de desplegar en entornos reales** | La integración es reversible y trazable, y cada fila comprueba su estado previo. Pero los datos no deben llegar a usuarios sin confirmación humana |
+| Doble revisión humana independiente (la revisión técnica ya la aprobó el responsable) | **No para `generation`; sí antes de declarar el catálogo validado para participantes reales** | La integración es reversible y trazable, y cada fila comprueba su estado previo |
+| 1113 y 849: verificación visual | No | Tratamiento conservador aprobado: 849 exige banco Scott (lo que muestra el GIF) y 1113 conserva los valores de V39 sin cambiar la seguridad |
 | C1: convención de los 74 ejercicios sentados (banco o cajón) | No | No cambia ninguna dosis ni restricción. Afecta a si un perfil de casa sin banco recibe un ejercicio sentado. Es un criterio previo a V38 + V39; no se ha medido si su uso aumenta con V39 |
 | C2: balón apoyado en el suelo | No | Mismo motivo: es un criterio de clasificación previo, sin cambios en V38 + V39 |
 | Dificultades sin consenso (1106 provisional; flexiones 1111, 1113, 1115 y 1262 sin instrumento) | No para `generation`; sí para una validación formal del catálogo | Los valores actuales son conservadores (nivel 1–2) y están documentados como provisionales |
@@ -222,7 +221,7 @@ Los `optionalEquipmentCodes` (`band`, `wall bars`, `anchor point`) solo se muest
 
 ## 10. Riesgos residuales
 
-- **Revisión de IA, no humana:** los datos del catálogo corregido no tienen todavía confirmación humana (§8).
+- **Revisión técnica aprobada, no doble revisión humana:** el catálogo no debe declararse validado para participantes reales mientras siga pendiente (§8).
 - **Clasificación:** los ejercicios de §4 se usan más con V39 y su grupo o patrón es discutible.
 - **E1/E2 sin sustituto:** si en algún perfil futuro no existe una sustitución que cumpla todo, la semana se rechaza por V15 en vez de forzarse. Es lo que pide la orden, pero significa que un catálogo más pobre puede dejar a alguien sin plan; lo detectaría el barrido.
 - **Perfiles de solo peso corporal:**
@@ -233,8 +232,111 @@ Los `optionalEquipmentCodes` (`band`, `wall bars`, `anchor point`) solo se muest
 
 ## 11. Fusión
 
-**No se ha fusionado.** Hay un PR borrador hacia `generation` para obtener el CI, con:
-- la evidencia de capacidades (§2 y `evidencia/v39/final/RESUMEN.md`);
-- las referencias revisadas (§4).
+Ver §12.
 
-Queda a tu decisión.
+## 12. Cierre: orden final del 30/10/2026
+
+### 12.1 Estado inicial
+
+- PR [#7](https://github.com/Fitsense-Real/Backend/pull/7) abierto, sin conflictos, con el CI en verde en `0018007`.
+- `generation` en `1482021`.
+- **V38 y V39 no se habían aplicado en ningún entorno persistente.** Solo existían en esta rama, nunca en `generation` ni en `main`, y no se ha ejecutado nada contra Neon.
+  - Por eso los ajustes se hicieron **en la propia V39**, sin una V40.
+- **Al fusionar:**
+  - el workflow `CI` solo compila y prueba sobre un PostgreSQL efímero, sin secretos;
+  - Railway no despliega desde `generation`, según confirmó el responsable (`CATALOGO_V37.md`);
+  - **queda una advertencia:** `application.properties` apunta a Neon con Flyway activado, así que **cualquier arranque manual del backend contra Neon aplicaría V38 y V39**. Para arrancarlo sin aplicarlas: `SPRING_FLYWAY_TARGET=37`.
+
+### 12.2 Seis ajustes aprobados
+
+| Ej. | Resultado |
+|---|---|
+| 302, 306, 308 | Se mantiene la espaldera. La toalla y la comprobación de la sujeción van como primer paso de las instrucciones. No hay un código «toalla»: lo obligatorio es el soporte. No son elegibles con solo peso corporal |
+| 1072 | Se mantiene el punto de anclaje, ahora «firme (poste fijo o anclaje de puerta)». El primer paso excluye el picaporte y la puerta sin anclaje |
+| 1106 | Sin cambios de datos: pecho, SETS_REPS y nivel 2 PROVISIONAL, sin aprobación de dificultad |
+| 813 | El GIF 3303 muestra un **poste vertical**, no una espaldera. Nuevo implemento `vertical pole` (gimnasio), sin equipararlo con la espaldera. 813 sigue retenido y no llega a ningún plan |
+
+**Pendientes, con el tratamiento conservador aprobado:**
+- **1113:** se conservan los valores de V39.
+- **849:** se exige banco Scott, el más restrictivo, que es lo que muestran sus fotogramas.
+
+### 12.3 Pruebas específicas (análisis de impacto previo)
+
+- Lo que cambió no interviene en la generación:
+  - instrucciones y nombre de un implemento;
+  - requisito de 813, que está retenido.
+- Pruebas ejecutadas, todas en verde:
+  - `CatalogoV39IT` (5, con la nueva `dictamenAprobado`);
+  - `LimitacionesPlanIT` (3);
+  - `CatalogoElegibleIT` (3);
+  - `GeneracionReferenciaIT`: referencia oficial **idéntica byte a byte**;
+  - `ReferenciasHistoricasInmutablesTest`.
+
+### 12.4 Simulaciones extensas (una sola vez, sobre `ed9c1b3`)
+
+| | Resultado |
+|---|---|
+| 72 referencias | 72/72; idéntica a la oficial |
+| Barrido de 72 | 72/72 válidos, todas las capacidades cubiertas |
+| Robustez | 288/288 |
+| 192 restricciones | 192/192 publicados, 0 con implementos no declarados, 0 violaciones |
+| Continuidad de 96 | Sin fallos |
+
+Barrido, robustez y restricciones son **idénticos byte a byte** a la ejecución anterior. Las referencias no se regeneraron: no hacía falta.
+
+### 12.5 CI y fusión
+
+- CI completo (`verify`: compilación, unitarias e integración) sobre el último commit de código. El commit verificado y el de fusión constan en el PR #7.
+
+### 12.6 Estado al cerrar
+
+| Componente | Estado |
+|---|---|
+| V20 exacto | Cerrado |
+| V38 + V39 | Integrados técnicamente en `generation` (PR #7) |
+| E1/E2 | Integrados y probados |
+| Dictamen de 43 ejercicios | Aprobado por el responsable |
+| Seis ajustes | Aplicados y verificados |
+| 1113 y 849 | Pendientes de verificación visual |
+| Doble revisión humana independiente | No acreditada |
+| Neon | Sin modificaciones |
+| Railway | Sin despliegue |
+| Progresión | Apagada por defecto |
+| C4/C6 | Investigación posterior (§12.7) |
+| Flutter | Parche preparado, integración pendiente |
+| Replicate | Validación posterior pendiente; ninguna llamada |
+
+**El catálogo no se declara validado para participantes reales.**
+
+### 12.7 Trabajos posteriores
+
+**C4/C6**
+
+- Hay que investigarlos sin modificar atributos:
+  - prioridad alta: 1225 y 439 (los que más crecen en V39), y después 959 y 962;
+  - segundo grupo: 927, 1223, 674 y 162.
+- Para cada uno se revisa:
+  - movimiento predominante;
+  - grupo real;
+  - patrón;
+  - capacidad;
+  - slot;
+  - impacto sobre V15, V23, V24 y V25;
+  - diferencias de generación que provocaría corregirlo.
+
+**Flutter**
+
+- El parche `evidencia/v39/flutter/0001-…patch` tiene 3 pruebas, que pasan.
+- Hay que:
+  - integrarlo en `FitSense-2-0/mobileapp` (hace falta permiso de GitHub);
+  - conectarlo con el perfil y el onboarding;
+  - probarlo en un dispositivo.
+
+**Replicate** (sin llamadas pagadas hasta que se autoricen)
+
+1. `min_session_seconds`.
+2. Revalidar al usuario 31.
+3. Usuarios 32 y 33, cuando sus archivos estén en el entorno.
+4. Tiempos de respuesta y timeouts.
+5. Rechazos del validador y uso del respaldo.
+6. Una campaña pequeña con V39.
