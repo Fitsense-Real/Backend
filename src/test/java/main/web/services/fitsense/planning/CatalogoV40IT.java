@@ -43,7 +43,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token="
+        "fitsense.ai.api-token=",
+        // Evidencia del catalogo V40: V41 cambia la familia de arrancadas (674) y otros cruces.
+        "spring.flyway.target=40"
 })
 @DisplayName("V40: coherencia grupo, patron y slot (C4/C6)")
 class CatalogoV40IT {
