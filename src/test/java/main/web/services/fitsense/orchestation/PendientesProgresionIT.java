@@ -114,7 +114,14 @@ class PendientesProgresionIT {
     @DisplayName("opcion 2: devolver una serie supera el 10 %; la dosis reducida se conserva y progresan otros ejercicios")
     void serieNoRecuperableYProgresionDeOtros() throws Exception {
         modo = Modo.SERIE;
-        long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, 45);
+        // Premisa aritmetica: devolver la serie quitada tiene que superar el 10 % de la sesion y +1
+        // repeticion de OTRO ejercicio caber en el 5 % (progression_increase_pct). Con dos
+        // ejercicios 3x6 (LOSE_WEIGHT intermedio, 45 min) es imposible: 6/54 > 10 % obliga a que
+        // 3/54 = 5,6 % > 5 %. Hasta V40 se cumplia porque 1225 (abdominal clasificado como fuerza
+        // de cadera, 3x10) ocupaba el viernes. Corregido el dato, el escenario es GENERAL_FITNESS
+        // intermedio en casa, 30 min (3x18: 18/107 = 16,8 % y 3/107 = 2,8 %); un principiante no
+        // sirve porque quitar una serie a un 2xN lo deja en una. La regla y las aserciones no cambian.
+        long u = participante(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, 30, "CASA");
         long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.FATIGA);
         var antes = semana(plan).get(2).getValue();

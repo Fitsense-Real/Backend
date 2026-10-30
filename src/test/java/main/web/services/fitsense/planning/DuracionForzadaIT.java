@@ -39,14 +39,17 @@ import static org.junit.jupiter.api.Assertions.*;
  * generacion y el de la correccion P2-D se construyen con la duracion
  * efectiva; V24 tiene que medir con la misma.
  * <p>
- * Con el catalogo vigente (V36). La comprobacion del plan 60 tal como se
- * publico, sin orden, esta en {@link DuracionForzadaPlan60IT} (catalogo V35).
+ * Fijada en el catalogo V39: las sesiones son las del plan 60, con 1225 a 3x13 como fuerza de
+ * zona pequena. Desde V40 (C4/C6) 1225 es TRUNK_FLEXION y V24 le exige 2x13, igual que paso con
+ * 872 en V36 (ver {@link DuracionForzadaPlan60IT}, catalogo V35). Lo que se prueba aqui es la
+ * duracion forzada, no la clasificacion de 1225.
  */
 @Testcontainers
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token="
+        "fitsense.ai.api-token=",
+        "spring.flyway.target=39"
 })
 class DuracionForzadaIT extends DuracionForzadaBase {
 
