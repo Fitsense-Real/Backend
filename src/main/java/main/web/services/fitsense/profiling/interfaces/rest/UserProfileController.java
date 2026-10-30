@@ -61,7 +61,8 @@ public class UserProfileController {
     }
 
     @PutMapping
-    @Operation(summary = "Actualiza el perfil. Los cambios se aplican en la generacion del lunes siguiente.")
+    @Operation(summary = "Actualiza el perfil. Solo antes del primer plan: despues responde 422 y el perfil "
+            + "se mantiene durante todo el estudio.")
     public ResponseEntity<UserProfileResource> update(
             @AuthenticationPrincipal UserDetailsImpl principal,
             @Valid @RequestBody UpdateUserProfileResource resource) {

@@ -119,3 +119,16 @@
 | Reincorporación | VERIFICADO |
 | Trazabilidad | VERIFICADO |
 | Multisemana | VERIFICADO; con un pendiente de decisión (el cambio de perfil) y NO REPRODUCIBLE (usuarios 31, 32 y 33, sin sus registros) |
+
+## 9. Actualización posterior: decisión 1 resuelta
+
+**Decisión del responsable (30/10/2026):** durante el estudio, la persona no puede modificar su perfil.
+
+**Implementación:**
+- Desde el primer plan, `PUT /api/v1/users/me/profile` responde 422 (`UserProfileLockedException`) y no guarda nada.
+- Antes del primer plan, el perfil se puede corregir.
+- Lo prueba `PerfilCongeladoIT`.
+
+**Efecto:** el riesgo residual 1 y la decisión 1 quedan cerrados.
+
+**Lo que tiene que hacer la app Flutter:** no ofrecer la edición del perfil después del primer plan, y mostrar el mensaje del 422 si llega.

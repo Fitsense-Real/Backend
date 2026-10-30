@@ -26,7 +26,7 @@
 | 2 | Falta una vez por un imprevisto | «2 imprevisto una vez» | VERIFICADO: CONSERVAR (SIN_EFECTO) y después NO_CHANGE |
 | 3 | Falta recurrente de tiempo | «3 falta de tiempo recurrente con minutos» | VERIFICADO: ACORTAR con techo. APLICADA en LW y GM, SIN_EFECTO en IS, RESPALDO en GF (techo inviable) |
 | 4 | Ningún minuto ese día | «4 sin ningún minuto ese día» | VERIFICADO: CONSERVAR |
-| 5 | Cambia sus días disponibles | `cambiaSuPerfil` (opt-in, `-Dfitsense.pendientes=true`) | **PENDIENTE DE DECISIÓN** (§4) |
+| 5 | Cambia sus días disponibles | `PerfilCongeladoIT`; `cambiaSuPerfil` (opt-in) reproduce el caso si se cambia por SQL | **CORREGIDO Y PROBADO** (§4): el perfil no cambia durante el estudio |
 | 6 | Fatiga | «6 fatiga» | VERIFICADO: REVISAR_CARGA, sin subir dosis |
 | 7 | Dolor | «7 dolor» | VERIFICADO: SEGURIDAD_ANTE_DOLOR APLICADA; el ejercicio no vuelve |
 | 8 | Rutina demasiado difícil | «8 demasiado difícil» | VERIFICADO: VARIANTE_MAS_SENCILLA |
@@ -77,7 +77,17 @@ Trazas completas: `evidencia/auditoria_integral/multisemana_trazas.txt`.
 | La falta de tiempo siempre acortaba | **CORREGIDO Y PROBADO** (`a335e48`) |
 | Artefactos de la IA simulada: quitar el ejercicio que dolió dejaba la sesión bajo el piso V20, y en GAIN_MUSCLE reducía el volumen (V24) | Era un defecto **del simulador**, no del backend: los validadores rechazaron correctamente. Se ajustó el simulador para que sustituya |
 
-## 4. Pendiente de decisión: cambio de perfil
+## 4. Cambio de perfil: decidido y aplicado
+
+**Decisión del responsable (30/10/2026):** durante el estudio, la persona no puede modificar su perfil. Lo que declaró al registrarse se mantiene.
+
+**Cómo se aplica en el backend:**
+- Desde el primer plan, `PUT /api/v1/users/me/profile` responde **422** y no guarda nada.
+- Antes del primer plan, el perfil se puede corregir.
+- Lo prueba `PerfilCongeladoIT`.
+- Así la semana copiada siempre cumple los días y el equipamiento del perfil. El caso de abajo ya no puede ocurrir por la API; `cambiaSuPerfil` lo reproduce solo cambiando la base directamente.
+
+**Análisis previo** (se conserva como antecedente):
 
 **Reproducción:** `-Dfitsense.pendientes=true` ejecuta `cambiaSuPerfil`. Evidencia en `evidencia/auditoria_integral/pendiente_cambio_de_perfil.txt`.
 

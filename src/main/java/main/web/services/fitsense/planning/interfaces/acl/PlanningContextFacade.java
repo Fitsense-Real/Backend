@@ -124,6 +124,12 @@ public class PlanningContextFacade {
                 .orElse(0);
     }
 
+    /** Si el usuario ya recibio algun plan, de cualquier semana y estado: desde ahi su perfil queda fijo. */
+    @Transactional(readOnly = true)
+    public boolean hasAnyPlan(Long userId) {
+        return planRepository.existsByUserId(userId);
+    }
+
     /** El plan ACTIVO de esa semana, si lo hay. */
     @Transactional(readOnly = true)
     public Optional<Long> findActivePlanId(Long userId, LocalDate weekStartDate) {
