@@ -157,9 +157,13 @@ abstract class Usuario31Base {
         contiene(r.get(1), "V18: el ejercicio 1325 se repite en dias consecutivos",
                 "V23: la semana no cubre LOWER_HIP", "LOWER_HIP=" + lowerHip + " elegibl");
         assertFalse(r.get(1).contains("V15"), r.get(1));
-        contiene(r.get(2), "V15: el entrenamiento del " + DOMINGO + " dedica 4 de 6 ejercicios a upper legs");
-        assertEquals(1, r.get(2).split(" ; ").length, r.get(2));
-        contiene(r.get(3), "V15: el entrenamiento del " + DOMINGO + " dedica 3 de 5 ejercicios a upper legs");
-        assertEquals(1, r.get(3).split(" ; ").length, r.get(3));
+        // Desde V20 exacto (IMPLEMENTACION_V20.md) el sabado de los intentos 2 y 3, 1.866 s (69,1 %),
+        // tambien se rechaza: antes pasaba solo por el redondeo a 31 minutos.
+        contiene(r.get(2), "V15: el entrenamiento del " + DOMINGO + " dedica 4 de 6 ejercicios a upper legs",
+                "V20: el entrenamiento del " + SABADO + " dura unos 1866 s y el minimo es 1890 s");
+        assertEquals(2, r.get(2).split(" ; ").length, r.get(2));
+        contiene(r.get(3), "V15: el entrenamiento del " + DOMINGO + " dedica 3 de 5 ejercicios a upper legs",
+                "V20: el entrenamiento del " + SABADO + " dura unos 1866 s y el minimo es 1890 s");
+        assertEquals(2, r.get(3).split(" ; ").length, r.get(3));
     }
 }

@@ -1,6 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
+import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
 import main.web.services.fitsense.planning.domain.services.TrainingPlanGenerator;
 import org.springframework.stereotype.Component;
@@ -194,9 +195,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // series en pequenos -> ejercicios sin topes -> 3 series en esos.
             if (minimumMinutes > 0 && context.prescription() != null) {
                 var date = dates.get(i);
-                java.util.function.BooleanSupplier falta = () -> durationEstimator.estimateMinutes(
-                        new PlanDraft.DraftWorkout(date, focus, nameOf(focus), sessionMinutes, exercises),
-                        context.prescription()) < minimumMinutes;
+                java.util.function.BooleanSupplier falta = () -> segundosDe(date, focus, sessionMinutes,
+                        exercises, context) < PlanDraftValidator.minimumSessionSeconds(context);
 
                 addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, true,
                         topeColocaciones, presupuestoDia, dosisFijada);
@@ -341,7 +341,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
 
         int hechas = 0;
         boolean seguir = true;
-        while (seguir && duracionDe(date, focus, sessionMinutes, exercises, context) < minimumMinutes) {
+        while (seguir && segundosDe(date, focus, sessionMinutes, exercises, context)
+                < PlanDraftValidator.minimumSessionSeconds(context)) {
             seguir = false;
 
             // picked y exercises van en paralelo (mismo indice): se recorre al
@@ -412,10 +413,10 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         }
     }
 
-    /** La duracion que vera V20, con el estimador de V17. */
-    private int duracionDe(LocalDate date, WorkoutFocus focus, int sessionMinutes,
-                           List<PlanDraft.DraftExercise> exercises, PlanGenerationContext context) {
-        return durationEstimator.estimateMinutes(new PlanDraft.DraftWorkout(
+    /** La duracion que vera V20: los segundos del estimador, sin redondear. */
+    private long segundosDe(LocalDate date, WorkoutFocus focus, int sessionMinutes,
+                            List<PlanDraft.DraftExercise> exercises, PlanGenerationContext context) {
+        return durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(
                 date, focus, nameOf(focus), sessionMinutes, exercises), context.prescription());
     }
 
@@ -598,7 +599,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     /** Semilla estable: mismo usuario y misma semana, mismo plan. */
-    private long seedFor(PlanGenerationContext context) {
+    long seedFor(PlanGenerationContext context) {
         return context.userId() * 1_000_003L + context.weekStartDate().toEpochDay();
     }
 }

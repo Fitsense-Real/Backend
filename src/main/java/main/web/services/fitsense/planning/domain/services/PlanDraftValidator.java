@@ -1446,15 +1446,27 @@ public class PlanDraftValidator {
             if (conservation.fechasConDuracionReducible().contains(workout.scheduledDate()))
                 continue;
 
-            int estimada = durationEstimator.estimateMinutes(workout, prescription);
-            if (estimada < floor)
-                problems.add(("V20: el entrenamiento del %s dura unos %d minutos y el minimo es %d "
-                        + "(%d %% de %d): le faltan unos %d minutos. Agrega un ejercicio del enfoque "
+            // V20 en segundos y sin redondear: con 45 minutos, 1.890 s. Antes se
+            // comparaba la duracion redondeada al minuto con el piso truncado
+            // (31), lo que aceptaba desde 1.830 s (67,8 %).
+            long segundos = durationEstimator.estimateSeconds(workout, prescription);
+            long minimo = minimumSessionSeconds(context);
+            if (segundos < minimo)
+                problems.add(("V20: el entrenamiento del %s dura unos %d s y el minimo es %d s "
+                        + "(%d %% de %d minutos): le faltan %d s. Agrega un ejercicio del enfoque "
                         + "o una serie a los que ya tiene, no descanso.")
-                        .formatted(workout.scheduledDate(), estimada, floor,
-                                prescription.floorPct(), context.effectiveSessionMinutes(),
-                                floor - estimada));
+                        .formatted(workout.scheduledDate(), segundos, minimo, prescription.floorPct(),
+                                context.effectiveSessionMinutes(), minimo - segundos));
         }
+    }
+
+    /**
+     * El piso de V20 en segundos: {@code ceil(minutos x 60 x floorPct / 100)}.
+     * 1.890 s con 45 minutos y 3.150 s con 75. 0 cuando V20 no aplica.
+     */
+    public static long minimumSessionSeconds(PlanGenerationContext context) {
+        if (minimumSessionMinutes(context) == 0) return 0;
+        return (context.effectiveSessionMinutes() * 60L * context.prescription().floorPct() + 99) / 100;
     }
 
     /** 0 cuando no aplica: hay orden de volumen o no hay configuracion. */
