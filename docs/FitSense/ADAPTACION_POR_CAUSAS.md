@@ -99,7 +99,7 @@ La consulta da también los indicadores de §4 del diseño. Lo prueba `resultado
 
 | Implementado | Pendiente de decisión |
 |---|---|
-| D1, D2, D6 y D7 (V42); D4 ya existía | Qué hacer cuando la persona **cambia sus días o su equipamiento** (`VALIDACION_MULTISEMANA.md` §4) |
+| D1, D2, D6 y D7 (V42); D4 ya existía; perfil fijo durante el estudio (`PerfilCongeladoIT`) | — |
 | CONSERVAR sin IA | Si un RESPALDO por un techo M inviable debe contarse aparte en los indicadores |
 | Dolor con adherencia buena | Ninguno más en este bloque |
 | Indicador por sesión adaptada (consulta) | Persistirlo como métrica (requeriría una tabla nueva) |

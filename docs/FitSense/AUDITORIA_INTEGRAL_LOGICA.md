@@ -25,7 +25,7 @@ Documentos relacionados:
 | 6 | Progresión | **VERIFICADO**, con la progresión apagada por defecto | §5 |
 | 7 | Reincorporación | **VERIFICADO** | §5 |
 | 8 | Trazabilidad | **VERIFICADO**. El resultado por sesión adaptada se implementó como consulta de solo lectura | §6 |
-| 9 | Validación multisemana | **VERIFICADO** en 16 de 18 escenarios. El cambio de perfil queda **PENDIENTE DE DECISIÓN**. Replicate 31/32/33: **NO REPRODUCIBLE** sin los registros originales | `VALIDACION_MULTISEMANA.md` |
+| 9 | Validación multisemana | **VERIFICADO** en 16 de 18 escenarios. El cambio de perfil queda **CORREGIDO Y PROBADO** tras la decisión: el perfil es fijo desde el primer plan (`PerfilCongeladoIT`). Replicate 31/32/33: **NO REPRODUCIBLE** sin los registros originales | `VALIDACION_MULTISEMANA.md` |
 
 ## 2. Catálogo
 
@@ -126,7 +126,7 @@ Medido en la referencia oficial V41. No se modificó el catálogo.
 
 ## 7. Riesgos pendientes
 
-1. **Cambio de perfil:** si la persona cambia sus días o su equipamiento, la semana copiada no se adapta y la siguiente queda sin publicar (V3/V1, NO_FACTIBLE). Es el pendiente de más prioridad. Ver `VALIDACION_MULTISEMANA.md` §4.
+1. ~~**Cambio de perfil**~~ **Resuelto (decisión del 30/10/2026):** el perfil es fijo desde el primer plan. Antes: si la persona cambia sus días o su equipamiento, la semana copiada no se adapta y la siguiente queda sin publicar (V3/V1, NO_FACTIBLE). Es el pendiente de más prioridad. Ver `VALIDACION_MULTISEMANA.md` §4.
 2. **C1:** los jalones con banda sentados se dan a perfiles sin banco.
 3. **1113 en principiantes:** dificultad sin evaluar con el instrumento.
 4. **Cotas inviables:** con MENOS_TIEMPO_HABITUAL, si los minutos declarados no permiten una sesión válida (V20), el resultado es RESPALDO (sesión original), no SIN_EFECTO. Es correcto por seguridad, pero el indicador lo cuenta como respaldo.
