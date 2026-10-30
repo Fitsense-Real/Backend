@@ -145,11 +145,36 @@ Con el prototipo A, 1106 subía en 20–31 apariciones.
 
 ### 3.1 Suite de integración completa (V37)
 
-_(se completa al terminar)_
+`mvn verify -Pintegration`: 845 unitarias sin fallos y 285 de integración (24 omitidas por opt-in). Hubo 6 fallos en la primera pasada.
+
+**3 corregidos (cambio de premisa justificado):** `Usuario31ReproduccionIT` (2) y `Usuario31V37IT` (1).
+- Reproducen las propuestas reales de la IA del incidente del usuario 31.
+- En los intentos 2 y 3, el sábado dura **1.866 s (69,1 %)**. Antes pasaba solo por el redondeo a 31 min; ahora V20 lo rechaza además de V15.
+- La prueba exigía exactamente un problema por intento. Ahora exige los dos: el mismo V15 y el nuevo V20 con sus segundos.
+- El rechazo de la propuesta no cambia, y el plan del motor sigue publicándose. Tras el ajuste, 3/3 pasan.
+
+**3 esperados, pendientes de tu aprobación:** las referencias protegidas.
+- `GeneracionReferenciaIT` (oficial, V37): 13 perfiles cambian (§2.4).
+- `GeneracionReferenciaV36IT` (catálogo V36): 11 perfiles cambian (LW 2, GM 2, GF 7).
+- `GeneracionReferenciaV35IT` (catálogo V35): 11 perfiles cambian (LW 2, GM 2, GF 7).
+
+En los tres casos todos los perfiles siguen válidos. Las tres protegen la generación «tal cual» y fallan con cualquier cambio del motor. No se han regenerado. Candidatas:
+- `evidencia/v20/final/fin_v37/generacion_referencia.txt`;
+- `evidencia/v20/final/generacion_referencia_v36_candidata.txt`;
+- `evidencia/v20/final/generacion_referencia_v35_candidata.txt`.
+
+**El resto de la suite pasa:**
+- V15, V18, V22, V23, V24 y V25;
+- adaptación, progresión y reserva, copia semanal, D8 y V8C;
+- seguridad, restricciones, 4–6 días y respaldo.
 
 ## 4. Riesgos y pendientes
 
-1. **Referencias oficiales.** `GeneracionReferenciaIT` protege la referencia oficial y fallará en los 13 perfiles de §2.4 hasta que apruebes la nueva referencia. Candidata: `evidencia/v20/final/fin_v37/generacion_referencia.txt`. No se ha tocado la oficial.
+1. **Referencias.** Las tres pruebas de referencia (oficial V37 y las históricas V36 y V35) fallarán hasta que decidas (§3.1). Para las históricas hay dos opciones:
+   - regenerarlas con el motor nuevo, sobre el mismo catálogo;
+   - o fijarlas al código anterior, como evidencia, dejando de ejecutarlas contra el motor actual.
+
+   Recomiendo la primera: siguen protegiendo que el catálogo V35 y V36 produce planes válidos.
 2. **La IA.** El dato que recibe la IA (`PlanInputSnapshot.min_session_minutes`) sigue siendo el piso entero, 31 min, porque no se tocan los prompts. Una propuesta de la IA de 31 min justos (1.860 s) ahora se rechaza y va al reintento o al respaldo. Con la IA apagada en las pruebas no tiene efecto. Conviene decidir si se le pasa también el mínimo en segundos.
 3. **GENERAL_FITNESS de 60 min.** Algunas sesiones pasan de 42 a 49–51 min, porque la única forma de completar es un estructural con 150 s de descanso. Están dentro del techo. Es el coste de exigir el 70 % real.
 4. **V37.1 sigue separada.** Con ella, LOSE_WEIGHT principiante en casa, 4 y 5 días, sigue sin plan. La solución es de catálogo, no de motor.
@@ -165,6 +190,6 @@ _(se completa al terminar)_
 ## 5. Para integrar (requiere tu aprobación)
 
 1. Revisar §1.2, paso 2.
-2. Aprobar la nueva referencia de 72 perfiles. Después, `-Dfitsense.generacion.capturar=true` sobre V37 y comprobar que coincide con la candidata.
+2. Aprobar las tres referencias candidatas (V37 oficial, V36 y V35). Después, regenerarlas con su propiedad de captura y comprobar que coinciden con las candidatas.
 3. Fusionar `v20-duracion` a `generation`. El CI completo se ejecutará en el PR.
 4. V37.1 queda fuera hasta resolver el cardio de casa.
