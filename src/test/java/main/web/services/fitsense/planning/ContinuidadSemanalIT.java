@@ -124,8 +124,15 @@ class ContinuidadSemanalIT {
                         String perfil = objetivo + "/" + nivel + "/" + dias + "d/" + lugar
                                 + (cumple ? " cumple" : " sin registros");
                         long u = participante(objetivo, nivel, dias, lugar);
-                        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null)
-                                .orElseThrow(() -> new AssertionError("sin plan inicial: " + perfil));
+                        long w1;
+                        try {
+                            w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null)
+                                    .orElseThrow(() -> new AssertionError("sin plan inicial: " + perfil));
+                        } catch (RuntimeException e) {
+                            // Se anota y se sigue: el informe lista todos los perfiles sin plan, no solo el primero.
+                            fallos.add(perfil + " -> sin plan inicial: " + e.getMessage());
+                            continue;
+                        }
                         if (cumple) cumplirTodo(u, w1);
                         var r = ciclo.runFor(u, S1, S1.plusWeeks(1));
                         var intento = ultimo(u);

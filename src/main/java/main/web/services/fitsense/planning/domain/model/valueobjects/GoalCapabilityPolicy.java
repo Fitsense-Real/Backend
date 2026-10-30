@@ -208,26 +208,6 @@ public final class GoalCapabilityPolicy {
      */
     public static Optional<GoalCapabilities> forGoal(String goalType) {
         if (goalType == null || goalType.isBlank()) return Optional.empty();
-        String clave = goalType.trim().toUpperCase(Locale.ROOT);
-        if ("LOSE_WEIGHT".equals(clave) && experimentoV20A()) return Optional.of(LOSE_WEIGHT_EXPERIMENTO_V20A);
-        return Optional.ofNullable(MATRIZ.get(clave));
+        return Optional.ofNullable(MATRIZ.get(goalType.trim().toUpperCase(Locale.ROOT)));
     }
-
-    /**
-     * EXPERIMENTO V20-A (rama v20-duracion, NO aprobado para produccion). Con
-     * {@code -Dfitsense.experimento.v20a=true}, LOSE_WEIGHT anade
-     * MUSCULAR_ENDURANCE como secundaria OPORTUNISTA: nunca se exige (V25 solo
-     * mira las principales) y el motor de reglas solo la usa como relleno cuando
-     * la fuerza estructural no cabe. Apagado, la matriz es la de siempre.
-     */
-    public static final String EXPERIMENTO_V20A = "fitsense.experimento.v20a";
-
-    public static boolean experimentoV20A() {
-        return Boolean.getBoolean(EXPERIMENTO_V20A);
-    }
-
-    private static final GoalCapabilities LOSE_WEIGHT_EXPERIMENTO_V20A = new GoalCapabilities("LOSE_WEIGHT", List.of(
-            primary(Capability.CARDIO),
-            secondary(Capability.STRENGTH, Condition.ALWAYS),
-            secondary(Capability.MUSCULAR_ENDURANCE, Condition.OPPORTUNISTIC)));
 }

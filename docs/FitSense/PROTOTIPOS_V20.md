@@ -142,7 +142,7 @@ Ninguna referencia queda inválida.
 
 **Lo que rompe con V37 + V37.1** (sin A):
 - **LW/BEG/4d y 5d casa:** siguen sin plan. Es composición, §1.
-- **LW/BEG/6d/45/casa (nuevo):** el jueves superior va justo detrás del miércoles. Le queda 1 cardio y 1.830 s. Para llegar a 1.890 s, la sesión publicada se queda **sin cardio**. La causa probable, sin traza todavía, es la sustitución de relleno por estructural del respaldo. Eso lo rechaza V25 («no incluye CARDIO ... y en esa sesión es factible»).
+- **LW/BEG/6d/45/casa (nuevo):** el jueves superior va justo detrás del miércoles. Le queda 1 cardio y 1.830 s. Para llegar a 1.890 s, la sesión publicada se queda **sin cardio**. La causa probable, sin traza todavía, es la sustitución de relleno por estructural del respaldo. **Corregido en `IMPLEMENTACION_V20.md` §1.3:** la causa exacta es otra. El relleno del miércoles usa el tercer cardio, y el jueves, que va pegado, se queda sin ninguno por V18. Eso lo rechaza V25 («no incluye CARDIO ... y en esa sesión es factible»).
 - **GF/INTERMEDIATE/4d/45/GYM (nuevo)** y GF/ADVANCED/4d/45/GYM (1 semilla): el jueves inferior (1.851–1.866 s) se completa con otro ejercicio de `upper legs`. Queda en «3 de 5 a upper legs» y V15 lo rechaza.
 - **Continuidad con A + exacto:** falla el usuario 88. Por el orden del recorrido, es GF/BEGINNER/6d/casa: «4 de 7 a upper legs» (V15). Es la misma causa: completar el día inferior añadiendo pierna.
 

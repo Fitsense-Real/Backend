@@ -40,8 +40,8 @@ public class SessionDurationEstimator {
 
     /**
      * Los segundos que suma el estimador ANTES de redondear al minuto
-     * (calentamiento, trabajo, descansos y transiciones). Lo usa el experimento
-     * de V20 al 70 % exacto ({@link PlanDraftValidator#v20Exacto()}).
+     * (calentamiento, trabajo, descansos y transiciones). V20 compara estos
+     * segundos con {@link PlanDraftValidator#minimumSessionSeconds}.
      */
     public long estimateSeconds(PlanDraft.DraftWorkout workout, PrescriptionParams params) {
         int n = workout.exercises().size();

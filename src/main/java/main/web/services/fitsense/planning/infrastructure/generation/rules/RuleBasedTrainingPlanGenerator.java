@@ -195,13 +195,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // series en pequenos -> ejercicios sin topes -> 3 series en esos.
             if (minimumMinutes > 0 && context.prescription() != null) {
                 var date = dates.get(i);
-                java.util.function.BooleanSupplier falta = () -> PlanDraftValidator.v20Exacto()
-                        ? durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(date, focus, nameOf(focus),
-                                sessionMinutes, exercises), context.prescription())
-                                < PlanDraftValidator.minimumSessionSeconds(context)
-                        : durationEstimator.estimateMinutes(
-                        new PlanDraft.DraftWorkout(date, focus, nameOf(focus), sessionMinutes, exercises),
-                        context.prescription()) < minimumMinutes;
+                java.util.function.BooleanSupplier falta = () -> segundosDe(date, focus, sessionMinutes,
+                        exercises, context) < PlanDraftValidator.minimumSessionSeconds(context);
 
                 addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, true,
                         topeColocaciones, presupuestoDia, dosisFijada);
@@ -346,10 +341,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
 
         int hechas = 0;
         boolean seguir = true;
-        while (seguir && (PlanDraftValidator.v20Exacto()
-                ? durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(date, focus, nameOf(focus),
-                        sessionMinutes, exercises), context.prescription()) < PlanDraftValidator.minimumSessionSeconds(context)
-                : duracionDe(date, focus, sessionMinutes, exercises, context) < minimumMinutes)) {
+        while (seguir && segundosDe(date, focus, sessionMinutes, exercises, context)
+                < PlanDraftValidator.minimumSessionSeconds(context)) {
             seguir = false;
 
             // picked y exercises van en paralelo (mismo indice): se recorre al
@@ -420,10 +413,10 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         }
     }
 
-    /** La duracion que vera V20, con el estimador de V17. */
-    private int duracionDe(LocalDate date, WorkoutFocus focus, int sessionMinutes,
-                           List<PlanDraft.DraftExercise> exercises, PlanGenerationContext context) {
-        return durationEstimator.estimateMinutes(new PlanDraft.DraftWorkout(
+    /** La duracion que vera V20: los segundos del estimador, sin redondear. */
+    private long segundosDe(LocalDate date, WorkoutFocus focus, int sessionMinutes,
+                            List<PlanDraft.DraftExercise> exercises, PlanGenerationContext context) {
+        return durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(
                 date, focus, nameOf(focus), sessionMinutes, exercises), context.prescription());
     }
 

@@ -1446,44 +1446,27 @@ public class PlanDraftValidator {
             if (conservation.fechasConDuracionReducible().contains(workout.scheduledDate()))
                 continue;
 
-            int estimada = durationEstimator.estimateMinutes(workout, prescription);
-            if (v20Exacto()) {
-                long segundos = durationEstimator.estimateSeconds(workout, prescription);
-                long minimo = minimumSessionSeconds(context);
-                if (segundos < minimo)
-                    problems.add(("V20: el entrenamiento del %s dura unos %d s y el minimo es %d s "
-                            + "(%d %% exacto de %d minutos): le faltan %d s. Agrega un ejercicio del enfoque "
-                            + "o una serie a los que ya tiene, no descanso.")
-                            .formatted(workout.scheduledDate(), segundos, minimo, prescription.floorPct(),
-                                    context.effectiveSessionMinutes(), minimo - segundos));
-                continue;
-            }
-            if (estimada < floor)
-                problems.add(("V20: el entrenamiento del %s dura unos %d minutos y el minimo es %d "
-                        + "(%d %% de %d): le faltan unos %d minutos. Agrega un ejercicio del enfoque "
+            // V20 en segundos y sin redondear: con 45 minutos, 1.890 s. Antes se
+            // comparaba la duracion redondeada al minuto con el piso truncado
+            // (31), lo que aceptaba desde 1.830 s (67,8 %).
+            long segundos = durationEstimator.estimateSeconds(workout, prescription);
+            long minimo = minimumSessionSeconds(context);
+            if (segundos < minimo)
+                problems.add(("V20: el entrenamiento del %s dura unos %d s y el minimo es %d s "
+                        + "(%d %% de %d minutos): le faltan %d s. Agrega un ejercicio del enfoque "
                         + "o una serie a los que ya tiene, no descanso.")
-                        .formatted(workout.scheduledDate(), estimada, floor,
-                                prescription.floorPct(), context.effectiveSessionMinutes(),
-                                floor - estimada));
+                        .formatted(workout.scheduledDate(), segundos, minimo, prescription.floorPct(),
+                                context.effectiveSessionMinutes(), minimo - segundos));
         }
     }
 
     /**
-     * EXPERIMENTO (rama v20-duracion, NO aprobado para produccion): V20 al 70 %
-     * EXACTO en segundos, sin el redondeo actual (piso truncado y duracion
-     * redondeada al minuto, que acepta desde el 67,8 % con 45 minutos). Solo con
-     * {@code -Dfitsense.experimento.v20exacto=true}; apagado, nada cambia.
+     * El piso de V20 en segundos: {@code ceil(minutos x 60 x floorPct / 100)}.
+     * 1.890 s con 45 minutos y 3.150 s con 75. 0 cuando V20 no aplica.
      */
-    public static final String EXPERIMENTO_V20_EXACTO = "fitsense.experimento.v20exacto";
-
-    public static boolean v20Exacto() {
-        return Boolean.getBoolean(EXPERIMENTO_V20_EXACTO);
-    }
-
-    /** El 70 % exacto en segundos (1.890 s con 45 minutos); 0 cuando V20 no aplica. */
     public static long minimumSessionSeconds(PlanGenerationContext context) {
         if (minimumSessionMinutes(context) == 0) return 0;
-        return (long) Math.ceil(context.effectiveSessionMinutes() * 60.0 * context.prescription().floorPct() / 100.0);
+        return (context.effectiveSessionMinutes() * 60L * context.prescription().floorPct() + 99) / 100;
     }
 
     /** 0 cuando no aplica: hay orden de volumen o no hay configuracion. */

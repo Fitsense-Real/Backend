@@ -95,6 +95,9 @@ class CapabilityWeekBuilder {
         this.complementos = CatalogEligibilityPolicy.complementos(context.availableExercises(), objetivo);
     }
 
+    /** El enfoque de la sesion de manana si va pegada a la de hoy (V18); si no, null. */
+    private WorkoutFocus enfoqueSiguientePegado;
+
     private boolean principalFactible(Capability c) {
         return principales.contains(c) && factibles.contains(c);
     }
@@ -141,6 +144,10 @@ class CapabilityWeekBuilder {
             var fecha = sesion.date();
             var enfoque = sesion.focus();
             boolean pegado = fechaAnterior != null && fechaAnterior.plusDays(1).equals(fecha);
+            int indice = split.indexOf(sesion);
+            var siguiente = indice + 1 < split.size() ? split.get(indice + 1) : null;
+            enfoqueSiguientePegado = siguiente != null && fecha.plusDays(1).equals(siguiente.date())
+                    ? siguiente.focus() : null;
             var bloqueados = pegado ? idsDiaAnterior : Set.<Long>of();
             var gruposBloqueados = pegado ? gruposDiaAnterior : Set.<String>of();
 
@@ -221,6 +228,34 @@ class CapabilityWeekBuilder {
                     if (extra == null) break;
                     var con = new ArrayList<>(dia);
                     con.add(extra);
+                    // V15: si el ejercicio dejaria a un grupo con mas de la mitad de
+                    // la sesion, antes se prueba a subir series de lo que ya hay,
+                    // dentro de la dosis vigente. Si con eso llega al piso, no se anade.
+                    if (respetaMitad(enfoque, dia) && !respetaMitad(enfoque, con)) {
+                        var ampliado = new ArrayList<>(dia);
+                        ampliarSeries(fecha, enfoque, ampliado, piso, techo);
+                        if (!corto(fecha, enfoque, ampliado, piso)) {
+                            dia.clear();
+                            dia.addAll(ampliado);
+                            break;
+                        }
+                        // Sin series que subir: otro ejercicio del enfoque que no la
+                        // rompa, con la capacidad del relleno. El selector no ve las
+                        // colocaciones que no son resistidas (una movilidad de pierna
+                        // por repeticiones) y V15 si las cuenta.
+                        var actuales = new ArrayList<>(resistidosDia);
+                        java.util.function.Predicate<CandidateExercise> sinRomper =
+                                c -> respetaMitad(enfoque, conCandidato(dia, c));
+                        var rechazado = extra;
+                        var otro = selector.pickAdditional(enfoque, actuales, true, sinRomper)
+                                .or(() -> selector.pickAdditional(enfoque, actuales, false, sinRomper))
+                                .map(c -> colocar(c, rechazado.capacidad(), rechazado.principal()));
+                        if (otro.isPresent()) {
+                            extra = otro.get();
+                            con = new ArrayList<>(dia);
+                            con.add(extra);
+                        }
+                    }
                     if (minutos(fecha, enfoque, con) > techo) break;
                     dia.add(extra);
                     var clase = CapabilityPrescriptionPolicy.claseDe(extra.candidato());
@@ -485,21 +520,6 @@ class CapabilityWeekBuilder {
                 if (col != null) return col;
             }
         }
-        // EXPERIMENTO V20-A (rama v20-duracion, NO aprobado para produccion):
-        // con -Dfitsense.experimento.v20a=true, LOSE_WEIGHT tiene ademas
-        // MUSCULAR_ENDURANCE como secundaria oportunista (GoalCapabilityPolicy) y,
-        // cuando la fuerza estructural ya no cabe (V15), completa con trabajo
-        // resistido de los grupos del enfoque con su dosis de resistencia. Sin la
-        // propiedad, asignable(MUSCULAR_ENDURANCE) es falso y nada cambia.
-        if ("LOSE_WEIGHT".equals(objetivo) && asignable(Capability.MUSCULAR_ENDURANCE)) {
-            var actuales = new ArrayList<>(resistidosDia);
-            var extra = selector.pickAdditional(enfoque, actuales, true)
-                    .or(() -> selector.pickAdditional(enfoque, actuales, false));
-            if (extra.isPresent()) {
-                var col = colocar(extra.get(), Capability.MUSCULAR_ENDURANCE, false);
-                if (col != null) return col;
-            }
-        }
         // Sin secundaria posible: mas de una principal resistida o de cardio.
         if (principalFactible(Capability.MUSCULAR_ENDURANCE)) {
             var actuales = new ArrayList<>(resistidosDia);
@@ -519,10 +539,31 @@ class CapabilityWeekBuilder {
             }
         }
         if (principalFactible(Capability.CARDIO)) {
-            var c = elegirComplemento(cardio, enfoque, dia, bloqueados, gruposBloqueados);
+            // LOSE_WEIGHT: el relleno no se lleva el ultimo cardio que le quedaria
+            // al dia siguiente pegado (V18 se lo bloquearia y esa sesion se quedaria
+            // sin su principal, V25). El dia corto sube series despues.
+            var pool = "LOSE_WEIGHT".equals(objetivo) && enfoqueSiguientePegado != null
+                    ? cardio.stream().filter(c -> dejaCardioAlSiguiente(cardio, dia, c)).toList()
+                    : cardio;
+            var c = elegirComplemento(pool, enfoque, dia, bloqueados, gruposBloqueados);
             if (c.isPresent()) return colocar(c.get(), Capability.CARDIO, true);
         }
         return null;
+    }
+
+    /**
+     * Si, poniendo {@code c} hoy, el dia siguiente pegado aun tiene un cardio
+     * que no esta en esta sesion (V18) y que admite su enfoque.
+     */
+    private boolean dejaCardioAlSiguiente(List<CandidateExercise> cardio, List<Colocacion> dia, CandidateExercise c) {
+        var hoy = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
+        hoy.add(c.exerciseId());
+        var enfoque = enfoqueSiguientePegado;
+        return cardio.stream()
+                .filter(x -> !hoy.contains(x.exerciseId()))
+                .filter(x -> complementos.contains(x.exerciseId())
+                        || enfoque == WorkoutFocus.FULL_BODY || enfoque.accepts(x.bodyPartCode()))
+                .anyMatch(x -> ExerciseSelector.allowedIn(enfoque, x));
     }
 
     private Colocacion colocar(CandidateExercise c, Capability preferida, boolean principal) {
@@ -696,12 +737,8 @@ class CapabilityWeekBuilder {
         })).toList();
     }
 
-    /**
-     * Si el dia no llega al piso de V20. Con el experimento del 70 % exacto
-     * compara segundos (el mismo calculo que el validador); si no, minutos.
-     */
+    /** Si el dia no llega al piso de V20: en segundos, el mismo calculo que el validador. */
     private boolean corto(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, int piso) {
-        if (!PlanDraftValidator.v20Exacto()) return minutos(fecha, enfoque, dia) < piso;
         if (context.prescription() == null) return false;
         return estimador.estimateSeconds(new PlanDraft.DraftWorkout(fecha, enfoque, nombre(enfoque), 0,
                 dia.stream().map(Colocacion::ejercicio).toList()), context.prescription())
