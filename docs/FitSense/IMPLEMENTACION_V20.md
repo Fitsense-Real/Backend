@@ -41,7 +41,7 @@ Si el siguiente relleno dejaría a un grupo con más de la mitad de la sesión, 
 
 **Por qué hizo falta el paso 2** (causa exacta, GENERAL_FITNESS avanzado, 4 días, gimnasio, V37.1):
 - El jueves inferior llevaba 554 (upper legs), 1015 (lower legs), 1141 (waist), cardio 1093 y **884, una movilidad de pierna por repeticiones** (`upper legs`, 2×10). V15 la cuenta como trabajo.
-- Con 1.866 s faltaba tiempo. El relleno pedía fuerza para un patrón pendiente y elegía 1202 (`upper legs`): upper legs quedaba en **3 de 5** y V15 rechazaba la sesión.
+- Con 1.866 s faltaba tiempo. El relleno elegía 1202 (`upper legs`): upper legs quedaba en **3 de 5** y V15 rechazaba la sesión.
 - El selector no ve la movilidad, solo los resistidos, así que no detectaba que rompía la mitad.
 - Las cinco colocaciones ya estaban en 3 series, el máximo de su dosis: **subir series no era posible**.
 
@@ -236,6 +236,26 @@ Con V37.1 exige al menos un cambio.
 3. Alternativa más simple: `min_session_minutes = ceil(segundos / 60)`, que da 32. Cambia el significado del campo, aunque hacia el lado seguro. Exige revisar las pruebas de prompt y la campaña. No la recomiendo como primer paso.
 4. Medir el efecto con una campaña corta autorizada, de pago, que compare el porcentaje de propuestas rechazadas por V20. Ahora mismo, sin campaña, la cota es del 2,6 % de las propuestas guardadas.
 
-### 6.4 Verificación final
+### 6.4 Verificación final (código definitivo)
 
-_(se completa al terminar)_
+**`mvn verify -Pintegration`: BUILD SUCCESS.**
+- **848 pruebas unitarias, 0 fallos.** Incluyen `V20PisoExactoTest` y `ReferenciasHistoricasInmutablesTest`.
+- **286 de integración, 0 fallos**, con 24 omitidas por ser opt-in. Pasan, entre otras:
+  - `GeneracionReferenciaIT` (oficial V37), `GeneracionReferenciaV36IT` y `GeneracionReferenciaV35IT`, cada una contra la referencia que le corresponde;
+  - `Usuario31ReproduccionIT` y `Usuario31V37IT`, con el rechazo adicional de V20;
+  - `V20ComposicionCasosIT`, con los casos de GENERAL_FITNESS y LOSE_WEIGHT de 6 días;
+  - `V15CambioDeGrupoIT`, `ContinuidadSemanalIT` y el resto de reglas.
+
+**Simulación con el código definitivo:**
+
+| | V37 | V37 + V37.1 |
+|---|---|---|
+| 72 referencias | 72 válidas; los 13 cambios esperados; idéntica a la oficial nueva | 72 válidas |
+| Barrido de 72 perfiles (4–6 días) | 72/72 | 70/72: solo LW principiante 4d y 5d casa (V20, catálogo) |
+| Robustez de 288 | 288/288 | 280/288: los mismos dos perfiles × 4 semillas |
+| Continuidad de 96 | 96/96 | 94/96: los mismos dos |
+| 192 restricciones | 192 publicados, 0 violaciones | 192 publicados, 0 violaciones |
+
+Frente a la primera versión de §2, solo cambia un plan del barrido con V37.1, GENERAL_FITNESS intermedio 4d gimnasio. Su ejercicio alternativo lleva ahora la capacidad del relleno rechazado (HYPERTROPHY). Antes, `colocar` caía en MUSCULAR_ENDURANCE. Es precisamente lo que impide el refuerzo de §1.2. Sigue siendo válido. Las referencias, la robustez y las restricciones son idénticas.
+
+**Pendientes por catálogo, no forzados:** LOSE_WEIGHT principiante en casa, 4 y 5 días, con V37.1. V37.1 sigue separada.
