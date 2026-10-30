@@ -9,12 +9,14 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import java.nio.file.Path;
 
 /**
- * EVIDENCIA HISTORICA. Los planes iniciales de los 72 perfiles de referencia con el
- * catalogo ANTERIOR a V36 (Flyway solo hasta V35) siguen siendo identicos a
- * {@code docs/FitSense/evidencia/progresion/generacion_referencia_v35.txt}, la
- * referencia oficial hasta V36, capturada antes de implementar la progresion.
- * Demuestra que el codigo de generacion no cambio con V36: lo que cambia es el
- * catalogo. La referencia vigente la protege {@link GeneracionReferenciaIT}.
+ * El catalogo V35 (Flyway solo hasta la 35) con el motor VIGENTE, que incluye V20
+ * exacto en segundos (IMPLEMENTACION_V20.md). Compara contra
+ * {@code docs/FitSense/evidencia/progresion/generacion_referencia_v35_motor_v20.txt}.
+ * <p>
+ * NO es la salida historica. La original, {@code generacion_referencia_v35.txt},
+ * se conserva intacta (la reproducia el motor anterior a V20 exacto, commit e14da35) y
+ * su huella la protege {@code ReferenciasHistoricasInmutablesTest}. Que cambio por
+ * el motor y que por el catalogo: {@code docs/FitSense/evidencia/progresion/REFERENCIAS.md}.
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -31,7 +33,7 @@ class GeneracionReferenciaV35IT extends GeneracionReferenciaBase {
 
     @Override
     Path referencia() {
-        return Path.of("docs/FitSense/evidencia/progresion/generacion_referencia_v35.txt");
+        return Path.of("docs/FitSense/evidencia/progresion/generacion_referencia_v35_motor_v20.txt");
     }
 
     @Override

@@ -95,6 +95,19 @@ class CapabilityWeekBuilder {
         this.complementos = CatalogEligibilityPolicy.complementos(context.availableExercises(), objetivo);
     }
 
+    /**
+     * Un relleno que habria roto V15, sin series que subir, cambiado por otro
+     * ejercicio del enfoque con la misma capacidad. Para las pruebas.
+     */
+    record CambioV15(LocalDate fecha, long rechazado, String grupoRechazado, long elegido, String grupoElegido,
+                     Capability capacidadRechazado, Capability capacidadElegido, PlanDraft.DraftExercise ejercicio) {}
+
+    private final List<CambioV15> cambiosV15 = new ArrayList<>();
+
+    List<CambioV15> cambiosV15() {
+        return List.copyOf(cambiosV15);
+    }
+
     /** El enfoque de la sesion de manana si va pegada a la de hoy (V18); si no, null. */
     private WorkoutFocus enfoqueSiguientePegado;
 
@@ -243,14 +256,24 @@ class CapabilityWeekBuilder {
                         // rompa, con la capacidad del relleno. El selector no ve las
                         // colocaciones que no son resistidas (una movilidad de pierna
                         // por repeticiones) y V15 si las cuenta.
+                        // La capacidad no cambia: solo entra un ejercicio con dosis de
+                        // esa misma capacidad para el objetivo y el nivel.
                         var actuales = new ArrayList<>(resistidosDia);
-                        java.util.function.Predicate<CandidateExercise> sinRomper =
-                                c -> respetaMitad(enfoque, conCandidato(dia, c));
                         var rechazado = extra;
+                        var capacidad = rechazado.capacidad();
+                        java.util.function.Predicate<CandidateExercise> sinRomper =
+                                c -> respetaMitad(enfoque, conCandidato(dia, c))
+                                        && CapabilityPrescriptionPolicy.admisibles(c, objetivo, nivel).contains(capacidad)
+                                        && CapabilityPrescriptionPolicy.dosis(capacidad, c, objetivo, nivel, limites).isPresent();
                         var otro = selector.pickAdditional(enfoque, actuales, true, sinRomper)
                                 .or(() -> selector.pickAdditional(enfoque, actuales, false, sinRomper))
-                                .map(c -> colocar(c, rechazado.capacidad(), rechazado.principal()));
+                                .map(c -> colocar(c, capacidad, rechazado.principal()))
+                                .filter(col -> col.capacidad() == capacidad);
                         if (otro.isPresent()) {
+                            cambiosV15.add(new CambioV15(fecha, rechazado.candidato().exerciseId(),
+                                    rechazado.candidato().bodyPartCode(), otro.get().candidato().exerciseId(),
+                                    otro.get().candidato().bodyPartCode(), capacidad, otro.get().capacidad(),
+                                    otro.get().ejercicio()));
                             extra = otro.get();
                             con = new ArrayList<>(dia);
                             con.add(extra);

@@ -15,7 +15,9 @@ import java.nio.file.Path;
  * de la validacion- a {@code docs/FitSense/evidencia/progresion/generacion_referencia.txt}.
  * <p>
  * Referencia oficial desde V37 (aprobada por el responsable del proyecto,
- * 29/10/2026). Las anteriores se conservan como evidencia en
+ * 29/10/2026), regenerada con V20 exacto en segundos (aprobado el 30/10/2026: 13
+ * perfiles cambian, IMPLEMENTACION_V20.md §2.4). La anterior, la del motor de e14da35,
+ * se conserva como {@code generacion_referencia_v37_motor_e14da35.txt}. Las anteriores se conservan como evidencia en
  * {@link GeneracionReferenciaV36IT} y {@link GeneracionReferenciaV35IT}; las
  * sesiones que cambiaron estan explicadas en {@code docs/FitSense/CATALOGO_V37.md}
  * y {@code docs/FitSense/CATALOGO_V36.md}.

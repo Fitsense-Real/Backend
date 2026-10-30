@@ -47,7 +47,9 @@ Si el siguiente relleno dejaría a un grupo con más de la mitad de la sesión, 
 
 Con solo el paso 1, el perfil seguía sin plan en el barrido con V37.1 (`evidencia/v20/final/correccion1_sin_alternativa/`). El paso 2 elige otro grupo del enfoque y lo resuelve.
 
-**⚠ Para tu revisión:** el paso 2 va un poco más allá de la literalidad de la orden («comprobar si puede ampliarse una serie»). Sigue siendo orden de composición: no relaja reglas, ni dosis, ni capacidades. Si no lo apruebas, se quita y GENERAL_FITNESS intermedio y avanzado, 4 días en gimnasio, vuelve a fallar con V37.1.
+**Paso 2 aprobado el 30/10/2026.** Al aprobarlo se reforzó una condición: el ejercicio alternativo solo entra si **tiene dosis de la misma capacidad** que el rechazado para ese objetivo y nivel (`admisibles` y `dosis` de `CapabilityPrescriptionPolicy`). Además, la colocación resultante se comprueba otra vez. Antes, `colocar` podía caer en otra capacidad admisible; ahora no. Las referencias y los casos dan lo mismo que antes del refuerzo.
+
+Cada cambio queda registrado en `CapabilityWeekBuilder.cambiosV15()` y `V15CambioDeGrupoIT` lo comprueba (§6.2).
 
 ### 1.3 Segunda corrección: el último cardio del día siguiente (`CapabilityWeekBuilder.siguienteRelleno`)
 
@@ -170,14 +172,10 @@ En los tres casos todos los perfiles siguen válidos. Las tres protegen la gener
 
 ## 4. Riesgos y pendientes
 
-1. **Referencias.** Las tres pruebas de referencia (oficial V37 y las históricas V36 y V35) fallarán hasta que decidas (§3.1). Para las históricas hay dos opciones:
-   - regenerarlas con el motor nuevo, sobre el mismo catálogo;
-   - o fijarlas al código anterior, como evidencia, dejando de ejecutarlas contra el motor actual.
-
-   Recomiendo la primera: siguen protegiendo que el catálogo V35 y V36 produce planes válidos.
-2. **La IA.** El dato que recibe la IA (`PlanInputSnapshot.min_session_minutes`) sigue siendo el piso entero, 31 min, porque no se tocan los prompts. Una propuesta de la IA de 31 min justos (1.860 s) ahora se rechaza y va al reintento o al respaldo. Con la IA apagada en las pruebas no tiene efecto. Conviene decidir si se le pasa también el mínimo en segundos.
+1. **Referencias.** Resuelto el 30/10/2026: ver §6.1 y `evidencia/progresion/REFERENCIAS.md`.
+2. **La IA.** Ver §6.3.
 3. **GENERAL_FITNESS de 60 min.** Algunas sesiones pasan de 42 a 49–51 min, porque la única forma de completar es un estructural con 150 s de descanso. Están dentro del techo. Es el coste de exigir el 70 % real.
-4. **V37.1 sigue separada.** Con ella, LOSE_WEIGHT principiante en casa, 4 y 5 días, sigue sin plan. La solución es de catálogo, no de motor.
+4. **V37.1 sigue separada.** Con ella, LOSE_WEIGHT principiante en casa, 4 y 5 días, sigue sin plan. La solución es de catálogo, no de motor, y no se fuerza.
 5. **Pendientes de V37.1, sin tocar:**
    - 1106: grupo, tipo de ejecución y prescripción por duración;
    - 1253: escalón real;
@@ -187,9 +185,57 @@ En los tres casos todos los perfiles siguen válidos. Las tres protegen la gener
    Cada cambio necesita evidencia de ejecución y comprobar V15, V18, V23 y V25.
 6. **Revisiones humanas independientes:** siguen pendientes.
 
-## 5. Para integrar (requiere tu aprobación)
+## 5. Integración
 
-1. Revisar §1.2, paso 2.
-2. Aprobar las tres referencias candidatas (V37 oficial, V36 y V35). Después, regenerarlas con su propiedad de captura y comprobar que coinciden con las candidatas.
-3. Fusionar `v20-duracion` a `generation`. El CI completo se ejecutará en el PR.
-4. V37.1 queda fuera hasta resolver el cardio de casa.
+Aprobada el 30/10/2026 con condiciones:
+- referencias versionadas;
+- todas las pruebas obligatorias en verde;
+- CI verde;
+- sin conflictos ni cambios de políticas.
+
+PR desde `v20-duracion` hacia `generation`. Sin despliegue en Railway, sin cambios en Neon y sin llamadas a Replicate.
+
+## 6. Decisiones del 30/10/2026 y verificación final
+
+### 6.1 Referencias versionadas
+
+Todo está en `evidencia/progresion/REFERENCIAS.md`.
+- **V37:** la referencia anterior se conserva intacta como `generacion_referencia_v37_motor_e14da35.txt` (motor de `e14da35`). La oficial se regeneró con los 13 cambios aprobados y es idéntica byte a byte a la candidata.
+- **V35 y V36:** los archivos originales siguen intactos. Hay referencias nuevas con el motor vigente, `generacion_referencia_v35_motor_v20.txt` y `generacion_referencia_v36_motor_v20.txt`, con 11 cambios cada una. `GeneracionReferenciaV35IT` y `V36IT` comparan contra ellas.
+- **Inmutabilidad:** `ReferenciasHistoricasInmutablesTest` fija la huella SHA-256 de las tres históricas.
+- **Efecto del motor y del catálogo:** separados en `REFERENCIAS.md`. El motor cambia 11, 11 y 13 perfiles con el mismo catálogo. El catálogo cambia 72 (V35→V36) y 68 (V36→V37) perfiles con cualquiera de los dos motores.
+
+### 6.2 Pruebas añadidas
+
+`V15CambioDeGrupoIT` recorre GENERAL_FITNESS (3 niveles, gimnasio y casa, 4 y 6 días, 8 semillas). Para cada cambio de grupo que registra el constructor comprueba que:
+1. el día no llegaba al piso subiendo series, porque si no, no habría cambio;
+2. la **capacidad es la misma**;
+3. la **dosis** del elegido es la de esa capacidad, con las series dentro de su máximo;
+4. el grupo es otro;
+5. el elegido está en la sesión y el rechazado no;
+6. el plan **se publica con el validador de producción**, que aplica V15, V18, V20, V23, V24 y V25.
+
+Con V37.1 exige al menos un cambio.
+
+### 6.3 Replicate: discrepancia y comprobación sin coste
+
+**La discrepancia.** `PlanInputSnapshot.min_session_minutes` sigue enviando el piso entero, `45 × 70 / 100 = 31`. El validador exige 1.890 s, que son 31,5 min. Una propuesta de la IA que dure entre 1.830 y 1.889 s cumple lo que se le dijo y aun así se rechaza: se gasta un reintento o se pasa al respaldo. **No se han tocado los prompts.**
+
+**Comprobación con respuestas reales guardadas** (sin llamadas):
+- **Usuario 31:** `Usuario31ReproduccionIT` y `Usuario31V37IT` reproducen sus tres propuestas. Los intentos 2 y 3 ahora reciben además el rechazo de V20 (sábado de 1.866 s). El resultado final no cambia: se publica el plan del motor.
+- **Usuarios 32 y 33:** sus respuestas **no están en el repositorio**. Las del usuario 31 se copiaron del registro de la aplicación, y no hay copia equivalente de las de 32 y 33. Para reproducirlas sin coste hace falta exportar del registro de Railway las líneas con sus propuestas, o el JSON que guarde el registro. Con eso se añaden como `Usuario31Base`. No se ha accedido a Railway ni a Neon.
+- **Campaña de Replicate real** (507 llamadas guardadas en `evidencia/replicate_real/`, `replay_v20.py`):
+  - Se midieron 469 propuestas y 662 sesiones con el estimador vigente.
+  - **12 propuestas (12 sesiones)** pasaban V20 por redondeo y ahora no: 1 de generación inicial y 11 de adaptación.
+  - Todas se quedan entre 8 y 57 s por debajo del piso, es decir, entre el 97,0 % y el 99,4 % de él. Detalle en `evidencia/v20/final/replay_v20_replicate_real.txt`.
+  - Es una **cota superior**: algunas adaptaciones pueden estar exentas por una orden de volumen o por V8C, y esta medición no lo modela.
+
+**Propuesta para comunicar el mínimo exacto sin romper el contrato** (no implementada):
+1. Añadir un campo nuevo `min_session_seconds` (1.890 con 45 min) en el snapshot, como versión menor del esquema de entrada (GEN-IN-1.13 → 1.14). Es aditivo: quien no lo lea sigue funcionando.
+2. Mantener `min_session_minutes` con su significado actual, para no cambiar en silencio un campo que ya existe. Añadir en las instrucciones una línea: «la sesión debe sumar al menos `min_session_seconds` según la fórmula del estimador».
+3. Alternativa más simple: `min_session_minutes = ceil(segundos / 60)`, que da 32. Cambia el significado del campo, aunque hacia el lado seguro. Exige revisar las pruebas de prompt y la campaña. No la recomiendo como primer paso.
+4. Medir el efecto con una campaña corta autorizada, de pago, que compare el porcentaje de propuestas rechazadas por V20. Ahora mismo, sin campaña, la cota es del 2,6 % de las propuestas guardadas.
+
+### 6.4 Verificación final
+
+_(se completa al terminar)_

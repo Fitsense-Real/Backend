@@ -599,7 +599,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     /** Semilla estable: mismo usuario y misma semana, mismo plan. */
-    private long seedFor(PlanGenerationContext context) {
+    long seedFor(PlanGenerationContext context) {
         return context.userId() * 1_000_003L + context.weekStartDate().toEpochDay();
     }
 }
