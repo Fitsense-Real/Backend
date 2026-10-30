@@ -182,6 +182,44 @@ class CatalogoV39IT {
         assertEquals(List.of(), fallos, sb.toString());
     }
 
+    @Test
+    @DisplayName("9 · dictamen aprobado: soporte real exigido, toalla documentada, 1106 provisional y 1113/849 sin cambios")
+    void dictamenAprobado() {
+        // 813: poste vertical (GIF 3303), no espaldera; y no se equiparan.
+        assertEquals("1:body weight,2:vertical pole", requisitos(813));
+        assertEquals(Boolean.TRUE, jdbc.queryForObject("SELECT requires_gym FROM equipment_types WHERE code = 'vertical pole'",
+                Boolean.class));
+        // Remos con toalla: el soporte sigue siendo obligatorio; nunca solo peso corporal.
+        for (long id : List.of(302L, 306L, 308L)) assertEquals("1:body weight,2:wall bars", requisitos(id));
+        assertEquals("1:body weight,2:anchor point", requisitos(1072));
+        assertTrue(jdbc.queryForObject("SELECT name_es FROM equipment_types WHERE code = 'anchor point'", String.class)
+                .contains("firme"));
+        for (long id : List.of(302L, 306L, 308L, 1072L)) {
+            var f = jdbc.queryForMap("SELECT instruction_steps_es ->> 0 AS paso, instructions_es,"
+                    + " (SELECT string_agg(t.p, ' ' ORDER BY t.n) FROM jsonb_array_elements_text(instruction_steps_es)"
+                    + " WITH ORDINALITY AS t (p, n)) AS unidos FROM exercises WHERE exercise_id = ?", id);
+            String paso = (String) f.get("paso");
+            assertTrue(paso.contains("toalla resistente") && paso.toLowerCase().contains("comprueba"),
+                    id + ": " + paso);
+            assertTrue(paso.contains(id == 1072L ? "anclaje firme" : "espaldera"), id + ": " + paso);
+            assertEquals(f.get("unidos"), f.get("instructions_es"), id + ": instrucciones = pasos unidos");
+        }
+        var bw = elegibles(contexto(GoalType.GENERAL_FITNESS, FitnessLevel.ADVANCED, 4, SOLO_CUERPO));
+        assertTrue(Collections.disjoint(bw.keySet(), Set.of(302L, 306L, 308L, 1072L, 813L)), "solo peso corporal");
+        // 1106: nivel 2 PROVISIONAL, sin aprobacion formal registrada.
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM exercise_difficulty_approvals WHERE exercise_id = 1106",
+                Integer.class));
+        // Pendientes de verificacion visual: se quedan como los dejo V39, sin cambios nuevos.
+        assertEquals("1:ez barbell,2:preacher bench", requisitos(849));
+        assertEquals(1, jdbc.queryForObject("SELECT difficulty_level FROM exercises WHERE exercise_id = 1113", Integer.class));
+    }
+
+    private String requisitos(long id) {
+        return jdbc.queryForObject("SELECT string_agg(r.group_no || ':' || q.code, ',' ORDER BY r.group_no, q.code)"
+                + " FROM exercise_equipment_requirements r JOIN equipment_types q ON q.equipment_id = r.equipment_id"
+                + " WHERE r.exercise_id = ?", String.class, id);
+    }
+
     private PlanGenerationContext contexto(GoalType objetivo, FitnessLevel nivel, int dias, List<String> equipo) {
         long u = participante(objetivo, nivel, dias, equipo);
         return planComandos.prepare(new GenerateWeeklyPlanCommand(u, S1, null, true, null, null)).context();

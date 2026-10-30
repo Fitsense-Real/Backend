@@ -27,7 +27,7 @@ C	305	3162	bodyweight standing one arm row	requisitos		1:body weight,2:wall bars
 C	306	3161	bodyweight standing one arm row (with towel)	requisitos		1:body weight,2:wall bars	GIF 3161: Toalla en la espaldera	D3
 C	307	3166	bodyweight standing row	requisitos		1:body weight,2:wall bars	GIF 3166: Espaldera	D3
 C	308	3165	bodyweight standing row (with towel)	requisitos		1:body weight,2:wall bars	GIF 3165: Toalla en la espaldera	D3
-C	813	3303	flag	requisitos		1:body weight,2:wall bars	GIF 3303: Bandera humana en poste o espaldera	D3
+C	813	3303	flag	requisitos		1:body weight,2:vertical pole	GIF 3303: poste vertical sobre base (revisado 30/10/2026, dictamen aprobado); no se equipara con la espaldera	D3
 C	1072	1773	one arm towel row	requisitos		1:body weight,2:anchor point	GIF 1773: Toalla atada a un poste o puerta	D3
 C	880	3193	glute-ham raise	requisitos		1:body weight,2:ghd bench	GIF 3193: Banco GHD con los pies trabados	D3
 C	58	0002	45° side bend	requisitos		1:body weight,2:hyperextension bench	GIF 0002: Banco romano a 45 grados	D3

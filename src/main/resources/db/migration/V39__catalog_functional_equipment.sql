@@ -8,16 +8,28 @@
 -- No toca exercise_difficulty_approvals (V27/V28), planes, adaptacion ni progresion.
 -- Revision visual asistida por IA; la doble revision humana sigue PENDIENTE. La dificultad
 -- 2 de 1106 es PROVISIONAL (D7), no una evaluacion validada con el instrumento.
+--
+-- Dictamen tecnico de los 43 ejercicios aprobado por el responsable del proyecto el
+-- 30/10/2026 (FitSense_V39_Dictamen_Tecnico_Aprobado_2026-10-30.xlsx). No es una doble
+-- revision humana independiente. Ajustes aplicados aqui (seccion final y filas marcadas):
+--   302, 306, 308: se mantiene la espaldera; se documenta la toalla y la sujecion.
+--   1072: se mantiene el punto de anclaje; la toalla y un anclaje FIRME se documentan, y el
+--         implemento se llama "punto de anclaje firme" (una puerta sin anclaje no basta).
+--   813: el GIF 3303 muestra un poste vertical, no una espaldera: nuevo implemento
+--        'vertical pole' (gimnasio o parque). No se equipara con la espaldera.
+--   1106: sin cambios de datos; la dificultad 2 sigue PROVISIONAL.
+-- Pendientes de verificacion visual, sin cambios: 1113 (grupo y dificultad) y 849 (banco).
 -- =====================================================================
 
 -- Implementos que el GIF exige y el catalogo no podia expresar (D3).
 INSERT INTO public.equipment_types (code, name_es, requires_gym, display_order) VALUES
     ('wall bars', 'Espaldera', FALSE, 32),
-    ('anchor point', 'Punto de anclaje (puerta o poste)', FALSE, 33),
+    ('anchor point', 'Punto de anclaje firme (poste fijo o anclaje de puerta)', FALSE, 33),
     ('ghd bench', 'Banco GHD', TRUE, 34),
     ('hyperextension bench', 'Banco de hiperextension (romano)', TRUE, 35),
     ('squat rack', 'Rack de sentadilla', TRUE, 36),
-    ('preacher bench', 'Banco Scott (predicador)', TRUE, 37)
+    ('preacher bench', 'Banco Scott (predicador)', TRUE, 37),
+    ('vertical pole', 'Poste vertical fijo (barra de bandera)', TRUE, 38)
 ON CONFLICT (code) DO NOTHING;
 
 CREATE TEMP TABLE v39_cambios (exercise_id BIGINT, source_code TEXT, name_en TEXT, columna TEXT,
@@ -51,7 +63,7 @@ INSERT INTO v39_cambios VALUES
     (306, '3161', 'bodyweight standing one arm row (with towel)', 'requisitos', '', '1:body weight,2:wall bars'),
     (307, '3166', 'bodyweight standing row', 'requisitos', '', '1:body weight,2:wall bars'),
     (308, '3165', 'bodyweight standing row (with towel)', 'requisitos', '', '1:body weight,2:wall bars'),
-    (813, '3303', 'flag', 'requisitos', '', '1:body weight,2:wall bars'),
+    (813, '3303', 'flag', 'requisitos', '', '1:body weight,2:vertical pole'),
     (1072, '1773', 'one arm towel row', 'requisitos', '', '1:body weight,2:anchor point'),
     (880, '3193', 'glute-ham raise', 'requisitos', '', '1:body weight,2:ghd bench'),
     (58, '0002', '45° side bend', 'requisitos', '', '1:body weight,2:hyperextension bench'),
@@ -140,6 +152,51 @@ BEGIN
     END IF;
 END $$;
 
+-- Dictamen aprobado (30/10/2026): la toalla y la sujecion, como primer paso de las instrucciones.
+-- No se crea un implemento "toalla": cualquier toalla resistente sirve y no aporta seguridad
+-- exigirla; lo que SI se exige es el soporte (espaldera o punto de anclaje firme).
+CREATE TEMP TABLE v39_preparacion (exercise_id BIGINT, source_code TEXT, paso TEXT);
+INSERT INTO v39_preparacion VALUES
+    (302, '3167', 'Pasa una toalla resistente por un barrote de la espaldera a la altura del pecho y sujeta un extremo con cada mano. Antes de cargar tu peso, comprueba que la espaldera está bien fijada a la pared y que la toalla no resbala.'),
+    (306, '3161', 'Pasa una toalla resistente por un barrote de la espaldera a la altura del pecho y sujeta los dos extremos con una mano. Antes de cargar tu peso, comprueba que la espaldera está bien fijada a la pared y que la toalla no resbala.'),
+    (308, '3165', 'Pasa una toalla resistente por un barrote de la espaldera a la altura del pecho y sujeta un extremo con cada mano. Antes de cargar tu peso, comprueba que la espaldera está bien fijada a la pared y que la toalla no resbala.'),
+    (1072, '1773', 'Pasa una toalla resistente por un punto de anclaje firme: un poste fijo o un anclaje de puerta en una puerta cerrada que se abra hacia el lado contrario. No uses un picaporte ni una puerta sin anclaje. Comprueba que el anclaje aguanta antes de cargar tu peso.');
+
+DO $$
+DECLARE distintos TEXT;
+BEGIN
+    SELECT string_agg(p.exercise_id::TEXT, ', ' ORDER BY p.exercise_id) INTO distintos
+      FROM v39_preparacion p
+     WHERE NOT EXISTS (SELECT 1 FROM public.exercises e
+                        WHERE e.exercise_id = p.exercise_id AND e.source_code = p.source_code
+                          AND e.instruction_steps_es ->> 0 LIKE 'Ponte de pie%'
+                          AND e.instruction_steps_es::TEXT NOT ILIKE '%toalla resistente%');
+    IF distintos IS NOT NULL THEN
+        RAISE EXCEPTION 'V39: instrucciones con estado anterior inesperado -> %', distintos;
+    END IF;
+END $$;
+
+UPDATE public.exercises e
+   SET instruction_steps_es = jsonb_build_array(p.paso) || e.instruction_steps_es
+  FROM v39_preparacion p
+ WHERE p.exercise_id = e.exercise_id;
+-- instructions_es es siempre los pasos unidos por un espacio (como en V36 y todo el catalogo).
+UPDATE public.exercises e
+   SET instructions_es = (SELECT string_agg(t.paso, ' ' ORDER BY t.n)
+                            FROM jsonb_array_elements_text(e.instruction_steps_es) WITH ORDINALITY AS t (paso, n))
+  FROM v39_preparacion p
+ WHERE p.exercise_id = e.exercise_id;
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM public.exercises e JOIN v39_preparacion p ON p.exercise_id = e.exercise_id
+                WHERE e.instruction_steps_es ->> 0 IS DISTINCT FROM p.paso
+                   OR e.instructions_es NOT LIKE p.paso || ' Ponte de pie%') THEN
+        RAISE EXCEPTION 'V39: instrucciones finales inesperadas';
+    END IF;
+END $$;
+
 -- Flyway ejecuta las migraciones en la misma sesion: los objetos temporales se borran aqui.
 DROP VIEW pg_temp.v39_valor;
 DROP TABLE pg_temp.v39_cambios;
+DROP TABLE pg_temp.v39_preparacion;
