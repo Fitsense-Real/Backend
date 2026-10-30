@@ -21,7 +21,8 @@ Cada archivo es la salida de **un catálogo con un motor**.
 | `generacion_referencia_v36_motor_v20.txt` | V36 | vigente, con V20 exacto | regresión del motor actual sobre V36 | `GeneracionReferenciaV36IT` | `2ccd9e24…cd12` |
 | `generacion_referencia_v37_motor_v20.txt` | V37 | V20 exacto (sin E1/E2). Copia byte a byte de la oficial hasta `4a45221` | **congelada** el 30/10/2026 (decisión G). Con E1/E2 y D1 el motor la reproduce igual | `GeneracionReferenciaV37IT` y `ReferenciasHistoricasInmutablesTest` | `00951b53…59e5` |
 | `generacion_referencia_v39_motor_e1e2.txt` | V39 (V38 + V39) | V20 exacto + D1 + E1/E2. Copia byte a byte de la oficial hasta V40 | **congelada** el 30/10/2026 (decisión C4/C6). El motor la reproduce | `GeneracionReferenciaV39IT` y `ReferenciasHistoricasInmutablesTest` | `8ee26d78…2077` |
-| `generacion_referencia.txt` | V40 (C4/C6) | vigente: V20 exacto + D1 + E1/E2 | **oficial**. 72/72 válidas; 22 perfiles cambian frente a V39 (`../v40/DIFERENCIAS_REFERENCIAS_V40.md`) | `GeneracionReferenciaIT` | ver la prueba |
+| `generacion_referencia_v40.txt` | V40 (C4/C6 fase 1) | V20 exacto + D1 + E1/E2. Copia byte a byte de la oficial hasta V41 | **congelada** el 30/10/2026 (auditoría integral). El motor la reproduce | `GeneracionReferenciaV40IT` y `ReferenciasHistoricasInmutablesTest` | `2f04bf14…efd2` |
+| `generacion_referencia.txt` | V41 (C4/C6 fase 2) | vigente: V20 exacto + D1 + E1/E2 | **oficial**. 72/72 válidas; 20 perfiles cambian frente a V40 (`../../AUDITORIA_INTEGRAL_LOGICA.md` §2.1) | `GeneracionReferenciaIT` | `89a08b73…a352` |
 
 Las tres nuevas (`*_motor_v20.txt` y la oficial) son **salidas del motor actual**, no las históricas. Las tres históricas guardan lo que producía el motor anterior y no se ejecutan contra el motor actual: solo se comprueba que no cambian.
 
@@ -74,3 +75,12 @@ Las históricas no se regeneran nunca. Si un cambio futuro del motor modifica la
 ## V40 (30/10/2026)
 
 Solo cambia el catálogo (7 ejercicios, C4/C6); el motor es el mismo. `GeneracionReferenciaV39IT` reproduce la V39 congelada. Cambian 22 de 72 perfiles, todos de gimnasio intermedio o avanzado; la referencia nueva es idéntica a la de la simulación exploratoria «combinada + 953».
+
+## V41 (30/10/2026)
+
+- **Qué cambia:** solo el catálogo (15 ejercicios, C4/C6 fase 2: 262 y 14 más). V42 (adaptación) no afecta a la generación.
+- **Regresión:** `GeneracionReferenciaV40IT` reproduce la V40 congelada.
+- **Perfiles que cambian:** 20 de 72, todos de nivel avanzado (11 de gimnasio, 9 de casa).
+- **262:** sale de las referencias (de 11 apariciones a 0).
+- **Coincidencia:** la oficial es idéntica a la de la simulación exploratoria V41.
+- **Regenerar V40 con el motor vigente:** `-Dfitsense.generacion.v40.capturar=true` (no debería cambiar).
