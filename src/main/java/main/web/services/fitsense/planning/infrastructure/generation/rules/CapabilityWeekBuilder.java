@@ -104,6 +104,19 @@ class CapabilityWeekBuilder {
 
     private final List<CambioV15> cambiosV15 = new ArrayList<>();
 
+    /**
+     * Un cambio de {@link #asegurarGrupos}: GRUPOS si la sesion tenia un solo grupo del enfoque
+     * (incluido FULL_BODY, E1), MITAD si un grupo pasaba de la mitad (E2). Para las pruebas.
+     */
+    record CambioGrupo(LocalDate fecha, WorkoutFocus enfoque, String motivo, long quitado, String grupoQuitado,
+                       Capability capacidadQuitada, long elegido, String grupoElegido, Capability capacidadElegida) {}
+
+    private final List<CambioGrupo> cambiosGrupo = new ArrayList<>();
+
+    List<CambioGrupo> cambiosGrupo() {
+        return List.copyOf(cambiosGrupo);
+    }
+
     List<CambioV15> cambiosV15() {
         return List.copyOf(cambiosV15);
     }
@@ -309,10 +322,10 @@ class CapabilityWeekBuilder {
             // 3 · TECHO: primero lo secundario, despues lo principal repetido.
             recortar(fecha, enfoque, dia, techo);
 
-            // 4 · GRUPOS DEL ENFOQUE. Solo si la sesion se quedo con un unico
-            // grupo de trabajo pudiendo tener dos: se cambia una colocacion de
-            // un grupo repetido por otra del grupo que falta.
-            asegurarGrupos(fecha, enfoque, dia, bloqueados, piso, techo);
+            // 4 · GRUPOS DEL ENFOQUE (V15). Solo si la sesion se quedo con un
+            // unico grupo de trabajo pudiendo tener dos, o con un grupo por encima
+            // de la mitad: se cambia una colocacion por otra de otro grupo.
+            asegurarGrupos(fecha, enfoque, dia, bloqueados, ultimaSesion ? pendientesAlEmpezar : Set.of(), piso, techo);
 
             // Un slot se da por cubierto al COLOCAR, pero el recorte puede quitar
             // esa colocacion. Se recalcula con lo que queda: si no, el slot
@@ -355,11 +368,20 @@ class CapabilityWeekBuilder {
      * Era la causa de las 12 semanas sin respaldo de la evaluacion del
      * 28/10/2026 (EVALUACION_GENERACION_4_6_DIAS.md).
      * <p>
-     * Solo actua cuando la sesion incumple ese minimo, asi que una semana que
-     * ya lo cumplia sale identica. Cambia UNA colocacion de un grupo repetido
-     * (antes las que no cubren un patron de fuerza unico de la sesion) por un
-     * ejercicio del grupo que falta que:
+     * Desde el 30/10/2026 (E1/E2, INFORME_V38.md) actua tambien en FULL_BODY (E1)
+     * y cuando un grupo pasa de la mitad de la sesion (E2). Antes los atributos
+     * incorrectos del catalogo (1102 como fuerza de rodilla de cintura, remos con
+     * espaldera sin exigirla) ocultaban esos dos casos.
+     * <p>
+     * Solo actua cuando la sesion incumpliria V15, asi que una semana que ya lo
+     * cumplia sale identica. Cambia UNA colocacion de un grupo repetido (con E2,
+     * del grupo dominante; antes las que no cubren un patron de fuerza unico de
+     * la sesion) por un ejercicio de otro grupo del enfoque que:
      * <ul>
+     *   <li>lleve la MISMA capacidad que la colocacion que sale: una fuerza sigue
+     *       siendo fuerza, nunca relleno ni movilidad;</li>
+     *   <li>no deje sin cubrir un slot de 4C que la semana aun necesitaba (si
+     *       la que sale era la unica que lo cubria, no se cambia);</li>
      *   <li>sea trabajo resistido prescribible para el objetivo y el nivel, con
      *       una dosis de sus capacidades (sin capacidad del objetivo no entra:
      *       no se pone un ejercicio solo para cubrir la cuota);</li>
@@ -374,16 +396,22 @@ class CapabilityWeekBuilder {
      * estaba y el validador dira por que.
      */
     private void asegurarGrupos(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia,
-                                Set<Long> bloqueados, int piso, int techo) {
-        if (enfoque == WorkoutFocus.FULL_BODY) return;   // ya lo resuelve el selector
+                                Set<Long> bloqueados, Set<MandatorySlot> pendientes, int piso, int techo) {
         var trabajo = dia.stream().filter(col -> !complementos.contains(col.candidato().exerciseId())).toList();
         var cubiertos = trabajo.stream().map(col -> col.candidato().bodyPartCode())
                 .filter(enfoque::accepts).collect(Collectors.toSet());
-        if (trabajo.size() < 2 || cubiertos.size() >= 2) return;
+        // E1 (30/10/2026): tambien FULL_BODY, que V15 tambien exige con dos grupos.
+        // E2: tambien un grupo por encima de la mitad de la sesion. Una sesion que ya cumple
+        // las dos condiciones de V15 no se toca.
+        boolean mitadOk = respetaMitad(enfoque, dia);
+        if (trabajo.size() < 2 || (cubiertos.size() >= 2 && mitadOk)) return;
+        String dominante = mitadOk ? null : trabajo.stream()
+                .collect(Collectors.groupingBy(col -> col.candidato().bodyPartCode(), Collectors.counting()))
+                .entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(null);
 
         var enDia = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
         for (var grupo : enfoque.bodyPartCodes()) {
-            if (cubiertos.contains(grupo)) continue;
+            if (dominante == null ? cubiertos.contains(grupo) : grupo.equals(dominante)) continue;
             var candidatos = resistidos.stream()
                     .filter(c -> grupo.equals(c.bodyPartCode()))
                     .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
@@ -404,20 +432,43 @@ class CapabilityWeekBuilder {
             }
             for (int k : quitablesPorGrupo(dia)) {
                 var quitado = dia.get(k);
+                if (dominante != null && !dominante.equals(quitado.candidato().bodyPartCode())) continue;
                 for (var c : ordenados) {
                     var col = colocar(c, quitado.capacidad(), quitado.principal());
-                    if (col == null) continue;
+                    // La misma capacidad: una fuerza sigue siendo fuerza (no relleno ni movilidad).
+                    if (col == null || col.capacidad() != quitado.capacidad()) continue;
                     var con = new ArrayList<>(dia);
                     con.set(k, col);
+                    if (dejaSinSlot(quitado, con, pendientes)) continue;
                     if (minutos(fecha, enfoque, con) > techo || !respetaMitad(enfoque, con)) continue;
+                    if (con.stream().filter(x -> !complementos.contains(x.candidato().exerciseId()))
+                            .map(x -> x.candidato().bodyPartCode()).filter(enfoque::accepts).distinct().count() < 2)
+                        continue;
                     if (piso > 0 && corto(fecha, enfoque, con, piso)) ampliarSeries(fecha, enfoque, con, piso, techo);
                     if (piso > 0 && corto(fecha, enfoque, con, piso)) continue;
+                    cambiosGrupo.add(new CambioGrupo(fecha, enfoque, dominante == null ? "GRUPOS" : "MITAD",
+                            quitado.candidato().exerciseId(), quitado.candidato().bodyPartCode(), quitado.capacidad(),
+                            col.candidato().exerciseId(), col.candidato().bodyPartCode(), col.capacidad()));
                     dia.clear();
                     dia.addAll(con);
                     return;
                 }
             }
         }
+        // Sin sustitucion factible: la sesion queda como estaba y el validador dira por que.
+    }
+
+    /**
+     * Si el cambio deja sin cubrir un slot de 4C que la semana todavia necesita. Solo se
+     * comprueba en la ULTIMA sesion de la semana ({@code pendientes} vacio en las demas): antes,
+     * un slot que sale de un dia sigue pendiente y lo piden las sesiones siguientes, y V23
+     * valida la semana completa. Cuenta la colocacion que entra: un press de pecho mantiene
+     * UPPER_PUSH aunque salga un press de hombro.
+     */
+    private boolean dejaSinSlot(Colocacion quitado, List<Colocacion> con, Set<MandatorySlot> pendientes) {
+        var slot = MandatorySlot.of(quitado.candidato());
+        if (slot.isEmpty() || !pendientes.contains(slot.get()) || !cubreSlotPendiente(quitado)) return false;
+        return con.stream().noneMatch(x -> cubreSlotPendiente(x) && MandatorySlot.of(x.candidato()).equals(slot));
     }
 
     /**

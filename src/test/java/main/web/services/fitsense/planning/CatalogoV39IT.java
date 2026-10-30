@@ -22,7 +22,6 @@ import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
 import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
 import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,18 +41,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * V38 CANDIDATA (DIAGNOSTICO_V37_1.md, decisiones D1-D7 del 30/10/2026). Solo corre con la
- * candidata aplicada; si no, se omite:
- * <pre>
- *   -Dspring.flyway.locations=classpath:db/migration,filesystem:docs/FitSense/auditoria_catalogo/v37/separables,filesystem:docs/FitSense/auditoria_catalogo/v38/candidata
- * </pre>
+ * V39 (la candidata V38 renumerada; decisiones D1-D7 y F del 30/10/2026) sobre V38 (la V37.1).
  * Comprueba los datos corregidos con las politicas de produccion (no con atributos sueltos),
  * que ningun plan contenga un ejercicio cuyo implemento SEGUN EL GIF no esta declarado, y que
  * los perfiles solo con peso corporal se generan o se declaran sin plan con su motivo, sin
- * inventar alternativas. Con {@code -Dfitsense.v38.dir} escribe el detalle.
+ * inventar alternativas. Con {@code -Dfitsense.v39.dir} escribe el detalle.
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -61,8 +55,8 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token="
 })
-@DisplayName("V38 candidata: datos corregidos, equipamiento real y perfiles solo con peso corporal")
-class CatalogoV38IT {
+@DisplayName("V39: datos corregidos, equipamiento real y perfiles solo con peso corporal")
+class CatalogoV39IT {
 
     @Container
     @ServiceConnection
@@ -80,12 +74,6 @@ class CatalogoV38IT {
     static final List<String> SOLO_CUERPO = List.of("body weight");
     static final Set<Long> ESPALDERA = Set.of(301L, 302L, 303L, 304L, 305L, 306L, 307L, 308L, 813L);
     private static int secuencia;
-
-    @BeforeEach
-    void soloConLaCandidata() {
-        assumeTrue(jdbc.queryForObject("SELECT count(*) FROM flyway_schema_history WHERE version = '38' AND success",
-                Integer.class) > 0, "V38 candidata no aplicada");
-    }
 
     @Test
     @DisplayName("1 · 853 y 1117: cardio de bajo impacto, dosis vigente 3x90 s (V24) y sin suelo ni saltos")
@@ -186,7 +174,7 @@ class CatalogoV38IT {
                         .append(slots.get(MandatorySlot.LOWER_HIP)).append('\t').append(slots.get(MandatorySlot.LOWER_KNEE))
                         .append('\t').append(slots.get(MandatorySlot.UPPER_PUSH)).append('\t').append(resultado).append('\n');
             }
-        var dir = System.getProperty("fitsense.v38.dir");
+        var dir = System.getProperty("fitsense.v39.dir");
         if (dir != null) {
             Files.createDirectories(Path.of(dir));
             Files.writeString(Path.of(dir, "solo_peso_corporal.tsv"), sb.toString());
@@ -205,7 +193,7 @@ class CatalogoV38IT {
     }
 
     private long participante(GoalType objetivo, FitnessLevel nivel, int dias, List<String> equipo) {
-        String email = "v38-" + (++secuencia) + "@pruebas.invalid";
+        String email = "v39-" + (++secuencia) + "@pruebas.invalid";
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
                 + " VALUES (?, 'x', 'Prueba', now(), now())", email);
         long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
@@ -213,7 +201,7 @@ class CatalogoV38IT {
         if (dias == 3) disponibles.addAll(List.of((short) 1, (short) 3, (short) 5));
         else for (short d = 1; d <= dias; d++) disponibles.add(d);
         perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1992, 1, 15), BiologicalSex.FEMALE,
-                new BigDecimal("165"), new BigDecimal("70"), null, nivel, objetivo, "v38", TrainingLocation.HOME,
+                new BigDecimal("165"), new BigDecimal("70"), null, nivel, objetivo, "v39", TrainingLocation.HOME,
                 (short) dias, disponibles, (short) 45, equipo, List.of(), "Ninguna", true, true, true, true, true));
         return u;
     }

@@ -1,0 +1,44 @@
+prioridad	id	nombre	gif	cambios (antes -> despues)	evidencia (revision asistida por IA)	revisor_1	veredicto_1	comentario_1	revisor_2	veredicto_2	comentario_2	consenso
+1	301	bodyweight squatting row	videos/3168-3xK09Sk.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3168: Agarrado a una espaldera							
+1	302	bodyweight squatting row (with towel)	videos/3167-BReCuOn.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3167: Toalla en la espaldera							
+1	303	bodyweight standing close-grip one arm row	videos/3156-v2DfH14.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3156: Espaldera							
+1	304	bodyweight standing close-grip row	videos/3158-tig3PXb.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3158: Espaldera							
+1	305	bodyweight standing one arm row	videos/3162-xbkPfaw.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3162: Espaldera							
+1	306	bodyweight standing one arm row (with towel)	videos/3161-O4oIqQD.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3161: Toalla en la espaldera							
+1	307	bodyweight standing row	videos/3166-wd4ds3s.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3166: Espaldera							
+1	308	bodyweight standing row (with towel)	videos/3165-uTv34oq.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3165: Toalla en la espaldera							
+1	880	glute-ham raise	videos/3193-Vvwjz6N.gif	requisitos: (vacio) -> 1:body weight,2:ghd bench	GIF 3193: Banco GHD con los pies trabados							
+1	1072	one arm towel row	videos/1773-bKWbrTA.gif	requisitos: (vacio) -> 1:body weight,2:anchor point	GIF 1773: Toalla atada a un poste o puerta							
+1	1102	posterior step to overhead reach	videos/1687-ErqK3UL.gif	movement_pattern: KNEE_DOMINANT -> MOBILITY	GIF 1687: paso atras de pie con alcance por encima de la cabeza; sin flexion de rodilla significativa							
+1	1106	push-up to side plank	videos/0664-KhHJ338.gif	body_part: waist -> chest; target_muscle: abs -> pectorals; default_prescription: DURATION -> SETS_REPS; difficulty_level: 1 -> 2	GIF 0664: flexion completa y giro a plancha lateral, dinamico							
+1	1253	standing calf raise (on a staircase)	videos/1490-6HmFgmx.gif	requisitos: (vacio) -> 1:body weight,2:step platform	GIF 1490: Antepie en el borde de un escalon							
+2	558	dumbbell biceps curl squat	videos/1655-niXESDw.gif	body_part: upper arms -> upper legs; target_muscle: biceps -> quads	GIF 1655: sentadilla/zancada completa (cuadriceps y gluteo resaltados) con el gesto de brazo encima; precedente V36 (527, 609)							
+2	567	dumbbell forward lunge triceps extension	videos/1732-XalXcvM.gif	body_part: upper arms -> upper legs; target_muscle: triceps -> quads	GIF 1732: sentadilla/zancada completa (cuadriceps y gluteo resaltados) con el gesto de brazo encima; precedente V36 (527, 609)							
+2	1111	outside leg kick push-up	videos/0642-jNU1gFQ.gif	body_part: upper legs -> chest; target_muscle: glutes -> pectorals	GIF 0642: flexion de brazos; el movimiento de pierna es accesorio							
+2	1113	pike-to-cobra push-up	videos/3662-XPUDTt7.gif	body_part: upper legs -> chest; target_muscle: glutes -> pectorals	GIF 3662: flexion de brazos; el movimiento de pierna es accesorio							
+2	1115	push-up inside leg kick	videos/0661-0br45wL.gif	body_part: upper legs -> chest; target_muscle: glutes -> pectorals	GIF 0661: flexion de brazos; el movimiento de pierna es accesorio							
+2	1117	quick feet v. 2	videos/3552-mweqJin.gif	default_prescription: SETS_REPS -> DURATION; body_part: upper legs -> cardio; target_muscle: quads -> cardiovascular system	GIF 3552: apoyos rapidos alternos sin vuelo; instrucciones 'durante el tiempo'; locomocion continua							
+2	1262	spider crawl push up	videos/0778-P9GFBME.gif	body_part: upper legs -> chest; target_muscle: glutes -> pectorals	GIF 0778: flexion de brazos; el movimiento de pierna es accesorio							
+3	58	45° side bend	videos/0002-Hy9D21L.gif	requisitos: (vacio) -> 1:body weight,2:hyperextension bench	GIF 0002: Banco romano a 45 grados							
+3	235	barbell rack pull	videos/0074-za9Ni4z.gif	requisitos: 1:barbell -> 1:barbell,2:squat rack	GIF 0074: Barra desde los soportes de un rack							
+3	244	barbell preacher curl	videos/0070-qOgPVf6.gif	requisitos: 1:barbell -> 1:barbell,2:preacher bench	GIF 0070: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	249	barbell reverse preacher curl	videos/0081-4LIG9xr.gif	requisitos: 1:barbell -> 1:barbell,2:preacher bench	GIF 0081: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	397	cable one arm preacher curl	videos/1633-eHBlPsa.gif	requisitos: 1:cable -> 1:cable,2:preacher bench	GIF 1633: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	398	cable one arm reverse preacher curl	videos/1635-ZXnjcOQ.gif	requisitos: 1:cable -> 1:cable,2:preacher bench	GIF 1635: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	403	cable preacher curl	videos/0195-P2lNrGL.gif	requisitos: 1:cable -> 1:cable,2:preacher bench	GIF 0195: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	411	cable reverse preacher curl	videos/0209-IwX5NqK.gif	requisitos: 1:cable -> 1:cable,2:preacher bench	GIF 0209: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	441	cable rope hammer preacher curl	videos/1639-PcPe0P5.gif	requisitos: 1:cable -> 1:cable,2:preacher bench	GIF 1639: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	445	cable rope one arm hammer preacher curl	videos/1640-4hATdoB.gif	requisitos: 1:cable -> 1:cable,2:preacher bench	GIF 1640: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	522	dumbbell alternate hammer preacher curl	videos/1646-fy7Tgy4.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 1646: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	523	dumbbell alternate preacher curl	videos/1647-NlfIbzq.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 1647: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	648	dumbbell one arm hammer preacher curl	videos/1663-4dF3maG.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 1663: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	676	dumbbell one arm reverse preacher curl	videos/1414-bWxq4op.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 1414: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	687	dumbbell peacher hammer curl	videos/0370-F1KxjBa.gif	requisitos: 1:dumbbell -> 1:dumbbell,2:preacher bench	GIF 0370: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	688	dumbbell preacher curl	videos/0372-jivWf8n.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 0372: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	792	dumbbell standing preacher curl	videos/0428-hq2hyDH.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 0428: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	795	dumbbell standing zottman preacher curl	videos/2293-P2nRiUa.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 2293: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	802	dumbbell zottman preacher curl	videos/2294-y5U5B9Y.gif	requisitos: 1:dumbbell,2:bench -> 1:dumbbell,2:preacher bench	GIF 2294: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	813	flag	videos/3303-pQ0Mx1Z.gif	requisitos: (vacio) -> 1:body weight,2:wall bars	GIF 3303: Bandera humana en poste o espaldera							
+3	837	ez barbell close grip preacher curl	videos/1627-hacCyUv.gif	requisitos: 1:ez barbell -> 1:ez barbell,2:preacher bench	GIF 1627: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	845	ez barbell reverse grip preacher curl	videos/0452-vBNyir7.gif	requisitos: 1:ez barbell -> 1:ez barbell,2:preacher bench	GIF 0452: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
+3	849	ez barbell spider curl	videos/1628-2kattbR.gif	requisitos: 1:ez barbell -> 1:ez barbell,2:preacher bench	GIF 1628: brazos apoyados en un banco de predicador (no_incluidas_v37.tsv)							
