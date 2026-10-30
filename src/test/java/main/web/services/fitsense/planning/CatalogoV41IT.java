@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning;
 
+import main.web.services.fitsense.EsquemaVigenteSobreCatalogoAnterior;
+import org.springframework.context.annotation.Import;
 import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyPlanCommand;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
@@ -40,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * acredita un slot de pierna con un grupo que no es de pierna (262 lo hacia en 11 referencias).
  */
 @Testcontainers
+@Import(EsquemaVigenteSobreCatalogoAnterior.class)
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",

@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning;
 
+import main.web.services.fitsense.EsquemaVigenteSobreCatalogoAnterior;
+import org.springframework.context.annotation.Import;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * se fija en {@code spring.flyway.target=37} (con V39, 301 exige espaldera y deja de ser elegible).
  */
 @Testcontainers
+@Import(EsquemaVigenteSobreCatalogoAnterior.class)
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
