@@ -140,7 +140,7 @@ public final class SafetySubstitutionPolicy {
                 .filter(c -> enfoque == null || enfoque.accepts(c.bodyPartCode())
                         || Objects.equals(c.bodyPartCode(), original.bodyPartCode()))
                 .filter(c -> admiteBrazo(enfoque, c))
-                .filter(c -> !GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION.contains(c.exerciseId()))
+                .filter(c -> !GoalFeasibilityPolicy.enRevision(c))
                 .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId()))
                 .sorted(Comparator.comparing((CandidateExercise c) -> !Objects.equals(c.bodyPartCode(), original.bodyPartCode()))
                         .thenComparing(c -> !Objects.equals(c.movementPattern(), original.movementPattern()))

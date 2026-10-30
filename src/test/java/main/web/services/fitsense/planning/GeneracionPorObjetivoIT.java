@@ -176,7 +176,11 @@ class GeneracionPorObjetivoIT {
                         : p.nivel() == FitnessLevel.ADVANCED ? 3 : 2);
         assertTrue(violaciones.isEmpty(), p.nombre() + ": ejercicios incompatibles " + violaciones);
         var enRevision = colocaciones(g).stream().map(Fila::exerciseId)
-                .filter(GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION::contains).toList();
+                .filter(id -> jdbc.queryForObject("SELECT movement_pattern, default_prescription FROM exercises"
+                        + " WHERE exercise_id = ?", (rs, i) -> GoalFeasibilityPolicy.enRevision(id,
+                        rs.getString(1), main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType
+                                .valueOf(rs.getString(2))), id))
+                .toList();
         assertTrue(enRevision.isEmpty(),
                 p.nombre() + ": ejercicios en revision " + enRevision);
 

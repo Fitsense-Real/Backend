@@ -654,7 +654,7 @@ class AdaptacionRegresionIT {
                                 .filter(x -> x.defaultPrescription() == o.defaultPrescription())
                                 .filter(x -> MandatorySlot.of(x).equals(slot))
                                 .filter(x -> !usados.contains(x.exerciseId()))
-                                .filter(x -> !GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION.contains(x.exerciseId()))
+                                .filter(x -> !GoalFeasibilityPolicy.enRevision(x))
                                 .filter(x -> !CatalogEligibilityPolicy.esComplemento(x, ctx.profile().goalType()))
                                 .filter(x -> !"upper arms".equals(o.bodyPartCode())
                                         || Objects.equals(x.targetMuscle(), o.targetMuscle()))
@@ -754,7 +754,7 @@ class AdaptacionRegresionIT {
                             .filter(x -> enfoque.accepts(x.bodyPartCode()))
                             .filter(x -> x.defaultPrescription() == PrescriptionType.SETS_REPS)
                             .filter(x -> !p.ids().contains(x.exerciseId()))
-                            .filter(x -> !GoalFeasibilityPolicy.CLASIFICACION_EN_REVISION.contains(x.exerciseId()))
+                            .filter(x -> !GoalFeasibilityPolicy.enRevision(x))
                             .findFirst();
                     if (hueco.isPresent() && ejercicio.isPresent()) {
                         forzados.computeIfAbsent(s.id(), k -> new HashMap<>()).put(hueco.get().id(), ejercicio.get());

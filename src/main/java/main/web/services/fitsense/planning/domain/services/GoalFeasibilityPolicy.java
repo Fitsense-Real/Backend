@@ -63,6 +63,30 @@ public final class GoalFeasibilityPolicy {
             55L, 312L, 465L, 809L, 1192L, 1194L, 1257L, 1310L,
             54L, 853L, 1174L, 1294L, 1295L);
 
+    /**
+     * Revisados con su GIF y fuera de revision (decision D1, 30/10/2026), pero SOLO cuando el
+     * catalogo cargado ya tiene la clasificacion revisada: cardio continuo por tiempo
+     * ({@code LOCOMOTION_CARDIO} y {@code DURATION}), lo que fijan V37.1 (853) y V38 (1117).
+     * Con un catalogo anterior (853 como KNEE_DOMINANT, 1117 por repeticiones) siguen en revision
+     * y la generacion es la de siempre. Evidencia: DIAGNOSTICO_V37_1.md y REVISION_CATALOGO_CARDIO.md.
+     */
+    private static final Map<Long, String> REVISADOS_COMO_CARDIO = Map.of(853L, "LOCOMOTION_CARDIO",
+            1117L, "LOCOMOTION_CARDIO");
+
+    /** Si el ejercicio cuenta como clasificacion en revision con el catalogo cargado. */
+    public static boolean enRevision(CandidateExercise c) {
+        return c != null && c.exerciseId() != null
+                && enRevision(c.exerciseId(), c.movementPattern(), c.defaultPrescription());
+    }
+
+    public static boolean enRevision(long exerciseId, String movementPattern,
+                                     main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType prescripcion) {
+        if (!CLASIFICACION_EN_REVISION.contains(exerciseId)) return false;
+        var revisado = REVISADOS_COMO_CARDIO.get(exerciseId);
+        return revisado == null || !revisado.equals(movementPattern)
+                || prescripcion != main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.DURATION;
+    }
+
     /** Del peor al mejor: el orden importa para combinar. */
     public enum Veredicto { NO_FACTIBLE, NO_VERIFICABLE, FRAGIL, ROBUSTO }
 
@@ -210,10 +234,10 @@ public final class GoalFeasibilityPolicy {
                     "el plan no tiene representacion verificable de un circuito: no acredita cardio");
 
         var verificados = elegibles.stream()
-                .filter(c -> !CLASIFICACION_EN_REVISION.contains(c.exerciseId()))
+                .filter(c -> !enRevision(c))
                 .filter(c -> perteneceARuta(c, ruta)).toList();
         int enRevision = (int) elegibles.stream()
-                .filter(c -> CLASIFICACION_EN_REVISION.contains(c.exerciseId()))
+                .filter(GoalFeasibilityPolicy::enRevision)
                 .filter(c -> perteneceARuta(c, ruta))
                 .map(CandidateExercise::exerciseId).distinct().count();
 
@@ -331,7 +355,7 @@ public final class GoalFeasibilityPolicy {
 
         if (rutas.contains(Ruta.SLOTS_RESISTIDOS)) {
             var verificadas = colocaciones.stream()
-                    .filter(e -> !CLASIFICACION_EN_REVISION.contains(e.getValue().exerciseId())).toList();
+                    .filter(e -> !enRevision(e.getValue())).toList();
             var porSlot = new EnumMap<MandatorySlot, Integer>(MandatorySlot.class);
             for (var e : verificadas) MandatorySlot.of(e.getValue()).ifPresent(s -> porSlot.merge(s, 1, Integer::sum));
             var faltan = MandatorySlot.ALL.stream().filter(s -> !porSlot.containsKey(s)).toList();
@@ -345,7 +369,7 @@ public final class GoalFeasibilityPolicy {
         var deLaRuta = colocaciones.stream()
                 .filter(e -> rutas.stream().anyMatch(r -> perteneceARuta(e.getValue(), r))).toList();
         var verificadas = deLaRuta.stream()
-                .filter(e -> !CLASIFICACION_EN_REVISION.contains(e.getValue().exerciseId())).toList();
+                .filter(e -> !enRevision(e.getValue())).toList();
         int dias = (int) verificadas.stream().map(Map.Entry::getKey).distinct().count();
         if (!verificadas.isEmpty())
             return new PresenciaCapacidad(capacidad, papel, true, Presencia.PRESENTE_PENDIENTE_4D,
