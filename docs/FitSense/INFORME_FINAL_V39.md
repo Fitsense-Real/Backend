@@ -180,7 +180,19 @@ Los `optionalEquipmentCodes` (`band`, `wall bars`, `anchor point`) solo se muest
 
 ### 7.1 Suite completa
 
-SUITE_PENDIENTE
+**`mvn verify -Pintegration` con V38 + V39 oficiales: BUILD SUCCESS.**
+- 855 unitarias y 296 de integración, **0 fallos**.
+- 24 omitidas, todas opt-in: Neon, Replicate real, lectura, progresión y simulaciones largas, que se ejecutan aparte (§1).
+- El CI del PR también pasa (`verify`).
+
+**Primera ejecución: 5 fallos en 3 clases.** Todos eran premisas ligadas a datos de V37 que V39 corrige a propósito. Se ajustaron **sin tocar políticas ni validadores**:
+
+| Prueba | Por qué fallaba | Ajuste |
+|---|---|---|
+| `Usuario31V37IT` | Es evidencia del catálogo V37. Con V39, 301 exige espaldera | Fijada en `spring.flyway.target=37` |
+| `GeneracionPorObjetivoIT`: `condicionGeneralSinCardio`, `perderPesoSinCardio`, `unUnicoCardio` | Su premisa era que en casa sin suelo no había cardio, o solo 1325. Con V39 hay cardio de pie (853, 1117, 1093) | La premisa se recrea bloqueando esos ejercicios con el mecanismo del usuario (`blocked_exercise_ids`) |
+| `GeneracionPorObjetivoIT`: prueba nueva `casaSinSueloConV39` | — | Comprueba la mejora: LOSE_WEIGHT en casa sin suelo queda COMPLETO, sin cardio de suelo |
+| `AdaptacionRegresionIT` (`Bloqueos`) | El sustituto se elegía por SQL sin mirar el equipamiento. Con V39 elegía 301, que el perfil ya no puede recibir | El sustituto se elige entre los elegibles reales del participante (`prepare`) |
 
 ## 8. Revisión humana (F)
 
