@@ -99,4 +99,23 @@
 
 ## 8. Resultado final
 
-Pendiente de completar con el CI del último commit y la simulación de continuidad.
+| Comprobación | Resultado |
+|---|---|
+| CI (`mvn verify -Pintegration`, GitHub Actions) | **Verde** sobre `95baa02`: compilación, 864 pruebas unitarias e integración completa. Este informe solo añade documentación; el CI de su commit consta en el PR |
+| Simulaciones finales | Todas pasan (§3). La continuidad: 96 perfiles y LW de 5–6 días, 0 fallos |
+| Restricciones de la orden | Sin despliegue, sin Neon, sin `main`, sin Replicate de pago, sin Flutter. Progresión apagada. Ninguna referencia histórica cambia. Ningún validador relajado |
+| Fusión en `generation` | Se cumplen las condiciones de la orden. Las decisiones pendientes (§7) no tienen código en este PR |
+
+**Estado por bloque (§22 de la orden):**
+
+| Bloque | Estado |
+|---|---|
+| Catálogo | CORREGIDO Y PROBADO; con pendientes de decisión |
+| Generación | VERIFICADO; con un pendiente de decisión (el orden en GAIN_MUSCLE) |
+| Adherencia | VERIFICADO |
+| Adaptación por causas | CORREGIDO Y PROBADO |
+| Varios motivos | CORREGIDO Y PROBADO |
+| Progresión | VERIFICADO |
+| Reincorporación | VERIFICADO |
+| Trazabilidad | VERIFICADO |
+| Multisemana | VERIFICADO; con un pendiente de decisión (el cambio de perfil) y NO REPRODUCIBLE (usuarios 31, 32 y 33, sin sus registros) |
