@@ -1,6 +1,6 @@
 """Genera la migracion candidata de V38 (o una etapa suelta para simular) desde cambios_v38.tsv.
 
-Uso: generar_v38.py <salida.sql> <etiqueta> <etapas>   (etapas: cualquier combinacion de A, B, C)
+Uso: generar_v38.py <salida.sql> <etiqueta> <etapas> [ids_excluidos]   (etapas: combinacion de A, B, C)
 
 Mismo formato que V37.1: tabla temporal de cambios, comprobacion del estado anterior de
 CADA columna (y source_code y name_en), aplicacion, comprobacion del estado final y
@@ -10,9 +10,10 @@ los implementos que faltan en equipment_types.
 import csv, sys, os
 
 salida, etiqueta, etapas = sys.argv[1], sys.argv[2], set(sys.argv[3])
+excluir = {x for x in (sys.argv[4].split(",") if len(sys.argv) > 4 else []) if x}   # ids fuera (para simular)
 base = os.path.dirname(os.path.abspath(__file__))
 cambios = [r for r in csv.DictReader(open(os.path.join(base, "cambios_v38.tsv")), delimiter="\t")
-           if r["etapa"] in etapas]
+           if r["etapa"] in etapas and r["exercise_id"] not in excluir]
 
 NUEVOS = [  # code, name_es, requires_gym, display_order
     ("wall bars", "Espaldera", False, 32),
