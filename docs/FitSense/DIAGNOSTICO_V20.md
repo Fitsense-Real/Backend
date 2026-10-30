@@ -9,7 +9,7 @@
 **Pregunta:** con V37.1, LOSE_WEIGHT principiante en casa, con 4 y 5 días, se queda sin plan por «unos 1 minutos». ¿Lo causa el redondeo del validador o la composición del motor de respaldo?
 
 **Prueba:** `DiagnosticoV20ComposicionIT` (opt-in: `-Dfitsense.v20.diagnostico.dir=…`).
-- Perfiles: LOSE_WEIGHT principiante, de 3 a 6 días, 45 minutos, en casa y en gimnasio.
+- Perfiles: LOSE_WEIGHT principiante, de 3 a 6 días consecutivos (como el barrido), 45 minutos, en casa y en gimnasio.
 - Para cada sesión del motor de reglas registra:
   - los segundos reales del estimador, antes de redondear;
   - el piso entero de V20 (31 minutos) frente al 70 % exacto (1.890 s);
@@ -27,7 +27,7 @@
 
 **El defecto de redondeo existe, pero va en el sentido contrario.** Es permisivo: piso truncado a 31 y duración redondeada al minuto. Hoy hace pasar sesiones por debajo del 70 %:
 - con V37 vigente, **10 sesiones** de LOSE_WEIGHT principiante pasan V20 solo por redondeo (1.830–1.836 s, entre el 67,8 % y el 68 %);
-- con V37.1, 10 más.
+- con V37 + V37.1 también son 10, además de las 5 que fallan.
 
 ## 2. Por qué el motor se queda corto (composición)
 
