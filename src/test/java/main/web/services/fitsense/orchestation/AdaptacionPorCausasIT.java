@@ -205,6 +205,36 @@ class AdaptacionPorCausasIT {
     }
 
     @Test
+    @DisplayName("§13 · resultado por sesion adaptada: completada, omitida por la misma causa y sin informacion")
+    void resultadoPorSesionAdaptada() throws Exception {
+        var esperados = new LinkedHashMap<Dia, String>();
+        esperados.put(Dia.HECHO, "COMPLETADA|false");
+        esperados.put(Dia.FATIGA, "OMITIDA|true");
+        esperados.put(Dia.NADA, "SIN_INFORMACION|false");
+        for (var e : esperados.entrySet()) {
+            long u = participante(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, 45);
+            long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+            ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.FATIGA);
+            long w2 = ciclo(u, 0, 1);
+            assertEquals("APLICADA", ultimo(u).get("status"), String.valueOf(ultimo(u)));
+            ejecutar(u, w2, Dia.HECHO, Dia.HECHO, e.getKey());
+            var filas = resultadoSesionAdaptada(u);
+            assertEquals(1, filas.size(), "una sesion adaptada: " + filas);
+            assertEquals(e.getValue(), filas.get(0).get("resultado") + "|" + filas.get(0).get("misma_causa"),
+                    e.getKey() + ": " + filas);
+            assertEquals("REVISAR_CARGA_Y_RECUPERACION", filas.get(0).get("intervencion"));
+        }
+    }
+
+    /** La consulta versionada, filtrada por usuario. */
+    private List<Map<String, Object>> resultadoSesionAdaptada(long u) throws Exception {
+        var texto = Files.readString(Path.of("docs/FitSense/consultas/resultado_sesion_adaptada.sql")).lines()
+                .filter(l -> !l.stripLeading().startsWith("--")).collect(Collectors.joining("\n"));
+        return jdbc.queryForList(texto.split(";")[0].strip()).stream()
+                .filter(f -> ((Number) f.get("user_id")).longValue() == u).toList();
+    }
+
+    @Test
     @DisplayName("D6 · omision por otra causa: CAUSA_NO_REGISTRADA, se conserva y no se llama a la IA")
     void sinCausaNoLlamaALaIA() throws Exception {
         long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, 45);
