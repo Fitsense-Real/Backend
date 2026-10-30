@@ -373,6 +373,20 @@ public class ConservationValidator {
                         dolieron, segura, catalogo, cargasPorSesion.getOrDefault(origen, Map.of()),
                         dosisPorSesion.getOrDefault(origen, Map.of()), divisorVolumen,
                         problems, aplicadas, sinEfecto);
+                // TOPE DECLARADO (DISENO_ADAPTACION_CONTEXTUAL v0.3, §2): si la persona dijo que suele
+                // tener M minutos para este entrenamiento, una sesion corregida no puede durar mas. Si
+                // vuelve sin cambios se admite y queda sin efecto: no es factible acortarla sin tocar
+                // los estructurales, y entonces se conserva y consta.
+                var tope = adjustment.minutosDisponiblesDe(origen);
+                if (tope.isPresent() && aplicadas.contains(origen)
+                        && derivada.workout().expectedDurationMinutes() > tope.get()) {
+                    problems.add(("V8C: la sesion %d dura %d minutos y la persona declaro que suele tener %d"
+                            + " para este entrenamiento. Acortala hasta %d minutos como maximo, o conservala"
+                            + " sin cambios si no se puede sin tocar los estructurales.")
+                            .formatted(origen, derivada.workout().expectedDurationMinutes(), tope.get(),
+                                    tope.get()));
+                    aplicadas.remove(origen);
+                }
                 // Una sesion con una subida rechazada no se clasifica (como en
                 // revisarSenalada): ni aplicada ni sin efecto.
                 if (dosisRechazada) {

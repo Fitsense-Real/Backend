@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning;
 
+import main.web.services.fitsense.EsquemaVigenteSobreCatalogoAnterior;
+import org.springframework.context.annotation.Import;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -62,6 +64,7 @@ import static org.mockito.Mockito.*;
  */
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(EsquemaVigenteSobreCatalogoAnterior.class)
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",

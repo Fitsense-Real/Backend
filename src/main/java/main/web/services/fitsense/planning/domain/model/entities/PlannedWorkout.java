@@ -7,6 +7,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.Prescriptio
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutStatus;
 import main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException;
+import main.web.services.fitsense.shared.domain.model.valueobjects.ContextoFaltaDeTiempo;
 import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -61,6 +62,18 @@ public class PlannedWorkout {
     @Enumerated(EnumType.STRING)
     @Column(name = "skip_reason", length = 40)
     private SkipReason skipReason;
+
+    /**
+     * Respuesta opcional tras omitir por falta de tiempo (V42, DISENO_ADAPTACION_CONTEXTUAL v0.3).
+     * Null si no respondio o si la causa es otra.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "lack_of_time_context", length = 30)
+    private ContextoFaltaDeTiempo lackOfTimeContext;
+
+    /** Minutos que la persona suele tener para ESTE entrenamiento; solo con MENOS_TIEMPO_HABITUAL. */
+    @Column(name = "declared_available_minutes")
+    private Short declaredAvailableMinutes;
 
     /** 23:59 hora local del dia programado. Define que entrenamientos son exigibles. */
     @Column(name = "expires_at", nullable = false)
@@ -140,6 +153,8 @@ public class PlannedWorkout {
                     "El desenlace debe ser COMPLETED, PARTIAL o SKIPPED.");
         this.status = outcome;
         this.skipReason = outcome == WorkoutStatus.SKIPPED ? reason : null;
+        this.lackOfTimeContext = null;
+        this.declaredAvailableMinutes = null;
     }
 
     /**
@@ -156,6 +171,28 @@ public class PlannedWorkout {
                     "Este entrenamiento ya se cerro como %s: no se puede marcar como omitido."
                             .formatted(status));
         markOutcome(WorkoutStatus.SKIPPED, reason);
+    }
+
+    /**
+     * Omision por falta de tiempo con su contexto declarado. Los dos datos son opcionales y solo
+     * tienen sentido juntos con {@link SkipReason#LACK_OF_TIME}; los minutos, solo con
+     * {@link ContextoFaltaDeTiempo#MENOS_TIEMPO_HABITUAL}, y entonces son obligatorios.
+     */
+    public void markSkipped(SkipReason reason, ContextoFaltaDeTiempo contexto, Integer minutos) {
+        if (contexto != null && reason != SkipReason.LACK_OF_TIME)
+            throw new DomainRuleViolationException(
+                    "El contexto de falta de tiempo solo se indica si el motivo es falta de tiempo.");
+        if (minutos != null && contexto != ContextoFaltaDeTiempo.MENOS_TIEMPO_HABITUAL)
+            throw new DomainRuleViolationException(
+                    "Los minutos disponibles solo se indican si sueles tener menos tiempo para este entrenamiento.");
+        if (contexto == ContextoFaltaDeTiempo.MENOS_TIEMPO_HABITUAL && minutos == null)
+            throw new DomainRuleViolationException(
+                    "Indica cuantos minutos sueles tener disponibles para este entrenamiento.");
+        if (minutos != null && (minutos < 15 || minutos > 180))
+            throw new DomainRuleViolationException("Los minutos disponibles van de 15 a 180.");
+        markSkipped(reason);
+        this.lackOfTimeContext = contexto;
+        this.declaredAvailableMinutes = minutos == null ? null : minutos.shortValue();
     }
 
     /**

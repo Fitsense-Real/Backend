@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning;
 
+import main.web.services.fitsense.EsquemaVigenteSobreCatalogoAnterior;
+import org.springframework.context.annotation.Import;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningProfile;
@@ -38,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(EsquemaVigenteSobreCatalogoAnterior.class)
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",

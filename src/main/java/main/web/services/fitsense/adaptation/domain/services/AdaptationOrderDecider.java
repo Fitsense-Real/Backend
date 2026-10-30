@@ -6,6 +6,7 @@ import main.web.services.fitsense.adaptation.domain.model.valueobjects.Adjustmen
 import main.web.services.fitsense.analytics.interfaces.acl.SessionOutcomeView;
 import main.web.services.fitsense.configuration.domain.model.valueobjects.CalculationParams;
 import main.web.services.fitsense.shared.domain.model.valueobjects.EvidenceRule;
+import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +58,30 @@ public class AdaptationOrderDecider {
         int registrados = context.recordedWorkouts();
         int previstos = context.scheduledWorkouts();
 
+        // 0. SEGURIDAD, SEPARADA DE LA ADHERENCIA (auditoria integral, 30/10/2026). Un ejercicio
+        //    dejado por dolor no se puede volver a prescribir: si la semana no ordenaria adaptar
+        //    -adherencia buena o datos insuficientes- se senala SOLO la sesion del dolor con
+        //    SEGURIDAD_ANTE_DOLOR. No es una adaptacion por baja adherencia: el resto se conserva.
+        //    Va por la CAUSA y no por "problematic": una sesion completada con un ejercicio dejado
+        //    por dolor no es un incumplimiento (SessionOutcomeIdentifier no la senala), pero su
+        //    causa ya es PAIN_OR_DISCOMFORT.
+        var conDolor = context.sessionOutcomes() == null ? List.<SessionOutcomeView>of()
+                : context.sessionOutcomes().stream()
+                .filter(SessionOutcomeView::recorded)
+                .filter(s -> SkipReason.PAIN_OR_DISCOMFORT.name().equals(s.skipReason()))
+                .toList();
+        boolean adaptariaPorAdherencia = EvidenceRule.enoughEvidence(observada, cobertura, coberturaMinimaPct)
+                && observada.doubleValue() < limits.goodThresholdPct();
+        if (!conDolor.isEmpty() && !adaptariaPorAdherencia)
+            return new AdaptationOrder(AdaptationOutcome.ADAPT_LOCALIZED,
+                    conDolor.stream().map(s -> new AdaptationOrder.TargetedSession(
+                            s.plannedWorkoutId(), s.scheduledDate(), s.completionPct(), s.skipReason(),
+                            s.sessionRpe(), TipoIntervencion.SEGURIDAD_ANTE_DOLOR)).toList(),
+                    observada, cobertura, registrados, previstos,
+                    "Dolor registrado en %d sesion(es): se resuelve la seguridad de esa(s) sesion(es) y el resto"
+                            .formatted(conDolor.size())
+                            + " se conserva. No es una adaptacion por adherencia.");
+
         // 1. Evidencia. UNA SOLA REGLA, la de shared: la condicion estaba
         //    escrita aqui otra vez, que es justo lo que EvidenceRule existe
         //    para evitar. Sin un solo registro, observada es NULL y su
@@ -92,7 +117,7 @@ public class AdaptationOrderDecider {
         // cumplimiento observado no llega al umbral, al menos una sesion no se
         // completo. Si ocurre, es un desacuerdo entre el calculo semanal y el
         // identificador, y conservar es mas seguro que adaptar a ciegas.
-        if (senaladas.isEmpty()) {
+        if (senaladas.isEmpty() && conDolor.isEmpty()) {
             return AdaptationOrder.sinCambios(AdaptationOutcome.INSUFFICIENT_DATA,
                     observada, cobertura, registrados, previstos,
                     "Adherencia observada %s %% por debajo del umbral pero ninguna sesion "
@@ -100,9 +125,20 @@ public class AdaptationOrderDecider {
                             + "quedo senalada. No se adapta a ciegas.");
         }
 
-        // 4. El alcance. Localizada toca UNA sesion; ampliada, todas.
+        // 4. El alcance. Localizada toca UNA sesion; ampliada, todas. EL DOLOR VA PRIMERO: con dolor,
+        //    la localizada corrige la(s) sesion(es) del dolor, y la ampliada las incluye aunque esten
+        //    completadas. Lo demas espera al ciclo siguiente: una modificacion funcional por ciclo.
         boolean ampliada = observada.doubleValue() < limits.moderateThresholdPct();
-        var objetivo = ampliada ? senaladas : List.of(senaladas.get(0));
+        var objetivo = new java.util.ArrayList<SessionOutcomeView>();
+        if (ampliada) {
+            objetivo.addAll(senaladas);
+            conDolor.stream().filter(d -> objetivo.stream().noneMatch(o -> o.plannedWorkoutId().equals(d.plannedWorkoutId())))
+                    .forEach(objetivo::add);
+        } else if (!conDolor.isEmpty()) {
+            objetivo.addAll(conDolor);
+        } else {
+            objetivo.add(senaladas.get(0));
+        }
 
         var sesiones = objetivo.stream()
                 .map(s -> new AdaptationOrder.TargetedSession(

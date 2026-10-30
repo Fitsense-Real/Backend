@@ -90,7 +90,16 @@ public enum TipoIntervencion {
     CAUSA_NO_REGISTRADA(false, false, false,
             "Informacion insuficiente sobre la causa. No inventar una sustitucion, no "
                     + "retirar ejercicios, y no cambiar la dosis ni el dia. Conservar "
-                    + "la sesion es la respuesta correcta.");
+                    + "la sesion es la respuesta correcta."),
+
+    /**
+     * Falta de tiempo sin evidencia de que recortar ayude (DISENO_ADAPTACION_CONTEXTUAL v0.3, D1):
+     * sin respuesta, imprevisto, sin tiempo ese dia, o con unos minutos habituales en los que la
+     * sesion ya cabe. Se conserva SIN llamar a la IA y queda registrada como sin efecto (D2).
+     */
+    CONSERVAR(false, false, false,
+            "Conservar la sesion tal como esta: no sustituir ni retirar ejercicios, y no "
+                    + "cambiar la dosis ni el dia. No se envia a la IA.");
 
     private final boolean permiteSustituirEjercicio;
     private final boolean permiteCambiarDosis;
@@ -183,6 +192,14 @@ public enum TipoIntervencion {
      */
     public boolean permiteReducirCarga() {
         return this == REVISAR_CARGA_Y_RECUPERACION || this == VARIANTE_MAS_SENCILLA_O_CARGA;
+    }
+
+    /**
+     * Si hay algo que pedirle a la IA. {@link #CONSERVAR} y {@link #CAUSA_NO_REGISTRADA} no
+     * permiten cambiar nada, asi que no se envian (D1 y D6 de DISENO_ADAPTACION_CONTEXTUAL v0.3).
+     */
+    public boolean requiereIA() {
+        return this != CONSERVAR && this != CAUSA_NO_REGISTRADA;
     }
 
     /** Texto para el prompt. Describe permisos y prohibiciones de cada intervencion. */

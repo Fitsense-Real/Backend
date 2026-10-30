@@ -362,6 +362,13 @@ public class AdaptedWeekCommandService {
                              Map<Long, CandidateExercise> elegibles,
                              ExclusionesDeSeguridad exclusiones) {
 
+        // SIN IA CUANDO NO HAY NADA QUE PEDIR (D1 y D6 de DISENO_ADAPTACION_CONTEXTUAL v0.3). Si
+        // todas las senaladas son CONSERVAR o CAUSA_NO_REGISTRADA, ninguna puede cambiar: se
+        // conservan con una propuesta vacia, que el productor registra como sin efecto, con
+        // origen CONSERVED y 0 llamadas.
+        if (context.adjustment() != null && context.adjustment().sesionesParaIA().isEmpty())
+            return new Intento(producir(context, derivation, List.of(), elegibles, exclusiones), null, (short) 0);
+
         if (!fixGenerator.isEnabled() || !proveedorDisponible(context.userId()))
             return sinPropuestaUsable(context, derivation, elegibles, exclusiones, (short) 0);
 

@@ -227,6 +227,35 @@ class AdaptationOrderDeciderTest {
         assertFalse(orden.permiteSustituirEjercicioEn(999L), "ni una que no existe");
     }
 
+    @Test
+    @DisplayName("Seguridad aparte: adherencia buena con un ejercicio dejado por dolor -> solo esa sesion, SEGURIDAD_ANTE_DOLOR")
+    void dolorConAdherenciaBuena() {
+        var orden = decidir(contexto(cifra("93.33"), cifra("100.00"), 3, 3, List.of(
+                sesionCon(1, 0, 100, null), sesionCon(2, 2, 80, "PAIN_OR_DISCOMFORT"), sesionCon(3, 4, 100, null))));
+        assertEquals(AdaptationOutcome.ADAPT_LOCALIZED, orden.outcome());
+        assertEquals(1, orden.sessions().size());
+        assertEquals(2L, orden.sessions().get(0).plannedWorkoutId());
+        assertEquals(main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion.SEGURIDAD_ANTE_DOLOR,
+                orden.sessions().get(0).intervencion());
+    }
+
+    @Test
+    @DisplayName("Localizada con dolor en otra sesion: se corrige primero la del dolor, no la de peor cumplimiento")
+    void dolorAntesQueLaPeor() {
+        var orden = decidir(contexto(cifra("60.00"), cifra("100.00"), 3, 3, List.of(
+                sesionCon(1, 0, 100, null), sesionCon(2, 2, 80, "PAIN_OR_DISCOMFORT"), sesion(3, 4, "LACK_OF_TIME", true))));
+        assertEquals(AdaptationOutcome.ADAPT_LOCALIZED, orden.outcome());
+        assertEquals(List.of(2L), orden.sessions().stream().map(s -> s.plannedWorkoutId()).toList());
+    }
+
+    @Test
+    @DisplayName("Sin dolor, adherencia buena: NO_CHANGE (una observacion de fatiga no dispara nada)")
+    void fatigaConAdherenciaBuena() {
+        var orden = decidir(contexto(cifra("93.33"), cifra("100.00"), 3, 3, List.of(
+                sesionCon(1, 0, 100, null), sesionCon(2, 2, 80, "FATIGUE"), sesionCon(3, 4, 100, null))));
+        assertEquals(AdaptationOutcome.NO_CHANGE, orden.outcome());
+    }
+
     // -----------------------------------------------------------------------
 
     private main.web.services.fitsense.adaptation.domain.model.valueobjects.AdaptationOrder
