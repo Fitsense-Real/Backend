@@ -105,7 +105,22 @@ class GeneracionPorObjetivoIT {
     }
 
     private Generada generar(Perfil p) {
+        return generar(p, List.of());
+    }
+
+    /**
+     * Cardio de pie que V38/V39 hicieron elegible en casa sin suelo (853 y 1117 revisados como
+     * cardio, D1; 1093 sin suelo). Las pruebas cuya premisa es "no hay cardio posible" o "hay un
+     * unico cardio" los bloquean con el mismo mecanismo que usa el participante
+     * ({@code blocked_exercise_ids}); la mejora de V39 la comprueba {@code casaSinSueloConV39}.
+     */
+    static final List<Long> CARDIO_DE_PIE_V39 = List.of(853L, 1093L, 1117L);
+
+    private Generada generar(Perfil p, List<Long> bloqueados) {
         long userId = usuario(p);
+        if (!bloqueados.isEmpty())
+            jdbc.update("UPDATE user_profiles SET blocked_exercise_ids = ?::bigint[] WHERE user_id = ?",
+                    bloqueados.toArray(Long[]::new), userId);
         long plan = planning.generateWeeklyPlan(userId, SEMANA, PlanAdjustment.none(), null, null)
                 .orElseThrow(() -> new AssertionError("sin plan para " + p.nombre()));
         var g = cobertura(p, userId, plan);
@@ -338,7 +353,8 @@ class GeneracionPorObjetivoIT {
         @DisplayName("GENERAL_FITNESS sin cardio posible: se publica automaticamente; fuerza, resistencia y movilidad, sin cardio")
         void condicionGeneralSinCardio() {
             var g = generar(perfil("GENERAL_FITNESS · principiante en casa sin suelo, 3x60", GoalType.GENERAL_FITNESS,
-                    FitnessLevel.BEGINNER, 41, TrainingLocation.HOME, CASA, LMV, 60, true, false, true));
+                    FitnessLevel.BEGINNER, 41, TrainingLocation.HOME, CASA, LMV, 60, true, false, true),
+                    CARDIO_DE_PIE_V39);
             assertEquals(1, planesDe(g.userId()), "publicado y activo, sin aceptacion");
             assertEquals("PARCIAL", g.resultado());
             assertEquals(Set.of("CARDIO"), claves(g.cobertura().get("no_cubiertas")));
@@ -397,7 +413,8 @@ class GeneracionPorObjetivoIT {
         @DisplayName("LOSE_WEIGHT sin ningun cardio posible: se publica una semana de fuerza, sin cardio inventado")
         void perderPesoSinCardio() {
             var g = generar(perfil("LOSE_WEIGHT · principiante en casa sin suelo", GoalType.LOSE_WEIGHT,
-                    FitnessLevel.BEGINNER, 45, TrainingLocation.HOME, CASA, LMV, 45, true, false, true));
+                    FitnessLevel.BEGINNER, 45, TrainingLocation.HOME, CASA, LMV, 45, true, false, true),
+                    CARDIO_DE_PIE_V39);
             assertEquals(1, planesDe(g.userId()));
             assertEquals("SOLO_SECUNDARIAS", g.resultado());
             assertEquals(Set.of("STRENGTH"), claves(g.cobertura().get("colocaciones")), "todo es fuerza, la secundaria");
@@ -430,9 +447,22 @@ class GeneracionPorObjetivoIT {
             var equipo = new ArrayList<>(CASA);
             equipo.add("treadmill");
             var g = generar(perfil("LOSE_WEIGHT · principiante sin suelo, con cinta, 3x45", GoalType.LOSE_WEIGHT,
-                    FitnessLevel.BEGINNER, 38, TrainingLocation.HOME, equipo, LMV, 45, true, false, true));
+                    FitnessLevel.BEGINNER, 38, TrainingLocation.HOME, equipo, LMV, 45, true, false, true),
+                    CARDIO_DE_PIE_V39);
             assertEquals("COMPLETO", g.resultado());
             assertEquals(Set.of(1325L), idsDeCapacidad(g, Capability.CARDIO));
+        }
+
+        @Test
+        @DisplayName("V39: en casa sin suelo ya hay cardio de pie; LOSE_WEIGHT queda COMPLETO sin cardio de suelo")
+        void casaSinSueloConV39() {
+            var g = generar(perfil("LOSE_WEIGHT · principiante en casa sin suelo (V39)", GoalType.LOSE_WEIGHT,
+                    FitnessLevel.BEGINNER, 45, TrainingLocation.HOME, CASA, LMV, 45, true, false, true));
+            assertEquals("COMPLETO", g.resultado());
+            var cardio = idsDeCapacidad(g, Capability.CARDIO);
+            assertFalse(cardio.isEmpty());
+            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM exercises WHERE exercise_id = ANY(?)"
+                    + " AND requires_floor", Integer.class, (Object) cardio.toArray(Long[]::new)), cardio.toString());
         }
 
         @Test
