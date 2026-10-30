@@ -12,6 +12,8 @@ import main.web.services.fitsense.profiling.domain.model.valueobjects.FitnessLev
 import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
 import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
 import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
+import main.web.services.fitsense.profiling.interfaces.rest.UserProfileController;
+import main.web.services.fitsense.profiling.interfaces.rest.resources.UpdateUserProfileResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,7 @@ class LimitacionesPlanIT {
     @Autowired PlanningContextFacade planning;
     @Autowired UserProfileCommandService perfiles;
     @Autowired UserRepository usuarios;
+    @Autowired UserProfileController perfilRest;
     @Autowired JdbcTemplate jdbc;
 
     private static int secuencia;
@@ -93,6 +96,39 @@ class LimitacionesPlanIT {
         long u = participante(List.of("body weight", "band"));
         List<Limitation> lim = planes.limitations(principal(u)).getBody().limitations();
         assertTrue(lim.stream().noneMatch(l -> "UPPER_PULL".equals(l.code())), lim.toString());
+    }
+
+    /**
+     * H: el codigo nuevo de V39 viaja por el contrato que usa la app (PUT del perfil), se guarda
+     * tal cual, quita la limitacion y la generacion lo usa (remos en espaldera, 301-308).
+     */
+    @Test
+    @DisplayName("H: 'wall bars' guardado por PUT llega a la generacion y cubre la traccion")
+    void espalderaPorElContratoDeLaApp() {
+        long u = participante(List.of("body weight"));
+        var p = perfilRest.get(principal(u)).getBody();
+        var actualizado = perfilRest.update(principal(u), new UpdateUserProfileResource(
+                null, p.heightCm(), p.currentWeightKg(), p.targetWeightKg(),
+                FitnessLevel.valueOf(p.fitnessLevel()), GoalType.valueOf(p.goalType()), p.goalText(),
+                TrainingLocation.valueOf(p.trainingLocation()), p.daysPerWeek(), p.availableDays(),
+                p.sessionMinutes(), List.of("body weight", "wall bars"), p.blockedExerciseIds(), p.healthNotes(),
+                null, null, null, null, null)).getBody();
+        assertEquals(List.of("body weight", "wall bars"), actualizado.equipmentCodes());
+
+        var res = planes.limitations(principal(u)).getBody();
+        assertTrue(res.limitations().stream().noneMatch(l -> "UPPER_PULL".equals(l.code())), res.toString());
+
+        planning.generateWeeklyPlan(u, res.weekStartDate(), PlanAdjustment.none(), null, null)
+                .orElseThrow(() -> new AssertionError("sin plan"));
+        var usados = jdbc.queryForList("""
+                SELECT DISTINCT et.code FROM weekly_training_plans p
+                JOIN planned_workouts w ON w.plan_id = p.plan_id
+                JOIN planned_workout_exercises e ON e.planned_workout_id = w.planned_workout_id
+                JOIN exercise_equipment_requirements ee ON ee.exercise_id = e.exercise_id
+                JOIN equipment_types et ON et.equipment_id = ee.equipment_id
+                WHERE p.user_id = ?
+                """, String.class, u);
+        assertTrue(usados.contains("wall bars"), "la generacion usa la espaldera declarada: " + usados);
     }
 
     private long participante(List<String> equipamiento) {

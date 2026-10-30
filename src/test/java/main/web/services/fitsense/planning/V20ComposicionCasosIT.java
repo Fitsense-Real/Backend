@@ -50,9 +50,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>LOSE_WEIGHT principiante, 4 y 5 dias en casa: con V37.1 se quedaban sin plan
  *       (3 cardios de casa y V18). Desde D1 (853 y 1117 como cardio revisado) publican.</li>
  * </ul>
- * El catalogo se elige con {@code -Dspring.flyway.locations}: por omision V37; con
- * {@code classpath:db/migration,filesystem:docs/FitSense/auditoria_catalogo/v37/separables},
- * V37 + V37.1.
+ * Desde el 30/10/2026 (decision F) V37.1 es la V38 oficial y la candidata V38 es V39, ambas
+ * en db/migration: el catalogo por omision es V39. Las copias de docs (v37/separables y
+ * v38/candidata) son historicas y no se combinan con db/migration (se aplicarian dos veces).
  */
 @Testcontainers
 @SpringBootTest(properties = {
