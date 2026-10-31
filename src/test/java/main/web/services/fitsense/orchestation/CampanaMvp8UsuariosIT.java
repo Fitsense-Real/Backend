@@ -322,7 +322,7 @@ class CampanaMvp8UsuariosIT {
                         org.springframework.test.util.ReflectionTestUtils.getField(correcciones, "promptBuilder");
                 var prompt = builder.build(inv.getArgument(0), inv.getArgument(1), inv.getArgument(2), inv.getArgument(3));
                 return new ReplicateSessionFixGenerator.RawFix(prompt.snapshotJson(),
-                        repetir("ADAPTACION", inv.getArgument(4)));
+                        remapear(repetir("ADAPTACION", inv.getArgument(4)), inv.getArgument(1)));
             }
             return registrar("ADAPTACION", ((PlanGenerationContext) inv.getArgument(0)).userId(),
                     inv.getArgument(4), inv.getArgument(3), () -> {
@@ -404,9 +404,45 @@ class CampanaMvp8UsuariosIT {
     /** Salidas de la campana original por etiqueta|tipo|intento (solo en modo foco). */
     final Map<String, String> originales = new HashMap<>();
     final Queue<String> repeticiones = new ConcurrentLinkedQueue<>();
+    /** Respuestas repetidas (REPLAY) y rechazos sin salida original, por etiqueta: nunca son llamadas. */
+    final Map<String, AtomicInteger> replays = new ConcurrentHashMap<>();
+    final Map<String, AtomicInteger> sinSalida = new ConcurrentHashMap<>();
+    /** Contabilidad LIVE/REPLAY por usuario|semana, para el CSV. */
+    final Map<String, String> contabilidad = new ConcurrentHashMap<>();
+    /**
+     * IDs reproducibles (orden de cierre del MVP, §8): sesion de la campana original -> clave logica
+     * (usuario y fecha), leida de su SESIONES_8_SEMANAS.csv. En la ejecucion nueva la clave se
+     * resuelve contra las sesiones que la derivacion corrige; si no queda exactamente una, error.
+     */
+    final Map<Long, String> logicaOriginal = new HashMap<>();
+    /** user_id de cada usuario en la campana original (USUARIOS_SINTETICOS.csv), solo en modo foco. */
+    final Map<String, Long> usuarioOriginal = new HashMap<>();
 
     private void cargarOriginales() throws Exception {
         if (FOCO.isEmpty()) return;
+        var usuariosOriginales = REPETICION.resolveSibling("USUARIOS_SINTETICOS.csv");
+        if (Files.exists(usuariosOriginales)) {
+            var lineas = Files.readAllLines(usuariosOriginales);
+            for (var l : lineas.subList(1, lineas.size())) {
+                var c = l.split(",", 3);
+                if (c.length >= 2 && !c[1].isBlank()) usuarioOriginal.put(c[0], Long.parseLong(c[1]));
+            }
+        }
+        var sesionesOriginales = REPETICION.resolveSibling("SESIONES_8_SEMANAS.csv");
+        if (Files.exists(sesionesOriginales)) {
+            var lineas = Files.readAllLines(sesionesOriginales);
+            var cab = List.of(lineas.get(0).split(","));
+            int iu = cab.indexOf("usuario"), is = cab.indexOf("sesion"), ifc = cab.indexOf("fecha");
+            for (var l : lineas.subList(1, lineas.size())) {
+                var c = l.split(",", -1);
+                if (c.length <= Math.max(iu, Math.max(is, ifc)) || c[is].isBlank()) continue;
+                long id = Long.parseLong(c[is]);
+                var previa = logicaOriginal.putIfAbsent(id, c[iu] + "|" + c[ifc]);
+                if (previa != null && !previa.equals(c[iu] + "|" + c[ifc]))
+                    throw new IllegalStateException("REPETICION: la sesion original " + id + " tiene dos claves: "
+                            + previa + " y " + c[iu] + "|" + c[ifc]);
+            }
+        }
         var json = new ObjectMapper();
         for (var linea : Files.readAllLines(REPETICION)) {
             if (linea.isBlank()) continue;
@@ -422,10 +458,46 @@ class CampanaMvp8UsuariosIT {
         var clave = ETIQUETA.get() + "|" + tipo + "|" + intento;
         var salida = originales.get(clave);
         repeticiones.add(clave + (salida == null ? " -> sin salida original (rechazo sin llamada)" : " -> repetida"));
+        (salida == null ? sinSalida : replays).computeIfAbsent(ETIQUETA.get(), k -> new AtomicInteger()).incrementAndGet();
         if (salida == null)
             throw new InvalidPlanDraftException(List.of("REPETICION: la campana original no tuvo el intento "
                     + intento + " de esta operacion; no se llama a la IA fuera del foco."));
         return salida;
+    }
+
+    /**
+     * Cambia cada source_planned_workout_id de la respuesta original por el de la sesion de ESTA
+     * ejecucion con la misma clave logica (usuario y fecha de la semana medida). Sin una
+     * correspondencia unica la repeticion se rechaza con un error explicito: nunca se adivina.
+     */
+    String remapear(String salida, WeekDerivation derivacion) {
+        if (salida == null || logicaOriginal.isEmpty()) return salida;
+        try {
+            var json = new ObjectMapper();
+            var raiz = (ObjectNode) json.readTree(salida);
+            String usuario = ETIQUETA.get().split(" · ")[0];
+            var fuentes = derivacion.workouts().stream().map(DerivedWorkout::sourcePlannedWorkoutId).toList();
+            for (var nodo : raiz.withArray("sessions")) {
+                var sesion = (ObjectNode) nodo;
+                long original = sesion.path("source_planned_workout_id").asLong();
+                var clave = logicaOriginal.get(original);
+                if (clave == null || !clave.startsWith(usuario + "|"))
+                    throw new IllegalStateException("REPETICION: la sesion original " + original
+                            + " no tiene clave logica de " + usuario + " (" + clave + ")");
+                var fecha = LocalDate.parse(clave.split("\\|")[1]);
+                var candidatas = fuentes.stream().filter(id -> fecha.equals(jdbc.queryForObject(
+                        "SELECT scheduled_date FROM planned_workouts WHERE planned_workout_id = ?", LocalDate.class, id)))
+                        .toList();
+                if (candidatas.size() != 1)
+                    throw new IllegalStateException("REPETICION: la sesion original " + original + " (" + clave
+                            + ") corresponde a " + candidatas + " en esta ejecucion; se exige exactamente una");
+                sesion.put("source_planned_workout_id", candidatas.get(0));
+                repeticiones.add(ETIQUETA.get() + " · sesion " + original + " (" + clave + ") -> " + candidatas.get(0));
+            }
+            return json.writeValueAsString(raiz);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new IllegalStateException("REPETICION: salida original ilegible: " + e.getMessage(), e);
+        }
     }
 
     private void parar(String motivo) {
@@ -512,7 +584,10 @@ class CampanaMvp8UsuariosIT {
         String inicial;
         try {
             plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null);
-            inicial = plan.map(p -> origen(p) + ", " + (contar(u) - antes) + " llamadas").orElse("SIN_PLAN");
+            String et = def.id() + " · inicial";
+            inicial = plan.map(p -> origen(p) + ", LIVE " + (contar(u) - antes) + ", REPLAY "
+                    + replays.getOrDefault(et, new AtomicInteger()).get() + ", SIN_SALIDA "
+                    + sinSalida.getOrDefault(et, new AtomicInteger()).get()).orElse("SIN_PLAN");
         } catch (RuntimeException e) {
             plan = Optional.empty();
             inicial = "SIN_PLAN: " + e.getClass().getSimpleName() + ": " + e.getMessage();
@@ -738,7 +813,16 @@ class CampanaMvp8UsuariosIT {
         int aiCalls = ((Number) ev.get("ai_calls")).intValue();
         String decision = (String) ev.get("decision");
         String intervenciones = String.valueOf(ev.get("intervenciones"));
-        if (IA && aiCalls != contadas) violaciones.add("ai_calls V32 = " + aiCalls + ", llamadas contadas = " + contadas);
+        // LIVE = llamadas enviadas a Replicate; REPLAY = respuestas originales repetidas; SIN_SALIDA =
+        // intentos rechazados sin llamada porque la campana original no llego a ellos. V32 cuenta los tres
+        // (para el backend todos son intentos) y no se altera: la contabilidad los separa.
+        String etiqueta = def.id() + " · s" + numero;
+        int replay = replays.getOrDefault(etiqueta, new AtomicInteger()).get();
+        int vacios = sinSalida.getOrDefault(etiqueta, new AtomicInteger()).get();
+        contabilidad.put(def.id() + "|" + numero, "LIVE=" + contadas + " REPLAY=" + replay + " SIN_SALIDA=" + vacios
+                + " V32=" + aiCalls);
+        if (IA && aiCalls != contadas + replay + vacios)
+            violaciones.add("ai_calls V32 = " + aiCalls + " y LIVE + REPLAY + SIN_SALIDA = " + (contadas + replay + vacios));
         if (contadas > 3) violaciones.add("mas de tres llamadas en el ciclo: " + contadas);
         if (("NO_CHANGE".equals(decision) || "INSUFFICIENT_DATA".equals(decision)) && contadas > 0)
             violaciones.add("ciclo determinista con " + contadas + " llamadas a la IA");
@@ -973,20 +1057,15 @@ class CampanaMvp8UsuariosIT {
      * las exenciones de una adaptacion autorizada (p. ej. la duracion de una sesion acortada). Es
      * informativa: lo que publico el backend ya paso V1-V25 y V8C con sus exenciones.
      */
+    /**
+     * Revalidacion independiente de la semana publicada, con las autorizaciones que se pueden
+     * demostrar desde el historial (V31/V32 en crudo, {@link ValidacionIndependiente}). Antes se
+     * validaba sin ninguna y toda dosis progresada, reducida o heredada salia INVALIDA.
+     */
     private String validarSemana(long u, long plan, LocalDate semana) {
         try {
-            var borrador = new ArrayList<PlanDraft.DraftWorkout>();
-            for (var s : sesionesDe(plan)) {
-                var l = s.ejercicios().stream().map(e -> new PlanDraft.DraftExercise(e.id(),
-                        PrescriptionType.valueOf(e.tipo()), e.series(), e.reps(), e.segundos(), e.carga(), e.descanso(),
-                        null)).toList();
-                borrador.add(new PlanDraft.DraftWorkout(s.fecha(), WorkoutFocus.valueOf(s.foco()), "semana", s.minutos(), l));
-            }
             var ctx = planComandos.prepare(new GenerateWeeklyPlanCommand(u, semana, null, true, null, null)).context();
-            validador.validate(new PlanDraft(GenerationSource.RULE_ENGINE, null, "semana", null, "r", borrador), ctx, 30);
-            return "VALIDA";
-        } catch (InvalidPlanDraftException e) {
-            return "INVALIDA " + e.problems().stream().map(p -> p.length() > 140 ? p.substring(0, 140) : p).toList();
+            return new ValidacionIndependiente(jdbc).validar(plan, ctx, validador, 30).texto();
         } catch (RuntimeException e) {
             return "NO_EVALUABLE " + e.getClass().getSimpleName() + ": " + e.getMessage();
         }
@@ -1006,8 +1085,21 @@ class CampanaMvp8UsuariosIT {
 
     private long participante(int n, Usuario d) {
         String email = "mvp-" + d.id().toLowerCase(Locale.ROOT) + "-" + (IA ? "real" : "seco") + "@pruebas.invalid";
-        jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
-                + " VALUES (?, 'x', ?, now(), now())", email, d.id());
+        var original = usuarioOriginal.get(d.id());
+        if (original != null) {
+            // Modo foco: el MISMO user_id que en la campana original. La semilla del motor de reglas es
+            // user_id x 1 000 003 + fecha, asi que con otro id el plan cambia y la repeticion no es fiel
+            // (antes los usuarios se creaban en hilos y su id dependia del orden). Solo en la base efimera.
+            synchronized (this) {
+                jdbc.update("INSERT INTO users (user_id, email, password_hash, first_name, consent_granted_at, enrolled_at)"
+                        + " OVERRIDING SYSTEM VALUE VALUES (?, ?, 'x', ?, now(), now())", original, email, d.id());
+                jdbc.queryForObject("SELECT setval(pg_get_serial_sequence('users', 'user_id'),"
+                        + " (SELECT max(user_id) FROM users))", Long.class);
+            }
+        } else {
+            jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
+                    + " VALUES (?, 'x', ?, now(), now())", email, d.id());
+        }
         long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
         perfiles.handle(new CreateUserProfileCommand(u, d.nacimiento(), d.sexo(), new BigDecimal(d.altura()),
                 new BigDecimal(d.peso()), null, d.nivel(), d.objetivo(), "campana MVP " + d.id(), d.lugar(),
@@ -1082,7 +1174,7 @@ class CampanaMvp8UsuariosIT {
                 "adherencia_formula_orden", "adherencia_backend_oficial", "adherencia_backend_observada", "riesgo",
                 "motivos", "cambio_perfil", "decision", "estado_v32", "intervenciones", "llamadas_ia_contadas",
                 "ai_calls_v32", "plan_siguiente", "pasos", "pasos_bloqueados", "retirados(ejercicio@sesion)",
-                "violaciones", "nota"));
+                "violaciones", "nota", "contabilidad_live_replay"));
         var sesionesCsv = new StringBuilder(linea("usuario", "semana", "sesion", "origen", "fecha", "foco", "minutos",
                 "ejercicios", "accion", "estado_final", "cumplimiento_pct", "motivo", "contexto", "minutos_declarados",
                 "rpe", "dosis"));
@@ -1100,7 +1192,8 @@ class CampanaMvp8UsuariosIT {
                         f.omitidas(), f.sinRegistro(), f.adherenciaOrden(), f.adherenciaBackend(),
                         f.adherenciaObservada(), f.riesgo(), f.motivos(), f.cambioPerfil(), f.decision(), f.estado(),
                         f.intervenciones(), f.llamadasIa(), f.aiCallsV32(), f.siguientePlan(), f.pasos(), f.bloqueos(),
-                        f.retirados(), String.join(" | ", f.violaciones()), f.nota()));
+                        f.retirados(), String.join(" | ", f.violaciones()), f.nota(),
+                        contabilidad.getOrDefault(f.usuario() + "|" + f.semana(), "-")));
             for (var s : r.sesiones())
                 sesionesCsv.append(linea(s.usuario(), s.semana(), s.sesion(), s.origen(), s.fecha(), s.foco(),
                         s.minutos(), s.ejercicios(), s.accion(), s.estado(), s.cumplimiento(), s.motivo(), s.contexto(),

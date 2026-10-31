@@ -87,6 +87,8 @@ class ProgresionIT {
     @Autowired UserRepository usuarios;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.domain.services.PlanDraftValidator validador;
+    @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
@@ -398,6 +400,28 @@ class ProgresionIT {
         assertTrue(w2.isEmpty(), objetivo + ": se publico una copia con una dosis no autorizada. " + ev);
         assertEquals("NO_FACTIBLE", ev.get("status"));
         assertTrue(String.valueOf(ev.get("rejection_reason")).contains("V24"), String.valueOf(ev));
+    }
+
+    @Test
+    @DisplayName("validacion independiente del simulador: reconoce el paso registrado y rechaza una dosis que nadie autorizo")
+    void validacionIndependienteDistingue() throws Exception {
+        long u = participante(GoalType.INCREASE_STRENGTH, List.of((short) 1, (short) 3, (short) 5));
+        var paso = hastaElPrimerPaso(u);
+        long w3 = paso[0];
+        var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                .GenerateWeeklyPlanCommand(u, S1.plusWeeks(2), null, true, null, null)).context();
+        var conPaso = new ValidacionIndependiente(jdbc).validar(w3, ctx, validador, 30);
+        assertEquals("VALIDA_CON_AUTORIZACIONES", conPaso.estado(), conPaso.texto());
+        assertEquals(1, conPaso.origenes().getOrDefault("PASO", 0), conPaso.texto());
+
+        // La misma semana con +1 repeticion a mano en el ejercicio del paso: ninguna autorizacion la explica.
+        long sesion = semana(w3).get((int) paso[1]).id();
+        assertEquals(1, jdbc.update("UPDATE planned_workout_exercises SET planned_reps = planned_reps + 1"
+                + " WHERE planned_workout_id = ? AND exercise_id = ?", sesion, paso[2]));
+        var manual = new ValidacionIndependiente(jdbc).validar(w3, ctx, validador, 30);
+        assertEquals("INVALIDA", manual.estado(), manual.texto());
+        assertEquals(1, manual.origenes().getOrDefault("SIN_AUTORIZACION", 0), manual.texto());
+        assertTrue(manual.problemas().stream().anyMatch(p -> p.startsWith("V24")), manual.texto());
     }
 
     // =======================================================================
