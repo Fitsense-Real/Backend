@@ -116,9 +116,15 @@ class ReincorporacionIaRealIT {
     static final int MAX_LLAMADAS = Integer.getInteger("fitsense.reincorporacion.max-llamadas", 12);
     static final int MAX_ESCENARIOS = Integer.getInteger("fitsense.reincorporacion.escenarios", 4);
     static final int SEMANAS_MAX = 16;
+    /** El perfil del escenario: objetivo y minutos (por omision LOSE_WEIGHT intermedio, 60 min). */
+    static final GoalType OBJETIVO = GoalType.valueOf(System.getProperty("fitsense.reincorporacion.objetivo", "LOSE_WEIGHT"));
+    static final int MINUTOS = Integer.getInteger("fitsense.reincorporacion.minutos", 60);
+    static final List<Short> DIAS = Arrays.stream(System.getProperty("fitsense.reincorporacion.dias", "1,3,5").split(","))
+            .map(String::strip).map(Short::valueOf).toList();
     static final LocalDate S1 = LocalDate.of(2026, 11, 2);
     static final boolean SECO = "seco".equals(System.getProperty("fitsense.reincorporacion.ia"));
-    static final Path SALIDA = Path.of("target", SECO ? "reincorporacion-seco" : "reincorporacion-ia");
+    static final Path SALIDA = Path.of("target", (SECO ? "reincorporacion-seco" : "reincorporacion-ia")
+            + "-" + OBJETIVO + "-" + MINUTOS + "-d" + DIAS.size());
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine",
             "bench", "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine");
 
@@ -170,8 +176,8 @@ class ReincorporacionIaRealIT {
             long w2 = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
             var ev = ultimo(u);
             int liveC = llamadas.size() - live0;
-            var viernesAntes = raiz.get(2).getValue();
-            var viernesDespues = semana(w2).get(2).getValue();
+            var viernesAntes = ultimaSesion(raiz);
+            var viernesDespues = ultimaSesion(semana(w2));
             var retirado = retirada(viernesAntes, viernesDespues);
             historial.append(fila(esc, 1, "C", w1, w2, ev, liveC, null, retirado == null ? null : retirado,
                     viernesDespues, validar(u, w2, S1.plusWeeks(1)), retirado == null
@@ -202,7 +208,7 @@ class ReincorporacionIaRealIT {
                 assertTrue(String.valueOf(evk.get("progressed_sessions")).split(",").length <= 1,
                         "a lo sumo un paso por ciclo: " + evk);
                 var inf = informe(evk);
-                var viernes = semana(siguiente).get(2).getValue();
+                var viernes = ultimaSesion(semana(siguiente));
                 String nota = inf.isEmpty() ? "mantenimiento" : inf.get(0).get("tipo") + " " + inf.get(0).get("exercise_id");
                 historial.append(fila(esc, k + 1, "D-G", plan, siguiente, evk, liveK, inf.isEmpty() ? null : inf.get(0),
                         retirado, viernes, validar(u, siguiente, S1.plusWeeks(k + 1)), nota));
@@ -215,7 +221,7 @@ class ReincorporacionIaRealIT {
                     long otra = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1)).orElseThrow();
                     assertEquals(siguiente, otra, "repetir el ciclo devuelve la misma semana");
                     assertEquals(intentos, intentos(u), "repetir el ciclo no registra otra evidencia");
-                    assertEquals(1, semana(siguiente).get(2).getValue().stream().filter(e -> e.id() == retirado.id()).count(),
+                    assertEquals(1, ultimaSesion(semana(siguiente)).stream().filter(e -> e.id() == retirado.id()).count(),
                             "sin duplicados");
                     plan = siguiente;
                     // G · se entrena la semana con el reincorporado y se cierra otro ciclo.
@@ -228,7 +234,7 @@ class ReincorporacionIaRealIT {
                     assertEquals(0, llamadas.size() - live);
                     var infm = informe(evm);
                     historial.append(fila(esc, k + 2, "G", plan, despues, evm, 0, infm.isEmpty() ? null : infm.get(0),
-                            retirado, semana(despues).get(2).getValue(), validar(u, despues, S1.plusWeeks(k + 2)),
+                            retirado, ultimaSesion(semana(despues)), validar(u, despues, S1.plusWeeks(k + 2)),
                             infm.isEmpty() ? "mantenimiento" : infm.get(0).get("tipo") + " " + infm.get(0).get("exercise_id")));
                     volcar(traza, esc, k + 3, despues, retirado.id());
                     var registro = jdbc.queryForList("SELECT wse.status, wse.actual_sets, wse.actual_reps_total,"
@@ -425,9 +431,9 @@ class ReincorporacionIaRealIT {
     /** Una fila por ejercicio del viernes de ese plan, con lo que se registro de el. */
     private void volcar(StringBuilder traza, String esc, int semana, long plan, Long retirado) {
         var viernes = jdbc.queryForList("SELECT planned_workout_id, scheduled_date FROM planned_workouts WHERE plan_id = ?"
-                + " ORDER BY scheduled_date", plan).get(2);
+                + " ORDER BY scheduled_date DESC LIMIT 1", plan).get(0);
         long id = ((Number) viernes.get("planned_workout_id")).longValue();
-        var ejercicios = semana(plan).get(2).getValue();
+        var ejercicios = ultimaSesion(semana(plan));
         boolean presente = false;
         for (int i = 0; i < ejercicios.size(); i++) {
             var e = ejercicios.get(i);
@@ -466,9 +472,9 @@ class ReincorporacionIaRealIT {
                 + " VALUES (?, 'x', 'Reincorporacion', now(), now())", email);
         long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
         perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1992, 1, 15), BiologicalSex.FEMALE,
-                new BigDecimal("165"), new BigDecimal("70"), null, FitnessLevel.INTERMEDIATE, GoalType.LOSE_WEIGHT,
-                "reincorporacion con IA real", TrainingLocation.GYM, (short) 3, List.of((short) 1, (short) 3, (short) 5),
-                (short) 60, GIMNASIO, List.of(), "Ninguna", true, true, true, true, true));
+                new BigDecimal("165"), new BigDecimal("70"), null, FitnessLevel.INTERMEDIATE, OBJETIVO,
+                "reincorporacion con IA real", TrainingLocation.GYM, (short) DIAS.size(), DIAS,
+                (short) MINUTOS, GIMNASIO, List.of(), "Ninguna", true, true, true, true, true));
         return u;
     }
 
@@ -479,6 +485,11 @@ class ReincorporacionIaRealIT {
                         + " WHERE planned_workout_id = ? ORDER BY exercise_order",
                 (rs, k) -> new Ej(rs.getLong(1), rs.getString(2), rs.getObject(3, Short.class), rs.getObject(4, Short.class),
                         rs.getObject(5, Integer.class), rs.getObject(6, Short.class)), id))).toList();
+    }
+
+    /** La sesion que se deja a medias (la ultima de la semana) y su evolucion. */
+    private static List<Ej> ultimaSesion(List<Map.Entry<Long, List<Ej>>> semana) {
+        return semana.get(semana.size() - 1).getValue();
     }
 
     private Map<String, Object> ultimo(long u) {

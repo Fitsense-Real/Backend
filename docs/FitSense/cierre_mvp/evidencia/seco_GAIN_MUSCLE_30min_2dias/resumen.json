@@ -1,0 +1,7 @@
+{
+  "llamadas_live" : 0,
+  "respuestas_replay" : 0,
+  "max_llamadas" : 12,
+  "escenarios" : [ "E1: ACORTAR APLICADA con 0 llamada(s); retira 480 2x10/90", "E1: retirada real del 480 en s1, reincorporacion publicada para s11 y entrenada; pasos [s2 mantenimiento, s3 PROGRESION 144, s4 PROGRESION 72, s5 PROGRESION 144, s6 PROGRESION 72, s7 PROGRESION 125, s8 PROGRESION 715, s9 PROGRESION 125, s10 REINCORPORACION 480]" ],
+  "predicciones" : [ ]
+}
