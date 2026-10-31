@@ -64,6 +64,15 @@
 
 Duración máxima que alcanza el motor: GAIN_MUSCLE ≈ 42 min; INCREASE_STRENGTH y GENERAL_FITNESS ≈ 53; LOSE_WEIGHT ≈ 63.
 
+> **Actualización (orden de investigación del PR #16, `INVESTIGACION_FACTIBILIDAD_30_120.md`).** La tabla de arriba se conserva como se midió. La investigación (1.236 combinaciones) separó dos cosas:
+>
+> - **Defectos del motor.** Con gimnasio, intermedio y 3 días, LOSE_WEIGHT a 105 min y GENERAL_FITNESS a 90 min **sí tienen plan válido**, y el motor no lo construía. Se corrigió (`CORRECCIONES_GENERADOR_REGLAS.md`).
+> - **Imposibilidad demostrada.** El resto de las celdas vacías son imposibles con V20, V24 y las dosis aprobadas (CASO B):
+>   - GAIN_MUSCLE: ≤ 65 min;
+>   - INCREASE_STRENGTH: ≤ 84 min (intermedio);
+>   - LOSE_WEIGHT y GENERAL_FITNESS: ≤ 108 min por la cota; GENERAL_FITNESS intermedio a 105 min, imposible por las obligaciones de la semana;
+>   - ningún objetivo llega a 120.
+
 **Alternativas** (requieren tu decisión):
 - **(a)** Mantener 120 y que la app explique el NO_FACTIBLE.
 - **(b)** Bajar el máximo admitido (por ejemplo a 60–75).

@@ -388,6 +388,43 @@ class PoliticasP123IT {
     }
 
     @Test
+    @Order(34)
+    @DisplayName("V43 concurrencia: el mismo dolor registrado dos veces a la vez -> una fila; otro usuario a la vez -> la suya")
+    void dolorSimultaneoMismoEventoYOtroUsuario() throws Exception {
+        long u = participante(GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, 45, GIMNASIO, true);
+        long v = participante(GoalType.INCREASE_STRENGTH, FitnessLevel.INTERMEDIATE, 45, GIMNASIO, true);
+        long wu = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        long wv = planning.generateWeeklyPlan(v, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        long su = workouts(wu).get(0), sv = workouts(wv).get(0);
+        long eu = ejercicios(su).get(0), ev = ejercicios(sv).get(0);
+        hacer(u, su, eu);
+        hacer(v, sv, ev);
+        // El cierre de la sesion ya registra; se borra para que las tres llamadas compitan por la PRIMERA insercion.
+        jdbc.update("DELETE FROM user_safety_exclusions WHERE user_id IN (?, ?)", u, v);
+
+        var salida = new java.util.concurrent.CountDownLatch(1);
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(3);
+        java.util.function.Function<Long, java.util.concurrent.Callable<Integer>> tarea = usuario -> () -> {
+            salida.await();
+            return dolor.registrarSemana(usuario, S1).size();
+        };
+        var a = pool.submit(tarea.apply(u));
+        var b = pool.submit(tarea.apply(u));
+        var c = pool.submit(tarea.apply(v));
+        salida.countDown();
+        a.get();
+        b.get();
+        c.get();
+        pool.shutdown();
+        assertEquals(List.of(eu), jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ?",
+                Long.class, u), "una sola fila por evento aunque se registre dos veces a la vez");
+        assertEquals(List.of(ev), jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ?",
+                Long.class, v), "el otro usuario tiene la suya y solo la suya");
+        assertEquals(Set.of(eu), dolor.excluidosActivos(u));
+        assertEquals(Set.of(ev), dolor.excluidosActivos(v));
+    }
+
+    @Test
     @Order(33)
     @DisplayName("P-02 orden: un dolor NUEVO despues de reactivar vuelve a excluir; registrar dos veces no duplica")
     void dolorNuevoTrasReactivar() {
@@ -480,6 +517,53 @@ class PoliticasP123IT {
                 Integer.class, u));
         assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE user_id = ?",
                 Integer.class, u));
+    }
+
+    @Test
+    @Order(45)
+    @DisplayName("V43 concurrencia: dos cierres simultaneos de la misma semana con regeneracion -> un plan y una traza")
+    void regeneracionesSimultaneasMismaSemana() throws Exception {
+        long u = participante(GoalType.INCREASE_STRENGTH, FitnessLevel.INTERMEDIATE, 45, GIMNASIO, true);
+        doReturn(ExclusionesDeSeguridad.ninguna()).when(exclusionesSeguridad).resolver(argThat(c -> c.userId() == u));
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        var ws = workouts(w1);
+        hacer(u, ws.get(0), null);
+        hacer(u, ws.get(1), null);
+        omitirPorDolor(u, ws.get(2));
+        var excluidos = dolor.excluidosActivos(u);
+
+        var salida = new java.util.concurrent.CountDownLatch(1);
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(2);
+        java.util.concurrent.Callable<Optional<Long>> tarea = () -> {
+            salida.await();
+            return ciclo.runFor(u, S1, S1.plusWeeks(1));
+        };
+        var a = pool.submit(tarea);
+        var b = pool.submit(tarea);
+        salida.countDown();
+        var ra = a.get();
+        var rb = b.get();
+        pool.shutdown();
+
+        // Nada duplicado ni a medias, gane quien gane: una traza por medicion (ux_sra_medicion) y, si publica, un
+        // plan y solo uno, el que la traza nombra.
+        var trazas = jdbc.queryForList("SELECT * FROM safe_regeneration_attempts WHERE user_id = ?", u);
+        assertEquals(1, trazas.size(), "una sola traza de P-03 por medicion");
+        assertEquals("PUBLICADO", trazas.get(0).get("outcome"), "premisa del escenario: la regeneracion es valida");
+        var planes = jdbc.queryForList("SELECT plan_id FROM weekly_training_plans WHERE user_id = ? AND"
+                + " week_start_date = ?", Long.class, u, S1.plusWeeks(1));
+        assertEquals(1, planes.size(), "una sola semana publicada");
+        long publicado = planes.get(0);
+        assertEquals(publicado, ((Number) trazas.get(0).get("resulting_plan_id")).longValue(),
+                "la traza apunta al plan que quedo");
+        for (var r : List.of(ra, rb)) r.ifPresent(id -> assertEquals(publicado, id));
+        assertNoContieneNinguno(publicado, excluidos);
+        // Un cierre posterior devuelve lo mismo y no duplica.
+        assertEquals(publicado, ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow());
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM safe_regeneration_attempts WHERE user_id = ?",
+                Integer.class, u));
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ? AND"
+                + " week_start_date = ?", Integer.class, u, S1.plusWeeks(1)));
     }
 
     @Test
