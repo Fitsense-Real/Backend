@@ -355,7 +355,10 @@ class CampanaMvp8UsuariosIT {
                         gymRestringido, "gimnasio sin barra; tres ejercicios bloqueados; seis dias", 45,
                         BiologicalSex.MALE, LocalDate.of(1987, 11, 9), "182", "96", true, true, true, true, true,
                         List.of(todo.apply("cumple todas"),
-                                Semana.con("cambio de horario: no hay fecha libre", Accion.omitir(2, SkipReason.SCHEDULE_CHANGE)),
+                                // Calibrado en el ensayo seco previo (31/10/2026): con UNA omision la semana queda en
+                                // 83,3 % y no se adapta; con dos (66,7 %) se pide reprogramar y no hay fecha libre.
+                                Semana.con("cambio de horario: no hay fecha libre",
+                                        Accion.omitir(2, SkipReason.SCHEDULE_CHANGE), Accion.omitir(4, SkipReason.SCHEDULE_CHANGE)),
                                 todo.apply("cumple"), todo.apply("cumple"),
                                 Semana.con("imprevisto puntual", Accion.en(Tipo.IMPREVISTO, 4)),
                                 todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
@@ -785,6 +788,34 @@ class CampanaMvp8UsuariosIT {
             var semana = S1.plusWeeks(k);
             var guion = def.guion().get(k);
             ETIQUETA.set(def.id() + " · s" + numero);
+            if (plan.isEmpty()) {
+                // Semana SIN PLAN (el ciclo anterior no publico: NO_FACTIBLE). Como en produccion, el ciclo de
+                // esta semana ve una semana medida sin plan y GENERA de nuevo para la siguiente.
+                boolean conReserva = reservar();
+                int antesCiclo = contar(u);
+                Optional<Long> regenerado;
+                String notaRegeneracion;
+                try {
+                    regenerado = ciclo.runFor(u, semana, semana.plusWeeks(1));
+                    notaRegeneracion = "semana sin plan; el ciclo genera de nuevo: "
+                            + regenerado.map(p -> "plan " + p + " (" + origen(p) + ")").orElse("sin plan");
+                } catch (RuntimeException e) {
+                    regenerado = Optional.empty();
+                    notaRegeneracion = "semana sin plan; la regeneracion fallo: " + e.getMessage();
+                } finally {
+                    if (conReserva) liberar(contar(u) - antesCiclo);
+                    SIN_PRESUPUESTO.set(false);
+                }
+                regenerado.ifPresent(p -> {
+                    var f = frecuencia(u, p, def.id(), numero + 1);
+                    if (f != null) eventos.add(def.id() + " · s" + numero + " | " + f);
+                });
+                semanas.add(new FilaSemana(def.id(), numero, semana, guion.guion(), null, "-", "-", 0, "-", 0, 0, 0, 0,
+                        null, null, null, "-", "-", null, "-", "SEMANA_SIN_PLAN", "-", contar(u) - antesCiclo, 0,
+                        regenerado.map(String::valueOf).orElse("NINGUNO"), null, null, null, List.of(), notaRegeneracion));
+                plan = regenerado;
+                continue;
+            }
             long planId = plan.get();
             String validacion = validarSemana(u, planId, semana);
 
@@ -816,7 +847,7 @@ class CampanaMvp8UsuariosIT {
             var fila = evaluar(def, u, numero, semana, guion, planId, validacion, medidas, acciones, cambio,
                     siguiente, llamadasCiclo, filasV32(u) > filasV32, nota, filasPaso);
             semanas.add(fila);
-            if (siguiente.isEmpty())
+            if (siguiente.isEmpty() && !ESTRES)
                 return new Resultado(def, u, inicial, semanas, filasSesion, filasPaso,
                         "sin semana publicada tras la " + numero);
             plan = siguiente;

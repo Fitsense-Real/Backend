@@ -273,6 +273,22 @@ class AdaptacionCompletaIT {
         assertNull(visto.get(visto.size() - 1).resultingPlanId());
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
                 + " AND week_start_date = ?", Integer.class, u, NUEVA));
+
+        // Campana de estres (31/10/2026): el ciclo siguiente ve una semana sin plan y GENERA desde cero. Antes
+        // nada recordaba el dolor y podia volver a prescribir lo que dolio; ahora esos ejercicios quedan fuera.
+        var dolieron = jdbc.queryForList("SELECT DISTINCT pwe.exercise_id FROM planned_workout_exercises pwe"
+                + " JOIN planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id"
+                + " WHERE pw.plan_id = ? AND pw.skip_reason = 'PAIN_OR_DISCOMFORT'", Long.class, planMedido);
+        assertFalse(dolieron.isEmpty(), "premisa: una sesion omitida por dolor");
+        var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                .GenerateWeeklyPlanCommand(u, NUEVA.plusWeeks(1), null, false, null, null)).context();
+        assertTrue(ctx.availableExercises().stream().noneMatch(c -> dolieron.contains(c.exerciseId())),
+                "la regeneracion no puede ofrecer lo que dolio: " + dolieron);
+        var regenerado = ciclo.runFor(u, NUEVA, NUEVA.plusWeeks(1));
+        assertTrue(regenerado.isPresent(), "la semana siguiente vuelve a tener plan");
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises pwe JOIN planned_workouts pw"
+                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pwe.exercise_id = ANY(?)",
+                Integer.class, regenerado.get(), dolieron.toArray(new Long[0])));
     }
 
     @org.junit.jupiter.api.Test
