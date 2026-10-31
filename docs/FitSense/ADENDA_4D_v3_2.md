@@ -27,8 +27,10 @@
 - **Política** (`MvpDosePolicy.SERIES_MAX_RELLENO_ZONA_PEQUENA = 3`): solo esa clase tiene `seriesMax` mayor que `series`.
 - **Motor de reglas**, ruta de GAIN_MUSCLE:
   1. Primero, la composición de siempre (selección y relleno hasta el tope).
-  2. Si la sesión sigue por debajo del mínimo, sube a 3×13 los rellenos de zona pequeña **de uno en uno**, solo mientras falte y dentro del presupuesto de 4D §5.
-  3. Después, el repaso de siempre, que ya no hace un cambio que deje la sesión con menos de 2 grupos del enfoque (V15).
+  2. Después, el repaso de V20 de siempre (relleno → estructural), que ya no hace un cambio que deje la sesión con menos de 2 grupos del enfoque (V15).
+  3. Solo si la sesión sigue por debajo del mínimo, sube a 3×13 los rellenos de zona pequeña **de uno en uno**, solo mientras falte y dentro del presupuesto de 4D §5.
+
+  *Corrección del 31/10/2026:* la primera redacción ponía la serie adicional antes del repaso. Ese era el orden de la primera implementación, que cambiaba planes de 45 min ya resueltos por el repaso y se corrigió antes de integrar (commit `88be56f`). El código integrado sigue el orden de arriba.
 - **V24** acepta 3×13 en esa clase solo si, con 2×13, la sesión baja del mínimo de V20. Si sobra, la rechaza: *«la serie adicional de 4D v3.2 solo se admite si sin ella la sesión no llega al mínimo de V20»*.
   - No se comprueba donde V20 no aplica: sesiones autorizadas a acortarse (V8C) o sin mínimo.
   - El presupuesto de §5 cobra las series reales.

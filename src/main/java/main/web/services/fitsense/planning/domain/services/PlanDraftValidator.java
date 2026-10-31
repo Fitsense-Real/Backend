@@ -558,7 +558,7 @@ public class PlanDraftValidator {
                         .formatted(workout.scheduledDate(), colocaciones, minutos, tope));
 
             double costeDia = 0;
-            // 4D v3.2: colocaciones de relleno de zona pequena con la serie adicional.
+            // 4D v3.2/v3.3: colocaciones de relleno con la serie adicional (zona pequena; biceps en PULL).
             var ampliadas = new ArrayList<Integer>();
             for (int k = 0; k < workout.exercises().size(); k++) {
                 var exercise = workout.exercises().get(k);
@@ -595,8 +595,9 @@ public class PlanDraftValidator {
                 boolean autorizada = origenAutorizado.isPresent()
                         && ProgresionDosisPolicy.admite4D(exigida, exercise, origenAutorizado.get());
                 // 4D v3.2: la serie adicional del relleno de zona pequena; si hacia falta se comprueba abajo.
-                boolean ampliada = !autorizada && exigida.ampliable() && series > exigida.series()
-                        && series <= exigida.seriesMax() && reps == exigida.reps()
+                short seriesMax = MvpDosePolicy.seriesMaxEn(exigida, workout.focus(), candidate.bodyPartCode());
+                boolean ampliada = !autorizada && seriesMax > exigida.series() && series > exigida.series()
+                        && series <= seriesMax && reps == exigida.reps()
                         && descanso == exigida.descansoSegundos();
                 if (ampliada) ampliadas.add(k);
                 costeDia += autorizada || ampliada
@@ -629,7 +630,7 @@ public class PlanDraftValidator {
                             workout.expectedDurationMinutes(), sin), context.prescription());
                     if (sinSerie >= piso)
                         incumplimientos.add(("V24: el ejercicio %d del %s lleva %dx%d y la serie adicional de "
-                                + "4D v3.2 solo se admite si sin ella la sesion no llega al minimo de V20: con "
+                                + "4D v3.2/v3.3 solo se admite si sin ella la sesion no llega al minimo de V20: con "
                                 + "%dx%d dura unos %d s y el minimo es %d s. Usa %dx%d.")
                                 .formatted(e.exerciseId(), workout.scheduledDate(), e.plannedSets(),
                                         e.plannedReps(), e.plannedSets() - 1, e.plannedReps(), sinSerie, piso,

@@ -102,20 +102,45 @@ class RespaldoSesentaMinutosIT {
     }
 
     @Test
-    @DisplayName("4D v3.2: GAIN_MUSCLE a 60 min con 5 y 6 dias publica plan en las 16 combinaciones que resuelve la opcion B")
+    @DisplayName("4D v3.2 y v3.3: GAIN_MUSCLE a 60 min con 5 y 6 dias publica plan en las 24 combinaciones")
     void gainMuscleSesentaMinutos() {
-        barrer(List.of(GoalType.GAIN_MUSCLE), c -> !pendienteCasa(c));
+        barrer(List.of(GoalType.GAIN_MUSCLE));
     }
 
+    /**
+     * 4D v3.3, verificacion previa (orden del 31/10/2026, fase E): en casa, intermedio, el dia PULL
+     * no tiene traccion estructural de brazo; con las dosis de 4D v3.2 la mejor composicion (6
+     * estructurales de espalda + biceps de relleno 2x10) no llega al piso de V20, y con el biceps a
+     * 3x10 si. Es el unico cambio posible de menor impacto: 3x13 no aplica (no es zona pequena) y un
+     * segundo biceps 2x10 en lugar de un estructural acorta la sesion.
+     */
     @Test
-    @org.junit.jupiter.api.condition.EnabledIfSystemProperty(named = "fitsense.pendientes", matches = "true")
-    @DisplayName("PENDIENTE: GAIN_MUSCLE intermedio/avanzado en casa a 60 min (dia PULL, biceps de relleno estandar)")
-    void gainMuscleCasaSesentaMinutos() {
-        barrer(List.of(GoalType.GAIN_MUSCLE), this::pendienteCasa);
-    }
-
-    private boolean pendienteCasa(Caso c) {
-        return c.objetivo() == GoalType.GAIN_MUSCLE && "CASA".equals(c.lugar()) && c.nivel() != FitnessLevel.BEGINNER;
+    @DisplayName("4D v3.3: en casa el PULL no tiene traccion estructural de brazo y solo llega al piso con el biceps a 3x10")
+    void casaPullNecesitaLaSerieDelBiceps() {
+        long u = participante(new Caso(GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, dias(1, 2, 3, 4, 5), 60, "CASA"));
+        var ctx = planComandos.prepare(new GenerateWeeklyPlanCommand(u, S1, null, true, null, null)).context();
+        var brazoEstructural = ctx.availableExercises().stream()
+                .filter(c -> "upper arms".equals(c.bodyPartCode()) && esBicepsDePull(c))
+                .filter(c -> MandatorySlot.of(c).isPresent()).map(CandidateExercise::exerciseId).toList();
+        assertEquals(List.of(), brazoEstructural, "en casa no hay traccion estructural de upper arms");
+        long piso = PlanDraftValidator.minimumSessionSeconds(ctx);
+        var biceps = ctx.availableExercises().stream()
+                .filter(c -> "upper arms".equals(c.bodyPartCode()) && esBicepsDePull(c))
+                .findFirst().orElseThrow();
+        var espalda = ctx.availableExercises().stream().filter(c -> "back".equals(c.bodyPartCode()))
+                .filter(c -> MandatorySlot.of(c).isPresent()).limit(6).toList();
+        assertEquals(6, espalda.size());
+        for (short series : new short[]{2, 3}) {
+            var ej = new ArrayList<PlanDraft.DraftExercise>();
+            espalda.forEach(c -> ej.add(new PlanDraft.DraftExercise(c.exerciseId(), PrescriptionType.SETS_REPS,
+                    (short) 3, (short) 10, null, null, (short) 90, null)));
+            ej.add(new PlanDraft.DraftExercise(biceps.exerciseId(), PrescriptionType.SETS_REPS, series, (short) 10,
+                    null, null, (short) 90, null));
+            long segundos = estimador.estimateSeconds(new PlanDraft.DraftWorkout(S1.plusDays(1), WorkoutFocus.PULL,
+                    "PULL", 60, ej), ctx.prescription());
+            if (series == 2) assertTrue(segundos < piso, segundos + " s con el biceps 2x10, piso " + piso);
+            else assertTrue(segundos >= piso, segundos + " s con el biceps 3x10, piso " + piso);
+        }
     }
 
     private void barrer(List<GoalType> objetivos) {
@@ -137,6 +162,12 @@ class RespaldoSesentaMinutosIT {
         System.out.println("BARRIDO_60 " + (n - fallos.size()) + "/" + n + " con plan");
         fallos.forEach(f -> System.out.println("BARRIDO_60_FALLO " + f));
         assertEquals(List.of(), fallos);
+    }
+
+    /** V22: en PULL, de upper arms solo el biceps. */
+    private static boolean esBicepsDePull(CandidateExercise c) {
+        return WorkoutFocus.PULL.accepts(c.bodyPartCode()) && c.targetMuscle() != null
+                && c.targetMuscle().toLowerCase(java.util.Locale.ROOT).contains("biceps");
     }
 
     private static List<Short> dias(int... d) {
@@ -182,7 +213,8 @@ class RespaldoSesentaMinutosIT {
                 var c = elegibles.get(e.exerciseId());
                 var d = MvpDosePolicy.dosisPara(MandatorySlot.of(c), c.bodyPartCode()).orElseThrow();
                 if (e.plannedSets() == d.series()) continue;
-                if (!d.ampliable() || e.plannedSets() != d.seriesMax()) {
+                if (e.plannedSets() != MvpDosePolicy.seriesMaxEn(d, foco, c.bodyPartCode())
+                        || MvpDosePolicy.seriesMaxEn(d, foco, c.bodyPartCode()) == d.series()) {
                     fallos.add(caso + " " + fecha + ": " + e.exerciseId() + " lleva " + e.plannedSets()
                             + " series y su dosis es " + d.describe());
                     continue;

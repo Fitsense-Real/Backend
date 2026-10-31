@@ -126,6 +126,28 @@ public final class MvpDosePolicy {
      */
     public static final int SERIES_MAX_RELLENO_ZONA_PEQUENA = 3;
 
+    /**
+     * <b>4D v3.3 (orden del 31/10/2026, docs/FitSense/ADENDA_4D_v3_3.md).</b> En el dia PULL, el
+     * relleno ESTANDAR de {@code upper arms} (el biceps, V22) admite UNA serie mas, hasta {@value},
+     * con la misma condicion que 4D v3.2: solo si sin ella la sesion no llega al minimo de V20. En
+     * casa no hay traccion estructural de brazo, y el PULL de 60 min se quedaba en 2430 s de 2520.
+     * No es una dosis de la clase RELLENO_ESTANDAR: depende del enfoque y del grupo.
+     */
+    public static final int SERIES_MAX_RELLENO_BICEPS_PULL = 3;
+
+    /**
+     * Hasta cuantas series admite una colocacion con esa dosis en esa sesion: {@code seriesMax}
+     * de la clase (4D v3.2) o, en PULL y {@code upper arms}, la de 4D v3.3. Igual a
+     * {@code series} en todo lo demas. La serie de mas solo vale si hace falta para V20.
+     */
+    public static short seriesMaxEn(Dosis dosis, WorkoutFocus enfoque, String bodyPartCode) {
+        if (dosis.ampliable()) return dosis.seriesMax();
+        if (dosis.relleno() && enfoque == WorkoutFocus.PULL && bodyPartCode != null
+                && "upper arms".equals(bodyPartCode.trim().toLowerCase(Locale.ROOT)))
+            return (short) Math.max(dosis.series(), SERIES_MAX_RELLENO_BICEPS_PULL);
+        return dosis.series();
+    }
+
     private MvpDosePolicy() {}
 
     /** Las cuatro filas de la tabla de dosis de 4D v2 §2. */
