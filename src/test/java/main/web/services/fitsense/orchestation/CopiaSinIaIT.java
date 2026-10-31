@@ -87,7 +87,7 @@ class CopiaSinIaIT {
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine",
             "bench", "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine");
 
-    enum Dia { HECHO, FATIGA, TIEMPO, NADA }
+    enum Dia { HECHO, FATIGA, TIEMPO, PARCIAL_TIEMPO, NADA }
 
     record Ej(long id, String tipo, Short series, Short reps, Integer segundos, Short descanso) {}
 
@@ -203,9 +203,13 @@ class CopiaSinIaIT {
         // porque 1225 (abdominal clasificado como fuerza de cadera, 3x10) ocupaba el viernes.
         // Corregido el dato, el escenario es el de 60 min (3/60 = 5 %). La regla y las aserciones
         // no cambian.
+        // Orden de cierre del MVP (31/10/2026): el acortamiento viene de una sesion PARCIAL por falta de
+        // tiempo, sin M. Con una omision con M declarada el diseno (§5, fila 5) no deja reincorporar sin
+        // una M nueva mayor; eso lo prueba conMNoSeReincorpora. Antes este escenario usaba la omision con
+        // M y pasaba porque la comprobacion de M no existia.
         long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, 60);
         long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
-        ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
+        ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.PARCIAL_TIEMPO);
         plan = ciclo(u, 0, 1);      // acortar: flujo de IA, 1 llamada
         assertEquals("{ACORTAR_O_REORGANIZAR}", ultimo(u).get("targeted_interventions"));
         assertEquals("APLICADA", ultimo(u).get("status"), String.valueOf(ultimo(u)));
@@ -236,6 +240,31 @@ class CopiaSinIaIT {
         System.out.println("SIN_IA reincorporacion/mantenimiento " + traza);
         assertTrue(mantenimiento, "tenia que haber al menos un ciclo de mantenimiento: " + traza);
         assertTrue(reincorporado, "tenia que reincorporarse el relleno: " + traza);
+        assertSinViolaciones();
+    }
+
+    @Test
+    @DisplayName("§5 fila 5: acortada con M declarada, el retirado NO vuelve sin una M nueva; la reserva se libera")
+    void conMNoSeReincorpora() throws Exception {
+        long u = participante(GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, 60);
+        long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);   // omision con M = minutos - 1
+        long m = jdbc.queryForObject("SELECT declared_available_minutes FROM planned_workouts WHERE plan_id = ?"
+                + " AND declared_available_minutes IS NOT NULL", Long.class, plan);
+        plan = ciclo(u, 0, 1);
+        assertEquals("APLICADA", ultimo(u).get("status"), String.valueOf(ultimo(u)));
+        var traza = new ArrayList<String>();
+        boolean liberada = false;
+        for (int k = 1; k <= 12; k++) {
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+            plan = ciclo(u, k, 0);
+            var inf = informe(ultimo(u));
+            assertFalse(inf.contains("\"tipo\":\"REINCORPORACION\""), "con M = " + m + " no se reincorpora: " + inf);
+            if (inf.contains("\"estado_reserva\":\"EN_ESPERA_DE_TIEMPO\"")) liberada = true;
+            traza.add("s" + (k + 2) + " " + ultimo(u).get("progressed_sessions"));
+        }
+        System.out.println("SIN_IA con M " + m + ": " + traza);
+        assertTrue(liberada, "la progresion de los conservados sigue con la reserva liberada: " + traza);
         assertSinViolaciones();
     }
 
@@ -418,6 +447,7 @@ class CopiaSinIaIT {
                 case FATIGA -> planes.skip(UserDetailsImpl.build(usuarios.findById(u).orElseThrow()), w,
                         new SkipWorkoutResource(SkipReason.FATIGUE));
                 case TIEMPO -> saltoPorFaltaDeTiempo(UserDetailsImpl.build(usuarios.findById(u).orElseThrow()), w);
+                case PARCIAL_TIEMPO -> parcialPorFaltaDeTiempo(u, w);
                 case NADA -> { }
             }
         }
@@ -430,6 +460,35 @@ class CopiaSinIaIT {
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE"
                 + " cardinality(progressed_sessions) > 1 OR (cardinality(progressed_sessions) = 1 AND"
                 + " (status <> 'SIN_ORDEN' OR resulting_plan_id IS NULL))", Integer.class));
+    }
+
+    /**
+     * Una sesion EMPEZADA que no se termina por falta de tiempo: el primer ejercicio completo y el
+     * resto dejados por LACK_OF_TIME. Es el acortamiento SIN M (FaltaDeTiempoPolicy: en las parciales
+     * no se pregunta nada), el unico tras el que el diseno permite reincorporar sin una M nueva (§5).
+     */
+    private void parcialPorFaltaDeTiempo(long u, long w) {
+        long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+        var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
+                + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
+                + " ORDER BY exercise_order", w);
+        // Un 35 % de la sesion (la media por ejercicio): PARTIAL (30-79,99 %, regla 17.2) y la semana,
+        // con las otras dos completas, en un 78 %, por debajo del umbral. Por debajo del 30 % el
+        // entrenamiento se cerraria como SKIPPED y, sin contexto, se conservaria (D1).
+        double objetivo = 0.35 * filas.size();
+        for (int k = 0; k < filas.size(); k++) {
+            var f = filas.get(k);
+            long pe = ((Number) f.get("planned_exercise_id")).longValue();
+            boolean duracion = "DURATION".equals(f.get("prescription_type"));
+            int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
+            int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
+            double parte = Math.max(0, Math.min(1, objetivo - k));
+            int hecho = (int) Math.round(total * parte);
+            sesiones.handle(new RecordSessionExerciseCommand(u, s, pe, (short) (hecho == 0 ? 0 : series),
+                    duracion ? null : hecho, duracion ? hecho : null, null,
+                    parte >= 1 ? null : SkipReason.LACK_OF_TIME));
+        }
+        sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 6, (short) 3, (short) 20));
     }
 
     /**

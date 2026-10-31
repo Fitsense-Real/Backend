@@ -92,7 +92,7 @@ class ProgresionIT {
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
     static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
 
-    enum Dia { HECHO, HECHO_CON_FATIGA, HECHO_CON_DOLOR, FATIGA, TIEMPO, NADA }
+    enum Dia { HECHO, HECHO_CON_FATIGA, HECHO_CON_DOLOR, FATIGA, TIEMPO, PARCIAL_TIEMPO, NADA }
 
     /** El ejercicio en el que se declara la fatiga o el dolor; null = el ultimo de la sesion. */
     private Long marcado = null;
@@ -268,7 +268,9 @@ class ProgresionIT {
             u = participante(GoalType.GAIN_MUSCLE, List.of((short) 1, (short) 3, (short) 5));
             w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
             raiz = semana(w1);
-            ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
+            // Acortamiento SIN M (sesion parcial por falta de tiempo): con M declarada el diseno no deja
+            // reincorporar sin una M nueva mayor (§5, fila 5; CopiaSinIaIT.conMNoSeReincorpora).
+            ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.PARCIAL_TIEMPO);
             plan = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
             ev = ultimoIntento(u);
             assertEquals("{ACORTAR_O_REORGANIZAR}", ev.get("targeted_interventions"), String.valueOf(ev));
@@ -698,6 +700,7 @@ class ProgresionIT {
                 }
                 case FATIGA -> planes.skip(principal, w, new SkipWorkoutResource(SkipReason.FATIGUE));
                 case TIEMPO -> saltoPorFaltaDeTiempo(principal, w);
+                case PARCIAL_TIEMPO -> parcialPorFaltaDeTiempo(u, w);
                 case NADA -> { }
             }
         }
@@ -708,6 +711,28 @@ class ProgresionIT {
                 + " targeted_interventions::text, applied_sessions::text, no_effect_sessions::text,"
                 + " conserved_sessions::text, progressed_sessions::text, conservation_report::text, rejection_reason"
                 + " FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", u);
+    }
+
+    /** Una sesion empezada que se deja al 35 % por falta de tiempo (PARTIAL, sin M). */
+    private void parcialPorFaltaDeTiempo(long u, long w) {
+        long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+        var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
+                + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
+                + " ORDER BY exercise_order", w);
+        double objetivo = 0.35 * filas.size();
+        for (int k = 0; k < filas.size(); k++) {
+            var f = filas.get(k);
+            long pe = ((Number) f.get("planned_exercise_id")).longValue();
+            boolean duracion = "DURATION".equals(f.get("prescription_type"));
+            int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
+            int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
+            double parte = Math.max(0, Math.min(1, objetivo - k));
+            int hecho = (int) Math.round(total * parte);
+            sesiones.handle(new RecordSessionExerciseCommand(u, s, pe, (short) (hecho == 0 ? 0 : series),
+                    duracion ? null : hecho, duracion ? hecho : null, null,
+                    parte >= 1 ? null : SkipReason.LACK_OF_TIME));
+        }
+        sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 6, (short) 3, (short) 20));
     }
 
     /**
