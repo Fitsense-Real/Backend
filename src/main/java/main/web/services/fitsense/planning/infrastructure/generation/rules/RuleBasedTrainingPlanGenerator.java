@@ -222,13 +222,13 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // toca la dosis. Si no hay estructural disponible, el dia se queda
             // corto y V20 lo dira: es un dato, no algo que tapar.
             if (dosisFijada && minimumMinutes > 0 && context.prescription() != null) {
-                // 4D v3.2: antes del repaso, la serie adicional del relleno de zona pequena, de una en
-                // una y solo mientras falte para el piso. Conserva los grupos que el repaso quitaria.
+                sustituirRellenoPorEstructural(selector, focus, picked, exercises, prescription,
+                        context, dates.get(i), sessionMinutes, minimumMinutes, presupuestoDia);
+                // 4D v3.2: si con la composicion de siempre el dia sigue por debajo del piso, la serie
+                // adicional del relleno de zona pequena, de una en una y solo mientras falte.
                 var date = dates.get(i);
                 ampliarRellenoZonaPequena(picked, exercises, () -> segundosDe(date, focus, sessionMinutes,
                         exercises, context) < PlanDraftValidator.minimumSessionSeconds(context), presupuestoDia);
-                sustituirRellenoPorEstructural(selector, focus, picked, exercises, prescription,
-                        context, dates.get(i), sessionMinutes, minimumMinutes, presupuestoDia);
             }
 
             // V4/V17: si el contenido supera el techo del perfil, se quitan
