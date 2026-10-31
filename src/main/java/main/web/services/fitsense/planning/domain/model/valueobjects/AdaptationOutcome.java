@@ -37,6 +37,16 @@ public record AdaptationOutcome(Long attemptId, LocalDate weekStartDate, Long re
     public record Sesion(Long origenPlannedWorkoutId, String intervencion, String resultado) {}
 
     public static final String NOTA_FACTIBILIDAD = "FACTIBILIDAD_PREVIA: ";
+    /** P-03, nivel 1: igual que {@code AdaptedWeekProducer.NOTA_REGENERACION_SEGURA}. */
+    public static final String NOTA_REGENERACION_SEGURA = "REGENERACION_SEGURA: ";
+
+    /** P-03, nivel 2: un NO_FACTIBLE por dolor cuya semana se regenero con reglas en el mismo ciclo. */
+    public AdaptationOutcome conRegeneracion(Long planRegenerado, String resultadoRegeneracion, String motivo) {
+        var m = new java.util.ArrayList<>(motivos);
+        if (motivo != null) m.add(motivo);
+        return new AdaptationOutcome(attemptId, weekStartDate, planRegenerado, resultadoRegeneracion, estado, decision,
+                llamadasIa, List.copyOf(m), sesiones);
+    }
     private static final Set<String> SIN_NADA_QUE_PEDIR = Set.of("CONSERVAR", "CAUSA_NO_REGISTRADA");
 
     /**
@@ -51,17 +61,13 @@ public record AdaptationOutcome(Long attemptId, LocalDate weekStartDate, Long re
                 .filter(c -> c != null && c.startsWith(NOTA_FACTIBILIDAD))
                 .map(c -> c.substring(NOTA_FACTIBILIDAD.length())).toList();
         var tipos = intervenciones == null ? List.<String>of() : Arrays.asList(intervenciones);
+        boolean regeneracionSegura = correcciones != null && correcciones.stream()
+                .anyMatch(c -> c != null && c.startsWith(NOTA_REGENERACION_SEGURA));
         String resultado = switch (estado == null ? "" : estado) {
             case "APLICADA" -> "ADAPTACION_APLICADA";
+            case "RESPALDO" -> regeneracionSegura ? "REGENERACION_SEGURA_SUSTITUCION" : respaldo(imposibles, tipos, llamadasIa);
             case "SIN_EFECTO" -> !tipos.isEmpty() && SIN_NADA_QUE_PEDIR.containsAll(tipos)
                     ? "CONSERVACION_DELIBERADA" : "SIN_CAMBIOS_VALIDOS";
-            case "RESPALDO" -> !imposibles.isEmpty()
-                    ? (tipos.contains("ACORTAR_O_REORGANIZAR") && tipos.stream().allMatch(t ->
-                    t.equals("ACORTAR_O_REORGANIZAR") || SIN_NADA_QUE_PEDIR.contains(t)) ? "ACORTAMIENTO_IMPOSIBLE"
-                    : tipos.contains("REPROGRAMAR_DIAS") && tipos.stream().allMatch(t ->
-                    t.equals("REPROGRAMAR_DIAS") || SIN_NADA_QUE_PEDIR.contains(t)) ? "REPROGRAMACION_IMPOSIBLE"
-                    : "ADAPTACION_IMPOSIBLE")
-                    : llamadasIa > 0 ? "RESPALDO_PROPUESTA_IA_INVALIDA" : "RESPALDO_SIN_IA";
             case "NO_FACTIBLE" -> tipos.contains("SEGURIDAD_ANTE_DOLOR")
                     || (rechazo != null && rechazo.toLowerCase(java.util.Locale.ROOT).contains("dolor"))
                     ? "NO_FACTIBLE_POR_SEGURIDAD" : "NO_FACTIBLE";
@@ -81,6 +87,16 @@ public record AdaptationOutcome(Long attemptId, LocalDate weekStartDate, Long re
             }
         return new AdaptationOutcome(attemptId, weekStartDate, resultingPlanId, resultado, estado, decision,
                 llamadasIa, motivos, List.copyOf(sesiones));
+    }
+
+    private static String respaldo(List<String> imposibles, List<String> tipos, int llamadasIa) {
+        return !imposibles.isEmpty()
+                    ? (tipos.contains("ACORTAR_O_REORGANIZAR") && tipos.stream().allMatch(t ->
+                    t.equals("ACORTAR_O_REORGANIZAR") || SIN_NADA_QUE_PEDIR.contains(t)) ? "ACORTAMIENTO_IMPOSIBLE"
+                    : tipos.contains("REPROGRAMAR_DIAS") && tipos.stream().allMatch(t ->
+                    t.equals("REPROGRAMAR_DIAS") || SIN_NADA_QUE_PEDIR.contains(t)) ? "REPROGRAMACION_IMPOSIBLE"
+                    : "ADAPTACION_IMPOSIBLE")
+                    : llamadasIa > 0 ? "RESPALDO_PROPUESTA_IA_INVALIDA" : "RESPALDO_SIN_IA";
     }
 
     private static boolean contiene(Long[] ids, Long id) {

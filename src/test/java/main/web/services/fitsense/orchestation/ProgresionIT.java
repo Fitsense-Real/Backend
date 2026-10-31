@@ -499,6 +499,72 @@ class ProgresionIT {
     }
 
     // =======================================================================
+    // P-02 · memoria persistente del dolor con progresion y reincorporacion
+    // =======================================================================
+
+    @Test
+    @DisplayName("P-02 + progresion: lo que dolio no vuelve en seis semanas cumplidas y ningun paso lo toca")
+    void p02ProgresionSinElExcluido() throws Exception {
+        long u = participante(GoalType.GENERAL_FITNESS, List.of((short) 1, (short) 3, (short) 5));
+        var r = hastaElPrimerPaso(u);
+        long plan = r[0];
+        int i = (int) r[1];
+        marcado = r[2];
+        var dias = new Dia[]{Dia.HECHO, Dia.HECHO, Dia.HECHO};
+        dias[i] = Dia.HECHO_CON_DOLOR;
+        ejecutar(u, plan, dias);
+        long excluido = marcado;
+        marcado = null;
+        int pasos = 0;
+        for (int k = 2; k <= 7; k++) {
+            plan = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1)).orElseThrow();
+            var ev = ultimoIntento(u);
+            assertTrue(semana(plan).stream().flatMap(x -> x.ejercicios().stream()).noneMatch(e -> e.id() == excluido),
+                    "semana " + (k + 2) + " publica el excluido " + excluido);
+            if (!"{}".equals(String.valueOf(ev.get("progressed_sessions")))) {
+                pasos++;
+                assertFalse(informe(ev).contains("\"exercise_id\":" + excluido + ","), "un paso sobre el excluido");
+            }
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        }
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " exercise_id = ? AND status = 'ACTIVA'", Integer.class, u, excluido), "no caduca");
+        assertTrue(pasos > 0, "premisa: la progresion siguio funcionando");
+        assertSinViolaciones();
+    }
+
+    @Test
+    @DisplayName("P-02 + reincorporacion: un retirado por ACORTAR que queda excluido por dolor no se reincorpora")
+    void p02ReincorporacionDescartadaPorDolor() throws Exception {
+        long u = participante(GoalType.GAIN_MUSCLE, List.of((short) 1, (short) 3, (short) 5));
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        var raiz = semana(w1);
+        ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.PARCIAL_TIEMPO);
+        long plan = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
+        var ev = ultimoIntento(u);
+        assertEquals("APLICADA", ev.get("status"), "premisa: ACORTAR retira un relleno: " + ev);
+        var acortado = semana(plan).get(2);
+        var retirado = raiz.get(2).ejercicios().stream()
+                .filter(e -> acortado.ejercicios().stream().noneMatch(x -> x.id() == e.id())).findFirst().orElseThrow();
+        // Fixture: un dolor sobre el retirado comunicado despues (su evento es la sesion del viernes medida).
+        jdbc.update("INSERT INTO user_safety_exclusions (user_id, exercise_id, reason, source_plan_id,"
+                + " source_planned_workout_id, event_date, recorded_by) VALUES (?, ?, 'DOLOR_IDENTIFICADO', ?, ?, ?,"
+                + " 'SESION')", u, retirado.id(), w1, raiz.get(2).id(), raiz.get(2).fecha());
+
+        boolean descartada = false;
+        for (int k = 1; k <= 14; k++) {
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+            plan = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1)).orElseThrow();
+            var evk = ultimoIntento(u);
+            assertFalse(informe(evk).contains("\"tipo\":\"REINCORPORACION\""), "semana " + (k + 1) + ": " + evk);
+            assertTrue(semana(plan).stream().flatMap(x -> x.ejercicios().stream()).noneMatch(e -> e.id() == retirado.id()));
+            if (informe(evk).contains("\"estado_reserva\":\"DESCARTADA\"")) descartada = true;
+        }
+        assertTrue(descartada, "la reserva del retirado tenia que quedar DESCARTADA");
+        assertSinViolaciones();
+    }
+
+    // =======================================================================
     // Comprobaciones
     // =======================================================================
 

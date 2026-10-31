@@ -253,7 +253,7 @@ class AdaptacionCompletaIT {
     }
 
     @org.junit.jupiter.api.Test
-    @DisplayName("omitida por dolor y sin IA: no se republica el ejercicio que dolio; la semana queda sin plan y consta")
+    @DisplayName("omitida por dolor y sin IA: P-02 registra la exclusion y P-03 publica en el mismo ciclo sin lo que dolio")
     void dolorSinIa() {
         when(ia.isEnabled()).thenReturn(false);
         long u = participante(GoalType.GAIN_MUSCLE);
@@ -261,34 +261,41 @@ class AdaptacionCompletaIT {
         var medida = semana(planMedido);
         ejecutar(u, medida, Escenario.ADAPT_LOCALIZED.dias, SkipReason.PAIN_OR_DISCOMFORT);
 
-        assertTrue(ciclo.runFor(u, MEDIDA, NUEVA).isEmpty());
-        var ev = evidencia(u);
-        assertEquals("ADAPT_LOCALIZED", ev.get("decision"));
-        assertEquals("NO_FACTIBLE", ev.get("status"));
-        assertNull(ev.get("resulting_plan_id"));
-        assertTrue(String.valueOf(ev.get("rejection_reason")).contains("dolor"), String.valueOf(ev));
-        // La semana no tiene plan nuevo; la app sabe por que con /users/me/plan/adaptations (orden de cierre, §11).
-        var visto = planes.adaptations(UserDetailsImpl.build(usuarios.findById(u).orElseThrow())).getBody();
-        assertEquals("NO_FACTIBLE_POR_SEGURIDAD", visto.get(visto.size() - 1).resultado(), String.valueOf(visto));
-        assertNull(visto.get(visto.size() - 1).resultingPlanId());
-        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
-                + " AND week_start_date = ?", Integer.class, u, NUEVA));
-
-        // Campana de estres (31/10/2026): el ciclo siguiente ve una semana sin plan y GENERA desde cero. Antes
-        // nada recordaba el dolor y podia volver a prescribir lo que dolio; ahora esos ejercicios quedan fuera.
         var dolieron = jdbc.queryForList("SELECT DISTINCT pwe.exercise_id FROM planned_workout_exercises pwe"
                 + " JOIN planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id"
                 + " WHERE pw.plan_id = ? AND pw.skip_reason = 'PAIN_OR_DISCOMFORT'", Long.class, planMedido);
         assertFalse(dolieron.isEmpty(), "premisa: una sesion omitida por dolor");
+
+        // P-02: omitir por dolor sin decir cual registra ya, en ese momento, todos los de la sesion.
+        assertEquals(dolieron.size(), jdbc.queryForObject("SELECT count(DISTINCT exercise_id) FROM"
+                + " user_safety_exclusions WHERE user_id = ? AND status = 'ACTIVA' AND reason ="
+                + " 'DOLOR_SESION_SIN_IDENTIFICAR'", Integer.class, u));
+
+        // P-03 (politica aprobada 31/10/2026): sin IA, la sesion del dolor se resuelve en el MISMO ciclo con la
+        // sustitucion determinista SUST-SEG-1. Antes la semana quedaba sin plan (NO_FACTIBLE) y se generaba
+        // desde cero en el ciclo siguiente.
+        long nuevo = ciclo.runFor(u, MEDIDA, NUEVA).orElseThrow();
+        var ev = evidencia(u);
+        assertEquals("ADAPT_LOCALIZED", ev.get("decision"));
+        assertEquals("RESPALDO", ev.get("status"), String.valueOf(ev));
+        assertEquals(nuevo, ((Number) ev.get("resulting_plan_id")).longValue());
+        assertEquals(0, ((Number) ev.get("ai_calls")).intValue());
+        var visto = planes.adaptations(UserDetailsImpl.build(usuarios.findById(u).orElseThrow())).getBody();
+        assertEquals("REGENERACION_SEGURA_SUSTITUCION", visto.get(visto.size() - 1).resultado(), String.valueOf(visto));
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
+                + " AND week_start_date = ?", Integer.class, u, NUEVA));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises pwe JOIN planned_workouts pw"
+                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pwe.exercise_id = ANY(?)",
+                Integer.class, nuevo, dolieron.toArray(new Long[0])), "lo que dolio no se vuelve a publicar");
+        // Mismas sesiones, mismos dias: P-03 no cambia la frecuencia.
+        assertEquals(semana(planMedido).stream().map(x -> x.fecha().plusWeeks(1)).toList(),
+                semana(nuevo).stream().map(Sesion::fecha).toList());
+
+        // P-02 entre semanas: la siguiente preparacion tampoco los ofrece.
         var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
                 .GenerateWeeklyPlanCommand(u, NUEVA.plusWeeks(1), null, false, null, null)).context();
         assertTrue(ctx.availableExercises().stream().noneMatch(c -> dolieron.contains(c.exerciseId())),
-                "la regeneracion no puede ofrecer lo que dolio: " + dolieron);
-        var regenerado = ciclo.runFor(u, NUEVA, NUEVA.plusWeeks(1));
-        assertTrue(regenerado.isPresent(), "la semana siguiente vuelve a tener plan");
-        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises pwe JOIN planned_workouts pw"
-                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pwe.exercise_id = ANY(?)",
-                Integer.class, regenerado.get(), dolieron.toArray(new Long[0])));
+                "la memoria del dolor no caduca: " + dolieron);
     }
 
     @org.junit.jupiter.api.Test

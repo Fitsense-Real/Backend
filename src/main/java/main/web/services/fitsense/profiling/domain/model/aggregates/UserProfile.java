@@ -104,6 +104,7 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
         this.fitnessLevel = require(command.fitnessLevel(), "El nivel de condicion fisica es obligatorio.");
         this.goal = new TrainingGoal(command.goalType(), command.goalText());
         this.trainingLocation = require(command.trainingLocation(), "El lugar de entrenamiento es obligatorio.");
+        requireMinutesForGoal(this.goal.goalType(), command.sessionMinutes());
         applyAvailability(command.daysPerWeek(), command.availableDays(), command.sessionMinutes());
         this.equipmentCodes = normalizeEquipment(command.equipmentCodes());
         this.blockedExerciseIds = normalizeBlocked(command.blockedExerciseIds());
@@ -126,6 +127,7 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
         this.fitnessLevel = require(command.fitnessLevel(), "El nivel de condicion fisica es obligatorio.");
         this.goal = new TrainingGoal(command.goalType(), command.goalText());
         this.trainingLocation = require(command.trainingLocation(), "El lugar de entrenamiento es obligatorio.");
+        requireMinutesForGoal(this.goal.goalType(), command.sessionMinutes());
         applyAvailability(command.daysPerWeek(), command.availableDays(), command.sessionMinutes());
         this.equipmentCodes = normalizeEquipment(command.equipmentCodes());
         this.blockedExerciseIds = normalizeBlocked(command.blockedExerciseIds());
@@ -184,6 +186,19 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
     }
 
     // ------------------------------------------------------------------ helpers
+
+    /**
+     * P-01: la duracion tiene que caber en el rango del objetivo. Se rechaza, nunca se corrige:
+     * cambiar en silencio lo que la persona declaro seria inventar su disponibilidad.
+     */
+    static void requireMinutesForGoal(GoalType goalType, Short sessionMinutes) {
+        if (goalType == null || sessionMinutes == null) return;
+        if (!goalType.admiteMinutos(sessionMinutes))
+            throw new DomainRuleViolationException(
+                    ("Para el objetivo %s la duracion por sesion debe estar entre %d y %d minutos;"
+                            + " indicaste %d.").formatted(goalType, goalType.minSessionMinutes(),
+                            GoalType.MAX_SESSION_MINUTES, sessionMinutes));
+    }
 
     private void applyAvailability(Short daysPerWeek, List<Short> availableDays, Short sessionMinutes) {
         if (daysPerWeek == null || daysPerWeek < 1 || daysPerWeek > 7)

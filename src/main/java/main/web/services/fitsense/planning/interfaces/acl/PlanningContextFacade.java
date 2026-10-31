@@ -54,6 +54,27 @@ public class PlanningContextFacade {
         this.publishedPlanRepair = publishedPlanRepair;
     }
 
+    /** P-02 y P-03. Por setter y opcionales: null en las pruebas que construyen el facade a mano. */
+    private main.web.services.fitsense.planning.application.internal.commandservices.PainMemoryService painMemory;
+    private main.web.services.fitsense.planning.application.internal.commandservices.SafeRegenerationService
+            regeneracionSegura;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setPainMemory(main.web.services.fitsense.planning.application.internal.commandservices.PainMemoryService p) {
+        this.painMemory = p;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setRegeneracionSegura(
+            main.web.services.fitsense.planning.application.internal.commandservices.SafeRegenerationService r) {
+        this.regeneracionSegura = r;
+    }
+
+    /** P-02: el dolor de la semana medida queda registrado ANTES de preparar la siguiente. */
+    private void registrarDolorDeLaSemanaAnterior(Long userId, LocalDate weekStartDate) {
+        if (painMemory != null) painMemory.registrarSemana(userId, weekStartDate.minusWeeks(1));
+    }
+
     /**
      * Denominador de la semana segun 17.4.
      * <p>
@@ -163,6 +184,7 @@ public class PlanningContextFacade {
                                              PlanAdjustment adjustment,
                                              BigDecimal previousAdherencePct,
                                              BigDecimal previousAverageRpe) {
+        registrarDolorDeLaSemanaAnterior(userId, weekStartDate);
         var command = new GenerateWeeklyPlanCommand(userId, weekStartDate, adjustment, false,
                 previousAdherencePct, previousAverageRpe);
 
@@ -204,12 +226,23 @@ public class PlanningContextFacade {
                                           BigDecimal previousAdherencePct,
                                           BigDecimal previousAverageRpe,
                                           MeasuredWeekView medida) {
+        registrarDolorDeLaSemanaAnterior(userId, weekStartDate);
+
+        // P-03, idempotencia: si esta medicion ya se resolvio regenerando, el mismo desenlace.
+        if (regeneracionSegura != null) {
+            var resuelta = regeneracionSegura.yaResuelta(medida.weeklyMetricId());
+            if (resuelta.isPresent()) return Optional.ofNullable(resuelta.get().getResultingPlanId());
+        }
+
         var command = new GenerateWeeklyPlanCommand(userId, weekStartDate, afinarPorCausa(adjustment), true,
                 previousAdherencePct, previousAverageRpe);
 
         var prepared = commandService.prepare(command);
-        return adaptedWeekCommandService.adaptar(prepared, medida)
-                .map(WeeklyTrainingPlan::getId);
+        var adaptada = adaptedWeekCommandService.adaptar(prepared, medida).map(WeeklyTrainingPlan::getId);
+        if (adaptada.isPresent() || regeneracionSegura == null) return adaptada;
+
+        // P-03: la adaptacion por dolor quedo NO_FACTIBLE. Alternativa segura en este mismo ciclo.
+        return regeneracionSegura.regenerar(userId, weekStartDate, medida, previousAdherencePct, previousAverageRpe);
     }
 
     /**

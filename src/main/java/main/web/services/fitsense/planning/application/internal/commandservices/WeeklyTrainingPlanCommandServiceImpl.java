@@ -127,6 +127,12 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         var profile = externalProfilingService.fetchProfile(command.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil del usuario", command.userId()));
 
+        // P-01: un perfil historico fuera del rango de su objetivo no llega a generar (ni a la IA).
+        if (!main.web.services.fitsense.planning.domain.services.DuracionPorObjetivoPolicy
+                .admite(profile.goalType(), profile.sessionMinutes()))
+            throw new ProfileOutsideGoalDurationException(command.userId(), profile.goalType(),
+                    profile.sessionMinutes());
+
         var week = TrainingWeek.containing(command.weekStartDate());
         var previousActive = planRepository.findByUserIdAndWeekStartDateAndStatus(
                 command.userId(), week.startDate(), PlanStatus.ACTIVE);
@@ -158,14 +164,17 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                 profile.age(), profile.fitnessLevel(), profile.declaradas());
 
         var eligible = externalCatalogService.fetchEligibleFor(profile, maxDifficulty, safety);
-        // DOLOR SIN RESOLVER (campana de estres, 31/10/2026): si el ciclo anterior no publico semana porque
-        // conservarla habria vuelto a publicar el ejercicio que dolio (NO_FACTIBLE), la semana nueva se genera
-        // desde cero y su semana medida esta vacia: nada recordaba ese dolor. Sus ejercicios quedan fuera.
-        var dolorSinResolver = doloresSinResolver(command.userId(), week);
-        if (!dolorSinResolver.isEmpty()) {
-            log.warn("DOLOR_SIN_RESOLVER usuario {}: la semana del {} se genera sin {} (el ciclo anterior fue"
-                    + " NO_FACTIBLE por dolor)", command.userId(), week.startDate(), dolorSinResolver);
-            eligible = eligible.stream().filter(c -> !dolorSinResolver.contains(c.exerciseId())).toList();
+        // P-02 · MEMORIA PERSISTENTE DEL DOLOR (sustituye al DOLOR_SIN_RESOLVER de la campana de estres,
+        // que solo recordaba el ciclo inmediato tras un NO_FACTIBLE). Lo que dolio queda fuera del conjunto
+        // elegible hasta una reactivacion explicita: ni la IA lo ve, ni el motor de reglas lo elige, ni la
+        // progresion o la reincorporacion lo encuentran, y V1 rechaza cualquier borrador que lo traiga.
+        var excluidosPorDolor = painMemory == null ? java.util.Set.<Long>of()
+                : painMemory.excluidosActivos(command.userId());
+        if (!excluidosPorDolor.isEmpty()) {
+            var antes = eligible.size();
+            eligible = eligible.stream().filter(c -> !excluidosPorDolor.contains(c.exerciseId())).toList();
+            log.info("DOLOR_PERSISTENTE usuario {}: la semana del {} se prepara sin {} ({} candidato(s) menos)",
+                    command.userId(), week.startDate(), excluidosPorDolor, antes - eligible.size());
         }
         if (eligible.isEmpty())
             throw new main.web.services.fitsense.catalog.domain.exceptions.EmptyEligibleSetException(
@@ -203,43 +212,6 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     }
 
     /**
-     * Los ejercicios de un dolor que quedo SIN RESOLVER justo antes de esta semana: el ultimo intento V32
-     * del usuario es NO_FACTIBLE con SEGURIDAD_ANTE_DOLOR y su semana nueva es la anterior a esta (la que
-     * quedo sin plan). Son los ejercicios de la semana medida de ese intento registrados con dolor y, si el
-     * dolor se declaro en la sesion sin decir en que ejercicio, todos los de esa sesion (como V8C: ante un
-     * dolor sin identificar no se conserva ninguno). Cuanto debe recordarse un dolor mas alla de este caso
-     * es una decision funcional pendiente; aqui solo se evita repetir lo que el sistema ya declaro inseguro.
-     */
-    private java.util.Set<Long> doloresSinResolver(Long userId, TrainingWeek week) {
-        var intentos = attemptRepository.findByUserIdOrderByIdAsc(userId);
-        if (intentos.isEmpty()) return java.util.Set.of();
-        var ultimo = intentos.get(intentos.size() - 1);
-        if (ultimo.getStatus() != main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationAttempt.Status.NO_FACTIBLE
-                || ultimo.getTargetedInterventions() == null
-                || !java.util.Arrays.asList(ultimo.getTargetedInterventions()).contains("SEGURIDAD_ANTE_DOLOR")
-                || !week.previous().startDate().equals(ultimo.getNewWeekStartDate())
-                || ultimo.getSourcePlanId() == null) return java.util.Set.of();
-        var medido = planRepository.findById(ultimo.getSourcePlanId()).orElse(null);
-        if (medido == null) return java.util.Set.of();
-        var resultados = externalExecutionService.fetchResultsByWorkout(
-                medido.workoutsView().stream().map(main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout::getId).toList());
-        var excluir = new java.util.LinkedHashSet<Long>();
-        for (var w : medido.workoutsView()) {
-            var porPlanificado = w.exercisesView().stream().collect(java.util.stream.Collectors.toMap(
-                    main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise::getId,
-                    main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise::getExerciseId));
-            var r = resultados.get(w.getId());
-            boolean sesionConDolor = w.getSkipReason() == main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason.PAIN_OR_DISCOMFORT;
-            var identificados = r == null || r.exercises() == null ? java.util.List.<Long>of() : r.exercises().stream()
-                    .filter(x -> "PAIN_OR_DISCOMFORT".equals(x.skipReason()))
-                    .map(x -> porPlanificado.get(x.plannedExerciseId())).filter(java.util.Objects::nonNull).toList();
-            excluir.addAll(identificados);
-            if (sesionConDolor && identificados.isEmpty()) excluir.addAll(porPlanificado.values());
-        }
-        return excluir;
-    }
-
-    /**
      * FASE 2. SIN @Transactional, y no es un olvido.
      * <p>
      * pipeline.run hace hasta dos llamadas HTTP a Replicate de ~90 s cada una y
@@ -269,6 +241,14 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      * construyen este servicio a mano (P2-D): ahi queda en null y no observa.
      */
     private GoalFeasibilityObserver feasibilityObserver;
+
+    /** P-02. Por setter y opcional por lo mismo que el observador: null en las pruebas hechas a mano. */
+    private PainMemoryService painMemory;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setPainMemory(PainMemoryService painMemory) {
+        this.painMemory = painMemory;
+    }
 
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     void setFeasibilityObserver(GoalFeasibilityObserver feasibilityObserver) {
@@ -491,6 +471,8 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         workout.markSkipped(command.reason(), command.lackOfTimeContext(), command.availableMinutes());
         plannedWorkoutRepository.save(workout);
+        // P-02: omitir por dolor sin decir que ejercicio excluye ya, en esta transaccion, los de la sesion.
+        if (painMemory != null) painMemory.registrarOmision(workout);
     }
 
     @Override

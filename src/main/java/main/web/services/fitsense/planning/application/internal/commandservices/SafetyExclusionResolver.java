@@ -34,9 +34,19 @@ public class SafetyExclusionResolver {
     private final ExternalCatalogService catalog;
     private final SafetyConflictChecker conflictos;
 
+    /** P-02. Null en las pruebas que construyen el resolver a mano: entonces, lo de siempre. */
+    private final PainMemoryService painMemory;
+
     public SafetyExclusionResolver(ExternalCatalogService catalog, SafetyConflictChecker conflictos) {
+        this(catalog, conflictos, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public SafetyExclusionResolver(ExternalCatalogService catalog, SafetyConflictChecker conflictos,
+                                   PainMemoryService painMemory) {
         this.catalog = catalog;
         this.conflictos = conflictos;
+        this.painMemory = painMemory;
     }
 
     public ExclusionesDeSeguridad resolver(PlanGenerationContext context) {
@@ -51,7 +61,16 @@ public class SafetyExclusionResolver {
                 .collect(Collectors.toCollection(TreeSet::new));
         if (heredadosFuera.isEmpty()) return ExclusionesDeSeguridad.ninguna();
 
-        var motivos = conflictos.motivos(heredadosFuera, context.profile(), context.safety());
+        var motivos = new LinkedHashMap<>(conflictos.motivos(heredadosFuera, context.profile(), context.safety()));
+        // P-02: un heredado que dolio y sigue excluido tiene una causa verificada (el evento registrado).
+        // Con ella entra en la sustitucion obligatoria SUST-SEG-1 y en su excepcion de V8C; sin ella, V1.
+        if (painMemory != null) {
+            var dolor = painMemory.excluidosActivos(context.userId());
+            for (var id : heredadosFuera)
+                if (dolor.contains(id))
+                    motivos.merge(id, main.web.services.fitsense.planning.domain.services.SafetyConflictPolicy
+                            .DOLOR_REGISTRADO, (a, b) -> a + "+" + b);
+        }
         if (motivos.isEmpty()) return ExclusionesDeSeguridad.ninguna();
 
         var descritos = catalog.fetchAsCandidates(motivos.keySet());

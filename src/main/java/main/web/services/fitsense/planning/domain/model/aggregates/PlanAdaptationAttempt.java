@@ -228,6 +228,10 @@ public class PlanAdaptationAttempt {
         return userId;
     }
 
+    public Long getWeeklyMetricId() {
+        return weeklyMetricId;
+    }
+
     public Long getSourcePlanId() {
         return sourcePlanId;
     }
