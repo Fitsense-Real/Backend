@@ -18,16 +18,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * P-01 · duracion minima por objetivo en la ADMISION del perfil. Limites inmediatamente inferior, igual y
- * superior al minimo, y 180/181 para los cuatro objetivos. El perfil nunca corrige el valor: o lo admite tal
+ * superior al minimo y al maximo (29/30, 75/76), y valores historicos (15, 90, 120, 180) para los cuatro objetivos. El perfil nunca corrige el valor: o lo admite tal
  * cual o lo rechaza con un mensaje comprensible (HTTP 422 por DomainRuleViolationException).
  */
 class PoliticaP01DuracionMinimaTest {
 
-    /** P-01 definitiva: 30-120 para los cuatro objetivos; la matriz de la orden de cierre del PR #16. */
+    /** P-01 definitiva: 30-75 para los cuatro objetivos (orden de fusion del PR #16). */
     static java.util.stream.Stream<org.junit.jupiter.params.provider.Arguments> matriz() {
         var casos = new java.util.ArrayList<org.junit.jupiter.params.provider.Arguments>();
-        int[] minutos = {15, 29, 30, 60, 119, 120, 121, 180};
-        boolean[] admitido = {false, false, true, true, true, true, false, false};
+        int[] minutos = {15, 29, 30, 60, 75, 76, 90, 120, 180};
+        boolean[] admitido = {false, false, true, true, true, false, false, false, false};
         for (var objetivo : GoalType.values())
             for (int i = 0; i < minutos.length; i++)
                 casos.add(org.junit.jupiter.params.provider.Arguments.of(objetivo, minutos[i], admitido[i]));
@@ -36,14 +36,14 @@ class PoliticaP01DuracionMinimaTest {
 
     @ParameterizedTest(name = "{0} {1} min -> {2}")
     @org.junit.jupiter.params.provider.MethodSource("matriz")
-    @DisplayName("alta del perfil: 30-120 para los cuatro objetivos, sin modificar los minutos")
+    @DisplayName("alta del perfil: 30-75 para los cuatro objetivos, sin modificar los minutos")
     void alta(GoalType objetivo, int minutos, boolean admitido) {
         if (admitido) {
             var perfil = new UserProfile(1L, alta(objetivo, minutos));
             assertEquals((short) minutos, perfil.getSessionMinutes(), "nunca se corrige lo declarado");
         } else {
             var e = assertThrows(DomainRuleViolationException.class, () -> new UserProfile(1L, alta(objetivo, minutos)));
-            assertTrue(e.getMessage().contains("entre 30 y 120 minutos"), e.getMessage());
+            assertTrue(e.getMessage().contains("entre 30 y 75 minutos"), e.getMessage());
             assertTrue(e.getMessage().contains("indicaste " + minutos), e.getMessage());
         }
         assertEquals(admitido, DuracionPorObjetivoPolicy.admite(objetivo.name(), minutos),
@@ -52,9 +52,9 @@ class PoliticaP01DuracionMinimaTest {
 
     @ParameterizedTest
     @EnumSource(GoalType.class)
-    @DisplayName("V4 intacta: con 120 min el techo sigue siendo 120 x 1,15 = 138 (y con 30, 34)")
+    @DisplayName("V4 intacta: con 75 min el techo sigue siendo 75 x 1,15 = 86 (y con 30, 34)")
     void toleranciaV4(GoalType objetivo) {
-        assertEquals(138, new UserProfile(1L, alta(objetivo, 120)).maxSessionMinutesAllowed());
+        assertEquals(86, new UserProfile(1L, alta(objetivo, 75)).maxSessionMinutesAllowed());
         assertEquals(69, new UserProfile(1L, alta(objetivo, 60)).maxSessionMinutesAllowed());
         assertEquals(34, new UserProfile(1L, alta(objetivo, 30)).maxSessionMinutesAllowed());
     }
@@ -65,7 +65,7 @@ class PoliticaP01DuracionMinimaTest {
     void mismasTablas(GoalType objetivo) {
         assertEquals(30, objetivo.minSessionMinutes());
         assertEquals(objetivo.minSessionMinutes(), DuracionPorObjetivoPolicy.minimo(objetivo.name()));
-        assertEquals(120, GoalType.MAX_SESSION_MINUTES);
+        assertEquals(75, GoalType.MAX_SESSION_MINUTES);
         assertEquals(GoalType.MAX_SESSION_MINUTES, DuracionPorObjetivoPolicy.MAXIMO);
     }
 
@@ -74,7 +74,7 @@ class PoliticaP01DuracionMinimaTest {
     void edicion() {
         var perfil = new UserProfile(1L, alta(GoalType.GAIN_MUSCLE, 30));
         assertThrows(DomainRuleViolationException.class, () -> perfil.update(edicion(GoalType.GAIN_MUSCLE, 29)));
-        assertThrows(DomainRuleViolationException.class, () -> perfil.update(edicion(GoalType.GENERAL_FITNESS, 121)));
+        assertThrows(DomainRuleViolationException.class, () -> perfil.update(edicion(GoalType.GENERAL_FITNESS, 76)));
         assertEquals((short) 30, perfil.getSessionMinutes(), "un rechazo no deja el perfil a medias");
     }
 

@@ -187,12 +187,13 @@ class FactibilidadDuracionIT {
                         long u = usuario();
                         perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1990, 6, 15),
                                 BiologicalSex.FEMALE, new BigDecimal("168"), new BigDecimal("68"), null, nivel,
-                                objetivo, "factibilidad", TrainingLocation.GYM, (short) 3, DIAS.get(3), (short) m,
+                                objetivo, "factibilidad", TrainingLocation.GYM, (short) 3, DIAS.get(3), admitido(m),
                                 EQUIPOS.get("GIMNASIO"), List.of(), "Ninguna", true, true, true, true, true));
                         var prepared = planComandos.prepare(new GenerateWeeklyPlanCommand(u, semana, null, true,
                                 null, null));
                         try {
-                            validador.validate(reglas.generate(prepared.context(), List.of()), prepared.context(),
+                            var ctxM = conMinutos(prepared.context(), m);
+                            validador.validate(reglas.generate(ctxM, List.of()), ctxM,
                                     prepared.divisor());
                             conPlan++;
                         } catch (InvalidPlanDraftException e) {
@@ -214,6 +215,27 @@ class FactibilidadDuracionIT {
         Files.writeString(dir.resolve("SEMILLAS_30_120.csv"), csv.toString());
     }
 
+
+    /**
+     * LABORATORIO (P-01 vigente: 30-75). Para estudiar duraciones fuera del rango admitido, el perfil se crea con
+     * {@code min(minutos, 75)} y el contexto preparado se copia con los minutos del escenario. Nada de esto toca el
+     * camino real: prepare() sigue rechazando un perfil fuera de P-01.
+     */
+    static PlanGenerationContext conMinutos(PlanGenerationContext c, int minutos) {
+        var p = c.profile();
+        if (p.sessionMinutes() == minutos) return c;
+        var perfil = new PlanningProfile(p.userId(), p.age(), p.biologicalSex(), p.heightCm(), p.weightKg(),
+                p.targetWeightKg(), p.fitnessLevel(), p.goalType(), p.goalText(), p.healthNotes(), p.trainingLocation(),
+                p.daysPerWeek(), p.availableDays(), minutos, p.equipmentCodes(), p.blockedExerciseIds(), p.declaradas());
+        return new PlanGenerationContext(c.userId(), c.weekNumber(), c.weekStartDate(), c.weekEndDate(), perfil,
+                c.adjustment(), c.previousWeek(), c.availableExercises(), c.safety(), c.prescription());
+    }
+
+    static short admitido(int minutos) {
+        return (short) Math.min(minutos, main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType
+                .MAX_SESSION_MINUTES);
+    }
+
     record Fila(String linea, String clasificacion) {}
 
     private Fila evaluar(Combinacion c, LocalDate semana) {
@@ -227,11 +249,11 @@ class FactibilidadDuracionIT {
         perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1990, 6, 15), BiologicalSex.FEMALE,
                 new BigDecimal("168"), new BigDecimal("68"), null, c.nivel(), c.objetivo(), "factibilidad",
                 "GIMNASIO".equals(c.equipo()) ? TrainingLocation.GYM : TrainingLocation.HOME, (short) c.dias(),
-                DIAS.get(c.dias()), (short) c.minutos(), equipo, bloqueados, "Ninguna", libre, libre, libre, libre,
+                DIAS.get(c.dias()), admitido(c.minutos()), equipo, bloqueados, "Ninguna", libre, libre, libre, libre,
                 libre));
 
         var prepared = planComandos.prepare(new GenerateWeeklyPlanCommand(u, semana, null, true, null, null));
-        var ctx = prepared.context();
+        var ctx = conMinutos(prepared.context(), c.minutos());
         var p = ctx.prescription();
         String obj = c.objetivo().name();
         String niv = c.nivel().name();

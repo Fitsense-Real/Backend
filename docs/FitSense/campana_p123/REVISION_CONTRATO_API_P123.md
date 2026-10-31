@@ -1,5 +1,8 @@
 # Revisión del contrato de la API (P-01, P-02 y P-03)
 
+> **Actualización (orden de fusión del PR #16).** P-01 queda en **30–75 minutos para los cuatro objetivos**. Fuera de rango, 422 con «La duración por sesión debe estar entre 30 y 75 minutos (objetivo X); indicaste N.». V4 se mantiene: con 75 min, el techo es 86. Los perfiles históricos fuera de 30–75 no se modifican: no generan plan y reciben `PERFIL_FUERA_DE_P01`. Limitación conocida, no oculta: GAIN_MUSCLE a 75 min sigue sin plan posible con V20 y 4D (la sesión más larga posible es de unos 46 min y el piso de 75 min es 52,5). Se estudia en `docs/FitSense/investigacion_reglas_entrenamiento/`.
+
+
 ## 1. Endpoints nuevos (P-02)
 
 ### `GET /api/v1/users/me/pain-exclusions`

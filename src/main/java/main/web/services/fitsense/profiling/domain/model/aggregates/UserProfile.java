@@ -203,7 +203,7 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
     private void applyAvailability(Short daysPerWeek, List<Short> availableDays, Short sessionMinutes) {
         if (daysPerWeek == null || daysPerWeek < 1 || daysPerWeek > 7)
             throw new DomainRuleViolationException("Los dias por semana deben estar entre 1 y 7.");
-        // P-01 (30-120) ya se comprobo antes con el objetivo; esto cubre una duracion nula.
+        // P-01 (30-75) ya se comprobo antes con el objetivo; esto cubre una duracion nula.
         if (sessionMinutes == null || sessionMinutes < GoalType.MIN_SESSION_MINUTES
                 || sessionMinutes > GoalType.MAX_SESSION_MINUTES)
             throw new DomainRuleViolationException("La duracion por sesion debe estar entre %d y %d minutos."

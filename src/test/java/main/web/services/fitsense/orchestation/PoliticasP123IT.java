@@ -149,12 +149,11 @@ class PoliticasP123IT {
 
     @ParameterizedTest(name = "{0} {1} min")
     @CsvSource({"GAIN_MUSCLE,30", "INCREASE_STRENGTH,30", "LOSE_WEIGHT,30", "GENERAL_FITNESS,30",
+            "GAIN_MUSCLE,45", "INCREASE_STRENGTH,45", "LOSE_WEIGHT,45", "GENERAL_FITNESS,45",
             "GAIN_MUSCLE,60", "INCREASE_STRENGTH,60", "LOSE_WEIGHT,60", "GENERAL_FITNESS,60",
-            "GAIN_MUSCLE,90", "INCREASE_STRENGTH,90", "LOSE_WEIGHT,90", "GENERAL_FITNESS,90",
-            "GAIN_MUSCLE,105", "INCREASE_STRENGTH,105", "LOSE_WEIGHT,105", "GENERAL_FITNESS,105",
-            "GAIN_MUSCLE,120", "INCREASE_STRENGTH,120", "LOSE_WEIGHT,120", "GENERAL_FITNESS,120"})
+            "GAIN_MUSCLE,75", "INCREASE_STRENGTH,75", "LOSE_WEIGHT,75", "GENERAL_FITNESS,75"})
     @Order(2)
-    @DisplayName("P-01: los cuatro objetivos de 30 a 120: o plan valido dentro del techo V4 (x 1,15), o no hay plan")
+    @DisplayName("P-01: los cuatro objetivos de 30 a 75: o plan valido dentro del techo V4 (x 1,15), o no hay plan")
     void cuatroObjetivosEnLosLimites(GoalType objetivo, int minutos) {
         long u = participante(objetivo, FitnessLevel.INTERMEDIATE, minutos, GIMNASIO, true);
         int techo = (int) Math.floor(minutos * 1.15);
@@ -174,9 +173,10 @@ class PoliticasP123IT {
     }
 
     @ParameterizedTest(name = "historico {0} {1} min")
-    @CsvSource({"GAIN_MUSCLE,15", "INCREASE_STRENGTH,20", "LOSE_WEIGHT,150", "GENERAL_FITNESS,180"})
+    @CsvSource({"GAIN_MUSCLE,15", "INCREASE_STRENGTH,29", "LOSE_WEIGHT,76", "GENERAL_FITNESS,90",
+            "GAIN_MUSCLE,120", "LOSE_WEIGHT,150", "GENERAL_FITNESS,180"})
     @Order(3)
-    @DisplayName("P-01: un perfil historico congelado fuera de 30-120 no genera, no llama a la IA y no se modifica")
+    @DisplayName("P-01: un perfil historico congelado fuera de 30-75 no genera, no llama a la IA y no se modifica")
     void perfilHistoricoFueraDelNuevoRango(GoalType objetivo, int minutos) {
         long u = usuario();
         jdbc.update("INSERT INTO user_profiles (user_id, birth_date, height_cm, current_weight_kg, fitness_level,"
@@ -185,7 +185,7 @@ class PoliticasP123IT {
                 + " 'historico', 'GYM', 3, '{1,3,5}', ?, '{dumbbell}', '{}')", u, objetivo.name(), minutos);
         var e = assertThrows(ProfileOutsideGoalDurationException.class,
                 () -> planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null));
-        assertTrue(e.getMessage().contains("admite de 30 a 120"), e.getMessage());
+        assertTrue(e.getMessage().contains("admite de 30 a 75"), e.getMessage());
         verify(pipeline, never()).run(any(), anyInt());
         verify(iaGeneracion, never()).requestOutput(any(), any(), anyInt());
         assertEquals(minutos, jdbc.queryForObject("SELECT session_minutes FROM user_profiles WHERE user_id = ?",

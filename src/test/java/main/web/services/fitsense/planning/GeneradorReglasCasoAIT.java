@@ -98,11 +98,12 @@ class GeneradorReglasCasoAIT {
                 "caso-a-" + userId + "@pruebas.invalid");
         perfiles.handle(new CreateUserProfileCommand(userId, LocalDate.of(1990, 6, 15), BiologicalSex.FEMALE,
                 new BigDecimal("168"), new BigDecimal("68"), null, nivel, objetivo, "factibilidad",
-                "GIMNASIO".equals(equipo) ? TrainingLocation.GYM : TrainingLocation.HOME, (short) dias, FactibilidadDuracionIT.DIAS.get(dias), (short) minutos,
+                "GIMNASIO".equals(equipo) ? TrainingLocation.GYM : TrainingLocation.HOME, (short) dias, FactibilidadDuracionIT.DIAS.get(dias), FactibilidadDuracionIT.admitido(minutos),
                 FactibilidadDuracionIT.EQUIPOS.get(equipo), List.of(), "Ninguna", true, true, true, true, true));
 
         var prepared = planComandos.prepare(new GenerateWeeklyPlanCommand(userId, SEMANA, null, true, null, null));
-        var ctx = prepared.context();
+        // F0011 (105) y F0064 (90) estan fuera de P-01 (30-75): laboratorio, mismo motor y validador.
+        var ctx = FactibilidadDuracionIT.conMinutos(prepared.context(), minutos);
         assertEquals(userId, ctx.userId(), "premisa: misma semilla que en la matriz");
         var borrador = reglas.generate(ctx, List.of());
         try {
