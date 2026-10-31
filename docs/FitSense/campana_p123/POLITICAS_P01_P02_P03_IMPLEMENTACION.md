@@ -177,7 +177,7 @@ En la semana derivada, un ejercicio heredado que dolió tiene una causa verifica
 - No se modifica el perfil ni M.
 - Mismas sesiones y mismos días.
 - No sube la dosis:
-  - el nivel 1 recalcula la dosis del sustituto, y V8C rechaza que suba el volumen ante dolor;
+  - el nivel 1 recalcula la dosis del sustituto, y además `masTrabajoQueLaMedida` impide que una sesión del dolor suba sus repeticiones o segundos totales (C-3 de `ERRORES_Y_CORRECCIONES.md`);
   - el nivel 2 usa las dosis base de 4D.
 - Las sesiones ejecutadas no se tocan (lo comprueban las pruebas sobre el historial).
 - La semana no se duplica:

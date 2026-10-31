@@ -83,6 +83,8 @@ class HerenciaD8IT {
     @Autowired UserRepository usuarios;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.domain.services.PlanDraftValidator validador;
+    @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
@@ -175,6 +177,12 @@ class HerenciaD8IT {
         ejecutar(u, plan, Dia.HECHO, Dia.DIFICIL, Dia.HECHO);                     // s5: el caso que fallaba
         plan = publicar(u, 3, "SIN_EFECTO");
         assertEquals(minutos, viernes(plan), "la copia del viernes conserva la exencion de V20");
+        // Campana p123: el instrumento independiente tambien sigue el linaje por una senalada SIN EFECTO.
+        long publicado = plan;
+        var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                .GenerateWeeklyPlanCommand(u, S1.plusWeeks(4), null, true, null, null)).context();
+        var independiente = new ValidacionIndependiente(jdbc).validar(publicado, ctx, validador, 30);
+        assertNotEquals("INVALIDA", independiente.estado(), independiente.texto());
 
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);                       // s6: y sigue
         plan = publicar(u, 4, "SIN_ORDEN");

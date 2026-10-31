@@ -123,6 +123,10 @@ class CampanaP123Cohorte02IT {
         for (int s = 1; s <= EXTENSION; s++) g.put(s, todas(sesiones, D.HECHO));
         switch (id) {
             case "N01", "N09" -> g.put(1, conUna(sesiones, D.HECHO, 0, D.PARCIAL_TIEMPO));
+            // VARIANTE DECLARADA A POSTERIORI (no cuenta en las 100 semanas): en N01 y N09 la sesion parcial del
+            // guion (la primera) no tenia relleno y ACORTAR no pudo retirar nada. La variante pone la parcial en la
+            // segunda sesion, que si lo tiene, para recorrer retirada -> progresion -> reincorporacion.
+            case "N01B", "N09B" -> g.put(1, conUna(sesiones, D.HECHO, 1, D.PARCIAL_TIEMPO));
             case "N02" -> {
                 g.put(3, conDos(sesiones, D.HECHO, 0, D.CON_FATIGA, 1, D.PARCIAL_FATIGA));
                 g.put(5, conUna(sesiones, D.HECHO, 0, D.OMITE_OTRO));
@@ -188,6 +192,18 @@ class CampanaP123Cohorte02IT {
                 new Perfil("N10", GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, List.of(M, X, J, V, S, Dm), 30,
                         TrainingLocation.GYM, GIMNASIO, List.of(), true, true, true, true, true, Dolor.SUSTITUYE,
                         "frecuencia alta y sesiones cortas"));
+    }
+
+    /** Variantes a posteriori de N01 y N09 (mismo perfil; solo cambia que sesion es la parcial de S1). */
+    static List<Perfil> variantes() {
+        var c = cohorte();
+        var n01 = c.get(0);
+        var n09 = c.get(8);
+        return List.of(
+                new Perfil("N01B", n01.objetivo(), n01.nivel(), n01.dias(), n01.minutos(), n01.lugar(), n01.equipo(),
+                        n01.bloqueados(), true, true, true, true, true, Dolor.SUSTITUYE, "variante a posteriori de N01"),
+                new Perfil("N09B", n09.objetivo(), n09.nivel(), n09.dias(), n09.minutos(), n09.lugar(), n09.equipo(),
+                        n09.bloqueados(), true, true, true, true, true, Dolor.SUSTITUYE, "variante a posteriori de N09"));
     }
 
     private static List<D> todas(int n, D d) {
@@ -259,7 +275,9 @@ class CampanaP123Cohorte02IT {
         }
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM user_profiles WHERE user_id = ?", Integer.class, negativo));
 
-        for (var p : cohorte()) {
+        var todos = new ArrayList<>(cohorte());
+        todos.addAll(variantes());   // al final: no cambian los user_id (ni las semillas) de N01-N10
+        for (var p : todos) {
             long u = usuario(p.id());
             perfil(u, p);
             ids.put(p.id(), u);
@@ -277,7 +295,7 @@ class CampanaP123Cohorte02IT {
         for (int s = 1; s <= EXTENSION; s++) {
             for (var id : ids.keySet()) {
                 boolean extension = s > SEMANAS;
-                if (extension && !(id.equals("N01") || id.equals("N09"))) continue;
+                if (extension && !id.matches("N0[19]B?")) continue;
                 if (extension && entrenadoTras.containsKey(id)) continue;
                 long u = ids.get(id);
                 var lunes = S1.plusWeeks(s - 1);
@@ -354,7 +372,8 @@ class CampanaP123Cohorte02IT {
                 + " WHERE w.plan_id = ? AND x.exercise_id = ANY(?)", Integer.class, nuevo, excluidos.toArray(new Long[0])) > 0;
         String frecuencia = nuevo == null ? "" : frecuencia(u, ws);
         String validacion = nuevo == null ? "" : validarSemana(u, nuevo, lunes.plusWeeks(1));
-        historial.add(String.join(";", id, String.valueOf(s), extension ? "EXTENSION" : "PRINCIPAL",
+        historial.add(String.join(";", id, String.valueOf(s), id.endsWith("B") ? "VARIANTE_POSTERIOR"
+                        : extension ? "EXTENSION" : "PRINCIPAL",
                 lunes.toString(), p == null ? "" : String.valueOf(p), ejecucion,
                 lunes.plusWeeks(1).toString(), nuevo == null ? "" : String.valueOf(nuevo), origen,
                 String.valueOf(ws.size()),
@@ -458,11 +477,14 @@ class CampanaP123Cohorte02IT {
         var informes = jdbc.queryForList("SELECT conservation_report::text FROM plan_adaptation_attempts WHERE"
                 + " user_id = ? AND conservation_report::text LIKE '%REINCORPORACION%'", String.class, u);
         var ids = new HashSet<Long>();
-        var m = java.util.regex.Pattern.compile("\"tipo\"\\s*:\\s*\"REINCORPORACION\"[^}]*?\"exercise_id\"\\s*:\\s*(\\d+)"
-                + "|\"exercise_id\"\\s*:\\s*(\\d+)[^}]*?\"tipo\"\\s*:\\s*\"REINCORPORACION\"");
+        var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
         for (var i : informes) {
-            var x = m.matcher(i);
-            while (x.find()) ids.add(Long.parseLong(x.group(1) != null ? x.group(1) : x.group(2)));
+            try {
+                for (var paso : mapper.readTree(i).path("pasos"))
+                    if ("REINCORPORACION".equals(paso.path("tipo").asText())) ids.add(paso.path("exercise_id").asLong());
+            } catch (java.io.IOException e) {
+                throw new IllegalStateException(e);
+            }
         }
         if (ids.isEmpty()) return false;
         return jdbc.queryForObject("SELECT count(*) FROM workout_session_exercises wse JOIN workout_sessions ws ON"
@@ -645,7 +667,7 @@ class CampanaP123Cohorte02IT {
         var usuariosIds = ids.values().stream().map(String::valueOf).collect(Collectors.joining(","));
         volcarTabla("v32.csv", "SELECT a.user_id, a.attempt_id, a.weekly_metric_id, a.source_plan_id, a.new_week_start_date,"
                 + " a.resulting_plan_id, a.decision, a.status, a.generation_source, a.ai_calls, a.targeted_sessions::text,"
-                + " a.targeted_interventions::text, a.applied_sessions::text, a.progressed_sessions::text,"
+                + " a.targeted_interventions::text, a.applied_sessions::text, a.no_effect_sessions::text, a.conserved_sessions::text, a.progressed_sessions::text,"
                 + " a.rejection_reason, a.conservation_report::text FROM plan_adaptation_attempts a WHERE a.user_id IN ("
                 + usuariosIds + ") ORDER BY a.attempt_id");
         volcarTabla("planes.csv", "SELECT p.user_id, p.plan_id, p.week_start_date, p.plan_version, p.status,"
