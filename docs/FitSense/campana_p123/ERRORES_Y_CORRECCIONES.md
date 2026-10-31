@@ -79,8 +79,13 @@ El detector de la ejecución del reincorporado usaba una expresión regular que 
 
 ## Batería final
 
-`mvn verify -Pintegration` en verde:
-- **792 pruebas unitarias**;
-- **416 de integración**, con 30 opcionales omitidas (campañas con IA real y la campaña p123, que es opt-in).
+`mvn verify -Pintegration` en verde sobre el commit final del PR #16:
+- **816 pruebas unitarias**, 0 fallos (antes de esta orden, 792);
+- **432 de integración**, 0 fallos (antes, 416), con **30 opcionales omitidas**.
+
+**Las 30 omitidas** son pruebas opt-in que no corren en el CI:
+- las campañas con IA real (`CampanaReplicateRealIT`, `ReincorporacionIaRealIT`, etc.), que requieren token y presupuesto;
+- la campaña p123 (`-Dfitsense.campana.p123=true`);
+- reproducciones de pendientes (`-Dfitsense.pendientes=true`).
 
 Línea base en `generation`: 765 unitarias y 284 de integración.

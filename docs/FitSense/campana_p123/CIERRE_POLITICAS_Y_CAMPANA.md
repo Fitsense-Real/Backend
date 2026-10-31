@@ -47,6 +47,7 @@
 | D · V43 | Auditada y ajustada **antes de su primera aplicación**: FK, índice, `ON CONFLICT`, reactivación con bloqueo. Probada desde cero, sobre V42 con histórico y con reinicio (`AUDITORIA_MIGRACION_V43.md`) |
 | E · API | Endpoints autenticados y aislados. Dos resultados nuevos; ningún campo cambia (`REVISION_CONTRATO_API_P123.md`) |
 | F · Campaña | Repetida en modo determinista: **solo cambia N03 S4** (resultado y llamadas; la misma semana publicada). Respuestas simuladas 16 → 14 |
+| Pruebas | `mvn verify -Pintegration`: **816 unitarias y 432 de integración, 0 fallos**, 30 opcionales omitidas (antes: 792 y 416) |
 | Replicate | **0 llamadas reales** |
 
 **Nueva decisión funcional (no resuelta unilateralmente):** P-01 admite hasta 120 min, pero con el motor de reglas, V20 (70 % de los minutos) y los topes de 4D hacen que **de 90 min en adelante casi ningún perfil tenga plan**.
