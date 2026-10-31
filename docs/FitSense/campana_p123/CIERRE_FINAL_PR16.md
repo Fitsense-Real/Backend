@@ -98,9 +98,9 @@ Documentos:
 - V42 con datos, después V43: ni tablas, ni columnas, ni restricciones, ni filas anteriores cambian.
 - El reinicio aplica 0 migraciones y `validate` pasa.
 
-**17. ¿Las pruebas y el CI quedaron en verde?** Pruebas locales en verde: ver §«Pruebas». CI: ver el PR.
+**17. ¿Las pruebas y el CI quedaron en verde?** Sí en local: `mvn verify -Pintegration` BUILD SUCCESS. El estado del CI está en el PR.
 
-**18. ¿Cuántas pruebas pasaron y cuántas se omitieron?** Ver §«Pruebas».
+**18. ¿Cuántas pruebas pasaron y cuántas se omitieron?** Unitarias: 935 pasaron, 0 omitidas. Integración: 458 pasaron y 32 omitidas (opt-in). Antes eran 432 + 30: hay 26 de integración nuevas (10 de `GeneradorReglasCasoAIT`, 2 de concurrencia de V43 y otras de la batería actual), y `FactibilidadDuracionIT` queda omitida por ser opt-in. El método de recuento es el de Maven; no es comparable con la suma de .txt de 816.
 
 **19. ¿Cuántas llamadas reales a Replicate se hicieron?** **0.** Todas las ejecuciones usan `fitsense.ai.enabled=false` y el log no contiene ninguna petición a `api.replicate.com`.
 
@@ -123,7 +123,7 @@ Documentos:
 | Batería | Ejecutadas | Fallos | Omitidas |
 |---|---:|---:|---:|
 | Unitarias (`mvn test`) | 935 | 0 | 0 |
-| Integración (`mvn verify -Pintegration`) | — | — | — |
+| Integración (`mvn verify -Pintegration`) | 458 | 0 | 32 |
 
 Las pruebas opt-in quedan omitidas: campañas, IA real e investigaciones como `FactibilidadDuracionIT`.
 

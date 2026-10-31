@@ -86,7 +86,7 @@ Las FK de V43 son RESTRICT (por omisión). El código no borra nada de lo que re
 
 | Comprobación | Prueba | Resultado |
 |---|---|---|
-| Base vacía con todas las migraciones | Las 43x IT | ✔ |
+| Base vacía con todas las migraciones | Las 458 IT | ✔ |
 | V42 con datos históricos, después V43 | `MigracionV43IT` | ✔ Solo V43; ni tablas, ni columnas, ni restricciones, ni filas anteriores cambian; los perfiles congelados de 15 y 180 min no se corrigen |
 | Reinicio y segunda ejecución de Flyway | `MigracionV43IT` | ✔ 0 migraciones; `validate` pasa |
 | Consultas de adaptación, generación y seguridad sobre el esquema nuevo | `PoliticasP123IT`, `ProgresionIT`, `HerenciaD8IT`, `C2ReproduccionN03IT`, campaña | ✔ |
