@@ -10,7 +10,13 @@ Estado de cada hallazgo:
 
 **Resumen:** no se encontró ningún defecto de código del backend. El único usuario sin plan se debe a un conflicto entre políticas aprobadas, que no se puede corregir sin autorización.
 
-## H1 · GAIN_MUSCLE de 5–6 días a 60 min no tiene plan — PENDIENTE DE DECISIÓN
+## H1 · GAIN_MUSCLE de 5–6 días a 60 min no tiene plan — CORREGIDO Y PROBADO en 16/24; 8 PENDIENTES
+
+**Actualización del 31/10/2026:** se aplicó la opción B (4D v3.2, `../ADENDA_4D_v3_2.md`).
+- **Resueltas:** 16 de las 24 combinaciones, entre ellas U06. U06 completó sus 8 semanas con IA real (`INFORME_U06_4D_v3_2.md`).
+- **Pendientes:** las 8 de GAIN_MUSCLE intermedio y avanzado en casa, que tienen un día PULL con bíceps de relleno estándar y quedan fuera de la opción B. Requieren otra decisión.
+
+### Diagnóstico original
 
 **Reproducción:**
 - U06 quedó sin plan inicial (IA: 1 propuesta rechazada y un timeout; reglas: V15/V20).
