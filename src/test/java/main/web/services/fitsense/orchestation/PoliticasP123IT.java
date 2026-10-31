@@ -173,8 +173,10 @@ class PoliticasP123IT {
     }
 
     @ParameterizedTest(name = "historico {0} {1} min")
-    @CsvSource({"GAIN_MUSCLE,15", "INCREASE_STRENGTH,29", "LOSE_WEIGHT,76", "GENERAL_FITNESS,90",
-            "GAIN_MUSCLE,120", "LOSE_WEIGHT,150", "GENERAL_FITNESS,180"})
+    // Ocho casos: con los 16 de arriba, las pruebas siguientes conservan los mismos user_id (la semilla del motor de
+    // reglas) que con la matriz anterior de P-01; los escenarios de P-03 dependen de esa semilla.
+    @CsvSource({"GAIN_MUSCLE,15", "INCREASE_STRENGTH,20", "INCREASE_STRENGTH,29", "LOSE_WEIGHT,76",
+            "GENERAL_FITNESS,90", "GAIN_MUSCLE,120", "LOSE_WEIGHT,150", "GENERAL_FITNESS,180"})
     @Order(3)
     @DisplayName("P-01: un perfil historico congelado fuera de 30-75 no genera, no llama a la IA y no se modifica")
     void perfilHistoricoFueraDelNuevoRango(GoalType objetivo, int minutos) {
