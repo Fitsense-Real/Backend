@@ -65,7 +65,7 @@ import static org.junit.jupiter.api.Assertions.*;
         "fitsense.ai.api-token="
 })
 @DisplayName("Investigacion · factibilidad de 30-120 min por objetivo, nivel, dias y equipo (motor de reglas)")
-class FactibilidadDuracionIT {
+public class FactibilidadDuracionIT {
 
     @Container
     @ServiceConnection
@@ -80,18 +80,18 @@ class FactibilidadDuracionIT {
     static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final int[] MINUTOS = {30, 60, 75, 90, 105, 120};
-    static final LocalDate SEMANA = LocalDate.of(2026, 11, 2);
+    public static final LocalDate SEMANA = LocalDate.of(2026, 11, 2);
     static final Pattern CODIGO = Pattern.compile("^(V\\d+[A-Z]?)");
 
     /** Equipos: los mismos codigos que las referencias. */
-    static final Map<String, List<String>> EQUIPOS = new LinkedHashMap<>();
+    public static final Map<String, List<String>> EQUIPOS = new LinkedHashMap<>();
     static {
         EQUIPOS.put("GIMNASIO", List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine", "bench",
                 "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine"));
         EQUIPOS.put("CASA_MANCUERNAS_BANDAS", List.of("body weight", "dumbbell", "band"));
         EQUIPOS.put("CASA_PESO_CORPORAL", List.of("body weight"));
     }
-    static final Map<Integer, List<Short>> DIAS = Map.of(
+    public static final Map<Integer, List<Short>> DIAS = Map.of(
             1, List.of((short) 1),
             2, List.of((short) 1, (short) 4),
             3, List.of((short) 1, (short) 3, (short) 5),
@@ -221,7 +221,7 @@ class FactibilidadDuracionIT {
      * {@code min(minutos, 75)} y el contexto preparado se copia con los minutos del escenario. Nada de esto toca el
      * camino real: prepare() sigue rechazando un perfil fuera de P-01.
      */
-    static PlanGenerationContext conMinutos(PlanGenerationContext c, int minutos) {
+    public static PlanGenerationContext conMinutos(PlanGenerationContext c, int minutos) {
         var p = c.profile();
         if (p.sessionMinutes() == minutos) return c;
         var perfil = new PlanningProfile(p.userId(), p.age(), p.biologicalSex(), p.heightCm(), p.weightKg(),
@@ -231,7 +231,7 @@ class FactibilidadDuracionIT {
                 c.adjustment(), c.previousWeek(), c.availableExercises(), c.safety(), c.prescription());
     }
 
-    static short admitido(int minutos) {
+    public static short admitido(int minutos) {
         return (short) Math.min(minutos, main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType
                 .MAX_SESSION_MINUTES);
     }
@@ -814,7 +814,7 @@ class FactibilidadDuracionIT {
     }
 
     /** Las dosis aprobadas de un ejercicio en este objetivo: la base y, si existe, la serie maxima admitida. */
-    static List<PlanDraft.DraftExercise> variantes(CandidateExercise c, String obj, String niv, WorkoutFocus foco,
+    public static List<PlanDraft.DraftExercise> variantes(CandidateExercise c, String obj, String niv, WorkoutFocus foco,
                                                   PrescriptionParams p) {
         var out = new ArrayList<PlanDraft.DraftExercise>();
         if (MvpDosePolicy.aplicaA(obj)) {
@@ -858,7 +858,7 @@ class FactibilidadDuracionIT {
     }
 
     /** Duracion declarada = la que calcula el estimador; volumen declarado = el del contenido. */
-    static PlanDraft recalcular(PlanDraft d, PrescriptionParams p, int divisor) {
+    public static PlanDraft recalcular(PlanDraft d, PrescriptionParams p, int divisor) {
         var ws = d.workouts().stream().map(w -> new PlanDraft.DraftWorkout(w.scheduledDate(), w.focus(), w.name(),
                 ESTIMADOR.estimateMinutes(w, p), w.exercises())).toList();
         var sin = new PlanDraft(d.source(), d.modelName(), d.planName(), null, d.rationale(), ws);
