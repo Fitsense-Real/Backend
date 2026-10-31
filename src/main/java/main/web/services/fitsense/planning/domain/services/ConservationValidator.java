@@ -396,6 +396,25 @@ public class ConservationValidator {
                 if (intervencion.permiteReducirDuracion()
                         && derivada.workout().scheduledDate() != null)
                     fechasReducibles.add(derivada.workout().scheduledDate());
+                // C-2 (orden de cierre del PR #16, 31/10/2026): HERENCIA LIMITADA DE D8 POR IDENTIDAD. Una sesion
+                // acortada con una reduccion autorizada (D8) que se senala por otra causa y vuelve EXACTAMENTE igual
+                // conserva su exencion de V20, como ya la conservaba el respaldo que publica esa misma copia. No se
+                // crea ninguna autorizacion: se hereda la de la semana medida. Solo si todo esto se cumple:
+                //  - consta la reduccion autorizada de la sesion de origen (linaje V31/V32);
+                //  - la sesion quedo SIN EFECTO: mismos ejercicios, en el mismo orden, mismas dosis y descansos,
+                //    misma fecha, enfoque y minutos, carga igual y ningun problema (ni subida de dosis rechazada);
+                //  - ninguna sustitucion por seguridad, ningun dolor registrado en la sesion y ningun ejercicio suyo
+                //    excluido por seguridad (P-02 incluido);
+                //  - la intervencion no exige un cambio de seguridad (SEGURIDAD_ANTE_DOLOR no admite la copia).
+                else if (derivada.workout().scheduledDate() != null
+                        && sinEfecto.contains(origen) && !dosisRechazada
+                        && previous.reduccionAutorizada().contains(origen)
+                        && !intervencion.exigeRevisionDeSeguridad()
+                        && segura && dieron(dolieron, dolorDeSesion)
+                        && admitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
+                        && ningunoExcluido(derivada, causas)
+                        && mismoOrden(previous, origen, derivada))
+                    fechasReducibles.add(derivada.workout().scheduledDate());
             }
         }
 
@@ -1081,6 +1100,25 @@ public class ConservationValidator {
 
     /** La dosis PRESCRITA de un ejercicio. La carga queda fuera a proposito. */
     private record Dosis(String tipo, Short series, Short reps, Integer segundos, Short descanso) {}
+
+    /** C-2: sin dolor registrado en la sesion (ni de ejercicio ni de sesion). */
+    private static boolean dieron(Set<Long> dolieron, boolean dolorDeSesion) {
+        return dolieron.isEmpty() && !dolorDeSesion;
+    }
+
+    /** C-2: ningun ejercicio de la sesion esta excluido por seguridad hoy (catalogo, retenciones o P-02). */
+    private static boolean ningunoExcluido(DerivedWorkout derivada, ExclusionesDeSeguridad causas) {
+        return causas == null || derivada.workout().exercises().stream().noneMatch(e -> causas.incluye(e.exerciseId()));
+    }
+
+    /** C-2: los mismos ejercicios en el MISMO orden que la sesion medida (la comparacion de V8C no mira el orden). */
+    private static boolean mismoOrden(PreviousWeekSummary previous, Long origen, DerivedWorkout derivada) {
+        var antes = previous.prescriptions() == null ? List.<Long>of() : previous.prescriptions().stream()
+                .filter(p -> origen.equals(p.plannedWorkoutId())).map(PreviousWeekSummary.PrescriptionOutcome::exerciseId)
+                .toList();
+        var ahora = derivada.workout().exercises().stream().map(PlanDraft.DraftExercise::exerciseId).toList();
+        return !antes.isEmpty() && antes.equals(ahora);
+    }
 
     private record Diferencias(List<Long> anadidos, List<Long> quitados, List<Long> dosisCambiada,
                                Set<Long> idsAnteriores, Set<Long> idsNuevos,

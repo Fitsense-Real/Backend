@@ -108,15 +108,133 @@ class HerenciaReduccionV20Test {
         assertTrue(resultado.problemas().stream().anyMatch(p -> p.startsWith("V20")), resultado.problemas().toString());
     }
 
+    // =======================================================================
+    // C-2 (orden de cierre del PR #16): herencia LIMITADA de D8 por identidad
+    // =======================================================================
+
+    /** La propuesta de la IA para el lunes: la copia exacta, o con una modificacion. */
+    private static CorrectedSession propuesta(List<PlanDraft.DraftExercise> ejercicios) {
+        return new CorrectedSession(SENALADA, diaCopia(0), minutos(ejercicios), ejercicios, "propuesta");
+    }
+
+    private AdaptedWeekResult adaptar(TipoIntervencion intervencion, Set<Long> d8, PreviousWeekSummary medida,
+                                      List<CorrectedSession> correcciones) {
+        var ctx = new PlanGenerationContext(USUARIO, (short) 2, LUNES.plusWeeks(1), LUNES.plusWeeks(1).plusDays(6),
+                perfil(), orden(intervencion), medida, List.copyOf(elegibles().values()), SafetyProfile.none(),
+                parametros());
+        return productor.produce(ctx, derivacion(), correcciones, elegibles());
+    }
+
     @Test
-    @DisplayName("una intervencion nueva distinta sobre el lunes interrumpe la herencia: V20 rige")
-    void intervencionNuevaInterrumpe() {
-        var resultado = productor.produce(
-                contexto(orden(TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION), Set.of(SENALADA)),
-                derivacion(), List.of(), elegibles());
-        assertFalse(resultado.publicable(), "con otra intervencion el lunes no hereda la exencion");
-        assertTrue(resultado.problemas().stream().anyMatch(p -> p.startsWith("V20")), resultado.problemas().toString());
-        assertFalse(resultado.conservacion().fechasConDuracionReducible().contains(diaCopia(0)));
+    @DisplayName("C-2 caso A (antes cortaba la herencia): D8 previa + senalada + propuesta identica -> conserva D8")
+    void identicaConservaD8() {
+        for (var tipo : List.of(TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO, TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION,
+                TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)) {
+            var r = adaptar(tipo, Set.of(SENALADA), semanaMedida(Set.of(SENALADA)),
+                    List.of(propuesta(ejercicios(0, 5))));
+            assertTrue(r.publicable(), tipo + ": " + r.problemas());
+            assertEquals(AdaptedWeekResult.Motivo.SIN_EFECTO, r.motivo(), tipo.name());
+            assertTrue(r.conservacion().sinEfecto().contains(SENALADA), tipo.name());
+            assertTrue(r.conservacion().fechasConDuracionReducible().contains(diaCopia(0)), tipo.name());
+            assertTrue(r.problemas().stream().noneMatch(p -> p.startsWith("V20")), r.problemas().toString());
+        }
+    }
+
+    @Test
+    @DisplayName("C-2: D8 previa + respaldo identico (sin respuesta usable) -> conserva D8, como antes")
+    void respaldoIdenticoConservaD8() {
+        var r = adaptar(TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO, Set.of(SENALADA), semanaMedida(Set.of(SENALADA)), null);
+        assertTrue(r.publicable(), r.problemas().toString());
+        assertEquals(AdaptedWeekResult.Motivo.RESPALDO_IA, r.motivo());
+        assertTrue(r.conservacion().fechasConDuracionReducible().contains(diaCopia(0)));
+    }
+
+    /** C-2 caso B: cualquier cambio quita la identidad; sin ella no hay herencia y rige V20 (o lo que corresponda). */
+    private void sinHerencia(List<PlanDraft.DraftExercise> modificada, String caso) {
+        var r = adaptar(TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO, Set.of(SENALADA), semanaMedida(Set.of(SENALADA)),
+                List.of(propuesta(modificada)));
+        assertFalse(r.conservacion().fechasConDuracionReducible().contains(diaCopia(0)), caso + ": recibio D8");
+        assertFalse(r.publicable(), caso + ": se publico una sesion bajo el piso sin exencion");
+        assertTrue(r.problemas().stream().anyMatch(p -> p.startsWith("V20")), caso + ": " + r.problemas());
+    }
+
+    @Test
+    @DisplayName("C-2 caso B: D8 previa + una repeticion menos -> sin excepcion por identidad")
+    void repeticionCambiada() {
+        var l = new ArrayList<>(ejercicios(0, 5));
+        var e = l.get(0);
+        l.set(0, new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), e.plannedSets(),
+                (short) (e.plannedReps() - 1), null, null, e.restSeconds(), null));
+        sinHerencia(l, "repeticion");
+    }
+
+    @Test
+    @DisplayName("C-2 caso B: D8 previa + descanso distinto -> sin excepcion por identidad")
+    void descansoCambiado() {
+        var l = new ArrayList<>(ejercicios(0, 5));
+        var e = l.get(4);
+        l.set(4, new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), e.plannedSets(), e.plannedReps(),
+                null, null, (short) 60, null));
+        sinHerencia(l, "descanso");
+    }
+
+    @Test
+    @DisplayName("C-2 caso B: D8 previa + ejercicio cambiado -> sin excepcion por identidad")
+    void ejercicioCambiado() {
+        var l = new ArrayList<>(ejercicios(0, 5));
+        l.set(4, prescrito(id(0, 5), true));   // el otro relleno (CARRY) en lugar de ISOMETRIC_HOLD
+        sinHerencia(l, "ejercicio");
+    }
+
+    @Test
+    @DisplayName("C-2 caso B: D8 previa + mismos ejercicios en otro orden -> sin excepcion por identidad")
+    void ordenCambiado() {
+        var l = new ArrayList<>(ejercicios(0, 5));
+        java.util.Collections.swap(l, 0, 1);
+        var r = adaptar(TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO, Set.of(SENALADA), semanaMedida(Set.of(SENALADA)),
+                List.of(propuesta(l)));
+        assertFalse(r.conservacion().fechasConDuracionReducible().contains(diaCopia(0)), "el orden tambien cuenta");
+    }
+
+    @Test
+    @DisplayName("C-2 caso C: sin D8 previa + senalada identica -> no se crea exencion: V20 rige")
+    void sinD8PreviaRigeV20() {
+        var r = adaptar(TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO, Set.of(), semanaMedida(Set.of()),
+                List.of(propuesta(ejercicios(0, 5))));
+        assertFalse(r.publicable());
+        assertTrue(r.problemas().stream().anyMatch(p -> p.startsWith("V20")), r.problemas().toString());
+        assertEquals(Set.of(), r.conservacion().fechasConDuracionReducible());
+    }
+
+    @Test
+    @DisplayName("C-2 caso D: D8 previa + dolor en un ejercicio conservado -> la propuesta identica se rechaza")
+    void dolorEnConservado() {
+        var r = adaptar(TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO, Set.of(SENALADA),
+                conDolor(semanaMedida(Set.of(SENALADA)), id(0, 0)), List.of(propuesta(ejercicios(0, 5))));
+        assertFalse(r.publicable(), "la identidad no puede conservar lo que dolio");
+        assertTrue(r.problemas().stream().anyMatch(p -> p.contains("V8C") && p.contains(String.valueOf(id(0, 0)))),
+                r.problemas().toString());
+        assertFalse(r.conservacion().fechasConDuracionReducible().contains(diaCopia(0)));
+    }
+
+    @Test
+    @DisplayName("C-2 caso E: D8 previa + SEGURIDAD_ANTE_DOLOR (exige cambio) -> una copia identica no se acepta")
+    void intervencionQueExigeCambio() {
+        var r = adaptar(TipoIntervencion.SEGURIDAD_ANTE_DOLOR, Set.of(SENALADA),
+                conDolor(semanaMedida(Set.of(SENALADA)), id(0, 0)), List.of(propuesta(ejercicios(0, 5))));
+        assertFalse(r.publicable());
+        assertFalse(r.conservacion().fechasConDuracionReducible().contains(diaCopia(0)));
+    }
+
+    /** La semana medida con el ejercicio marcado con dolor en el lunes. */
+    private static PreviousWeekSummary conDolor(PreviousWeekSummary s, long ejercicio) {
+        var prescripciones = s.prescriptions().stream().map(p -> p.exerciseId() == ejercicio
+                ? new PreviousWeekSummary.PrescriptionOutcome(p.plannedWorkoutId(), p.scheduledDate(), p.exerciseId(),
+                p.name(), p.prescriptionType(), p.sets(), p.reps(), p.durationSeconds(), p.loadKg(), (short) 0, 0,
+                null, null, BigDecimal.ZERO, "SKIPPED", "PAIN_OR_DISCOMFORT", p.status(), p.restSeconds())
+                : p).toList();
+        return new PreviousWeekSummary(s.weightedAdherencePct(), s.averageSessionRpe(), null, Map.of(),
+                s.workouts(), prescripciones, List.of(), s.reduccionAutorizada());
     }
 
     @Test
