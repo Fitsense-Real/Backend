@@ -11,7 +11,7 @@
 | Contenido | C-2, P-02, P-03, V43 y las cuatro correcciones del motor (D-1 a D-4) |
 | Pruebas antes del merge | `mvn verify -Pintegration`: **939 unitarias** y **458 de integración**, 0 fallos, 32 opt-in omitidas. Las 4 unitarias de más respecto a la referencia (935) son los casos nuevos de P-01 (75/76/90) |
 | Replicate | **0 llamadas reales**: `fitsense.ai.enabled=false`; ninguna petición a `api.replicate.com` en los logs |
-| CI de `generation` tras el merge | Ejecuciones `41242869086` (push) y `41242872779` (PR #1, borrador `generation`→`main`, que no se toca): ver estado al final |
+| CI de `generation` tras el merge | Ejecución `41242869086` (push a `generation`, commit `afef98a`): **success**. La ejecución `41242872779` es del PR #1 (borrador `generation`→`main`, que no se toca) |
 | Despliegues | Ninguno. La API de GitHub no registra deployments en el repositorio. En `generation` solo hay checks de GitHub Actions (`verify`), ninguno de Railway ni de otros proveedores. El CI no tiene secretos ni pasos de despliegue. Railway no despliega desde `generation` (confirmado por el responsable, `CATALOGO_V37.md`) |
 | Migraciones remotas | Ninguna. Hasta el merge, V43 solo existía en `politicas-p123`; ahora está en el código de `generation`. **No se conectó a Neon ni a Railway** |
 
