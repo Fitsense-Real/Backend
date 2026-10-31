@@ -232,14 +232,30 @@ abstract class CorreccionesReplicateBase {
 
         clearInvocations(ia);
         var r = ciclo.runFor(u, S1, S1.plusWeeks(1));
-        assertTrue(r.isEmpty(), "sin alternativa valida no se publica la sesion con mas trabajo");
         var ev = ultimo(u);
-        assertEquals("NO_FACTIBLE", ev.get("status"), String.valueOf(ev));
+        // P-03 (31/10/2026): la propuesta con mas trabajo se rechaza las tres veces y nunca se publica; el respaldo
+        // sustituye de forma determinista lo que dolio, sin anadir ejercicios ni subir el volumen de la sesion.
+        assertTrue(r.isPresent(), "P-03: alternativa segura en el mismo ciclo: " + ev);
+        assertEquals("RESPALDO", ev.get("status"), String.valueOf(ev));
+        var dolor = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ? AND"
+                + " skip_reason = 'PAIN_OR_DISCOMFORT'", Long.class, plan).get(0);
+        var nueva = jdbc.queryForObject("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ? AND"
+                + " source_planned_workout_id = ?", Long.class, r.get(), dolor);
+        assertEquals(ejercicios(dolor).size(), ejercicios(nueva).size(), "no se anade trabajo");
+        assertTrue(ejercicios(nueva).stream().noneMatch(x -> ejercicios(dolor).stream().anyMatch(y -> y.id() == x.id())),
+                "nada de la sesion que dolio vuelve");
+        assertTrue(volumen(ejercicios(nueva)) <= volumen(ejercicios(dolor)), "el volumen no sube");
         assertEquals(3, ((Number) ev.get("ai_calls")).intValue());
         assertTrue(feedbacks.stream().flatMap(f -> f.rejectionProblems().stream())
                 .anyMatch(p -> p.contains("no se anade trabajo")), feedbacks.toString());
-        assertNotNull(ev.get("rejection_reason"), "el motivo queda registrado");
+        assertTrue(String.valueOf(ev.get("conservation_report")).contains("REGENERACION_SEGURA"),
+                "consta en V32 que se resolvio sin la IA: " + ev);
         assertSinViolaciones();
+    }
+
+    private static int volumen(List<Ej> l) {
+        return l.stream().mapToInt(e -> (e.series() == null ? 1 : e.series()) * (e.reps() != null ? e.reps()
+                : (e.segundos() == null ? 0 : e.segundos() / 30))).sum();
     }
 
     // =======================================================================

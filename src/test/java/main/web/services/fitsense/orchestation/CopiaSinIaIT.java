@@ -450,14 +450,15 @@ class CopiaSinIaIT {
                 var e = actuales.get(k).getKey();
                 if (k == quitar && seguridad) {
                     // Seguridad: el que dolio se SUSTITUYE por otro del mismo patron, con su dosis.
-                    var original = ctx.availableExercises().stream().filter(c -> c.exerciseId().equals(e.exerciseId()))
-                            .findFirst().orElseThrow();
+                    // Del catalogo, no del conjunto elegible: desde P-02 el que dolio ya no es elegible.
+                    var original = jdbc.queryForMap("SELECT e.movement_pattern, bp.code FROM exercises e JOIN body_parts bp"
+                            + " ON bp.body_part_id = e.body_part_id WHERE e.exercise_id = ?", e.exerciseId());
                     var enSesion = actuales.stream().map(x -> x.getKey().exerciseId()).toList();
                     var sustituto = ctx.availableExercises().stream()
                             .filter(c -> !enSesion.contains(c.exerciseId())
-                                    && java.util.Objects.equals(c.movementPattern(), original.movementPattern())
-                                    && c.defaultPrescription() == original.defaultPrescription()
-                                    && java.util.Objects.equals(c.bodyPartCode(), original.bodyPartCode()))
+                                    && java.util.Objects.equals(c.movementPattern(), original.get("movement_pattern"))
+                                    && c.defaultPrescription() == e.prescriptionType()
+                                    && java.util.Objects.equals(c.bodyPartCode(), original.get("code")))
                             .findFirst().orElseThrow(() -> new IllegalStateException("premisa: sin sustituto"));
                     lista.add(new PlanDraft.DraftExercise(sustituto.exerciseId(), e.prescriptionType(), e.plannedSets(),
                             e.plannedReps(), e.plannedDurationSeconds(), null, e.restSeconds(), null));

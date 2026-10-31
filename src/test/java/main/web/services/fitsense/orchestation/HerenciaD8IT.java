@@ -133,11 +133,26 @@ class HerenciaD8IT {
         long plan = a.plan();
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
         plan = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2)).orElseThrow();   // copia exenta
+        long medido = plan;
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
         var r = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
-        assertTrue(r.isEmpty(), "volver a publicar el viernes que dolio no es una solucion segura");
-        assertEquals("NO_FACTIBLE", ultimo(u).get("status"));
-        assertNotNull(ultimo(u).get("rejection_reason"));
+        // P-03 (31/10/2026): la IA (que devuelve el viernes igual) se rechaza tres veces; el respaldo ya no deja
+        // la semana sin plan: sustituye de forma determinista TODO lo del viernes que dolio (dolor sin identificar).
+        assertTrue(r.isPresent(), "P-03: alternativa segura en el mismo ciclo");
+        // Nivel 1 (RESPALDO con sustitucion) o, si esa semana no pasa (aqui V20 del viernes acortado), nivel 2:
+        // NO_FACTIBLE en V32 y la semana regenerada con reglas en el mismo ciclo.
+        var estado = String.valueOf(ultimo(u).get("status"));
+        assertTrue(estado.equals("RESPALDO") || (estado.equals("NO_FACTIBLE") && jdbc.queryForObject("SELECT count(*)"
+                + " FROM safe_regeneration_attempts WHERE user_id = ? AND outcome = 'PUBLICADO' AND resulting_plan_id = ?",
+                Integer.class, u, r.get()) == 1), estado);
+        var viernesQueDolio = jdbc.queryForList("SELECT pwe.exercise_id FROM planned_workout_exercises pwe JOIN"
+                + " planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND"
+                + " pw.skip_reason = 'PAIN_OR_DISCOMFORT'", Long.class, medido);
+        assertFalse(viernesQueDolio.isEmpty());
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises pwe JOIN planned_workouts pw"
+                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pwe.exercise_id = ANY(?)",
+                Integer.class, r.get(), viernesQueDolio.toArray(new Long[0])),
+                "volver a publicar el viernes que dolio no es una solucion segura");
         assertSinViolaciones();
     }
 

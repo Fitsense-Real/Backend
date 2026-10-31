@@ -132,7 +132,8 @@ class LinajeIntegridadIT {
         }
         System.out.println("LINAJE d8_copias planes=" + copias + " viernes=" + acortado + " min (piso " + piso + ")");
 
-        // C: sin IA -> RESPALDO. D: dolor sin IA -> NO_FACTIBLE (sin plan).
+        // C: sin IA -> RESPALDO. D: dolor sin IA -> P-03 (31/10/2026): sustitucion determinista SUST-SEG-1 en el
+        // mismo ciclo, RESPALDO con plan; antes NO_FACTIBLE sin plan. Su linaje V31/V32 tambien se audita aqui.
         configurarIa(false);
         long c = participante(GoalType.LOSE_WEIGHT);
         long c1 = planning.generateWeeklyPlan(c, S1, PlanAdjustment.none(), null, null).orElseThrow();
@@ -141,13 +142,19 @@ class LinajeIntegridadIT {
         long d = participante(GoalType.GAIN_MUSCLE);
         long d1 = planning.generateWeeklyPlan(d, S1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(d, d1, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
-        assertTrue(ciclo.runFor(d, S1, S1.plusWeeks(1)).isEmpty());
+        long d2 = ciclo.runFor(d, S1, S1.plusWeeks(1)).orElseThrow();
+        var dolieron = jdbc.queryForList("SELECT pwe.exercise_id FROM planned_workout_exercises pwe JOIN planned_workouts pw"
+                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pw.skip_reason ="
+                + " 'PAIN_OR_DISCOMFORT'", Long.class, d1);
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises pwe JOIN planned_workouts pw"
+                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pwe.exercise_id = ANY(?)",
+                Integer.class, d2, dolieron.toArray(new Long[0])), "P-03 no republica lo que dolio");
 
         var estados = jdbc.queryForList("SELECT user_id, status FROM plan_adaptation_attempts ORDER BY attempt_id")
                 .stream().map(r -> r.get("user_id") + ":" + r.get("status")).toList();
         System.out.println("LINAJE intentos " + estados);
         assertTrue(estados.containsAll(List.of(a + ":APLICADA", a + ":SIN_ORDEN", b + ":SIN_EFECTO",
-                c + ":RESPALDO", d + ":NO_FACTIBLE", e + ":APLICADA", e + ":SIN_ORDEN")), estados.toString());
+                c + ":RESPALDO", d + ":RESPALDO", e + ":APLICADA", e + ":SIN_ORDEN")), estados.toString());
         assertFalse(estados.contains(e + ":NO_FACTIBLE"), "D8: el acortado no debe dejar semanas sin plan");
 
         // 1. Sin violaciones; todos los pasos clasificados.
