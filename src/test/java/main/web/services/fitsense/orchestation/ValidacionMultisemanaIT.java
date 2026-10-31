@@ -146,7 +146,52 @@ class ValidacionMultisemanaIT {
     @org.junit.jupiter.params.ParameterizedTest(name = "{0} · {1}")
     @org.junit.jupiter.params.provider.MethodSource("casos")
     void secuencia(GoalType objetivo, Secuencia sec) throws Exception {
-        long u = participante(objetivo, FitnessLevel.INTERMEDIATE, 45);
+        recorrer(objetivo, sec, participante(objetivo, FitnessLevel.INTERMEDIATE, 45));
+    }
+
+    /**
+     * 4D v3.2 (31/10/2026): el perfil de U06 (GAIN_MUSCLE avanzado, gimnasio, lunes, miercoles,
+     * jueves, sabado y domingo, 60 min), cuyas sesiones LEGS y LOWER_BODY llevan relleno de zona
+     * pequena a 3x13. El motivo cae en el domingo (LOWER_BODY, con las 3x13) y el sabado queda sin
+     * registro para que la adherencia observada baje del 80 % y haya orden de adaptar. Las mismas
+     * comprobaciones que el resto de secuencias.
+     */
+    static java.util.stream.Stream<org.junit.jupiter.params.provider.Arguments> casosU06() {
+        var n = Dia.NADA;
+        return java.util.stream.Stream.of(
+                new Secuencia("U06 cumple todo", new Dia[][]{s(H, H, H, H, H), s(H, H, H, H, H)}, new String[]{"{}", "{}"}),
+                new Secuencia("U06 imprevisto", new Dia[][]{s(H, H, H, n, Dia.PUNTUAL), s(H, H, H, H, H)},
+                        new String[]{"{CONSERVAR}", "{}"}),
+                new Secuencia("U06 menos tiempo habitual", new Dia[][]{s(H, H, H, n, Dia.HABITUAL_NO_ALCANZA),
+                        s(H, H, H, H, H), s(H, H, H, H, H)}, new String[]{"{ACORTAR_O_REORGANIZAR}", "{}", "{}"}),
+                new Secuencia("U06 fatiga", new Dia[][]{s(H, H, H, n, Dia.FATIGA), s(H, H, H, H, H)},
+                        new String[]{"{REVISAR_CARGA_Y_RECUPERACION}", "{}"}),
+                new Secuencia("U06 dolor", new Dia[][]{s(H, H, H, H, Dia.PARCIAL_DOLOR), s(H, H, H, H, H)},
+                        new String[]{"{SEGURIDAD_ANTE_DOLOR}", "{}"}),
+                new Secuencia("U06 demasiado dificil", new Dia[][]{s(H, H, H, n, Dia.DIFICIL), s(H, H, H, H, H)},
+                        new String[]{"{VARIANTE_MAS_SENCILLA_O_CARGA}", "{}"}),
+                new Secuencia("U06 desmotivado", new Dia[][]{s(H, H, H, n, Dia.DESMOTIVADO), s(H, H, H, H, H)},
+                        new String[]{"{INVESTIGAR_CAMBIO_MINIMO}", "{}"}))
+                .map(org.junit.jupiter.params.provider.Arguments::of);
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest(name = "{0}")
+    @org.junit.jupiter.params.provider.MethodSource("casosU06")
+    void secuenciaU06(Secuencia sec) throws Exception {
+        long u = participanteU06();
+        // Premisa: el plan inicial lleva la serie adicional de 4D v3.2 en el domingo.
+        long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        assertTrue(jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises pwe JOIN planned_workouts pw"
+                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pwe.planned_sets = 3"
+                + " AND pwe.planned_reps = 13", Integer.class, plan) > 0, "sin 3x13 no hay nada que probar");
+        jdbc.update("DELETE FROM planned_workout_exercises WHERE planned_workout_id IN"
+                + " (SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?)", plan);
+        jdbc.update("DELETE FROM planned_workouts WHERE plan_id = ?", plan);
+        jdbc.update("DELETE FROM weekly_training_plans WHERE plan_id = ?", plan);
+        recorrer(GoalType.GAIN_MUSCLE, sec, u);
+    }
+
+    private void recorrer(GoalType objetivo, Secuencia sec, long u) throws Exception {
         long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
         var traza = new ArrayList<String>();
         var dolieron = new HashSet<Long>();
@@ -313,6 +358,18 @@ class ValidacionMultisemanaIT {
     // =======================================================================
     // Material
     // =======================================================================
+
+    private long participanteU06() {
+        String email = "multisemana-u06-" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
+        jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
+                + " VALUES (?, 'x', 'Prueba', now(), now())", email);
+        long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
+        perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1996, 1, 17), BiologicalSex.MALE,
+                new BigDecimal("180"), new BigDecimal("82"), null, FitnessLevel.ADVANCED, GoalType.GAIN_MUSCLE, "U06",
+                TrainingLocation.GYM, (short) 5, List.of((short) 1, (short) 3, (short) 4, (short) 6, (short) 7),
+                (short) 60, GIMNASIO, List.of(), "Ninguna", true, true, true, true, true));
+        return u;
+    }
 
     private long participante(GoalType objetivo, FitnessLevel nivel, int minutos) {
         String email = "multisemana" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";

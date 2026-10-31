@@ -116,6 +116,16 @@ public final class MvpDosePolicy {
      */
     public static final int SERIES_RELLENO = 2;
 
+    /**
+     * <b>4D v3.2 (decision del 31/10/2026, docs/FitSense/ADENDA_4D_v3_2.md).</b> El relleno de ZONA
+     * PEQUENA ({@link ClaseDosis#RELLENO_ZONA_PEQUENA}, 2x13) admite UNA serie mas, hasta
+     * {@value}, SOLO cuando sin ella la sesion no llega al minimo de V20. Con la dosis fija y el
+     * tope de 7 colocaciones, ninguna sesion LEGS, PULL o LOWER_BODY de 60 min que cumpla V15
+     * llegaba a 2520 s (campana MVP, usuario U06). Las otras tres clases no cambian, y V24
+     * rechaza la serie adicional cuando sobra.
+     */
+    public static final int SERIES_MAX_RELLENO_ZONA_PEQUENA = 3;
+
     private MvpDosePolicy() {}
 
     /** Las cuatro filas de la tabla de dosis de 4D v2 §2. */
@@ -192,7 +202,8 @@ public final class MvpDosePolicy {
             short reps = (short) (principal.reps()
                     + (zonaPequena ? EXTRA_REPS_ZONA_PEQUENA : 0));
             short series = relleno ? (short) SERIES_RELLENO : principal.series();
-            return new Dosis(series, reps, principal.descansoSegundos(), principal, relleno);
+            short seriesMax = relleno && zonaPequena ? (short) SERIES_MAX_RELLENO_ZONA_PEQUENA : series;
+            return new Dosis(series, seriesMax, reps, principal.descansoSegundos(), principal, relleno);
         }
 
         /**
@@ -209,9 +220,22 @@ public final class MvpDosePolicy {
         }
     }
 
-    /** Lo que se exige a una colocacion concreta. */
-    public record Dosis(short series, short reps, short descansoSegundos,
+    /**
+     * Lo que se exige a una colocacion concreta. {@code seriesMax} es igual a {@code series} salvo
+     * en el relleno de zona pequena (4D v3.2), donde la serie adicional solo se admite si hace
+     * falta para el minimo de V20.
+     */
+    public record Dosis(short series, short seriesMax, short reps, short descansoSegundos,
                         Capacidad capacidad, boolean relleno) {
+
+        public Dosis(short series, short reps, short descansoSegundos, Capacidad capacidad, boolean relleno) {
+            this(series, series, reps, descansoSegundos, capacidad, relleno);
+        }
+
+        /** Si la dosis tiene la serie adicional de 4D v3.2 ({@code series < seriesMax}). */
+        public boolean ampliable() {
+            return seriesMax > series;
+        }
 
         /** 4D v2 §5: el descanso se cobra DESPUES DE CADA serie, tambien la ultima. */
         public double costeSegundos(boolean porLado) {
@@ -220,9 +244,11 @@ public final class MvpDosePolicy {
         }
 
         public String describe() {
-            return "%dx%d, descanso %d s (%s)".formatted(series, reps, descansoSegundos,
+            return "%dx%d, descanso %d s (%s)%s".formatted(series, reps, descansoSegundos,
                     relleno ? "relleno, reps y descanso de " + capacidad.name()
-                            : capacidad.name());
+                            : capacidad.name(),
+                    ampliable() ? "; %dx%d solo si sin esa serie la sesion no llega al minimo de V20"
+                            .formatted(seriesMax, reps) : "");
         }
     }
 
@@ -306,11 +332,12 @@ public final class MvpDosePolicy {
     public static String describeTabla(int sessionMinutes) {
         var h = Capacidad.HYPERTROPHY;
         return ("4D v3 MVP GAIN_MUSCLE: estructural %dx%d descanso %d s · "
-                + "relleno 2x%d descanso %d s · zona pequena %s +%d reps · "
+                + "relleno 2x%d descanso %d s · zona pequena %s +%d reps (relleno hasta %d series solo para V20) · "
                 + "maximo %d colocaciones/dia · util %.0f %% del tiempo de sesion")
                 .formatted(h.series(), h.reps(), h.descansoSegundos(),
                         h.reps(), h.descansoSegundos(),
                         ZONAS_PEQUENAS.stream().sorted().toList(), EXTRA_REPS_ZONA_PEQUENA,
+                        SERIES_MAX_RELLENO_ZONA_PEQUENA,
                         maxColocaciones(sessionMinutes), FRACCION_UTIL * 100);
     }
 }

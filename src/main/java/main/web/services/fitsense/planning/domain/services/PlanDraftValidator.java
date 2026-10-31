@@ -558,7 +558,10 @@ public class PlanDraftValidator {
                         .formatted(workout.scheduledDate(), colocaciones, minutos, tope));
 
             double costeDia = 0;
-            for (var exercise : workout.exercises()) {
+            // 4D v3.2: colocaciones de relleno de zona pequena con la serie adicional.
+            var ampliadas = new ArrayList<Integer>();
+            for (int k = 0; k < workout.exercises().size(); k++) {
+                var exercise = workout.exercises().get(k);
                 if (exercise == null) continue;
 
                 // Abstencion de unidad: 4D v2 §4, regla 4.
@@ -591,12 +594,17 @@ public class PlanDraftValidator {
                 var origenAutorizado = conservation.autorizacionDe(workout.scheduledDate(), exercise);
                 boolean autorizada = origenAutorizado.isPresent()
                         && ProgresionDosisPolicy.admite4D(exigida, exercise, origenAutorizado.get());
-                costeDia += autorizada
+                // 4D v3.2: la serie adicional del relleno de zona pequena; si hacia falta se comprueba abajo.
+                boolean ampliada = !autorizada && exigida.ampliable() && series > exigida.series()
+                        && series <= exigida.seriesMax() && reps == exigida.reps()
+                        && descanso == exigida.descansoSegundos();
+                if (ampliada) ampliadas.add(k);
+                costeDia += autorizada || ampliada
                         ? new MvpDosePolicy.Dosis(series, reps, descanso, exigida.capacidad(), exigida.relleno())
                         .costeSegundos(false)
                         : exigida.costeSegundos(false);
 
-                if (!autorizada && (series != exigida.series() || reps != exigida.reps()
+                if (!autorizada && !ampliada && (series != exigida.series() || reps != exigida.reps()
                         || descanso != exigida.descansoSegundos()))
                     incumplimientos.add(("V24: el ejercicio %d del %s lleva %dx%d con %d s de descanso "
                             + "y 4D v2 exige %s. Ajusta la dosis exactamente a la de su capacidad; "
@@ -604,6 +612,29 @@ public class PlanDraftValidator {
                             .formatted(exercise.exerciseId(), workout.scheduledDate(),
                                     series, reps, descanso, exigida.describe()));
             }
+
+            // 4D v3.2: la serie adicional solo se admite si, sin ella, la sesion no llega al minimo
+            // de V20. Donde V20 no aplica (sesion autorizada a acortarse, o sin piso) no se exige.
+            long piso = minimumSessionSeconds(context);
+            if (!ampliadas.isEmpty() && piso > 0 && context.prescription() != null
+                    && !conservation.fechasConDuracionReducible().contains(workout.scheduledDate()))
+                for (int k : ampliadas) {
+                    var e = workout.exercises().get(k);
+                    var sin = new ArrayList<>(workout.exercises());
+                    sin.set(k, new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(),
+                            (short) (e.plannedSets() - 1), e.plannedReps(), e.plannedDurationSeconds(),
+                            e.targetLoadKg(), e.restSeconds(), e.notes()));
+                    long sinSerie = durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(
+                            workout.scheduledDate(), workout.focus(), workout.name(),
+                            workout.expectedDurationMinutes(), sin), context.prescription());
+                    if (sinSerie >= piso)
+                        incumplimientos.add(("V24: el ejercicio %d del %s lleva %dx%d y la serie adicional de "
+                                + "4D v3.2 solo se admite si sin ella la sesion no llega al minimo de V20: con "
+                                + "%dx%d dura unos %d s y el minimo es %d s. Usa %dx%d.")
+                                .formatted(e.exerciseId(), workout.scheduledDate(), e.plannedSets(),
+                                        e.plannedReps(), e.plannedSets() - 1, e.plannedReps(), sinSerie, piso,
+                                        e.plannedSets() - 1, e.plannedReps()));
+                }
 
             // 3: presupuesto del dia con la formula de 4D v2 §5.
             if (costeDia > presupuesto)

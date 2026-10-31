@@ -169,6 +169,10 @@ public final class PrescriptionPrinciples {
                 en constraints esta la dosis de esa clase
                 (constraints.dosis_por_clase): usa exactamente esa dosis en el
                 candidato que elijas, no la ajustes por tu cuenta.
+                Unica excepcion: si una clase trae series_max mayor que series,
+                puedes darle series_max a una colocacion de esa clase SOLO si,
+                sin esa serie, la sesion no llega a su duracion minima. Si la
+                sesion ya llega con series, la serie de mas se rechaza.
                 No pongas mas de constraints.max_colocaciones_dia ejercicios en
                 una sesion, y que el dia no supere constraints.minutos_utiles_dia:
                 suma el coste_minutos de las clases que uses.

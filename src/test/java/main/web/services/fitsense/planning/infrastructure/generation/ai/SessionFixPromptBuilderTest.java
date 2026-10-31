@@ -488,7 +488,7 @@ class SessionFixPromptBuilderTest {
                 List.of(new PlanInputSnapshot.SuggestedSession(
                         L2, "FULL_BODY", List.of("BACK", "CHEST"), 2, 3)),
                 List.of(new PlanInputSnapshot.ReduceVolumeCap(740L, 3, 10, "V19")),
-                List.of(new PlanInputSnapshot.DosisPorClase("BASICO", 3, 10, 90, 7.5)),
+                List.of(new PlanInputSnapshot.DosisPorClase("BASICO", 3, 10, 90, 3, 7.5)),
                 4, 38.25, List.of("PULL", "PUSH_H", "SQUAT", "HINGE"));
 
         var adjustment = new PlanInputSnapshot.Adjustment(

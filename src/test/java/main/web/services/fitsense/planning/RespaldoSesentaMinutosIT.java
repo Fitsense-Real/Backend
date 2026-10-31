@@ -5,6 +5,10 @@ import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyP
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
+import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
+import main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
+import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
 import main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy;
 import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
@@ -49,8 +53,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * pequena 2x13/90 ~262 s) y un tope de 7 colocaciones; V20 pide 2520 s; V15 pide dos grupos y, en
  * LOWER_BODY, ninguno por encima de la mitad. LEGS/PULL con dos grupos: 6 x 364 + 262 = 2448 s.
  * LOWER_BODY con la mitad: 3 x 364 + 4 x 262 = 2142 s. Ninguna composicion valida llega al piso.
- * Pendiente de decision (HALLAZGOS_Y_CORRECCIONES_MVP.md): se reproduce con
- * {@code -Dfitsense.pendientes=true}. Los otros tres objetivos son regresion normal.
+ * <p>
+ * 4D v3.2 (decision del 31/10/2026, opcion B, ADENDA_4D_v3_2.md): el relleno de zona pequena
+ * puede pasar de 2x13 a 3x13 solo cuando hace falta para V20. Resuelve 16 de las 24 combinaciones
+ * (U06 incluido), que pasan a ser regresion. Quedan 8 (GAIN_MUSCLE intermedio y avanzado EN CASA:
+ * el dia PULL es espalda 3x10 x 6 + biceps de relleno ESTANDAR 2x10, 2430 s de 2520) que la
+ * opcion B no cubre; siguen como reproduccion con {@code -Dfitsense.pendientes=true}.
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -80,7 +88,6 @@ class RespaldoSesentaMinutosIT {
     }
 
     @Test
-    @org.junit.jupiter.api.condition.EnabledIfSystemProperty(named = "fitsense.pendientes", matches = "true")
     @DisplayName("U06: GAIN_MUSCLE avanzado, gimnasio, 5 dias no seguidos, 60 min")
     void usuarioU06() {
         var fallos = new ArrayList<String>();
@@ -95,20 +102,36 @@ class RespaldoSesentaMinutosIT {
     }
 
     @Test
-    @org.junit.jupiter.api.condition.EnabledIfSystemProperty(named = "fitsense.pendientes", matches = "true")
-    @DisplayName("PENDIENTE: GAIN_MUSCLE a 60 min con 5 y 6 dias (conflicto 4D v3.1 / V15 / V20)")
+    @DisplayName("4D v3.2: GAIN_MUSCLE a 60 min con 5 y 6 dias publica plan en las 16 combinaciones que resuelve la opcion B")
     void gainMuscleSesentaMinutos() {
-        barrer(List.of(GoalType.GAIN_MUSCLE));
+        barrer(List.of(GoalType.GAIN_MUSCLE), c -> !pendienteCasa(c));
+    }
+
+    @Test
+    @org.junit.jupiter.api.condition.EnabledIfSystemProperty(named = "fitsense.pendientes", matches = "true")
+    @DisplayName("PENDIENTE: GAIN_MUSCLE intermedio/avanzado en casa a 60 min (dia PULL, biceps de relleno estandar)")
+    void gainMuscleCasaSesentaMinutos() {
+        barrer(List.of(GoalType.GAIN_MUSCLE), this::pendienteCasa);
+    }
+
+    private boolean pendienteCasa(Caso c) {
+        return c.objetivo() == GoalType.GAIN_MUSCLE && "CASA".equals(c.lugar()) && c.nivel() != FitnessLevel.BEGINNER;
     }
 
     private void barrer(List<GoalType> objetivos) {
+        barrer(objetivos, c -> true);
+    }
+
+    private void barrer(List<GoalType> objetivos, java.util.function.Predicate<Caso> incluir) {
         var fallos = new ArrayList<String>();
         int n = 0;
         for (var objetivo : objetivos)
             for (var nivel : FitnessLevel.values())
                 for (var d : List.of(dias(1, 2, 3, 4, 5), dias(1, 3, 4, 6, 7), dias(1, 2, 3, 4, 5, 6), dias(1, 2, 3, 5, 6, 7)))
                     for (var lugar : List.of("GYM", "CASA")) {
-                        generar(new Caso(objetivo, nivel, d, 60, lugar), fallos);
+                        var caso = new Caso(objetivo, nivel, d, 60, lugar);
+                        if (!incluir.test(caso)) continue;
+                        generar(caso, fallos);
                         n++;
                     }
         System.out.println("BARRIDO_60 " + (n - fallos.size()) + "/" + n + " con plan");
@@ -129,6 +152,50 @@ class RespaldoSesentaMinutosIT {
                     .orElseThrow(() -> new AssertionError("sin plan: " + caso));
         } catch (PlanGenerationFailedException e) {
             fallos.add(caso + " -> " + e.getMessage() + borrador(u));
+            return;
+        }
+        if (caso.objetivo() == GoalType.GAIN_MUSCLE) seriesAdicionales(caso, u, fallos);
+    }
+
+    /**
+     * 4D v3.2, independiente del validador: en el plan publicado, toda colocacion con mas series que
+     * su dosis 4D es relleno de zona pequena con 3x13, y es NECESARIA (con 2x13 la sesion baja del
+     * piso de V20). Las demas llevan exactamente su dosis.
+     */
+    private void seriesAdicionales(Caso caso, long u, List<String> fallos) {
+        var ctx = planComandos.prepare(new GenerateWeeklyPlanCommand(u, S1, null, true, null, null)).context();
+        Map<Long, CandidateExercise> elegibles = ctx.availableExercises().stream()
+                .collect(Collectors.toMap(CandidateExercise::exerciseId, Function.identity(), (a, b) -> a));
+        long piso = PlanDraftValidator.minimumSessionSeconds(ctx);
+        long plan = jdbc.queryForObject("SELECT plan_id FROM weekly_training_plans WHERE user_id = ?", Long.class, u);
+        for (var w : jdbc.queryForList("SELECT planned_workout_id, scheduled_date, focus_code,"
+                + " expected_duration_minutes FROM planned_workouts WHERE plan_id = ?", plan)) {
+            long id = ((Number) w.get("planned_workout_id")).longValue();
+            var ejercicios = jdbc.query("SELECT exercise_id, planned_sets, planned_reps, rest_seconds"
+                            + " FROM planned_workout_exercises WHERE planned_workout_id = ? ORDER BY exercise_order",
+                    (rs, i) -> new PlanDraft.DraftExercise(rs.getLong(1), PrescriptionType.SETS_REPS,
+                            rs.getShort(2), rs.getShort(3), null, null, rs.getShort(4), null), id);
+            var fecha = ((java.sql.Date) w.get("scheduled_date")).toLocalDate();
+            var foco = WorkoutFocus.valueOf((String) w.get("focus_code"));
+            for (int k = 0; k < ejercicios.size(); k++) {
+                var e = ejercicios.get(k);
+                var c = elegibles.get(e.exerciseId());
+                var d = MvpDosePolicy.dosisPara(MandatorySlot.of(c), c.bodyPartCode()).orElseThrow();
+                if (e.plannedSets() == d.series()) continue;
+                if (!d.ampliable() || e.plannedSets() != d.seriesMax()) {
+                    fallos.add(caso + " " + fecha + ": " + e.exerciseId() + " lleva " + e.plannedSets()
+                            + " series y su dosis es " + d.describe());
+                    continue;
+                }
+                var sin = new ArrayList<>(ejercicios);
+                sin.set(k, new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), d.series(),
+                        e.plannedReps(), null, null, e.restSeconds(), null));
+                long segundos = estimador.estimateSeconds(new PlanDraft.DraftWorkout(fecha, foco, "s",
+                        ((Number) w.get("expected_duration_minutes")).intValue(), sin), ctx.prescription());
+                if (segundos >= piso)
+                    fallos.add(caso + " " + fecha + ": la serie adicional de " + e.exerciseId()
+                            + " sobra (" + segundos + " s >= " + piso + " s)");
+            }
         }
     }
 
