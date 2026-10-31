@@ -192,19 +192,22 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
      * cambiar en silencio lo que la persona declaro seria inventar su disponibilidad.
      */
     static void requireMinutesForGoal(GoalType goalType, Short sessionMinutes) {
-        if (goalType == null || sessionMinutes == null) return;
+        if (goalType == null || sessionMinutes == null) return;   // los nulos los rechazan sus propias reglas
         if (!goalType.admiteMinutos(sessionMinutes))
             throw new DomainRuleViolationException(
-                    ("Para el objetivo %s la duracion por sesion debe estar entre %d y %d minutos;"
-                            + " indicaste %d.").formatted(goalType, goalType.minSessionMinutes(),
-                            GoalType.MAX_SESSION_MINUTES, sessionMinutes));
+                    ("La duracion por sesion debe estar entre %d y %d minutos (objetivo %s); indicaste %d.")
+                            .formatted(GoalType.MIN_SESSION_MINUTES, GoalType.MAX_SESSION_MINUTES, goalType,
+                                    sessionMinutes));
     }
 
     private void applyAvailability(Short daysPerWeek, List<Short> availableDays, Short sessionMinutes) {
         if (daysPerWeek == null || daysPerWeek < 1 || daysPerWeek > 7)
             throw new DomainRuleViolationException("Los dias por semana deben estar entre 1 y 7.");
-        if (sessionMinutes == null || sessionMinutes < 15 || sessionMinutes > 180)
-            throw new DomainRuleViolationException("La duracion por sesion debe estar entre 15 y 180 minutos.");
+        // P-01 (30-120) ya se comprobo antes con el objetivo; esto cubre una duracion nula.
+        if (sessionMinutes == null || sessionMinutes < GoalType.MIN_SESSION_MINUTES
+                || sessionMinutes > GoalType.MAX_SESSION_MINUTES)
+            throw new DomainRuleViolationException("La duracion por sesion debe estar entre %d y %d minutos."
+                    .formatted(GoalType.MIN_SESSION_MINUTES, GoalType.MAX_SESSION_MINUTES));
         if (availableDays == null || availableDays.isEmpty())
             throw new DomainRuleViolationException("Indica en que dias puedes entrenar.");
 

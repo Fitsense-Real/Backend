@@ -10,27 +10,26 @@ public enum GoalType {
     INCREASE_STRENGTH,
     GENERAL_FITNESS;
 
-    /** P-01: duracion maxima por sesion, igual para los cuatro objetivos. */
-    public static final int MAX_SESSION_MINUTES = 180;
-
     /**
-     * P-01 (politica aprobada, 31/10/2026): duracion MINIMA por sesion segun el objetivo.
+     * P-01 DEFINITIVA (orden de cierre del PR #16, 31/10/2026): los cuatro objetivos admiten exactamente el mismo
+     * rango de minutos por sesion, 30 a 120, configurado por la persona. Sustituye a la version anterior
+     * (15 en GAIN_MUSCLE e INCREASE_STRENGTH, 30 en LOSE_WEIGHT y GENERAL_FITNESS, 180 de maximo).
      * <p>
-     * Es un limite de ADMISION del perfil, no una garantia de factibilidad: un perfil admitido
-     * puede seguir sin plan por su equipamiento, sus restricciones o sus dias. Se fijo despues de
-     * la campana de estres, donde GENERAL_FITNESS y LOSE_WEIGHT a 15 min no caben en V4 con la
-     * composicion que exigen V15, V20 y V25. Los validadores de planificacion no cambian.
+     * Es un limite de ADMISION de {@code session_minutes}, no un maximo de la duracion real: V4 sigue admitiendo
+     * hasta {@code session_minutes x 1,15} (120 -> 138), y D8 sigue permitiendo una sesion legitimamente acortada
+     * por debajo de 30. Tampoco garantiza que exista un plan factible para cualquier combinacion de perfil.
      */
+    public static final int MIN_SESSION_MINUTES = 30;
+    public static final int MAX_SESSION_MINUTES = 120;
+
+    /** P-01: el minimo es el mismo para los cuatro objetivos; el metodo se conserva por claridad del contrato. */
     public int minSessionMinutes() {
-        return switch (this) {
-            case GAIN_MUSCLE, INCREASE_STRENGTH -> 15;
-            case LOSE_WEIGHT, GENERAL_FITNESS -> 30;
-        };
+        return MIN_SESSION_MINUTES;
     }
 
-    /** Si una duracion declarada cabe en el rango admitido para este objetivo. */
+    /** Si una duracion declarada cabe en el rango admitido (30-120, igual para todos los objetivos). */
     public boolean admiteMinutos(int minutos) {
-        return minutos >= minSessionMinutes() && minutos <= MAX_SESSION_MINUTES;
+        return minutos >= MIN_SESSION_MINUTES && minutos <= MAX_SESSION_MINUTES;
     }
 
     /** Solo estas dos usan target_weight_kg. */

@@ -15,9 +15,9 @@ public class ProfileOutsideGoalDurationException extends DomainRuleViolationExce
     private final Long userId;
 
     public ProfileOutsideGoalDurationException(Long userId, String goalType, int minutos) {
-        super(("%s: el perfil del usuario %d declara %d min por sesion y el objetivo %s admite de %d a %d."
-                + " El perfil no se modifica; no se genera un plan que no puede cumplir sus reglas.")
-                .formatted(CODIGO, userId, minutos, goalType, DuracionPorObjetivoPolicy.minimo(goalType),
+        super(("%s: el perfil del usuario %d (objetivo %s) declara %d min por sesion y P-01 admite de %d a %d."
+                + " El perfil esta congelado y no se modifica; no se genera un plan nuevo para el.")
+                .formatted(CODIGO, userId, goalType, minutos, DuracionPorObjetivoPolicy.MINIMO,
                         DuracionPorObjetivoPolicy.MAXIMO));
         this.userId = userId;
     }
