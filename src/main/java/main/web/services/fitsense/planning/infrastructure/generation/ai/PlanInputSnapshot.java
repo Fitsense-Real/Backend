@@ -404,6 +404,12 @@ public record PlanInputSnapshot(
             @JsonProperty("reps") int reps,
             @JsonProperty("descanso_segundos") int descansoSegundos,
             /**
+             * 4D v3.2: hasta cuantas series admite la clase. Igual a {@code series} salvo en
+             * RELLENO_ZONA_PEQUENA, donde la serie adicional solo vale si sin ella la sesion no
+             * llega al minimo de V20 (y V24 la rechaza si sobra).
+             */
+            @JsonProperty("series_max") int seriesMax,
+            /**
              * Coste de 4D v2 §5: {@code series x (reps x 3 s + descanso)}, en
              * minutos. Viaja ya calculado para que comprobar
              * {@code minutos_utiles_dia} sea una SUMA y no una formula.
@@ -780,7 +786,7 @@ public record PlanInputSnapshot(
                 .map(clase -> {
                     var dosis = clase.dosis();
                     return new DosisPorClase(clase.name(), dosis.series(), dosis.reps(),
-                            dosis.descansoSegundos(), dosis.costeSegundos(false) / 60.0);
+                            dosis.descansoSegundos(), dosis.seriesMax(), dosis.costeSegundos(false) / 60.0);
                 })
                 .toList();
     }

@@ -212,10 +212,12 @@ public final class CapabilityPrescriptionPolicy {
 
         if (capacidad == Capability.HYPERTROPHY) {
             var d = MvpDosePolicy.dosisPara(MandatorySlot.of(c), c.bodyPartCode()).orElseThrow();
-            // GAIN_MUSCLE: 4D v3 tal cual, sin tocar nada y sin ampliacion. Los
-            // demas objetivos conservan el tope de dos series para principiantes.
+            // GAIN_MUSCLE: 4D v3 tal cual; desde 4D v3.2, solo el relleno de zona pequena admite una
+            // serie mas (seriesMax), y solo la usa la ampliacion para el minimo de V20. Los demas
+            // objetivos conservan el tope de dos series para principiantes.
             if (MvpDosePolicy.aplicaA(goalType))
-                return Optional.of(new Dosis(capacidad, tipo, d.series(), d.reps(), null, d.descansoSegundos(), null));
+                return Optional.of(new Dosis(capacidad, tipo, d.series(), d.seriesMax(), d.reps(), null,
+                        d.descansoSegundos(), null));
             short series = principiante ? (short) Math.min(d.series(), 2) : d.series();
             return Optional.of(ampliable(capacidad, tipo, series, reps(d.reps(), c, fitnessLevel, limites),
                     d.descansoSegundos()));

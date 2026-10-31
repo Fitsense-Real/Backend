@@ -129,7 +129,11 @@ class CampanaMvp8UsuariosIT {
     @Autowired JdbcTemplate jdbc;
 
     static final boolean IA = !"false".equals(System.getProperty("fitsense.campana.ia"));
-    static final Path SALIDA = Path.of("target", "campana-mvp", IA ? "real" : "ensayo-seco");
+    /** Solo estos usuarios (p. ej. {@code U06}); vacio = los ocho. */
+    static final Set<String> SOLO = Arrays.stream(System.getProperty("fitsense.campana.usuarios", "").split(","))
+            .map(String::strip).filter(x -> !x.isEmpty()).collect(Collectors.toSet());
+    static final Path SALIDA = Path.of("target", "campana-mvp", (IA ? "real" : "ensayo-seco")
+            + (SOLO.isEmpty() ? "" : "-" + String.join("-", new TreeSet<>(SOLO))));
     static final int MAX_LLAMADAS = Integer.getInteger("fitsense.campana.max-llamadas", 80);
     static final int HILOS = Integer.getInteger("fitsense.campana.hilos", 4);
     static final int SEMANAS = 8;
@@ -405,7 +409,7 @@ class CampanaMvp8UsuariosIT {
         Files.createDirectories(SALIDA);
         espiar();
         long inicio = System.currentTimeMillis();
-        var lista = usuariosDeLaOrden();
+        var lista = usuariosDeLaOrden().stream().filter(u -> SOLO.isEmpty() || SOLO.contains(u.id())).toList();
         var pool = Executors.newFixedThreadPool(HILOS);
         var futuros = new ArrayList<Future<Resultado>>();
         for (int i = 0; i < lista.size(); i++) {

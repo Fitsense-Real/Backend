@@ -222,6 +222,11 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // toca la dosis. Si no hay estructural disponible, el dia se queda
             // corto y V20 lo dira: es un dato, no algo que tapar.
             if (dosisFijada && minimumMinutes > 0 && context.prescription() != null) {
+                // 4D v3.2: antes del repaso, la serie adicional del relleno de zona pequena, de una en
+                // una y solo mientras falte para el piso. Conserva los grupos que el repaso quitaria.
+                var date = dates.get(i);
+                ampliarRellenoZonaPequena(picked, exercises, () -> segundosDe(date, focus, sessionMinutes,
+                        exercises, context) < PlanDraftValidator.minimumSessionSeconds(context), presupuestoDia);
                 sustituirRellenoPorEstructural(selector, focus, picked, exercises, prescription,
                         context, dates.get(i), sessionMinutes, minimumMinutes, presupuestoDia);
             }
@@ -355,6 +360,12 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 var reemplazo = selector.estructuralQueSustituyaA(focus, picked, actual);
                 if (reemplazo.isEmpty()) continue;
 
+                // V15: el cambio no puede dejar la sesion con menos de dos grupos del enfoque si
+                // los tenia (a 60 min dejaba los dias LEGS solo con upper legs).
+                var conCambio = new ArrayList<>(picked);
+                conCambio.set(k, reemplazo.get());
+                if (gruposDelEnfoque(focus, conCambio) < Math.min(2, gruposDelEnfoque(focus, picked))) continue;
+
                 var nueva = toDraftExercise(reemplazo.get(), prescription, context);
                 double conElCambio = costeSegundos4D(exercises)
                         - costeSegundos4D(exercises.get(k)) + costeSegundos4D(nueva);
@@ -368,6 +379,30 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             }
         }
         return hechas;
+    }
+
+    private static long gruposDelEnfoque(WorkoutFocus focus, List<CandidateExercise> lista) {
+        return lista.stream().map(CandidateExercise::bodyPartCode).filter(focus::accepts).distinct().count();
+    }
+
+    /**
+     * 4D v3.2: sube el relleno de zona pequena (2x13) a su serie adicional, de una colocacion en
+     * una y en orden, solo mientras la sesion no llegue al piso de V20 y sin salir del presupuesto
+     * de 4D §5. Las demas colocaciones no se tocan: su dosis sigue fija.
+     */
+    private void ampliarRellenoZonaPequena(List<CandidateExercise> picked, List<PlanDraft.DraftExercise> exercises,
+                                           java.util.function.BooleanSupplier falta, double presupuestoSegundos) {
+        for (int k = 0; k < exercises.size() && falta.getAsBoolean(); k++) {
+            var d = MvpDosePolicy.dosisPara(MandatorySlot.of(picked.get(k)), picked.get(k).bodyPartCode()).orElse(null);
+            var e = exercises.get(k);
+            if (d == null || !d.ampliable() || e.prescriptionType() != PrescriptionType.SETS_REPS
+                    || e.plannedSets() == null || e.plannedSets() != d.series()) continue;
+            var ampliada = new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), d.seriesMax(),
+                    e.plannedReps(), e.plannedDurationSeconds(), e.targetLoadKg(), e.restSeconds(), e.notes());
+            if (costeSegundos4D(exercises) - costeSegundos4D(e) + costeSegundos4D(ampliada) > presupuestoSegundos)
+                continue;
+            exercises.set(k, ampliada);
+        }
     }
 
     /** Estructural o resistido de REPETICIONES: 4D v3 no tiene dosis de hipertrofia para la duracion. */
