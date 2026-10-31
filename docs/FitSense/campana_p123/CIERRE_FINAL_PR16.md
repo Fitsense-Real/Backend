@@ -100,7 +100,7 @@ Documentos:
 
 **17. ¿Las pruebas y el CI quedaron en verde?** Sí en local: `mvn verify -Pintegration` BUILD SUCCESS. El estado del CI está en el PR.
 
-**18. ¿Cuántas pruebas pasaron y cuántas se omitieron?** Unitarias: 935 pasaron, 0 omitidas. Integración: 458 pasaron y 32 omitidas (opt-in). Antes eran 432 + 30: hay 26 de integración nuevas (10 de `GeneradorReglasCasoAIT`, 2 de concurrencia de V43 y otras de la batería actual), y `FactibilidadDuracionIT` queda omitida por ser opt-in. El método de recuento es el de Maven; no es comparable con la suma de .txt de 816.
+**18. ¿Cuántas pruebas pasaron y cuántas se omitieron?** Unitarias: 935 pasaron, 0 omitidas. Integración: 458 pasaron y 32 omitidas (opt-in). Antes eran 432 + 30: este PR añade 12 de integración (10 de `GeneradorReglasCasoAIT` y 2 de concurrencia de V43); el resto de la diferencia (26 − 12) no está desglosado y puede deberse a un método de recuento distinto en la cifra anterior, y `FactibilidadDuracionIT` queda omitida por ser opt-in. El método de recuento es el de Maven; no es comparable con la suma de .txt de 816.
 
 **19. ¿Cuántas llamadas reales a Replicate se hicieron?** **0.** Todas las ejecuciones usan `fitsense.ai.enabled=false` y el log no contiene ninguna petición a `api.replicate.com`.
 
