@@ -38,6 +38,13 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
     public static WeeklyTrainingPlanResource toResourceFromEntity(
             WeeklyTrainingPlan entity, Map<Long, EligibleExerciseView> catalogo,
             EffortGuidance guidance, Map<Long, String> conflictos) {
+        return toResourceFromEntity(entity, catalogo, guidance, conflictos, null);
+    }
+
+    public static WeeklyTrainingPlanResource toResourceFromEntity(
+            WeeklyTrainingPlan entity, Map<Long, EligibleExerciseView> catalogo,
+            EffortGuidance guidance, Map<Long, String> conflictos,
+            main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcome adaptation) {
 
         var workouts = entity.workoutsView().stream()
                 .map(workout -> toWorkoutResource(workout, catalogo, conflictos))
@@ -60,7 +67,8 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
                 workouts,
                 guidance == null ? null : new EffortGuidanceResource(
                         guidance.repsInReserve(), guidance.setsRepsText(),
-                        guidance.durationText(), guidance.loadText()));
+                        guidance.durationText(), guidance.loadText()),
+                adaptation);
     }
 
     public static PlanSummaryResource toSummaryFromEntity(WeeklyTrainingPlan entity) {

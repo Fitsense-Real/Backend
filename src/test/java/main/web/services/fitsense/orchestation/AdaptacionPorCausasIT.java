@@ -83,6 +83,7 @@ class AdaptacionPorCausasIT {
     @Autowired WorkoutSessionCommandService sesiones;
     @Autowired TrainingPlanController planes;
     @Autowired UserRepository usuarios;
+    @Autowired org.springframework.transaction.PlatformTransactionManager tx;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
 
@@ -130,6 +131,8 @@ class AdaptacionPorCausasIT {
         for (int i = 0; i < a.size(); i++) assertEquals(a.get(i).getValue(), b.get(i).getValue(), "sesion " + i);
         assertEquals(estructura(w1, 7), estructura(w2, 0), "mismas fechas +7 y mismos minutos");
         assertEquals(perfilAntes, perfil(u), "una omision no cambia la disponibilidad del perfil");
+        // Lo que ve la app (orden de cierre del MVP, §11): conservacion deliberada, no una adaptacion.
+        assertEquals("CONSERVACION_DELIBERADA", adaptacion(u, w2).resultado());
         assertSinViolaciones();
     }
 
@@ -146,6 +149,9 @@ class AdaptacionPorCausasIT {
         assertEquals("APLICADA", ev.get("status"), String.valueOf(ev));
         var viernes = estructura(w2, 0).get(2).split("\\|");
         assertTrue(Integer.parseInt(viernes[2]) <= m, "el viernes dura " + viernes[2] + " y se declararon " + m);
+        var visto = adaptacion(u, w2);
+        assertEquals("ADAPTACION_APLICADA", visto.resultado());
+        assertEquals("APLICADA", visto.sesiones().get(0).resultado());
         var a = semana(w1);
         var b = semana(w2);
         for (int i = 0; i < 2; i++) assertEquals(a.get(i).getValue(), b.get(i).getValue(), "lunes y miercoles iguales");
@@ -168,7 +174,29 @@ class AdaptacionPorCausasIT {
         var a = semana(w1);
         var b = semana(w2);
         for (int i = 0; i < a.size(); i++) assertEquals(a.get(i).getValue(), b.get(i).getValue(), "se conserva todo");
+        // La app no puede presentar la sesion de siempre como ajustada a M: ve ACORTAMIENTO_IMPOSIBLE y la cota.
+        var visto = adaptacion(u, w2);
+        assertEquals("ACORTAMIENTO_IMPOSIBLE", visto.resultado(), String.valueOf(visto));
+        assertEquals("SIN_EFECTO", visto.sesiones().get(0).resultado(), "la sesion senalada no cambio");
+        assertTrue(visto.motivos().get(0).contains("no baja de"), String.valueOf(visto.motivos()));
+        assertEquals(java.util.List.of(visto), planes.adaptations(principal(u)).getBody().stream()
+                .filter(x -> x.resultingPlanId() != null && x.resultingPlanId() == w2).toList());
         assertSinViolaciones();
+    }
+
+    /** El resultado de la adaptacion tal como lo devuelve la API del plan publicado. */
+    private main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcome adaptacion(long u, long plan) {
+        // Como en una peticion HTTP (open-in-view): las colecciones del plan se leen dentro de una sesion.
+        var r = new org.springframework.transaction.support.TransactionTemplate(tx).execute(t ->
+                planes.byId(principal(u), plan).getBody());
+        assertNotNull(r);
+        assertNotNull(r.adaptation(), "una semana adaptada declara su resultado");
+        return r.adaptation();
+    }
+
+    private main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl principal(long u) {
+        return main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl.build(
+                usuarios.findById(u).orElseThrow());
     }
 
     @Test

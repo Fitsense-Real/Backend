@@ -223,4 +223,20 @@ public class PlanAdaptationAttempt {
     public String getConservationReport() {
         return conservationReport;
     }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public LocalDate getNewWeekStartDate() {
+        return newWeekStartDate;
+    }
+
+    public short getAiCalls() {
+        return aiCalls;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
 }

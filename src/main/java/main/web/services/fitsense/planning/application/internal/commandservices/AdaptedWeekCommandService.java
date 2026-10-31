@@ -379,7 +379,15 @@ public class AdaptedWeekCommandService {
         if (imposible.isPresent()) {
             log.warn("FACTIBILIDAD_PREVIA usuario {}: sin llamada a la IA, imposibilidad demostrada · {}",
                     context.userId(), imposible.get());
-            return sinPropuestaUsable(context, derivation, elegibles, exclusiones, (short) 0);
+            // Orden de cierre del MVP (§11-12): el motivo queda en la evidencia V32, no solo en el log,
+            // para que la API distinga «imposible» de «la IA no estaba disponible». La semana es la misma.
+            var respaldo = sinPropuestaUsable(context, derivation, elegibles, exclusiones, (short) 0);
+            var r = respaldo.resultado();
+            var notas = new java.util.ArrayList<>(r.conservacion().correccionesDelBackend());
+            notas.add(main.web.services.fitsense.planning.domain.services.FactibilidadPreviaIA.NOTA + imposible.get());
+            return new Intento(new AdaptedWeekResult(r.estado(), r.motivo(), r.semana(), r.source(),
+                    r.conservacion().conCorreccionesDelBackend(notas), r.problemas()), respaldo.snapshotJson(),
+                    respaldo.llamadas());
         }
 
         var full = PlanInputSnapshot.of(context);

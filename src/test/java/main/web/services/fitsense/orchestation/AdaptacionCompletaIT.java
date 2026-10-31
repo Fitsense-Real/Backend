@@ -267,6 +267,10 @@ class AdaptacionCompletaIT {
         assertEquals("NO_FACTIBLE", ev.get("status"));
         assertNull(ev.get("resulting_plan_id"));
         assertTrue(String.valueOf(ev.get("rejection_reason")).contains("dolor"), String.valueOf(ev));
+        // La semana no tiene plan nuevo; la app sabe por que con /users/me/plan/adaptations (orden de cierre, §11).
+        var visto = planes.adaptations(UserDetailsImpl.build(usuarios.findById(u).orElseThrow())).getBody();
+        assertEquals("NO_FACTIBLE_POR_SEGURIDAD", visto.get(visto.size() - 1).resultado(), String.valueOf(visto));
+        assertNull(visto.get(visto.size() - 1).resultingPlanId());
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
                 + " AND week_start_date = ?", Integer.class, u, NUEVA));
     }
