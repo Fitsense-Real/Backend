@@ -612,7 +612,7 @@ public class ProgresionResolver {
     }
 
     /** El rango de D-P3 para la dosis actual, o null si no se reconoce su dosis base. */
-    private record Rango(MvpDosePolicy.Dosis exigida4D, CapabilityPrescriptionPolicy.Dosis capacidad,
+    record Rango(MvpDosePolicy.Dosis exigida4D, CapabilityPrescriptionPolicy.Dosis capacidad,
                          short seriesMax, short repsMax, int minReps, int maxReps) {
         boolean admite(PlanDraft.DraftExercise n) {
             return exigida4D != null
@@ -621,7 +621,7 @@ public class ProgresionResolver {
         }
     }
 
-    private static Rango rango(PlanDraft.DraftExercise e, CandidateExercise c, PlanGenerationContext ctx) {
+    static Rango rango(PlanDraft.DraftExercise e, CandidateExercise c, PlanGenerationContext ctx) {
         if (c == null || ctx.profile() == null) return null;
         String objetivo = ctx.profile().goalType();
         String nivel = ctx.profile().fitnessLevel();
@@ -656,7 +656,7 @@ public class ProgresionResolver {
     }
 
     /** La dosis inicial EXACTA de su clase para el retirado (D-P8), con su carga sugerida de entonces. */
-    private static PlanDraft.DraftExercise exacta(PlannedWorkoutExercise x, CandidateExercise c,
+    static PlanDraft.DraftExercise exacta(PlannedWorkoutExercise x, CandidateExercise c,
                                                  PlanGenerationContext ctx) {
         if (ctx.profile() == null) return null;
         String objetivo = ctx.profile().goalType();
