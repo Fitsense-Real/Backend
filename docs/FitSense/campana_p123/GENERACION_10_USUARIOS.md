@@ -38,10 +38,11 @@
   - No aparecen en ninguno de sus planes.
 - **Restricciones:** ningún plan contiene un ejercicio que choque con las banderas declaradas; lo comprueba el filtro del catálogo y V1.
 
-## P-01 en la cohorte
+## P-01 en la cohorte (versión definitiva, 30–120 para los cuatro objetivos)
 
-- Los diez perfiles fueron admitidos por P-01.
-- Prueba negativa separada: **N07_NEG** (GENERAL_FITNESS, 15 min). Se rechazó en el alta, antes de generar: *«Para el objetivo GENERAL_FITNESS la duración por sesión debe estar entre 30 y 180 minutos; indicaste 15.»* No se creó ningún perfil.
+- Los diez perfiles (30–60 min) están dentro de 30–120 y fueron admitidos.
+- La generación es **idéntica** con P-01 definitiva: la campaña repetida no cambia ningún plan inicial.
+- Prueba negativa separada: **N07_NEG** (GENERAL_FITNESS, 15 min). Se rechazó en el alta, antes de generar: *«La duración por sesión debe estar entre 30 y 120 minutos (objetivo GENERAL_FITNESS); indicaste 15.»* No se creó ningún perfil.
 
 ## Regresiones de generación
 
@@ -49,7 +50,9 @@ Se ejecutan en la batería del PR (`mvn verify -Pintegration`), con la generaci�
 - `GeneracionPorObjetivoIT` y las de referencia V35–V40;
 - V2, V4, V15, V17, V20, V23, V24 y V25;
 - 4D v3.2/v3.3 (`Adenda4Dv32IT`);
-- P-01 (`PoliticaP01DuracionMinimaTest`, `PoliticasP123IT`);
+- P-01 definitiva (`PoliticaP01DuracionMinimaTest`: 15, 29, 30, 60, 119, 120, 121 y 180 × 4 objetivos, más la tolerancia V4; `PoliticasP123IT`);
 - las exclusiones por dolor en una generación nueva (`PoliticasP123IT.dolorIdentificadoPersisteCincoSemanas`).
 
-**Hallazgo de P-01:** INCREASE_STRENGTH intermedio de 15 min en gimnasio no tiene plan, porque V4 rechaza sesiones de 18 min con un techo de 17 (`PoliticasP123IT.cuatroObjetivosEnSuMinimo`). Ver el cierre: es un límite de admisión, no una garantía.
+**P-01 definitiva:**
+- El hallazgo de la primera versión (INCREASE_STRENGTH de 15 min sin plan, porque V4 rechaza 18 min con un techo de 17) **desaparece**: ya no se admiten 15 min.
+- `PoliticasP123IT.cuatroObjetivosEnLosLimites` genera los cuatro objetivos en 30 y en 120: el techo V4 se respeta (34 y 138) y no hay sesiones iniciales bajo el piso de V20.

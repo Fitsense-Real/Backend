@@ -44,6 +44,15 @@
 | Rechazada por una restricción incompatible | `reactivacionRechazadaPorSeguridad` | `REACTIVACION_RECHAZADA_POR_SEGURIDAD` (brazos por encima de la cabeza no permitidos); sigue ACTIVA |
 | El reactivado sigue sujeto a los validadores | Diseño | Solo vuelve al conjunto elegible; V1–V25 y V8C como cualquier candidato |
 
+## 2 bis. Concurrencia y orden (cierre del PR #16)
+
+| Caso | Prueba | Resultado |
+|---|---|---|
+| Dos reactivaciones simultáneas del mismo ejercicio | `PoliticasP123IT.reactivacionesSimultaneas` | Una 200 y otra 404; una sola fila REACTIVADA (bloqueo de fila) |
+| Dolor nuevo después de reactivar | `PoliticasP123IT.dolorNuevoTrasReactivar` | Evento nuevo, otra vez ACTIVA; la reactivación anterior sigue constando |
+| Registrar dos veces la misma semana | Ídem, y `MigracionV43IT` | Sin duplicados (`ON CONFLICT DO NOTHING`), también ante carreras |
+| GET sin token, sin exclusiones o con exclusiones propias | `PoliticasP123IT.reactivacion` | 401; `[]`; solo las propias |
+
 ## 3. Aislamiento por usuario
 
 - Las consultas filtran siempre por `user_id`.

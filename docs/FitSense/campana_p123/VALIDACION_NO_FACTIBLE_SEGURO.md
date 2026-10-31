@@ -28,6 +28,20 @@
 | La IA añade trabajo ante dolor | `CorreccionesReplicate*IT.c5DolorAnadeMas` | La propuesta con más trabajo se rechaza 3 veces y nunca se publica. El nivel 1 publica con el mismo número de ejercicios y sin subir el volumen |
 | D8 y dolor | `HerenciaD8IT.dolorNoAprovechaD8` | El nivel 1 no pasa V20 en el viernes acortado; el nivel 2 publica con reglas sin lo que dolió |
 
+## 2 bis. Auditoría del nivel 2 (cierre del PR #16)
+
+**Defecto confirmado y corregido:** con dosis previamente reducidas (fatiga) o tras un ACORTAR, la regeneración con dosis base subía el trabajo de la semana medida:
+- LOSE_WEIGHT: 102 → 108 repeticiones;
+- D8: 450 → 486.
+
+Ahora, si la regeneración sube las repeticiones o los segundos totales, el nivel 2 no publica: queda NO_FACTIBLE con el motivo y se conserva P-02. Detalle en `AUDITORIA_P03_NIVEL2.md`.
+
+| Prueba nueva | Resultado |
+|---|---|
+| `ProgresionIT.p03Nivel2TrasReduccion` (3 objetivos) | Nunca se publica más trabajo; LOSE_WEIGHT queda NO_FACTIBLE |
+| `ProgresionIT.p03Nivel2TrasProgresion` | Sin paso nuevo, sin V31 falso, sin el excluido, idempotente |
+| `HerenciaD8IT.dolorNoAprovechaD8` | NO_FACTIBLE («sube el trabajo»); exclusión activa |
+
 ## 3. Garantías
 
 - **P-02 se mantiene activo en P-03:**
@@ -42,4 +56,4 @@
   - la consulta de linaje (`linaje_v31_v32.sql`) no encuentra violaciones (`LinajeIntegridadIT` incluye ahora un caso de P-03).
 - **Dosis:**
   - nivel 1: la de SUST-SEG-1, sin subir el trabajo de la sesión del dolor;
-  - nivel 2: las dosis base de 4D, revalidadas por V24.
+  - nivel 2: las dosis base de 4D, revalidadas por V24, y **nunca más trabajo total que la semana medida**.

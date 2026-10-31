@@ -2,6 +2,11 @@
 
 **Fecha:** 31/10/2026.
 **Rama:** `politicas-p123`, creada desde `generation` en `7af6ad8` (PR #15), con CI verde en ese commit.
+**Actualizada** con la orden de cierre del PR #16:
+- P-01 definitiva (30–120 min);
+- C-2 (herencia limitada de D8);
+- el guardia del nivel 2 de P-03;
+- la auditoría de V43 y de la API.
 **Entorno:** PostgreSQL efímero (Testcontainers).
 - No se tocaron Neon, Railway, Flutter ni `main`.
 - No se desplegó nada.
@@ -36,7 +41,8 @@ Ejecuté la batería completa (`mvn verify -Pintegration`) sobre `generation` an
 ### Lo que no se modificó
 
 - Los cuatro objetivos.
-- V8C, V1–V25 y 4D v3.2/v3.3.
+- V1–V25 (V20 y V4 incluidos) y 4D v3.2/v3.3.
+- V8C, salvo **C-2**: la única modificación, aprobada en el cierre del PR #16. Es una herencia limitada de D8 por identidad (`CIERRE_C2_D8_V8C.md`).
 - ADAPT-2.
 - Los límites de progresión y las reglas de reincorporación.
 - La fórmula de adherencia.
@@ -44,34 +50,55 @@ Ejecuté la batería completa (`mvn verify -Pintegration`) sobre `generation` an
 - La inmutabilidad del perfil.
 - P-04: no hay ningún mecanismo para cambiar los minutos ni M.
 
-## 1. P-01: duración mínima por objetivo
+## 1. P-01: duración por sesión, versión definitiva (30–120 min)
+
+**Actualización del cierre del PR #16:** sustituye a la primera versión de P-01 (15/30 según el objetivo y 180 de máximo).
 
 | Objetivo | Mínimo | Máximo |
 |---|---:|---:|
-| GAIN_MUSCLE e INCREASE_STRENGTH | 15 | 180 |
-| LOSE_WEIGHT y GENERAL_FITNESS | 30 | 180 |
+| GAIN_MUSCLE | 30 | 120 |
+| INCREASE_STRENGTH | 30 | 120 |
+| LOSE_WEIGHT | 30 | 120 |
+| GENERAL_FITNESS | 30 | 120 |
 
-**Dónde se aplica:** en el constructor y en `update` de `UserProfile`, antes del rango general.
+No queda ninguna distinción entre objetivos (`GoalType.MIN_SESSION_MINUTES = 30` y `MAX_SESSION_MINUTES = 120`; `DuracionPorObjetivoPolicy` repite la tabla en planificación).
 
-**Qué pasa fuera de rango:** se rechaza con HTTP 422, el contrato de error de siempre (`DomainRuleViolationException`). El mensaje nombra el objetivo y el rango, por ejemplo: *«Para el objetivo GENERAL_FITNESS la duración por sesión debe estar entre 30 y 180 minutos; indicaste 15.»*
+**Dónde se aplica:**
+- en el alta del perfil y en la edición permitida antes de congelarlo (`UserProfile`), antes del rango general;
+- en la admisión de duración;
+- en la verificación de perfiles históricos (`prepare()`).
 
-El valor declarado nunca se corrige.
+**Qué pasa fuera de rango:** HTTP 422, el contrato de error de siempre (`DomainRuleViolationException`), con un mensaje único: *«La duración por sesión debe estar entre 30 y 120 minutos (objetivo GENERAL_FITNESS); indicaste 15.»* El valor declarado nunca se corrige.
 
-**Perfiles históricos:** los congelados antes de P-01 no se modifican. `prepare()` lanza `ProfileOutsideGoalDurationException` (código `PERFIL_FUERA_DE_P01`, HTTP 422) antes de generar, así que tampoco llega nada a Replicate. En el ciclo semanal, esa semana queda sin plan y el motivo consta en el log.
+**Perfiles históricos** congelados fuera de 30–120 (por ejemplo 15, 20, 150 o 180):
+- no se modifican ni se sobrescriben, y sus planes anteriores no cambian;
+- no se genera un plan nuevo para ellos: `ProfileOutsideGoalDurationException`, código `PERFIL_FUERA_DE_P01`, HTTP 422, antes de generar y sin llamar a la IA;
+- en el ciclo semanal, esa semana queda sin plan y el motivo consta en el log;
+- no hay ningún mecanismo para editar un perfil congelado.
+
+**La restricción de la base no cambia:** `ck_profile_session_minutes` sigue en `15..180` (V1). Así los perfiles históricos siguen siendo legibles. P-01 es una regla de dominio y no necesita una migración.
+
+**V4 intacta:** 30–120 es la `session_minutes` del perfil, no un máximo de la duración real. El techo sigue siendo `session_minutes × 1,15` con el redondeo vigente (`floor`):
+
+| Perfil | Techo |
+|---:|---:|
+| 30 | 34 |
+| 60 | 69 |
+| 120 | 138 |
+
+**D8 intacta:**
+- una sesión acortada legítimamente por ACORTAR puede durar menos de 30 min (N03: 15 min con un perfil de 30);
+- la generación inicial no hereda D8: ninguna sesión inicial baja del piso de V20.
 
 **Pruebas:**
-- `PoliticaP01DuracionMinimaTest` (27 casos):
-  - 14/15/16 y 29/30/31 según el objetivo;
-  - 180/181 para los cuatro objetivos;
-  - la edición previa al primer plan;
-  - que la tabla de planificación coincide con la del perfil.
-- `PoliticasP123IT.perfilHistoricoFueraDeP01`: no genera, no llama a la IA y no modifica el perfil.
-- `PoliticasP123IT.cuatroObjetivosEnSuMinimo`.
-
-**Hallazgo:** el mínimo es un límite de admisión, no una garantía de plan.
-- INCREASE_STRENGTH intermedio de 15 min en gimnasio **no tiene plan**: V4 rechaza sesiones de 18 min con un techo de 17.
-- Es la misma situación de U07 en la campaña anterior, ahora en un objetivo cuyo mínimo aprobado es 15.
-- Se registra como pendiente de decisión y no se relaja V4.
+- `PoliticaP01DuracionMinimaTest` (41 casos):
+  - 15, 29, 30, 60, 119, 120, 121 y 180 para los cuatro objetivos;
+  - techo V4 con 30, 60 y 120;
+  - edición previa (29 y 121 rechazados sin dejar el perfil a medias);
+  - las dos tablas coinciden.
+- `PoliticasP123IT.cuatroObjetivosEnLosLimites`: cada objetivo en 30 y en 120. Si hay plan, ninguna sesión supera el techo ni baja del piso.
+- `PoliticasP123IT.perfilHistoricoFueraDelNuevoRango`: 15, 20, 150 y 180 no generan, no llaman a la IA y no se modifican.
+- `C2ReproduccionN03IT`: ACORTAR deja una sesión de menos de 30 min con D8 válida.
 
 ## 2. P-02: memoria persistente del dolor
 
@@ -167,9 +194,12 @@ En la semana derivada, un ejercicio heredado que dolió tiene una causa verifica
    - con el mismo perfil, los mismos días y el mismo número de sesiones (V2);
    - sin M y sin progresiones;
    - con la validación completa;
-   - con una comprobación explícita de que nada excluido aparece.
+   - con una comprobación explícita de que nada excluido aparece;
+   - **sin más trabajo que la semana medida** (auditoría del cierre del PR #16, `AUDITORIA_P03_NIVEL2.md`): si la semana regenerada sube las repeticiones o los segundos totales planificados, no se publica.
 
-   El resultado es API `REGENERACION_SEGURA_REGLAS`, con el plan regenerado.
+   Este guardia existe porque las dosis base podían deshacer una reducción autorizada por fatiga o un ACORTAR en plena semana de dolor.
+
+   Si pasa, el resultado es API `REGENERACION_SEGURA_REGLAS`, con el plan regenerado.
 6. Si tampoco hay semana válida, `safe_regeneration_attempts` registra NO_FACTIBLE con el motivo y no se publica nada. La API muestra `NO_FACTIBLE_POR_SEGURIDAD` y el motivo `P-03: sin alternativa segura válida: …`.
 
 ### Restricciones respetadas
@@ -225,14 +255,25 @@ La semana del nivel 2 parte de dosis base. Es lo mismo que antes ocurría una se
 
 ## 4. Migración V43
 
-- Solo crea dos tablas y un índice. No modifica datos existentes.
-- Se probó:
+- **Qué crea:** dos tablas y dos índices. No modifica datos existentes.
+- **Ajustada antes de su primera aplicación** (no se ha aplicado en ningún entorno compartido):
+  - claves foráneas al ejercicio, al evento original (plan, sesión y ejercicio planificado) y a la semana medida;
+  - índice por usuario en la traza de P-03.
+- **Concurrencia:**
+  - el registro del dolor usa `INSERT … ON CONFLICT DO NOTHING`;
+  - la reactivación bloquea la fila.
+- **Detalle:** `AUDITORIA_MIGRACION_V43.md`.
+- **Probada:**
   - desde una base vacía (todas las IT);
-  - sobre esquemas con historial previo, porque las IT que fijan el catálogo en V36–V41 aplican después V42 y V43 con `EsquemaVigenteSobreCatalogoAnterior`.
+  - sobre un esquema V42 con datos históricos y con un reinicio posterior (`MigracionV43IT`);
+  - sobre catálogos fijados (V36–V41) más V42 y V43 (`EsquemaVigenteSobreCatalogoAnterior`).
 - **No** se aplicó a Neon ni a Railway.
-- Por ser una migración, el PR **no se fusiona automáticamente**: queda para revisión.
+- **El PR no se fusiona automáticamente.**
 
 ## 5. Compatibilidad del contrato
+
+Detalle y requisitos para Flutter en `REVISION_CONTRATO_API_P123.md`.
+
 
 - `AdaptationOutcome.resultado` admite dos valores nuevos: `REGENERACION_SEGURA_SUSTITUCION` y `REGENERACION_SEGURA_REGLAS`.
 - Los demás campos no cambian. Un cliente que no conozca los valores nuevos los verá como un texto más.

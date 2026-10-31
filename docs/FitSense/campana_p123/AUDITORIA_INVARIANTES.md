@@ -16,13 +16,18 @@
 
 Los 12 planes iniciales también son VALIDA (`generacion.csv`).
 
+**Campaña repetida tras el cierre del PR #16** (P-01 definitiva, C-2 y el guardia de P-03): las cifras de clasificación **no cambian**. La única diferencia en las 139 semanas es el estado de N03 S4 (SIN_EFECTO con 1 llamada, en lugar de RESPALDO con 3); su semana publicada es la misma.
+
 **Aviso sobre el instrumento:** en la primera ejecución, 7 semanas de N03 (S4–S10) salieron INVALIDA (V20). Se investigó: era un **defecto del instrumento**, no del backend (C-1 en `ERRORES_Y_CORRECCIONES.md`). Se corrigió con una regresión; no se cambió ningún validador del backend.
 
 ## 2. Invariantes
 
 | Invariante | Resultado |
 |---|---|
-| P-01: los perfiles de la cohorte dentro del rango; el negativo (15 min, GENERAL_FITNESS) rechazado antes de generar | ✔ |
+| P-01 definitiva (30–120 en los cuatro objetivos): los perfiles de la cohorte (30–60) admitidos; el negativo (15 min) rechazado antes de generar | ✔ |
+| V4: techo = minutos × 1,15 (30 → 34, 60 → 69, 120 → 138) | ✔ sin cambios |
+| D8: una sesión acortada puede bajar de 30 min (N03: 15) y la generación inicial no la hereda | ✔ |
+| C-2: una señalada idéntica a una sesión con D8 conserva la exención solo por identidad | ✔ (N03 S4) |
 | P-02: ninguna semana publica un ejercicio excluido | ✔ 139/139 (`publica_excluido = false`) |
 | P-03: ninguna semana sin plan por un NO_FACTIBLE por dolor; ninguna publicación insegura | ✔ (N06 S4 resuelto en el mismo ciclo) |
 | V8C y V1–V25 | ✔ (validación estricta del backend e independiente) |

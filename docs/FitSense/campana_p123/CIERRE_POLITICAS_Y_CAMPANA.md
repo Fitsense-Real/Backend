@@ -30,22 +30,55 @@
 
 **Errores:**
 - 1 defecto del instrumento de validación (C-1), corregido.
-- 1 defecto de P-03 (C-3), corregido antes de la campaña.
-- 1 conflicto en V8C pendiente de decisión (C-2).
+- 1 defecto de P-03 nivel 1 (C-3), corregido antes de la campaña.
+- C-2 (V8C/D8), **corregido en el cierre del PR #16**.
+- Defecto de P-03 nivel 2 (C-6), **corregido en el cierre del PR #16**.
+- Ajustes de V43 (C-7), **corregidos en el cierre del PR #16**.
 
 **Llamadas reales a Replicate: 0.**
 
-## Respuestas
+## Actualización: cierre técnico del PR #16 (orden definitiva)
+
+| Fase | Resultado |
+|---|---|
+| A · P-01 | **30–120 min para los cuatro objetivos**, sin distinciones. V4 intacta (techo × 1,15: 30 → 34, 120 → 138). D8 intacta (N03: 15 min con un perfil de 30). Perfiles históricos fuera de rango: sin modificar y sin plan nuevo (`PERFIL_FUERA_DE_P01`) |
+| B · C-2 | **Corregido** en V8C: herencia limitada de D8 por identidad. N03 S4 pasa de RESPALDO con 3 llamadas a SIN_EFECTO con 1. Diez casos positivos y negativos. V20 sin cambios (`CIERRE_C2_D8_V8C.md`) |
+| C · P-03 nivel 2 | **Defecto confirmado y corregido:** tras una reducción por fatiga (LOSE_WEIGHT, 102 → 108 repeticiones) o un ACORTAR (450 → 486), la regeneración deshacía la reducción. Ahora queda NO_FACTIBLE si sube el trabajo (`AUDITORIA_P03_NIVEL2.md`) |
+| D · V43 | Auditada y ajustada **antes de su primera aplicación**: FK, índice, `ON CONFLICT`, reactivación con bloqueo. Probada desde cero, sobre V42 con histórico y con reinicio (`AUDITORIA_MIGRACION_V43.md`) |
+| E · API | Endpoints autenticados y aislados. Dos resultados nuevos; ningún campo cambia (`REVISION_CONTRATO_API_P123.md`) |
+| F · Campaña | Repetida en modo determinista: **solo cambia N03 S4** (resultado y llamadas; la misma semana publicada). Respuestas simuladas 16 → 14 |
+| Replicate | **0 llamadas reales** |
+
+**Nueva decisión funcional (no resuelta unilateralmente):** P-01 admite hasta 120 min, pero con el motor de reglas, V20 (70 % de los minutos) y los topes de 4D hacen que **de 90 min en adelante casi ningún perfil tenga plan**.
+
+`PoliticasP123IT.cuatroObjetivosEnLosLimites`, gimnasio, intermedio, 3 días:
+
+| Minutos | GAIN_MUSCLE | INCREASE_STRENGTH | LOSE_WEIGHT | GENERAL_FITNESS |
+|---:|:-:|:-:|:-:|:-:|
+| 30 | plan | plan | plan | plan |
+| 60 | plan | plan | plan | plan |
+| 90 | — | — | plan | — |
+| 105 | — | — | — | — |
+| 120 | — | — | — | — |
+
+Duración máxima que alcanza el motor: GAIN_MUSCLE ≈ 42 min; INCREASE_STRENGTH y GENERAL_FITNESS ≈ 53; LOSE_WEIGHT ≈ 63.
+
+**Alternativas** (requieren tu decisión):
+- **(a)** Mantener 120 y que la app explique el NO_FACTIBLE.
+- **(b)** Bajar el máximo admitido (por ejemplo a 60–75).
+- **(c)** Revisar los topes de 4D o el piso de V20 para sesiones largas. Sería una política nueva.
+
+## Respuestas (campaña original; las afectadas por la orden de cierre se corrigen abajo)
 
 **1. ¿P-01 quedó implementada?**
-Sí:
+Sí, en su versión definitiva: **30–120 min para los cuatro objetivos**. Se aplica:
 - en el alta y en la edición previa al primer plan (`UserProfile`);
 - en la planificación, para los perfiles históricos (`PERFIL_FUERA_DE_P01`, sin llamar a la IA).
 
 **2. ¿Los cuatro objetivos respetan sus mínimos?**
-Sí: 15 en GAIN_MUSCLE e INCREASE_STRENGTH; 30 en LOSE_WEIGHT y GENERAL_FITNESS; 180 de máximo. Hay 27 casos límite probados (14/15/16, 29/30/31 y 180/181).
+Sí: 30–120 para todos. Se probaron 15, 29, 30, 60, 119, 120, 121 y 180 en cada objetivo (41 casos con la tolerancia V4).
 
-Que un perfil se admita no garantiza un plan: INCREASE_STRENGTH intermedio de 15 min en gimnasio no tiene plan, porque V4 rechaza 18 min con un techo de 17.
+Que un perfil se admita no garantiza un plan: de 90 min en adelante casi ningún perfil tiene plan con el motor de reglas (decisión pendiente, arriba).
 
 **3. ¿El perfil sigue siendo inmutable?**
 Sí:
@@ -106,10 +139,10 @@ Sí, en 100 de 100: N03 tiene 7 días y recibe 4 sesiones; nunca 7; sin fechas r
 Dos con la propuesta de la IA simulada (N08 S2 por dolor; N03 S3 ACORTAR), más una resuelta por P-03 sin IA (N06 S4).
 
 **14. ¿Cuántas fueron rechazadas?**
-- **9 respuestas simuladas rechazadas** por los validadores en 3 semanas:
-  - N03 S4: V20 sin la exención D8 (C-2);
+- **6 respuestas simuladas rechazadas** (tras C-2; antes eran 9):
   - N06 S4: contrato inválido, a propósito;
   - N07 S4: V25 al quitar la movilidad.
+  - Los 3 rechazos redundantes de N03 S4 desaparecieron con C-2.
 - Ninguna se publicó.
 - Además: 1 REPROGRAMACION_IMPOSIBLE (N04 S2, sin llamada) y 3 sin efecto.
 
@@ -160,8 +193,9 @@ No:
 Detalle en `ERRORES_Y_CORRECCIONES.md`.
 
 **24. ¿Qué limitaciones permanecen?**
-- **C-2** (decisión): en el camino de la IA, una sesión acortada que se señala por otra causa y vuelve igual pierde la exención D8. Cuesta hasta 3 llamadas. Corregirlo exige tocar V8C.
-- **Mínimo de P-01 en INCREASE_STRENGTH:** con 15 min no hay plan para el intermedio en gimnasio (V4). ¿Subir el mínimo a 20?
+- **C-2:** corregido en el cierre del PR #16.
+- **Máximo de P-01 (decisión):** de 90 min en adelante casi ningún perfil tiene plan con el motor de reglas (V20 y 4D).
+- **P-03 nivel 2:** con una reducción o un ACORTAR previos, queda NO_FACTIBLE cuando la regeneración subiría el trabajo. Es seguro; la persona se queda sin plan esa semana y el dolor se recuerda.
 - **Progresión imposible** en sesiones muy cortas o solo de duración (N03 y N10): el menor paso supera el 5 %. Ya documentada; no se fuerza.
 - **ACORTAR sin relleno:** en sesiones de 4 ejercicios, todos de slot 4C (N01 y N09 a 30 min), ACORTAR no tiene nada que retirar, así que esos perfiles nunca pasan por la retirada y la reincorporación.
 - **Composición dependiente del `user_id`:** la semilla del motor de reglas depende de él. Un mismo perfil con otro identificador recibe otra composición (N01 frente a N01B).
@@ -171,7 +205,7 @@ Detalle en `ERRORES_Y_CORRECCIONES.md`.
 **25. ¿Cuántas llamadas reales nuevas se hicieron a Replicate?**
 **Cero.**
 - `fitsense.ai.enabled=false`, y el espía de la generación con IA registró 0 invocaciones.
-- Las 16 respuestas de la IA de corrección son **SIMULADAS** (14 en las 100 semanas).
+- Las respuestas de la IA de corrección son **SIMULADAS**: 14 en total y 12 en las 100 semanas, tras C-2 (antes 16 y 14).
 - El total histórico sigue en 78 de 80.
 
 **26. ¿Qué pruebas con IA real convendría hacer si se aprueba presupuesto?** (no ejecutadas)
@@ -192,7 +226,7 @@ Coste estimado: **US$ 0,8–3,5**, a US$ 0,02–0,05 por llamada (campañas ante
 - **CI completa** (`mvn verify -Pintegration`).
 - **No se fusiona automáticamente:** incluye la migración V43 y cambios de contrato (dos resultados nuevos en la API y dos endpoints nuevos). Queda para revisión.
 - **V43:**
-  - probada desde una base vacía y sobre esquemas con historial (catálogos fijados en V36–V41 más V42 y V43);
+  - probada desde una base vacía, sobre V42 con datos históricos más un reinicio (`MigracionV43IT`) y sobre catálogos fijados (V36–V41 más V42 y V43);
   - **no aplicada a Neon ni a Railway**.
 - **Progresión:** sigue apagada fuera de las pruebas (`fitsense.adaptation.progression.enabled=false` por defecto).
 
@@ -213,4 +247,8 @@ Coste estimado: **US$ 0,8–3,5**, a US$ 0,02–0,05 por llamada (campañas ante
 | `AUDITORIA_INVARIANTES.md` | Validación independiente e invariantes |
 | `ERRORES_Y_CORRECCIONES.md` | Causas raíz, correcciones y regresiones |
 | `CIERRE_POLITICAS_Y_CAMPANA.md` | Este documento |
+| `CIERRE_C2_D8_V8C.md` | C-2: la inconsistencia, la modificación limitada, los casos y la reproducción de N03 S4 |
+| `AUDITORIA_P03_NIVEL2.md` | Dosis reducida, progresada, varias sesiones y caso imposible; el defecto y su corrección |
+| `AUDITORIA_MIGRACION_V43.md` | Estructura, integridad, concurrencia, compatibilidad y riesgos |
+| `REVISION_CONTRATO_API_P123.md` | Endpoints, respuestas, compatibilidad y requisitos para Flutter |
 | `evidencia/` | Volcados en crudo de la base aislada (V32, planes, métricas, exclusiones, regeneraciones y perfiles), `PASOS.csv`, `traza_backend.log` y `eventos.log`. Sin credenciales: los usuarios son sintéticos, con correos `@pruebas.invalid` |

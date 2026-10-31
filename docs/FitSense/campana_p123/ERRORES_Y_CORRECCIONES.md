@@ -12,15 +12,16 @@
 | **Regresión que falla sin la corrección** | `HerenciaD8IT.respaldoIdenticoConservaD8` y `propuestaIdenticaConservaD8` validan ahora con el instrumento la copia tras una señalada SIN_EFECTO. Sin la corrección dan INVALIDA (comprobado); con ella pasan |
 | **Repetición** | Campaña de nuevo: 0 INVALIDA |
 
-## C-2 · V20 y D8 en una sesión acortada que se señala y vuelve igual de la IA (pendiente de decisión: no se modificó V8C)
+## C-2 · V20 y D8 en una sesión acortada que se señala y vuelve igual de la IA (corregido en el cierre del PR #16)
 
 | | |
 |---|---|
-| **Evidencia** | N03 S4: la sesión acortada (15 min, exenta) se omite y se señala INVESTIGAR_CAMBIO_MINIMO. La IA simulada la devuelve **igual** y V8C/V20 la rechazan 3 veces («le faltan 342 s»). Después, el respaldo publica **esa misma sesión**, válida y con la exención |
-| **Causa** | En V8C (`ConservationValidator`), una sesión señalada solo recibe la exención D8 si su intervención permite reducir la duración (ACORTAR). Una conservada, sí |
-| **Impacto** | Seguridad: ninguno (se publica lo mismo y es válido). **Coste:** con IA real, hasta 3 llamadas pagadas desperdiciadas en un caso que acaba igual |
-| **Por qué no se corrigió** | Exige cambiar V8C, que la orden prohíbe. Además, «una señalada sin cambios hereda D8» solo está aprobado para las sesiones **no** señaladas |
-| **Decisión necesaria** | ¿Una sesión acortada que se señala por otra causa y vuelve sin cambios conserva la exención D8 en el camino de la IA? Si la respuesta es sí: es un cambio de una línea en V8C, más una regresión |
+| **Evidencia** | N03 S4: la sesión acortada (15 min, exenta por D8) se señala INVESTIGAR y la IA simulada la devuelve **igual**. V20 la rechaza 3 veces; después el respaldo publica esa misma sesión con D8 |
+| **Causa** | En V8C, una sesión señalada solo heredaba D8 si su intervención permite reducir la duración |
+| **Decisión** | Aprobada en la orden de cierre del PR #16: herencia limitada por identidad |
+| **Corrección** | `ConservationValidator`: hereda la autorización de origen solo si la sesión queda SIN_EFECTO (idéntica, en el mismo orden), sin dolor, sin exclusiones, sin sustituciones, sin dosis rechazada y con una intervención que admite la copia. V20 no cambia |
+| **Regresiones que fallan sin la corrección** | `HerenciaReduccionV20Test.identicaConservaD8` y `C2ReproduccionN03IT` (antes RESPALDO con 3 llamadas; ahora SIN_EFECTO con 1). Casos negativos: repetición, descanso, ejercicio, orden, sin D8, dolor y SEGURIDAD_ANTE_DOLOR |
+| **Detalle** | `CIERRE_C2_D8_V8C.md` |
 
 ## C-3 · P-03 podía publicar, ante dolor, una sesión sustituida con más trabajo (corregido antes de la campaña)
 
@@ -30,6 +31,25 @@
 | **Causa raíz** | El nivel 1 de P-03 reutiliza la continuidad, que no conoce la regla de dolor de las señaladas |
 | **Corrección** | `AdaptedWeekProducer.masTrabajoQueLaMedida`: en el nivel 1, si una sesión del dolor sube repeticiones o segundos totales respecto de la medida, no se publica. Pasa al nivel 2 o queda NO_FACTIBLE |
 | **Regresión** | `c5DolorAnadeMas`: mismo número de ejercicios y volumen ≤ el medido |
+
+## C-6 · P-03 nivel 2 podía deshacer una reducción autorizada en plena semana de dolor (corregido en el cierre del PR #16)
+
+| | |
+|---|---|
+| **Evidencia** | Auditoría pedida en la orden. LOSE_WEIGHT con reducción por fatiga y después dolor: la regeneración con dosis base subía la semana de 102 a 108 repeticiones. Tras un ACORTAR, de 450 a 486 |
+| **Causa raíz** | El nivel 2 genera desde cero con las dosis base de 4D y no tiene linaje hacia las dosis reducidas ni hacia las retiradas de ACORTAR |
+| **Corrección** | `SafeRegenerationService.masTrabajoQueLaMedida`: si la semana regenerada sube las repeticiones o los segundos totales de la semana medida, queda NO_FACTIBLE con el motivo («ante dolor no se añade trabajo»). No es una política nueva: aplica las reglas aprobadas |
+| **Regresión** | `ProgresionIT.p03Nivel2TrasReduccion` (falla sin la corrección: 102 → 108), `p03Nivel2TrasProgresion`, `HerenciaD8IT.dolorNoAprovechaD8` |
+| **Detalle** | `AUDITORIA_P03_NIVEL2.md` |
+
+## C-7 · V43: integridad y concurrencia (corregido en el cierre del PR #16, antes de su primera aplicación)
+
+| | |
+|---|---|
+| **Hallazgos** | Faltaban FK al ejercicio, al evento original y a la semana medida. El registro del dolor hacía «existe y luego inserta», así que una carrera omisión/ciclo podía violar la unicidad y abortar el ciclo. Dos reactivaciones simultáneas se pisaban |
+| **Corrección** | FK e índice en V43; `INSERT … ON CONFLICT DO NOTHING`; reactivación con `FOR UPDATE` |
+| **Pruebas** | `MigracionV43IT`, `PoliticasP123IT.reactivacionesSimultaneas` y `dolorNuevoTrasReactivar` |
+| **Detalle** | `AUDITORIA_MIGRACION_V43.md` |
 
 ## C-4 · Dobles de IA que leían lo que dolió del conjunto elegible (pruebas, corregido)
 
@@ -48,7 +68,11 @@ El detector de la ejecución del reincorporado usaba una expresión regular que 
 | `HerenciaD8IT.dolorNoAprovechaD8` | Sin plan | Nivel 1 o nivel 2, nunca lo que dolió |
 | `CorreccionesReplicate*IT.c5DolorAnadeMas` | Sin plan | Nivel 1 sin más trabajo |
 | `AdaptacionRegresionIT.cardioNoSustituyeAlTrabajoEstructural` | La propuesta inválida (V23) no publicaba nada | La propuesta sigue sin publicarse (V32 NO_FACTIBLE, 3 llamadas); si hay plan, es el de P-03 con reglas |
-| `PerfilesLimiteIT` | Creaba perfiles de 15 min en LOSE_WEIGHT y GENERAL_FITNESS | P-01 los rechaza; U07 se diagnostica a 30 min |
+| `PerfilesLimiteIT` | Creaba perfiles de 15 min | P-01 definitiva (30–120) los rechaza; U07 se diagnostica a 30 min |
+| `GeneracionPorObjetivoIT.principalesConsumenElTiempo` | Perfil de 20 min | Perfil de 30 min, el mínimo de P-01; **el resultado no cambia** (sin secundarias) |
+| `HerenciaReduccionV20Test.intervencionNuevaInterrumpe` | Una señalada idéntica perdía D8 | Sustituida por los casos A–E de C-2 |
+| `HerenciaD8IT.propuestaIdenticaConservaD8` | RESPALDO | SIN_EFECTO (C-2) |
+| `HerenciaD8IT.dolorNoAprovechaD8` | Nivel 2 publicaba con reglas | NO_FACTIBLE: la regeneración subiría el trabajo (C-6) |
 | `EsquemaVigenteSobreCatalogoAnterior` | Aplicaba V42 | Aplica también V43 (solo esquema) tras fijar el catálogo |
 
 **No se eliminó ni se relajó ninguna validación del backend.**

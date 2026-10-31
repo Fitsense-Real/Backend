@@ -149,9 +149,12 @@ class PoliticasP123IT {
 
     @ParameterizedTest(name = "{0} {1} min")
     @CsvSource({"GAIN_MUSCLE,30", "INCREASE_STRENGTH,30", "LOSE_WEIGHT,30", "GENERAL_FITNESS,30",
+            "GAIN_MUSCLE,60", "INCREASE_STRENGTH,60", "LOSE_WEIGHT,60", "GENERAL_FITNESS,60",
+            "GAIN_MUSCLE,90", "INCREASE_STRENGTH,90", "LOSE_WEIGHT,90", "GENERAL_FITNESS,90",
+            "GAIN_MUSCLE,105", "INCREASE_STRENGTH,105", "LOSE_WEIGHT,105", "GENERAL_FITNESS,105",
             "GAIN_MUSCLE,120", "INCREASE_STRENGTH,120", "LOSE_WEIGHT,120", "GENERAL_FITNESS,120"})
     @Order(2)
-    @DisplayName("P-01: los cuatro objetivos en 30 y 120: o plan valido dentro del techo V4 (x 1,15), o no hay plan")
+    @DisplayName("P-01: los cuatro objetivos de 30 a 120: o plan valido dentro del techo V4 (x 1,15), o no hay plan")
     void cuatroObjetivosEnLosLimites(GoalType objetivo, int minutos) {
         long u = participante(objetivo, FitnessLevel.INTERMEDIATE, minutos, GIMNASIO, true);
         int techo = (int) Math.floor(minutos * 1.15);
