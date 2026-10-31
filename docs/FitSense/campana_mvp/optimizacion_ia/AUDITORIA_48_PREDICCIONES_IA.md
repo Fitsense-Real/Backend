@@ -85,8 +85,9 @@ V24 admite reducciones solo en series, repeticiones o segundos, nunca en el desc
 - **Causa 3**, evitable en parte con una lista de sustitutos admitidos por ejercicio.
 
 **Imposibles (U01 S2 y U04 S5).**
-- **U01:** 22 min declarados frente a una sesión de 37 de GAIN_MUSCLE. En GAIN_MUSCLE solo se puede retirar un relleno, que ahorra unos 4 min, y retirar cualquiera de los tres de la sesión rompe V15 (3 de 5 en `upper legs`).
-- **U04:** 16 min para una sesión de 24 de GENERAL_FITNESS principiante. Hay más detalle en `FACTIBILIDAD_PREVIA_IA.md`.
+- **U01:** 22 min declarados frente a una sesión de 32 de GAIN_MUSCLE. En GAIN_MUSCLE solo se puede retirar un relleno, y aun así la sesión no baja de 28 min. Además, retirar cualquiera de los rellenos de la sesión rompe V15 (3 de 5 en `upper legs`).
+- **U04:** 20 min declarados frente a una sesión de 29 de GENERAL_FITNESS principiante. Ni retirando una colocación ni bajando la dosis al mínimo baja de 21. Hay más detalle en `FACTIBILIDAD_PREVIA_IA.md`.
+- *Corrección del 31/10/2026:* una primera versión de esta auditoría daba «16 min» para U04 y «37» para U01. Las cifras de arriba salen de `SESIONES_8_SEMANAS.csv` (columnas `minutos_declarados` y `minutos`) y de la cota que calcula `FactibilidadPreviaIA`. El «M ≈ 16» de los informes de la campaña se conserva allí como dato histórico.
 - En los dos casos, la llamada no podía producir una adaptación válida. **Causa 7.**
 
 **Proveedor (U06).** Un timeout de 172 s en el 2.º intento, después de 156 s en el 1.º. **Causa 8.**

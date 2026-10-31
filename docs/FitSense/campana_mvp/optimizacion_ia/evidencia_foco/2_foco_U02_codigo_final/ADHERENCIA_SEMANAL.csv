@@ -1,0 +1,9 @@
+usuario,semana,inicio,guion,plan_id,origen_plan,validacion_independiente,programadas,focos,completas,parciales,omitidas,sin_registro,adherencia_formula_orden,adherencia_backend_oficial,adherencia_backend_observada,riesgo,motivos,cambio_perfil,decision,estado_v32,intervenciones,llamadas_ia_contadas,ai_calls_v32,plan_siguiente,pasos,pasos_bloqueados,retirados(ejercicio@sesion),violaciones,nota
+U02,1,2026-11-02,cumplimiento completo,1,RULE_ENGINE,VALIDA,2,SAT:UPPER_BODY SUN:LOWER_BODY,2,0,0,0,100.00,100.00,100.00,LOW (0.00),-,,NO_CHANGE,SIN_ORDEN,{},0,0,2,,,,,
+U02,2,2026-11-09,sesion parcial por fatiga,2,CONSERVED,VALIDA,2,SAT:UPPER_BODY SUN:LOWER_BODY,1,1,0,0,75.00,66.66,66.66,MODERATE (25.00),FATIGUE,,ADAPT_LOCALIZED,RESPALDO,{REVISAR_CARGA_Y_RECUPERACION},0,3,3,,,,"ai_calls V32 = 3, llamadas contadas = 0",
+U02,3,2026-11-16,omision por dificultad excesiva,3,CONSERVED,VALIDA,2,SAT:UPPER_BODY SUN:LOWER_BODY,1,0,1,0,50.00,50.00,50.00,MODERATE (30.00),TOO_DIFFICULT,,ADAPT_LOCALIZED,APLICADA,{VARIANTE_MAS_SENCILLA_O_CARGA},1,1,4,,,1196@6,,
+U02,4,2026-11-23,recupera adherencia,4,AI,VALIDA,2,SAT:UPPER_BODY SUN:LOWER_BODY,2,0,0,0,100.00,100.00,100.00,LOW (0.00),-,,NO_CHANGE,SIN_ORDEN,{},0,0,5,,,,,
+U02,5,2026-11-30,falta de motivacion,5,CONSERVED,VALIDA,2,SAT:UPPER_BODY SUN:LOWER_BODY,1,0,1,0,50.00,50.00,50.00,MODERATE (35.00),LACK_OF_MOTIVATION,,ADAPT_LOCALIZED,APLICADA,{INVESTIGAR_CAMBIO_MINIMO},1,1,6,,,,,
+U02,6,2026-12-07,cumple con RPE registrado (7),,-,-,0,-,0,0,0,0,,,,-,-,,-,FUERA_DEL_FOCO,-,0,0,-,,,,,modo foco: el usuario se detiene tras su ultimo caso
+U02,7,2026-12-14,imprevisto aislado de tiempo,,-,-,0,-,0,0,0,0,,,,-,-,,-,FUERA_DEL_FOCO,-,0,0,-,,,,,modo foco: el usuario se detiene tras su ultimo caso
+U02,8,2026-12-21,cumple el plan vigente,,-,-,0,-,0,0,0,0,,,,-,-,,-,FUERA_DEL_FOCO,-,0,0,-,,,,,modo foco: el usuario se detiene tras su ultimo caso

@@ -298,14 +298,15 @@ public class AdaptedWeekProducer {
             Long origen = d.sourcePlannedWorkoutId();
             var anterior = medida.workouts().stream().filter(w -> origen.equals(w.plannedWorkoutId())).findFirst();
             var w = d.workout();
-            if (adjustment.intervencionDe(origen).isEmpty() || anterior.isEmpty()
-                    || w.expectedDurationMinutes() == anterior.get().expectedDurationMinutes()) {
+            if (adjustment.intervencionDe(origen).isEmpty() || anterior.isEmpty()) {
                 salida.add(d);
                 continue;
             }
             if (!contenidoTemporal(w.exercises()).equals(contenidoMedido(medida, origen))) {
                 // Orden de optimizacion (31/10/2026), B2: con contenido nuevo, los minutos los calcula
                 // el backend con el estimador de V17, no la IA (11 rechazos V17 de 48 predicciones).
+                // Tambien cuando la IA repite los minutos de antes: el contenido cambio (U02 S3 en la
+                // comparacion con IA real, 23 min declarados para 16 de contenido).
                 int calculados = context.prescription() == null || w.exercises().isEmpty()
                         ? w.expectedDurationMinutes() : ESTIMADOR.estimateMinutes(w, context.prescription());
                 if (calculados != w.expectedDurationMinutes()) {
@@ -315,6 +316,10 @@ public class AdaptedWeekProducer {
                     salida.add(new DerivedWorkout(origen, new PlanDraft.DraftWorkout(w.scheduledDate(), w.focus(),
                             w.name(), calculados, w.exercises())));
                 } else salida.add(d);
+                continue;
+            }
+            if (w.expectedDurationMinutes() == anterior.get().expectedDurationMinutes()) {
+                salida.add(d);
                 continue;
             }
             int minutos = anterior.get().expectedDurationMinutes();
