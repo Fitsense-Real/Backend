@@ -1,0 +1,23 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.planning.Usuario31V37IT
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 6.219 s <<< FAILURE! -- in main.web.services.fitsense.planning.Usuario31V37IT
+main.web.services.fitsense.planning.Usuario31V37IT.catalogoV37 -- Time elapsed: 0.147 s <<< ERROR!
+main.web.services.fitsense.planning.domain.exceptions.PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 1. Ultimos problemas: V15: el entrenamiento del 2026-11-08 dedica 3 de 5 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY.
+	at main.web.services.fitsense.planning.application.internal.commandservices.PlanGenerationPipeline.run(PlanGenerationPipeline.java:168)
+	at main.web.services.fitsense.planning.application.internal.commandservices.WeeklyTrainingPlanCommandServiceImpl.generate(WeeklyTrainingPlanCommandServiceImpl.java:212)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:715)
+	at main.web.services.fitsense.planning.application.internal.commandservices.WeeklyTrainingPlanCommandServiceImpl$$SpringCGLIB$$0.generate(<generated>)
+	at main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade.generateWeeklyPlan(PlanningContextFacade.java:163)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:359)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:715)
+	at main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade$$SpringCGLIB$$0.generateWeeklyPlan(<generated>)
+	at main.web.services.fitsense.planning.Usuario31Base.generar(Usuario31Base.java:121)
+	at main.web.services.fitsense.planning.Usuario31Base.informe(Usuario31Base.java:146)
+	at main.web.services.fitsense.planning.Usuario31V37IT.catalogoV37(Usuario31V37IT.java:35)
+

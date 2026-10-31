@@ -1,9 +1,11 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
+import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Seleccion de ejercicios de 20.3: al menos uno de cada body_part del enfoque,
@@ -32,6 +34,27 @@ import java.util.*;
  * </ul>
  * body_part es una aproximacion. Se reemplaza por la categoria de movimiento
  * cuando el catalogo este clasificado.
+ * <p>
+ * <b>SELECCION ESTRUCTURAL, 16/10/2026. SOLO con {@code GAIN_MUSCLE}</b>, y solo
+ * si el generador llama a {@link #preferirEstructurales(boolean)}. Con los demas
+ * objetivos esta clase se comporta EXACTAMENTE igual que antes: el modo esta
+ * apagado y ninguna de las rutas nuevas se ejecuta.
+ * <p>
+ * POR QUE EXISTE. El 16/10 la semana del usuario 17 termino en 422: la IA fallo
+ * sus tres intentos y el motor de reglas, que cumplio 4D sin un solo
+ * incumplimiento, lo tumbo V20 por UN minuto -30 contra 31-. La causa es que el
+ * reparto por zona corporal eligio 8 colocaciones estructurales y 10 de relleno
+ * en la semana, y una colocacion de relleno aporta 150 s al estimador de V17
+ * contra 270 s de una estructural. Con el tope de seis colocaciones de 4D y sin
+ * poder subir series, anadir relleno no alcanza el piso.
+ * <p>
+ * NO cambia 4D, ni relaja V20, ni sube el tope de seis. Cambia QUE se elige, no
+ * cuanto ni con que dosis.
+ * <p>
+ * COBERTURA SEMANAL, NO DIARIA. 4C §5 exige que la SEMANA toque los cuatro
+ * patrones, no cada dia. Por eso los slots pendientes los lleva el generador y
+ * se los pasa dia a dia con {@link #slotsPendientes(Collection)}; un slot sin
+ * candidatos elegibles no se fuerza: se pide y, si no hay, se sigue.
  */
 class ExerciseSelector {
 
@@ -58,6 +81,42 @@ class ExerciseSelector {
      * una preferencia, esto es un bloqueo duro.
      */
     private Set<Long> blocked = Set.of();
+
+    /** Cualquier candidato: el comportamiento de siempre. */
+    static final Predicate<CandidateExercise> CUALQUIERA = candidate -> true;
+
+    /** Candidato de uno de los cuatro slots de 4C. */
+    static final Predicate<CandidateExercise> ESTRUCTURAL =
+            candidate -> MandatorySlot.of(candidate).isPresent();
+
+    /** Candidato de un slot concreto. */
+    static Predicate<CandidateExercise> deSlot(MandatorySlot slot) {
+        return candidate -> MandatorySlot.of(candidate).filter(s -> s == slot).isPresent();
+    }
+
+    /** Modo estructural. Apagado salvo que el generador lo encienda (GAIN_MUSCLE). */
+    private boolean preferirEstructurales = false;
+
+    /** Slots que la SEMANA todavia no cubre. Los lleva el generador. */
+    private List<MandatorySlot> pendientes = List.of();
+
+    void preferirEstructurales(boolean activo) {
+        this.preferirEstructurales = activo;
+    }
+
+    /**
+     * Los slots que aun faltan en la semana, en el orden fijo de
+     * {@code MandatorySlot.ALL} para que dos corridas se comparen.
+     */
+    void slotsPendientes(Collection<MandatorySlot> slots) {
+        this.pendientes = slots == null ? List.of()
+                : MandatorySlot.ALL.stream().filter(slots::contains).toList();
+    }
+
+    /** Cuantos candidatos elegibles hay de cada slot. Para no exigir lo que no existe. */
+    boolean haySlot(MandatorySlot slot) {
+        return all.stream().anyMatch(deSlot(slot));
+    }
 
     void block(Set<Long> exerciseIds) {
         this.blocked = exerciseIds == null ? Set.of() : Set.copyOf(exerciseIds);
@@ -89,6 +148,23 @@ class ExerciseSelector {
         int tope = halfCap(grupos, count);
         var porGrupo = new HashMap<String, Integer>();
 
+        // 0. 4C/4D, solo en modo estructural: antes que nada, un candidato de
+        //    cada slot que la SEMANA aun no cubre. Va primero porque es el
+        //    recurso escaso -LOWER_HIP tiene 13 elegibles contra 51 de
+        //    UPPER_PUSH- y porque elegir por slot reparte solo entre body_part
+        //    distintos, asi que no compite con la cobertura de grupos de V15.
+        //    Un slot sin candidatos en este enfoque simplemente no sale: no se
+        //    fuerza nada.
+        if (preferirEstructurales) {
+            for (var slot : pendientes) {
+                if (picked.size() >= count) break;
+                var candidate = next(focus, picked, porGrupo, tope, true, deSlot(slot));
+                if (candidate.isEmpty()) continue;
+                picked.add(candidate.get());
+                porGrupo.merge(candidate.get().bodyPartCode(), 1, Integer::sum);
+            }
+        }
+
         // 1. Cobertura (20.3): uno de cada grupo, los grandes primero. Si la
         //    sesion es mas corta que el numero de grupos, quedan fuera los
         //    pequenos, no los grandes.
@@ -99,7 +175,7 @@ class ExerciseSelector {
         for (var code : cobertura) {
             if (picked.size() >= count) break;
             if (porGrupo.getOrDefault(code, 0) + 1 > tope) continue;
-            var candidate = pickOneFrom(pool(code, focus), picked);
+            var candidate = pickOneFrom(pool(code, focus), picked, CUALQUIERA);
             if (candidate.isEmpty()) continue;
             picked.add(candidate.get());
             porGrupo.merge(code, 1, Integer::sum);
@@ -107,12 +183,22 @@ class ExerciseSelector {
 
         // 2. Resto por prioridad: primero con los topes de grupos pequenos y,
         //    solo si no alcanza, sin ellos.
-        for (boolean respetarTopes : new boolean[]{true, false}) {
-            while (picked.size() < count) {
-                var next = next(focus, picked, porGrupo, tope, respetarTopes);
-                if (next.isEmpty()) break;
-                picked.add(next.get());
-                porGrupo.merge(next.get().bodyPartCode(), 1, Integer::sum);
+        //
+        //    En modo estructural se recorre dos veces: la primera admitiendo
+        //    SOLO estructurales, la segunda cualquiera. Asi el relleno entra
+        //    cuando corresponde -cuando ya no quedan estructurales que
+        //    cumplan V15, V18 y V22- y no por azar del reparto por zona.
+        var filtros = preferirEstructurales
+                ? List.of(ESTRUCTURAL, CUALQUIERA)
+                : List.of(CUALQUIERA);
+        for (var filtro : filtros) {
+            for (boolean respetarTopes : new boolean[]{true, false}) {
+                while (picked.size() < count) {
+                    var next = next(focus, picked, porGrupo, tope, respetarTopes, filtro);
+                    if (next.isEmpty()) break;
+                    picked.add(next.get());
+                    porGrupo.merge(next.get().bodyPartCode(), 1, Integer::sum);
+                }
             }
         }
 
@@ -143,11 +229,40 @@ class ExerciseSelector {
      */
     Optional<CandidateExercise> pickAdditional(WorkoutFocus focus, List<CandidateExercise> current,
                                                boolean respetarTopes) {
+        return pickAdditional(focus, current, respetarTopes, CUALQUIERA);
+    }
+
+    /**
+     * Igual, pero restringido a los candidatos que pasan {@code filtro}. El
+     * motor de reglas lo usa con {@link #ESTRUCTURAL} para llegar al piso de V20
+     * con colocaciones que de verdad aportan tiempo: una estructural pone 270 s
+     * en el estimador de V17 y una de relleno 150 s.
+     * <p>
+     * No relaja NADA: V15, V18, V22 y los topes de grupos pequenos siguen
+     * decidiendo igual, porque esto pasa por el mismo {@link #next}.
+     */
+    Optional<CandidateExercise> pickAdditional(WorkoutFocus focus, List<CandidateExercise> current,
+                                               boolean respetarTopes,
+                                               Predicate<CandidateExercise> filtro) {
         var picked = new LinkedHashSet<>(current);
         var porGrupo = new HashMap<String, Integer>();
         current.forEach(candidate -> porGrupo.merge(candidate.bodyPartCode(), 1, Integer::sum));
         int tope = halfCap(focus.bodyPartCodes(), current.size() + 1);
-        return next(focus, picked, porGrupo, tope, respetarTopes);
+        return next(focus, picked, porGrupo, tope, respetarTopes, filtro);
+    }
+
+    /**
+     * Una estructural que pueda ocupar el sitio de {@code aQuitar} en una sesion
+     * ya armada. Para el repaso final del generador: si un dia no llega al piso
+     * de V20, se SUSTITUYE un relleno por una estructural, nunca se borra.
+     * Borrar relleno empeora V20, que es justo lo que no queremos.
+     */
+    Optional<CandidateExercise> estructuralQueSustituyaA(WorkoutFocus focus,
+                                                         List<CandidateExercise> current,
+                                                         CandidateExercise aQuitar) {
+        var sinEl = current.stream().filter(candidate -> !candidate.equals(aQuitar)).toList();
+        return pickAdditional(focus, sinEl, true, ESTRUCTURAL)
+                .or(() -> pickAdditional(focus, sinEl, false, ESTRUCTURAL));
     }
 
     /**
@@ -158,7 +273,8 @@ class ExerciseSelector {
      */
     private Optional<CandidateExercise> next(WorkoutFocus focus, Set<CandidateExercise> picked,
                                              Map<String, Integer> porGrupo, int tope,
-                                             boolean respetarTopes) {
+                                             boolean respetarTopes,
+                                             Predicate<CandidateExercise> filtro) {
         var grupos = focus.bodyPartCodes();
         boolean aplicanTopes = respetarTopes && grupos.stream().anyMatch(ExerciseSelector::isMajor);
 
@@ -174,7 +290,7 @@ class ExerciseSelector {
             if (actuales + 1 > tope) continue;
             if (aplicanTopes && MAX_PER_SESSION.containsKey(code)
                     && actuales + 1 > MAX_PER_SESSION.get(code)) continue;
-            var candidate = pickOneFrom(pool(code, focus), picked);
+            var candidate = pickOneFrom(pool(code, focus), picked, filtro);
             if (candidate.isPresent()) return candidate;
         }
         return Optional.empty();
@@ -191,7 +307,7 @@ class ExerciseSelector {
     private void completarCon(List<CandidateExercise> pool,
                               Set<CandidateExercise> picked, int count) {
         while (picked.size() < count) {
-            var candidate = pickOneFrom(pool, picked);
+            var candidate = pickOneFrom(pool, picked, CUALQUIERA);
             if (candidate.isEmpty()) break;
             picked.add(candidate.get());
         }
@@ -220,8 +336,10 @@ class ExerciseSelector {
      * vacio: la variedad es deseable, tener plan es obligatorio.
      */
     private Optional<CandidateExercise> pickOneFrom(List<CandidateExercise> pool,
-                                                    Set<CandidateExercise> alreadyPicked) {
+                                                    Set<CandidateExercise> alreadyPicked,
+                                                    Predicate<CandidateExercise> filtro) {
         var fresh = pool.stream()
+                .filter(filtro)
                 .filter(candidate -> !blocked.contains(candidate.exerciseId()))
                 .filter(candidate -> !alreadyPicked.contains(candidate))
                 .filter(candidate -> !recentlyUsed.contains(candidate.exerciseId()))
@@ -230,6 +348,7 @@ class ExerciseSelector {
         if (!fresh.isEmpty()) return Optional.of(fresh.get(random.nextInt(fresh.size())));
 
         var reusable = pool.stream()
+                .filter(filtro)
                 .filter(candidate -> !blocked.contains(candidate.exerciseId()))
                 .filter(candidate -> !alreadyPicked.contains(candidate))
                 .toList();

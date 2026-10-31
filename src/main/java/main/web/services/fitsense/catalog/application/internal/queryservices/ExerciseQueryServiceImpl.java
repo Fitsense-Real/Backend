@@ -32,12 +32,20 @@ public class ExerciseQueryServiceImpl implements ExerciseQueryService {
     private final BodyPartRepository bodyPartRepository;
     private final EquipmentTypeRepository equipmentTypeRepository;
 
+    /**
+     * Admision por aprobacion humana (V27/V28). APAGADA por omision; mientras lo
+     * este, {@code apply} devuelve la lista intacta y no consulta nada.
+     */
+    private final ApprovedDifficultyGate approvedDifficultyGate;
+
     public ExerciseQueryServiceImpl(ExerciseRepository exerciseRepository,
                                     BodyPartRepository bodyPartRepository,
-                                    EquipmentTypeRepository equipmentTypeRepository) {
+                                    EquipmentTypeRepository equipmentTypeRepository,
+                                    ApprovedDifficultyGate approvedDifficultyGate) {
         this.exerciseRepository = exerciseRepository;
         this.bodyPartRepository = bodyPartRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
+        this.approvedDifficultyGate = approvedDifficultyGate;
     }
 
     @Override
@@ -85,8 +93,19 @@ public class ExerciseQueryServiceImpl implements ExerciseQueryService {
         blocked.add(NO_BLOCKED_SENTINEL);
         if (query.blockedExerciseIds() != null) blocked.addAll(query.blockedExerciseIds());
 
-        return exerciseRepository.findEligible(equipmentIds, (short) query.maxDifficultyLevel(),
-                blocked, query.excludeHighImpact(), query.excludeFloorWork(), query.excludeAxialLoad());
+        var elegibles = exerciseRepository.findEligible(equipmentIds,
+                (short) query.maxDifficultyLevel(),
+                blocked, query.excludeHighImpact(), query.excludeFloorWork(), query.excludeAxialLoad(),
+                query.excludeKneeling(),
+                query.excludeHanging(),
+                query.excludeOverhead(),
+                query.excludeInversion());
+
+        // Ultimo paso, y APAGADO por omision. Va despues de la consulta y no
+        // dentro: la vista de aprobaciones es de la V27 y mezclarla en el JPQL
+        // ataria el filtro de equipamiento a ella. Asi encender o apagar el
+        // interruptor no cambia ninguna consulta.
+        return approvedDifficultyGate.apply(elegibles, query.maxDifficultyLevel());
     }
 
     @Override

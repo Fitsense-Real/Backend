@@ -1,0 +1,9 @@
+895|CONFIRMADO|MEDIA|equipment|body weight|bench + step platform|Pies en un banco, manos en un step
+895|PROBABLE|ALTA|requires_floor|false|true|Baja las manos al suelo entre los apoyos
+896|CONFIRMADO|MEDIA|equipment|body weight|step platform|Manos en un step
+898|CONFIRMADO|MEDIA|equipment|body weight|smith machine|Manos en la barra de la multipower
+1080|CONFIRMADO|BAJA|equipment|medicine ball|medicine ball + companero|Pase a otra persona: no es realizable en solitario
+1084|PENDIENTE_CRITERIO|BAJA|high_impact|true|false (probable)|Lanzamiento de pecho sin fase de vuelo
+1095|CONFIRMADO|BAJA|requires_floor|true|false|De pie, sin suelo (restriccion de mas)
+1095|PROBABLE|MEDIA|movement_pattern|HORIZONTAL_PUSH|MOBILITY|Balanceo de brazos sin carga; cuenta hoy como UPPER_PUSH
+1123|CONFIRMADO|ALTA|requires_floor|false|true|Pies sobre el balon, manos en el suelo (flexion completa)

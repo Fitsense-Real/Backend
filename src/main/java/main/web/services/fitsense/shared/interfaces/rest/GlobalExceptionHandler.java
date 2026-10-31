@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -23,6 +24,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());
+    }
+
+    /**
+     * Una restriccion de la base rechazo la escritura: casi siempre dos
+     * peticiones simultaneas (dos inicios de sesion, dos reportes del mismo
+     * entrenamiento) donde la segunda llego tarde. Es un conflicto, no un error
+     * del servidor, y la base ya dejo los datos intactos.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErrorResource> handleConflict(DataIntegrityViolationException ex) {
+        return build(HttpStatus.CONFLICT,
+                "La operacion choco con otra simultanea y no se aplico. Consulta el estado actual.", List.of());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

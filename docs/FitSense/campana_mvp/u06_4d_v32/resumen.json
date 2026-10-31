@@ -1,0 +1,16 @@
+{
+  "modo" : "IA real",
+  "duracion_min" : 6,
+  "llamadas" : 3,
+  "llamadas_con_error" : 0,
+  "predicciones_con_metricas" : 3,
+  "tokens_entrada" : 235186,
+  "tokens_salida" : 37318,
+  "coste_estimado_usd" : 0.1334325,
+  "latencia_media_ms" : 116308,
+  "latencia_max_ms" : 127509,
+  "motivo_parada" : null,
+  "violaciones_linaje" : 0,
+  "violaciones_comprobaciones" : [ ],
+  "cortes" : [ ]
+}

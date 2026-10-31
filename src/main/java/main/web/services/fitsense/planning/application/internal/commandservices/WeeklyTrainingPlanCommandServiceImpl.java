@@ -2,11 +2,15 @@ package main.web.services.fitsense.planning.application.internal.commandservices
 
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.*;
 import main.web.services.fitsense.planning.domain.exceptions.*;
+import main.web.services.fitsense.planning.domain.model.aggregates.PlanAdaptationAttempt;
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
+import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
 import main.web.services.fitsense.planning.domain.model.commands.*;
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
+import main.web.services.fitsense.planning.domain.services.AdaptationEvidenceMapper;
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot;
+import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.PlanAdaptationAttemptRepository;
 import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.PlannedWorkoutRepository;
 import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository;
 import main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException;
@@ -18,9 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanCommandService {
@@ -29,6 +35,8 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
     private final WeeklyTrainingPlanRepository planRepository;
     private final PlannedWorkoutRepository plannedWorkoutRepository;
+    private final PlanAdaptationAttemptRepository attemptRepository;
+    private final AdaptationEvidenceMapper evidenceMapper;
     private final PlanGenerationPipeline pipeline;
     private final PreviousWeekAssembler previousWeekAssembler;
     private final ExternalIamService externalIamService;
@@ -36,18 +44,36 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     private final ExternalCatalogService externalCatalogService;
     private final ExternalConfigurationService externalConfigurationService;
     private final JsonSupport jsonSupport;
+    private final ExternalExecutionService externalExecutionService;
+
+    /**
+     * Que hacer con el veredicto de cobertura 4C antes de generar. Propiedad y
+     * no despliegue: la cuenta entra siempre, bloquear es otra decision.
+     */
+    private final main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement
+            coveragePregeneration;
 
     public WeeklyTrainingPlanCommandServiceImpl(WeeklyTrainingPlanRepository planRepository,
                                                 PlannedWorkoutRepository plannedWorkoutRepository,
+                                                PlanAdaptationAttemptRepository attemptRepository,
+                                                AdaptationEvidenceMapper evidenceMapper,
                                                 PlanGenerationPipeline pipeline,
                                                 PreviousWeekAssembler previousWeekAssembler,
                                                 ExternalIamService externalIamService,
                                                 ExternalProfilingService externalProfilingService,
                                                 ExternalCatalogService externalCatalogService,
                                                 ExternalConfigurationService externalConfigurationService,
-                                                JsonSupport jsonSupport) {
+                                                JsonSupport jsonSupport,
+                                                ExternalExecutionService externalExecutionService,
+                                                @org.springframework.beans.factory.annotation.Value(
+                                                        "${fitsense.coverage.pregeneration:OBSERVE}")
+                                                String coveragePregeneration) {
+        this.coveragePregeneration = main.web.services.fitsense.planning.domain.services
+                .SlotCoverageEnforcement.parse(coveragePregeneration);
         this.planRepository = planRepository;
         this.plannedWorkoutRepository = plannedWorkoutRepository;
+        this.attemptRepository = attemptRepository;
+        this.evidenceMapper = evidenceMapper;
         this.pipeline = pipeline;
         this.previousWeekAssembler = previousWeekAssembler;
         this.externalIamService = externalIamService;
@@ -55,6 +81,34 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         this.externalCatalogService = externalCatalogService;
         this.externalConfigurationService = externalConfigurationService;
         this.jsonSupport = jsonSupport;
+        this.externalExecutionService = externalExecutionService;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LocalDate firstPlanWeekStart(Long userId) {
+        var profile = externalProfilingService.fetchProfile(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Perfil del usuario", userId));
+        var hoy = LocalDate.now(externalIamService.timezoneOf(userId));
+        return primeraSemana(hoy, profile.availableDays(), profile.daysPerWeek(), profile.fitnessLevel());
+    }
+
+    /**
+     * La semana actual si su primera sesion es hoy o despues; si no, la
+     * siguiente. Usa la MISMA eleccion de dias que el generador
+     * (WeeklySplitPlanner), para no adivinar que dias saldrian.
+     */
+    static LocalDate primeraSemana(LocalDate hoy, java.util.List<Short> diasDisponibles, int diasPorSemana,
+                                   String nivel) {
+        var lunes = main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek.containing(hoy).startDate();
+        if (diasDisponibles == null || diasDisponibles.isEmpty()) return lunes;
+        int tope = "BEGINNER".equals(nivel) ? PlanGenerationContext.MAX_SESSIONS_BEGINNER
+                : PlanGenerationContext.MAX_SESSIONS_OTHERS;
+        int sesiones = Math.min(Math.min(diasPorSemana, tope), diasDisponibles.size());
+        var division = main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner
+                .plan(lunes, diasDisponibles, sesiones, 1);
+        boolean algunaPasada = division.stream().anyMatch(s -> s.date().isBefore(hoy));
+        return algunaPasada ? lunes.plusWeeks(1) : lunes;
     }
 
     /**
@@ -90,15 +144,48 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                 ? Math.max(1, adjustment.maxDifficultyLevel())
                 : profile.maxDifficultyLevel();
 
-        // Restricciones por edad y nivel. Se aplican EN LA CONSULTA: la IA no
-        // llega a ver los ejercicios que no le corresponden al participante, asi
-        // que no puede proponerlos aunque ignore las instrucciones del prompt.
-        var safety = SafetyProfile.forAgeAndLevel(profile.age(), profile.fitnessLevel());
+        // Restricciones por edad y nivel MAS las que el participante declaro.
+        // Se aplican EN LA CONSULTA: la IA no llega a ver los ejercicios que no
+        // le corresponden, asi que no puede proponerlos aunque ignore las
+        // instrucciones del prompt.
+        //
+        // INC-4C-03: hasta el 16/10 esta linea llamaba a forAgeAndLevel, que
+        // ignora lo declarado y pasa false literal en arrodillarse, suspension
+        // y por encima de la cabeza. Las cinco columnas allow_* existian desde
+        // V25 y no las leia nadie: toda restriccion que el participante
+        // declarara se perdia antes de llegar al filtro.
+        var safety = SafetyProfile.forAgeLevelAndDeclared(
+                profile.age(), profile.fitnessLevel(), profile.declaradas());
 
         var eligible = externalCatalogService.fetchEligibleFor(profile, maxDifficulty, safety);
+        // DOLOR SIN RESOLVER (campana de estres, 31/10/2026): si el ciclo anterior no publico semana porque
+        // conservarla habria vuelto a publicar el ejercicio que dolio (NO_FACTIBLE), la semana nueva se genera
+        // desde cero y su semana medida esta vacia: nada recordaba ese dolor. Sus ejercicios quedan fuera.
+        var dolorSinResolver = doloresSinResolver(command.userId(), week);
+        if (!dolorSinResolver.isEmpty()) {
+            log.warn("DOLOR_SIN_RESOLVER usuario {}: la semana del {} se genera sin {} (el ciclo anterior fue"
+                    + " NO_FACTIBLE por dolor)", command.userId(), week.startDate(), dolorSinResolver);
+            eligible = eligible.stream().filter(c -> !dolorSinResolver.contains(c.exerciseId())).toList();
+        }
         if (eligible.isEmpty())
             throw new main.web.services.fitsense.catalog.domain.exceptions.EmptyEligibleSetException(
                     command.userId());
+
+        // COMPROBACION PREVIA DE COBERTURA 4C.
+        //
+        // Va AQUI y no antes: se valora el conjunto que de verdad le queda al
+        // participante, despues de equipamiento, dificultad efectiva, bloqueos
+        // y las restricciones de SafetyProfile. Contarlo sobre el catalogo
+        // entero mediria un conjunto que nadie va a recibir.
+        //
+        // Es lo unico que el Step 4 aporta y el backend no tenia: decir
+        // "no factible" ANTES de gastar tres intentos de IA mas el motor de
+        // reglas. No cambia la dosis ni toca el conjunto elegible.
+        //
+        // La decision vive en SlotCoverageGate, que es dominio puro: asi se
+        // prueba sin Spring, sin base y sin Replicate.
+        main.web.services.fitsense.planning.domain.services.SlotCoverageGate
+                .evaluateBeforeGeneration(command.userId(), eligible, coveragePregeneration);
 
         short weekNumber = resolveWeekNumber(command.userId(), previousActive.orElse(null));
         var previousWeek = previousWeekAssembler.assemble(
@@ -116,6 +203,43 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     }
 
     /**
+     * Los ejercicios de un dolor que quedo SIN RESOLVER justo antes de esta semana: el ultimo intento V32
+     * del usuario es NO_FACTIBLE con SEGURIDAD_ANTE_DOLOR y su semana nueva es la anterior a esta (la que
+     * quedo sin plan). Son los ejercicios de la semana medida de ese intento registrados con dolor y, si el
+     * dolor se declaro en la sesion sin decir en que ejercicio, todos los de esa sesion (como V8C: ante un
+     * dolor sin identificar no se conserva ninguno). Cuanto debe recordarse un dolor mas alla de este caso
+     * es una decision funcional pendiente; aqui solo se evita repetir lo que el sistema ya declaro inseguro.
+     */
+    private java.util.Set<Long> doloresSinResolver(Long userId, TrainingWeek week) {
+        var intentos = attemptRepository.findByUserIdOrderByIdAsc(userId);
+        if (intentos.isEmpty()) return java.util.Set.of();
+        var ultimo = intentos.get(intentos.size() - 1);
+        if (ultimo.getStatus() != main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationAttempt.Status.NO_FACTIBLE
+                || ultimo.getTargetedInterventions() == null
+                || !java.util.Arrays.asList(ultimo.getTargetedInterventions()).contains("SEGURIDAD_ANTE_DOLOR")
+                || !week.previous().startDate().equals(ultimo.getNewWeekStartDate())
+                || ultimo.getSourcePlanId() == null) return java.util.Set.of();
+        var medido = planRepository.findById(ultimo.getSourcePlanId()).orElse(null);
+        if (medido == null) return java.util.Set.of();
+        var resultados = externalExecutionService.fetchResultsByWorkout(
+                medido.workoutsView().stream().map(main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout::getId).toList());
+        var excluir = new java.util.LinkedHashSet<Long>();
+        for (var w : medido.workoutsView()) {
+            var porPlanificado = w.exercisesView().stream().collect(java.util.stream.Collectors.toMap(
+                    main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise::getId,
+                    main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise::getExerciseId));
+            var r = resultados.get(w.getId());
+            boolean sesionConDolor = w.getSkipReason() == main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason.PAIN_OR_DISCOMFORT;
+            var identificados = r == null || r.exercises() == null ? java.util.List.<Long>of() : r.exercises().stream()
+                    .filter(x -> "PAIN_OR_DISCOMFORT".equals(x.skipReason()))
+                    .map(x -> porPlanificado.get(x.plannedExerciseId())).filter(java.util.Objects::nonNull).toList();
+            excluir.addAll(identificados);
+            if (sesionConDolor && identificados.isEmpty()) excluir.addAll(porPlanificado.values());
+        }
+        return excluir;
+    }
+
+    /**
      * FASE 2. SIN @Transactional, y no es un olvido.
      * <p>
      * pipeline.run hace hasta dos llamadas HTTP a Replicate de ~90 s cada una y
@@ -130,8 +254,25 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      */
     @Override
     public GeneratedPlan generate(PreparedPlanGeneration prepared) {
+        if (feasibilityObserver != null) feasibilityObserver.antesDeGenerar(prepared.context());
         var result = pipeline.run(prepared.context(), prepared.divisor());
+        if (feasibilityObserver != null)
+            feasibilityObserver.despuesDeGenerar(prepared.context(), result.draft());
         return new GeneratedPlan(result.draft(), result.attempts());
+    }
+
+    /**
+     * Paso 3 · factibilidad por objetivo, SOLO OBSERVACION y solo en la
+     * generacion inicial: el camino de adaptacion no pasa por generate().
+     * <p>
+     * Por setter y opcional, no por constructor, para no tocar las pruebas que
+     * construyen este servicio a mano (P2-D): ahi queda en null y no observa.
+     */
+    private GoalFeasibilityObserver feasibilityObserver;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setFeasibilityObserver(GoalFeasibilityObserver feasibilityObserver) {
+        this.feasibilityObserver = feasibilityObserver;
     }
 
     /**
@@ -191,6 +332,129 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         return Optional.of(saved);
     }
 
+    /**
+     * FASE 3 DE LA ADAPTACION. La semana adaptada y su evidencia, en una sola
+     * transaccion: si el plan no se publica, no queda constancia de que se
+     * publicara.
+     */
+    @Override
+    @Transactional
+    public Optional<WeeklyTrainingPlan> publishAdapted(PreparedPlanGeneration prepared,
+                                                       AdaptedPublication publicacion) {
+        var resultado = publicacion.resultado();
+
+        // Un NO_FACTIBLE aqui seria publicar lo que el productor rechazo.
+        if (!resultado.publicable())
+            throw new DomainRuleViolationException(
+                    ("El productor devolvio %s y no hay semana que publicar. La evidencia de"
+                            + " un fallo va por el registrador, en su propia transaccion.")
+                            .formatted(resultado.estado()));
+
+        var command = prepared.command();
+
+        // UNA SOLA PUBLICACION POR MEDICION, AUNQUE EL BLOQUEO DE SESION SE PIERDA.
+        // CicloSemanalBloqueo evita que dos ciclos del mismo participante
+        // corran a la vez, pero si su conexion cae mientras la IA contesta, el
+        // servidor lo suelta y otro ciclo puede empezar: los dos llegaban aqui
+        // y publicaban dos versiones con dos evidencias. La fila de la medicion
+        // se bloquea en ESTA transaccion, y quien entre segundo ve la evidencia
+        // ya confirmada y devuelve ese plan sin escribir nada.
+        attemptRepository.bloquearMedicion(publicacion.weeklyMetricId());
+        var yaPublicado = attemptRepository.planPublicadoDeLaMedicion(publicacion.weeklyMetricId());
+        if (yaPublicado.isPresent()) {
+            log.warn("La medicion {} del usuario {} ya publico el plan {}; esta ejecucion no publica otro"
+                            + " (otra ejecucion del ciclo llego antes).",
+                    publicacion.weeklyMetricId(), command.userId(), yaPublicado.get());
+            return planRepository.findById(yaPublicado.get());
+        }
+
+        // Se relee el plan previo, por lo mismo que en persist: entre fases
+        // pasaron minutos sin sesion de persistencia abierta.
+        var previousActive = planRepository.findByUserIdAndWeekStartDateAndStatus(
+                command.userId(), prepared.weekStartDate(), PlanStatus.ACTIVE);
+
+        if (previousActive.isPresent() && !command.replaceExisting())
+            throw new PlanAlreadyExistsException(command.userId(), prepared.weekStartDate());
+
+        var adjustment = prepared.adjustment();
+        var etiqueta = publicacion.etiquetaDeAjuste();
+        var motivo = publicacion.motivoDePublicacion(adjustment);
+
+        // REEMPLAZAR UN PLAN YA PUBLICADO EXIGE DECIR POR QUE.
+        // nextVersionOf rechaza un motivo vacio, y con NO_CHANGE o
+        // INSUFFICIENT_DATA la orden no trae ninguno: PlanAdjustment.none()
+        // deja reason en null. Se exige declararlo en vez de inventarlo.
+        if (previousActive.isPresent() && (motivo == null || motivo.isBlank()))
+            throw new DomainRuleViolationException(
+                    ("Hay un plan activo del %s y la decision %s no trae motivo. Reemplazar"
+                            + " una version ya publicada exige declarar por que, en"
+                            + " replacementReason.")
+                            .formatted(prepared.weekStartDate(), publicacion.decision()));
+
+        // UN SOLO VALOR DE ORIGEN para el plan y para la evidencia. El
+        // disparador de V32 compara los dos y rechaza el intento si difieren.
+        var source = resultado.source();
+
+        // generation_attempts cuenta los intentos de PRODUCIR la semana, y
+        // ck_plan_attempts (V4) exige al menos uno. Una continuidad sin IA
+        // -NO_CHANGE, INSUFFICIENT_DATA, respaldo con la IA apagada o el
+        // cortacircuitos abierto- es un intento determinista: con aiCalls = 0
+        // la publicacion fallaba y la semana quedaba sin plan y sin evidencia.
+        // ai_calls de la evidencia V32 sigue siendo el numero REAL de llamadas.
+        short generationAttempts = (short) Math.max(1, publicacion.aiCalls());
+
+        var plan = previousActive
+                .map(previous -> WeeklyTrainingPlan.nextVersionOf(previous, source,
+                        publicacion.modelName(), publicacion.inputSnapshotJson(),
+                        generationAttempts, etiqueta, motivo))
+                .orElseGet(() -> WeeklyTrainingPlan.firstVersion(command.userId(),
+                        prepared.weekNumber(), prepared.weekStartDate(), prepared.weekEndDate(),
+                        source, publicacion.modelName(), publicacion.inputSnapshotJson(),
+                        generationAttempts));
+
+        // POR ordenaAdaptar(), NO POR isActive(). isActive() mira targetVolume,
+        // que en una orden localizada es null, asi que una adaptacion se
+        // publicaba con adjustment_applied en null. Y la etiqueta sale de la
+        // decision, no de types().get(0), que pertenece al mecanismo porcentual.
+        if (publicacion.decision().ordenaAdaptar())
+            plan.recordAdjustment(etiqueta, motivo);
+
+        // La sobrecarga que conserva el linaje: linkSource por sesion.
+        materialize(plan, resultado.semana(), prepared.zone());
+
+        // Se etiqueta el formato para distinguirlo del snapshot de generacion
+        // inicial, que es un PlanDraft y no lleva el origen de cada sesion.
+        plan.attachOutputSnapshot(jsonSupport.write(java.util.Map.of(
+                "schema_version", "ADAPTED_WEEK_V1",
+                "derived_workouts", resultado.semana())));
+
+        previousActive.ifPresent(previous -> {
+            previous.markReplaced();
+            planRepository.saveAndFlush(previous);
+        });
+
+        // saveAndFlush, no save: la evidencia referencia el plan por clave
+        // ajena (fk_paa_result) y esa comprobacion NO es diferida, asi que la
+        // fila del plan tiene que existir antes de insertar el intento.
+        var saved = planRepository.saveAndFlush(plan);
+
+        var intento = evidenceMapper.map(resultado, adjustment, publicacion.decision(),
+                new AdaptationEvidenceMapper.PublicationFacts(
+                        command.userId(), publicacion.weeklyMetricId(),
+                        publicacion.sourcePlanId(), prepared.weekStartDate(),
+                        saved.getId(), publicacion.aiCalls(),
+                        publicacion.observedAdherencePct(),
+                        publicacion.registrationCoveragePct(),
+                        jsonSupport.write(resultado.conservacion())));
+
+        attemptRepository.save(PlanAdaptationAttempt.desde(intento));
+
+        log.info("Semana adaptada {} publicada para el usuario {} · origen {} · motivo {} · {}",
+                saved.getId(), command.userId(), source, resultado.motivo(),
+                resultado.conservacion().describe());
+        return Optional.of(saved);
+    }
+
     @Override
     @Transactional
     public void handle(StartPlannedWorkoutCommand command) {
@@ -217,8 +481,15 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         if (command.reason() == null)
             throw new DomainRuleViolationException(
                     "Indica por que no vas a hacer este entrenamiento: sin la causa el sistema no puede ajustar.");
+        // Con una sesion abierta, omitirlo dejaria el entrenamiento SKIPPED y
+        // la sesion en curso: dos estados que se contradicen, y el cierre
+        // posterior pisaria la omision. Primero se cierra o se abandona.
+        if (workout.getStatus() == WorkoutStatus.IN_PROGRESS
+                && externalExecutionService.hasOpenSession(workout.getId()))
+            throw new DomainRuleViolationException(
+                    "Tienes una sesion abierta de este entrenamiento. Terminala o abandonala antes de omitirlo.");
 
-        workout.markSkipped(command.reason());
+        workout.markSkipped(command.reason(), command.lackOfTimeContext(), command.availableMinutes());
         plannedWorkoutRepository.save(workout);
     }
 
@@ -270,23 +541,45 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     }
 
     private void materialize(WeeklyTrainingPlan plan, PlanDraft draft, ZoneId zone) {
-        for (var draftWorkout : draft.workouts()) {
-            // expires_at es 23:59 hora LOCAL del usuario: es lo que define que
-            // entrenamientos siguen siendo exigibles.
-            var expiresAt = draftWorkout.scheduledDate()
-                    .atTime(LocalTime.of(23, 59))
-                    .atZone(zone)
-                    .toOffsetDateTime();
-
-            var workout = plan.addWorkout(draftWorkout.scheduledDate(), draftWorkout.focus(),
-                    draftWorkout.name(), draftWorkout.expectedDurationMinutes(), expiresAt);
-
-            for (var draftExercise : draftWorkout.exercises()) {
-                workout.addExercise(draftExercise.exerciseId(), draftExercise.prescriptionType(),
-                        draftExercise.plannedSets(), draftExercise.plannedReps(),
-                        draftExercise.plannedDurationSeconds(), draftExercise.targetLoadKg(),
-                        draftExercise.restSeconds(), draftExercise.notes());
-            }
+        for (var workout : draft.workouts()) {
+            materializar(plan, workout, zone);
         }
+    }
+
+    /**
+     * V31: crea cada sesion adaptada junto con su ID de origen.
+     * No aplanar a PlanDraft porque se perderia sourcePlannedWorkoutId.
+     * Esta sobrecarga queda inactiva hasta conectar P2-B-2c/P2-B-3.
+     */
+    private void materialize(WeeklyTrainingPlan plan, List<DerivedWorkout> semana, ZoneId zone) {
+        for (var derivada : semana) {
+            materializar(plan, derivada.workout(), zone)
+                    .linkSource(derivada.sourcePlannedWorkoutId());
+        }
+    }
+
+    /**
+     * Un solo camino para las prescripciones de generacion inicial y adaptacion.
+     */
+    private PlannedWorkout materializar(WeeklyTrainingPlan plan,
+                                        PlanDraft.DraftWorkout draftWorkout,
+                                        ZoneId zone) {
+        // expires_at es 23:59 hora LOCAL del usuario: es lo que define que
+        // entrenamientos siguen siendo exigibles.
+        var expiresAt = draftWorkout.scheduledDate()
+                .atTime(LocalTime.of(23, 59))
+                .atZone(zone)
+                .toOffsetDateTime();
+
+        var workout = plan.addWorkout(draftWorkout.scheduledDate(), draftWorkout.focus(),
+                draftWorkout.name(), draftWorkout.expectedDurationMinutes(), expiresAt);
+
+        for (var draftExercise : draftWorkout.exercises()) {
+            workout.addExercise(draftExercise.exerciseId(), draftExercise.prescriptionType(),
+                    draftExercise.plannedSets(), draftExercise.plannedReps(),
+                    draftExercise.plannedDurationSeconds(), draftExercise.targetLoadKg(),
+                    draftExercise.restSeconds(), draftExercise.notes());
+        }
+        return workout;
     }
 }

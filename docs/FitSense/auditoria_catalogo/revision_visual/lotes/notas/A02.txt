@@ -1,0 +1,35 @@
+267|PENDIENTE_CRITERIO|MEDIA|combinado|shoulders / KNEE_DOMINANT|sentadilla + press|Thruster
+952|PENDIENTE_CRITERIO|MEDIA|combinado|shoulders / KNEE_DOMINANT|sentadilla + press|Thruster
+930|PROBABLE|MEDIA|body_part|upper arms|upper legs o shoulders|Cargada colgante
+971|PROBABLE|MEDIA|body_part|upper arms|upper legs o shoulders|Cargada colgante
+528|CONFIRMADO|MEDIA|movement_pattern|TRUNK_FLEXION|ELBOW_FLEXION|Curl sentado en balon con una pierna elevada
+316|CONFIRMADO|MEDIA|movement_pattern|VERTICAL_PULL|HORIZONTAL_PULL|Remo invertido bajo la barra, talones en el suelo
+316|CONFIRMADO|BAJA|requires_hanging / requires_overhead|true / true|false / false|No cuelga (restriccion de mas)
+316|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado bajo la barra, talones en el suelo (igual que 912)
+684|CONFIRMADO|MEDIA|body_part / target|upper arms / biceps|lower arms / forearms|Curl de muneca
+685|CONFIRMADO|MEDIA|body_part / target|upper arms / biceps|lower arms / forearms|Curl de muneca
+730|CONFIRMADO|MEDIA|body_part / target|upper arms / biceps|lower arms / forearms|Curl de muneca
+160|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench|Sentadilla hasta el banco
+161|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench|Sentadilla hasta el banco
+875|CONFIRMADO|MEDIA|equipment|body weight|body weight + bench|Tumbado en un banco
+875|CONFIRMADO|BAJA|requires_floor|true|false|En banco, no en el suelo (restriccion de mas)
+875|PROBABLE|MEDIA|body_part|upper legs|waist|Patadas de tijera
+310|PROBABLE|MEDIA|body_part|upper legs|waist|Giro de tronco tumbado
+162|PENDIENTE_CRITERIO|MEDIA|combinado|upper legs / VERTICAL_PUSH|cargada + press|
+674|PENDIENTE_CRITERIO|MEDIA|combinado|upper legs / VERTICAL_PUSH|arrancada a una mano|
+813|CONFIRMADO|ALTA|difficulty_level|1|3|Bandera humana en un poste
+813|CONFIRMADO|MEDIA|equipment|body weight|poste o espaldera (no modelado)|
+1298|CONFIRMADO|ALTA|requires_floor|false|true|Manos en el suelo, cuerpo suspendido sobre los brazos
+1298|CONFIRMADO|ALTA|difficulty_level|1|3|Maltesa en straddle: habilidad gimnastica de elite
+1298|CONFIRMADO|BAJA|requires_hanging / requires_overhead|true / true|false / false|No cuelga
+502|CONFIRMADO|MEDIA|movement_pattern|ELBOW_FLEXION|TRUNK_FLEXION|Encogimiento abdominal en el suelo
+903|PENDIENTE_CRITERIO|MEDIA|movement_pattern|LOCOMOTION_CARDIO|MOBILITY o CORE (probable)|Inchworm
+868|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|3 (probable)|Pica colgado: piernas hasta la barra
+61|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|1-2|Elevacion de rodillas colgado de correas
+62|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|2 (probable)|Elevacion de piernas rectas colgado
+865|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|1-2|Elevacion de rodillas colgado
+866|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|1-2|Elevacion de rodillas colgado
+869|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|2 (probable)|Piernas rectas colgado
+870|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|2 (probable)|Piernas rectas colgado
+427|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado sobre el bosu en el suelo
+427|CONFIRMADO|MEDIA|equipment|cable|cable + bosu ball|

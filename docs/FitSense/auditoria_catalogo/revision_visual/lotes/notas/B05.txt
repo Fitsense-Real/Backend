@@ -1,0 +1,12 @@
+574|PROBABLE|MEDIA|movement_pattern|VERTICAL_PUSH|SHOULDER_RAISE|Brazos colgando en banco inclinado; elevacion corta, no press
+574|PROBABLE|BAJA|requires_overhead|true|false|No pasa de la altura del hombro (restriccion de mas)
+1022|CONFIRMADO|MEDIA|equipment|leverage machine|landmine + barbell|Barra anclada al suelo con disco
+1022|PENDIENTE_CRITERIO|MEDIA|combinado|shoulders / VERTICAL_PUSH|sentadilla + press (thruster con landmine)|
+366|CONFIRMADO|MEDIA|equipment|cable|cable + bench|Banco inclinado
+443|CONFIRMADO|MEDIA|equipment|cable|cable + bench|Banco inclinado
+605|CONFIRMADO|ALTA|requires_overhead|false|true|Extension de triceps con mancuernas por encima de la cabeza
+721|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+722|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+729|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+315|PENDIENTE_CRITERIO|BAJA|equipment|body weight|silla o banco (convencion de los sentados)|Sentado
+446|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco

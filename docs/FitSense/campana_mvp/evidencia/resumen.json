@@ -1,0 +1,16 @@
+{
+  "modo" : "IA real",
+  "duracion_min" : 13,
+  "llamadas" : 45,
+  "llamadas_con_error" : 1,
+  "predicciones_con_metricas" : 45,
+  "tokens_entrada" : 1363518,
+  "tokens_salida" : 266597,
+  "coste_estimado_usd" : 0.8740735,
+  "latencia_media_ms" : 58662,
+  "latencia_max_ms" : 171975,
+  "motivo_parada" : null,
+  "violaciones_linaje" : 0,
+  "violaciones_comprobaciones" : [ ],
+  "cortes" : [ "U06: sin plan inicial (SIN_PLAN: PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 6. Ultimos problemas: V15: el entrenamiento del 2026-11-05 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V20: el entrenamiento del 2026-11-08 dura unos 2142 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 378 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.)" ]
+}

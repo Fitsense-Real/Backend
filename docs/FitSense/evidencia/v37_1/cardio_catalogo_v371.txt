@@ -1,0 +1,78 @@
+LOCOMOTION_CARDIO total 27 activos 27
+prescribibles principiante casa: [('253', 'bear crawl'), ('298', 'bridge - mountain climber (cross body)'), ('853', 'half knee bends (male)'), ('1054', 'mountain climber'), ('1093', 'push to run')]
+10 ('alto impacto',)
+3 ('dificultad 2', 'alto impacto')
+3 ('prescripcion SETS_REPS',)
+2 ('dificultad 2', 'alto impacto', 'prescripcion SETS_REPS')
+1 ('dificultad 2', 'equipo 1:leverage machine')
+1 ('alto impacto', 'equipo 1:treadmill')
+1 ('dificultad 2', 'equipo 1:stationary bike')
+1 ('equipo 1:treadmill',)
+--- activos LOCOMOTION_CARDIO bloqueados solo por 1 motivo
+53 astride jumps (male) | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+293 burpee | cardio body weight  diff 1 DURATION hi t floor t kneel f | alto impacto
+854 high knee against wall | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+893 jack burpee | cardio body weight  diff 1 DURATION hi t floor t kneel f | alto impacto
+902 inchworm | waist body weight  diff 1 SETS_REPS hi f floor t kneel f | prescripcion SETS_REPS
+903 inchworm v. 2 | waist body weight  diff 1 SETS_REPS hi f floor t kneel f | prescripcion SETS_REPS
+1117 quick feet v. 2 | upper legs body weight  diff 1 SETS_REPS hi f floor f kneel f | prescripcion SETS_REPS
+1133 run | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+1135 scissor jumps (male) | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+1175 short stride run | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+1176 skater hops | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+1177 ski step | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+1325 walking on incline treadmill | cardio treadmill 1:treadmill diff 1 DURATION hi f floor f kneel f | equipo 1:treadmill
+1333 wheel run | cardio body weight  diff 1 DURATION hi t floor f kneel f | alto impacto
+--- no LOCOMOTION_CARDIO con nombre de cardio, activos, dificultad<=2
+106 band bicycle crunch | waist TRUNK_FLEXION band 1:band diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+108 band jack knife sit-up | waist TRUNK_FLEXION band 1:band diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+109 band kneeling twisting crunch | waist TRUNK_ROTATION_LATERAL_FLEXION band 1:band diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+138 band standing crunch | waist TRUNK_FLEXION band 1:band diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+139 band standing twisting crunch | waist TRUNK_ROTATION_LATERAL_FLEXION band 1:band diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+295 box jump down with one leg stabilization | lower legs BALANCE_CONTROL bench 1:bench diff 2 SETS_REPS hi t | ['dificultad 2', 'alto impacto', 'equipo 1:bench', 'prescripcion SETS_REPS']
+311 bodyweight drop jump squat | upper legs KNEE_DOMINANT body weight  diff 2 SETS_REPS hi t | ['dificultad 2', 'alto impacto', 'prescripcion SETS_REPS']
+348 cable kneeling crunch | waist TRUNK_FLEXION cable 1:cable diff 1 SETS_REPS hi f | ['equipo 1:cable', 'prescripcion SETS_REPS']
+385 cable reverse crunch | waist TRUNK_FLEXION cable 1:cable diff 2 SETS_REPS hi f | ['dificultad 2', 'equipo 1:cable', 'prescripcion SETS_REPS']
+424 cable seated crunch | waist TRUNK_FLEXION cable 1:cable diff 1 SETS_REPS hi f | ['equipo 1:cable', 'prescripcion SETS_REPS']
+427 cable side bend crunch (bosu ball) | waist TRUNK_ROTATION_LATERAL_FLEXION cable 1:cable,2:bosu ball diff 2 SETS_REPS hi f | ['dificultad 2', 'equipo 1:cable,2:bosu ball', 'prescripcion SETS_REPS']
+428 cable side crunch | waist TRUNK_ROTATION_LATERAL_FLEXION cable 1:cable diff 2 SETS_REPS hi f | ['dificultad 2', 'equipo 1:cable', 'prescripcion SETS_REPS']
+429 cable standing crunch | waist TRUNK_FLEXION cable 1:cable diff 2 SETS_REPS hi f | ['dificultad 2', 'equipo 1:cable', 'prescripcion SETS_REPS']
+430 cable standing crunch (with rope attachment) | waist TRUNK_FLEXION cable 1:cable diff 2 SETS_REPS hi f | ['dificultad 2', 'equipo 1:cable', 'prescripcion SETS_REPS']
+475 cable tuck reverse crunch | waist TRUNK_FLEXION cable 1:cable diff 2 SETS_REPS hi f | ['dificultad 2', 'equipo 1:cable', 'prescripcion SETS_REPS']
+499 cross body crunch | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+500 crunch (hands overhead) | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+501 crunch floor | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+504 decline crunch | waist TRUNK_FLEXION body weight 1:body weight,2:bench diff 1 SETS_REPS hi f | ['equipo 1:body weight,2:bench', 'prescripcion SETS_REPS']
+530 crunch (on stability ball) | waist TRUNK_FLEXION stability ball 1:stability ball diff 1 SETS_REPS hi f | ['equipo 1:stability ball', 'prescripcion SETS_REPS']
+531 crunch (on stability ball, arms straight) | waist TRUNK_FLEXION stability ball 1:stability ball diff 1 SETS_REPS hi f | ['equipo 1:stability ball', 'prescripcion SETS_REPS']
+819 farmers walk | upper legs OTHER dumbbell 1:dumbbell diff 2 DURATION hi f | ['dificultad 2']
+856 frog crunch | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+863 groin crunch | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+878 glute bridge march | upper legs HIP_EXTENSION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+895 incline push up depth jump | chest HORIZONTAL_PUSH bench 1:bench,2:step platform diff 1 SETS_REPS hi t | ['alto impacto', 'equipo 1:bench,2:step platform', 'prescripcion SETS_REPS']
+906 jackknife sit-up | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+918 jump squat | upper legs KNEE_DOMINANT body weight  diff 2 SETS_REPS hi t | ['dificultad 2', 'alto impacto', 'prescripcion SETS_REPS']
+919 jump squat v. 2 | upper legs KNEE_DOMINANT body weight  diff 2 SETS_REPS hi t | ['dificultad 2', 'alto impacto', 'prescripcion SETS_REPS']
+935 knee touch crunch | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+973 left hook. boxing | shoulders TRUNK_ROTATION_LATERAL_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1027 lever seated crunch | waist TRUNK_FLEXION leverage machine 1:leverage machine diff 1 SETS_REPS hi f | ['equipo 1:leverage machine', 'prescripcion SETS_REPS']
+1028 lever seated crunch (chest pad) | waist TRUNK_FLEXION leverage machine 1:leverage machine diff 1 SETS_REPS hi f | ['equipo 1:leverage machine', 'prescripcion SETS_REPS']
+1029 lever seated crunch v. 2 | waist TRUNK_FLEXION leverage machine 1:leverage machine diff 1 SETS_REPS hi f | ['equipo 1:leverage machine', 'prescripcion SETS_REPS']
+1030 lever seated leg raise crunch | waist TRUNK_FLEXION leverage machine 1:leverage machine diff 1 SETS_REPS hi f | ['equipo 1:leverage machine', 'prescripcion SETS_REPS']
+1063 negative crunch | waist TRUNK_FLEXION bench 1:bench diff 1 SETS_REPS hi f | ['equipo 1:bench', 'prescripcion SETS_REPS']
+1064 oblique crunch v. 2 | waist TRUNK_ROTATION_LATERAL_FLEXION bench 1:bench diff 1 SETS_REPS hi f | ['equipo 1:bench', 'prescripcion SETS_REPS']
+1065 oblique crunches floor | waist TRUNK_ROTATION_LATERAL_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1074 lunge with jump | upper legs KNEE_DOMINANT body weight  diff 2 SETS_REPS hi t | ['dificultad 2', 'alto impacto', 'prescripcion SETS_REPS']
+1076 march sit (wall) | upper legs KNEE_DOMINANT body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1077 monster walk | upper legs HIP_ABDUCTION_ADDUCTION body weight  diff 1 DURATION hi f | []
+1084 medicine ball chest push with run release | chest HORIZONTAL_PUSH medicine ball 1:medicine ball diff 1 DURATION hi t | ['alto impacto', 'equipo 1:medicine ball']
+1139 reverse crunch | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1150 runners stretch | upper legs MOBILITY body weight  diff 1 DURATION hi f | []
+1174 semi squat jump (male) | cardio KNEE_DOMINANT body weight  diff 2 SETS_REPS hi t | ['dificultad 2', 'alto impacto', 'prescripcion SETS_REPS']
+1181 seated side crunch (wall) | waist TRUNK_ROTATION_LATERAL_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1262 spider crawl push up | upper legs HORIZONTAL_PUSH body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1269 stability ball crunch (full range hands behind head) | waist TRUNK_FLEXION stability ball 1:stability ball diff 1 SETS_REPS hi f | ['equipo 1:stability ball', 'prescripcion SETS_REPS']
+1295 walking high knees lunge | cardio KNEE_DOMINANT body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1301 suspended reverse crunch | waist TRUNK_FLEXION suspension straps 1:suspension straps diff 1 SETS_REPS hi f | ['equipo 1:suspension straps', 'prescripcion SETS_REPS']
+1302 tuck crunch | waist TRUNK_FLEXION body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']
+1315 walking lunge | upper legs KNEE_DOMINANT body weight  diff 1 SETS_REPS hi f | ['prescripcion SETS_REPS']

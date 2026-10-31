@@ -1,0 +1,25 @@
+id	ejercicio	grupo	patron	cruce
+54	back and forth step	cardio	KNEE_DOMINANT	slot de pierna con grupo cardio
+162	barbell clean and press	upper legs	VERTICAL_PUSH	slot de tronco superior con grupo upper legs
+262	barbell skier	shoulders	HIP_HINGE	slot de pierna con grupo shoulders
+267	barbell thruster	shoulders	KNEE_DOMINANT	slot de pierna con grupo shoulders
+301	bodyweight squatting row	back	KNEE_DOMINANT	slot de pierna con grupo back
+302	bodyweight squatting row (with towel)	back	KNEE_DOMINANT	slot de pierna con grupo back
+439	cable squat row (with rope attachment)	back	KNEE_DOMINANT	slot de pierna con grupo back
+671	dumbbell pullover hip extension on exercise ball	chest	HIP_EXTENSION	slot de pierna con grupo chest
+674	dumbbell one arm snatch	upper legs	VERTICAL_PUSH	slot de tronco superior con grupo upper legs
+796	dumbbell step up single leg balance with bicep curl	upper arms	KNEE_DOMINANT	slot de pierna con grupo upper arms
+824	exercise ball prone leg raise	back	HIP_EXTENSION	slot de pierna con grupo back
+862	gorilla chin	waist	VERTICAL_PULL	slot de tronco superior con grupo waist
+922	kettlebell alternating hang clean	lower arms	HIP_HINGE	slot de pierna con grupo lower arms
+927	kettlebell bent press	waist	VERTICAL_PUSH	slot de tronco superior con grupo waist
+930	kettlebell bottoms up clean from the hang position	upper arms	HIP_HINGE	slot de pierna con grupo upper arms
+952	kettlebell thruster	shoulders	KNEE_DOMINANT	slot de pierna con grupo shoulders
+953	kettlebell two arm clean	shoulders	HIP_HINGE	slot de pierna con grupo shoulders
+959	kettlebell figure 8	waist	HIP_HINGE	slot de pierna con grupo waist
+962	kettlebell sumo high pull	back	KNEE_DOMINANT	slot de pierna con grupo back
+971	kettlebell double alternating hang clean	upper arms	HIP_HINGE	slot de pierna con grupo upper arms
+1086	medicine ball catch and overhead throw	back	KNEE_DOMINANT	slot de pierna con grupo back
+1174	semi squat jump (male)	cardio	KNEE_DOMINANT	slot de pierna con grupo cardio
+1225	smith hip raise	waist	HIP_EXTENSION	slot de pierna con grupo waist
+1295	walking high knees lunge	cardio	KNEE_DOMINANT	slot de pierna con grupo cardio
