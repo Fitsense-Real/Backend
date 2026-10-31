@@ -372,6 +372,16 @@ public class AdaptedWeekCommandService {
         if (!fixGenerator.isEnabled() || !proveedorDisponible(context.userId()))
             return sinPropuestaUsable(context, derivation, elegibles, exclusiones, (short) 0);
 
+        // FACTIBILIDAD PREVIA (fase C, 31/10/2026): si ninguna sesion para la IA admite una
+        // propuesta valida, se va al mismo camino que sin propuesta, sin gastar llamadas.
+        var imposible = main.web.services.fitsense.planning.domain.services.FactibilidadPreviaIA
+                .imposibilidad(context, derivation);
+        if (imposible.isPresent()) {
+            log.warn("FACTIBILIDAD_PREVIA usuario {}: sin llamada a la IA, imposibilidad demostrada · {}",
+                    context.userId(), imposible.get());
+            return sinPropuestaUsable(context, derivation, elegibles, exclusiones, (short) 0);
+        }
+
         var full = PlanInputSnapshot.of(context);
         var acumulados = new LinkedHashSet<String>();
         String ultimaPropuesta = null;

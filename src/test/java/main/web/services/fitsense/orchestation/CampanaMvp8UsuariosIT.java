@@ -94,6 +94,14 @@ import static org.mockito.Mockito.doAnswer;
  * respuesta; no se fuerzan por SQL.
  * <p>
  * Salida en {@code target/campana-mvp/}.
+ * <p>
+ * MODO FOCO (orden de optimizacion del 31/10/2026, fase F): con
+ * {@code -Dfitsense.campana.foco=U01:2,U02:3,...} solo esas operaciones (usuario:semana del ciclo)
+ * llaman a Replicate. Las demas REPITEN, sin coste, la salida que dio el modelo en la campana
+ * original ({@code fitsense.campana.repeticion}, por omision su {@code llamadas.jsonl}) en el mismo
+ * intento, validada por el backend ACTUAL; si la campana original no llego a ese intento, el intento
+ * se rechaza sin llamada. Asi el estado previo a cada caso se recrea con las mismas respuestas y la
+ * misma adherencia del guion, sin registrar nada a mano. Cada usuario se detiene tras su ultimo caso.
  */
 @Testcontainers
 @EnabledIfSystemProperty(named = "fitsense.campana.mvp", matches = "true")
@@ -130,10 +138,17 @@ class CampanaMvp8UsuariosIT {
 
     static final boolean IA = !"false".equals(System.getProperty("fitsense.campana.ia"));
     /** Solo estos usuarios (p. ej. {@code U06}); vacio = los ocho. */
-    static final Set<String> SOLO = Arrays.stream(System.getProperty("fitsense.campana.usuarios", "").split(","))
-            .map(String::strip).filter(x -> !x.isEmpty()).collect(Collectors.toSet());
+    /** Modo foco: usuario -> semanas cuyo ciclo llama a la IA real. Vacio = campana completa. */
+    static final Map<String, SortedSet<Integer>> FOCO = foco(System.getProperty("fitsense.campana.foco", ""));
+    static final Set<String> SOLO = FOCO.isEmpty()
+            ? Arrays.stream(System.getProperty("fitsense.campana.usuarios", "").split(","))
+                    .map(String::strip).filter(x -> !x.isEmpty()).collect(Collectors.toSet())
+            : FOCO.keySet();
     static final Path SALIDA = Path.of("target", "campana-mvp", (IA ? "real" : "ensayo-seco")
+            + (FOCO.isEmpty() ? "" : "-foco")
             + (SOLO.isEmpty() ? "" : "-" + String.join("-", new TreeSet<>(SOLO))));
+    static final Path REPETICION = Path.of(System.getProperty("fitsense.campana.repeticion",
+            "docs/FitSense/campana_mvp/evidencia/llamadas.jsonl"));
     static final int MAX_LLAMADAS = Integer.getInteger("fitsense.campana.max-llamadas", 80);
     static final int HILOS = Integer.getInteger("fitsense.campana.hilos", 4);
     static final int SEMANAS = 8;
@@ -298,17 +313,31 @@ class CampanaMvp8UsuariosIT {
     final AtomicBoolean abortar = new AtomicBoolean();
     volatile String motivoParada;
 
-    private void espiar() {
-        doAnswer(inv -> registrar("ADAPTACION", ((PlanGenerationContext) inv.getArgument(0)).userId(),
-                inv.getArgument(4), inv.getArgument(3), () -> {
-                    var r = (ReplicateSessionFixGenerator.RawFix) inv.callRealMethod();
-                    return new Object[]{r, r.output()};
-                })).when(correcciones).pedirRespuesta(any(), any(), any(), any(), anyInt());
-        doAnswer(inv -> registrar("GENERACION", ((PlanGenerationContext) inv.getArgument(0)).userId(),
-                inv.getArgument(2), inv.getArgument(1), () -> {
-                    var r = (String) inv.callRealMethod();
-                    return new Object[]{r, r};
-                })).when(generador).requestOutput(any(), any(), anyInt());
+    private void espiar() throws Exception {
+        cargarOriginales();
+        doAnswer(inv -> {
+            if (!enFoco()) {
+                // El snapshot es el que el backend actual habria enviado: solo la salida es la original.
+                var builder = (main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilder)
+                        org.springframework.test.util.ReflectionTestUtils.getField(correcciones, "promptBuilder");
+                var prompt = builder.build(inv.getArgument(0), inv.getArgument(1), inv.getArgument(2), inv.getArgument(3));
+                return new ReplicateSessionFixGenerator.RawFix(prompt.snapshotJson(),
+                        repetir("ADAPTACION", inv.getArgument(4)));
+            }
+            return registrar("ADAPTACION", ((PlanGenerationContext) inv.getArgument(0)).userId(),
+                    inv.getArgument(4), inv.getArgument(3), () -> {
+                        var r = (ReplicateSessionFixGenerator.RawFix) inv.callRealMethod();
+                        return new Object[]{r, r.output()};
+                    });
+        }).when(correcciones).pedirRespuesta(any(), any(), any(), any(), anyInt());
+        doAnswer(inv -> {
+            if (!enFoco()) return repetir("GENERACION", inv.getArgument(2));
+            return registrar("GENERACION", ((PlanGenerationContext) inv.getArgument(0)).userId(),
+                    inv.getArgument(2), inv.getArgument(1), () -> {
+                        var r = (String) inv.callRealMethod();
+                        return new Object[]{r, r};
+                    });
+        }).when(generador).requestOutput(any(), any(), anyInt());
 
         var appender = new AppenderBase<ILoggingEvent>() {
             @Override
@@ -353,13 +382,59 @@ class CampanaMvp8UsuariosIT {
         }
     }
 
+    static Map<String, SortedSet<Integer>> foco(String valor) {
+        var m = new TreeMap<String, SortedSet<Integer>>();
+        for (var par : valor.split(",")) {
+            if (par.isBlank()) continue;
+            var x = par.strip().split(":");
+            m.computeIfAbsent(x[0], k -> new TreeSet<>()).add(Integer.parseInt(x[1]));
+        }
+        return m;
+    }
+
+    /** La operacion en curso llama a la IA real: siempre fuera del modo foco. */
+    static boolean enFoco() {
+        if (FOCO.isEmpty()) return true;
+        var e = ETIQUETA.get();
+        if (e == null) return false;
+        var x = e.split(" · s");
+        return x.length == 2 && FOCO.getOrDefault(x[0], new TreeSet<>()).contains(Integer.parseInt(x[1]));
+    }
+
+    /** Salidas de la campana original por etiqueta|tipo|intento (solo en modo foco). */
+    final Map<String, String> originales = new HashMap<>();
+    final Queue<String> repeticiones = new ConcurrentLinkedQueue<>();
+
+    private void cargarOriginales() throws Exception {
+        if (FOCO.isEmpty()) return;
+        var json = new ObjectMapper();
+        for (var linea : Files.readAllLines(REPETICION)) {
+            if (linea.isBlank()) continue;
+            var n = json.readTree(linea);
+            if (n.path("salida").isTextual())
+                originales.put(n.get("etiqueta").asText() + "|" + n.get("tipo").asText() + "|" + n.get("intento").asInt(),
+                        n.get("salida").asText());
+        }
+    }
+
+    /** La salida original de este intento, o un rechazo sin llamada si la campana no llego a el. */
+    private String repetir(String tipo, int intento) {
+        var clave = ETIQUETA.get() + "|" + tipo + "|" + intento;
+        var salida = originales.get(clave);
+        repeticiones.add(clave + (salida == null ? " -> sin salida original (rechazo sin llamada)" : " -> repetida"));
+        if (salida == null)
+            throw new InvalidPlanDraftException(List.of("REPETICION: la campana original no tuvo el intento "
+                    + intento + " de esta operacion; no se llama a la IA fuera del foco."));
+        return salida;
+    }
+
     private void parar(String motivo) {
         if (abortar.compareAndSet(false, true)) motivoParada = motivo;
     }
 
     /** Reserva el maximo de una operacion (3 intentos). Falso si no cabe en el presupuesto. */
     private boolean reservar() {
-        if (!IA) return true;
+        if (!IA || !enFoco()) return true;
         while (true) {
             int r = reservadas.get();
             if (r + 3 > MAX_LLAMADAS) return false;
@@ -369,7 +444,7 @@ class CampanaMvp8UsuariosIT {
 
     /** Devuelve lo reservado que no se gasto. */
     private void liberar(int usadas) {
-        if (IA) reservadas.addAndGet(usadas - 3);
+        if (IA && enFoco()) reservadas.addAndGet(usadas - 3);
     }
 
     private int contar(long u) {
@@ -486,6 +561,13 @@ class CampanaMvp8UsuariosIT {
                 return new Resultado(def, u, inicial, semanas, filasSesion, filasPaso,
                         "sin semana publicada tras la " + numero);
             plan = siguiente;
+            if (!FOCO.isEmpty() && numero == FOCO.get(def.id()).last()) {
+                for (int r = numero + 1; r <= SEMANAS; r++)
+                    semanas.add(new FilaSemana(def.id(), r, S1.plusWeeks(r - 1), def.guion().get(r - 1).guion(), null,
+                            "-", "-", 0, "-", 0, 0, 0, 0, null, null, null, "-", "-", null, "-", "FUERA_DEL_FOCO", "-",
+                            0, 0, "-", null, null, null, List.of(), "modo foco: el usuario se detiene tras su ultimo caso"));
+                return new Resultado(def, u, inicial, semanas, filasSesion, filasPaso, "fin del foco (semana " + numero + ")");
+            }
         }
         return new Resultado(def, u, inicial, semanas, filasSesion, filasPaso, null);
     }
@@ -1050,6 +1132,7 @@ class CampanaMvp8UsuariosIT {
             for (var l : llamadas) w.write(json.writeValueAsString(l) + "\n");
         }
         Files.write(SALIDA.resolve("eventos.log"), new ArrayList<>(eventos));
+        if (!FOCO.isEmpty()) Files.write(SALIDA.resolve("repeticiones.log"), new ArrayList<>(repeticiones));
         Files.write(SALIDA.resolve("tiempos.log"), new ArrayList<>(tiempos));
 
         // Integridad V31-V34 sobre toda la base efimera.

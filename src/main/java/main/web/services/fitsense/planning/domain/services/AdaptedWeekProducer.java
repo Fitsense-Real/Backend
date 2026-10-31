@@ -57,6 +57,9 @@ import java.util.Map;
  */
 public class AdaptedWeekProducer {
 
+    /** Sin estado: el mismo calculo de V17 y V20. */
+    private static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
+
     private final SessionFixApplier applier;
     private final ConservationValidator conservation;
     private final StrictPlanValidation estricta;
@@ -175,7 +178,7 @@ public class AdaptedWeekProducer {
         // son un cambio de entrenamiento.
         var normalizadas = new ArrayList<String>();
         var adaptada = new WeekDerivation(
-                minutosSegunContenido(aplicada.workouts(), context.previousWeek(), adjustment, normalizadas),
+                minutosSegunContenido(aplicada.workouts(), context, adjustment, normalizadas),
                 aplicada.sourcesWithoutDerived());
         // Lo HEREDADO que dejo de ser seguro se repara tambien aqui: una sesion
         // no senalada con el ejercicio no la puede corregir la IA, porque V8C
@@ -286,8 +289,9 @@ public class AdaptedWeekProducer {
      * la duracion declarada la juzga V17 contra el estimador; si es una no
      * senalada, V8C sigue rechazando que cambie sus minutos.
      */
-    private static List<DerivedWorkout> minutosSegunContenido(List<DerivedWorkout> semana, PreviousWeekSummary medida,
+    private static List<DerivedWorkout> minutosSegunContenido(List<DerivedWorkout> semana, PlanGenerationContext context,
                                                               PlanAdjustment adjustment, List<String> notas) {
+        var medida = context.previousWeek();
         if (medida == null || medida.workouts() == null) return semana;
         var salida = new ArrayList<DerivedWorkout>();
         for (var d : semana) {
@@ -295,9 +299,22 @@ public class AdaptedWeekProducer {
             var anterior = medida.workouts().stream().filter(w -> origen.equals(w.plannedWorkoutId())).findFirst();
             var w = d.workout();
             if (adjustment.intervencionDe(origen).isEmpty() || anterior.isEmpty()
-                    || w.expectedDurationMinutes() == anterior.get().expectedDurationMinutes()
-                    || !contenidoTemporal(w.exercises()).equals(contenidoMedido(medida, origen))) {
+                    || w.expectedDurationMinutes() == anterior.get().expectedDurationMinutes()) {
                 salida.add(d);
+                continue;
+            }
+            if (!contenidoTemporal(w.exercises()).equals(contenidoMedido(medida, origen))) {
+                // Orden de optimizacion (31/10/2026), B2: con contenido nuevo, los minutos los calcula
+                // el backend con el estimador de V17, no la IA (11 rechazos V17 de 48 predicciones).
+                int calculados = context.prescription() == null || w.exercises().isEmpty()
+                        ? w.expectedDurationMinutes() : ESTIMADOR.estimateMinutes(w, context.prescription());
+                if (calculados != w.expectedDurationMinutes()) {
+                    notas.add(("DURACION: la sesion %d declaraba %d min y su contenido dura %d; se publica %d"
+                            + " (la calcula el backend).").formatted(origen, w.expectedDurationMinutes(),
+                            calculados, calculados));
+                    salida.add(new DerivedWorkout(origen, new PlanDraft.DraftWorkout(w.scheduledDate(), w.focus(),
+                            w.name(), calculados, w.exercises())));
+                } else salida.add(d);
                 continue;
             }
             int minutos = anterior.get().expectedDurationMinutes();

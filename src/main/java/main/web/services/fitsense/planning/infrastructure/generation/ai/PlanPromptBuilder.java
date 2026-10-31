@@ -187,16 +187,17 @@ public class PlanPromptBuilder {
                     Cuando clase_dosis tenga un valor no nulo, la dosis de esa clase
                     manda sobre target_reps y target_sets: no te apartes de ella. Los demas
                     siguen partiendo de target_reps y target_sets.
-                17. expected_duration_minutes debe ser lo que dura el contenido
-                    que prescribes, no una copia de session_minutes. El backend
-                    lo recalcula asi y rechaza un desvio mayor al 20 %:
+                17. La duracion de cada sesion la calcula el backend con el
+                    contenido que prescribes y fija expected_duration_minutes con
+                    ese valor; no hace falta que la calcules tu. La formula es:
                       minutos = 5 de calentamiento
                               + por ejercicio: series x repeticiones x 3 s
                                                (o series x segundos si es DURATION)
                               + por ejercicio: (series - 1) x descanso
                               + 1 minuto de transicion entre ejercicios
-                    Declara lo que de verdad dura. Inflarlo NO ayuda: distorsiona
-                    la medicion de adherencia y invalida el plan igual.
+                    Usala para comprobar que cada sesion llega a su minimo: el
+                    bloque DURACION CALCULADA de abajo da ese minimo en segundos y
+                    lo que cuesta cada dosis.
                     Si constraints.min_session_minutes no es null, cada sesion
                     debe durar al menos eso: la persona reservo ese tiempo. Llega
                     con ejercicios o series, no con descanso: rest_seconds nunca
@@ -262,6 +263,7 @@ public class PlanPromptBuilder {
         if (porCapacidades)
             prompt.append(BLOQUE_CAPACIDADES);
 
+        prompt.append(duracionCalculada(context));
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
 
         // La comprobacion va DESPUES de los datos: es lo ultimo que lee el
@@ -376,6 +378,11 @@ public class PlanPromptBuilder {
             prompt.append("\nErrores de intentos anteriores que tampoco puedes repetir:\n");
             feedback.earlierProblems().forEach(problem -> prompt.append("- ").append(problem).append('\n'));
         }
+        var pistas = PistasDeReintento.para(feedback.rejectionProblems(), false);
+        if (!pistas.isEmpty()) {
+            prompt.append("\nDonde esta la solucion de cada motivo:\n");
+            pistas.forEach(pista -> prompt.append("- ").append(pista).append('\n'));
+        }
 
         prompt.append(conPropuesta ? """
 
@@ -402,4 +409,51 @@ public class PlanPromptBuilder {
                 las reglas 1 a 20 completas.
                 """);
     }
+
+    /** Sin estado: el mismo calculo de V17 y V20. */
+    private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR =
+            new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
+
+    /**
+     * Orden de optimizacion (31/10/2026), B2: el minimo de V20 en segundos y lo que cuesta cada dosis
+     * de 4D (GAIN_MUSCLE) en el mismo calculo que el validador: un ejercicio dentro de una sesion
+     * suma su trabajo, sus descansos y una transicion. 10 de los rechazos de las 48 predicciones eran
+     * V20, con faltas de 6 a 378 s, y 3 eran series adicionales de 4D v3.2 que sobraban.
+     */
+    static String duracionCalculada(PlanGenerationContext context) {
+        if (context.prescription() == null) return "";
+        long piso = main.web.services.fitsense.planning.domain.services.PlanDraftValidator.minimumSessionSeconds(context);
+        var b = new StringBuilder("\nDURACION CALCULADA (backend): ");
+        if (piso > 0) b.append("cada sesion debe sumar al menos ").append(piso).append(" s");
+        else b.append("sin minimo de duracion en esta semana");
+        var p = context.prescription();
+        b.append("; el calentamiento cuenta ").append(p.warmupMinutesOrDefault() * 60)
+                .append(" s y cada ejercicio despues del primero ").append(p.transitionSecondsOrDefault())
+                .append(" s de transicion.");
+        if (context.profile() != null && main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy
+                .aplicaA(context.profile().goalType())) {
+            b.append(" Segundos de trabajo y descanso de cada dosis de constraints.dosis_por_clase:");
+            for (var clase : main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy.tablaDosis()) {
+                var d = clase.dosis();
+                b.append(' ').append(clase.name()).append(' ').append(d.series()).append('x').append(d.reps())
+                        .append('=').append(segundos(d.series(), d.reps(), d.descansoSegundos(), p)).append(" s");
+                if (d.ampliable()) b.append(" (").append(d.seriesMax()).append('x').append(d.reps()).append('=')
+                        .append(segundos(d.seriesMax(), d.reps(), d.descansoSegundos(), p)).append(" s)");
+                b.append(';');
+            }
+        }
+        return b.append('\n').toString();
+    }
+
+    private static long segundos(int series, int reps, int descanso,
+                                 main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams p) {
+        var e = new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise(1L,
+                main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.SETS_REPS,
+                (short) series, (short) reps, null, null, (short) descanso, null);
+        var w = new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftWorkout(
+                java.time.LocalDate.of(2026, 1, 5), main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus.FULL_BODY,
+                "x", 60, java.util.List.of(e));
+        return ESTIMADOR.estimateSeconds(w, p) - (long) p.warmupMinutesOrDefault() * 60;
+    }
+
 }

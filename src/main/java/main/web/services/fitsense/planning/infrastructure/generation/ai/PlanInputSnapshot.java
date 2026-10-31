@@ -599,6 +599,10 @@ public record PlanInputSnapshot(
             // clasificacion, o que no aporta nada al objetivo) no se ofrece: V24
             // lo rechazaria.
             if (porCapacidades && dosis.isEmpty()) return;
+            // Orden de optimizacion (31/10/2026), B1: en GAIN_MUSCLE, lo que no puede demostrar
+            // hipertrofia (duracion, o clase sin hipertrofia) no se ofrece: V24 lo rechaza siempre y
+            // el motor de reglas ya lo excluye. Eran 11 de los rechazos de las 48 predicciones.
+            if (dosisFijada && !puedeDemostrarHipertrofia(candidate)) return;
             var etiquetas = etiquetasDe(candidate, dosisFijada);
             // GEN-IN-1.13: el slot de 4C viaja tambien a los objetivos por
             // capacidades que lo exigen (INCREASE_STRENGTH, GENERAL_FITNESS):
@@ -778,6 +782,15 @@ public record PlanInputSnapshot(
         return new EtiquetasDosis(nombreSlot,
                 MvpDosePolicy.claseDosis(slot, candidate.bodyPartCode())
                         .map(Enum::name).orElse(null));
+    }
+
+    /** El mismo criterio que el motor de reglas para GAIN_MUSCLE: estructural o resistido de repeticiones. */
+    private static boolean puedeDemostrarHipertrofia(
+            main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise c) {
+        if (c.defaultPrescription() == main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.DURATION)
+            return false;
+        var clase = CapabilityPrescriptionPolicy.claseDe(c);
+        return clase == CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL || clase == CapabilityPrescriptionPolicy.Clase.RESISTIDO;
     }
 
     /** La tabla de 4D v3, recorriendo la politica. Ninguna fila escrita a mano. */
