@@ -85,7 +85,7 @@ class CampanaP123Cohorte02IT {
     static final Path SALIDA = Path.of("docs/FitSense/campana_p123/evidencia");
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
     /** N04: fijados tras inspeccionar el catalogo (campana p123, 31/10/2026). No cambian durante la ejecucion. */
-    static final Long[] N04_FIJOS = {};
+    static final Long[] N04_FIJOS = {293L, 404L, 1133L};   // burpee, cable pulldown bicep curl, run
     static final List<Long> N04_BLOQUEADOS = bloqueadosN04();
 
     @MockitoBean ReplicateSessionFixGenerator ia;
