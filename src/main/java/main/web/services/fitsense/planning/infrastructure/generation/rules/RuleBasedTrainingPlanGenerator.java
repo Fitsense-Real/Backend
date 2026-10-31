@@ -438,9 +438,14 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                             .filter(j -> j != idx).anyMatch(j -> Objects.equals(picked.get(j).bodyPartCode(), c.bodyPartCode()));
                     boolean slotRepetido = estructural && java.util.stream.IntStream.range(0, picked.size())
                             .filter(j -> j != idx).anyMatch(j -> MandatorySlot.of(picked.get(j)).equals(slot));
+                    // V15 (investigacion 30-120 del PR #16, CASO A F0313): un relleno UNICO de su grupo no sale si
+                    // con el el dia baja de dos grupos; antes se quitaba la pantorrilla del LEGS de 30 minutos y el
+                    // dia quedaba solo con «upper legs». Sale entonces una estructural de slot y grupo repetidos.
+                    long gruposSin = java.util.stream.IntStream.range(0, picked.size()).filter(j -> j != idx)
+                            .mapToObj(j -> picked.get(j).bodyPartCode()).distinct().count();
                     boolean vale = switch (ronda) {
                         case 0 -> !estructural && grupoRepetido;
-                        case 1 -> !estructural;
+                        case 1 -> !estructural && (grupoRepetido || gruposSin >= 2);
                         case 2 -> slotRepetido && grupoRepetido;
                         default -> grupoRepetido;
                     };

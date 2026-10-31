@@ -58,4 +58,33 @@ class AdaptationOutcomeTest {
                 null, null, null, new Long[0], List.of(), null);
         assertEquals("SIN_ADAPTACION", nada.resultado());
     }
+
+    @Test
+    @DisplayName("P-03: los dos resultados nuevos, sin cambiar los existentes ni el estado V32")
+    void resultadosP03() {
+        var sustitucion = de("RESPALDO", 3, "SEGURIDAD_ANTE_DOLOR", null, null, UNA,
+                List.of("REGENERACION_SEGURA: sesiones [15] resueltas sin IA por sustitucion SUST-SEG-1 de [129->78]"), null);
+        assertEquals("REGENERACION_SEGURA_SUSTITUCION", sustitucion.resultado());
+        assertEquals("RESPALDO", sustitucion.estado(), "el estado V32 se informa tal cual");
+
+        var noFactible = de("NO_FACTIBLE", 3, "SEGURIDAD_ANTE_DOLOR", null, null, null, List.of(), "dolor sin resolver");
+        var reglas = noFactible.conRegeneracion(42L, "REGENERACION_SEGURA_REGLAS", "P-03: semana regenerada");
+        assertEquals("REGENERACION_SEGURA_REGLAS", reglas.resultado());
+        assertEquals("NO_FACTIBLE", reglas.estado(), "la adaptacion fallida sigue constando");
+        assertEquals(42L, reglas.resultingPlanId());
+        assertEquals(List.of("dolor sin resolver", "P-03: semana regenerada"), reglas.motivos());
+        assertEquals("NO_FACTIBLE_POR_SEGURIDAD", noFactible.resultado(), "sin regeneracion, lo de siempre");
+
+        // Un respaldo sin la nota de P-03 se sigue leyendo como antes.
+        assertEquals("RESPALDO_PROPUESTA_IA_INVALIDA", de("RESPALDO", 3, "INVESTIGAR_CAMBIO_MINIMO", null, null, UNA,
+                List.of(), null).resultado());
+    }
+
+    @Test
+    @DisplayName("contrato: los campos del recurso no cambian de nombre ni de orden")
+    void camposDelContrato() {
+        assertEquals(List.of("attemptId", "weekStartDate", "resultingPlanId", "resultado", "estado", "decision",
+                "llamadasIa", "motivos", "sesiones"), java.util.Arrays.stream(AdaptationOutcome.class.getRecordComponents())
+                .map(java.lang.reflect.RecordComponent::getName).toList());
+    }
 }

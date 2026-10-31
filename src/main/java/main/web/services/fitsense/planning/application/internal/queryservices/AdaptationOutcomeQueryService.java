@@ -20,23 +20,59 @@ public class AdaptationOutcomeQueryService {
 
     private final PlanAdaptationAttemptRepository attempts;
     private final JsonSupport json;
+    /** P-03, nivel 2. Null en pruebas que construyen el servicio a mano. */
+    private final main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories
+            .SafeRegenerationAttemptRepository regeneraciones;
 
     public AdaptationOutcomeQueryService(PlanAdaptationAttemptRepository attempts, JsonSupport json) {
+        this(attempts, json, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public AdaptationOutcomeQueryService(PlanAdaptationAttemptRepository attempts, JsonSupport json,
+                                         main.web.services.fitsense.planning.infrastructure.persistence.jpa
+                                                 .repositories.SafeRegenerationAttemptRepository regeneraciones) {
         this.attempts = attempts;
         this.json = json;
+        this.regeneraciones = regeneraciones;
     }
+
+    /** Codigos de P-03, nivel 2 (la regeneracion con reglas tras un NO_FACTIBLE por dolor). */
+    public static final String REGENERACION_SEGURA_REGLAS = "REGENERACION_SEGURA_REGLAS";
 
     /** Lo que paso en el ciclo que publico este plan; vacio para una generacion inicial. */
     @Transactional(readOnly = true)
     public Optional<AdaptationOutcome> forPlan(Long planId) {
         var lista = attempts.findByResultingPlanId(planId);
-        return lista.size() == 1 ? Optional.of(traducir(lista.get(0))) : Optional.empty();
+        if (lista.size() == 1) return Optional.of(traducir(lista.get(0)));
+        if (regeneraciones == null) return Optional.empty();
+        // P-03, nivel 2: el plan regenerado no tiene fila V32 propia; se cuenta desde el NO_FACTIBLE que lo origino.
+        return regeneraciones.findByResultingPlanId(planId).filter(r -> r.getAdaptationAttemptId() != null)
+                .flatMap(r -> attempts.findById(r.getAdaptationAttemptId()))
+                .map(a -> traducir(a).conRegeneracion(planId, REGENERACION_SEGURA_REGLAS, null));
     }
 
     /** Todos los ciclos del usuario, publicados o no (NO_FACTIBLE no publica plan). */
     @Transactional(readOnly = true)
     public List<AdaptationOutcome> history(Long userId) {
-        return attempts.findByUserIdOrderByIdAsc(userId).stream().map(this::traducir).toList();
+        var porIntento = new java.util.HashMap<Long, main.web.services.fitsense.planning.domain.model.aggregates
+                .SafeRegenerationAttempt>();
+        if (regeneraciones != null)
+            regeneraciones.findByUserIdOrderByIdAsc(userId).forEach(r -> {
+                if (r.getAdaptationAttemptId() != null) porIntento.put(r.getAdaptationAttemptId(), r);
+            });
+        return attempts.findByUserIdOrderByIdAsc(userId).stream().map(a -> {
+            var o = traducir(a);
+            var r = porIntento.get(a.getId());
+            if (r == null) return o;
+            // El NO_FACTIBLE de la adaptacion sigue constando (estado); el resultado dice como acabo la semana.
+            return r.getOutcome() == main.web.services.fitsense.planning.domain.model.aggregates
+                    .SafeRegenerationAttempt.Outcome.PUBLICADO
+                    ? o.conRegeneracion(r.getResultingPlanId(), REGENERACION_SEGURA_REGLAS,
+                    "P-03: semana regenerada en el mismo ciclo con el motor de reglas, sin " + r.getExcludedExerciseIds())
+                    : o.conRegeneracion(null, o.resultado(), "P-03: sin alternativa segura valida: "
+                    + r.getValidationProblems());
+        }).toList();
     }
 
     private AdaptationOutcome traducir(PlanAdaptationAttempt a) {

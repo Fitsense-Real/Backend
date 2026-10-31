@@ -154,7 +154,11 @@ final class ValidacionIndependiente {
             long origen = actual.origen();
             if (contiene(intento.get("applied_sessions"), origen))
                 return "ACORTAR_O_REORGANIZAR".equals(intervencion(intento, origen));
+            // Campana p123 (31/10/2026): una senalada SIN EFECTO (no_effect_sessions) tambien es una copia; D8
+            // hereda la exencion tras una senalada sin cambios (HerenciaD8IT). Antes el instrumento la cortaba y
+            // marcaba INVALIDA una copia del acortado que el backend publicaba bien.
             boolean copia = contiene(intento.get("conserved_sessions"), origen)
+                    || contiene(intento.get("no_effect_sessions"), origen)
                     || contiene(intento.get("progressed_sessions"), origen);
             if (!copia) return false;
             actual = sesion(origen);
@@ -187,7 +191,7 @@ final class ValidacionIndependiente {
     }
 
     private Map<String, Object> intento(long planId) {
-        var filas = jdbc.queryForList("SELECT applied_sessions, conserved_sessions, progressed_sessions,"
+        var filas = jdbc.queryForList("SELECT applied_sessions, conserved_sessions, no_effect_sessions, progressed_sessions,"
                 + " targeted_sessions, targeted_interventions, conservation_report::text AS conservation_report"
                 + " FROM plan_adaptation_attempts WHERE resulting_plan_id = ?", planId);
         return filas.size() == 1 ? filas.get(0) : null;

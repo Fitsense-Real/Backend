@@ -83,6 +83,8 @@ class HerenciaD8IT {
     @Autowired UserRepository usuarios;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.domain.services.PlanDraftValidator validador;
+    @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
@@ -113,15 +115,14 @@ class HerenciaD8IT {
     }
 
     /**
-     * La IA devuelve el viernes identico. Como SENALADA esa semana no tiene la exencion de
-     * D8 (V8C solo la da a las copias no senaladas), V20 rechaza la propuesta y el respaldo
-     * publica la misma sesion: RESPALDO, con el viernes en no_effect. Es el comportamiento de
-     * antes, fuera del alcance de este cambio; lo que se comprueba es que la herencia siga.
+     * La IA devuelve el viernes identico. Antes de C-2 (orden de cierre del PR #16), como SENALADA esa semana
+     * no tenia la exencion de D8: V20 rechazaba la propuesta tres veces y el respaldo publicaba la misma sesion
+     * (RESPALDO). Con C-2 la propuesta identica hereda D8 y se publica en la primera llamada: SIN_EFECTO.
      */
     @Test
-    @DisplayName("ACORTAR -> copia -> fatiga con la IA devolviendolo igual (acaba en RESPALDO) -> la copia conserva la exencion")
+    @DisplayName("ACORTAR -> copia -> fatiga con la IA devolviendolo igual (C-2: SIN_EFECTO) -> la copia conserva la exencion")
     void propuestaIdenticaConservaD8() throws Exception {
-        recorrer(Modo.IGUAL, "RESPALDO");
+        recorrer(Modo.IGUAL, "SIN_EFECTO");
     }
 
     @Test
@@ -133,11 +134,19 @@ class HerenciaD8IT {
         long plan = a.plan();
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
         plan = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2)).orElseThrow();   // copia exenta
+        long medido = plan;
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
         var r = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
+        // P-03: la IA (que devuelve el viernes igual) se rechaza tres veces por el dolor. El nivel 1 (sustitucion)
+        // no pasa V20 en el viernes acortado. El nivel 2 tampoco publica: regenerar con dosis base devolveria el
+        // trabajo que ACORTAR retiro (450 -> 486 repeticiones) en plena semana de dolor, y ante dolor no se anade
+        // trabajo (auditoria del nivel 2, orden de cierre del PR #16). Queda NO_FACTIBLE, con su motivo.
         assertTrue(r.isEmpty(), "volver a publicar el viernes que dolio no es una solucion segura");
         assertEquals("NO_FACTIBLE", ultimo(u).get("status"));
-        assertNotNull(ultimo(u).get("rejection_reason"));
+        assertTrue(String.valueOf(jdbc.queryForObject("SELECT validation_problems FROM safe_regeneration_attempts WHERE"
+                + " user_id = ? AND outcome = 'NO_FACTIBLE'", String.class, u)).contains("sube el trabajo"));
+        assertTrue(jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND status ="
+                + " 'ACTIVA'", Integer.class, u) > 0, "la exclusion por dolor se conserva");
         assertSinViolaciones();
     }
 
@@ -160,6 +169,12 @@ class HerenciaD8IT {
         ejecutar(u, plan, Dia.HECHO, Dia.DIFICIL, Dia.HECHO);                     // s5: el caso que fallaba
         plan = publicar(u, 3, "SIN_EFECTO");
         assertEquals(minutos, viernes(plan), "la copia del viernes conserva la exencion de V20");
+        // Campana p123: el instrumento independiente tambien sigue el linaje por una senalada SIN EFECTO.
+        long publicado = plan;
+        var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                .GenerateWeeklyPlanCommand(u, S1.plusWeeks(4), null, true, null, null)).context();
+        var independiente = new ValidacionIndependiente(jdbc).validar(publicado, ctx, validador, 30);
+        assertNotEquals("INVALIDA", independiente.estado(), independiente.texto());
 
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);                       // s6: y sigue
         plan = publicar(u, 4, "SIN_ORDEN");

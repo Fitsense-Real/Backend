@@ -33,10 +33,15 @@ public final class SafetyConflictPolicy {
     public static final String SUSPENSION = "suspension";
     public static final String BRAZOS_ARRIBA = "brazos_arriba";
     public static final String INVERSION = "inversion";
+    /**
+     * P-02: el ejercicio provoco dolor a ESTE usuario y sigue excluido (user_safety_exclusions). Es una
+     * causa comprobable -un evento registrado-, no una ausencia del conjunto elegible.
+     */
+    public static final String DOLOR_REGISTRADO = "dolor_registrado";
 
     /** Todas las causas admitidas. Un motivo fuera de esta lista no autoriza nada. */
     public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, ALTO_IMPACTO,
-            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, BRAZOS_ARRIBA, INVERSION);
+            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
 
     private SafetyConflictPolicy() {}
 

@@ -169,6 +169,25 @@ public class PlanGenerationPipeline {
         }
     }
 
+    /**
+     * P-03 · SOLO EL MOTOR DE REGLAS, con la validacion completa (V1-V25). Para la regeneracion segura
+     * dentro del ciclo: determinista, sin llamadas a la IA (P-05 no autoriza gasto) y con el conjunto
+     * elegible que ya excluye lo que dolio (P-02). Lanza {@code PlanGenerationFailedException} si el
+     * borrador no pasa: nunca devuelve un plan invalido.
+     */
+    public Result runDeterministic(PlanGenerationContext context, int durationToRepsDivisor) {
+        registrarCapacidades(context);
+        try {
+            var draft = ruleGenerator.generate(context, List.of());
+            validator.validate(draft, context, durationToRepsDivisor);
+            registrarCobertura(draft, context);
+            return new Result(draft, (short) 1);
+        } catch (InvalidPlanDraftException e) {
+            throw new PlanGenerationFailedException(context.userId(),
+                    "Regeneracion determinista: " + String.join(" | ", e.problems()));
+        }
+    }
+
     /** Solo para el log: que capacidades del objetivo lleva la semana. No decide nada. */
     private void registrarCobertura(PlanDraft draft, PlanGenerationContext context) {
         var profile = context.profile();

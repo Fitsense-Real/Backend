@@ -305,14 +305,15 @@ class ValidacionMultisemanaIT {
                     if (dolio.contains(actuales.get(k).getKey().exerciseId())) quitar = k;
                 if (quitar >= 0) {
                     long idDolio = actuales.get(quitar).getKey().exerciseId();
-                    var original = ctx.availableExercises().stream()
-                            .filter(c -> c.exerciseId().equals(idDolio)).findFirst();
+                    // Del catalogo, no del conjunto elegible: desde P-02 el que dolio ya no es elegible.
+                    var o = jdbc.queryForMap("SELECT e.movement_pattern, bp.code FROM exercises e JOIN body_parts bp"
+                            + " ON bp.body_part_id = e.body_part_id WHERE e.exercise_id = ?", idDolio);
                     var enSesion = actuales.stream().map(x -> x.getKey().exerciseId()).collect(Collectors.toSet());
-                    sustituto = original.flatMap(o -> ctx.availableExercises().stream()
+                    sustituto = ctx.availableExercises().stream()
                             .filter(c -> !enSesion.contains(c.exerciseId()) && !dolio.contains(c.exerciseId())
-                                    && java.util.Objects.equals(c.movementPattern(), o.movementPattern())
-                                    && java.util.Objects.equals(c.bodyPartCode(), o.bodyPartCode()))
-                            .map(c -> c.exerciseId()).findFirst()).orElse(null);
+                                    && java.util.Objects.equals(c.movementPattern(), o.get("movement_pattern"))
+                                    && java.util.Objects.equals(c.bodyPartCode(), o.get("code")))
+                            .map(c -> c.exerciseId()).findFirst().orElse(null);
                 }
             }
             if (senalada.intervencion() == TipoIntervencion.ACORTAR_O_REORGANIZAR)

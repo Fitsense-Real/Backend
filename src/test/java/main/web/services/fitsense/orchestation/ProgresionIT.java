@@ -78,6 +78,8 @@ class ProgresionIT {
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
     @MockitoBean ReplicateSessionFixGenerator ia;
+    @org.springframework.test.context.bean.override.mockito.MockitoSpyBean
+    main.web.services.fitsense.planning.application.internal.commandservices.SafetyExclusionResolver exclusionesSeguridad;
 
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlanningContextFacade planning;
@@ -495,6 +497,190 @@ class ProgresionIT {
         assertFalse(informe(ev).contains("VUELTA_ATRAS"));
         w4.ifPresent(p -> assertTrue(semana(p).get(i).ejercicios().stream().noneMatch(e -> e.id() == marcado),
                 "el ejercicio que dolio no se republica"));
+        assertSinViolaciones();
+    }
+
+    // =======================================================================
+    // P-02 · memoria persistente del dolor con progresion y reincorporacion
+    // =======================================================================
+
+    @Test
+    @DisplayName("P-02 + progresion: lo que dolio no vuelve en seis semanas cumplidas y ningun paso lo toca")
+    void p02ProgresionSinElExcluido() throws Exception {
+        long u = participante(GoalType.GENERAL_FITNESS, List.of((short) 1, (short) 3, (short) 5));
+        var r = hastaElPrimerPaso(u);
+        long plan = r[0];
+        int i = (int) r[1];
+        marcado = r[2];
+        var dias = new Dia[]{Dia.HECHO, Dia.HECHO, Dia.HECHO};
+        dias[i] = Dia.HECHO_CON_DOLOR;
+        ejecutar(u, plan, dias);
+        long excluido = marcado;
+        marcado = null;
+        int pasos = 0;
+        for (int k = 2; k <= 7; k++) {
+            plan = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1)).orElseThrow();
+            var ev = ultimoIntento(u);
+            assertTrue(semana(plan).stream().flatMap(x -> x.ejercicios().stream()).noneMatch(e -> e.id() == excluido),
+                    "semana " + (k + 2) + " publica el excluido " + excluido);
+            if (!"{}".equals(String.valueOf(ev.get("progressed_sessions")))) {
+                pasos++;
+                assertFalse(informe(ev).contains("\"exercise_id\":" + excluido + ","), "un paso sobre el excluido");
+            }
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        }
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " exercise_id = ? AND status = 'ACTIVA'", Integer.class, u, excluido), "no caduca");
+        assertTrue(pasos > 0, "premisa: la progresion siguio funcionando");
+        assertSinViolaciones();
+    }
+
+    @Test
+    @DisplayName("P-02 + reincorporacion: un retirado por ACORTAR que queda excluido por dolor no se reincorpora")
+    void p02ReincorporacionDescartadaPorDolor() throws Exception {
+        long u = participante(GoalType.GAIN_MUSCLE, List.of((short) 1, (short) 3, (short) 5));
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        var raiz = semana(w1);
+        ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.PARCIAL_TIEMPO);
+        long plan = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
+        var ev = ultimoIntento(u);
+        assertEquals("APLICADA", ev.get("status"), "premisa: ACORTAR retira un relleno: " + ev);
+        var acortado = semana(plan).get(2);
+        var retirado = raiz.get(2).ejercicios().stream()
+                .filter(e -> acortado.ejercicios().stream().noneMatch(x -> x.id() == e.id())).findFirst().orElseThrow();
+        // Fixture: un dolor sobre el retirado comunicado despues (su evento es la sesion del viernes medida).
+        jdbc.update("INSERT INTO user_safety_exclusions (user_id, exercise_id, reason, source_plan_id,"
+                + " source_planned_workout_id, event_date, recorded_by) VALUES (?, ?, 'DOLOR_IDENTIFICADO', ?, ?, ?,"
+                + " 'SESION')", u, retirado.id(), w1, raiz.get(2).id(), raiz.get(2).fecha());
+
+        boolean descartada = false;
+        for (int k = 1; k <= 14; k++) {
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+            plan = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1)).orElseThrow();
+            var evk = ultimoIntento(u);
+            assertFalse(informe(evk).contains("\"tipo\":\"REINCORPORACION\""), "semana " + (k + 1) + ": " + evk);
+            assertTrue(semana(plan).stream().flatMap(x -> x.ejercicios().stream()).noneMatch(e -> e.id() == retirado.id()));
+            if (informe(evk).contains("\"estado_reserva\":\"DESCARTADA\"")) descartada = true;
+        }
+        assertTrue(descartada, "la reserva del retirado tenia que quedar DESCARTADA");
+        assertSinViolaciones();
+    }
+
+    // =======================================================================
+    // P-03 nivel 2 · auditoria (orden de cierre del PR #16): dosis reducida o progresada y despues dolor
+    // =======================================================================
+
+    /** Totales planificados de una semana: repeticiones y segundos, por separado. */
+    private int[] trabajo(long planId) {
+        var f = jdbc.queryForMap("SELECT coalesce(sum(coalesce(pwe.planned_sets,1) * coalesce(pwe.planned_reps,0)),0) r,"
+                + " coalesce(sum(coalesce(pwe.planned_sets,1) * coalesce(pwe.planned_duration_seconds,0)),0) s"
+                + " FROM planned_workout_exercises pwe JOIN planned_workouts pw ON pw.planned_workout_id ="
+                + " pwe.planned_workout_id WHERE pw.plan_id = ?", planId);
+        return new int[]{((Number) f.get("r")).intValue(), ((Number) f.get("s")).intValue()};
+    }
+
+    /**
+     * Dolor (sin identificar) en la sesion {@code i} de la semana {@code medida}; el nivel 1 se fuerza a no tener
+     * sustituto (resolutor sin exclusiones verificadas) para llegar al nivel 2. Devuelve el plan publicado, si hay.
+     */
+    private java.util.Optional<Long> dolorANivel2(long u, long medida, int i, int k) {
+        var principal = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
+        var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
+                + " ORDER BY scheduled_date", Long.class, medida);
+        var dias = new Dia[ids.size()];
+        java.util.Arrays.fill(dias, Dia.HECHO);
+        dias[i] = Dia.NADA;
+        ejecutar(u, medida, dias);
+        planes.skip(principal, ids.get(i), new SkipWorkoutResource(SkipReason.PAIN_OR_DISCOMFORT));
+        org.mockito.Mockito.doReturn(main.web.services.fitsense.planning.domain.model.valueobjects
+                .ExclusionesDeSeguridad.ninguna()).when(exclusionesSeguridad).resolver(argThat(c -> c.userId() == u));
+        try {
+            return ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1));
+        } finally {
+            org.mockito.Mockito.reset(exclusionesSeguridad);
+        }
+    }
+
+    /** Lo que mide la auditoria; las aserciones de seguridad son comunes. */
+    private String medirNivel2(long u, long medida, java.util.Optional<Long> publicado, String caso) {
+        var reg = jdbc.queryForList("SELECT outcome, resulting_plan_id, validation_problems FROM"
+                + " safe_regeneration_attempts WHERE user_id = ?", u);
+        assertEquals(1, reg.size(), caso + ": una traza P-03 nivel 2");
+        var excluidos = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " status = 'ACTIVA'", Long.class, u);
+        int[] antes = trabajo(medida);
+        if (publicado.isEmpty()) {
+            assertEquals("NO_FACTIBLE", reg.get(0).get("outcome"));
+            assertFalse(excluidos.isEmpty(), "la exclusion P-02 se conserva");
+            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ? AND"
+                    + " week_start_date > (SELECT week_start_date FROM weekly_training_plans WHERE plan_id = ?)",
+                    Integer.class, u, medida), "nada publicado");
+            return caso + " NO_FACTIBLE " + reg.get(0).get("validation_problems") + " medida reps/seg=" + antes[0] + "/" + antes[1];
+        }
+        long p = publicado.get();
+        assertEquals("RULE_ENGINE", jdbc.queryForObject("SELECT generation_source FROM weekly_training_plans WHERE plan_id = ?",
+                String.class, p));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE resulting_plan_id = ?",
+                Integer.class, p), "nivel 2 no se presenta como una adaptacion con continuidad (sin V32 propio)");
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workouts WHERE plan_id = ? AND"
+                + " source_planned_workout_id IS NOT NULL", Integer.class, p), "sin linaje V31 falso");
+        assertEquals(semana(medida).size(), semana(p).size(), "misma frecuencia");
+        for (var ses : semana(p))
+            for (var e : ses.ejercicios())
+                assertFalse(excluidos.contains(e.id()), caso + ": publica el excluido " + e.id());
+        int[] despues = trabajo(p);
+        // Las dosis de los ejercicios que estan en las dos semanas.
+        var medidas = new java.util.HashMap<Long, Ejercicio>();
+        semana(medida).forEach(x -> x.ejercicios().forEach(e -> medidas.put(e.id(), e)));
+        var comunes = new java.util.ArrayList<String>();
+        semana(p).forEach(x -> x.ejercicios().forEach(e -> {
+            var m = medidas.get(e.id());
+            if (m != null && !m.equals(e)) comunes.add(e.id() + ":" + m.series() + "x" + m.reps() + "->" + e.series() + "x" + e.reps());
+        }));
+        return caso + " PUBLICADO reps " + antes[0] + "->" + despues[0] + " seg " + antes[1] + "->" + despues[1]
+                + " dosis_cambiadas_en_comunes=" + comunes;
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @org.junit.jupiter.params.provider.EnumSource(value = GoalType.class, names = {"GENERAL_FITNESS", "LOSE_WEIGHT",
+            "INCREASE_STRENGTH"})
+    @DisplayName("P-03 nivel 2 tras una REDUCCION por fatiga: no publica mas trabajo que la semana medida")
+    void p03Nivel2TrasReduccion(GoalType objetivo) throws Exception {
+        long u = participante(objetivo, List.of((short) 1, (short) 3, (short) 5));
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.FATIGA);
+        long w2 = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
+        boolean reducida = "APLICADA".equals(ultimoIntento(u).get("status"));
+        var r = dolorANivel2(u, w2, 0, 1);
+        var linea = medirNivel2(u, w2, r, "REDUCCION " + objetivo + (reducida ? "" : " (sin reduccion previa)"));
+        System.out.println("P03_NIVEL2 " + linea);
+        r.ifPresent(p -> {
+            int[] a = trabajo(w2), b = trabajo(p);
+            assertTrue(b[0] <= a[0] && b[1] <= a[1], "P-03 nivel 2 publica mas trabajo que la semana medida: " + linea);
+        });
+        assertSinViolaciones();
+    }
+
+    @Test
+    @DisplayName("P-03 nivel 2 tras PROGRESION: sin progresion nueva, sin el excluido y sin mas trabajo que la medida")
+    void p03Nivel2TrasProgresion() throws Exception {
+        long u = participante(GoalType.GENERAL_FITNESS, List.of((short) 1, (short) 3, (short) 5));
+        var r0 = hastaElPrimerPaso(u);
+        long w3 = r0[0];
+        var r = dolorANivel2(u, w3, (int) r0[1], 2);
+        var linea = medirNivel2(u, w3, r, "PROGRESION");
+        System.out.println("P03_NIVEL2 " + linea);
+        r.ifPresent(p -> {
+            int[] a = trabajo(w3), b = trabajo(p);
+            assertTrue(b[0] <= a[0] && b[1] <= a[1], "P-03 nivel 2 publica mas trabajo que la semana medida: " + linea);
+            // Sin progresion nueva: ninguna evidencia V32 (ni paso) para el plan regenerado.
+            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE resulting_plan_id = ?",
+                    Integer.class, p), "sin paso nuevo");
+        });
+        // Idempotencia: repetir el ciclo devuelve lo mismo y no duplica.
+        assertEquals(r, ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3)));
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM safe_regeneration_attempts WHERE user_id = ?",
+                Integer.class, u));
         assertSinViolaciones();
     }
 

@@ -387,8 +387,9 @@ class GeneracionPorObjetivoIT {
         @Test
         @DisplayName("sesiones cortas: las principales ocupan el tiempo y no entra ninguna secundaria")
         void principalesConsumenElTiempo() {
-            var g = generar(perfil("INCREASE_STRENGTH · gimnasio, 3x20", GoalType.INCREASE_STRENGTH,
-                    FitnessLevel.INTERMEDIATE, 30, TrainingLocation.GYM, GIMNASIO, LMV, 20, true, true, true));
+            // P-01 definitiva: la sesion mas corta admitida es de 30 min (antes este caso usaba 20).
+            var g = generar(perfil("INCREASE_STRENGTH · gimnasio, 3x30", GoalType.INCREASE_STRENGTH,
+                    FitnessLevel.INTERMEDIATE, 30, TrainingLocation.GYM, GIMNASIO, LMV, 30, true, true, true));
             assertEquals("COMPLETO", g.resultado());
             assertEquals(Set.of(), lista(g.cobertura().get("secundarias")), g.cobertura().toString());
         }

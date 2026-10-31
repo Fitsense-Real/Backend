@@ -115,9 +115,15 @@ class PerfilesLimiteIT {
     @Test
     @DisplayName("U07 (15 min, peso corporal, un dia): diagnostico del motor de reglas")
     void u07() {
-        long u = participante(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, List.of((short) 6), 15,
+        // P-01 definitiva: los cuatro objetivos admiten 30-75 min; el perfil de U07 (15) ya no se puede crear.
+        var e = org.junit.jupiter.api.Assertions.assertThrows(
+                main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException.class,
+                () -> participante(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, List.of((short) 6), 15,
+                        TrainingLocation.HOME, List.of("body weight")));
+        org.junit.jupiter.api.Assertions.assertTrue(e.getMessage().contains("entre 30 y 75"), e.getMessage());
+        long u = participante(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, List.of((short) 6), 30,
                 TrainingLocation.HOME, List.of("body weight"));
-        System.out.println("LIMITE U07\n" + diagnostico(u));
+        System.out.println("LIMITE U07 a 30 min (minimo de P-01)\n" + diagnostico(u));
     }
 
     /**
@@ -129,6 +135,15 @@ class PerfilesLimiteIT {
     @org.junit.jupiter.params.provider.EnumSource(GoalType.class)
     @DisplayName("15 minutos: nunca se publica una sesion que de verdad supera el techo")
     void quinceMinutosNuncaPorEncimaDelTecho(GoalType objetivo) {
+        if (!objetivo.admiteMinutos(15)) {
+            // P-01 definitiva: ningun objetivo admite 15 min; se rechaza antes de generar.
+            org.junit.jupiter.api.Assertions.assertThrows(
+                    main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException.class,
+                    () -> participante(objetivo, FitnessLevel.BEGINNER, List.of((short) 6), 15,
+                            TrainingLocation.HOME, List.of("body weight")));
+            System.out.println("LIMITE15 " + objetivo + ": RECHAZADO POR P-01");
+            return;
+        }
         long u = participante(objetivo, FitnessLevel.BEGINNER, List.of((short) 6), 15,
                 TrainingLocation.HOME, List.of("body weight"));
         java.util.Optional<Long> plan;

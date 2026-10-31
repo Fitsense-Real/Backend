@@ -57,6 +57,66 @@ import java.util.Map;
  */
 public class AdaptedWeekProducer {
 
+    /** P-03: la nota que deja en V32 (correcciones_del_backend) una sesion de dolor resuelta sin IA. */
+    public static final String NOTA_REGENERACION_SEGURA = "REGENERACION_SEGURA: ";
+
+    /**
+     * P-03: si lo que dolio en cada sesion senalada por seguridad esta excluido con causa verificada. Con
+     * dolor identificado, esos ejercicios; con dolor de sesion -o preventivo sin nada en los indices-,
+     * todos los de la sesion. Ninguna sesion puede quedar sin algo que excluir: eso no es «cubierto».
+     */
+    static boolean cubiertoPorMemoriaDelDolor(List<Long> sesiones, PreviousWeekSummary previa,
+                                             ExclusionesDeSeguridad exclusiones) {
+        if (previa == null || exclusiones == null || exclusiones.vacias()) return false;
+        for (var origen : sesiones) {
+            var identificados = new java.util.HashSet<Long>();
+            var todos = new java.util.HashSet<Long>();
+            if (previa.prescriptions() != null)
+                for (var p : previa.prescriptions()) {
+                    if (!origen.equals(p.plannedWorkoutId()) || p.exerciseId() == null) continue;
+                    todos.add(p.exerciseId());
+                    if ("PAIN_OR_DISCOMFORT".equals(p.skipReason())) identificados.add(p.exerciseId());
+                }
+            boolean deSesion = previa.workouts() != null && previa.workouts().stream().anyMatch(w ->
+                    origen.equals(w.plannedWorkoutId()) && "PAIN_OR_DISCOMFORT".equals(w.skipReason()));
+            var requeridos = new java.util.HashSet<>(identificados);
+            if (deSesion || identificados.isEmpty()) requeridos.addAll(todos);
+            if (requeridos.isEmpty() || !requeridos.stream().allMatch(exclusiones::incluye)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * P-03: las sesiones del dolor cuya version sustituida sube las repeticiones totales o los segundos totales
+     * respecto de la semana medida. Las dos magnitudes por separado, sin convertir una en otra.
+     */
+    static List<String> masTrabajoQueLaMedida(List<Long> sesiones, PreviousWeekSummary previa,
+                                              List<DerivedWorkout> semana) {
+        var problemas = new ArrayList<String>();
+        for (var origen : sesiones) {
+            long repsAntes = 0, segAntes = 0, repsDespues = 0, segDespues = 0;
+            if (previa != null && previa.prescriptions() != null)
+                for (var p : previa.prescriptions()) {
+                    if (!origen.equals(p.plannedWorkoutId())) continue;
+                    int series = p.sets() == null ? 1 : p.sets();
+                    repsAntes += (long) series * (p.reps() == null ? 0 : p.reps());
+                    segAntes += (long) series * (p.durationSeconds() == null ? 0 : p.durationSeconds());
+                }
+            for (var d : semana) {
+                if (!origen.equals(d.sourcePlannedWorkoutId())) continue;
+                for (var e : d.workout().exercises()) {
+                    int series = e.plannedSets() == null ? 1 : e.plannedSets();
+                    repsDespues += (long) series * (e.plannedReps() == null ? 0 : e.plannedReps());
+                    segDespues += (long) series * (e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds());
+                }
+            }
+            if (repsDespues > repsAntes || segDespues > segAntes)
+                problemas.add("sesion %d: repeticiones %d -> %d, segundos %d -> %d".formatted(origen, repsAntes,
+                        repsDespues, segAntes, segDespues));
+        }
+        return problemas;
+    }
+
     /** Sin estado: el mismo calculo de V17 y V20. */
     private static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
 
@@ -223,6 +283,30 @@ public class AdaptedWeekProducer {
                 .filter(s -> s.intervencion().exigeRevisionDeSeguridad())
                 .map(PlanAdjustment.TargetedSession::plannedWorkoutId)
                 .toList();
+
+        // P-03 · VIA DETERMINISTA SEGURA (politica aprobada 31/10/2026). Si TODO lo que dolio en las sesiones
+        // del dolor esta en la memoria persistente (P-02) -el ejercicio marcado, o todos los de la sesion si
+        // el dolor no se identifico-, la sustitucion obligatoria SUST-SEG-1 puede resolverlo sin la IA: mismo
+        // dia, mismo enfoque, mismos minutos, misma clase de slot, dosis recalculada y nunca mayor; V8C
+        // comprueba que lo que dolio no vuelve y la validacion estricta revisa la semana entera. Si no
+        // cuadra, NO_FACTIBLE como siempre: nunca se publica una sesion insegura.
+        if (!conSeguridad.isEmpty() && cubiertoPorMemoriaDelDolor(conSeguridad, context.previousWeek(), exclusiones)) {
+            var r = continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, exclusiones,
+                    null);
+            if (!r.publicable()) return r;
+            // Ante dolor no se anade trabajo: ninguna sesion del dolor puede salir con mas volumen que la medida.
+            var masTrabajo = masTrabajoQueLaMedida(conSeguridad, context.previousWeek(), r.semana());
+            if (!masTrabajo.isEmpty())
+                return AdaptedWeekResult.noFactible(AdaptedWeekResult.Motivo.RESPALDO_IA, ConservationReport.vacio(),
+                        List.of("P-03: la sustitucion determinista de las sesiones %s sube el trabajo (%s); ante"
+                                .formatted(conSeguridad, masTrabajo) + " dolor no se anade trabajo."));
+            var notas = new ArrayList<>(r.conservacion().correccionesDelBackend());
+            notas.add(NOTA_REGENERACION_SEGURA + "sesiones %s resueltas sin IA por sustitucion %s de %s"
+                    .formatted(conSeguridad, SafetySubstitutionPolicy.REGLA, r.conservacion().sustituciones().stream()
+                            .map(x -> x.quitado() + "->" + x.puesto()).toList()));
+            return new AdaptedWeekResult(r.estado(), r.motivo(), r.semana(), r.source(),
+                    r.conservacion().conCorreccionesDelBackend(notas), r.problemas());
+        }
 
         if (!conSeguridad.isEmpty())
             return AdaptedWeekResult.noFactible(AdaptedWeekResult.Motivo.RESPALDO_IA,
