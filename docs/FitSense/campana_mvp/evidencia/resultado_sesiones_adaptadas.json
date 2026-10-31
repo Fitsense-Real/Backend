@@ -1,0 +1,71 @@
+[ {
+  "user_id" : 2,
+  "attempt_id" : 13,
+  "intervencion" : "SEGURIDAD_ANTE_DOLOR",
+  "origen" : 22,
+  "derivada" : 24,
+  "scheduled_date" : 1797292800000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+}, {
+  "user_id" : 3,
+  "attempt_id" : 19,
+  "intervencion" : "INVESTIGAR_CAMBIO_MINIMO",
+  "origen" : 15,
+  "derivada" : 44,
+  "scheduled_date" : 1798243200000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+}, {
+  "user_id" : 4,
+  "attempt_id" : 23,
+  "intervencion" : "SEGURIDAD_ANTE_DOLOR",
+  "origen" : 42,
+  "derivada" : 66,
+  "scheduled_date" : 1795564800000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+}, {
+  "user_id" : 5,
+  "attempt_id" : 32,
+  "intervencion" : "SEGURIDAD_ANTE_DOLOR",
+  "origen" : 58,
+  "derivada" : 104,
+  "scheduled_date" : 1795392000000,
+  "a_s" : 0.40000000000000000000,
+  "resultado" : "PARCIAL_VALIDA",
+  "misma_causa" : false
+}, {
+  "user_id" : 5,
+  "attempt_id" : 40,
+  "intervencion" : "REVISAR_CARGA_Y_RECUPERACION",
+  "origen" : 104,
+  "derivada" : 152,
+  "scheduled_date" : 1795996800000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+}, {
+  "user_id" : 8,
+  "attempt_id" : 53,
+  "intervencion" : "SEGURIDAD_ANTE_DOLOR",
+  "origen" : 202,
+  "derivada" : 205,
+  "scheduled_date" : 1796601600000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+}, {
+  "user_id" : 8,
+  "attempt_id" : 55,
+  "intervencion" : "ACORTAR_O_REORGANIZAR",
+  "origen" : 210,
+  "derivada" : 213,
+  "scheduled_date" : 1798156800000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+} ]

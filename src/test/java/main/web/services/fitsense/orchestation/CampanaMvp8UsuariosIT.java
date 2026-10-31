@@ -492,7 +492,7 @@ class CampanaMvp8UsuariosIT {
             semanas.add(new FilaSemana(def.id(), k, S1.plusWeeks(k - 1), def.guion().get(k - 1).guion(), null, "-",
                     "-", 0, "-", 0, 0, 0, 0, null, null, null, "-", "-", null, "-", "NO_EJECUTADA", "-", 0, 0, "-",
                     null, null, null, List.of(), corte));
-        return new Resultado(def, u, semanas.isEmpty() ? corte : "ver semanas", semanas, s, p, corte);
+        return new Resultado(def, u, desde == 1 ? "SIN_PLAN" : "detenido", semanas, s, p, corte);
     }
 
     // =======================================================================
