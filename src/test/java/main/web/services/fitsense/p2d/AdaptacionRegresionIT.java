@@ -875,8 +875,15 @@ class AdaptacionRegresionIT {
             verify(ia, times(3)).pedirRespuesta(any(), any(), any(), feedback.capture(), anyInt());
             var motivos = feedback.getAllValues().get(2).toString();
             assertTrue(motivos.contains("V23: la semana no cubre " + desplazado + "."), motivos);
-            assertTrue(publicado.isEmpty());
             assertEquals("NO_FACTIBLE", intento(p).get("status"));
+            // P-03 (31/10/2026): la propuesta de la IA nunca se publica. Si se publica algo es la regeneracion con el
+            // motor de reglas en el mismo ciclo, registrada en safe_regeneration_attempts y validada entera.
+            publicado.ifPresent(plan -> {
+                assertEquals("RULE_ENGINE", jdbc.queryForObject("SELECT generation_source FROM weekly_training_plans"
+                        + " WHERE plan_id = ?", String.class, plan));
+                assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM safe_regeneration_attempts WHERE"
+                        + " resulting_plan_id = ? AND outcome = 'PUBLICADO'", Integer.class, plan));
+            });
             assertEquals(3, ((Number) intento(p).get("ai_calls")).intValue());
         }
     }

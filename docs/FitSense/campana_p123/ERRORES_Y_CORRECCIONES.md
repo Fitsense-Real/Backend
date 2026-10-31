@@ -47,7 +47,16 @@ El detector de la ejecución del reincorporado usaba una expresión regular que 
 | `LinajeIntegridadIT` (caso D) | `NO_FACTIBLE` | `RESPALDO` con el plan de P-03; el linaje se audita igual |
 | `HerenciaD8IT.dolorNoAprovechaD8` | Sin plan | Nivel 1 o nivel 2, nunca lo que dolió |
 | `CorreccionesReplicate*IT.c5DolorAnadeMas` | Sin plan | Nivel 1 sin más trabajo |
+| `AdaptacionRegresionIT.cardioNoSustituyeAlTrabajoEstructural` | La propuesta inválida (V23) no publicaba nada | La propuesta sigue sin publicarse (V32 NO_FACTIBLE, 3 llamadas); si hay plan, es el de P-03 con reglas |
 | `PerfilesLimiteIT` | Creaba perfiles de 15 min en LOSE_WEIGHT y GENERAL_FITNESS | P-01 los rechaza; U07 se diagnostica a 30 min |
 | `EsquemaVigenteSobreCatalogoAnterior` | Aplicaba V42 | Aplica también V43 (solo esquema) tras fijar el catálogo |
 
 **No se eliminó ni se relajó ninguna validación del backend.**
+
+## Batería final
+
+`mvn verify -Pintegration` en verde:
+- **792 pruebas unitarias**;
+- **416 de integración**, con 30 opcionales omitidas (campañas con IA real y la campaña p123, que es opt-in).
+
+Línea base en `generation`: 765 unitarias y 284 de integración.
