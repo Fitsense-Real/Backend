@@ -598,15 +598,16 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         var prescription = context.prescription();
         if (prescription == null) return draft;
 
-        // La validacion 4 sigue mandando: nunca por encima del techo del perfil.
-        int techo = context.profile().maxSessionMinutes();
-
+        // Se declara lo que dura el contenido, SIN recortarlo al techo (campana de estres, 31/10/2026).
+        // Antes se declaraba min(techo, estimado): V4 compara el techo con lo DECLARADO, asi que una
+        // sesion de 21 minutos para un perfil de 15 se publicaba declarando 17 y V4 la daba por buena
+        // (V17 tolera un 20 %). Con la duracion real, V4 rechaza lo que de verdad se pasa del techo.
         var workouts = draft.workouts().stream()
                 .map(workout -> new PlanDraft.DraftWorkout(
                         workout.scheduledDate(),
                         workout.focus(),
                         workout.name(),
-                        Math.min(techo, durationEstimator.estimateMinutes(workout, prescription)),
+                        durationEstimator.estimateMinutes(workout, prescription),
                         workout.exercises()))
                 .toList();
 

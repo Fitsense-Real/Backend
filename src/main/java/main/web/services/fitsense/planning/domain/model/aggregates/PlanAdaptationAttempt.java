@@ -228,6 +228,10 @@ public class PlanAdaptationAttempt {
         return userId;
     }
 
+    public Long getSourcePlanId() {
+        return sourcePlanId;
+    }
+
     public LocalDate getNewWeekStartDate() {
         return newWeekStartDate;
     }

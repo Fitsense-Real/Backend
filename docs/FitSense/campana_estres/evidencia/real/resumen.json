@@ -1,0 +1,16 @@
+{
+  "modo" : "IA real",
+  "duracion_min" : 9,
+  "llamadas" : 20,
+  "llamadas_con_error" : 0,
+  "predicciones_con_metricas" : 20,
+  "tokens_entrada" : 758870,
+  "tokens_salida" : 173162,
+  "coste_estimado_usd" : 0.5360415000000001,
+  "latencia_media_ms" : 86338,
+  "latencia_max_ms" : 171336,
+  "motivo_parada" : null,
+  "violaciones_linaje" : 0,
+  "violaciones_comprobaciones" : [ ],
+  "cortes" : [ "U07: sin plan inicial (SIN_PLAN: PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 6. Ultimos problemas: V15: el entrenamiento del 2026-11-07 tiene enfoque FULL_BODY y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [chest, back, upper legs, shoulders, waist]. | V4: el entrenamiento del 2026-11-07 dura 21 minutos y el techo es 17.)" ]
+}

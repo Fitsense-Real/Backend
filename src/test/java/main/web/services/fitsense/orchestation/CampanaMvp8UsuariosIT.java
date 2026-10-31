@@ -127,8 +127,12 @@ class CampanaMvp8UsuariosIT {
 
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlanningContextFacade planning;
-    @Autowired WeeklyTrainingPlanCommandService planComandos;
-    @Autowired PlanDraftValidator validador;
+    // Espias de solo lectura: cronometran las fases de la generacion inicial (orden de estres, fase 10).
+    @MockitoSpyBean WeeklyTrainingPlanCommandService planComandos;
+    @MockitoSpyBean PlanDraftValidator validador;
+    @MockitoSpyBean main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer normalizador;
+    @Autowired main.web.services.fitsense.planning.application.internal.queryservices.AdaptationOutcomeQueryService adaptacionesApi;
+    @Autowired org.springframework.core.env.Environment entorno;
     @Autowired UserProfileCommandService perfiles;
     @Autowired UserProfileController perfilRest;
     @Autowired WorkoutSessionCommandService sesiones;
@@ -144,14 +148,21 @@ class CampanaMvp8UsuariosIT {
             ? Arrays.stream(System.getProperty("fitsense.campana.usuarios", "").split(","))
                     .map(String::strip).filter(x -> !x.isEmpty()).collect(Collectors.toSet())
             : FOCO.keySet();
-    static final Path SALIDA = Path.of("target", "campana-mvp", (IA ? "real" : "ensayo-seco")
+    static final Path SALIDA = Path.of("target", "estres".equals(System.getProperty("fitsense.campana.conjunto"))
+            ? "campana-estres" : "campana-mvp", (IA ? "real" : "ensayo-seco")
             + (FOCO.isEmpty() ? "" : "-foco")
             + (SOLO.isEmpty() ? "" : "-" + String.join("-", new TreeSet<>(SOLO))));
     static final Path REPETICION = Path.of(System.getProperty("fitsense.campana.repeticion",
             "docs/FitSense/campana_mvp/evidencia/llamadas.jsonl"));
     static final int MAX_LLAMADAS = Integer.getInteger("fitsense.campana.max-llamadas", 80);
-    static final int HILOS = Integer.getInteger("fitsense.campana.hilos", 4);
-    static final int SEMANAS = 8;
+    /**
+     * Conjunto de usuarios: {@code mvp} (la campana de 8 x 8 del 30/10/2026) o {@code estres} (la campana
+     * integral de estres de 8 x 10). En estres: las 8 generaciones iniciales van PRIMERO (barrera) y, sin
+     * presupuesto, la campana SIGUE sin llamar a Replicate (cada intento queda como SIN_PRESUPUESTO).
+     */
+    static final boolean ESTRES = "estres".equals(System.getProperty("fitsense.campana.conjunto", "mvp"));
+    static final int HILOS = Integer.getInteger("fitsense.campana.hilos", ESTRES ? 8 : 4);
+    static final int SEMANAS = ESTRES ? 10 : 8;
     static final double USD_ENTRADA = 0.25, USD_SALIDA = 2.00;
     static final LocalDate S1 = LocalDate.of(2026, 11, 2);
 
@@ -296,6 +307,96 @@ class CampanaMvp8UsuariosIT {
                                 Semana.todo("cumple (continuidad y progresion real)"))));
     }
 
+    /** Ejercicios bloqueados por la persona en el perfil (solo los de la campana de estres). */
+    static final Map<String, List<Long>> BLOQUEADOS = ESTRES ? Map.of(
+            "U04", List.of(1176L, 1293L, 1324L),
+            "U06", List.of(495L, 350L, 1264L),
+            "U08", List.of(507L, 878L)) : Map.of();
+
+    /**
+     * CAMPANA INTEGRAL DE ESTRES (orden del 31/10/2026): dos usuarios por objetivo, de 1 a 7 dias
+     * disponibles, 15 a 60 minutos. El guion de diez semanas queda fijado aqui ANTES de ejecutar.
+     */
+    static List<Usuario> usuariosDeEstres() {
+        var gym = GIMNASIO;
+        var gymRestringido = List.of("body weight", "dumbbell", "cable", "leverage machine", "bench",
+                "treadmill", "stationary bike");
+        var todo = (java.util.function.Function<String, Semana>) Semana::todo;
+        return List.of(
+                new Usuario("U01", GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, d(1, 4), TrainingLocation.GYM,
+                        gym, "gimnasio completo; lunes y jueves", 30,
+                        BiologicalSex.MALE, LocalDate.of(1993, 5, 20), "178", "80", true, true, true, true, true,
+                        List.of(todo.apply("cumple todas"),
+                                Semana.con("jueves a medias por falta de tiempo (sin M)", Accion.parcial(1, SkipReason.LACK_OF_TIME)),
+                                todo.apply("cumple la sesion adaptada"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple (evaluar reincorporacion)"))),
+                new Usuario("U02", GoalType.GAIN_MUSCLE, FitnessLevel.ADVANCED, d(1, 2, 3, 5, 6), TrainingLocation.HOME,
+                        List.of("body weight", "dumbbell", "band"), "casa: peso corporal, mancuernas y bandas", 60,
+                        BiologicalSex.FEMALE, LocalDate.of(1990, 9, 3), "168", "64", true, true, true, true, true,
+                        List.of(todo.apply("cumple todas"), todo.apply("cumple todas"),
+                                Semana.con("fatiga puntual", Accion.parcial(0, SkipReason.FATIGUE)),
+                                todo.apply("recupera"),
+                                Semana.con("omite una por falta de motivacion", Accion.omitir(3, SkipReason.LACK_OF_MOTIVATION)),
+                                todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"))),
+                new Usuario("U03", GoalType.LOSE_WEIGHT, FitnessLevel.BEGINNER, d(1, 2, 3, 4, 5, 6, 7), TrainingLocation.HOME,
+                        List.of("body weight", "band"), "casa, equipamiento minimo; siete dias disponibles", 30,
+                        BiologicalSex.FEMALE, LocalDate.of(1985, 1, 28), "160", "88", false, true, true, false, true,
+                        List.of(todo.apply("cumple todas"),
+                                Semana.con("una sesion demasiado dificil", Accion.en(Tipo.DIFICIL, 1)),
+                                Semana.con("dos sesiones parciales", Accion.parcial(0, SkipReason.FATIGUE),
+                                        Accion.parcial(2, SkipReason.LACK_OF_MOTIVATION)),
+                                Semana.con("omite por desmotivacion", Accion.omitir(1, SkipReason.LACK_OF_MOTIVATION),
+                                        Accion.omitir(3, SkipReason.LACK_OF_MOTIVATION)),
+                                todo.apply("recupera"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"), todo.apply("cumple"))),
+                new Usuario("U04", GoalType.LOSE_WEIGHT, FitnessLevel.INTERMEDIATE, d(1, 2, 3, 4, 5, 6), TrainingLocation.GYM,
+                        gymRestringido, "gimnasio sin barra; tres ejercicios bloqueados; seis dias", 45,
+                        BiologicalSex.MALE, LocalDate.of(1987, 11, 9), "182", "96", true, true, true, true, true,
+                        List.of(todo.apply("cumple todas"),
+                                // Calibrado en el ensayo seco previo (31/10/2026): con UNA omision la semana queda en
+                                // 83,3 % y no se adapta; con dos (66,7 %) se pide reprogramar y no hay fecha libre.
+                                Semana.con("cambio de horario: no hay fecha libre",
+                                        Accion.omitir(2, SkipReason.SCHEDULE_CHANGE), Accion.omitir(4, SkipReason.SCHEDULE_CHANGE)),
+                                todo.apply("cumple"), todo.apply("cumple"),
+                                Semana.con("imprevisto puntual", Accion.en(Tipo.IMPREVISTO, 4)),
+                                todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"))),
+                new Usuario("U05", GoalType.INCREASE_STRENGTH, FitnessLevel.BEGINNER, d(3), TrainingLocation.HOME,
+                        List.of("body weight", "dumbbell", "band"), "casa, mancuernas y bandas; un dia", 45,
+                        BiologicalSex.MALE, LocalDate.of(2000, 4, 14), "172", "70", true, true, true, true, true,
+                        List.of(todo.apply("cumple"),
+                                Semana.con("sesion demasiado dificil", Accion.en(Tipo.DIFICIL, 0)),
+                                todo.apply("cumple la adaptada"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"))),
+                new Usuario("U06", GoalType.INCREASE_STRENGTH, FitnessLevel.ADVANCED, d(1, 2, 4, 5), TrainingLocation.GYM,
+                        gym, "gimnasio; tres ejercicios bloqueados; sin trabajo sobre la cabeza", 60,
+                        BiologicalSex.MALE, LocalDate.of(1991, 2, 2), "185", "92", true, true, true, true, false,
+                        List.of(todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                Semana.con("dolor en un ejercicio", Accion.en(Tipo.DOLOR_EJERCICIO, 0)),
+                                todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"))),
+                new Usuario("U07", GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, d(6), TrainingLocation.HOME,
+                        List.of("body weight"), "casa, sin equipamiento; un dia de 15 minutos", 15,
+                        BiologicalSex.FEMALE, LocalDate.of(1979, 6, 30), "158", "70", false, true, true, false, true,
+                        List.of(todo.apply("cumple"),
+                                Semana.con("falta de tiempo puntual", Accion.en(Tipo.IMPREVISTO, 0)),
+                                new Semana("semana sin registro", List.of(), true, null, null),
+                                todo.apply("vuelve"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"))),
+                new Usuario("U08", GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, d(1, 3, 5), TrainingLocation.GYM,
+                        gym, "gimnasio; dos ejercicios bloqueados; sin arrodillarse", 45,
+                        BiologicalSex.FEMALE, LocalDate.of(1996, 12, 1), "170", "66", true, true, false, true, true,
+                        List.of(todo.apply("cumple"),
+                                Semana.con("dolor en un ejercicio", Accion.en(Tipo.DOLOR_EJERCICIO, 1)),
+                                todo.apply("cumple la sustitucion"),
+                                Semana.con("fatiga posterior", Accion.parcial(0, SkipReason.FATIGUE)),
+                                todo.apply("recupera"), todo.apply("cumple"), todo.apply("cumple"), todo.apply("cumple"),
+                                todo.apply("cumple"), todo.apply("cumple"))));
+    }
+
     // =======================================================================
     // Registro de lo que entra y sale de Replicate (los espias solo copian)
     // =======================================================================
@@ -313,9 +414,33 @@ class CampanaMvp8UsuariosIT {
     final AtomicBoolean abortar = new AtomicBoolean();
     volatile String motivoParada;
 
+    /** Cronometra una fase de la generacion inicial (solo con la etiqueta «inicial»). */
+    private Object cronometrar(String fase, org.mockito.invocation.InvocationOnMock inv) throws Throwable {
+        var e = ETIQUETA.get();
+        long t0 = System.nanoTime();
+        try {
+            return inv.callRealMethod();
+        } finally {
+            if (e != null && e.endsWith("inicial"))
+                fasesGeneracion.computeIfAbsent(e.split(" · ")[0], k -> new ConcurrentHashMap<>())
+                        .merge(fase, (System.nanoTime() - t0) / 1_000_000, Long::sum);
+        }
+    }
+
     private void espiar() throws Exception {
+        // AISLAMIENTO (orden de estres, §3): la base es la del contenedor efimero, nunca Neon ni Railway.
+        String url = entorno.getProperty("spring.datasource.url", "");
+        if (!url.contains("localhost") && !url.contains("127.0.0.1") || url.contains("neon") || url.contains("railway"))
+            throw new IllegalStateException("La campana solo corre sobre PostgreSQL efimero; url efectiva: " + url);
+        eventos.add("AISLAMIENTO | url efectiva de la base: " + url.replaceAll("password=[^&]*", "password=***"));
+        doAnswer(inv -> cronometrar("prepare", inv)).when(planComandos).prepare(any());
+        doAnswer(inv -> cronometrar("generate", inv)).when(planComandos).generate(any());
+        doAnswer(inv -> cronometrar("persist", inv)).when(planComandos).persist(any(), any());
+        doAnswer(inv -> cronometrar("validar", inv)).when(validador).validate(any(), any(), anyInt(), any());
+        doAnswer(inv -> cronometrar("normalizar", inv)).when(normalizador).normalize(any(), any());
         cargarOriginales();
         doAnswer(inv -> {
+            if (SIN_PRESUPUESTO.get()) return sinLlamada("ADAPTACION");
             if (!enFoco()) {
                 // El snapshot es el que el backend actual habria enviado: solo la salida es la original.
                 var builder = (main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilder)
@@ -331,6 +456,7 @@ class CampanaMvp8UsuariosIT {
                     });
         }).when(correcciones).pedirRespuesta(any(), any(), any(), any(), anyInt());
         doAnswer(inv -> {
+            if (SIN_PRESUPUESTO.get()) return sinLlamada("GENERACION");
             if (!enFoco()) return repetir("GENERACION", inv.getArgument(2));
             return registrar("GENERACION", ((PlanGenerationContext) inv.getArgument(0)).userId(),
                     inv.getArgument(2), inv.getArgument(1), () -> {
@@ -343,6 +469,10 @@ class CampanaMvp8UsuariosIT {
             @Override
             protected void append(ILoggingEvent e) {
                 String t = e.getFormattedMessage();
+                if (t.startsWith("Salida de la IA")) {
+                    var m = Pattern.compile("prediccion (\\S+), prompt ([^,]+), (\\d+) caracteres de prompt").matcher(t);
+                    if (m.find()) promptsGeneracion.add(ETIQUETA.get() + "," + m.group(1) + "," + m.group(2) + "," + m.group(3));
+                }
                 if (t.startsWith("REPLICATE_TIMING")) {
                     tiempos.add(t);
                     if (t.contains("resultado=SUCCEEDED")) fallosSeguidos.set(0);
@@ -406,6 +536,12 @@ class CampanaMvp8UsuariosIT {
     final Queue<String> repeticiones = new ConcurrentLinkedQueue<>();
     /** Respuestas repetidas (REPLAY) y rechazos sin salida original, por etiqueta: nunca son llamadas. */
     final Map<String, AtomicInteger> replays = new ConcurrentHashMap<>();
+    /** Barrera de la campana de estres: todas las generaciones iniciales antes de la primera semana. */
+    volatile CountDownLatch generaciones = new CountDownLatch(0);
+    /** Por usuario: ms de generateWeeklyPlan entero, y de cada fase (prepare, generate, persist, validar...). */
+    final Map<String, Long> tiemposGeneracion = new ConcurrentHashMap<>();
+    final Map<String, Map<String, Long>> fasesGeneracion = new ConcurrentHashMap<>();
+    final Queue<String> promptsGeneracion = new ConcurrentLinkedQueue<>();
     final Map<String, AtomicInteger> sinSalida = new ConcurrentHashMap<>();
     /** Contabilidad LIVE/REPLAY por usuario|semana, para el CSV. */
     final Map<String, String> contabilidad = new ConcurrentHashMap<>();
@@ -506,17 +642,42 @@ class CampanaMvp8UsuariosIT {
 
     /** Reserva el maximo de una operacion (3 intentos). Falso si no cabe en el presupuesto. */
     private boolean reservar() {
+        SIN_PRESUPUESTO.set(false);
         if (!IA || !enFoco()) return true;
         while (true) {
             int r = reservadas.get();
-            if (r + 3 > MAX_LLAMADAS) return false;
+            if (r + 3 > MAX_LLAMADAS) {
+                // Hay reservas de otras operaciones aun en curso: lo que no gasten vuelve. Se espera.
+                if (r > llamadas.size()) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return false;
+                    }
+                    continue;
+                }
+                if (ESTRES) SIN_PRESUPUESTO.set(true);
+                return false;
+            }
             if (reservadas.compareAndSet(r, r + 3)) return true;
         }
     }
 
     /** Devuelve lo reservado que no se gasto. */
     private void liberar(int usadas) {
-        if (IA && enFoco()) reservadas.addAndGet(usadas - 3);
+        if (IA && enFoco() && !SIN_PRESUPUESTO.get()) reservadas.addAndGet(usadas - 3);
+        SIN_PRESUPUESTO.set(false);
+    }
+
+    /** La operacion en curso no tiene presupuesto: sus intentos se rechazan sin llamar (solo en estres). */
+    static final ThreadLocal<Boolean> SIN_PRESUPUESTO = ThreadLocal.withInitial(() -> false);
+    final Map<String, AtomicInteger> sinPresupuesto = new ConcurrentHashMap<>();
+
+    private Object sinLlamada(String tipo) {
+        sinPresupuesto.computeIfAbsent(ETIQUETA.get(), k -> new AtomicInteger()).incrementAndGet();
+        throw new InvalidPlanDraftException(List.of("PRESUPUESTO_AGOTADO: no se llama a Replicate (" + tipo
+                + "); la operacion sigue por el camino sin IA."));
     }
 
     private int contar(long u) {
@@ -556,7 +717,9 @@ class CampanaMvp8UsuariosIT {
         Files.createDirectories(SALIDA);
         espiar();
         long inicio = System.currentTimeMillis();
-        var lista = usuariosDeLaOrden().stream().filter(u -> SOLO.isEmpty() || SOLO.contains(u.id())).toList();
+        var lista = (ESTRES ? usuariosDeEstres() : usuariosDeLaOrden()).stream()
+                .filter(u -> SOLO.isEmpty() || SOLO.contains(u.id())).toList();
+        generaciones = new CountDownLatch(lista.size());
         var pool = Executors.newFixedThreadPool(HILOS);
         var futuros = new ArrayList<Future<Resultado>>();
         for (int i = 0; i < lista.size(); i++) {
@@ -574,34 +737,85 @@ class CampanaMvp8UsuariosIT {
         var semanas = new ArrayList<FilaSemana>();
         var filasSesion = new ArrayList<FilaSesion>();
         var filasPaso = new ArrayList<FilaPaso>();
-        long u = participante(n, def);
+        long u;
+        try {
+            u = participante(n, def);
+        } catch (RuntimeException e) {
+            generaciones.countDown();
+            throw e;
+        }
         ETIQUETA.set(def.id() + " · inicial");
 
-        if (!reservar())
+        boolean conPresupuesto = reservar();
+        if (!conPresupuesto && !SIN_PRESUPUESTO.get()) {
+            generaciones.countDown();
             return pendiente(def, u, "PENDIENTE_PRESUPUESTO (generacion inicial)", semanas, filasSesion, filasPaso, 1);
+        }
         int antes = contar(u);
         Optional<Long> plan;
         String inicial;
+        long t0 = System.nanoTime();
         try {
             plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null);
+            tiemposGeneracion.put(def.id(), (System.nanoTime() - t0) / 1_000_000);
             String et = def.id() + " · inicial";
             inicial = plan.map(p -> origen(p) + ", LIVE " + (contar(u) - antes) + ", REPLAY "
                     + replays.getOrDefault(et, new AtomicInteger()).get() + ", SIN_SALIDA "
-                    + sinSalida.getOrDefault(et, new AtomicInteger()).get()).orElse("SIN_PLAN");
+                    + sinSalida.getOrDefault(et, new AtomicInteger()).get() + ", SIN_PRESUPUESTO "
+                    + sinPresupuesto.getOrDefault(et, new AtomicInteger()).get()).orElse("SIN_PLAN");
         } catch (RuntimeException e) {
             plan = Optional.empty();
             inicial = "SIN_PLAN: " + e.getClass().getSimpleName() + ": " + e.getMessage();
         } finally {
             liberar(contar(u) - antes);
+            generaciones.countDown();
+        }
+        if (ESTRES) {
+            // Prioridad 1 de la orden: las ocho generaciones antes que cualquier adaptacion.
+            try {
+                generaciones.await(2, TimeUnit.HOURS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
         if (plan.isEmpty())
             return pendiente(def, u, "sin plan inicial (" + inicial + ")", semanas, filasSesion, filasPaso, 1);
+        var frecuenciaInicial = frecuencia(u, plan.get(), def.id(), 1);
+        if (frecuenciaInicial != null) inicial += " · " + frecuenciaInicial;
 
         for (int k = 0; k < SEMANAS; k++) {
             int numero = k + 1;
             var semana = S1.plusWeeks(k);
             var guion = def.guion().get(k);
             ETIQUETA.set(def.id() + " · s" + numero);
+            if (plan.isEmpty()) {
+                // Semana SIN PLAN (el ciclo anterior no publico: NO_FACTIBLE). Como en produccion, el ciclo de
+                // esta semana ve una semana medida sin plan y GENERA de nuevo para la siguiente.
+                boolean conReserva = reservar();
+                int antesCiclo = contar(u);
+                Optional<Long> regenerado;
+                String notaRegeneracion;
+                try {
+                    regenerado = ciclo.runFor(u, semana, semana.plusWeeks(1));
+                    notaRegeneracion = "semana sin plan; el ciclo genera de nuevo: "
+                            + regenerado.map(p -> "plan " + p + " (" + origen(p) + ")").orElse("sin plan");
+                } catch (RuntimeException e) {
+                    regenerado = Optional.empty();
+                    notaRegeneracion = "semana sin plan; la regeneracion fallo: " + e.getMessage();
+                } finally {
+                    if (conReserva) liberar(contar(u) - antesCiclo);
+                    SIN_PRESUPUESTO.set(false);
+                }
+                regenerado.ifPresent(p -> {
+                    var f = frecuencia(u, p, def.id(), numero + 1);
+                    if (f != null) eventos.add(def.id() + " · s" + numero + " | " + f);
+                });
+                semanas.add(new FilaSemana(def.id(), numero, semana, guion.guion(), null, "-", "-", 0, "-", 0, 0, 0, 0,
+                        null, null, null, "-", "-", null, "-", "SEMANA_SIN_PLAN", "-", contar(u) - antesCiclo, 0,
+                        regenerado.map(String::valueOf).orElse("NINGUNO"), null, null, null, List.of(), notaRegeneracion));
+                plan = regenerado;
+                continue;
+            }
             long planId = plan.get();
             String validacion = validarSemana(u, planId, semana);
 
@@ -609,7 +823,8 @@ class CampanaMvp8UsuariosIT {
             var medidas = sesionesDe(planId);
             var acciones = ejecutar(u, medidas, guion);
 
-            if (abortar.get() || !reservar()) {
+            boolean reservada = !abortar.get() && reservar();
+            if (abortar.get() || (!reservada && !SIN_PRESUPUESTO.get())) {
                 semanas.add(filaSinCiclo(def, numero, semana, guion, planId, validacion, medidas, acciones, cambio,
                         abortar.get() ? "campana detenida: " + motivoParada : "PENDIENTE_PRESUPUESTO"));
                 volcarSesiones(def, numero, medidas, acciones, filasSesion);
@@ -632,7 +847,7 @@ class CampanaMvp8UsuariosIT {
             var fila = evaluar(def, u, numero, semana, guion, planId, validacion, medidas, acciones, cambio,
                     siguiente, llamadasCiclo, filasV32(u) > filasV32, nota, filasPaso);
             semanas.add(fila);
-            if (siguiente.isEmpty())
+            if (siguiente.isEmpty() && !ESTRES)
                 return new Resultado(def, u, inicial, semanas, filasSesion, filasPaso,
                         "sin semana publicada tras la " + numero);
             plan = siguiente;
@@ -819,10 +1034,16 @@ class CampanaMvp8UsuariosIT {
         String etiqueta = def.id() + " · s" + numero;
         int replay = replays.getOrDefault(etiqueta, new AtomicInteger()).get();
         int vacios = sinSalida.getOrDefault(etiqueta, new AtomicInteger()).get();
+        int sinPres = sinPresupuesto.getOrDefault(etiqueta, new AtomicInteger()).get();
         contabilidad.put(def.id() + "|" + numero, "LIVE=" + contadas + " REPLAY=" + replay + " SIN_SALIDA=" + vacios
-                + " V32=" + aiCalls);
-        if (IA && aiCalls != contadas + replay + vacios)
-            violaciones.add("ai_calls V32 = " + aiCalls + " y LIVE + REPLAY + SIN_SALIDA = " + (contadas + replay + vacios));
+                + " SIN_PRESUPUESTO=" + sinPres + " V32=" + aiCalls);
+        var problemaFrecuencia = publicado.map(p -> frecuencia(u, p, def.id(), numero + 1)).orElse(null);
+        if (problemaFrecuencia != null) violaciones.add(problemaFrecuencia);
+        var api = adaptacionesApi.history(u);
+        if (!api.isEmpty()) resultadoApi.put(def.id() + "|" + numero, api.get(api.size() - 1).resultado());
+        if (IA && aiCalls != contadas + replay + vacios + sinPres)
+            violaciones.add("ai_calls V32 = " + aiCalls + " y LIVE + REPLAY + SIN_SALIDA + SIN_PRESUPUESTO = "
+                    + (contadas + replay + vacios + sinPres));
         if (contadas > 3) violaciones.add("mas de tres llamadas en el ciclo: " + contadas);
         if (("NO_CHANGE".equals(decision) || "INSUFFICIENT_DATA".equals(decision)) && contadas > 0)
             violaciones.add("ciclo determinista con " + contadas + " llamadas a la IA");
@@ -1062,6 +1283,35 @@ class CampanaMvp8UsuariosIT {
      * demostrar desde el historial (V31/V32 en crudo, {@link ValidacionIndependiente}). Antes se
      * validaba sin ninguna y toda dosis progresada, reducida o heredada salia INVALIDA.
      */
+    /** Por usuario y semana: sesiones, tope por nivel, dias disponibles y fechas (CONTROL_FRECUENCIA_SEMANAL). */
+    final Queue<String> frecuencias = new ConcurrentLinkedQueue<>();
+    /** Por usuario|semana: el resultado que devuelve la API (adaptation.resultado) del plan publicado. */
+    final Map<String, String> resultadoApi = new ConcurrentHashMap<>();
+
+    /**
+     * Frecuencia del plan (orden de estres, §4 y §13): como mucho 4 sesiones en principiante y 6 en los
+     * demas, nunca 7, una por fecha y todas en dias disponibles. Devuelve el problema, o null.
+     */
+    private String frecuencia(long u, long plan, String usuario, int semana) {
+        var perfil = jdbc.queryForMap("SELECT fitness_level, available_days::text AS dias, days_per_week FROM user_profiles"
+                + " WHERE user_id = ?", u);
+        var dias = jdbc.queryForList("SELECT scheduled_date FROM planned_workouts WHERE plan_id = ?", LocalDate.class, plan);
+        int tope = "BEGINNER".equals(perfil.get("fitness_level")) ? 4 : 6;
+        var disponibles = Arrays.stream(String.valueOf(perfil.get("dias")).replaceAll("[{}]", "").split(","))
+                .map(String::strip).filter(x -> !x.isEmpty()).map(Integer::parseInt).collect(Collectors.toSet());
+        int esperadas = Math.min(Math.min(((Number) perfil.get("days_per_week")).intValue(), tope), disponibles.size());
+        var problemas = new ArrayList<String>();
+        if (dias.size() > tope) problemas.add(dias.size() + " sesiones con tope " + tope);
+        if (dias.size() >= 7) problemas.add("siete sesiones");
+        if (dias.size() != esperadas) problemas.add(dias.size() + " sesiones y se esperaban " + esperadas);
+        if (new HashSet<>(dias).size() != dias.size()) problemas.add("fecha repetida");
+        if (dias.stream().anyMatch(f -> !disponibles.contains(f.getDayOfWeek().getValue()))) problemas.add("dia no disponible");
+        frecuencias.add(String.join(",", usuario, String.valueOf(semana), String.valueOf(plan),
+                String.valueOf(perfil.get("fitness_level")), String.valueOf(disponibles.size()), String.valueOf(tope),
+                String.valueOf(esperadas), String.valueOf(dias.size()), problemas.isEmpty() ? "OK" : String.join(" | ", problemas)));
+        return problemas.isEmpty() ? null : "FRECUENCIA: " + String.join(" | ", problemas);
+    }
+
     private String validarSemana(long u, long plan, LocalDate semana) {
         try {
             var ctx = planComandos.prepare(new GenerateWeeklyPlanCommand(u, semana, null, true, null, null)).context();
@@ -1103,7 +1353,8 @@ class CampanaMvp8UsuariosIT {
         long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
         perfiles.handle(new CreateUserProfileCommand(u, d.nacimiento(), d.sexo(), new BigDecimal(d.altura()),
                 new BigDecimal(d.peso()), null, d.nivel(), d.objetivo(), "campana MVP " + d.id(), d.lugar(),
-                (short) d.dias().size(), d.dias(), (short) d.minutos(), d.equipamiento(), List.of(), "Ninguna",
+                (short) d.dias().size(), d.dias(), (short) d.minutos(), d.equipamiento(),
+                BLOQUEADOS.getOrDefault(d.id(), List.of()), "Ninguna",
                 d.impacto(), d.suelo(), d.rodillas(), d.colgado(), d.sobreCabeza()));
         return u;
     }
@@ -1174,7 +1425,7 @@ class CampanaMvp8UsuariosIT {
                 "adherencia_formula_orden", "adherencia_backend_oficial", "adherencia_backend_observada", "riesgo",
                 "motivos", "cambio_perfil", "decision", "estado_v32", "intervenciones", "llamadas_ia_contadas",
                 "ai_calls_v32", "plan_siguiente", "pasos", "pasos_bloqueados", "retirados(ejercicio@sesion)",
-                "violaciones", "nota", "contabilidad_live_replay"));
+                "violaciones", "nota", "contabilidad_live_replay", "resultado_api"));
         var sesionesCsv = new StringBuilder(linea("usuario", "semana", "sesion", "origen", "fecha", "foco", "minutos",
                 "ejercicios", "accion", "estado_final", "cumplimiento_pct", "motivo", "contexto", "minutos_declarados",
                 "rpe", "dosis"));
@@ -1193,7 +1444,8 @@ class CampanaMvp8UsuariosIT {
                         f.adherenciaObservada(), f.riesgo(), f.motivos(), f.cambioPerfil(), f.decision(), f.estado(),
                         f.intervenciones(), f.llamadasIa(), f.aiCallsV32(), f.siguientePlan(), f.pasos(), f.bloqueos(),
                         f.retirados(), String.join(" | ", f.violaciones()), f.nota(),
-                        contabilidad.getOrDefault(f.usuario() + "|" + f.semana(), "-")));
+                        contabilidad.getOrDefault(f.usuario() + "|" + f.semana(), "-"),
+                        resultadoApi.getOrDefault(f.usuario() + "|" + f.semana(), "-")));
             for (var s : r.sesiones())
                 sesionesCsv.append(linea(s.usuario(), s.semana(), s.sesion(), s.origen(), s.fecha(), s.foco(),
                         s.minutos(), s.ejercicios(), s.accion(), s.estado(), s.cumplimiento(), s.motivo(), s.contexto(),
@@ -1225,6 +1477,15 @@ class CampanaMvp8UsuariosIT {
             for (var l : llamadas) w.write(json.writeValueAsString(l) + "\n");
         }
         Files.write(SALIDA.resolve("eventos.log"), new ArrayList<>(eventos));
+        var frec = new ArrayList<String>();
+        frec.add("usuario,semana_plan,plan_id,nivel,dias_disponibles,tope_nivel,sesiones_esperadas,sesiones_programadas,resultado");
+        frec.addAll(frecuencias);
+        Files.write(SALIDA.resolve("FRECUENCIA_SEMANAL.csv"), frec);
+        var gen = new ArrayList<String>();
+        gen.add("usuario,total_ms,fases_ms");
+        tiemposGeneracion.forEach((k, v) -> gen.add(k + "," + v + ",\"" + fasesGeneracion.getOrDefault(k, Map.of()) + "\""));
+        Files.write(SALIDA.resolve("TIEMPOS_GENERACION.csv"), gen);
+        Files.write(SALIDA.resolve("prompts_generacion.log"), new ArrayList<>(promptsGeneracion));
         if (!FOCO.isEmpty()) Files.write(SALIDA.resolve("repeticiones.log"), new ArrayList<>(repeticiones));
         Files.write(SALIDA.resolve("tiempos.log"), new ArrayList<>(tiempos));
 

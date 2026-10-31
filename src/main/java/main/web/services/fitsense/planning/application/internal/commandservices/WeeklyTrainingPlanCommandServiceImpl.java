@@ -158,6 +158,15 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                 profile.age(), profile.fitnessLevel(), profile.declaradas());
 
         var eligible = externalCatalogService.fetchEligibleFor(profile, maxDifficulty, safety);
+        // DOLOR SIN RESOLVER (campana de estres, 31/10/2026): si el ciclo anterior no publico semana porque
+        // conservarla habria vuelto a publicar el ejercicio que dolio (NO_FACTIBLE), la semana nueva se genera
+        // desde cero y su semana medida esta vacia: nada recordaba ese dolor. Sus ejercicios quedan fuera.
+        var dolorSinResolver = doloresSinResolver(command.userId(), week);
+        if (!dolorSinResolver.isEmpty()) {
+            log.warn("DOLOR_SIN_RESOLVER usuario {}: la semana del {} se genera sin {} (el ciclo anterior fue"
+                    + " NO_FACTIBLE por dolor)", command.userId(), week.startDate(), dolorSinResolver);
+            eligible = eligible.stream().filter(c -> !dolorSinResolver.contains(c.exerciseId())).toList();
+        }
         if (eligible.isEmpty())
             throw new main.web.services.fitsense.catalog.domain.exceptions.EmptyEligibleSetException(
                     command.userId());
@@ -191,6 +200,43 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                 week.startDate(), week.endDate(), divisor, weekNumber,
                 previousActive.map(WeeklyTrainingPlan::getId).orElse(null),
                 externalIamService.timezoneOf(command.userId()));
+    }
+
+    /**
+     * Los ejercicios de un dolor que quedo SIN RESOLVER justo antes de esta semana: el ultimo intento V32
+     * del usuario es NO_FACTIBLE con SEGURIDAD_ANTE_DOLOR y su semana nueva es la anterior a esta (la que
+     * quedo sin plan). Son los ejercicios de la semana medida de ese intento registrados con dolor y, si el
+     * dolor se declaro en la sesion sin decir en que ejercicio, todos los de esa sesion (como V8C: ante un
+     * dolor sin identificar no se conserva ninguno). Cuanto debe recordarse un dolor mas alla de este caso
+     * es una decision funcional pendiente; aqui solo se evita repetir lo que el sistema ya declaro inseguro.
+     */
+    private java.util.Set<Long> doloresSinResolver(Long userId, TrainingWeek week) {
+        var intentos = attemptRepository.findByUserIdOrderByIdAsc(userId);
+        if (intentos.isEmpty()) return java.util.Set.of();
+        var ultimo = intentos.get(intentos.size() - 1);
+        if (ultimo.getStatus() != main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationAttempt.Status.NO_FACTIBLE
+                || ultimo.getTargetedInterventions() == null
+                || !java.util.Arrays.asList(ultimo.getTargetedInterventions()).contains("SEGURIDAD_ANTE_DOLOR")
+                || !week.previous().startDate().equals(ultimo.getNewWeekStartDate())
+                || ultimo.getSourcePlanId() == null) return java.util.Set.of();
+        var medido = planRepository.findById(ultimo.getSourcePlanId()).orElse(null);
+        if (medido == null) return java.util.Set.of();
+        var resultados = externalExecutionService.fetchResultsByWorkout(
+                medido.workoutsView().stream().map(main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout::getId).toList());
+        var excluir = new java.util.LinkedHashSet<Long>();
+        for (var w : medido.workoutsView()) {
+            var porPlanificado = w.exercisesView().stream().collect(java.util.stream.Collectors.toMap(
+                    main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise::getId,
+                    main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise::getExerciseId));
+            var r = resultados.get(w.getId());
+            boolean sesionConDolor = w.getSkipReason() == main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason.PAIN_OR_DISCOMFORT;
+            var identificados = r == null || r.exercises() == null ? java.util.List.<Long>of() : r.exercises().stream()
+                    .filter(x -> "PAIN_OR_DISCOMFORT".equals(x.skipReason()))
+                    .map(x -> porPlanificado.get(x.plannedExerciseId())).filter(java.util.Objects::nonNull).toList();
+            excluir.addAll(identificados);
+            if (sesionConDolor && identificados.isEmpty()) excluir.addAll(porPlanificado.values());
+        }
+        return excluir;
     }
 
     /**
