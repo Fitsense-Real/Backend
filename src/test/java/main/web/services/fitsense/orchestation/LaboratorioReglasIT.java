@@ -104,7 +104,7 @@ class LaboratorioReglasIT {
     static final int SERIES_SESION_GRUPO = 10, SERIES_SEMANA_GRUPO = 20;
     static final String[] VARIANTES = {"A_VIGENTE", "D_PISO_50", "D_SIN_PISO", "B_TOPE_DINAMICO", "C_SIN_TOPE",
             "E_COMBINADO"};
-    int secuencia;
+    static int secuencia;
 
     @BeforeEach
     void iaApagada() {
