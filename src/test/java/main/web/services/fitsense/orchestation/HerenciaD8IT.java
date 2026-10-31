@@ -115,15 +115,14 @@ class HerenciaD8IT {
     }
 
     /**
-     * La IA devuelve el viernes identico. Como SENALADA esa semana no tiene la exencion de
-     * D8 (V8C solo la da a las copias no senaladas), V20 rechaza la propuesta y el respaldo
-     * publica la misma sesion: RESPALDO, con el viernes en no_effect. Es el comportamiento de
-     * antes, fuera del alcance de este cambio; lo que se comprueba es que la herencia siga.
+     * La IA devuelve el viernes identico. Antes de C-2 (orden de cierre del PR #16), como SENALADA esa semana
+     * no tenia la exencion de D8: V20 rechazaba la propuesta tres veces y el respaldo publicaba la misma sesion
+     * (RESPALDO). Con C-2 la propuesta identica hereda D8 y se publica en la primera llamada: SIN_EFECTO.
      */
     @Test
-    @DisplayName("ACORTAR -> copia -> fatiga con la IA devolviendolo igual (acaba en RESPALDO) -> la copia conserva la exencion")
+    @DisplayName("ACORTAR -> copia -> fatiga con la IA devolviendolo igual (C-2: SIN_EFECTO) -> la copia conserva la exencion")
     void propuestaIdenticaConservaD8() throws Exception {
-        recorrer(Modo.IGUAL, "RESPALDO");
+        recorrer(Modo.IGUAL, "SIN_EFECTO");
     }
 
     @Test
@@ -138,23 +137,16 @@ class HerenciaD8IT {
         long medido = plan;
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
         var r = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
-        // P-03 (31/10/2026): la IA (que devuelve el viernes igual) se rechaza tres veces; el respaldo ya no deja
-        // la semana sin plan: sustituye de forma determinista TODO lo del viernes que dolio (dolor sin identificar).
-        assertTrue(r.isPresent(), "P-03: alternativa segura en el mismo ciclo");
-        // Nivel 1 (RESPALDO con sustitucion) o, si esa semana no pasa (aqui V20 del viernes acortado), nivel 2:
-        // NO_FACTIBLE en V32 y la semana regenerada con reglas en el mismo ciclo.
-        var estado = String.valueOf(ultimo(u).get("status"));
-        assertTrue(estado.equals("RESPALDO") || (estado.equals("NO_FACTIBLE") && jdbc.queryForObject("SELECT count(*)"
-                + " FROM safe_regeneration_attempts WHERE user_id = ? AND outcome = 'PUBLICADO' AND resulting_plan_id = ?",
-                Integer.class, u, r.get()) == 1), estado);
-        var viernesQueDolio = jdbc.queryForList("SELECT pwe.exercise_id FROM planned_workout_exercises pwe JOIN"
-                + " planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND"
-                + " pw.skip_reason = 'PAIN_OR_DISCOMFORT'", Long.class, medido);
-        assertFalse(viernesQueDolio.isEmpty());
-        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises pwe JOIN planned_workouts pw"
-                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ? AND pwe.exercise_id = ANY(?)",
-                Integer.class, r.get(), viernesQueDolio.toArray(new Long[0])),
-                "volver a publicar el viernes que dolio no es una solucion segura");
+        // P-03: la IA (que devuelve el viernes igual) se rechaza tres veces por el dolor. El nivel 1 (sustitucion)
+        // no pasa V20 en el viernes acortado. El nivel 2 tampoco publica: regenerar con dosis base devolveria el
+        // trabajo que ACORTAR retiro (450 -> 486 repeticiones) en plena semana de dolor, y ante dolor no se anade
+        // trabajo (auditoria del nivel 2, orden de cierre del PR #16). Queda NO_FACTIBLE, con su motivo.
+        assertTrue(r.isEmpty(), "volver a publicar el viernes que dolio no es una solucion segura");
+        assertEquals("NO_FACTIBLE", ultimo(u).get("status"));
+        assertTrue(String.valueOf(jdbc.queryForObject("SELECT validation_problems FROM safe_regeneration_attempts WHERE"
+                + " user_id = ? AND outcome = 'NO_FACTIBLE'", String.class, u)).contains("sube el trabajo"));
+        assertTrue(jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND status ="
+                + " 'ACTIVA'", Integer.class, u) > 0, "la exclusion por dolor se conserva");
         assertSinViolaciones();
     }
 

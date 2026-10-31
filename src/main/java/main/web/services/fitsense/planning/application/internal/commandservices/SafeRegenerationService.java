@@ -112,6 +112,15 @@ public class SafeRegenerationService {
             return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos,
                     "El borrador regenerado trae ejercicios excluidos por dolor " + reaparecen + ": no se publica.");
 
+        // NO SE ANADE TRABAJO (auditoria del nivel 2, orden de cierre del PR #16). La regeneracion vuelve a las dosis
+        // base y no conserva el linaje de la semana medida: tras una reduccion autorizada (fatiga) eso DESHACIA la
+        // reduccion en plena semana de dolor (LOSE_WEIGHT: 102 -> 108 repeticiones). Ante dolor no se anade trabajo
+        // y P-03 no puede superar el volumen: si la semana regenerada sube las repeticiones o los segundos totales
+        // de la semana medida, no hay alternativa segura con las reglas vigentes y queda NO_FACTIBLE.
+        var masTrabajo = masTrabajoQueLaMedida(medida.measuredPlanId(), generado.draft());
+        if (masTrabajo != null)
+            return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos, masTrabajo);
+
         var plan = tx.execute(status -> {
             var guardado = comandos.persist(preparada, new GeneratedPlan(generado.draft(), generado.attempts()))
                     .orElseThrow();
@@ -124,6 +133,35 @@ public class SafeRegenerationService {
                         + " mismo ciclo con el motor de reglas · plan {} · excluidos {}", userId, newWeekStart,
                 intento.getId(), plan, excluidos);
         return Optional.ofNullable(plan);
+    }
+
+    /**
+     * El motivo, o null si la semana regenerada no sube ni las repeticiones ni los segundos totales planificados de
+     * la semana medida (series x repeticiones y series x segundos, por separado, sin convertir uno en otro).
+     */
+    String masTrabajoQueLaMedida(Long planMedido, PlanDraft regenerada) {
+        var medidaPlan = tx.execute(status -> planes.findById(planMedido).map(p -> {
+            long r = 0, sg = 0;
+            for (var w : p.workoutsView())
+                for (var e : w.exercisesView()) {
+                    int series = e.getPlannedSets() == null ? 1 : e.getPlannedSets();
+                    r += (long) series * (e.getPlannedReps() == null ? 0 : e.getPlannedReps());
+                    sg += (long) series * (e.getPlannedDurationSeconds() == null ? 0 : e.getPlannedDurationSeconds());
+                }
+            return new long[]{r, sg};
+        }).orElse(null));
+        if (medidaPlan == null) return "P-03 nivel 2: no se encuentra la semana medida para comparar el trabajo.";
+        long r = 0, sg = 0;
+        for (var w : regenerada.workouts())
+            for (var e : w.exercises()) {
+                int series = e.plannedSets() == null ? 1 : e.plannedSets();
+                r += (long) series * (e.plannedReps() == null ? 0 : e.plannedReps());
+                sg += (long) series * (e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds());
+            }
+        if (r <= medidaPlan[0] && sg <= medidaPlan[1]) return null;
+        return ("P-03 nivel 2: la semana regenerada con dosis base sube el trabajo de la semana medida (repeticiones %d"
+                + " -> %d, segundos %d -> %d); ante dolor no se anade trabajo y no hay otra alternativa determinista.")
+                .formatted(medidaPlan[0], r, medidaPlan[1], sg);
     }
 
     private static boolean porDolor(PlanAdaptationAttempt a) {
