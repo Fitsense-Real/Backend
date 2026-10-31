@@ -217,6 +217,14 @@ public class SessionFixPromptBuilder {
                 -el peso que se uso y como fue cada sesion- esta en SESIONES
                 SENALADAS, sesion por sesion, y solo de las que puedes corregir.
                 Si un dato no aparece ahi, tratalo como ausente: no lo supongas.
+
+                EN UNA CORRECCION NO SE PROGRESA. Donde los principios dicen
+                progresar, subir repeticiones o sugerir mas peso, aqui NO se
+                aplica: no subas series, repeticiones, segundos, peso ni el
+                volumen de ninguna sesion. Solo el backend progresa, y lo hace
+                en otro momento. Una propuesta que sube algo se rechaza.
+                El descanso (rest_seconds) de un ejercicio que se queda no se
+                cambia nunca: ni para acortar ni para alargar.
                 """);
 
         prompt.append(sesionesSenaladas(context, derivation, adjustment));
@@ -289,6 +297,7 @@ public class SessionFixPromptBuilder {
 
             bloque.append("  QUE PUEDES CAMBIAR AQUI: ")
                     .append(intervencion.instruccion()).append('\n');
+            bloque.append(contratoDeLaSesion(context, derivation, senalada, prescritos));
             if (senalada.minutosDisponibles() != null)
                 bloque.append("  LIMITE DE TIEMPO: la persona declaro que suele tener ")
                         .append(senalada.minutosDisponibles())
@@ -308,6 +317,109 @@ public class SessionFixPromptBuilder {
         }
 
         return bloque.toString();
+    }
+
+    /** Sin estado: el mismo calculo de V17 y V20. */
+    private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR =
+            new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
+
+    /**
+     * Orden de optimizacion (31/10/2026), fases B3 y B4: lo que el backend ya sabe y la IA no podia
+     * deducir. Cada linea sale del mismo calculo o de la misma politica que la valida:
+     * <ul>
+     *   <li>que significa «bajar la dosis» (V24: series, repeticiones o segundos, nunca el descanso;
+     *       en GAIN_MUSCLE la dosis 4D no se reduce);</li>
+     *   <li>la duracion que el backend calcula para la sesion tal como esta (V17, V20);</li>
+     *   <li>el resto de la semana: fechas y ejercicios (V12, V18), que antes no viajaban;</li>
+     *   <li>en REPROGRAMAR, las fechas libres validas;</li>
+     *   <li>donde se puede sustituir, los sustitutos admitidos (mismo patron, elegibles, no usados
+     *       en la sesion ni en los dias contiguos).</li>
+     * </ul>
+     */
+    private String contratoDeLaSesion(PlanGenerationContext context, WeekDerivation derivation,
+                                      PlanAdjustment.TargetedSession senalada,
+                                      List<PreviousWeekSummary.PrescriptionOutcome> prescritos) {
+        var b = new StringBuilder();
+        var intervencion = senalada.intervencion();
+        Long id = senalada.plannedWorkoutId();
+        boolean gm = context.profile() != null
+                && main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy
+                .aplicaA(context.profile().goalType());
+        var propia = derivation.from(id).map(d -> d.workout()).orElse(null);
+
+        if (intervencion.permiteCambiarDosis())
+            b.append(gm
+                    ? "  DOSIS: en GAIN_MUSCLE la dosis de 4D NO se reduce ni se sube: cada ejercicio que se queda"
+                    + " conserva exactamente su series x repeticiones y su descanso. Para acortar solo puedes retirar"
+                    + " una colocacion de relleno.\n"
+                    : "  DOSIS: bajar la dosis significa menos series (minimo 2), menos repeticiones (nunca por"
+                    + " debajo del min_reps del ejercicio) o menos segundos (minimo 20). El descanso NO cambia y"
+                    + " nada sube.\n");
+
+        if (propia != null && context.prescription() != null && !propia.exercises().isEmpty()) {
+            long segundos = ESTIMADOR.estimateSeconds(propia, context.prescription());
+            long piso = main.web.services.fitsense.planning.domain.services.PlanDraftValidator
+                    .minimumSessionSeconds(context);
+            b.append("  DURACION (la calcula el backend): ahora dura unos ").append(segundos).append(" s (")
+                    .append(ESTIMADOR.estimateMinutes(propia, context.prescription())).append(" min)");
+            if (intervencion.permiteReducirDuracion()) b.append("; en esta sesion el minimo de duracion no obliga");
+            else if (piso > 0) b.append("; no puede bajar de ").append(piso).append(" s");
+            b.append(". Tu expected_duration_minutes no hace falta calcularlo: el backend lo fija con el contenido.\n");
+        }
+
+        // Las fechas que ya ocupa el resto de la semana (V12), que la correccion no enviaba. Solo las
+        // fechas: los ejercicios de las conservadas no viajan, porque si los ve tiende a tocarlas
+        // (noMandaLasConservadas). V18 lo cubre la lista de sustitutos, que ya excluye los dias pegados.
+        var otras = derivation.workouts().stream()
+                .filter(d -> !id.equals(d.sourcePlannedWorkoutId()))
+                .sorted(java.util.Comparator.comparing(d -> d.workout().scheduledDate()))
+                .toList();
+        if (!otras.isEmpty())
+            b.append("  FECHAS YA OCUPADAS por el resto de la semana (no se tocan): ")
+                    .append(otras.stream().map(d -> d.workout().scheduledDate()).toList()).append(".\n");
+
+        if (intervencion.permiteReprogramar() && context.profile() != null && context.profile().availableDays() != null) {
+            var ocupadas = otras.stream().map(d -> d.workout().scheduledDate()).collect(java.util.stream.Collectors.toSet());
+            var libres = new java.util.ArrayList<java.time.LocalDate>();
+            for (var f = context.weekStartDate(); !f.isAfter(context.weekEndDate()); f = f.plusDays(1))
+                if (context.profile().availableDays().contains((short) f.getDayOfWeek().getValue()) && !ocupadas.contains(f))
+                    libres.add(f);
+            b.append("  FECHAS LIBRES VALIDAS para scheduled_date: ").append(libres)
+                    .append(libres.isEmpty() ? " (ninguna: conserva la fecha)" : "").append(". Ninguna otra.\n");
+        }
+
+        if (intervencion.permiteSustituirEjercicio() && propia != null) {
+            var enSesion = propia.exercises().stream().map(main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise::exerciseId)
+                    .collect(java.util.stream.Collectors.toSet());
+            var contiguos = otras.stream()
+                    .filter(d -> Math.abs(d.workout().scheduledDate().toEpochDay()
+                            - propia.scheduledDate().toEpochDay()) == 1)
+                    .flatMap(d -> d.workout().exercises().stream().map(main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise::exerciseId))
+                    .collect(java.util.stream.Collectors.toSet());
+            var dolieron = prescritos.stream().filter(p -> "PAIN_OR_DISCOMFORT".equals(p.skipReason()))
+                    .map(PreviousWeekSummary.PrescriptionOutcome::exerciseId).collect(java.util.stream.Collectors.toSet());
+            var porId = context.availableExercises().stream().collect(java.util.stream.Collectors.toMap(
+                    main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId,
+                    c -> c, (x, y) -> x));
+            var lineas = new StringBuilder();
+            for (var e : propia.exercises()) {
+                var actual = porId.get(e.exerciseId());
+                if (actual == null || actual.movementPattern() == null) continue;
+                var opciones = context.availableExercises().stream()
+                        .filter(c -> actual.movementPattern().equals(c.movementPattern()))
+                        .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
+                                && !dolieron.contains(c.exerciseId()))
+                        .filter(c -> c.difficulty() <= actual.difficulty())
+                        .map(main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId)
+                        .sorted().limit(6).toList();
+                lineas.append("    ").append(e.exerciseId()).append(" (").append(actual.movementPattern()).append("): ")
+                        .append(opciones.isEmpty() ? "ninguno" : opciones).append('\n');
+            }
+            if (!lineas.isEmpty())
+                b.append("  SUSTITUTOS ADMITIDOS (mismo patron, elegibles, no repetidos en dias pegados; usa su dosis"
+                        + " de available_exercises):\n").append(lineas);
+        }
+        return b.toString();
     }
 
     /** Una linea legible por ejercicio prescrito, con su dosis. */
@@ -397,6 +509,11 @@ public class SessionFixPromptBuilder {
             prompt.append("\nErrores de intentos anteriores que tampoco puedes repetir:\n");
             feedback.earlierProblems()
                     .forEach(problem -> prompt.append("- ").append(problem).append('\n'));
+        }
+        var pistas = PistasDeReintento.para(feedback.rejectionProblems(), true);
+        if (!pistas.isEmpty()) {
+            prompt.append("\nDonde esta la solucion de cada motivo:\n");
+            pistas.forEach(pista -> prompt.append("- ").append(pista).append('\n'));
         }
 
         prompt.append("""

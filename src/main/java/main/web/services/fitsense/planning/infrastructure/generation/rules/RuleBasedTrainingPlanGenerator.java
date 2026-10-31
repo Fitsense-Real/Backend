@@ -224,10 +224,11 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             if (dosisFijada && minimumMinutes > 0 && context.prescription() != null) {
                 sustituirRellenoPorEstructural(selector, focus, picked, exercises, prescription,
                         context, dates.get(i), sessionMinutes, minimumMinutes, presupuestoDia);
-                // 4D v3.2: si con la composicion de siempre el dia sigue por debajo del piso, la serie
-                // adicional del relleno de zona pequena, de una en una y solo mientras falte.
+                // 4D v3.2/v3.3: si con la composicion de siempre el dia sigue por debajo del piso, la
+                // serie adicional del relleno (zona pequena; biceps en PULL), de una en una y solo
+                // mientras falte.
                 var date = dates.get(i);
-                ampliarRellenoZonaPequena(picked, exercises, () -> segundosDe(date, focus, sessionMinutes,
+                ampliarRelleno(focus, picked, exercises, () -> segundosDe(date, focus, sessionMinutes,
                         exercises, context) < PlanDraftValidator.minimumSessionSeconds(context), presupuestoDia);
             }
 
@@ -386,18 +387,21 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     /**
-     * 4D v3.2: sube el relleno de zona pequena (2x13) a su serie adicional, de una colocacion en
-     * una y en orden, solo mientras la sesion no llegue al piso de V20 y sin salir del presupuesto
-     * de 4D §5. Las demas colocaciones no se tocan: su dosis sigue fija.
+     * 4D v3.2/v3.3: sube el relleno que admite serie adicional (zona pequena 2x13; biceps 2x10 en
+     * PULL) a esa serie, de una colocacion en una y en orden, solo mientras la sesion no llegue al
+     * piso de V20 y sin salir del presupuesto de 4D §5. Las demas colocaciones no se tocan.
      */
-    private void ampliarRellenoZonaPequena(List<CandidateExercise> picked, List<PlanDraft.DraftExercise> exercises,
-                                           java.util.function.BooleanSupplier falta, double presupuestoSegundos) {
+    private void ampliarRelleno(WorkoutFocus focus, List<CandidateExercise> picked,
+                                List<PlanDraft.DraftExercise> exercises,
+                                java.util.function.BooleanSupplier falta, double presupuestoSegundos) {
         for (int k = 0; k < exercises.size() && falta.getAsBoolean(); k++) {
             var d = MvpDosePolicy.dosisPara(MandatorySlot.of(picked.get(k)), picked.get(k).bodyPartCode()).orElse(null);
             var e = exercises.get(k);
-            if (d == null || !d.ampliable() || e.prescriptionType() != PrescriptionType.SETS_REPS
+            if (d == null) continue;
+            short seriesMax = MvpDosePolicy.seriesMaxEn(d, focus, picked.get(k).bodyPartCode());
+            if (seriesMax <= d.series() || e.prescriptionType() != PrescriptionType.SETS_REPS
                     || e.plannedSets() == null || e.plannedSets() != d.series()) continue;
-            var ampliada = new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), d.seriesMax(),
+            var ampliada = new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), seriesMax,
                     e.plannedReps(), e.plannedDurationSeconds(), e.targetLoadKg(), e.restSeconds(), e.notes());
             if (costeSegundos4D(exercises) - costeSegundos4D(e) + costeSegundos4D(ampliada) > presupuestoSegundos)
                 continue;

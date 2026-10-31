@@ -173,6 +173,9 @@ public final class PrescriptionPrinciples {
                 puedes darle series_max a una colocacion de esa clase SOLO si,
                 sin esa serie, la sesion no llega a su duracion minima. Si la
                 sesion ya llega con series, la serie de mas se rechaza.
+                Lo mismo vale, en las sesiones PULL, para el relleno
+                RELLENO_ESTANDAR de upper arms (el biceps): hasta 3 series,
+                y solo si sin esa serie la sesion no llega a su minimo.
                 No pongas mas de constraints.max_colocaciones_dia ejercicios en
                 una sesion, y que el dia no supere constraints.minutos_utiles_dia:
                 suma el coste_minutos de las clases que uses.

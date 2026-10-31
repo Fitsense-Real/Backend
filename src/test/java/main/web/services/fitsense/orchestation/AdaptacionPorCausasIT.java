@@ -153,12 +153,15 @@ class AdaptacionPorCausasIT {
     }
 
     @Test
-    @DisplayName("A01 · M inalcanzable sin tocar estructurales: no se fuerza; se conserva y consta (3 intentos, RESPALDO)")
+    @DisplayName("A01 · M inalcanzable sin tocar estructurales: no se fuerza; se conserva y consta (sin llamada, RESPALDO)")
     void menosTiempoHabitualInviable() throws Exception {
         long u = participante(GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, 45);
         long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.HABITUAL_INVIABLE);
-        long w2 = ciclo(u, 0, 3);
+        // Orden de optimizacion (31/10/2026), fase C: antes se gastaban los 3 intentos para llegar al
+        // mismo RESPALDO. Ahora FactibilidadPreviaIA demuestra que retirar un relleno no cabe en los
+        // minutos declarados y no se llama. El resultado publicado es el mismo.
+        long w2 = ciclo(u, 0, 0);
         var ev = ultimo(u);
         assertEquals("{ACORTAR_O_REORGANIZAR}", ev.get("targeted_interventions"), String.valueOf(ev));
         assertEquals("RESPALDO", ev.get("status"), String.valueOf(ev));

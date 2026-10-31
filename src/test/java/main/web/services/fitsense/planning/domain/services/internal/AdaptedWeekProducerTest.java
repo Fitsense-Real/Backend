@@ -74,6 +74,27 @@ class AdaptedWeekProducerTest {
         assertEquals(List.of(592L), ejerciciosDe(r, 103L), "conservada, sin tocar");
     }
 
+    @Test
+    @DisplayName("B2: con contenido nuevo los minutos los calcula el backend, tambien si la IA repite los de antes")
+    void minutosRepetidosConContenidoNuevo() {
+        // U02 S3 en la comparacion con IA real: la IA dejo 23 min para un contenido de 16 y V17 la rechazo.
+        var orden = senalando(Map.of(102L, TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA));
+        var params = new main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams(
+                null, null, null, null, null, null, null, null, null, null);
+        var contexto = new PlanGenerationContext(1L, (short) 2, L2, L2.plusDays(6), perfil(), orden,
+                semanaMedida(), List.of(), null, params);
+        var nueva = ej(305L, 2, 10);
+
+        var r = producer.produce(contexto, derivacion(), List.of(correccion(102L, L2.plusDays(2), 45, nueva)),
+                catalogo());
+
+        int calculados = new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator()
+                .estimateMinutes(new PlanDraft.DraftWorkout(L2.plusDays(2), WorkoutFocus.FULL_BODY, "x", 45,
+                        List.of(nueva)), params);
+        assertNotEquals(45, calculados, "la prueba necesita un contenido que no dure 45");
+        assertEquals(calculados, sesion(r, 102L).expectedDurationMinutes(), () -> r.problemas().toString());
+    }
+
     // =======================================================================
     // 2 · Adaptacion ampliada
     // =======================================================================

@@ -2,6 +2,7 @@ package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
 import main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams;
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
+import main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy;
 import main.web.services.fitsense.shared.infrastructure.json.JsonSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,14 @@ class PromptCapacidadesTest {
         var s = PlanInputSnapshot.of(contexto("GAIN_MUSCLE"));
         assertNull(s.constraints().capacidades());
         assertTrue(s.availableExercises().stream().allMatch(e -> e.dosisPorCapacidad() == null));
-        assertEquals(ELEGIBLES.size(), s.availableExercises().size(), "GAIN_MUSCLE recibe el conjunto de siempre");
+        // Orden de optimizacion (31/10/2026), B1: GAIN_MUSCLE ya no recibe lo que no puede demostrar
+        // hipertrofia (duracion o sin clase), que V24 rechazaba siempre (11 rechazos en las 48
+        // predicciones reales). El resto llega igual.
+        long conHipertrofia = ELEGIBLES.stream().filter(c -> c.defaultPrescription() != PrescriptionType.DURATION
+                && (CapabilityPrescriptionPolicy.claseDe(c) == CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                || CapabilityPrescriptionPolicy.claseDe(c) == CapabilityPrescriptionPolicy.Clase.RESISTIDO)).count();
+        assertTrue(conHipertrofia < ELEGIBLES.size(), "la prueba tiene candidatos sin hipertrofia");
+        assertEquals(conHipertrofia, s.availableExercises().size(), "GAIN_MUSCLE recibe solo lo que acredita hipertrofia");
         assertFalse(new PlanPromptBuilder(new JsonSupport()).build(contexto("GAIN_MUSCLE"), "{}", null)
                 .contains("CAPACIDADES DEL OBJETIVO"));
     }
