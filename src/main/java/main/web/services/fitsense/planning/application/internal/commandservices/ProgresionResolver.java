@@ -58,8 +58,12 @@ import java.util.*;
  * </ol>
  * Ante un linaje incompleto o ambiguo, ningun paso para esa sesion.
  * <p>
- * LIMITACION DECLARADA: la disponibilidad M por entrenamiento no se modela
- * aqui; el tiempo lo limitan V4 y el presupuesto de 4D en la revalidacion.
+ * TIEMPO: V4 y el presupuesto de 4D en la revalidacion y, para la reincorporacion,
+ * la disponibilidad M declarada (§5, fila 5): si la sesion se acorto con M
+ * declarada, el retirado solo vuelve si la sesion con el cabe en la M vigente
+ * -la ultima declarada en el linaje desde ese acortamiento-. Si no cabe, la
+ * reserva queda EN ESPERA DE TIEMPO (orden de cierre del MVP, 31/10/2026: antes
+ * esta comprobacion no existia y se reincorporaba por encima de M).
  */
 @Component
 public class ProgresionResolver {
@@ -232,6 +236,13 @@ public class ProgresionResolver {
             return perfectas ? progresiones(s, nueva, context, elegibles, p, base, techo, techo, DESCARTADA)
                     : List.of();
 
+        // §5 fila 5: con M declarada al acortar, solo vuelve si cabe en la M vigente. Sin una M
+        // nueva mayor no cabe nunca: la reserva se libera (EN ESPERA DE TIEMPO), como cuando no cabe en V4.
+        var m = mVigente(linaje);
+        if (m != null && minutosCon(nueva, exacta, context) > m)
+            return perfectas ? progresiones(s, nueva, context, elegibles, p, base, techo, techo, EN_ESPERA_DE_TIEMPO)
+                    : List.of();
+
         int vRet = exacta.volume(p.divisor());
         var conReserva = progresiones(s, nueva, context, elegibles, p, base, techo, techo - vRet, PENDIENTE);
         // Si aun cabe una progresion pero las semanas no son perfectas, la sesion se
@@ -395,6 +406,36 @@ public class ProgresionResolver {
                     .filter(e -> quitados.get(0).equals(e.getExerciseId())).findFirst().orElse(null);
         }
         return null;
+    }
+
+    /**
+     * La disponibilidad M vigente para la reincorporacion: la ultima declarada (MENOS_TIEMPO_HABITUAL)
+     * en las sesiones del linaje, de la mas reciente hacia atras, hasta la sesion que se acorto
+     * incluida. null si el acortamiento no tuvo M (una sesion parcial por falta de tiempo).
+     */
+    static Integer mVigente(List<Tramo> linaje) {
+        for (var t : linaje) {
+            var m = m(t.derivada());
+            if (m != null) return m;
+            if (t.clase() == EvidenciaV32.Clase.APLICADA
+                    && EvidenciaV32.intervencion(t.intento(), t.origen().getId()) == TipoIntervencion.ACORTAR_O_REORGANIZAR)
+                return m(t.origen());
+        }
+        return null;
+    }
+
+    private static Integer m(PlannedWorkout w) {
+        return w.getLackOfTimeContext() == main.web.services.fitsense.shared.domain.model.valueobjects
+                .ContextoFaltaDeTiempo.MENOS_TIEMPO_HABITUAL && w.getDeclaredAvailableMinutes() != null
+                ? (int) w.getDeclaredAvailableMinutes() : null;
+    }
+
+    /** Los minutos de la sesion con el retirado al final, con el estimador de V17. */
+    private int minutosCon(PlanDraft.DraftWorkout nueva, PlanDraft.DraftExercise exacta, PlanGenerationContext context) {
+        var con = new ArrayList<>(nueva.exercises());
+        con.add(exacta);
+        return estimador.estimateMinutes(new PlanDraft.DraftWorkout(nueva.scheduledDate(), nueva.focus(), nueva.name(),
+                0, con), context.prescription());
     }
 
     /**
@@ -571,7 +612,7 @@ public class ProgresionResolver {
     }
 
     /** El rango de D-P3 para la dosis actual, o null si no se reconoce su dosis base. */
-    private record Rango(MvpDosePolicy.Dosis exigida4D, CapabilityPrescriptionPolicy.Dosis capacidad,
+    record Rango(MvpDosePolicy.Dosis exigida4D, CapabilityPrescriptionPolicy.Dosis capacidad,
                          short seriesMax, short repsMax, int minReps, int maxReps) {
         boolean admite(PlanDraft.DraftExercise n) {
             return exigida4D != null
@@ -580,7 +621,7 @@ public class ProgresionResolver {
         }
     }
 
-    private static Rango rango(PlanDraft.DraftExercise e, CandidateExercise c, PlanGenerationContext ctx) {
+    static Rango rango(PlanDraft.DraftExercise e, CandidateExercise c, PlanGenerationContext ctx) {
         if (c == null || ctx.profile() == null) return null;
         String objetivo = ctx.profile().goalType();
         String nivel = ctx.profile().fitnessLevel();
@@ -615,7 +656,7 @@ public class ProgresionResolver {
     }
 
     /** La dosis inicial EXACTA de su clase para el retirado (D-P8), con su carga sugerida de entonces. */
-    private static PlanDraft.DraftExercise exacta(PlannedWorkoutExercise x, CandidateExercise c,
+    static PlanDraft.DraftExercise exacta(PlannedWorkoutExercise x, CandidateExercise c,
                                                  PlanGenerationContext ctx) {
         if (ctx.profile() == null) return null;
         String objetivo = ctx.profile().goalType();

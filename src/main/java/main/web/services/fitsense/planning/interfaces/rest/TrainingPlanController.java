@@ -52,19 +52,23 @@ public class TrainingPlanController {
     private final JsonSupport jsonSupport;
     private final PublishedPlanSafetyService publishedPlanSafety;
     private final PlanLimitationsService planLimitations;
+    private final main.web.services.fitsense.planning.application.internal.queryservices.AdaptationOutcomeQueryService adaptaciones;
 
     public TrainingPlanController(WeeklyTrainingPlanQueryService queryService,
                                   WeeklyTrainingPlanCommandService commandService,
                                   ExternalCatalogService externalCatalogService,
                                   JsonSupport jsonSupport,
                                   PublishedPlanSafetyService publishedPlanSafety,
-                                  PlanLimitationsService planLimitations) {
+                                  PlanLimitationsService planLimitations,
+                                  main.web.services.fitsense.planning.application.internal.queryservices
+                                          .AdaptationOutcomeQueryService adaptaciones) {
         this.queryService = queryService;
         this.commandService = commandService;
         this.externalCatalogService = externalCatalogService;
         this.jsonSupport = jsonSupport;
         this.publishedPlanSafety = publishedPlanSafety;
         this.planLimitations = planLimitations;
+        this.adaptaciones = adaptaciones;
     }
 
     @GetMapping("/users/me/plan/current")
@@ -136,6 +140,17 @@ public class TrainingPlanController {
                 .orElseThrow(() -> new PlanNotFoundException(planId));
     }
 
+    /**
+     * Que paso en cada ciclo semanal, tambien en los que no publicaron semana (NO_FACTIBLE): solo lee V32.
+     * Es la unica forma de que la app sepa por que una semana no tiene plan nuevo.
+     */
+    @GetMapping("/users/me/plan/adaptations")
+    @Operation(summary = "Resultado de la adaptacion de cada semana: aplicada, conservada, imposible o no factible")
+    public ResponseEntity<List<main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcome>> adaptations(
+            @AuthenticationPrincipal UserDetailsImpl principal) {
+        return ResponseEntity.ok(adaptaciones.history(principal.getUserId()));
+    }
+
     @GetMapping("/users/me/plans")
     @Operation(summary = "Historial de planes del usuario, incluidas todas las versiones")
     public ResponseEntity<List<PlanSummaryResource>> history(
@@ -173,7 +188,8 @@ public class TrainingPlanController {
                 EffortGuidance.forLevel(fitnessLevelOf(plan)),
                 // Un plan guardado no se revalida solo: las sesiones abiertas se
                 // comprueban contra la seguridad de HOY (INC-CAT-1374 y otras).
-                publishedPlanSafety.conflictos(plan));
+                publishedPlanSafety.conflictos(plan),
+                adaptaciones.forPlan(plan.getId()).orElse(null));
     }
 
     /**

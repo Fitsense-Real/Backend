@@ -38,6 +38,9 @@ import java.util.stream.Collectors;
  */
 public final class FactibilidadPreviaIA {
 
+    /** Prefijo con que el motivo queda en {@code correcciones_del_backend} de la evidencia V32. */
+    public static final String NOTA = main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcome.NOTA_FACTIBILIDAD;
+
     private static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
     private static final short SERIES_MIN = 2;
     private static final int SEGUNDOS_MIN = ProgresionDosisPolicy.SEGUNDOS_MIN;

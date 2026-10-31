@@ -87,12 +87,14 @@ class ProgresionIT {
     @Autowired UserRepository usuarios;
     @Autowired SessionDurationEstimator estimador;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.domain.services.PlanDraftValidator validador;
+    @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
     static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
 
-    enum Dia { HECHO, HECHO_CON_FATIGA, HECHO_CON_DOLOR, FATIGA, TIEMPO, NADA }
+    enum Dia { HECHO, HECHO_CON_FATIGA, HECHO_CON_DOLOR, FATIGA, TIEMPO, PARCIAL_TIEMPO, NADA }
 
     /** El ejercicio en el que se declara la fatiga o el dolor; null = el ultimo de la sesion. */
     private Long marcado = null;
@@ -268,7 +270,9 @@ class ProgresionIT {
             u = participante(GoalType.GAIN_MUSCLE, List.of((short) 1, (short) 3, (short) 5));
             w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
             raiz = semana(w1);
-            ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
+            // Acortamiento SIN M (sesion parcial por falta de tiempo): con M declarada el diseno no deja
+            // reincorporar sin una M nueva mayor (§5, fila 5; CopiaSinIaIT.conMNoSeReincorpora).
+            ejecutar(u, w1, Dia.HECHO, Dia.HECHO, Dia.PARCIAL_TIEMPO);
             plan = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
             ev = ultimoIntento(u);
             assertEquals("{ACORTAR_O_REORGANIZAR}", ev.get("targeted_interventions"), String.valueOf(ev));
@@ -396,6 +400,28 @@ class ProgresionIT {
         assertTrue(w2.isEmpty(), objetivo + ": se publico una copia con una dosis no autorizada. " + ev);
         assertEquals("NO_FACTIBLE", ev.get("status"));
         assertTrue(String.valueOf(ev.get("rejection_reason")).contains("V24"), String.valueOf(ev));
+    }
+
+    @Test
+    @DisplayName("validacion independiente del simulador: reconoce el paso registrado y rechaza una dosis que nadie autorizo")
+    void validacionIndependienteDistingue() throws Exception {
+        long u = participante(GoalType.INCREASE_STRENGTH, List.of((short) 1, (short) 3, (short) 5));
+        var paso = hastaElPrimerPaso(u);
+        long w3 = paso[0];
+        var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                .GenerateWeeklyPlanCommand(u, S1.plusWeeks(2), null, true, null, null)).context();
+        var conPaso = new ValidacionIndependiente(jdbc).validar(w3, ctx, validador, 30);
+        assertEquals("VALIDA_CON_AUTORIZACIONES", conPaso.estado(), conPaso.texto());
+        assertEquals(1, conPaso.origenes().getOrDefault("PASO", 0), conPaso.texto());
+
+        // La misma semana con +1 repeticion a mano en el ejercicio del paso: ninguna autorizacion la explica.
+        long sesion = semana(w3).get((int) paso[1]).id();
+        assertEquals(1, jdbc.update("UPDATE planned_workout_exercises SET planned_reps = planned_reps + 1"
+                + " WHERE planned_workout_id = ? AND exercise_id = ?", sesion, paso[2]));
+        var manual = new ValidacionIndependiente(jdbc).validar(w3, ctx, validador, 30);
+        assertEquals("INVALIDA", manual.estado(), manual.texto());
+        assertEquals(1, manual.origenes().getOrDefault("SIN_AUTORIZACION", 0), manual.texto());
+        assertTrue(manual.problemas().stream().anyMatch(p -> p.startsWith("V24")), manual.texto());
     }
 
     // =======================================================================
@@ -698,6 +724,7 @@ class ProgresionIT {
                 }
                 case FATIGA -> planes.skip(principal, w, new SkipWorkoutResource(SkipReason.FATIGUE));
                 case TIEMPO -> saltoPorFaltaDeTiempo(principal, w);
+                case PARCIAL_TIEMPO -> parcialPorFaltaDeTiempo(u, w);
                 case NADA -> { }
             }
         }
@@ -708,6 +735,28 @@ class ProgresionIT {
                 + " targeted_interventions::text, applied_sessions::text, no_effect_sessions::text,"
                 + " conserved_sessions::text, progressed_sessions::text, conservation_report::text, rejection_reason"
                 + " FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", u);
+    }
+
+    /** Una sesion empezada que se deja al 35 % por falta de tiempo (PARTIAL, sin M). */
+    private void parcialPorFaltaDeTiempo(long u, long w) {
+        long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+        var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
+                + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
+                + " ORDER BY exercise_order", w);
+        double objetivo = 0.35 * filas.size();
+        for (int k = 0; k < filas.size(); k++) {
+            var f = filas.get(k);
+            long pe = ((Number) f.get("planned_exercise_id")).longValue();
+            boolean duracion = "DURATION".equals(f.get("prescription_type"));
+            int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
+            int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
+            double parte = Math.max(0, Math.min(1, objetivo - k));
+            int hecho = (int) Math.round(total * parte);
+            sesiones.handle(new RecordSessionExerciseCommand(u, s, pe, (short) (hecho == 0 ? 0 : series),
+                    duracion ? null : hecho, duracion ? hecho : null, null,
+                    parte >= 1 ? null : SkipReason.LACK_OF_TIME));
+        }
+        sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 6, (short) 3, (short) 20));
     }
 
     /**
