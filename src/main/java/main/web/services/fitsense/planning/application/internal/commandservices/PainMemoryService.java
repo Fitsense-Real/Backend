@@ -134,11 +134,11 @@ public class PainMemoryService {
     private Optional<Registro> registrar(WeeklyTrainingPlan plan, PlannedWorkout w, PlannedWorkoutExercise e,
                                          Reason reason, RecordedBy via) {
         if (e.getExerciseId() == null) return Optional.empty();
-        // El evento original es la identidad: ni duplica ni resucita una exclusion ya reactivada.
-        if (repository.existsByUserIdAndExerciseIdAndSourcePlannedWorkoutId(plan.getUserId(), e.getExerciseId(),
-                w.getId())) return Optional.empty();
-        repository.save(new UserSafetyExclusion(plan.getUserId(), e.getExerciseId(), reason, plan.getId(),
-                w.getId(), e.getId(), w.getScheduledDate(), via));
+        // El evento original es la identidad: ni duplica ni resucita una exclusion ya reactivada. ON CONFLICT DO
+        // NOTHING: dos registros simultaneos del mismo evento (omision y ciclo) no chocan ni abortan el ciclo.
+        int insertadas = repository.registrarSiNoExiste(plan.getUserId(), e.getExerciseId(), reason.name(),
+                plan.getId(), w.getId(), e.getId(), w.getScheduledDate(), via.name());
+        if (insertadas == 0) return Optional.empty();
         return Optional.of(new Registro(e.getExerciseId(), reason, w.getId(), w.getScheduledDate()));
     }
 
@@ -182,7 +182,8 @@ public class PainMemoryService {
         if (!confirmacionExplicita)
             throw new DomainRuleViolationException(
                     "Para volver a considerar este ejercicio confirma de forma explicita que lo pides tu.");
-        var activas = repository.findByUserIdAndExerciseIdAndStatus(userId, exerciseId, UserSafetyExclusion.Status.ACTIVA);
+        // Bloqueo de fila: dos reactivaciones simultaneas no se pisan (la segunda ya no ve nada activo).
+        var activas = repository.bloquearActivas(userId, exerciseId);
         // Otro usuario, o un ejercicio que no esta excluido: no se revela nada.
         if (activas.isEmpty()) throw new ResourceNotFoundException("Exclusion por dolor activa del ejercicio", exerciseId);
 

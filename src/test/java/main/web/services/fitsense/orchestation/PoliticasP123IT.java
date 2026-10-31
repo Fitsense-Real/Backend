@@ -290,6 +290,20 @@ class PoliticasP123IT {
 
         http.perform(post(ruta).contentType(MediaType.APPLICATION_JSON).content(cuerpo))
                 .andExpect(status().isUnauthorized());
+        // GET: sin token 401; un usuario sin exclusiones recibe una lista vacia; cada uno ve solo las suyas.
+        http.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .get("/api/v1/users/me/pain-exclusions")).andExpect(status().isUnauthorized());
+        http.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .get("/api/v1/users/me/pain-exclusions").header("Authorization", "Bearer " + token(http, b)))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content().json("[]"));
+        http.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .get("/api/v1/users/me/pain-exclusions").header("Authorization", "Bearer " + token(http, a)))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                        .jsonPath("$[0].exerciseId").value(doloroso))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                        .jsonPath("$[0].status").value("ACTIVA"));
         http.perform(post(ruta).header("Authorization", "Bearer " + token(http, b))
                 .contentType(MediaType.APPLICATION_JSON).content(cuerpo)).andExpect(status().isNotFound());
         http.perform(post(ruta).header("Authorization", "Bearer " + token(http, a))
@@ -336,6 +350,60 @@ class PoliticasP123IT {
         assertTrue(e.getMessage().startsWith("REACTIVACION_RECHAZADA_POR_SEGURIDAD"), e.getMessage());
         assertTrue(dolor.excluidosActivos(u).contains(porEncima), "sigue excluido");
         assertThrows(ResourceNotFoundException.class, () -> dolor.reactivar(u, 999_999L, true, null));
+    }
+
+    @Test
+    @Order(32)
+    @DisplayName("P-02 concurrencia: dos reactivaciones simultaneas -> una reactiva, la otra no encuentra nada (404)")
+    void reactivacionesSimultaneas() throws Exception {
+        long u = participante(GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, 45, GIMNASIO, true);
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        long sesion = workouts(w1).get(0);
+        long ejercicio = ejercicios(sesion).get(0);
+        exclusiones.save(new UserSafetyExclusion(u, ejercicio, UserSafetyExclusion.Reason.DOLOR_IDENTIFICADO, w1,
+                sesion, null, S1, UserSafetyExclusion.RecordedBy.SESION));
+        var salida = new java.util.concurrent.CountDownLatch(1);
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(2);
+        java.util.concurrent.Callable<String> tarea = () -> {
+            salida.await();
+            try {
+                dolor.reactivar(u, ejercicio, true, null);
+                return "OK";
+            } catch (ResourceNotFoundException e) {
+                return "404";
+            }
+        };
+        var a = pool.submit(tarea);
+        var b = pool.submit(tarea);
+        salida.countDown();
+        var resultados = new java.util.ArrayList<>(List.of(a.get(), b.get()));
+        pool.shutdown();
+        java.util.Collections.sort(resultados);
+        assertEquals(List.of("404", "OK"), resultados);
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " status = 'REACTIVADA'", Integer.class, u));
+    }
+
+    @Test
+    @Order(33)
+    @DisplayName("P-02 orden: un dolor NUEVO despues de reactivar vuelve a excluir; registrar dos veces no duplica")
+    void dolorNuevoTrasReactivar() {
+        long u = participante(GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, 45, GIMNASIO, true);
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        var ws = workouts(w1);
+        long ejercicio = ejercicios(ws.get(0)).get(0);
+        hacer(u, ws.get(0), ejercicio);
+        dolor.registrarSemana(u, S1);
+        dolor.registrarSemana(u, S1);   // idempotente
+        assertEquals(1, exclusiones.findByUserIdOrderByIdAsc(u).size());
+        dolor.reactivar(u, ejercicio, true, null);
+        assertTrue(dolor.excluidosActivos(u).isEmpty());
+        // Nuevo evento sobre el mismo ejercicio despues de reactivar (otra sesion real del usuario como origen).
+        exclusiones.save(new UserSafetyExclusion(u, ejercicio, UserSafetyExclusion.Reason.DOLOR_IDENTIFICADO, w1,
+                ws.get(1), null, S1.plusDays(2), UserSafetyExclusion.RecordedBy.SESION));
+        assertEquals(java.util.Set.of(ejercicio), dolor.excluidosActivos(u), "el dolor posterior prevalece");
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " status = 'REACTIVADA'", Integer.class, u), "la reactivacion anterior sigue constando");
     }
 
     // =====================================================================

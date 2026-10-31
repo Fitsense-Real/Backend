@@ -12,19 +12,25 @@
 --   semanal (weekly_metric_id UNIQUE), que es tambien la llave de
 --   idempotencia: repetir el ciclo no regenera dos veces.
 -- Solo crea tablas nuevas. No modifica datos existentes.
+--
+-- Auditoria del PR #16 (antes de su primera aplicacion: V43 no se ha aplicado
+-- en ningun entorno compartido): claves foraneas hacia el ejercicio y el evento
+-- original (plan, sesion y ejercicio planificado) y hacia la semana medida,
+-- con RESTRICT por omision (en FitSense no se borran planes ni sesiones: se
+-- reemplazan), e indice por usuario en la traza de P-03.
 -- =====================================================================
 
 CREATE TABLE public.user_safety_exclusions (
     exclusion_id               BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id                    BIGINT       NOT NULL REFERENCES public.users (user_id),
-    exercise_id                BIGINT       NOT NULL,
+    exercise_id                BIGINT       NOT NULL REFERENCES public.exercises (exercise_id),
     -- DOLOR_IDENTIFICADO: la persona marco ESE ejercicio con dolor.
     -- DOLOR_SESION_SIN_IDENTIFICAR: dolor de sesion sin decir cual; se excluyen
     -- provisionalmente todos los de la sesion (la misma regla que V8C).
     reason                     VARCHAR(40)  NOT NULL,
-    source_plan_id             BIGINT       NOT NULL,
-    source_planned_workout_id  BIGINT       NOT NULL,
-    source_planned_exercise_id BIGINT,
+    source_plan_id             BIGINT       NOT NULL REFERENCES public.weekly_training_plans (plan_id),
+    source_planned_workout_id  BIGINT       NOT NULL REFERENCES public.planned_workouts (planned_workout_id),
+    source_planned_exercise_id BIGINT       REFERENCES public.planned_workout_exercises (planned_exercise_id),
     event_date                 DATE         NOT NULL,
     -- Por donde llego el registro: al omitir la sesion o al cerrar el ciclo.
     recorded_by                VARCHAR(30)  NOT NULL,
@@ -49,7 +55,7 @@ CREATE TABLE public.safe_regeneration_attempts (
     regeneration_id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id                  BIGINT       NOT NULL REFERENCES public.users (user_id),
     weekly_metric_id         BIGINT       NOT NULL REFERENCES public.weekly_user_metrics (weekly_metric_id),
-    measured_plan_id         BIGINT       NOT NULL,
+    measured_plan_id         BIGINT       NOT NULL REFERENCES public.weekly_training_plans (plan_id),
     new_week_start_date      DATE         NOT NULL,
     -- El intento V32 NO_FACTIBLE que la origina.
     adaptation_attempt_id    BIGINT       REFERENCES public.plan_adaptation_attempts (attempt_id),
@@ -66,3 +72,5 @@ CREATE TABLE public.safe_regeneration_attempts (
     CONSTRAINT ck_sra_plan CHECK ((outcome = 'PUBLICADO') = (resulting_plan_id IS NOT NULL)),
     CONSTRAINT ux_sra_medicion UNIQUE (weekly_metric_id)
 );
+
+CREATE INDEX ix_sra_user ON public.safe_regeneration_attempts (user_id);
