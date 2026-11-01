@@ -14,7 +14,8 @@
 | `mvn -o verify -Pintegration` (completa) | 6aec7e0 | Unitarias **979**: 0 fallos, 0 omitidas. Integración: **462 contabilizadas, 429 ejecutadas, 33 omitidas, 0 fallos** |
 | Batería de 15 clases con `PLAN-V4-0.1` | 6aec7e0 + pruebas de d1de25c | **225 contabilizadas, 223 aprobadas, 0 fallos, 2 omitidas** (las mismas 2 de siempre) |
 | `GeneracionIAV4CIT`, `GeneracionIAHistoricaIT`, `BrechaRedondeoV4Test` (añadidas en d1de25c) | d1de25c | 2 de integración y 16 unitarias, **0 fallos** |
-| Unitarias completas | d1de25c | Ver `REGRESION_PREINTEGRACION.md` §2 |
+| Unitarias completas | d1de25c | **995, 0 fallos** |
+| CI de GitHub (`verify`) en Fitsense-Real/Backend#18 | d1de25c | **success** |
 | `ComparacionPerfilesIT` (960 perfiles, HIST y V4-C) | Antes y después de d1de25c | Volcados idénticos entre sí y, para PLAN-HIST-1, idénticos a `generation` línea a línea |
 
 **Referencia en `generation`** (afef98a, medida en esta orden): **939 unitarias**, 0 fallos. Las +40 de la rama aislada son:
