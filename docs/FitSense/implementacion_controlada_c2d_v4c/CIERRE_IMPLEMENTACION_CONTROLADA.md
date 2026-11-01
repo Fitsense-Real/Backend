@@ -69,7 +69,11 @@
     - La muestra ampliada (`MUESTRA_PROFESIONAL_AMPLIADA.csv`: 28 originales + 8 nuevas, A01–A08) con el instrumento de 12 criterios.
     - Confirmar los umbrales de consenso.
     - **No hay ninguna evaluación registrada.**
-28. **¿Cuántas pruebas pasaron, fallaron y se omitieron?** Ver `REGRESION_COMPLETA.md`.
+28. **¿Cuántas pruebas pasaron, fallaron y se omitieron?**
+    - Unitarias: **983 pasan, 0 fallos, 0 omitidas.**
+    - Integración: **466 contabilizadas, 427 ejecutadas sin fallos, 39 omitidas** (opt-in).
+    - Laboratorios opt-in: 7/7.
+    - Durante el trabajo fallaron dos pruebas (`PublishAdaptedTest`, `MigracionV43IT`), con causa identificada y corregida (`REGRESION_COMPLETA.md` §2).
 29. **¿La campaña histórica sigue idéntica?** **Sí.** REPLAY de 100 semanas sin fallos, 0 llamadas a Replicate y evidencia idéntica salvo `recorded_at` y `reactivated_at` de `exclusiones_dolor.csv` (marcas de tiempo, comprobado línea a línea).
 30. **¿Hubo modificaciones en Neon o Railway?** **No.**
 31. **¿Hubo llamadas reales a Replicate?** **Cero.**
