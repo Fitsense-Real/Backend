@@ -64,23 +64,23 @@ public final class DuracionYAerobicaAssembler {
                                          String politica, String ajuste) {
         if (sesion == null || disponibles == null)
             return new DurationInfoResource(null, (int) w.expectedDurationMinutes(), null, politica, "SIN_DATOS",
-                    "Duracion estimada: %d minutos.".formatted(w.expectedDurationMinutes()));
+                    "Duración estimada: %d minutos.".formatted(w.expectedDurationMinutes()));
         long seg = sesion.get("segundos_estimados") instanceof Number n ? n.longValue() : w.expectedDurationMinutes() * 60L;
         int estimados = (int) Math.max(1, Math.round(seg / 60.0));
         String motivo;
-        if (Boolean.TRUE.equals(sesion.get("excepcion_c2d"))) motivo = "ESTRUCTURA_COMPLETA";
+        if (Boolean.TRUE.equals(sesion.get("excepcion_c2d"))) motivo = "DURACION_POR_CONTENIDO";
         else if (Boolean.TRUE.equals(sesion.get("exenta_v8c")))
             motivo = ajuste != null && ajuste.toUpperCase(Locale.ROOT).contains("ACORTAR") ? "SESION_ACORTADA"
                     : "REDUCCION_AUTORIZADA";
         else motivo = "DENTRO_DEL_TIEMPO";
-        var texto = new StringBuilder("Tu rutina tiene una duracion estimada de %d minutos. Dispones de hasta %d minutos"
+        var texto = new StringBuilder("Tu rutina tiene una duración estimada de %d minutos. Dispones de hasta %d minutos"
                 .formatted(estimados, disponibles)).append(" para entrenar.");
         switch (motivo) {
             // Neutral: no afirma que el contenido sea suficiente ni completo; solo de donde sale la duracion.
-            case "ESTRUCTURA_COMPLETA" -> texto.append(" La duracion se calculo segun los ejercicios disponibles y las"
+            case "DURACION_POR_CONTENIDO" -> texto.append(" La duración se calculó según los ejercicios disponibles y las"
                     + " restricciones de tu plan.");
-            case "REDUCCION_AUTORIZADA" -> texto.append(" Esta semana la sesion es mas corta porque tu plan se adapto.");
-            case "SESION_ACORTADA" -> texto.append(" Se acorto para ajustarse al tiempo que indicaste.");
+            case "REDUCCION_AUTORIZADA" -> texto.append(" Esta semana la sesión es más corta porque tu plan se adaptó.");
+            case "SESION_ACORTADA" -> texto.append(" Se acortó para ajustarse al tiempo que indicaste.");
             default -> { }
         }
         return new DurationInfoResource(disponibles, estimados, disponibles - estimados, politica, motivo,

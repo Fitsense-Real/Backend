@@ -18,7 +18,7 @@ class DuracionYAerobicaAssemblerTest {
             (short) 43, (short) 1, "PENDING", null, null, List.of(), false, null);
 
     static final List<String> PROHIBIDAS = List.of("optim", "suficiente", "anade", "agrega", "rellena", "incumpl",
-            "perder", "garantiza", "todos", "complet", "admite", "maximo");
+            "perder", "garantiza", "todos", "complet", "admite", "maximo", "máximo", "óptim", "añade");
 
     @Test
     void motivos() {
@@ -27,9 +27,9 @@ class DuracionYAerobicaAssemblerTest {
         assertEquals(75, c2d.availableMinutes());
         assertEquals(43, c2d.estimatedMinutes());
         assertEquals(32, c2d.differenceMinutes());
-        assertEquals("ESTRUCTURA_COMPLETA", c2d.reason());
-        assertEquals("Tu rutina tiene una duracion estimada de 43 minutos. Dispones de hasta 75 minutos para entrenar."
-                + " La duracion se calculo segun los ejercicios disponibles y las restricciones de tu plan.",
+        assertEquals("DURACION_POR_CONTENIDO", c2d.reason());
+        assertEquals("Tu rutina tiene una duración estimada de 43 minutos. Dispones de hasta 75 minutos para entrenar."
+                + " La duración se calculó según los ejercicios disponibles y las restricciones de tu plan.",
                 c2d.message(), "mensaje neutral: no afirma suficiencia ni completitud");
         var red = DuracionYAerobicaAssembler.duracion(W, Map.of("segundos_estimados", 1500, "excepcion_c2d", false,
                 "exenta_v8c", true), 45, "PLAN-HIST-1", "REDUCE_VOLUME");
