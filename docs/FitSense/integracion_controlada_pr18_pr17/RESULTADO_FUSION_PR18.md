@@ -21,7 +21,7 @@
 | V45 | No está en `generation` (sigue solo en el PR #17) |
 | Política por defecto | `PLAN-HIST-1` |
 | `PLAN-V4-0.1` | **Sin activar:** `allow-candidates=false` y ninguna propiedad de configuración lo selecciona |
-| CI tras el `push` a `generation` | Se lanzó **solo** el workflow `CI` (ejecución #94, `mvn verify` con Testcontainers). Resultado en `CIERRE_INTEGRACION.md` |
+| CI tras el `push` a `generation` | Se lanzó **solo** el workflow `CI` (ejecución #94, `mvn verify` con Testcontainers): **success**. Además se ejecutó #95, el CI del PR #1, cuya rama es `generation`: **success** |
 | Despliegue o migración remota | **Ninguno** iniciado por esta sesión. Ningún workflow de despliegue existe ni se ejecutó |
 
 **La autorización cubría solo la fusión de código:** no se ha desplegado, no se ha activado V4-C y no se ha tocado Neon ni Railway.
