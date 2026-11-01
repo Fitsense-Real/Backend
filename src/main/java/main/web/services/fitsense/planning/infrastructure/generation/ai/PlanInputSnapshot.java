@@ -143,7 +143,28 @@ public record PlanInputSnapshot(
              * cuales son factibles con este conjunto elegible. {@code null} con
              * GAIN_MUSCLE, que sigue con la tabla de 4D v3.
              */
-            @JsonProperty("capacidades") CapacidadesObjetivo capacidades) {
+            @JsonProperty("capacidades") CapacidadesObjetivo capacidades,
+            /**
+             * V44 · solo con una politica V4-C: el techo de V4 en SEGUNDOS (M x 60 x 1,15), calculado por el backend a
+             * partir del contenido. Con la politica historica es null y NO se serializa: el contrato historico no
+             * cambia.
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("max_session_seconds") Long maxSessionSeconds) {
+
+        /** Compatibilidad con GEN-IN-1.13: sin techo en segundos (politica historica). */
+        public Constraints(short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate, int daysPerWeek,
+                           List<Short> availableDays, int sessionMinutes, String trainingLocation,
+                           int maxDifficultyLevel, Integer maxReps, Integer targetReps, Integer targetSets,
+                           Integer minSessionMinutes, Integer minExercisesPerSession, Integer maxRestSeconds,
+                           List<SuggestedSession> suggestedSplit, List<ReduceVolumeCap> reduceVolumeCaps,
+                           List<DosisPorClase> dosisPorClase, Integer maxColocacionesDia, Double minutosUtilesDia,
+                           List<String> slotsExigibles, CapacidadesObjetivo capacidades) {
+            this(weekNumber, weekStartDate, weekEndDate, daysPerWeek, availableDays, sessionMinutes,
+                    trainingLocation, maxDifficultyLevel, maxReps, targetReps, targetSets, minSessionMinutes,
+                    minExercisesPerSession, maxRestSeconds, suggestedSplit, reduceVolumeCaps, dosisPorClase,
+                    maxColocacionesDia, minutosUtilesDia, slotsExigibles, capacidades, null);
+        }
 
         /** Compatibilidad con GEN-IN-1.10: sin capacidades. */
         public Constraints(short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate, int daysPerWeek,
@@ -156,7 +177,7 @@ public record PlanInputSnapshot(
             this(weekNumber, weekStartDate, weekEndDate, daysPerWeek, availableDays, sessionMinutes,
                     trainingLocation, maxDifficultyLevel, maxReps, targetReps, targetSets, minSessionMinutes,
                     minExercisesPerSession, maxRestSeconds, suggestedSplit, reduceVolumeCaps, dosisPorClase,
-                    maxColocacionesDia, minutosUtilesDia, slotsExigibles, null);
+                    maxColocacionesDia, minutosUtilesDia, slotsExigibles, null, null);
         }
     }
 
@@ -543,7 +564,11 @@ public record PlanInputSnapshot(
                 !dosisFijada && !(porCapacidades
                         && GoalFeasibilityPolicy.exigeSlotsResistidos(profile.goalType())) ? null
                         : slotsExigibles(context),
-                !porCapacidades ? null : capacidades(context, limites, codigos, dosisDe));
+                !porCapacidades ? null : capacidades(context, limites, codigos, dosisDe),
+                context.policy().v4Segundos()
+                        ? main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy
+                                .limiteV4Segundos(context.profile().sessionMinutes())
+                        : null);
 
         var adjustment = context.adjustment() == null ? null : new Adjustment(
                 context.adjustment().types().stream().map(Enum::name).toList(),

@@ -22,8 +22,33 @@ public record PlanGenerationContext(
         PreviousWeekSummary previousWeek,
         List<CandidateExercise> availableExercises,
         SafetyProfile safety,
-        PrescriptionParams prescription
+        PrescriptionParams prescription,
+        /**
+         * Version de la politica de planificacion (generacion y validacion). Nunca null: el constructor de diez
+         * argumentos, el de toda la base anterior, la fija en {@link PlanningPolicy#HISTORICA}. NO viaja en
+         * input_snapshot (que tiene su propio DTO): solo cambia el contrato de la IA si la version activa V4-C.
+         */
+        PlanningPolicy policy
 ) {
+    public PlanGenerationContext {
+        if (policy == null) policy = PlanningPolicy.HISTORICA;
+    }
+
+    /** El de siempre: politica historica. */
+    public PlanGenerationContext(Long userId, short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate,
+                                 PlanningProfile profile, PlanAdjustment adjustment, PreviousWeekSummary previousWeek,
+                                 List<CandidateExercise> availableExercises, SafetyProfile safety,
+                                 PrescriptionParams prescription) {
+        this(userId, weekNumber, weekStartDate, weekEndDate, profile, adjustment, previousWeek, availableExercises,
+                safety, prescription, PlanningPolicy.HISTORICA);
+    }
+
+    /** Copia con otra politica (mismo contenido). */
+    public PlanGenerationContext conPolitica(PlanningPolicy otra) {
+        return new PlanGenerationContext(userId, weekNumber, weekStartDate, weekEndDate, profile, adjustment,
+                previousWeek, availableExercises, safety, prescription, otra);
+    }
+
     /**
      * GEN-IN-1.1 (V18, principios P-1.0): input_snapshot suma principles_version,
      * user.equipment_codes y available_exercises[].prescription_type, y cambia

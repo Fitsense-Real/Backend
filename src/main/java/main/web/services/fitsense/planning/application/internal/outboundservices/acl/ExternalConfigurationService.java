@@ -35,6 +35,11 @@ public class ExternalConfigurationService {
         return configurationContextFacade.fetchActive().params().adjustment();
     }
 
+    /** V44: version de la fila activa de calculation_configs (para la traza de la politica). */
+    public String versionCalculo() {
+        return configurationContextFacade.fetchActive().version();
+    }
+
     public PrescriptionParams prescriptionParams() {
         return configurationContextFacade.fetchActive().params().prescription();
     }

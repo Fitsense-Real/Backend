@@ -159,7 +159,8 @@ public class PublishedPlanSafetyRepairService {
             var publicada = lectura.execute(tx -> assembler.assemble(userId, week.startDate(), divisor, null, null));
             var c = preparada.context();
             contexto = new PlanGenerationContext(c.userId(), c.weekNumber(), c.weekStartDate(), c.weekEndDate(),
-                    c.profile(), c.adjustment(), publicada, c.availableExercises(), c.safety(), c.prescription());
+                    c.profile(), c.adjustment(), publicada, c.availableExercises(), c.safety(), c.prescription(),
+                    c.policy());
         } catch (RuntimeException e) {
             return registrar(userId, week, Resultado.de(Estado.NO_VALIDA, leido.planId(), leido.conflictos(),
                     List.of("No se pudo preparar el contexto de hoy: " + e.getMessage())));

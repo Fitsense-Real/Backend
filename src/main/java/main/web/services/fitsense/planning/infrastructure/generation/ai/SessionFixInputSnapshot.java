@@ -92,8 +92,22 @@ public record SessionFixInputSnapshot(
             @JsonProperty("max_rest_seconds") Integer maxRestSeconds,
             @JsonProperty("dosis_por_clase") List<PlanInputSnapshot.DosisPorClase> dosisPorClase,
             @JsonProperty("max_colocaciones_dia") Integer maxColocacionesDia,
-            @JsonProperty("minutos_utiles_dia") Double minutosUtilesDia
-    ) {}
+            @JsonProperty("minutos_utiles_dia") Double minutosUtilesDia,
+            /** V44 · solo con politica V4-C; null y omitido con la historica (el contrato no cambia). */
+            @com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)
+            @JsonProperty("max_session_seconds") Long maxSessionSeconds
+    ) {
+        public Constraints(short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate, List<Short> availableDays,
+                           int sessionMinutes, String trainingLocation, int maxDifficultyLevel, Integer maxReps,
+                           Integer targetReps, Integer targetSets, Integer minSessionMinutes,
+                           Integer minExercisesPerSession, Integer maxRestSeconds,
+                           List<PlanInputSnapshot.DosisPorClase> dosisPorClase, Integer maxColocacionesDia,
+                           Double minutosUtilesDia) {
+            this(weekNumber, weekStartDate, weekEndDate, availableDays, sessionMinutes, trainingLocation,
+                    maxDifficultyLevel, maxReps, targetReps, targetSets, minSessionMinutes, minExercisesPerSession,
+                    maxRestSeconds, dosisPorClase, maxColocacionesDia, minutosUtilesDia, null);
+        }
+    }
 
     /**
      * Proyecta el snapshot general. Campo por campo y por su nombre: esta lista
@@ -131,7 +145,8 @@ public record SessionFixInputSnapshot(
                         c.maxRestSeconds(),
                         c.dosisPorClase(),
                         c.maxColocacionesDia(),
-                        c.minutosUtilesDia()),
+                        c.minutosUtilesDia(),
+                        c.maxSessionSeconds()),
                 full.availableExercises(),
                 full.safetyNotes());
     }

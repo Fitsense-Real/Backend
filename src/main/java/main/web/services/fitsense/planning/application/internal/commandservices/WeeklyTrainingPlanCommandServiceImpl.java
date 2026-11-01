@@ -201,9 +201,14 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                 command.userId(), week.previous().startDate(), divisor,
                 command.previousWeekAdherencePct(), command.previousWeekAverageRpe());
 
+        // V44 · politica de planificacion. Una nueva version de la MISMA semana hereda la del plan que reemplaza
+        // (no se reinterpreta lo ya publicado); una semana nueva usa la politica activa.
+        var politica = previousActive.map(WeeklyTrainingPlan::politica)
+                .orElseGet(() -> policySelector == null ? PlanningPolicy.HISTORICA : policySelector.activa());
+
         var context = new PlanGenerationContext(command.userId(), weekNumber,
                 week.startDate(), week.endDate(), profile, adjustment, previousWeek,
-                eligible, safety, externalConfigurationService.prescriptionParams());
+                eligible, safety, externalConfigurationService.prescriptionParams(), politica);
 
         return new PreparedPlanGeneration(command, context, adjustment,
                 week.startDate(), week.endDate(), divisor, weekNumber,
@@ -245,6 +250,14 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     /** P-02. Por setter y opcional por lo mismo que el observador: null en las pruebas hechas a mano. */
     private PainMemoryService painMemory;
 
+    /** V44. Por setter y opcional: null (pruebas hechas a mano) es la politica historica. */
+    private PlanningPolicySelector policySelector;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setPolicySelector(PlanningPolicySelector policySelector) {
+        this.policySelector = policySelector;
+    }
+
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     void setPainMemory(PainMemoryService painMemory) {
         this.painMemory = painMemory;
@@ -262,6 +275,13 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     @Transactional
     public Optional<WeeklyTrainingPlan> persist(PreparedPlanGeneration prepared,
                                                 GeneratedPlan generated) {
+        return persist(prepared, generated, "GENERACION");
+    }
+
+    @Override
+    @Transactional
+    public Optional<WeeklyTrainingPlan> persist(PreparedPlanGeneration prepared, GeneratedPlan generated,
+                                                String contextoPolitica) {
         var command = prepared.command();
         var draft = generated.draft();
         var adjustment = prepared.adjustment();
@@ -298,6 +318,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         materialize(plan, draft, prepared.zone());
         plan.attachOutputSnapshot(jsonSupport.write(draft));
+        registrarPolitica(plan, prepared, draft.workouts(), draft.source(), contextoPolitica, java.util.Set.of());
 
         // Reemplazar y vaciar el contexto ANTES de guardar el nuevo:
         // ux_plan_active solo admite un ACTIVE por usuario y semana.
@@ -401,6 +422,9 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         // La sobrecarga que conserva el linaje: linkSource por sesion.
         materialize(plan, resultado.semana(), prepared.zone());
+        registrarPolitica(plan, prepared, resultado.semana().stream().map(DerivedWorkout::workout).toList(), source,
+                "ADAPTACION", resultado.conservacion() == null ? java.util.Set.of()
+                        : resultado.conservacion().fechasConDuracionReducible());
 
         // Se etiqueta el formato para distinguirlo del snapshot de generacion
         // inicial, que es un PlanDraft y no lleva el origen de cada sesion.
@@ -515,6 +539,31 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      * empieza en 1 con su primer plan. Un reemplazo conserva el numero, porque
      * sigue siendo la misma semana.
      */
+    /**
+     * V44 · version y traza de la politica con la que se genero y valido el contenido que se publica. La misma
+     * politica del contexto que uso el validador: generacion, adaptacion y P-03 no la reinterpretan.
+     */
+    private void registrarPolitica(WeeklyTrainingPlan plan, PreparedPlanGeneration prepared,
+                                   List<PlanDraft.DraftWorkout> sesiones, GenerationSource source, String contexto,
+                                   java.util.Set<LocalDate> exentasV8C) {
+        var ctx = prepared.context();
+        // Sin contexto (solo en pruebas hechas a mano) no hay politica que registrar: el plan queda con la de su
+        // linaje (null = historica). En produccion prepare() siempre la fija.
+        if (ctx == null || ctx.profile() == null) return;
+        String version = null;
+        try {
+            version = externalConfigurationService.versionCalculo();
+        } catch (RuntimeException e) {
+            log.debug("Sin version de calculo para la traza de politica: {}", e.getMessage());
+        }
+        var traza = main.web.services.fitsense.planning.domain.services.PlanningPolicyTrace.de(ctx, sesiones, source,
+                contexto, version, exentasV8C, ESTIMADOR_TRAZA);
+        plan.registrarPolitica(ctx.policy().id(), jsonSupport.write(traza));
+    }
+
+    private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR_TRAZA =
+            new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
+
     private short resolveWeekNumber(Long userId, WeeklyTrainingPlan previousActive) {
         if (previousActive != null) return previousActive.getWeekNumber();
         return planRepository.findFirstByUserIdOrderByWeekNumberDescPlanVersionDesc(userId)

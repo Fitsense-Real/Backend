@@ -227,6 +227,14 @@ public class SessionFixPromptBuilder {
                 cambia nunca: ni para acortar ni para alargar.
                 """);
 
+        // V44 · V4-C: solo con esa politica; la historica recibe exactamente el texto de siempre.
+        if (context.policy().v4Segundos() && context.profile() != null)
+            prompt.append("\nTECHO DE DURACION (backend): ninguna sesion puede pasar de ")
+                    .append(main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy
+                            .limiteV4Segundos(context.profile().sessionMinutes()))
+                    .append(" s (constraints.max_session_seconds), calculados a partir de los ejercicios aunque"
+                            + " declares menos minutos.\n");
+
         prompt.append(sesionesSenaladas(context, derivation, adjustment));
 
         var snapshotJson = json.write(SessionFixInputSnapshot.of(full));
