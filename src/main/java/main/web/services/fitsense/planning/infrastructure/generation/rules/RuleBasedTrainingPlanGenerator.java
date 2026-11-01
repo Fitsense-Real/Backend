@@ -79,6 +79,20 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     private final int durationToRepsDivisor;
     private final SessionDurationEstimator durationEstimator;
 
+    /**
+     * OPCION EXPERIMENTAL, DESACTIVADA (orden de implementacion controlada, fase 8): en LOSE_WEIGHT, al colocar la
+     * fuerza secundaria, preferir un grupo grande que la semana aun no trabaja. No crea obligaciones nuevas, no cambia
+     * dosis ni tiempo y pasa por el mismo selector (V15, V18, V22). Cambia la composicion de planes validos: requiere
+     * aprobacion separada y una version de politica antes de activarse fuera del laboratorio.
+     */
+    @Value("${fitsense.generation.lose-weight.preferir-grupo-no-cubierto:false}")
+    private boolean preferirGrupoNoCubiertoLW;
+
+    /** Para el laboratorio: activa o desactiva la opcion en esta instancia. */
+    public void setPreferirGrupoNoCubiertoLW(boolean v) {
+        this.preferirGrupoNoCubiertoLW = v;
+    }
+
     public RuleBasedTrainingPlanGenerator(
             @Value("${fitsense.volume.duration-to-reps-divisor:30}") int durationToRepsDivisor,
             SessionDurationEstimator durationEstimator) {
@@ -100,6 +114,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 && main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
                 .gobiernaGeneracion(context.profile().goalType()))
             return new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
+                    .preferirGrupoNoCubierto(preferirGrupoNoCubiertoLW)
                     .construir(this::finalizar);
 
         var profile = context.profile();
@@ -236,9 +251,10 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // ejercicios del final. Antes se declaraba el techo con un contenido
             // mayor y V17 lo rechazaba (fuerza, 4x6 con 120 s, en 30 minutos).
             if (context.prescription() != null) {
-                while (exercises.size() > 2 && durationEstimator.estimateMinutes(new PlanDraft.DraftWorkout(
-                                dates.get(i), focus, nameOf(focus), sessionMinutes, exercises),
-                        context.prescription()) > techo) {
+                // V4 con la politica del contexto: HISTORICA compara minutos con techo (igual que siempre);
+                // V4-C compara los segundos estimados con M x 60 x 1,15, el mismo limite del validador.
+                while (exercises.size() > 2 && excedeTecho(context, new PlanDraft.DraftWorkout(
+                        dates.get(i), focus, nameOf(focus), sessionMinutes, exercises), techo)) {
                     exercises.remove(exercises.size() - 1);
                 }
             }
@@ -646,5 +662,12 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     /** Semilla estable: mismo usuario y misma semana, mismo plan. */
     long seedFor(PlanGenerationContext context) {
         return context.userId() * 1_000_003L + context.weekStartDate().toEpochDay();
+    }
+
+    private boolean excedeTecho(PlanGenerationContext context, PlanDraft.DraftWorkout w, int techo) {
+        int minutos = durationEstimator.estimateMinutes(w, context.prescription());
+        if (!context.policy().v4Segundos()) return minutos > techo;
+        return context.policy().excedeTecho(durationEstimator.estimateSeconds(w, context.prescription()), minutos,
+                context.profile().sessionMinutes());
     }
 }

@@ -135,6 +135,51 @@ public class PlanDraftValidator {
      */
     public void validate(PlanDraft draft, PlanGenerationContext context,
                          int durationToRepsDivisor, ConservationReport conservation) {
+        var problems = problemas(draft, context, durationToRepsDivisor, conservation);
+        // C2-D (solo con una version que lo incluye): V20 deja de bloquear si es la UNICA infraccion y las sesiones
+        // cortas estan saturadas, comprobado con estas mismas reglas. Nada del borrador cambia.
+        if (aplicaC2D(context, conservation, problems)) {
+            var r = evaluarC2D(draft, context, durationToRepsDivisor, conservation);
+            if (r.saturada()) {
+                LOG_C2D.info("C2D_EXCEPCION usuario {} semana {} politica {}: sesiones {} bajo el piso de V20 aceptadas"
+                                + " por saturacion ({} evaluaciones)", context.userId(), context.weekStartDate(),
+                        context.policy().id(), r.sesionesCortas(), r.evaluaciones());
+                return;
+            }
+            LOG_C2D.info("C2D_SIN_EXCEPCION usuario {} semana {} politica {}: {} - {} ({} evaluaciones)",
+                    context.userId(), context.weekStartDate(), context.policy().id(), r.estado(), r.motivo(),
+                    r.evaluaciones());
+        }
+        if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
+    }
+
+    private static final org.slf4j.Logger LOG_C2D = org.slf4j.LoggerFactory.getLogger("fitsense.politica.c2d");
+
+    /**
+     * Condicion estricta de C2-D: version con C2-D; hay problemas y TODOS son de V20; sin orden de volumen (D8 ya
+     * exime de V20) y sin autorizaciones ni reducciones de V8C, que se gestionan con su propia politica.
+     */
+    static boolean aplicaC2D(PlanGenerationContext context, ConservationReport conservation, List<String> problems) {
+        if (context == null || !context.policy().c2d() || problems.isEmpty()) return false;
+        if (!problems.stream().allMatch(p -> p != null && p.trim().startsWith("V20:"))) return false;
+        if (context.adjustment() != null && context.adjustment().isActive()) return false;
+        if (conservation != null && (!conservation.dosisAutorizadas().isEmpty()
+                || !conservation.fechasConDuracionReducible().isEmpty() || !conservation.problems().isEmpty()))
+            return false;
+        return true;
+    }
+
+    /** El veredicto de saturacion de C2-D para un borrador (lo usa validate y el laboratorio). */
+    public SaturacionContenidoV20.Resultado evaluarC2D(PlanDraft draft, PlanGenerationContext context,
+                                                       int durationToRepsDivisor, ConservationReport conservation) {
+        var c = conservation == null ? ConservationReport.vacio() : conservation;
+        return SaturacionContenidoV20.evaluar(draft, context, d -> problemas(d, context, durationToRepsDivisor, c),
+                durationEstimator, SaturacionContenidoV20.PRESUPUESTO);
+    }
+
+    /** Todas las validaciones, sin la excepcion C2-D. */
+    private List<String> problemas(PlanDraft draft, PlanGenerationContext context,
+                                   int durationToRepsDivisor, ConservationReport conservation) {
         var problems = new ArrayList<String>();
 
         var eligible = context.availableExercises().stream()
@@ -161,7 +206,7 @@ public class PlanDraftValidator {
         validateCapabilityCoverage(conservation.dosisAutorizadas().isEmpty() ? draft
                 : conDosisBase(draft, context, eligible, conservation), context, eligible, problems);
 
-        if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
+        return problems;
     }
 
     /**
@@ -1003,9 +1048,20 @@ public class PlanDraftValidator {
                                   List<String> problems) {
         int ceiling = context.profile().maxSessionMinutes();
 
+        var politica = context.policy();
+        int minutosPerfil = context.profile().sessionMinutes();
         for (var workout : draft.workouts()) {
             // 4: ninguna sesion excede session_minutes + 15 %.
-            if (workout.expectedDurationMinutes() > ceiling)
+            if (politica.v4Segundos() && context.prescription() != null) {
+                // V4-C (version candidata): los SEGUNDOS ESTIMADOS del contenido, no lo declarado. Una sesion que
+                // declara 35 minutos con 2.550 s de contenido en un perfil de 30 se rechaza.
+                long segundos = durationEstimator.estimateSeconds(workout, context.prescription());
+                long limite = PlanningPolicy.limiteV4Segundos(minutosPerfil);
+                if (politica.excedeTecho(segundos, workout.expectedDurationMinutes(), minutosPerfil))
+                    problems.add(("V4: el entrenamiento del %s dura unos %d s segun su contenido y el techo es %d s"
+                            + " (%d minutos + 15 %%), declare lo que declare. Quita trabajo hasta caber.")
+                            .formatted(workout.scheduledDate(), segundos, limite, minutosPerfil));
+            } else if (workout.expectedDurationMinutes() > ceiling)
                 problems.add("V4: el entrenamiento del %s dura %d minutos y el techo es %d."
                         .formatted(workout.scheduledDate(), workout.expectedDurationMinutes(), ceiling));
 

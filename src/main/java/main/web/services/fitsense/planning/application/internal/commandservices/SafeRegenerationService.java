@@ -122,8 +122,8 @@ public class SafeRegenerationService {
             return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos, masTrabajo);
 
         var plan = tx.execute(status -> {
-            var guardado = comandos.persist(preparada, new GeneratedPlan(generado.draft(), generado.attempts()))
-                    .orElseThrow();
+            var guardado = comandos.persist(preparada, new GeneratedPlan(generado.draft(), generado.attempts()),
+                    "REGENERACION_P03").orElseThrow();
             regeneraciones.save(new SafeRegenerationAttempt(userId, medida.weeklyMetricId(), medida.measuredPlanId(),
                     newWeekStart, intento.getId(), intento.getRejectionReason(), excluidos, Outcome.PUBLICADO,
                     guardado.getId(), null));

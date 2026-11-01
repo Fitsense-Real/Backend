@@ -30,7 +30,9 @@ public class EsquemaVigenteSobreCatalogoAnterior {
     /** Migraciones que solo cambian el esquema, en orden. */
     static final List<String> SOLO_ESQUEMA = List.of("42:db/migration/V42__adaptation_lack_of_time_context.sql",
             // V43 (P-02 y P-03): dos tablas nuevas, sin datos del catalogo.
-            "43:db/migration/V43__pain_memory_and_safe_regeneration.sql");
+            "43:db/migration/V43__pain_memory_and_safe_regeneration.sql",
+            // V44 (version de la politica de planificacion): dos columnas nullable, sin datos.
+            "44:db/migration/V44__planning_policy_version.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {

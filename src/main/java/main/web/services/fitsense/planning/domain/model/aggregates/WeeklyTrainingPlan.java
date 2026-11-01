@@ -80,6 +80,15 @@ public class WeeklyTrainingPlan
     @Column(name = "output_snapshot", columnDefinition = "jsonb")
     private String outputSnapshot;
 
+    /** V44: version de la politica de planificacion. null = plan anterior a V44, que es PLAN-HIST-1. */
+    @Column(name = "planning_policy", length = 32)
+    private String planningPolicy;
+
+    /** V44: traza de la politica (parametros efectivos, excepciones C2-D, segundos, limite V4, contexto). */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "planning_policy_trace", columnDefinition = "jsonb")
+    private String planningPolicyTrace;
+
     @Column(name = "adjustment_applied", length = 40)
     private String adjustmentApplied;
 
@@ -159,6 +168,10 @@ public class WeeklyTrainingPlan
                 source, modelName, inputSnapshot, attempts);
         next.adjustmentApplied = adjustmentApplied;
         next.adjustmentReason = adjustmentReason;
+        // Linaje: la version siguiente de la MISMA semana conserva la politica de la que reemplaza (una reparacion o
+        // una regeneracion de la semana no la reinterpreta). Quien genera contenido nuevo la registra despues.
+        next.planningPolicy = previous.planningPolicy;
+        next.planningPolicyTrace = previous.planningPolicyTrace;
         return next;
     }
 
@@ -176,6 +189,26 @@ public class WeeklyTrainingPlan
         workouts.add(workout);
         this.plannedDaysCount = (short) workouts.size();
         return workout;
+    }
+
+    /** Registra la version de politica y su traza. La version se valida contra el catalogo cerrado. */
+    public void registrarPolitica(String politica, String trazaJson) {
+        main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy.deRegistro(politica);
+        this.planningPolicy = politica;
+        this.planningPolicyTrace = trazaJson;
+    }
+
+    public String getPlanningPolicy() {
+        return planningPolicy;
+    }
+
+    public String getPlanningPolicyTrace() {
+        return planningPolicyTrace;
+    }
+
+    /** La politica con la que se interpreta este plan: la registrada, o la historica si no tiene. */
+    public main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy politica() {
+        return main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy.deRegistro(planningPolicy);
     }
 
     public void attachOutputSnapshot(String outputSnapshot) {
