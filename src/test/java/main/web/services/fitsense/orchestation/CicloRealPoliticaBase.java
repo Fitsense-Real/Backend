@@ -130,6 +130,19 @@ abstract class CicloRealPoliticaBase {
             }
         }
         escribir(archivo(), csv.toString());
+        // Detalle de todos los planes del ciclo (para el anexo de la muestra profesional y la auditoria).
+        var det = new StringBuilder("caso_user_id,plan_id,semana_inicio,politica,origen,fecha,enfoque,orden,exercise_id,"
+                + "nombre,body_part,patron,tipo,series,reps,segundos,descanso\n");
+        for (var f : jdbc.queryForList("SELECT p.user_id, p.plan_id, p.week_start_date, coalesce(p.planning_policy,"
+                + " 'NULL') pol, p.generation_source, pw.scheduled_date, pw.focus_code, pwe.exercise_order,"
+                + " pwe.exercise_id, replace(coalesce(e.name_es, e.name_en), ',', ' ') nombre, bp.code bp,"
+                + " coalesce(e.movement_pattern, '-') patron, pwe.prescription_type, pwe.planned_sets, pwe.planned_reps,"
+                + " pwe.planned_duration_seconds, pwe.rest_seconds FROM weekly_training_plans p JOIN planned_workouts pw"
+                + " ON pw.plan_id = p.plan_id JOIN planned_workout_exercises pwe ON pwe.planned_workout_id ="
+                + " pw.planned_workout_id JOIN exercises e ON e.exercise_id = pwe.exercise_id JOIN body_parts bp ON"
+                + " bp.body_part_id = e.body_part_id ORDER BY p.plan_id, pw.scheduled_date, pwe.exercise_order"))
+            det.append(String.join(",", f.values().stream().map(String::valueOf).toList())).append('\n');
+        escribir(archivo().replace("LONGITUDINAL_", "PLANES_CICLO_"), det.toString());
     }
 
     static String guionDe(int s) {
