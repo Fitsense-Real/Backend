@@ -600,7 +600,7 @@ class CierrePR17LabIT {
                     .toList();
             diag.append(String.join(",", "D%02d".formatted(++dn), c.p().objetivo().name(), c.p().nivel().name(),
                     String.valueOf(c.p().dias()), String.valueOf(c.p().minutos()), q(String.join(" | ", EQUIPOS.get(c.p().equipo()))),
-                    "PULL (espalda y biceps), dos veces por semana",
+                    q("PULL (espalda y biceps), dos veces por semana"),
                     q(zona.stream().map(x -> x.exerciseId() + " " + x.name()).collect(Collectors.joining(" ; "))),
                     q(zona.stream().map(x -> String.valueOf(x.movementPattern())).sorted().distinct().collect(Collectors.joining(" "))),
                     q("No se genera la semana: ningun ejercicio de traccion (remo o dominada) disponible con ese material"))).append('\n');
