@@ -195,6 +195,7 @@ public class PlanDraftValidator {
         validatePrescriptionRanges(draft, context, eligible, problems);
         validateRecovery(draft, eligible, problems);
         validateArmSplit(draft, eligible, problems);
+        if (context.policy().elegibilidadFuncional()) validateElegibilidadFuncional(draft, context, eligible, problems);
         appendSplitSuggestion(context, problems);
         validateReductionDoesNotIncrease(draft, context, eligible, problems);
         validateMinimumDurationAndRest(draft, context, conservation, problems);
@@ -1585,6 +1586,51 @@ public class PlanDraftValidator {
                             .formatted(workout.focus(), workout.scheduledDate(), candidate.exerciseId(),
                                     forbidden, workout.focus(),
                                     workout.focus() == WorkoutFocus.PUSH ? "triceps" : "biceps")));
+        }
+    }
+
+    /**
+     * VEF (elegibilidad funcional EF-0.1, solo con una version de politica que la incluye). Dos comprobaciones:
+     * <ol>
+     *   <li>cada ejercicio resistido que no es complemento tiene un patron compatible con el enfoque de la sesion
+     *       (un empuje no cuenta como trabajo de PULL; un patron de tronco con zona distinta de "waist" no cuenta como
+     *       trabajo resistido de esa zona);</li>
+     *   <li>una sesion PUSH, PULL o LEGS tiene al menos un ejercicio de su patron principal. Si el catalogo elegible
+     *       no tiene ninguno, se dice: es un limite de catalogo o de equipamiento, no algo que se rellene con otro
+     *       movimiento.</li>
+     * </ol>
+     */
+    private void validateElegibilidadFuncional(PlanDraft draft, PlanGenerationContext context,
+                                               Map<Long, CandidateExercise> eligible, List<String> problems) {
+        var goal = context.profile() == null ? null : context.profile().goalType();
+        var complementos = CatalogEligibilityPolicy.complementos(context.availableExercises(), goal);
+        int maxDificultad = context.effectiveMaxDifficulty();
+        for (var workout : draft.workouts()) {
+            var enfoque = workout.focus();
+            if (enfoque == null) continue;
+            var propios = workout.exercises().stream()
+                    .map(exercise -> eligible.get(exercise.exerciseId()))
+                    .filter(Objects::nonNull)
+                    .filter(candidate -> !complementos.contains(candidate.exerciseId()))
+                    .toList();
+            for (var candidate : propios) {
+                if (ElegibilidadFuncional.compatible(enfoque, candidate)) continue;
+                var motivo = ElegibilidadFuncional.excluidoGlobal(candidate)
+                        .orElse("patron " + candidate.movementPattern() + " fuera de la funcion de " + enfoque);
+                problems.add("VEF: el entrenamiento %s del %s incluye el ejercicio %d (%s), que no cuenta como trabajo de esa sesion: %s."
+                        .formatted(enfoque, workout.scheduledDate(), candidate.exerciseId(), candidate.name(), motivo));
+            }
+            var ancla = ElegibilidadFuncional.ancla(enfoque);
+            if (ancla.isEmpty() || propios.stream().anyMatch(c -> ElegibilidadFuncional.esAncla(enfoque, c))) continue;
+            long disponibles = context.availableExercises().stream()
+                    .filter(c -> c.difficulty() <= maxDificultad)
+                    .filter(c -> !complementos.contains(c.exerciseId()))
+                    .filter(c -> ElegibilidadFuncional.esAncla(enfoque, c))
+                    .count();
+            problems.add((disponibles == 0
+                    ? "VEF: el entrenamiento %s del %s no tiene ningun ejercicio de %s y el catalogo elegible con el equipamiento declarado no tiene ninguno (NO_FACTIBLE por catalogo o equipamiento insuficiente; no se sustituye por otro movimiento)."
+                    : "VEF: el entrenamiento %s del %s no tiene ningun ejercicio de %s; hay %d candidatos elegibles de ese patron.")
+                    .formatted(enfoque, workout.scheduledDate(), ElegibilidadFuncional.nombreAncla(enfoque), disponibles));
         }
     }
 

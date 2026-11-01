@@ -35,6 +35,8 @@ public final class PlanningPolicyTrace {
         params.put("piso_v20_pct", ctx.prescription() == null ? null : ctx.prescription().floorPct());
         params.put("piso_v20_segundos", piso);
         params.put("tolerancia_v4_pct", PlanningPolicy.TOLERANCIA_V4_PCT);
+        // Solo en las versiones con EF: la traza de las demas no cambia.
+        if (politica.elegibilidadFuncional()) params.put("elegibilidad_funcional", ElegibilidadFuncional.VERSION);
         params.put("limite_v4", politica.v4Segundos()
                 ? Map.of("segundos", PlanningPolicy.limiteV4Segundos(m))
                 : Map.of("minutos_declarados", (int) Math.round(m * 1.15)));

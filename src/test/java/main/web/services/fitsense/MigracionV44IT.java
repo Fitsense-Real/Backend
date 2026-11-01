@@ -47,7 +47,7 @@ class MigracionV44IT {
                 + " '2026-11-01', 1, 'COMPLETED', 'RULE_ENGINE', '{}'::jsonb)", u);
         var antes = huella(jdbc);
 
-        var r = flyway(null).migrate();
+        var r = flyway("44").migrate();
         assertEquals(1, r.migrationsExecuted, "solo V44");
         assertEquals("44", r.targetSchemaVersion);
         assertEquals(antes, huella(jdbc), "V44 no altera columnas, restricciones ni filas anteriores");
@@ -61,7 +61,7 @@ class MigracionV44IT {
         assertThrows(Exception.class, () -> jdbc.update("UPDATE weekly_training_plans SET planning_policy ="
                 + " 'PLAN-E-0.1'"), "el modelo E no tiene version");
 
-        var otra = flyway(null);
+        var otra = flyway("44");
         assertEquals(0, otra.migrate().migrationsExecuted);
         assertDoesNotThrow(otra::validate);
     }

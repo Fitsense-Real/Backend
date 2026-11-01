@@ -38,7 +38,7 @@ class PoliticaPlanificacionTest {
         assertTrue(PlanningPolicy.C2D_V4C.c2d() && PlanningPolicy.C2D_V4C.v4Segundos());
         assertFalse(PlanningPolicy.HISTORICA.c2d() || PlanningPolicy.HISTORICA.v4Segundos());
         assertFalse(PlanningPolicy.HISTORICA.candidata());
-        assertEquals(4, PlanningPolicy.CATALOGO.size());
+        assertEquals(7, PlanningPolicy.CATALOGO.size());
     }
 
     @Test

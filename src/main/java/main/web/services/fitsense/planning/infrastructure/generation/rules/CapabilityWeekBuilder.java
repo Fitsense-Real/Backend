@@ -72,6 +72,8 @@ class CapabilityWeekBuilder {
     private final Set<Capability> factibles;
     private final Set<Long> recientes;
     private final Set<Long> complementos;
+    /** Elegibilidad funcional EF-0.1: solo si la version de politica del contexto la incluye. */
+    private final boolean funcional;
     private final Map<Capability, Integer> enSemana = new EnumMap<>(Capability.class);
     private final Set<Long> usadosEnSemana = new HashSet<>();
     /** El trabajo resistido prescribible del objetivo: de aqui sale el cambio de {@link #asegurarGrupos}. */
@@ -93,6 +95,7 @@ class CapabilityWeekBuilder {
         this.recientes = context.previousWeek() == null ? Set.of()
                 : new HashSet<>(context.previousWeek().exerciseIdsUsedLast7Days());
         this.complementos = CatalogEligibilityPolicy.complementos(context.availableExercises(), objetivo);
+        this.funcional = context.policy().elegibilidadFuncional();
     }
 
     /**
@@ -152,6 +155,8 @@ class CapabilityWeekBuilder {
                     var clase = CapabilityPrescriptionPolicy.claseDe(c);
                     return clase == Clase.ESTRUCTURAL || clase == Clase.RESISTIDO;
                 })
+                .filter(c -> !funcional || main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
+                        .excluidoGlobal(c).isEmpty())
                 .toList();
         var cardio = deClase(verificados, Clase.CARDIO, Capability.CARDIO);
         var movilidad = deClase(verificados, Clase.MOVILIDAD, Capability.MOBILITY);
@@ -159,6 +164,7 @@ class CapabilityWeekBuilder {
 
         var selector = new ExerciseSelector(resistidos, maxDificultad, recientes, random);
         selector.preferirEstructurales(true);
+        selector.elegibilidadFuncional(funcional);
         var slotsPorCubrir = new LinkedHashSet<MandatorySlot>();
         MandatorySlot.ALL.stream().filter(selector::haySlot).forEach(slotsPorCubrir::add);
         var slotsDeLaSemana = Set.copyOf(slotsPorCubrir);
@@ -429,7 +435,7 @@ class CapabilityWeekBuilder {
             if (dominante == null ? cubiertos.contains(grupo) : grupo.equals(dominante)) continue;
             var candidatos = resistidos.stream()
                     .filter(c -> grupo.equals(c.bodyPartCode()))
-                    .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                    .filter(c -> admite(enfoque, c))
                     .filter(c -> !bloqueados.contains(c.exerciseId()) && !enDia.contains(c.exerciseId()))
                     .sorted(Comparator.comparing(CandidateExercise::exerciseId))
                     .toList();
@@ -666,7 +672,7 @@ class CapabilityWeekBuilder {
                 .filter(x -> !hoy.contains(x.exerciseId()))
                 .filter(x -> complementos.contains(x.exerciseId())
                         || enfoque == WorkoutFocus.FULL_BODY || enfoque.accepts(x.bodyPartCode()))
-                .anyMatch(x -> ExerciseSelector.allowedIn(enfoque, x));
+                .anyMatch(x -> admite(enfoque, x));
     }
 
     private Colocacion colocar(CandidateExercise c, Capability preferida, boolean principal) {
@@ -733,12 +739,12 @@ class CapabilityWeekBuilder {
             var opciones = validos.stream().filter(preferencia).toList();
             if (opciones.isEmpty()) continue;
             var elegido = opciones.get(random.nextInt(opciones.size()));
-            if (ExerciseSelector.allowedIn(enfoque, elegido)) return Optional.of(elegido);
+            if (admite(enfoque, elegido)) return Optional.of(elegido);
             // V22 para TODO lo que entra, complementos incluidos: V15 no los
             // cuenta, pero V22 si, y rechaza un estiramiento de triceps en PULL
             // (PULL solo admite biceps, PUSH solo triceps). Se vuelve a elegir
             // solo en ese caso, para que una sesion que ya era valida salga igual.
-            var admitidas = opciones.stream().filter(c -> ExerciseSelector.allowedIn(enfoque, c)).toList();
+            var admitidas = opciones.stream().filter(c -> admite(enfoque, c)).toList();
             if (!admitidas.isEmpty()) return Optional.of(admitidas.get(random.nextInt(admitidas.size())));
         }
         return Optional.empty();
@@ -1169,13 +1175,20 @@ class CapabilityWeekBuilder {
         }
     }
 
+    /** V22 y, con EF-0.1, la compatibilidad patron-enfoque (los complementos no se juzgan por patron). */
+    private boolean admite(WorkoutFocus enfoque, CandidateExercise c) {
+        if (!ExerciseSelector.allowedIn(enfoque, c)) return false;
+        return !funcional || complementos.contains(c.exerciseId())
+                || main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional.compatible(enfoque, c);
+    }
+
     /** Las mismas condiciones de enfoque y recuperacion que elegirComplemento y el selector (V15, V18, V22). */
     private boolean admitidoEn(WorkoutFocus enfoque, CandidateExercise c, Set<String> gruposBloqueados) {
         var grupo = c.bodyPartCode();
         if (RECUPERACION.contains(grupo) && (!enfoque.accepts(grupo) || gruposBloqueados.contains(grupo))) return false;
         if (!complementos.contains(c.exerciseId()) && enfoque != WorkoutFocus.FULL_BODY && !enfoque.accepts(grupo))
             return false;
-        return ExerciseSelector.allowedIn(enfoque, c);
+        return admite(enfoque, c);
     }
 
     /** V15: el cambio no deja menos grupos del enfoque de los que exige (dos, o los ejercicios de trabajo si son menos). */

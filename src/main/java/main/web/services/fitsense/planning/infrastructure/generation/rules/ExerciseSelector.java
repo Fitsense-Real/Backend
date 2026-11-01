@@ -4,6 +4,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateEx
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
 
+import main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -102,6 +103,18 @@ class ExerciseSelector {
 
     void preferirEstructurales(boolean activo) {
         this.preferirEstructurales = activo;
+    }
+
+    /** Elegibilidad funcional EF-0.1 (solo con una version de politica que la incluye). Apagada por defecto. */
+    private boolean funcional = false;
+
+    void elegibilidadFuncional(boolean activa) {
+        this.funcional = activa;
+    }
+
+    /** V22 y, con EF-0.1, la compatibilidad patron-enfoque. */
+    boolean admite(WorkoutFocus focus, CandidateExercise candidate) {
+        return allowedIn(focus, candidate) && (!funcional || ElegibilidadFuncional.compatible(focus, candidate));
     }
 
     /**
@@ -315,7 +328,7 @@ class ExerciseSelector {
 
     private List<CandidateExercise> pool(String bodyPartCode, WorkoutFocus focus) {
         return byBodyPart.getOrDefault(bodyPartCode, List.of()).stream()
-                .filter(candidate -> allowedIn(focus, candidate))
+                .filter(candidate -> admite(focus, candidate))
                 .toList();
     }
 

@@ -264,6 +264,9 @@ public class PlanPromptBuilder {
             prompt.append(BLOQUE_CAPACIDADES);
 
         prompt.append(duracionCalculada(context));
+        // EF-0.1: solo con una version que la incluye (las demas reciben exactamente el texto de siempre).
+        if (context.policy().elegibilidadFuncional())
+            prompt.append(main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional.reglaParaIA());
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
 
         // La comprobacion va DESPUES de los datos: es lo ultimo que lee el

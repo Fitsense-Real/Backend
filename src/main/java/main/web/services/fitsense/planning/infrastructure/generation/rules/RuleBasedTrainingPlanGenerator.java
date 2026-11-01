@@ -158,9 +158,14 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 // cardio, OTHER o en revision de clasificacion no ocupan una
                 // colocacion de la sesion de hipertrofia.
                 .filter(candidate -> !dosisFijada || puedeDemostrarHipertrofia(candidate))
+                // EF-0.1 (solo con una version de politica que la incluye): lo que no cuenta como trabajo resistido.
+                .filter(candidate -> !context.policy().elegibilidadFuncional()
+                        || main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
+                        .excluidoGlobal(candidate).isEmpty())
                 .toList();
         var selector = new ExerciseSelector(seleccionables,
                 context.effectiveMaxDifficulty(), recentlyUsed, random);
+        selector.elegibilidadFuncional(context.policy().elegibilidadFuncional());
 
         // Seleccion estructural, solo con la dosis fijada. Con los demas
         // objetivos el modo queda apagado y el selector se comporta igual que
