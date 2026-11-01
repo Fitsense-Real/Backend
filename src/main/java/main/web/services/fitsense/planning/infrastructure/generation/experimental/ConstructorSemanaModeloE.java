@@ -149,7 +149,7 @@ public final class ConstructorSemanaModeloE {
     }
 
     /** La dosis BASE aprobada de la capacidad del objetivo (4D en GAIN_MUSCLE; la primera admisible en los demas). */
-    static PlanDraft.DraftExercise dosisBase(CandidateExercise c, String obj, String niv, PrescriptionParams pres) {
+    public static PlanDraft.DraftExercise dosisBase(CandidateExercise c, String obj, String niv, PrescriptionParams pres) {
         if (MvpDosePolicy.aplicaA(obj)) {
             if (c.defaultPrescription() == PrescriptionType.DURATION) return null;
             return MvpDosePolicy.dosisPara(MandatorySlot.of(c), c.bodyPartCode())
