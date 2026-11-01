@@ -289,7 +289,10 @@ abstract class CicloRealPoliticaBase {
         return u;
     }
 
-    static void escribir(String nombre, String contenido) throws Exception {
-        ImplementacionC2DV4CMatrizIT.escribir(nombre, contenido);
+    /** Las versiones con EF escriben en la carpeta de la correccion funcional; las demas, donde siempre. */
+    void escribir(String nombre, String contenido) throws Exception {
+        if (esperada().elegibilidadFuncional() || Boolean.getBoolean("fitsense.correccion.ef"))
+            CorreccionFuncionalMatrizIT.escribir(nombre, contenido);
+        else ImplementacionC2DV4CMatrizIT.escribir(nombre, contenido);
     }
 }

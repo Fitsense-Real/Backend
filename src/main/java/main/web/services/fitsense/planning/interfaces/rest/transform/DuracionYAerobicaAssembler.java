@@ -76,8 +76,9 @@ public final class DuracionYAerobicaAssembler {
         var texto = new StringBuilder("Tu rutina tiene una duracion estimada de %d minutos. Dispones de hasta %d minutos"
                 .formatted(estimados, disponibles)).append(" para entrenar.");
         switch (motivo) {
-            case "ESTRUCTURA_COMPLETA" -> texto.append(" Incluye todos los ejercicios y series que tu plan admite con"
-                    + " las reglas actuales.");
+            // Neutral: no afirma que el contenido sea suficiente ni completo; solo de donde sale la duracion.
+            case "ESTRUCTURA_COMPLETA" -> texto.append(" La duracion se calculo segun los ejercicios disponibles y las"
+                    + " restricciones de tu plan.");
             case "REDUCCION_AUTORIZADA" -> texto.append(" Esta semana la sesion es mas corta porque tu plan se adapto.");
             case "SESION_ACORTADA" -> texto.append(" Se acorto para ajustarse al tiempo que indicaste.");
             default -> { }

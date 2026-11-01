@@ -42,6 +42,23 @@ class ContratoV4CIATest {
                 .contains("max_session_seconds"));
     }
 
+    /** EF-0.1: la regla funcional llega a la IA solo con una version EF; con las demas, prompt y JSON identicos. */
+    @Test
+    void elegibilidadFuncionalSoloConEF() {
+        var b = new PlanPromptBuilder(new JsonSupport());
+        var json = new JsonSupport();
+        String regla = main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional.reglaParaIA();
+        var hist = b.build(ctx(PlanningPolicy.HISTORICA), "{}", null);
+        var c2d = b.build(ctx(PlanningPolicy.C2D), "{}", null);
+        var ef = b.build(ctx(PlanningPolicy.C2D_EF), "{}", null);
+        assertFalse(hist.contains("ELEGIBILIDAD FUNCIONAL"));
+        assertEquals(hist, c2d);
+        assertTrue(ef.contains(regla), "la regla de VEF, tal cual");
+        assertEquals(c2d, ef.replace(regla, ""), "es el unico cambio del prompt");
+        assertEquals(json.write(PlanInputSnapshot.of(ctx(PlanningPolicy.C2D))),
+                json.write(PlanInputSnapshot.of(ctx(PlanningPolicy.C2D_EF))), "EF no cambia el JSON");
+    }
+
     @Test
     void textoDelPrompt() {
         var hist = PlanPromptBuilder.duracionCalculada(ctx(PlanningPolicy.HISTORICA));

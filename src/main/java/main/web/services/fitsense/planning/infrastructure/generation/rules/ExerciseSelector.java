@@ -178,6 +178,20 @@ class ExerciseSelector {
             }
         }
 
+        // EF-0.1: la sesion necesita su patron principal (traccion en PULL, empuje en PUSH, rodilla o cadera en
+        //    LEGS). Si no salio ya por slot y existe en el enfoque, va el primero; si no existe, no se fuerza nada
+        //    (el validador lo dice: NO_FACTIBLE por catalogo o equipamiento).
+        if (funcional && count > 0 && !ElegibilidadFuncional.ancla(focus).isEmpty()
+                && picked.stream().noneMatch(c -> ElegibilidadFuncional.esAncla(focus, c))) {
+            var ancla = next(focus, picked, porGrupo, tope, true, c -> ElegibilidadFuncional.esAncla(focus, c))
+                    .or(() -> next(focus, picked, porGrupo, tope, false, c -> ElegibilidadFuncional.esAncla(focus, c)));
+            ancla.ifPresent(c -> {
+                if (picked.size() >= count) return;
+                picked.add(c);
+                porGrupo.merge(c.bodyPartCode(), 1, Integer::sum);
+            });
+        }
+
         // 1. Cobertura (20.3): uno de cada grupo, los grandes primero. Si la
         //    sesion es mas corta que el numero de grupos, quedan fuera los
         //    pequenos, no los grandes.

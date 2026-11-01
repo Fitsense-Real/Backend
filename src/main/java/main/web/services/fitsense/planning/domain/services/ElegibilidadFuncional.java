@@ -1,12 +1,19 @@
 package main.web.services.fitsense.planning.domain.services;
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * ELEGIBILIDAD FUNCIONAL (experimental, solo con una version de politica que la incluye; desactivada por defecto).
@@ -101,6 +108,60 @@ public final class ElegibilidadFuncional {
     }
 
     /**
+     * Los problemas VEF de un borrador (los usa el validador y el generador, para que sean la misma regla):
+     * <ol>
+     *   <li>cada ejercicio resistido que no es complemento tiene un patron compatible con el enfoque;</li>
+     *   <li>una sesion PUSH, PULL o LEGS con trabajo resistido propio tiene al menos un ejercicio de su patron
+     *       principal. Si el catalogo elegible no tiene ninguno, se dice (NO_FACTIBLE por catalogo o
+     *       equipamiento); no se rellena con otro movimiento. Una sesion solo de cardio o movilidad (LOSE_WEIGHT
+     *       corto) no afirma esa funcion.</li>
+     * </ol>
+     */
+    public static List<String> problemas(PlanDraft draft, PlanGenerationContext context,
+                                         Map<Long, CandidateExercise> eligible) {
+        var problems = new ArrayList<String>();
+        if (draft == null || draft.workouts() == null || context == null) return problems;
+        var porId = eligible != null ? eligible : context.availableExercises().stream()
+                .collect(Collectors.toMap(CandidateExercise::exerciseId, c -> c, (a, b) -> a));
+        var goal = context.profile() == null ? null : context.profile().goalType();
+        var complementos = CatalogEligibilityPolicy.complementos(context.availableExercises(), goal);
+        int maxDificultad = context.effectiveMaxDifficulty();
+        for (var workout : draft.workouts()) {
+            var enfoque = workout.focus();
+            if (enfoque == null) continue;
+            var propios = workout.exercises().stream()
+                    .map(exercise -> porId.get(exercise.exerciseId()))
+                    .filter(Objects::nonNull)
+                    .filter(candidate -> !complementos.contains(candidate.exerciseId()))
+                    .toList();
+            for (var candidate : propios) {
+                if (compatible(enfoque, candidate)) continue;
+                var motivo = excluidoGlobal(candidate)
+                        .orElse("patron " + candidate.movementPattern() + " fuera de la funcion de " + enfoque);
+                problems.add("VEF: el entrenamiento %s del %s incluye el ejercicio %d (%s), que no cuenta como trabajo de esa sesion: %s."
+                        .formatted(enfoque, workout.scheduledDate(), candidate.exerciseId(), candidate.name(), motivo));
+            }
+            if (ancla(enfoque).isEmpty() || propios.stream().noneMatch(ElegibilidadFuncional::esResistido)
+                    || propios.stream().anyMatch(c -> esAncla(enfoque, c))) continue;
+            long disponibles = context.availableExercises().stream()
+                    .filter(c -> c.difficulty() <= maxDificultad)
+                    .filter(c -> !complementos.contains(c.exerciseId()))
+                    .filter(c -> esAncla(enfoque, c))
+                    .count();
+            problems.add((disponibles == 0
+                    ? "VEF: el entrenamiento %s del %s no tiene ningun ejercicio de %s y el catalogo elegible con el equipamiento declarado no tiene ninguno (NO_FACTIBLE por catalogo o equipamiento insuficiente; no se sustituye por otro movimiento)."
+                    : "VEF: el entrenamiento %s del %s no tiene ningun ejercicio de %s; hay %d candidatos elegibles de ese patron.")
+                    .formatted(enfoque, workout.scheduledDate(), nombreAncla(enfoque), disponibles));
+        }
+        return problems;
+    }
+
+    /** La misma version sin EF (para generar primero como siempre y conservar el plan si ya cumple VEF). */
+    public static PlanningPolicy sinElegibilidad(PlanningPolicy p) {
+        return new PlanningPolicy(p.id(), p.candidata(), p.c2d(), p.v4Segundos(), false, p.descripcion());
+    }
+
+    /**
      * La misma regla que aplica VEF, en el texto que recibe la IA (solo con una version EF). Coincide con
      * {@link #compatible} y {@link #ancla}: lo que este texto permite, el validador lo acepta.
      */
@@ -122,7 +183,7 @@ public final class ElegibilidadFuncional {
         return p != null && a.contains(p) && esResistido(c) && excluidoGlobal(c).isEmpty();
     }
 
-    static boolean esResistido(CandidateExercise c) {
+    public static boolean esResistido(CandidateExercise c) {
         var clase = CapabilityPrescriptionPolicy.claseDe(c);
         return clase == CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL || clase == CapabilityPrescriptionPolicy.Clase.RESISTIDO;
     }

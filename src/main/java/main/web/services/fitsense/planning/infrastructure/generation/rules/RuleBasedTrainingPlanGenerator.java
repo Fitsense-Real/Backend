@@ -88,6 +88,74 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     @Value("${fitsense.generation.lose-weight.preferir-grupo-no-cubierto:false}")
     private boolean preferirGrupoNoCubiertoLW;
 
+    /** Version de la correccion de la preferencia (trazada en el plan cuando la opcion esta encendida). */
+    public static final String VERSION_PREFERENCIA_LW = "LW-PREF-0.2";
+
+    /**
+     * LW-PREF-0.2 (correccion de los efectos de la 0.1): la semana se construye SIEMPRE igual que sin la opcion. Solo
+     * si tiene una brecha real (un grupo grande con candidatos resistidos elegibles y ninguna colocacion resistida)
+     * se construye la alternativa con la preferencia, y se acepta solo si reduce la brecha y el validador no le
+     * encuentra ningun problema nuevo (ni V15 ni otro). Si no, se conserva la original: un plan sin brecha no
+     * cambia y un plan valido no pasa a invalido.
+     */
+    PlanDraft conPreferenciaLW(PlanGenerationContext context, PlanDraft base) {
+        int brechaBase = brechaGruposGrandes(context, base);
+        if (brechaBase == 0) return base;
+        var alternativa = new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
+                .preferirGrupoNoCubierto(true)
+                .construir(this::finalizar);
+        if (brechaGruposGrandes(context, alternativa) >= brechaBase) return base;
+        var pBase = problemasLW(base, context);
+        var pAlt = problemasLW(alternativa, context);
+        var codigosBase = pBase.stream().map(RuleBasedTrainingPlanGenerator::codigo).collect(java.util.stream.Collectors.toSet());
+        boolean sinNuevos = pAlt.size() <= pBase.size()
+                && pAlt.stream().map(RuleBasedTrainingPlanGenerator::codigo).allMatch(codigosBase::contains);
+        return sinNuevos ? alternativa : base;
+    }
+
+    private static String codigo(String problema) {
+        int i = problema.indexOf(':');
+        return i < 0 ? problema : problema.substring(0, i).trim();
+    }
+
+    private List<String> problemasLW(PlanDraft d, PlanGenerationContext context) {
+        var validador = new main.web.services.fitsense.planning.domain.services.PlanDraftValidator(durationEstimator,
+                main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement.ENFORCE_WHEN_SATISFIABLE,
+                main.web.services.fitsense.planning.domain.services.DoseEnforcement.ENFORCE);
+        try {
+            validador.validate(d, context, durationToRepsDivisor,
+                    main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport.vacio());
+            return List.of();
+        } catch (main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException e) {
+            return e.problems();
+        }
+    }
+
+    /** Grupos grandes con algun candidato resistido elegible que la semana no trabaja con ninguna colocacion resistida. */
+    public static int brechaGruposGrandes(PlanGenerationContext context, PlanDraft d) {
+        var complementos = main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy
+                .complementos(context.availableExercises(), context.profile().goalType());
+        int max = context.effectiveMaxDifficulty();
+        java.util.function.Predicate<CandidateExercise> resistido = c -> {
+            var clase = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.claseDe(c);
+            return !complementos.contains(c.exerciseId())
+                    && (clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                    || clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.RESISTIDO);
+        };
+        var porId = context.availableExercises().stream()
+                .collect(java.util.stream.Collectors.toMap(CandidateExercise::exerciseId, c -> c, (a, b) -> a));
+        var cubiertos = d.workouts().stream().flatMap(w -> w.exercises().stream())
+                .map(e -> porId.get(e.exerciseId())).filter(java.util.Objects::nonNull).filter(resistido)
+                .map(CandidateExercise::bodyPartCode).collect(java.util.stream.Collectors.toSet());
+        int brecha = 0;
+        for (var g : CapabilityWeekBuilder.GRUPOS_GRANDES) {
+            boolean hay = context.availableExercises().stream()
+                    .anyMatch(c -> c.difficulty() <= max && g.equals(c.bodyPartCode()) && resistido.test(c));
+            if (hay && !cubiertos.contains(g)) brecha++;
+        }
+        return brecha;
+    }
+
     /** Para el laboratorio: activa o desactiva la opcion en esta instancia. */
     public void setPreferirGrupoNoCubiertoLW(boolean v) {
         this.preferirGrupoNoCubiertoLW = v;
@@ -105,17 +173,36 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         return GenerationSource.RULE_ENGINE;
     }
 
+    /**
+     * EF-0.1: primero se genera exactamente como sin EF. Si ese plan ya cumple VEF, se conserva identico (cambiar la
+     * eleccion de un plan funcionalmente valido solo por cambiar el conjunto de candidatos no mejora nada). Solo si
+     * no la cumple se genera con la elegibilidad funcional. Sin EF, el camino es el de siempre.
+     */
     @Override
     public PlanDraft generate(PlanGenerationContext context, List<String> previousProblems) {
+        if (context.policy().elegibilidadFuncional()) {
+            var comoSiempre = generarCon(context.conPolitica(
+                    main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
+                            .sinElegibilidad(context.policy())), previousProblems);
+            if (main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
+                    .problemas(comoSiempre, context, null).isEmpty()) return comoSiempre;
+        }
+        return generarCon(context, previousProblems);
+    }
+
+    private PlanDraft generarCon(PlanGenerationContext context, List<String> previousProblems) {
         // 4A v6 + 4D v4: INCREASE_STRENGTH, LOSE_WEIGHT y GENERAL_FITNESS se
         // generan por capacidades. GAIN_MUSCLE sigue exactamente por el camino
         // de abajo (4D v3), que ya cumple.
         if (context.profile() != null
                 && main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
                 .gobiernaGeneracion(context.profile().goalType()))
-            return new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
-                    .preferirGrupoNoCubierto(preferirGrupoNoCubiertoLW)
+        {
+            var base = new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
                     .construir(this::finalizar);
+            if (!preferirGrupoNoCubiertoLW || !"LOSE_WEIGHT".equals(context.profile().goalType())) return base;
+            return conPreferenciaLW(context, base);
+        }
 
         var profile = context.profile();
         // Division semanal (WeeklySplitPlanner): la misma que recibe la IA como
