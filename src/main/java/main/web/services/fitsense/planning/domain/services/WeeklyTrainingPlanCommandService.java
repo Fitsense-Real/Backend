@@ -36,6 +36,12 @@ public interface WeeklyTrainingPlanCommandService {
     /** Fase 3: materializa y guarda. Transaccional y corta. */
     Optional<WeeklyTrainingPlan> persist(PreparedPlanGeneration prepared, GeneratedPlan generated);
 
+    /** V44: igual que {@link #persist}, anotando en la traza de la politica el contexto (p. ej. REGENERACION_P03). */
+    default java.util.Optional<main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan> persist(
+            PreparedPlanGeneration prepared, GeneratedPlan generated, String contextoPolitica) {
+        return persist(prepared, generated);
+    }
+
     /**
      * FASE 3 DE LA ADAPTACION. Publica la semana adaptada y registra su
      * evidencia EN LA MISMA TRANSACCION.

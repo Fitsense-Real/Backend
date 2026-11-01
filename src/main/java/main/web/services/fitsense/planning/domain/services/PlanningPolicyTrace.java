@@ -1,0 +1,89 @@
+package main.web.services.fitsense.planning.domain.services;
+
+import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy;
+
+import java.time.LocalDate;
+import java.util.*;
+
+/**
+ * V44 · TRAZA DE LA POLITICA con la que se publica un plan (columna {@code planning_policy_trace}). Dominio puro.
+ * <p>
+ * Por sesion: segundos estimados (la formula de V17/V20), minutos declarados, % de M, si queda bajo el piso de V20
+ * y si estaba exenta por V8C (reduccion autorizada).
+ * <p>
+ * MINUTOS: V4 (historica y V4-C), los generadores y el contrato con la IA usan los minutos CONFIGURADOS del perfil
+ * ({@code profile.sessionMinutes()}); V20 y la duracion de la semana usan los EFECTIVOS
+ * ({@code effectiveSessionMinutes()}, que una adaptacion como ACORTAR puede reducir). La traza registra los dos
+ * ({@code minutos_perfil}, {@code minutos_efectivos}) y el limite que V4 APLICA de verdad
+ * ({@code parametros.limite_v4_aplicado}, con la misma regla que {@code PlanDraftValidator}: V4-C en segundos solo
+ * si hay bloque prescription; si no, la de minutos). Los campos anteriores conservan su significado:
+ * {@code minutos_disponibles}, {@code pct_de_m} y {@code parametros.limite_v4} siguen calculados sobre los minutos
+ * efectivos y son informativos ({@code parametros.limite_v4_minutos_base} lo dice explicitamente).
+ * <p>
+ * Sin bloque prescription no hay estimacion: {@code segundos_estimados} y {@code pct_de_m} son null (antes 0), nunca
+ * un valor inventado.
+ */
+public final class PlanningPolicyTrace {
+
+    private PlanningPolicyTrace() {}
+
+    public static Map<String, Object> de(PlanGenerationContext ctx, List<PlanDraft.DraftWorkout> sesiones,
+                                         GenerationSource origen, String contexto, String versionCalculo,
+                                         Set<LocalDate> exentasV8C, SessionDurationEstimator estimador) {
+        var politica = ctx.policy();
+        int m = ctx.effectiveSessionMinutes();
+        int perfil = ctx.profile().sessionMinutes();
+        // La misma condicion que PlanDraftValidator.validateSessions: V4-C solo con bloque prescription.
+        boolean v4cAplicada = politica.v4Segundos() && ctx.prescription() != null;
+        int techoMinutos = ctx.profile().maxSessionMinutes();
+        long piso = PlanDraftValidator.minimumSessionSeconds(ctx);
+        var t = new LinkedHashMap<String, Object>();
+        t.put("politica", politica.id());
+        t.put("version_calculo", versionCalculo);
+        var params = new LinkedHashMap<String, Object>();
+        params.put("v4", politica.v4Segundos() ? "SEGUNDOS" : "HISTORICO");
+        params.put("piso_v20_pct", ctx.prescription() == null ? null : ctx.prescription().floorPct());
+        params.put("piso_v20_segundos", piso);
+        params.put("tolerancia_v4_pct", PlanningPolicy.TOLERANCIA_V4_PCT);
+        params.put("limite_v4", politica.v4Segundos()
+                ? Map.of("segundos", PlanningPolicy.limiteV4Segundos(m))
+                : Map.of("minutos_declarados", (int) Math.round(m * 1.15)));
+        params.put("limite_v4_minutos_base", m);
+        var aplicado = new LinkedHashMap<String, Object>();
+        aplicado.put("regla", v4cAplicada ? "V4C_SEGUNDOS" : "V4_MINUTOS");
+        aplicado.put("minutos_base", perfil);
+        if (v4cAplicada) aplicado.put("segundos", PlanningPolicy.limiteV4Segundos(perfil));
+        else aplicado.put("minutos_declarados", techoMinutos);
+        params.put("limite_v4_aplicado", aplicado);
+        t.put("parametros", params);
+        t.put("minutos_disponibles", m);
+        t.put("minutos_perfil", perfil);
+        t.put("minutos_efectivos", m);
+        t.put("origen", origen == null ? null : origen.name());
+        t.put("contexto", contexto);
+        var lista = new ArrayList<Map<String, Object>>();
+        for (var w : sesiones) {
+            if (w == null) continue;
+            Long s = ctx.prescription() == null ? null : estimador.estimateSeconds(w, ctx.prescription());
+            boolean bajo = s != null && piso > 0 && s < piso;
+            boolean exenta = exentasV8C != null && exentasV8C.contains(w.scheduledDate());
+            var x = new LinkedHashMap<String, Object>();
+            x.put("fecha", String.valueOf(w.scheduledDate()));
+            x.put("segundos_estimados", s);
+            x.put("minutos_declarados", w.expectedDurationMinutes());
+            x.put("pct_de_m", m <= 0 || s == null ? null : Math.round(1000.0 * s / (m * 60.0)) / 10.0);
+            x.put("bajo_piso_v20", bajo);
+            // La decision de V4 sobre esta sesion, con la regla y el limite aplicados (los del validador).
+            x.put("dentro_limite_v4_aplicado", v4cAplicada
+                    ? !politica.excedeTecho(s, w.expectedDurationMinutes(), perfil)
+                    : w.expectedDurationMinutes() <= techoMinutos);
+            x.put("exenta_v8c", exenta);
+            lista.add(x);
+        }
+        t.put("sesiones", lista);
+        return t;
+    }
+}

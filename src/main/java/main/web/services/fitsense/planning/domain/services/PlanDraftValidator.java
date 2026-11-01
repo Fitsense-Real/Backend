@@ -1003,9 +1003,20 @@ public class PlanDraftValidator {
                                   List<String> problems) {
         int ceiling = context.profile().maxSessionMinutes();
 
+        var politica = context.policy();
+        int minutosPerfil = context.profile().sessionMinutes();
         for (var workout : draft.workouts()) {
             // 4: ninguna sesion excede session_minutes + 15 %.
-            if (workout.expectedDurationMinutes() > ceiling)
+            if (politica.v4Segundos() && context.prescription() != null) {
+                // V4-C (version candidata): los SEGUNDOS ESTIMADOS del contenido, no lo declarado. Una sesion que
+                // declara 35 minutos con 2.550 s de contenido en un perfil de 30 se rechaza.
+                long segundos = durationEstimator.estimateSeconds(workout, context.prescription());
+                long limite = PlanningPolicy.limiteV4Segundos(minutosPerfil);
+                if (politica.excedeTecho(segundos, workout.expectedDurationMinutes(), minutosPerfil))
+                    problems.add(("V4: el entrenamiento del %s dura unos %d s segun su contenido y el techo es %d s"
+                            + " (%d minutos + 15 %%), declare lo que declare. Quita trabajo hasta caber.")
+                            .formatted(workout.scheduledDate(), segundos, limite, minutosPerfil));
+            } else if (workout.expectedDurationMinutes() > ceiling)
                 problems.add("V4: el entrenamiento del %s dura %d minutos y el techo es %d."
                         .formatted(workout.scheduledDate(), workout.expectedDurationMinutes(), ceiling));
 

@@ -236,9 +236,10 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // ejercicios del final. Antes se declaraba el techo con un contenido
             // mayor y V17 lo rechazaba (fuerza, 4x6 con 120 s, en 30 minutos).
             if (context.prescription() != null) {
-                while (exercises.size() > 2 && durationEstimator.estimateMinutes(new PlanDraft.DraftWorkout(
-                                dates.get(i), focus, nameOf(focus), sessionMinutes, exercises),
-                        context.prescription()) > techo) {
+                // V4 con la politica del contexto: HISTORICA compara minutos con techo (igual que siempre);
+                // V4-C compara los segundos estimados con M x 60 x 1,15, el mismo limite del validador.
+                while (exercises.size() > 2 && excedeTecho(context, new PlanDraft.DraftWorkout(
+                        dates.get(i), focus, nameOf(focus), sessionMinutes, exercises), techo)) {
                     exercises.remove(exercises.size() - 1);
                 }
             }
@@ -646,5 +647,12 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     /** Semilla estable: mismo usuario y misma semana, mismo plan. */
     long seedFor(PlanGenerationContext context) {
         return context.userId() * 1_000_003L + context.weekStartDate().toEpochDay();
+    }
+
+    private boolean excedeTecho(PlanGenerationContext context, PlanDraft.DraftWorkout w, int techo) {
+        int minutos = durationEstimator.estimateMinutes(w, context.prescription());
+        if (!context.policy().v4Segundos()) return minutos > techo;
+        return context.policy().excedeTecho(durationEstimator.estimateSeconds(w, context.prescription()), minutos,
+                context.profile().sessionMinutes());
     }
 }

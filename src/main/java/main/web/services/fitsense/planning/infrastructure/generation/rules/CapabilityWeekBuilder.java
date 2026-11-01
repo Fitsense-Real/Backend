@@ -242,7 +242,7 @@ class CapabilityWeekBuilder {
                     if (col == null) continue;
                     var con = new ArrayList<>(dia);
                     con.add(col);
-                    if (minutos(fecha, enfoque, con) > techo) continue;
+                    if (excede(fecha, enfoque, con)) continue;
                     dia.add(col);
                     resistidosDia.add(extra.get());
                     slotsPorCubrir.remove(slot);
@@ -294,7 +294,7 @@ class CapabilityWeekBuilder {
                             con.add(extra);
                         }
                     }
-                    if (minutos(fecha, enfoque, con) > techo) break;
+                    if (excede(fecha, enfoque, con)) break;
                     dia.add(extra);
                     var clase = CapabilityPrescriptionPolicy.claseDe(extra.candidato());
                     if (!complementos.contains(extra.candidato().exerciseId())
@@ -324,7 +324,7 @@ class CapabilityWeekBuilder {
                     var con = new ArrayList<>(dia);
                     var col = colocar(c.get(), Capability.BALANCE, false);
                     con.add(col);
-                    if (col != null && minutos(fecha, enfoque, con) <= techo && respetaMitad(enfoque, con))
+                    if (col != null && !excede(fecha, enfoque, con) && respetaMitad(enfoque, con))
                         dia.add(col);
                 }
             }
@@ -454,7 +454,7 @@ class CapabilityWeekBuilder {
                     var con = new ArrayList<>(dia);
                     con.set(k, col);
                     if (dejaSinSlot(quitado, con, pendientes)) continue;
-                    if (minutos(fecha, enfoque, con) > techo || !respetaMitad(enfoque, con)) continue;
+                    if (excede(fecha, enfoque, con) || !respetaMitad(enfoque, con)) continue;
                     if (con.stream().filter(x -> !complementos.contains(x.candidato().exerciseId()))
                             .map(x -> x.candidato().bodyPartCode()).filter(enfoque::accepts).distinct().count() < 2)
                         continue;
@@ -757,7 +757,7 @@ class CapabilityWeekBuilder {
      * (V15).
      */
     private void recortar(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, int techo) {
-        while (dia.size() > 2 && minutos(fecha, enfoque, dia) > techo) {
+        while (dia.size() > 2 && excede(fecha, enfoque, dia)) {
             int quitar = elegirParaQuitar(dia, k -> !dia.get(k).principal());
             if (quitar < 0) quitar = elegirParaQuitar(dia, k -> {
                 var cap = dia.get(k).capacidad();
@@ -806,7 +806,7 @@ class CapabilityWeekBuilder {
                         col.capacidad(), col.principal());
                 var con = new ArrayList<>(dia);
                 con.set(k, nueva);
-                if (minutos(fecha, enfoque, con) > techo) continue;
+                if (excede(fecha, enfoque, con)) continue;
                 dia.set(k, nueva);
                 cambio = true;
             }
@@ -882,7 +882,7 @@ class CapabilityWeekBuilder {
                     if (miraSiguiente && "LOSE_WEIGHT".equals(objetivo) && entra.capacidad() == Capability.CARDIO
                             && enfoqueSiguientePegado != null && !dejaCardioAlSiguiente(cardio, dia, c)) continue;
                     ampliarSeries(fecha, enfoque, con, piso, techo);
-                    if (minutos(fecha, enfoque, con) > techo || segundos(fecha, enfoque, con) <= ahora) continue;
+                    if (excede(fecha, enfoque, con) || segundos(fecha, enfoque, con) <= ahora) continue;
                     mejor = con;
                     break buscar;
                 }
@@ -1013,7 +1013,7 @@ class CapabilityWeekBuilder {
                         if (exigeSlots && pierdeSlotEnSemana(armadas, jj, y, con, slotsDeLaSemana)) continue;
                         if (!respetaMitad(otra.enfoque(), con) || !gruposSuficientes(otra.enfoque(), otra.dia(), con))
                             continue;
-                        if (minutos(otra.fecha(), otra.enfoque(), con) > techo) continue;
+                        if (excede(otra.fecha(), otra.enfoque(), con)) continue;
                         if (piso > 0 && corto(otra.fecha(), otra.enfoque(), con, piso)) continue;
                         otra.dia().set(k, entra);
                         enSemana.merge(y.capacidad(), -1, Integer::sum);
@@ -1061,7 +1061,7 @@ class CapabilityWeekBuilder {
                     if (!puedeSalir(x, otra.dia(), fueraDeOtra)) continue;
                     var con = new ArrayList<>(otra.dia());
                     con.set(k, fuerza);
-                    if (minutos(otra.fecha(), otra.enfoque(), con) > techo) continue;
+                    if (excede(otra.fecha(), otra.enfoque(), con)) continue;
                     if (piso > 0 && corto(otra.fecha(), otra.enfoque(), con, piso)
                             && !corto(otra.fecha(), otra.enfoque(), otra.dia(), piso)) continue;
                     otra.dia().set(k, fuerza);
@@ -1159,6 +1159,16 @@ class CapabilityWeekBuilder {
         return estimador.estimateSeconds(new PlanDraft.DraftWorkout(fecha, enfoque, nombre(enfoque), 0,
                 dia.stream().map(Colocacion::ejercicio).toList()), context.prescription())
                 < PlanDraftValidator.minimumSessionSeconds(context);
+    }
+
+    /**
+     * V4 con la politica del contexto. HISTORICA: minutos estimados frente a {@code round(M x 1,15)}, exactamente la
+     * comparacion de siempre. V4-C: segundos estimados frente a {@code M x 60 x 1,15}, el mismo limite del validador.
+     */
+    private boolean excede(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia) {
+        if (context.prescription() == null) return false;
+        return context.policy().excedeTecho(segundos(fecha, enfoque, dia), minutos(fecha, enfoque, dia),
+                context.profile().sessionMinutes());
     }
 
     private int minutos(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia) {

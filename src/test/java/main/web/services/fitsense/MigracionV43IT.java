@@ -49,7 +49,8 @@ class MigracionV43IT {
         cargarHistorico(jdbc);
         var antes = huella(jdbc);
 
-        var r = flyway(null).migrate();
+        // Fijado en 43: esta prueba audita V43 sobre V42. V44 y posteriores tienen su propia IT (MigracionV44IT).
+        var r = flyway("43").migrate();
         assertEquals(1, r.migrationsExecuted, "solo V43");
         assertEquals("43", r.targetSchemaVersion);
         assertEquals(antes, huella(jdbc), "V43 no altera tablas ni datos historicos");
@@ -79,7 +80,7 @@ class MigracionV43IT {
                 + " 'PUBLICADO')", u, plan), "PUBLICADO sin plan viola ck_sra_plan");
 
         // Reinicio con V43 ya aplicada: nada que aplicar y la validacion pasa.
-        var otra = flyway(null);
+        var otra = flyway("43");
         assertEquals(0, otra.migrate().migrationsExecuted);
         assertDoesNotThrow(otra::validate);
     }
