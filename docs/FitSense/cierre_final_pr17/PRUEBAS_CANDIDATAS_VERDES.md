@@ -50,7 +50,7 @@ Cubren **D8, ACORTAR, C-2, P-02, P-03**, progresión, reincorporación, concurre
 - El primer intento con C2-D-EF dio **12 errores** en `PoliticasP123IT`.
 - **Causa:** la comprobación nueva de EF construía un `Set.of(...)` con patrones repetidos de una misma sesión (`IllegalArgumentException: duplicate element`).
 - **Era un fallo de la prueba, no del motor.** Corregida (`HashSet`) y repetida: 0 errores.
-- El registro del primer intento se conserva como evidencia.
+- El error exacto queda descrito aquí; el registro completo del primer intento no se versiona.
 
 ## 3. Pruebas nuevas de esta orden
 
