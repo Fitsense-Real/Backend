@@ -143,6 +143,14 @@ abstract class CicloRealPoliticaBase {
                 + " bp.body_part_id = e.body_part_id ORDER BY p.plan_id, pw.scheduled_date, pwe.exercise_order"))
             det.append(String.join(",", f.values().stream().map(String::valueOf).toList())).append('\n');
         escribir(archivo().replace("LONGITUDINAL_", "PLANES_CICLO_"), det.toString());
+        // Opciones experimentales registradas en la traza de cada plan (LW-PREF, REP-SUST), si las hay.
+        var op = new StringBuilder("caso_user_id,plan_id,semana_inicio,politica,elegibilidad_funcional,opciones\n");
+        for (var f : jdbc.queryForList("SELECT user_id, plan_id, week_start_date, coalesce(planning_policy, 'NULL') pol,"
+                + " coalesce(planning_policy_trace->'parametros'->>'elegibilidad_funcional', '-') ef,"
+                + " coalesce(replace((planning_policy_trace->'opciones')::text, ',', ';'), '-') op"
+                + " FROM weekly_training_plans ORDER BY plan_id"))
+            op.append(String.join(",", f.values().stream().map(String::valueOf).toList())).append('\n');
+        escribir(archivo().replace("LONGITUDINAL_", "TRAZA_OPCIONES_"), op.toString());
     }
 
     static String guionDe(int s) {
@@ -291,7 +299,8 @@ abstract class CicloRealPoliticaBase {
 
     /** Las versiones con EF escriben en la carpeta de la correccion funcional; las demas, donde siempre. */
     void escribir(String nombre, String contenido) throws Exception {
-        if (esperada().elegibilidadFuncional() || Boolean.getBoolean("fitsense.correccion.ef"))
+        if (Boolean.getBoolean("fitsense.cierre.pr17")) CierrePR17LabIT.escribir(nombre, contenido);
+        else if (esperada().elegibilidadFuncional() || Boolean.getBoolean("fitsense.correccion.ef"))
             CorreccionFuncionalMatrizIT.escribir(nombre, contenido);
         else ImplementacionC2DV4CMatrizIT.escribir(nombre, contenido);
     }

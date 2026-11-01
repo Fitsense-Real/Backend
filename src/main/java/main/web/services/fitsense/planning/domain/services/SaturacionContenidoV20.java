@@ -33,9 +33,21 @@ public final class SaturacionContenidoV20 {
     public enum Estado { SATURADA, NO_SATURADA, NO_DEMOSTRADA, NO_APLICA }
 
     public record Resultado(Estado estado, List<LocalDate> sesionesCortas, String motivo, int evaluaciones,
-                            Map<String, Integer> descartes) {
+                            Map<String, Integer> descartes, PlanDraft mejorado) {
+        public Resultado(Estado estado, List<LocalDate> sesionesCortas, String motivo, int evaluaciones,
+                         Map<String, Integer> descartes) {
+            this(estado, sesionesCortas, motivo, evaluaciones, descartes, null);
+        }
+
         public boolean saturada() {
             return estado == Estado.SATURADA;
+        }
+
+        /** El tipo del movimiento que demostro la mejora (ANADIR, SERIE, SUSTITUIR, REDISTRIBUIR) o null. */
+        public String movimiento() {
+            if (estado != Estado.NO_SATURADA || motivo == null) return null;
+            int i = motivo.indexOf(' ');
+            return i < 0 ? motivo : motivo.substring(0, i);
         }
     }
 
@@ -49,6 +61,8 @@ public final class SaturacionContenidoV20 {
     private final int presupuesto;
     private final Map<String, Integer> descartes = new TreeMap<>();
     private int evaluaciones;
+    /** El borrador del movimiento que demostro la mejora (para la reparacion experimental; no cambia el veredicto). */
+    private PlanDraft mejorado;
 
     private SaturacionContenidoV20(PlanDraft d, PlanGenerationContext ctx, Function<PlanDraft, List<String>> problemas,
                                    SessionDurationEstimator estimador, int presupuesto) {
@@ -96,7 +110,7 @@ public final class SaturacionContenidoV20 {
             for (int i : cortas) {
                 var m = mejoraEnSesion(i, piso, pool, tope, porId);
                 if (m != null)
-                    return new Resultado(Estado.NO_SATURADA, fechas, m, evaluaciones, descartes);
+                    return new Resultado(Estado.NO_SATURADA, fechas, m, evaluaciones, descartes, mejorado);
             }
         } catch (Presupuesto p) {
             return new Resultado(Estado.NO_DEMOSTRADA, fechas,
@@ -174,8 +188,10 @@ public final class SaturacionContenidoV20 {
                     var nuevo = conSesion(conSesion(original, k, sin), i, mas(w.exercises(), e));
                     if (excede(nuevo.workouts().get(i))) { contar("techo_v4"); continue; }
                     var rr = evaluarProblemas(nuevo);
-                    if (rr.stream().allMatch(x -> x.startsWith("V20:")) && cortas(nuevo, piso).size() < cortasAntes)
+                    if (rr.stream().allMatch(x -> x.startsWith("V20:")) && cortas(nuevo, piso).size() < cortasAntes) {
+                        mejorado = nuevo;
                         return "REDISTRIBUIR " + e.exerciseId() + " de " + otra.scheduledDate() + " a " + w.scheduledDate();
+                    }
                     contar(rr.stream().filter(x -> !x.startsWith("V20:")).findFirst().map(SaturacionContenidoV20::codigo)
                             .orElse("V20_SIN_MEJORA"));
                 }
@@ -209,6 +225,7 @@ public final class SaturacionContenidoV20 {
             contar("no_alarga");
             return false;
         }
+        mejorado = nuevo;
         return true;
     }
 

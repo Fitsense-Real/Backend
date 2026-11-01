@@ -180,6 +180,11 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
      */
     @Override
     public PlanDraft generate(PlanGenerationContext context, List<String> previousProblems) {
+        var d = generarSegunPolitica(context, previousProblems);
+        return reparacionSustitucionV20 ? repararPorSustitucion(context, d) : d;
+    }
+
+    private PlanDraft generarSegunPolitica(PlanGenerationContext context, List<String> previousProblems) {
         if (context.policy().elegibilidadFuncional()) {
             var comoSiempre = generarCon(context.conPolitica(
                     main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
@@ -188,6 +193,86 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                     .problemas(comoSiempre, context, null).isEmpty()) return comoSiempre;
         }
         return generarCon(context, previousProblems);
+    }
+
+    // ===================================================================== REP-SUST-0.1 (experimental, apagada)
+
+    /** Version de la reparacion por sustitucion (trazada en el plan cuando la opcion esta encendida). */
+    public static final String VERSION_REPARACION_SUSTITUCION = "REP-SUST-0.1";
+    static final int MAX_PASOS_REPARACION = 6;
+
+    /**
+     * REP-SUST-0.1: si la UNICA infraccion de la semana es V20 y el verificador de saturacion de C2-D demuestra que
+     * SUSTITUIR un ejercicio por otro elegible de dosis base mas larga alarga la sesion corta sin romper ninguna otra
+     * regla (V4, V15, V18, V22, V24, V25 y, con EF, VEF), se aplica esa sustitucion. Se repite, como mucho
+     * {@value #MAX_PASOS_REPARACION} veces, mientras la sustitucion siga siendo la mejora demostrada. No anade
+     * ejercicios ni series, no cambia dosis (la sustituta lleva su dosis base 4D) y no relaja C2-D: si el plan sigue
+     * corto, C2-D vuelve a evaluar su saturacion con las reglas de siempre. Determinista: el verificador recorre los
+     * candidatos por id. Fuera de ese caso devuelve el borrador tal cual.
+     */
+    PlanDraft repararPorSustitucion(PlanGenerationContext context, PlanDraft d) {
+        if (d == null || context.prescription() == null) return d;
+        var sinC2D = context.conPolitica(new main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy(
+                context.policy().id(), context.policy().candidata(), false, context.policy().v4Segundos(),
+                context.policy().elegibilidadFuncional(), context.policy().descripcion()));
+        // El validador COMPLETO (V24 y V25 por capacidades incluidas): una sustitucion que alarga la sesion pero deja
+        // una capacidad sin cubrir no es una mejora.
+        var validador = new main.web.services.fitsense.planning.domain.services.PlanDraftValidator(durationEstimator,
+                main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement.ENFORCE_WHEN_SATISFIABLE,
+                main.web.services.fitsense.planning.domain.services.DoseEnforcement.ENFORCE,
+                main.web.services.fitsense.planning.domain.services.DoseEnforcement.ENFORCE);
+        var actual = d;
+        for (int paso = 0; paso < MAX_PASOS_REPARACION; paso++) {
+            var p = problemasCon(validador, actual, sinC2D);
+            if (p.isEmpty() || !p.stream().allMatch(x -> x.startsWith("V20:"))) return actual;
+            var r = validador.evaluarC2D(actual, sinC2D, durationToRepsDivisor,
+                    main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport.vacio());
+            if (!"SUSTITUIR".equals(r.movimiento()) || r.mejorado() == null) return actual;
+            // Solo una sustitucion que conserva la CLASE del ejercicio (estructural por estructural, resistido por
+            // resistido, cardio por cardio...): cambiar fuerza por cardio para llenar minutos no es la misma sesion.
+            if (!conservaClase(actual, r.mejorado(), context)) return actual;
+            actual = r.mejorado();
+        }
+        return actual;
+    }
+
+    private List<String> problemasCon(main.web.services.fitsense.planning.domain.services.PlanDraftValidator v,
+                                      PlanDraft d, PlanGenerationContext context) {
+        try {
+            v.validate(d, context, durationToRepsDivisor,
+                    main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport.vacio());
+            return List.of();
+        } catch (main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException e) {
+            return e.problems();
+        }
+    }
+
+    /** Si cada ejercicio cambiado entre los dos borradores conserva su clase de capacidad. */
+    static boolean conservaClase(PlanDraft antes, PlanDraft despues, PlanGenerationContext context) {
+        var porId = context.availableExercises().stream()
+                .collect(java.util.stream.Collectors.toMap(CandidateExercise::exerciseId, c -> c, (a, b) -> a));
+        for (int i = 0; i < antes.workouts().size(); i++) {
+            var a = antes.workouts().get(i).exercises();
+            var b = despues.workouts().get(i).exercises();
+            if (a.size() != b.size()) return false;
+            for (int j = 0; j < a.size(); j++) {
+                if (java.util.Objects.equals(a.get(j).exerciseId(), b.get(j).exerciseId())) continue;
+                var ca = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                        .claseDe(porId.get(a.get(j).exerciseId()));
+                var cb = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                        .claseDe(porId.get(b.get(j).exerciseId()));
+                if (ca != cb) return false;
+            }
+        }
+        return true;
+    }
+
+    @Value("${fitsense.generation.reparacion-sustitucion-v20:false}")
+    private boolean reparacionSustitucionV20;
+
+    /** Para el laboratorio: activa o desactiva la reparacion en esta instancia. */
+    public void setReparacionSustitucionV20(boolean v) {
+        this.reparacionSustitucionV20 = v;
     }
 
     private PlanDraft generarCon(PlanGenerationContext context, List<String> previousProblems) {

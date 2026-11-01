@@ -559,14 +559,22 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         var traza = main.web.services.fitsense.planning.domain.services.PlanningPolicyTrace.de(ctx, sesiones, source,
                 contexto, version, exentasV8C, ESTIMADOR_TRAZA);
         // LW-PREF-0.2 solo se traza si la opcion experimental esta encendida (apagada, la traza no cambia).
+        var opciones = new java.util.LinkedHashMap<String, Object>();
         if (preferenciaCoberturaLW && "LOSE_WEIGHT".equals(ctx.profile().goalType()))
-            traza.put("opciones", java.util.Map.of("preferencia_cobertura_lw", main.web.services.fitsense.planning
-                    .infrastructure.generation.rules.RuleBasedTrainingPlanGenerator.VERSION_PREFERENCIA_LW));
+            opciones.put("preferencia_cobertura_lw", main.web.services.fitsense.planning
+                    .infrastructure.generation.rules.RuleBasedTrainingPlanGenerator.VERSION_PREFERENCIA_LW);
+        if (reparacionSustitucionV20)
+            opciones.put("reparacion_sustitucion_v20", main.web.services.fitsense.planning
+                    .infrastructure.generation.rules.RuleBasedTrainingPlanGenerator.VERSION_REPARACION_SUSTITUCION);
+        if (!opciones.isEmpty()) traza.put("opciones", opciones);
         plan.registrarPolitica(ctx.policy().id(), jsonSupport.write(traza));
     }
 
     @org.springframework.beans.factory.annotation.Value("${fitsense.generation.lose-weight.preferir-grupo-no-cubierto:false}")
     private boolean preferenciaCoberturaLW;
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.generation.reparacion-sustitucion-v20:false}")
+    private boolean reparacionSustitucionV20;
 
     private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR_TRAZA =
             new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();

@@ -1,0 +1,2 @@
+perfil,objetivo,nivel,equipo,dias,minutos,politica,resultado_sin,resultado_con,identico,c2d_sin,c2d_con,reglas_con
+R0808,GENERAL_FITNESS,BEGINNER,CASA_PESO_CORPORAL,6,75,PLAN-C2D-EF-0.1,INVALIDO,VALIDO,false,NO_SATURADA,SATURADA,""

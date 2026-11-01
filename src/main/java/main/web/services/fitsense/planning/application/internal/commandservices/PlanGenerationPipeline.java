@@ -165,7 +165,7 @@ public class PlanGenerationPipeline {
             log.error("El motor de reglas tampoco produjo un plan valido para el usuario {}: {}",
                     context.userId(), e.problems());
             throw new PlanGenerationFailedException(context.userId(),
-                    "Ultimos problemas: " + String.join(" | ", e.problems()));
+                    "Ultimos problemas: " + String.join(" | ", e.problems()), e.problems());
         }
     }
 
@@ -184,7 +184,7 @@ public class PlanGenerationPipeline {
             return new Result(draft, (short) 1);
         } catch (InvalidPlanDraftException e) {
             throw new PlanGenerationFailedException(context.userId(),
-                    "Regeneracion determinista: " + String.join(" | ", e.problems()));
+                    "Regeneracion determinista: " + String.join(" | ", e.problems()), e.problems());
         }
     }
 
