@@ -8,6 +8,7 @@ import main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.Use
 import main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import main.web.services.fitsense.orchestration.application.internal.WeeklyCycleService;
 import main.web.services.fitsense.planning.application.internal.commandservices.PlanningPolicySelector;
+import main.web.services.fitsense.planning.domain.model.valueobjects.AdjustmentType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateSessionFixGenerator;
@@ -143,6 +144,75 @@ class PoliticaV4CCicloIT {
         assertNull(antiguo.get("planning_policy"), "el plan publicado antes no se reescribe");
         assertNull(antiguo.get("planning_policy_trace"));
         comprobar(siguiente, c.minutos(), null);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    @DisplayName("perfil de 60: falta de tiempo en el ciclo real y orden ACORTAR a 30; la traza distingue 60 configurados,"
+            + " 30 efectivos y 4.140 s aplicados")
+    void acortarTrazaDiferenciada() {
+        var c = new Caso(GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, 3, 60);
+        long u = crear(c);
+        // 1-2 · Generacion inicial y publicacion con V4-C.
+        long plan = planning.generateWeeklyPlan(u, SEMANA, PlanAdjustment.none(), null, null).orElseThrow();
+        comprobar(plan, 60, "GENERACION");
+        var inicial = trazaDe(plan);
+        assertEquals(60, inicial.get("minutos_perfil"));
+        assertEquals(60, inicial.get("minutos_efectivos"));
+        // 3 · Registro de falta de tiempo ("hoy tengo 30") en todas las sesiones.
+        var ws = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ? ORDER BY"
+                + " scheduled_date", Long.class, plan);
+        var user = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
+        for (long w : ws)
+            planes.skip(user, w, new SkipWorkoutResource(SkipReason.LACK_OF_TIME,
+                    ContextoFaltaDeTiempo.MENOS_TIEMPO_HABITUAL, 30));
+        // 4 · El ciclo real adapta la semana siguiente. El decisor actual no fija minutos: los efectivos siguen
+        //     siendo los del perfil, y la traza lo dice.
+        long s2 = ciclo.runFor(u, SEMANA, SEMANA.plusWeeks(1)).orElseThrow();
+        assertEquals(s2, ciclo.runFor(u, SEMANA, SEMANA.plusWeeks(1)).orElseThrow(), "idempotente");
+        assertEquals(1, activos(u, SEMANA.plusWeeks(1)), "un solo plan activo por semana");
+        comprobar(s2, 60, "ADAPTACION");
+        var t2 = trazaDe(s2);
+        assertEquals(60, t2.get("minutos_perfil"));
+        assertEquals(t2.get("minutos_disponibles"), t2.get("minutos_efectivos"));
+        // 5 · Orden ACORTAR a 30 minutos (forcedSessionMinutes, la via por la que hoy bajan los minutos efectivos):
+        //     se publica la semana con el pipeline real de generacion.
+        var acortar = new PlanAdjustment(List.of(AdjustmentType.REDUCE_DURATION), null, null, null, 0.0, 0.0, null,
+                null, 30, "sesiones mas cortas", "LACK_OF_TIME", null);
+        var s3semana = SEMANA.plusWeeks(2);
+        long s3 = planning.generateWeeklyPlan(u, s3semana, acortar, null, null).orElseThrow();
+        assertEquals(1, activos(u, s3semana), "un solo plan activo por semana");
+        assertEquals("PLAN-V4-0.1", jdbc.queryForObject("SELECT planning_policy FROM weekly_training_plans WHERE"
+                + " plan_id = ?", String.class, s3));
+        // 6 · La traza persistida: 60 configurados, 30 efectivos, 4.140 s aplicados y 2.070 s solo informativo.
+        var t = trazaDe(s3);
+        System.out.println("TRAZA_ACORTAR " + t);
+        assertEquals(60, t.get("minutos_perfil"), "minutos configurados del perfil");
+        assertEquals(30, t.get("minutos_efectivos"), "minutos efectivos de la orden");
+        assertEquals(30, t.get("minutos_disponibles"), "campo historico: sigue siendo el efectivo");
+        var params = (Map<String, Object>) t.get("parametros");
+        var aplicado = (Map<String, Object>) params.get("limite_v4_aplicado");
+        assertEquals("V4C_SEGUNDOS", aplicado.get("regla"));
+        assertEquals(60, aplicado.get("minutos_base"));
+        assertEquals(4140L, ((Number) aplicado.get("segundos")).longValue(), "el limite que aplica el validador");
+        assertEquals(2070L, ((Number) ((Map<String, Object>) params.get("limite_v4")).get("segundos")).longValue(),
+                "limite_v4: informativo, sobre los minutos efectivos");
+        assertEquals(30, params.get("limite_v4_minutos_base"));
+        for (var s : (List<Map<String, Object>>) t.get("sesiones")) {
+            assertEquals(true, s.get("dentro_limite_v4_aplicado"), s.toString());
+            assertTrue(((Number) s.get("segundos_estimados")).longValue() <= 4140, s.toString());
+        }
+    }
+
+    int activos(long u, java.time.LocalDate semana) {
+        return jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ? AND"
+                + " week_start_date = ? AND status = 'ACTIVE'", Integer.class, u, semana);
+    }
+
+    @SuppressWarnings("unchecked")
+    Map<String, Object> trazaDe(long plan) {
+        return JSON.read(jdbc.queryForObject("SELECT planning_policy_trace::text FROM weekly_training_plans WHERE"
+                + " plan_id = ?", String.class, plan), Map.class);
     }
 
     @SuppressWarnings("unchecked")
