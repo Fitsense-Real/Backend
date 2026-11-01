@@ -11,7 +11,7 @@
 Fuente: `implementacion_controlada_c2d_v4c/LOSE_WEIGHT_PREFERENCIA_COBERTURA.csv`.
 
 - La preferencia se aplicaba **siempre**. Cambiaba la composición de 82 planes **sin ninguna brecha**.
-- Podía elegir un ejercicio que rompía V15: **2 planes válidos pasaban a inválidos**, y 5 empeoraban.
+- Podía elegir un ejercicio que rompía V15: **2 planes válidos pasaban a inválidos**. El informe anterior hablaba también de 5 empeoramientos: con el recuento corregido son 0 (§3).
 
 ## 2. Corrección (`RuleBasedTrainingPlanGenerator.conPreferenciaLW`)
 
@@ -24,24 +24,36 @@ Fuente: `implementacion_controlada_c2d_v4c/LOSE_WEIGHT_PREFERENCIA_COBERTURA.csv
 
 ## 3. Resultados (240 perfiles LOSE_WEIGHT de la matriz)
 
-Fuente: `LOSE_WEIGHT_PREFERENCIA_LW02.csv`, política histórica.
+Fuentes:
+- `LOSE_WEIGHT_PREFERENCIA_LW02.csv` (0.2).
+- `implementacion_controlada_c2d_v4c/LOSE_WEIGHT_PREFERENCIA_COBERTURA.csv` (0.1).
+
+Ambas con la política histórica.
+
+**Mismo denominador que el informe anterior:** de los 230 planes LOSE_WEIGHT válidos, 148 tienen algún grupo grande a cero y 82 ninguno.
 
 | Métrica | LW-PREF-0.1 | **LW-PREF-0.2** |
 |---|---|---|
-| Planes sin brecha (84) cuya composición cambia | 82 | **0** |
-| Válidos → inválidos | 2 (V15) | **0** |
-| Planes que empeoran (más grupos a cero) | 5 | **0** |
-| Planes con menos grupos a cero | 48 | **48** (34 sin ningún grupo a cero) |
+| Planes sin grupos a cero (82) cuya composición cambia | **82** | **0** |
+| De los 148 con grupos a cero: mejoran | 59 (34 sin ningún grupo a cero) | **59 (34)** |
+| … quedan igual | 87 | 89 |
+| … empeoran | 0 | **0** |
+| … pasan a inválidos | **2** (V15) | **0** |
 | Inválidos → válidos | 6 | 6 |
-| Planes con brecha sin alternativa aceptable (se conserva el original) | — | **91** de 156 |
-| Planes cambiados (todos con brecha) | — | 65 |
+| Planes cambiados en total | 200 | **65** (todos reducen la brecha) |
 | Minutos de trabajo de cardio | Sin cambios | **Sin cambios** (0 diferencias) |
 | Series de fuerza totales | Sin cambios | **Sin cambios** (0 diferencias) |
 
-**Notas:**
-- Los 65 planes cambiados reducen la **brecha** (grupos con candidatos y sin colocación).
-- 48 de ellos reducen además los «grupos a cero» con la métrica del laboratorio anterior, que cuenta los grupos entrenables del enfoque sin series.
-- Los 17 restantes reducen la brecha sin cambiar esa métrica. Las dos métricas no son idénticas.
+**Corrección del informe anterior.**
+- El informe anterior (`MEJORA_EXPERIMENTAL_LOSE_WEIGHT.md` y `CIERRE_IMPLEMENTACION_CONTROLADA.md`, pregunta 25) daba «48 de 148 mejoran» y «5 empeoran».
+- Recalculado ahora con un recuento de grupos corregido («upper legs» se contaba como dos palabras), la 0.1 da **59 mejoras y 0 empeoramientos**.
+- Los dos efectos negativos reales de la 0.1 se confirman:
+  - **cambia los 82 planes sin grupos a cero**;
+  - **2 válidos pasan a inválidos**.
+
+**La 0.2 corrige los dos efectos.**
+- Iguala las mejoras de la 0.1.
+- Cambia 65 planes en lugar de 200: la 0.1 alteraba otros 135 sin mejorarlos.
 - Los 6 inválidos que pasan a válidos tienen menos problemas con la alternativa y ninguno nuevo. **No es un objetivo de la corrección**, se registra. Requieren la misma revisión que el resto.
 
 ## 4. Lo que no cambia
