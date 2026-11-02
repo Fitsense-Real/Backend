@@ -69,7 +69,8 @@
   - **438 de integración**;
   - **4 baterías** con 223/225 cada una;
   - los 960 perfiles y REPLAY.
-- CI verde (#96).
+- CI verde en 697ff0e (#96).
+- **Desde el 2 de noviembre el CI está en rojo** por 3 pruebas de `generation` que dependen de la fecha, también rojas en `generation` antes del PR #18. Ver la pregunta 12 (f).
 
 **9. ¿Los 960 perfiles históricos siguen idénticos?**
 - **Sí:**
@@ -93,6 +94,10 @@
 - **(c) Docker:** el entorno de esta sesión se detuvo dos veces; no afecta al código.
 - **(d) El PR #1**, abierto desde la rama `generation`, recibió la fusión; su CI (#95) está verde. No se ha tocado.
 - **(e) Pendientes funcionales del PR #17:** la revisión profesional, la lista de equipamiento y Flutter.
+- **(f) Pruebas de `generation` dependientes de la fecha:** `GeneracionReferencia*IT`, `ValidacionMultisemanaIT` y `Usuario31ReproduccionIT` usan `LocalDate.now()` y fallan desde el lunes 2026-11-02, en `generation` y en el PR #17.
+  - **Arreglo propuesto:** fijar la semana de referencia; probado en local, 60/60.
+  - **Requiere tu autorización:** es un cambio de pruebas en `generation`, que se haría con un PR nuevo o dentro del PR #17.
+  - **Mientras tanto,** el CI de `generation` y el del PR #17 seguirán en rojo.
 
 **13. ¿Qué criterios profesionales debemos aprobar?**
 - **A1** (plan aceptable);

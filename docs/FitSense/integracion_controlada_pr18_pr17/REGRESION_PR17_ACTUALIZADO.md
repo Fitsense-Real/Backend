@@ -38,6 +38,24 @@
 
 **CI de GitHub (`verify`) en el PR #17 (697ff0e, código 1e42519):** **success** (ejecución #96).
 
+### CI en rojo desde el 2 de noviembre (no es de este PR)
+
+**Qué falla:** el CI del commit siguiente, f913d4d (solo documentación), ejecutado el **lunes 2026-11-02**, falla con 8 pruebas:
+- 6 × `GeneracionReferencia*IT`;
+- `ValidacionMultisemanaIT`;
+- `Usuario31ReproduccionIT`.
+
+**Por qué no es de este PR:**
+- En local fallan igual en `generation` (bfd5756) **y en `generation` antes del PR #18 (afef98a)**.
+- Las tres clases calculan su semana con `LocalDate.now()`, y sus valores esperados corresponden a la semana del 2 de noviembre.
+- Es un **defecto de las pruebas de `generation`, dependiente de la fecha**. No viene de este PR ni de la integración.
+
+**Arreglo propuesto:**
+- fijar la semana de referencia (`LocalDate.of(2026, 11, 1)`) en `GeneracionReferenciaBase`, `ValidacionMultisemanaIT` y `Usuario31Base`;
+- probado en local: 60 pruebas, 0 fallos.
+
+**No aplicado:** queda pendiente de autorización. Está documentado en el comentario del PR #17.
+
 ## 3. Comparación con el PR #17 antes de la fusión (361d270 / 6d6e522)
 
 | | Antes | **Ahora** | Diferencia y causa |
