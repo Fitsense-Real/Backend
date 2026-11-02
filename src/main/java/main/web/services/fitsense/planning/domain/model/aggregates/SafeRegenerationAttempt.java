@@ -58,6 +58,10 @@ public class SafeRegenerationAttempt {
     @Column(name = "validation_problems")
     private String validationProblems;
 
+    /** V44_1: {@code NoFactibleReason} del NO_FACTIBLE del nivel 2; null si se publico o en filas anteriores. */
+    @Column(name = "reason_code", length = 40)
+    private String reasonCode;
+
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -81,6 +85,16 @@ public class SafeRegenerationAttempt {
         this.validationProblems = validationProblems;
     }
 
+    /** NO_FACTIBLE del nivel 2 con su codigo estable. */
+    public SafeRegenerationAttempt(Long userId, Long weeklyMetricId, Long measuredPlanId, LocalDate newWeekStartDate,
+                                   Long adaptationAttemptId, String adaptationRejection, List<Long> excluidos,
+                                   String validationProblems,
+                                   main.web.services.fitsense.planning.domain.model.valueobjects.NoFactibleReason codigo) {
+        this(userId, weeklyMetricId, measuredPlanId, newWeekStartDate, adaptationAttemptId, adaptationRejection,
+                excluidos, Outcome.NO_FACTIBLE, null, validationProblems);
+        this.reasonCode = codigo == null ? null : codigo.name();
+    }
+
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
     public Long getWeeklyMetricId() { return weeklyMetricId; }
@@ -93,5 +107,6 @@ public class SafeRegenerationAttempt {
     public Outcome getOutcome() { return outcome; }
     public Long getResultingPlanId() { return resultingPlanId; }
     public String getValidationProblems() { return validationProblems; }
+    public String getReasonCode() { return reasonCode; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
 }

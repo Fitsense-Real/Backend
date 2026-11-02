@@ -96,7 +96,8 @@ public class AdaptationEvidenceMapper {
                     decision, status, null, hechos.aiCalls(),
                     senaladas, intervenciones, List.of(), List.of(), List.of(),
                     hechos.conservationReportJson(), motivo(resultado),
-                    hechos.observedAdherencePct(), hechos.registrationCoveragePct());
+                    hechos.observedAdherencePct(), hechos.registrationCoveragePct(), List.of(),
+                    resultado.codigos().stream().map(Enum::name).toList());
 
         // V34 (§12.4): la sesion publicada del paso es EXACTAMENTE la propuesta.
         // Si no, no se registra nada, y la transaccion de publicacion se deshace.

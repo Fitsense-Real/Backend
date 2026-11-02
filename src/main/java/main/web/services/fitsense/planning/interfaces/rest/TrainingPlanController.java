@@ -53,6 +53,9 @@ public class TrainingPlanController {
     private final PublishedPlanSafetyService publishedPlanSafety;
     private final PlanLimitationsService planLimitations;
     private final main.web.services.fitsense.planning.application.internal.queryservices.AdaptationOutcomeQueryService adaptaciones;
+    /** Zona del usuario y reloj: «hoy» es el dia LOCAL del usuario, no el del servidor (cierre definitivo, 2.4). */
+    private final main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalIamService iam;
+    private final java.time.Clock reloj;
 
     public TrainingPlanController(WeeklyTrainingPlanQueryService queryService,
                                   WeeklyTrainingPlanCommandService commandService,
@@ -61,7 +64,12 @@ public class TrainingPlanController {
                                   PublishedPlanSafetyService publishedPlanSafety,
                                   PlanLimitationsService planLimitations,
                                   main.web.services.fitsense.planning.application.internal.queryservices
-                                          .AdaptationOutcomeQueryService adaptaciones) {
+                                          .AdaptationOutcomeQueryService adaptaciones,
+                                  main.web.services.fitsense.planning.application.internal.outboundservices.acl
+                                          .ExternalIamService iam,
+                                  org.springframework.beans.factory.ObjectProvider<java.time.Clock> reloj) {
+        this.iam = iam;
+        this.reloj = reloj.getIfAvailable(java.time.Clock::systemUTC);
         this.queryService = queryService;
         this.commandService = commandService;
         this.externalCatalogService = externalCatalogService;
@@ -78,7 +86,9 @@ public class TrainingPlanController {
 
         // Si el primer plan empieza el lunes que viene (se genero a mitad de
         // semana), el vigente de hoy no existe todavia: se devuelve ese.
-        var hoy = LocalDate.now();
+        // «Hoy» en la zona del usuario: con el servidor en UTC, un usuario de Lima el domingo despues de las 19:00
+        // ya estaria en «lunes» y no encontraria la semana que esta terminando (antes: LocalDate.now() del servidor).
+        var hoy = LocalDate.now(reloj.withZone(iam.timezoneOf(principal.getUserId())));
         return queryService.handle(new GetActivePlanQuery(principal.getUserId(), hoy))
                 .or(() -> queryService.handle(new GetActivePlanQuery(principal.getUserId(), hoy.plusWeeks(1))))
                 .map(this::toResource)
