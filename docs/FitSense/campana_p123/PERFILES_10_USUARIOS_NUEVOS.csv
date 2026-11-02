@@ -1,0 +1,12 @@
+cohorte,usuario,user_id_prueba,objetivo,nivel,dias_disponibles,dias_iso,n_dias,tope_nivel,minutos,minimo_P01,lugar,equipamiento,ejercicios_bloqueados,restricciones,nota
+FITSENSE_STRESS_P123_COHORT_02,N01,2,GAIN_MUSCLE,INTERMEDIATE,Martes;Sabado,"2,6",2,6,30,15,GYM,"body weight,dumbbell,barbell,cable,leverage machine,bench,band",,todas permitidas,Candidato principal a retirada y reincorporacion
+FITSENSE_STRESS_P123_COHORT_02,N02,3,GAIN_MUSCLE,ADVANCED,Lunes;Martes;Jueves;Sabado;Domingo,"1,2,4,6,7",5,6,60,15,HOME,"body weight,dumbbell,band",,todas permitidas,Progresion exigente y fatiga
+FITSENSE_STRESS_P123_COHORT_02,N03,4,LOSE_WEIGHT,BEGINNER,Lunes a domingo,"1,2,3,4,5,6,7",7,4,30,30,HOME,"body weight,band",,sin alto impacto,"7 dias disponibles, tope 4"
+FITSENSE_STRESS_P123_COHORT_02,N04,5,LOSE_WEIGHT,INTERMEDIATE,Lunes;Martes;Miercoles;Viernes;Sabado;Domingo,"1,2,3,5,6,7",6,6,45,30,GYM,"body weight,dumbbell,barbell,cable,leverage machine,bench,band",293 burpee;404 cable pulldown bicep curl;1133 run,todas permitidas,Reprogramacion dificil; bloqueos fijados tras inspeccionar el catalogo
+FITSENSE_STRESS_P123_COHORT_02,N05,6,INCREASE_STRENGTH,BEGINNER,Domingo,7,1,4,60,15,HOME,"body weight,dumbbell,band",,todas permitidas,Una sesion semanal
+FITSENSE_STRESS_P123_COHORT_02,N06,7,INCREASE_STRENGTH,ADVANCED,Lunes;Miercoles;Viernes;Sabado,"1,3,5,6",4,6,60,15,GYM,"body weight,dumbbell,barbell,cable,leverage machine,bench,band",,sin brazos por encima de la cabeza,Dolor en S4; IA simulada invalida
+FITSENSE_STRESS_P123_COHORT_02,N07,8,GENERAL_FITNESS,BEGINNER,Miercoles,3,1,4,30,30,HOME,body weight,,sin alto impacto,Nuevo minimo de 30 (y prueba negativa de 15)
+FITSENSE_STRESS_P123_COHORT_02,N08,9,GENERAL_FITNESS,INTERMEDIATE,Lunes;Jueves;Domingo,"1,4,7",3,6,45,30,GYM,"body weight,dumbbell,barbell,cable,leverage machine,bench,band",,sin rodillas ni suspension,Dolor en S2 y reactivacion en S7
+FITSENSE_STRESS_P123_COHORT_02,N09,10,GAIN_MUSCLE,INTERMEDIATE,Miercoles;Domingo,"3,7",2,6,30,15,GYM,"body weight,dumbbell,barbell,cable,leverage machine,bench,band",,todas permitidas,Segundo candidato a reincorporacion
+FITSENSE_STRESS_P123_COHORT_02,N10,11,LOSE_WEIGHT,INTERMEDIATE,Martes a domingo,"2,3,4,5,6,7",6,6,30,30,GYM,"body weight,dumbbell,barbell,cable,leverage machine,bench,band",,todas permitidas,Frecuencia alta y sesiones cortas
+FITSENSE_STRESS_P123_COHORT_02,N07_NEG,(sin perfil),GENERAL_FITNESS,BEGINNER,Miercoles,3,1,4,15,30,HOME,body weight,,sin alto impacto,Prueba negativa de P-01: rechazado antes de generar

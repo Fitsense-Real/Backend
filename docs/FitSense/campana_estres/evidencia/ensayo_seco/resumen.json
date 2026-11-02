@@ -1,0 +1,16 @@
+{
+  "modo" : "ensayo seco (sin IA)",
+  "duracion_min" : 0,
+  "llamadas" : 0,
+  "llamadas_con_error" : 0,
+  "predicciones_con_metricas" : 0,
+  "tokens_entrada" : 0,
+  "tokens_salida" : 0,
+  "coste_estimado_usd" : 0.0,
+  "latencia_media_ms" : 0,
+  "latencia_max_ms" : 0,
+  "motivo_parada" : null,
+  "violaciones_linaje" : 0,
+  "violaciones_comprobaciones" : [ ],
+  "cortes" : [ "U07: sin plan inicial (SIN_PLAN: PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 7. Ultimos problemas: V15: el entrenamiento del 2026-11-07 tiene enfoque FULL_BODY y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [chest, back, upper legs, shoulders, waist]. | V4: el entrenamiento del 2026-11-07 dura 21 minutos y el techo es 17.)" ]
+}

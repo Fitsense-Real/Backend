@@ -24,6 +24,9 @@
 		<java.version>21</java.version>
 		<springdoc.version>3.1.0</springdoc.version>
 		<jjwt.version>0.12.6</jjwt.version>
+		<!-- Destino deliberadamente inalcanzable (puerto 1 de loopback) que
+		     surefire y failsafe imponen a spring.datasource.url. -->
+		<fitsense.bd.bloqueada>jdbc:postgresql://127.0.0.1:1/bloqueada-por-maven</fitsense.bd.bloqueada>
 	</properties>
 
 	<dependencies>
@@ -160,6 +163,23 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- PostgreSQL efimero para las pruebas de integracion (*IT). Sin
+		     <version>: las gestiona el BOM de Spring Boot. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -182,7 +202,88 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<!-- PRUEBAS UNITARIAS (mvn test). Sin base de datos y sin Replicate.
+			     application.properties apunta a Neon de PRODUCCION con Flyway
+			     activo; si alguna prueba levantara Spring aqui y existiera
+			     DB_PASSWORD, migraria produccion. Por eso:
+			       - los *IT no corren en esta fase;
+			       - la URL y la clave se fijan a un destino inalcanzable, que
+			         gana a application.properties y a DB_PASSWORD;
+			       - igual para spring.flyway.url y spring.datasource.hikari.jdbc-url,
+			         que abren conexion por otra via, y SPRING_APPLICATION_JSON se
+			         vacia porque gana a las propiedades de sistema;
+			       - la IA queda apagada aunque FITSENSE_AI_ENABLED diga otra cosa.
+			     SpringBootEnSuiteUnitariaTest falla si un @SpringBootTest entra
+			     en esta fase, y BaseDeProduccionBloqueada (segunda capa, en
+			     src/test/resources/META-INF/spring.factories) aborta cualquier
+			     contexto cuyo DataSource o Flyway apunte al host de produccion. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
+					<systemPropertyVariables>
+						<spring.datasource.url>${fitsense.bd.bloqueada}</spring.datasource.url>
+						<spring.datasource.hikari.jdbc-url>${fitsense.bd.bloqueada}</spring.datasource.hikari.jdbc-url>
+						<spring.datasource.password>bloqueada</spring.datasource.password>
+						<spring.flyway.url>${fitsense.bd.bloqueada}</spring.flyway.url>
+						<spring.flyway.enabled>false</spring.flyway.enabled>
+						<fitsense.ai.enabled>false</fitsense.ai.enabled>
+					</systemPropertyVariables>
+					<!-- SPRING_APPLICATION_JSON gana a las propiedades de sistema:
+					     se vacia para que no pueda reintroducir una URL. -->
+					<environmentVariables>
+						<SPRING_APPLICATION_JSON>{}</SPRING_APPLICATION_JSON>
+					</environmentVariables>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- PRUEBAS DE INTEGRACION, solo de forma explicita:
+		         mvn verify -Pintegration
+		     Requiere Docker: FitsenseApplicationIT arranca la aplicacion entera
+		     contra un PostgreSQL efimero de Testcontainers y aplica V1..V33.
+		     Las IT de P2-D siguen apagadas salvo que se pase
+		     -Dfitsense.pruebas.url (y sus propios cerrojos). La misma URL
+		     inalcanzable de surefire es el valor por omision: cada IT tiene que
+		     declarar su base (@ServiceConnection o @DynamicPropertySource). -->
+		<profile>
+			<id>integration</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<systemPropertyVariables>
+								<spring.datasource.url>${fitsense.bd.bloqueada}</spring.datasource.url>
+								<spring.datasource.password>bloqueada</spring.datasource.password>
+								<fitsense.ai.enabled>false</fitsense.ai.enabled>
+							</systemPropertyVariables>
+							<!-- Flyway y Hikari NO se bloquean aqui: las IT de P2-D declaran
+							     su base con @DynamicPropertySource y Flyway la sigue. La
+							     guardia BaseDeProduccionBloqueada cubre esas vias. -->
+							<environmentVariables>
+								<SPRING_APPLICATION_JSON>{}</SPRING_APPLICATION_JSON>
+							</environmentVariables>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

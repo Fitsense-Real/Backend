@@ -8,13 +8,16 @@ import main.web.services.fitsense.adaptation.domain.model.commands.DecideWeeklyA
 import main.web.services.fitsense.adaptation.domain.model.commands.LinkResultingPlanCommand;
 import main.web.services.fitsense.adaptation.domain.model.commands.RecordInterventionOutcomeCommand;
 import main.web.services.fitsense.adaptation.domain.model.valueobjects.AdjustmentContext;
-import main.web.services.fitsense.adaptation.domain.services.AdjustmentDecisionTable;
+import main.web.services.fitsense.adaptation.domain.model.valueobjects.AdjustmentDecision;
+import main.web.services.fitsense.adaptation.domain.model.valueobjects.AdjustmentType;
+import main.web.services.fitsense.adaptation.domain.services.AdaptationOrderDecider;
 import main.web.services.fitsense.adaptation.domain.services.UserInterventionCommandService;
 import main.web.services.fitsense.adaptation.infrastructure.persistence.jpa.repositories.UserInterventionRepository;
 import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,24 +29,38 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
     private static final Logger log = LoggerFactory.getLogger(UserInterventionCommandServiceImpl.class);
 
     private final UserInterventionRepository interventionRepository;
-    private final AdjustmentDecisionTable decisionTable;
     private final ExternalAnalyticsService externalAnalyticsService;
     private final ExternalProfilingService externalProfilingService;
     private final ExternalPlanningService externalPlanningService;
     private final ExternalConfigurationService externalConfigurationService;
+    private final AdaptationOrderDecider adaptationOrderDecider;
+
+    /**
+     * Cobertura de registro minima para decidir una adaptacion.
+     * <p>
+     * Es una propiedad y no una constante porque el valor es PROVISIONAL y esta
+     * pendiente de aprobacion metodologica. Su sitio definitivo es la
+     * configuracion de calculo, que es donde viven los demas umbrales; vive
+     * aqui mientras se decide, para no gastar una version de configuracion en
+     * un numero que va a cambiar.
+     */
+    private final double coberturaMinimaPct;
 
     public UserInterventionCommandServiceImpl(UserInterventionRepository interventionRepository,
-                                              AdjustmentDecisionTable decisionTable,
                                               ExternalAnalyticsService externalAnalyticsService,
                                               ExternalProfilingService externalProfilingService,
                                               ExternalPlanningService externalPlanningService,
-                                              ExternalConfigurationService externalConfigurationService) {
+                                              ExternalConfigurationService externalConfigurationService,
+                                              AdaptationOrderDecider adaptationOrderDecider,
+                                              @Value("${fitsense.adaptation.min-registration-coverage-pct:50.0}")
+                                              double coberturaMinimaPct) {
         this.interventionRepository = interventionRepository;
-        this.decisionTable = decisionTable;
         this.externalAnalyticsService = externalAnalyticsService;
         this.externalProfilingService = externalProfilingService;
         this.externalPlanningService = externalPlanningService;
         this.externalConfigurationService = externalConfigurationService;
+        this.adaptationOrderDecider = adaptationOrderDecider;
+        this.coberturaMinimaPct = coberturaMinimaPct;
     }
 
     /**
@@ -98,6 +115,11 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
                 .map(WeeklyMetricsView::weightedAdherencePct)
                 .orElse(null);
 
+        // Lo que paso sesion a sesion, con las senaladas ya marcadas por el
+        // identificador de analytics con los umbrales del instrumento.
+        var sessionOutcomes = externalAnalyticsService
+                .fetchSessionOutcomes(command.userId(), week.startDate());
+
         var context = new AdjustmentContext(
                 metrics.weightedAdherencePct(),
                 metrics.dominantSkipReason(),
@@ -105,15 +127,52 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
                 baselineVolume,
                 previousDays, previousMinutes, previousDifficulty,
                 previousAdherence,
-                metrics.averageSessionRpe());
+                metrics.averageSessionRpe(),
+                sessionOutcomes,
+                metrics.recordedWorkouts() == null ? 0 : metrics.recordedWorkouts(),
+                metrics.scheduledWorkouts(),
+                metrics.observedAdherencePct(),
+                metrics.registrationCoveragePct());
 
-        var decision = decisionTable.decide(context, configuration.params());
+        // LA ORDEN YA DECIDE. Hasta el 21/10/2026 esto se calculaba «en
+        // observacion» y se tiraba, y lo que llegaba al generador era la
+        // decision porcentual. El comentario que habia aqui fijaba la condicion
+        // de activacion: «se activara junto con la validacion de conservacion
+        // que sustituye a V8, porque sin ella una orden localizada produciria un
+        // plan que V8 rechazaria por no haber movido el volumen». Esa condicion
+        // se cumplio: V8C -ConservationValidator- esta integrada desde P2-B-1.
+        //
+        // Mientras estuvo en observacion, PlanAdjustment.targetedSessions
+        // llegaba vacio SIEMPRE, asi que adapta() era falso SIEMPRE y el camino
+        // de adaptacion localizada era inalcanzable desde el ciclo semanal por
+        // mucho que estuviera construido.
+        var orden = adaptationOrderDecider.decide(context, configuration.params(),
+                coberturaMinimaPct);
+        log.info("ORDEN_ADAPTACION usuario {} semana {}: {} · observada {} · cobertura {} · "
+                        + "registradas {}/{}",
+                command.userId(), week.startDate(), orden.describe(),
+                orden.observedAdherencePct(), orden.registrationCoveragePct(),
+                orden.recordedWorkouts(), orden.scheduledWorkouts());
+
+        // LA TABLA DE DECISION PORCENTUAL YA NO ACTUA. No se la llama, y por eso
+        // no se la inyecta: el mecanismo que reduce un porcentaje del volumen es
+        // irreconciliable con la dosis fija de 4D, y la direccion aprobada es
+        // «solo se adapta cuando hay baja adherencia; si no, no se hace nada».
+        // La clase AdjustmentDecisionTable se conserva -no se borra- porque es
+        // el mecanismo contra el que se compara en la tesis, pero fuera del
+        // flujo.
+        //
+        // Lo que se persiste en user_interventions es NONE / 0, que es la
+        // verdad: no se aplico ningun ajuste porcentual. La adaptacion
+        // localizada se registra entera en plan_adaptation_attempts (V32), que
+        // existe para eso.
+        var decision = sinAjustePorcentual(orden.reason());
 
         // uq_ui_metric: una sola fila por semana medida. Si ya existe se devuelve
-        // con la decision recalculada, que es identica por ser determinista.
+        // con la orden recalculada, que es identica por ser determinista.
         var existing = interventionRepository.findByWeeklyMetricId(metrics.weeklyMetricId());
         if (existing.isPresent())
-            return Optional.of(new AdjustmentResult(existing.get(), decision));
+            return Optional.of(new AdjustmentResult(existing.get(), decision, orden));
 
         var intervention = new UserIntervention(
                 command.userId(),
@@ -127,7 +186,46 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
                 previousDays, previousMinutes, previousDifficulty,
                 configuration.version());
 
-        return Optional.of(new AdjustmentResult(interventionRepository.save(intervention), decision));
+        return Optional.of(new AdjustmentResult(
+                interventionRepository.save(intervention), decision, orden));
+    }
+
+    /**
+     * Lo que se escribe en {@code user_interventions} ahora que el mecanismo
+     * porcentual no actua: ningun tipo de ajuste y cero por ciento.
+     * <p>
+     * NONE Y NO UNA LISTA VACIA, por dos motivos que apuntan al mismo sitio: el
+     * constructor de {@code UserIntervention} exige al menos un tipo, y
+     * {@code ck_ui_types_size} de V6 exige entre 1 y 4. {@code NONE} ademas
+     * tiene que ir solo, por {@code ck_ui_none_alone}.
+     * <p>
+     * El motivo SI se conserva: viene de la orden, asi que la fila sigue
+     * diciendo por que se decidio lo que se decidio aunque no haya porcentaje
+     * que registrar.
+     * <p>
+     * Y EL MENSAJE TAMBIEN, PORQUE ES OBLIGATORIO. {@code UserIntervention}
+     * hace {@code this.messageShown = decision.message()} y la columna
+     * {@code message_shown} de V6 es {@code VARCHAR(500) NOT NULL}: un
+     * {@code null} aqui no rompe ninguna prueba de traduccion y revienta al
+     * guardar la primera intervencion. Se usa el motivo de la orden -el
+     * javadoc del metodo que lo producia antes decia «el mensaje que ve el
+     * participante: explica el porque, no solo el que», y el motivo explica
+     * exactamente eso-, con un respaldo explicito si llegara vacio. Lo que NO
+     * se hace es inventar un texto de reduccion porcentual que no ocurrio.
+     *
+     * @param motivo el {@code reason} de la orden. Puede venir vacio.
+     */
+    static AdjustmentDecision sinAjustePorcentual(String motivo) {
+        String mensaje = motivo == null || motivo.isBlank()
+                ? "Esta semana se mantiene la prescripcion anterior."
+                : motivo;
+
+        return new AdjustmentDecision(
+                java.util.List.of(AdjustmentType.NONE),
+                0, 0, 0,
+                0.0, 0.0,
+                null, null, null,
+                motivo, null, mensaje);
     }
 
     /**

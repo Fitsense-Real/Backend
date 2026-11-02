@@ -68,7 +68,10 @@ public class WeeklyCycleScheduler {
 
         for (Long userId : participants) {
             try {
-                weeklyCycleService.runFor(userId, measuredWeek.startDate(), newWeek.startDate());
+                var r = weeklyCycleService.ejecutar(userId, measuredWeek.startDate(), newWeek.startDate());
+                if (r.estado() != main.web.services.fitsense.orchestration.infrastructure.locking.CicloSemanalBloqueo
+                        .Estado.EJECUTADO)
+                    log.warn("Ciclo semanal del usuario {} no ejecutado ({}); se reintentara.", userId, r.estado());
             } catch (RuntimeException e) {
                 // Aislar por participante: un perfil incompleto o un catalogo sin
                 // material no puede dejar sin plan al resto de la cohorte.

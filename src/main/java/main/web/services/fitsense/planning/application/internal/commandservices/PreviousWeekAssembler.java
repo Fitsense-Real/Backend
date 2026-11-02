@@ -34,15 +34,43 @@ public class PreviousWeekAssembler {
     private final PlannedWorkoutRepository plannedWorkoutRepository;
     private final ExternalCatalogService externalCatalogService;
     private final ExternalExecutionService externalExecutionService;
+    private final ReduccionAutorizadaResolver reduccionAutorizadaResolver;
+    private final DosisLinajeResolver dosisLinajeResolver;
+    private final boolean dosisHeredadas;
 
     public PreviousWeekAssembler(WeeklyTrainingPlanRepository planRepository,
                                  PlannedWorkoutRepository plannedWorkoutRepository,
                                  ExternalCatalogService externalCatalogService,
-                                 ExternalExecutionService externalExecutionService) {
+                                 ExternalExecutionService externalExecutionService,
+                                 ReduccionAutorizadaResolver reduccionAutorizadaResolver) {
+        this(planRepository, plannedWorkoutRepository, externalCatalogService, externalExecutionService,
+                reduccionAutorizadaResolver, null, false, false);
+    }
+
+    /**
+     * @param progresion  {@code fitsense.adaptation.progression.enabled}
+     * @param capacidades {@code fitsense.adaptation.capability-validation.enabled}.
+     *                    Con los dos apagados no se calcula ninguna dosis heredada.
+     */
+    @org.springframework.beans.factory.annotation.Autowired
+    public PreviousWeekAssembler(WeeklyTrainingPlanRepository planRepository,
+                                 PlannedWorkoutRepository plannedWorkoutRepository,
+                                 ExternalCatalogService externalCatalogService,
+                                 ExternalExecutionService externalExecutionService,
+                                 ReduccionAutorizadaResolver reduccionAutorizadaResolver,
+                                 DosisLinajeResolver dosisLinajeResolver,
+                                 @org.springframework.beans.factory.annotation.Value(
+                                         "${fitsense.adaptation.progression.enabled:false}") boolean progresion,
+                                 @org.springframework.beans.factory.annotation.Value(
+                                         "${fitsense.adaptation.capability-validation.enabled:false}")
+                                 boolean capacidades) {
+        this.dosisLinajeResolver = dosisLinajeResolver;
+        this.dosisHeredadas = dosisLinajeResolver != null && (progresion || capacidades);
         this.planRepository = planRepository;
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.externalCatalogService = externalCatalogService;
         this.externalExecutionService = externalExecutionService;
+        this.reduccionAutorizadaResolver = reduccionAutorizadaResolver;
     }
 
     public PreviousWeekSummary assemble(Long userId, LocalDate previousWeekStart,
@@ -91,6 +119,7 @@ public class PreviousWeekAssembler {
             for (var exercise : workout.exercisesView()) {
                 var done = byPlannedExercise.get(exercise.getId());
                 prescriptions.add(new PreviousWeekSummary.PrescriptionOutcome(
+                        workout.getId(),
                         workout.getScheduledDate(),
                         exercise.getExerciseId(),
                         names.getOrDefault(exercise.getExerciseId(), null),
@@ -107,7 +136,8 @@ public class PreviousWeekAssembler {
                         done == null || done.status() == null
                                 ? PreviousWeekSummary.NOT_RECORDED : done.status(),
                         done == null ? null : done.skipReason(),
-                        workout.getStatus().name()));
+                        workout.getStatus().name(),
+                        exercise.getRestSeconds()));
             }
         }
 
@@ -116,19 +146,51 @@ public class PreviousWeekAssembler {
 
         return new PreviousWeekSummary(adherencePct, averageRpe, totalVolume,
                 bodyPartDistribution, List.copyOf(workouts), List.copyOf(prescriptions),
-                List.copyOf(usedLast7Days));
+                List.copyOf(usedLast7Days), reduccionAutorizadaResolver.resolver(activeWorkouts),
+                dosisHeredadas ? dosisLinajeResolver.resolver(activeWorkouts) : Map.of());
     }
 
     private static PreviousWeekSummary.WorkoutOutcome toWorkoutOutcome(PlannedWorkout workout,
                                                                        WorkoutResultView result) {
         return new PreviousWeekSummary.WorkoutOutcome(
+                workout.getId(),
                 workout.getScheduledDate(),
                 workout.getFocusCode().name(),
                 workout.getStatus().name(),
                 workout.getSkipReason() == null ? null : workout.getSkipReason().name(),
-                result != null,
+                hayRegistro(result != null, workout.getStatus()),
                 result == null ? null : result.sessionStatus(),
                 result == null ? null : result.sessionRpe(),
-                result == null ? null : result.completionPercentage());
+                result == null ? null : result.completionPercentage(),
+                workout.getWorkoutName(),
+                workout.getExpectedDurationMinutes());
+    }
+
+    /**
+     * Si de esa sesion HAY INFORMACION. Alineado con V30.
+     * <p>
+     * Antes era {@code result != null}: solo contaba como registrada si existia
+     * un resultado de ejecucion. Pero una OMISION DECLARADA es informacion: la
+     * persona nos dijo que no entreno. {@code WeeklyMetricsCalculator} ya lo
+     * contaba asi desde V30, y {@code planning} no, de modo que el mismo
+     * concepto significaba dos cosas en dos modulos.
+     * <p>
+     * Importa porque este valor viaja al prompt por dos caminos -el bloque de
+     * sesiones senaladas de la adaptacion y {@code previous_week.workouts} de la
+     * generacion inicial-, y la distincion que se perdia es justo la que decide
+     * si adaptar: una omision declarada no es una sesion desconocida.
+     * <p>
+     * Se compara con la CONSTANTE del enum, no con la cadena "SKIPPED": si
+     * manana se renombra, esto deja de compilar en vez de devolver false en
+     * silencio.
+     * <p>
+     * No es privado para que la prueba pueda recorrer la tabla de verdad sin
+     * montar una entidad JPA.
+     *
+     * @param conResultado si existe un {@link WorkoutResultView} de esa sesion
+     * @param status       el estado del previsto; nunca null en esta ruta
+     */
+    static boolean hayRegistro(boolean conResultado, WorkoutStatus status) {
+        return conResultado || status == WorkoutStatus.SKIPPED;
     }
 }

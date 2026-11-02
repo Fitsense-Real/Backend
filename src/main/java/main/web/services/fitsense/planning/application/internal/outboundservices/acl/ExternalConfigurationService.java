@@ -30,6 +30,16 @@ public class ExternalConfigurationService {
      * es anterior y no trae el bloque: en ese caso las validaciones 16 y 17 se
      * saltan, que es preferible a inventar limites.
      */
+    /** Los parametros de ajuste vigentes (umbral bueno, pasos de progresion y recuperacion). */
+    public main.web.services.fitsense.configuration.domain.model.valueobjects.CalculationParams.Adjustment adjustment() {
+        return configurationContextFacade.fetchActive().params().adjustment();
+    }
+
+    /** V44: version de la fila activa de calculation_configs (para la traza de la politica). */
+    public String versionCalculo() {
+        return configurationContextFacade.fetchActive().version();
+    }
+
     public PrescriptionParams prescriptionParams() {
         return configurationContextFacade.fetchActive().params().prescription();
     }

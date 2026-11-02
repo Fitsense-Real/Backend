@@ -14,5 +14,12 @@ public record PlannedWorkoutResource(
         String status,
         String skipReason,
         OffsetDateTime expiresAt,
-        List<PlannedExerciseResource> exercises
+        List<PlannedExerciseResource> exercises,
+        /**
+         * La sesion contiene un ejercicio que hoy no es seguro: no se puede
+         * iniciar (el backend lo rechaza) y requiere correccion.
+         */
+        boolean safetyBlocked,
+        /** El aviso para mostrar cuando safetyBlocked; null si no. */
+        String safetyBlockMessage
 ) {}

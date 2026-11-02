@@ -1,0 +1,2 @@
+CAMBIA_PERFIL dias NO_CHANGE/NO_FACTIBLE {"pasos": [], "problems": [], "aplicadas": [], "sin_efecto": [], "conservadas": [1, 2, 3], "progresadas": [], "sustituciones": [], "pasos_bloqueados": [], "correcciones_del_backend": [], "fechas_con_duracion_reducible": []}
+CAMBIA_PERFIL equipamiento NO_CHANGE/NO_FACTIBLE {"pasos": [], "problems": [], "aplicadas": [], "sin_efecto": [], "conservadas": [4, 5, 6], "progresadas": [], "sustituciones": [], "pasos_bloqueados": [], "correcciones_del_backend": [], "fechas_con_duracion_reducible": []}

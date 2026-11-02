@@ -1,0 +1,8 @@
+637|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Tumbado boca abajo en un banco
+637|CONFIRMADO|BAJA|requires_floor|true|false|En banco (restriccion de mas)
+786|CONFIRMADO|BAJA|equipment|dumbbell + plyo box o step|dumbbell + bench, plyo box o step|El GIF usa un banco, que no figura entre las alternativas
+1110|CONFIRMADO|MEDIA|equipment|body weight|bench o cajon|Pie trasero sobre un cajon
+1237|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado en el suelo bajo la barra de la multipower
+224|CONFIRMADO|ALTA|requires_overhead|false|true|Press de la barra por encima de la cabeza
+224|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench|Banco declinado
+224|CONFIRMADO|BAJA|requires_floor|true|false|En banco (restriccion de mas)

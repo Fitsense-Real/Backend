@@ -25,7 +25,12 @@ public class CreateUserProfileCommandFromResourceAssembler {
                 resource.sessionMinutes(),
                 resource.equipmentCodes(),
                 resource.blockedExerciseIds(),
-                resource.healthNotes()
+                resource.healthNotes(),
+                resource.allowHighImpact(),
+                resource.allowFloorExercises(),
+                resource.allowKneelingExercises(),
+                resource.allowHangingExercises(),
+                resource.allowOverheadExercises()
         );
     }
 }

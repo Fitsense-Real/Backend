@@ -1,0 +1,3 @@
+867|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|1-2|Elevacion oblicua de rodillas colgado
+871|PENDIENTE_CRITERIO|BAJA|difficulty_level|1|2 (probable)|Piernas rectas con giro, colgado
+927|PROBABLE|MEDIA|body_part|waist|shoulders|Press inclinado con kettlebell
