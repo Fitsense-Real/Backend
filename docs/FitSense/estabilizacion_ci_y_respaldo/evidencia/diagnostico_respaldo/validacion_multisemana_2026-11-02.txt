@@ -1,0 +1,2 @@
+[WARNING] Tests run: 57, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 113.5 s -- in Validacion multisemana: escenarios humanos con el ciclo real, en los cuatro objetivos
+[INFO] Tests run: 57, Failures: 0, Errors: 0, Skipped: 2
