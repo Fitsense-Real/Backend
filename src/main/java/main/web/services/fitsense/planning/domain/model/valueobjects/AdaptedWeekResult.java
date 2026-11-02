@@ -31,7 +31,17 @@ public record AdaptedWeekResult(Estado estado,
                                 List<DerivedWorkout> semana,
                                 GenerationSource source,
                                 ConservationReport conservacion,
-                                List<String> problemas) {
+                                List<String> problemas,
+                                List<NoFactibleReason> codigos) {
+
+    /**
+     * Sin codigo de motivo: los caminos publicables y los anteriores a la fase 2.1. Un NO_FACTIBLE debe llevar su
+     * codigo (lo pone quien decide, ver {@link #noFactible(Motivo, ConservationReport, List, List)}).
+     */
+    public AdaptedWeekResult(Estado estado, Motivo motivo, List<DerivedWorkout> semana, GenerationSource source,
+                             ConservationReport conservacion, List<String> problemas) {
+        this(estado, motivo, semana, source, conservacion, problemas, List.of());
+    }
 
     /**
      * POR QUE la semana quedo como quedo. Es un dato, no una deduccion.
@@ -84,6 +94,9 @@ public record AdaptedWeekResult(Estado estado,
             throw new IllegalArgumentException("Sin informe de conservacion no hay resultado.");
         semana = semana == null ? List.of() : List.copyOf(semana);
         problemas = problemas == null ? List.of() : List.copyOf(problemas);
+        codigos = codigos == null ? List.of() : List.copyOf(codigos);
+        if (estado == Estado.PUBLICABLE && !codigos.isEmpty())
+            throw new IllegalArgumentException("Publicable con codigo de no factible es una contradiccion: " + codigos);
 
         if (estado == Estado.PUBLICABLE && !problemas.isEmpty())
             throw new IllegalArgumentException(
@@ -123,5 +136,12 @@ public record AdaptedWeekResult(Estado estado,
                                                List<String> problemas) {
         return new AdaptedWeekResult(Estado.NO_FACTIBLE, motivo, List.of(), null,
                 conservacion, problemas);
+    }
+
+    /** NO_FACTIBLE con el codigo estable de la regla que lo decidio (en orden: el primero es el de fondo). */
+    public static AdaptedWeekResult noFactible(Motivo motivo, ConservationReport conservacion,
+                                               List<String> problemas, List<NoFactibleReason> codigos) {
+        return new AdaptedWeekResult(Estado.NO_FACTIBLE, motivo, List.of(), null,
+                conservacion, problemas, codigos);
     }
 }

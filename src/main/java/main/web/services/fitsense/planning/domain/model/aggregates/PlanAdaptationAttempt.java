@@ -116,6 +116,11 @@ public class PlanAdaptationAttempt {
     @Column(name = "rejection_reason")
     private String rejectionReason;
 
+    /** V44_1: codigos {@code NoFactibleReason} de la regla que decidio el NO_FACTIBLE; null en filas anteriores. */
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "reason_codes", columnDefinition = "varchar(40)[]")
+    private String[] reasonCodes;
+
     @Column(name = "observed_adherence_pct")
     private BigDecimal observedAdherencePct;
 
@@ -153,6 +158,7 @@ public class PlanAdaptationAttempt {
         fila.progressedSessions = ids(intento.progressedSessions());
         fila.conservationReport = intento.conservationReportJson();
         fila.rejectionReason = intento.rejectionReason();
+        fila.reasonCodes = intento.reasonCodes().isEmpty() ? null : intento.reasonCodes().toArray(String[]::new);
         fila.observedAdherencePct = intento.observedAdherencePct();
         fila.registrationCoveragePct = intento.registrationCoveragePct();
         return fila;
@@ -246,5 +252,10 @@ public class PlanAdaptationAttempt {
 
     public String getRejectionReason() {
         return rejectionReason;
+    }
+
+    /** Codigos {@code NoFactibleReason} (vacio si la fila no los tiene). */
+    public java.util.List<String> getReasonCodes() {
+        return reasonCodes == null ? java.util.List.of() : java.util.List.of(reasonCodes);
     }
 }
