@@ -206,19 +206,33 @@ class ValidacionMultisemanaIT {
                     + " planned_workout_exercises pwe ON pwe.planned_exercise_id = wse.planned_exercise_id JOIN"
                     + " planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ?"
                     + " AND wse.skip_reason = 'PAIN_OR_DISCOMFORT'", Long.class, plan));
+            long planMedido = plan;
             var publicado = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1));
             var ev = ultimo(u);
             traza.add("s" + (k + 2) + " " + ev.get("decision") + "/" + ev.get("status") + " " + ev.get("targeted_interventions"));
+            assertEquals(sec.intervenciones()[k], ev.get("targeted_interventions"), sec.nombre() + " " + traza);
+            var senaladas = String.valueOf(ev.get("targeted_interventions"));
+            // CASO C (D1, 02/11/2026): ante dolor, si no hay semana segura no se publica nada. No se exige una
+            // publicacion a cualquier coste: se exige NO_FACTIBLE con motivo, ningun plan activo para la semana y
+            // las exclusiones por dolor intactas. Sin dolor, una semana sin publicar sigue siendo un fallo.
+            if (publicado.isEmpty() && senaladas.contains("SEGURIDAD_ANTE_DOLOR")) {
+                assertEquals(List.of(), InvariantesRespaldo.sinPublicar(jdbc, u, S1.plusWeeks(k + 1), ultimoCompleto(u), dolieron),
+                        sec.nombre() + ": semana " + (k + 2) + " sin publicar " + traza);
+                System.out.println("MULTISEMANA " + objetivo + " · " + sec.nombre() + " · NO_FACTIBLE seguro · " + traza);
+                assertSinViolaciones();
+                return;
+            }
             assertTrue(publicado.isPresent(), sec.nombre() + ": semana " + (k + 2) + " sin publicar: " + traza + " " + ev);
             plan = publicado.get();
-            assertEquals(sec.intervenciones()[k], ev.get("targeted_interventions"), sec.nombre() + " " + traza);
             var despues = semana(plan);
-            var senaladas = String.valueOf(ev.get("targeted_interventions"));
-            // Sin orden, o con una orden que no cambia nada: la semana es identica.
+            // Sin orden, con una orden que no cambia nada, o RESPALDO: la semana es la medida (CASO A), salvo las
+            // sustituciones de seguridad que el codigo autoriza y traza en V32 (P-02 y P-03 nivel 1, SUST-SEG-1;
+            // CASO B con dolor). No una igualdad absoluta: la de antes contradecia «lo que dolio no vuelve» cuando el
+            // respaldo sustituia el ejercicio que dolio (DIAGNOSTICO_RESPALDO_MULTISEMANA.md, Resultado 2).
             if (senaladas.equals("{}") || senaladas.equals("{CONSERVAR}") || "SIN_EFECTO".equals(ev.get("status"))
                     || "RESPALDO".equals(ev.get("status"))) {
-                for (int i = 0; i < antes.size(); i++)
-                    assertEquals(antes.get(i).getValue(), despues.get(i).getValue(), sec.nombre() + " sesion " + i + " " + traza);
+                assertEquals(List.of(), InvariantesRespaldo.semanaConservada(jdbc, planMedido, plan,
+                        ultimoCompleto(u)), sec.nombre() + " " + traza);
                 assertEquals(minutosAntes, estructura(plan, 0), "mismas fechas y minutos " + traza);
             }
             // Nada se recorta sin una causa que lo autorice.
@@ -428,6 +442,13 @@ class ValidacionMultisemanaIT {
     private Map<String, Object> ultimo(long u) {
         return jdbc.queryForMap("SELECT decision, status, generation_source, ai_calls, targeted_interventions::text,"
                 + " progressed_sessions::text, conservation_report::text, adaptation_rule_version FROM plan_adaptation_attempts WHERE user_id = ?"
+                + " ORDER BY attempt_id DESC LIMIT 1", u);
+    }
+
+    /** La fila V32 con lo que necesitan las invariantes de la semana conservada. */
+    private Map<String, Object> ultimoCompleto(long u) {
+        return jdbc.queryForMap("SELECT decision, status, generation_source, targeted_interventions::text,"
+                + " conservation_report::text, rejection_reason FROM plan_adaptation_attempts WHERE user_id = ?"
                 + " ORDER BY attempt_id DESC LIMIT 1", u);
     }
 
