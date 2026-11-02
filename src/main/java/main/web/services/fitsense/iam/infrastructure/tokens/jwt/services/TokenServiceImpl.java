@@ -26,7 +26,7 @@ public class TokenServiceImpl implements BearerTokenService {
     private final long expirationMillis;
 
     public TokenServiceImpl(@Value("${authorization.jwt.secret}") String secret,
-                            @Value("${authorization.jwt.expiration-days:7}") int expirationDays) {
+                            @Value("${authorization.jwt.expiration.days:${authorization.jwt.expiration-days:7}}") int expirationDays) {
         var keyBytes = decodeSecret(secret);
         if (keyBytes.length < 32)
             throw new IllegalStateException(
