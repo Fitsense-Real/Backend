@@ -1,5 +1,6 @@
 package main.web.services.fitsense.orchestation;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -67,6 +68,8 @@ class C2ReproduccionN03IT {
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
     @MockitoBean ReplicateSessionFixGenerator ia;
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos. */
+    @MockitoBean main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
 
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlanningContextFacade planning;
@@ -204,6 +207,7 @@ class C2ReproduccionN03IT {
     }
 
     private void registrar(long u, long w, double fraccion, SkipReason motivoParcial, SkipReason marca, int rpe) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
         var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
                 + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
