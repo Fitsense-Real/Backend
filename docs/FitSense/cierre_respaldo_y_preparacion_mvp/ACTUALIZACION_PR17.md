@@ -31,5 +31,5 @@
 
 | | Resultado |
 |---|---|
-| CI `verify` en cc97045 | **success** |
-| Regresión local | Ver `REGRESION_FINAL.md` |
+| CI `verify` | **success** en cc97045, c00e6e7 y 379b768 |
+| Regresión local (cc97045) | 1.046 unitarias; integración 493/438/55; 4 baterías 223/225; 6 ciclos reales; 960 perfiles idénticos; REPLAY idéntica (`REGRESION_FINAL.md`) |
