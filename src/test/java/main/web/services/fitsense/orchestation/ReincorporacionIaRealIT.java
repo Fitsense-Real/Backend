@@ -5,6 +5,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -102,6 +103,10 @@ class ReincorporacionIaRealIT {
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos (ver RelojPruebas). */
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
+
     @MockitoSpyBean ReplicateSessionFixGenerator correcciones;
     @MockitoSpyBean ReplicateTrainingPlanGenerator generador;
 
@@ -121,7 +126,8 @@ class ReincorporacionIaRealIT {
     static final int MINUTOS = Integer.getInteger("fitsense.reincorporacion.minutos", 60);
     static final List<Short> DIAS = Arrays.stream(System.getProperty("fitsense.reincorporacion.dias", "1,3,5").split(","))
             .map(String::strip).map(Short::valueOf).toList();
-    static final LocalDate S1 = LocalDate.of(2026, 11, 2);
+    /** Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas). */
+    static final LocalDate S1 = RelojPruebas.SEMANA_REFERENCIA;
     static final boolean SECO = "seco".equals(System.getProperty("fitsense.reincorporacion.ia"));
     static final Path SALIDA = Path.of("target", (SECO ? "reincorporacion-seco" : "reincorporacion-ia")
             + "-" + OBJETIVO + "-" + MINUTOS + "-d" + DIAS.size());
@@ -518,6 +524,7 @@ class ReincorporacionIaRealIT {
                 Long.class, planId);
         for (int i = 0; i < ids.size(); i++) {
             long w = ids.get(i);
+            RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
             long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
             var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
                     + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
