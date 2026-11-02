@@ -1,5 +1,6 @@
 package main.web.services.fitsense.orchestation;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -49,6 +50,8 @@ import static org.mockito.Mockito.when;
 abstract class CicloRealPoliticaBase {
 
     @MockitoBean ReplicateSessionFixGenerator ia;
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos (ver RelojPruebas). */
+    @MockitoBean main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
 
     @Autowired UserProfileCommandService perfiles;
     @Autowired PlanningContextFacade planning;
@@ -60,7 +63,7 @@ abstract class CicloRealPoliticaBase {
     @Autowired PlanningPolicySelector selector;
     @Autowired JdbcTemplate jdbc;
 
-    static final LocalDate SEMANA = LocalDate.of(2026, 11, 2);
+    static final LocalDate SEMANA = RelojPruebas.SEMANA_REFERENCIA;
 
     abstract String jdbcUrl();
 
@@ -204,6 +207,7 @@ abstract class CicloRealPoliticaBase {
     }
 
     void hacer(long u, long w, short rpe) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long sesion = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
         for (var f : jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
                 + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
