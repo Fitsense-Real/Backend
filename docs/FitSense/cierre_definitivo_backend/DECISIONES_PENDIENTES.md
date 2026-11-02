@@ -4,7 +4,7 @@ Cada decisión está clasificada como en `IMPLEMENTACIONES_PENDIENTES_MVP.md`: *
 
 | # | Decisión | Clase | Opciones | Recomendación |
 |---|---|---|---|---|
-| D1 | Fusionar #22, #23, #24, #25 y #26 en `generation` | **[B]** | Todos / por partes | Todos en una tanda (#22 antes que #25) y etiqueta `backend-mvp-1.0`. Así se congela el contrato para Flutter |
+| D1 | ~~Fusionar #22, #23, #24, #25 y #26 en `generation`~~ **Hecho** (orden de integración final; etiqueta `backend-mvp-1.0`) | — | Todos / por partes | Todos en una tanda (#22 antes que #25) y etiqueta `backend-mvp-1.0`. Así se congela el contrato para Flutter |
 | D2 | Aprobar A1–A6 (formulario en `ESTADO_PR17_Y_EVALUACION.md` §2) | [E] | Tal cual / con cambios | Tal cual: es tu redacción, ya registrada con la huella del paquete |
 | D3 | Elegir 2 evaluadores, acordar el plazo y autorizar el envío del paquete ciego | [E] | — | Solo `revision_profesional/paquete_evaluador/` |
 | D4 | Ampliar a 12 planes cortos de C2-D | [E] | Sí / no | Solo si C2-D va a usarse con participantes |

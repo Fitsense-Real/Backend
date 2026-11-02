@@ -1,7 +1,7 @@
 # Contratos finales para Flutter
 
-**Referencia congelada propuesta:** `generation` **después de fusionar #22–#26**, con la etiqueta `backend-mvp-1.0` (a crear cuando los fusiones).
-- Hasta entonces, la referencia es el commit de integración local que se probó: `generation` 7c19703 más los 5 PR.
+**Referencia congelada:** la etiqueta **`backend-mvp-1.0`** de `generation`, con #22–#26 fusionados (`INTEGRACION_FINAL_Y_CONGELAMIENTO.md`).
+- Una diferencia con la versión de este documento anterior a la fusión: `dev-log` (código de recuperación en el log) solo se admite con el perfil `local` o `local-dev`.
 - Todos los cambios son **aditivos o correcciones de estado**: la app ya desarrollada (`feature/mvp-integracion-api`) no se rompe.
 
 **Convenciones:**

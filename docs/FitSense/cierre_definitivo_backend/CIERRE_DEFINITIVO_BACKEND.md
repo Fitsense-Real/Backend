@@ -1,6 +1,8 @@
 # Cierre definitivo del backend
 
-**Fecha:** 2026-11-02 · **Base:** `generation` 7c19703 · **PR abiertos de esta etapa (sin fusionar):** Fitsense-Real/Backend#22, #23, #24, #25 y #26 · **PR #17:** borrador, sin fusionar.
+**Fecha:** 2026-11-02 · **Base:** `generation` 7c19703 · **PR de esta etapa:** Fitsense-Real/Backend#22, #23, #24, #25 y #26 · **PR #17:** borrador, sin fusionar.
+
+> **Actualización tras la integración final (2026-11-02).** Los PR #22 a #26 están **fusionados** en `generation`, por ese orden; el último es `114eb89`. La regresión sobre el código integrado está en `INTEGRACION_FINAL_Y_CONGELAMIENTO.md`. La versión congelada es la etiqueta `backend-mvp-1.0`. Las respuestas de abajo se escribieron antes de fusionar; donde dicen «cuando se fusionen», esa condición ya se cumple.
 
 **Qué hay en este documento:** las respuestas de la orden y los estados A/B/C. Cada respuesta remite al documento que tiene el detalle; aquí no se repite.
 
@@ -8,9 +10,9 @@
 
 | Estado | Significado | Situación |
 |---|---|---|
-| **A · Técnicamente listo** | El código hace lo que dice el contrato, con pruebas y regresión | **Sí, con #22–#26 fusionados.** Regresión combinada en verde (`REGRESION_CIERRE_BACKEND.md`). La política histórica no cambia: 960 × 5 y REPLAY idénticos |
-| **B · Listo para integrar con Flutter** | Contratos congelados, entorno local reproducible, guía y ejemplos | **Sí, cuando fusiones #22–#26 y se etiquete la versión** (D1 en `DECISIONES_PENDIENTES.md`). Hasta entonces, el contrato congelado es el de esos 5 PR: `CONTRATOS_FINALES_PARA_FLUTTER.md`. Entorno: `GUIA_EJECUCION_LOCAL.md` |
-| **C · Habilitado para personas reales** | Desplegado, con datos reales y decisiones de operación tomadas | **No.** Depende de decisiones externas (abajo) |
+| **A · Técnicamente listo** | El código hace lo que dice el contrato, con pruebas y regresión | **Sí.** #22–#26 fusionados; regresión sobre el árbol final de `generation` en verde (`INTEGRACION_FINAL_Y_CONGELAMIENTO.md` §5). La política histórica no cambia: 960 perfiles y REPLAY idénticos |
+| **B · Listo para integrar con Flutter** | Contratos congelados, entorno local reproducible, guía y ejemplos | **Sí.** Contratos integrados en `generation`, etiqueta `backend-mvp-1.0`, perfil local seguro y documentación alineada con el código: `CONTRATOS_FINALES_PARA_FLUTTER.md` y `GUIA_EJECUCION_LOCAL.md`. No significa que Flutter se haya ejecutado |
+| **C · Habilitado para personas reales** | Desplegado, con datos reales y decisiones de operación tomadas | **No.** Sigue pendiente de seguridad operativa, evaluación profesional y autorizaciones (abajo, e `INTEGRACION_FINAL_Y_CONGELAMIENTO.md` §7) |
 
 **Bloquean C** (decisiones tuyas o de terceros, no trabajo de código pendiente de esta orden):
 1. autorizar el despliegue y confirmar la rama en el panel de Railway;
@@ -167,7 +169,7 @@ Recomendación: **no fusionarlo antes de la evaluación.**
 Restauración en `PRESERVACION_TRABAJO_FLUTTER.md`. **No se ha hecho trabajo móvil.**
 
 **18. ¿Qué es realmente bloqueante?**
-- Para A y B: **solo fusionar #22–#26** (sobre todo #23, #24 y #26) **y etiquetar la versión**. No queda código pendiente.
+- Para A y B: nada. **Hecho:** #22–#26 fusionados y versión etiquetada.
 - Para C: las decisiones listadas arriba.
 
 **19. ¿Qué puede esperar a después del MVP?**
@@ -180,7 +182,7 @@ Restauración en `PRESERVACION_TRABAJO_FLUTTER.md`. **No se ha hecho trabajo mó
 - Las políticas del PR #17 (tras la evaluación).
 - P-03 localizado, que sigue pospuesto.
 
-**20. ¿Podemos congelar los contratos y empezar Flutter sin tocar más el backend?** **Sí, en cuanto se fusionen #22–#26.**
+**20. ¿Podemos congelar los contratos y empezar Flutter sin tocar más el backend?** **Sí: #22–#26 ya están fusionados y congelados en `backend-mvp-1.0`.**
 - Esos cambios son aditivos y compatibles (`AdaptationOutcome` mantiene los 9 campos y el formato de error es el de siempre).
 - Lo que queda pendiente para C no cambia ningún contrato que Flutter use: la salud, la revocación y el correo son de operación o aditivos.
 

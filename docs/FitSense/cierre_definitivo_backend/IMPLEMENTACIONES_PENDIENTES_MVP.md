@@ -6,7 +6,9 @@
 - **[E]** experimental, pendiente de evaluación;
 - **[P]** mejora posterior al MVP.
 
-## 1. Implementado en esta etapa (PR abiertos, pendientes de tu revisión; **ninguno fusionado**)
+## 1. Implementado en esta etapa
+
+> **Actualización:** los cinco PR están **fusionados** en `generation` por el orden #22, #23, #24, #25 y #26, y congelados en `backend-mvp-1.0` (`INTEGRACION_FINAL_Y_CONGELAMIENTO.md`).
 
 | PR | Qué resuelve | Clase |
 |---|---|---|
@@ -22,7 +24,7 @@
 
 | # | Pendiente | Clase | Requiere |
 |---|---|---|---|
-| 1 | Fusionar #22–#26 y etiquetar la versión congelada (`backend-mvp-1.0`) | **[B]** | Tu aprobación |
+| 1 | ~~Fusionar #22–#26 y etiquetar la versión congelada (`backend-mvp-1.0`)~~ **Hecho** | — | — |
 | 2 | Recuperación del planificador semanal si se pierde el tick de las 03:00 (reinicio o despliegue) | [U] | Aprobar el diseño (ver `MATRIZ_CONTRATOS_API.md` fila 10) |
 | 3 | Comprobación de salud para Railway (Actuator solo con `health`, u otra ruta) | [U] | Decisión |
 | 4 | Revocación de sesiones: retirada del estudio, cambio de contraseña, cierre de sesión | [U] | Decisión de diseño |

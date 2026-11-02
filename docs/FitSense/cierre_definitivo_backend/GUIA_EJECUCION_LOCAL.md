@@ -1,6 +1,6 @@
 # Guía de ejecución local del backend
 
-**Requisito:** el perfil `local-dev`, de Fitsense-Real/Backend#26. Hasta que se fusione, ejecutar desde esa rama o desde la combinación de los PR.
+**Requisito:** el perfil `local-dev` (Fitsense-Real/Backend#26, ya fusionado en `generation`). Ejecutar desde la etiqueta `backend-mvp-1.0` o desde `generation`.
 
 **Material necesario:**
 - Java 21;

@@ -2,6 +2,8 @@
 
 **PR:** Fitsense-Real/Backend#17, **en borrador y sin fusionar**. Todos sus indicadores están apagados.
 
+> **Tras la integración final:** desde que se fusionó el #22, el PR #17 está en conflicto con `generation`, como se esperaba (línea `SOLO_ESQUEMA`). No se ha tocado en GitHub. Cuando se autorice, se le aplican los ajustes del §4 bis.
+
 ## 1. Dos decisiones distintas
 
 | Decisión | Qué la respalda | Estado |
