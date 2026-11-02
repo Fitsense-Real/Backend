@@ -54,7 +54,26 @@ public record AdaptationAttempt(Long userId,
                                 String rejectionReason,
                                 BigDecimal observedAdherencePct,
                                 BigDecimal registrationCoveragePct,
-                                List<Long> progressedSessions) {
+                                List<Long> progressedSessions,
+                                List<String> reasonCodes) {
+
+    /**
+     * Sin codigos de motivo (fase 2.1 del cierre definitivo): los estados publicados y las filas anteriores. Los
+     * codigos son {@link NoFactibleReason}; solo un estado que no publica puede llevarlos.
+     */
+    public AdaptationAttempt(Long userId, Long weeklyMetricId, Long sourcePlanId, LocalDate newWeekStartDate,
+                             Long resultingPlanId, AdaptationDecision decision, Status status,
+                             GenerationSource generationSource, short aiCalls, List<Long> targetedSessions,
+                             List<String> targetedInterventions, List<Long> appliedSessions,
+                             List<Long> noEffectSessions, List<Long> conservedSessions,
+                             String conservationReportJson, String rejectionReason,
+                             BigDecimal observedAdherencePct, BigDecimal registrationCoveragePct,
+                             List<Long> progressedSessions) {
+        this(userId, weeklyMetricId, sourcePlanId, newWeekStartDate, resultingPlanId, decision, status,
+                generationSource, aiCalls, targetedSessions, targetedInterventions, appliedSessions,
+                noEffectSessions, conservedSessions, conservationReportJson, rejectionReason,
+                observedAdherencePct, registrationCoveragePct, progressedSessions, List.of());
+    }
 
     /** Sin paso de progresion (V34): la forma de siempre. */
     public AdaptationAttempt(Long userId, Long weeklyMetricId, Long sourcePlanId, LocalDate newWeekStartDate,
@@ -88,6 +107,10 @@ public record AdaptationAttempt(Long userId,
         noEffectSessions = copia(noEffectSessions);
         conservedSessions = copia(conservedSessions);
         progressedSessions = copia(progressedSessions);
+        reasonCodes = reasonCodes == null ? List.of() : List.copyOf(reasonCodes);
+        if (status != null && status.publico() && !reasonCodes.isEmpty())
+            throw new IllegalArgumentException("Un " + status + " publica un plan: no lleva codigos de no factible "
+                    + reasonCodes + ".");
 
         exigir(userId != null, "el participante");
         exigir(weeklyMetricId != null, "la medicion de la semana");

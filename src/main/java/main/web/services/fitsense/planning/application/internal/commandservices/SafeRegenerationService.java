@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.planning.domain.model.valueobjects.NoFactibleReason;
 import main.web.services.fitsense.planning.domain.model.aggregates.PlanAdaptationAttempt;
 import main.web.services.fitsense.planning.domain.model.aggregates.SafeRegenerationAttempt;
 import main.web.services.fitsense.planning.domain.model.aggregates.SafeRegenerationAttempt.Outcome;
@@ -93,7 +94,8 @@ public class SafeRegenerationService {
         // Sin duplicar la semana: si ya hay un plan activo, no se regenera encima.
         if (planes.findByUserIdAndWeekStartDateAndStatus(userId, newWeekStart, PlanStatus.ACTIVE).isPresent())
             return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos,
-                    "Ya hay un plan activo para la semana del %s: P-03 no duplica la semana.".formatted(newWeekStart));
+                    "Ya hay un plan activo para la semana del %s: P-03 no duplica la semana.".formatted(newWeekStart),
+                    NoFactibleReason.PLAN_YA_ACTIVO);
 
         PreparedPlanGeneration preparada;
         PlanGenerationPipeline.Result generado;
@@ -102,7 +104,8 @@ public class SafeRegenerationService {
                     false, adherencia, rpe));
             generado = pipeline.runDeterministic(preparada.context(), preparada.divisor());
         } catch (main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException e) {
-            return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos, e.getMessage());
+            return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos, e.getMessage(),
+                    NoFactibleReason.SIN_SEMANA_GENERABLE);
         }
 
         // Comprobacion explicita, independiente de V1: nada de lo excluido en lo que se va a publicar.
@@ -110,7 +113,8 @@ public class SafeRegenerationService {
                 .map(PlanDraft.DraftExercise::exerciseId).filter(excluidos::contains).distinct().toList();
         if (!reaparecen.isEmpty())
             return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos,
-                    "El borrador regenerado trae ejercicios excluidos por dolor " + reaparecen + ": no se publica.");
+                    "El borrador regenerado trae ejercicios excluidos por dolor " + reaparecen + ": no se publica.",
+                    NoFactibleReason.EXCLUIDO_REAPARECE);
 
         // NO SE ANADE TRABAJO (auditoria del nivel 2, orden de cierre del PR #16). La regeneracion vuelve a las dosis
         // base y no conserva el linaje de la semana medida: tras una reduccion autorizada (fatiga) eso DESHACIA la
@@ -119,7 +123,9 @@ public class SafeRegenerationService {
         // de la semana medida, no hay alternativa segura con las reglas vigentes y queda NO_FACTIBLE.
         var masTrabajo = masTrabajoQueLaMedida(medida.measuredPlanId(), generado.draft());
         if (masTrabajo != null)
-            return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos, masTrabajo);
+            return registrarNoFactible(userId, medida, newWeekStart, intento, excluidos, masTrabajo,
+                    SIN_SEMANA_MEDIDA.equals(masTrabajo) ? NoFactibleReason.SEMANA_MEDIDA_NO_ENCONTRADA
+                            : NoFactibleReason.TRABAJO_SUPERIOR_AL_PERMITIDO);
 
         var plan = tx.execute(status -> {
             var guardado = comandos.persist(preparada, new GeneratedPlan(generado.draft(), generado.attempts()),
@@ -139,6 +145,8 @@ public class SafeRegenerationService {
      * El motivo, o null si la semana regenerada no sube ni las repeticiones ni los segundos totales planificados de
      * la semana medida (series x repeticiones y series x segundos, por separado, sin convertir uno en otro).
      */
+    static final String SIN_SEMANA_MEDIDA = "P-03 nivel 2: no se encuentra la semana medida para comparar el trabajo.";
+
     String masTrabajoQueLaMedida(Long planMedido, PlanDraft regenerada) {
         var medidaPlan = tx.execute(status -> planes.findById(planMedido).map(p -> {
             long r = 0, sg = 0;
@@ -150,7 +158,7 @@ public class SafeRegenerationService {
                 }
             return new long[]{r, sg};
         }).orElse(null));
-        if (medidaPlan == null) return "P-03 nivel 2: no se encuentra la semana medida para comparar el trabajo.";
+        if (medidaPlan == null) return SIN_SEMANA_MEDIDA;
         long r = 0, sg = 0;
         for (var w : regenerada.workouts())
             for (var e : w.exercises()) {
@@ -170,10 +178,11 @@ public class SafeRegenerationService {
     }
 
     private Optional<Long> registrarNoFactible(Long userId, MeasuredWeekView medida, LocalDate newWeekStart,
-                                               PlanAdaptationAttempt intento, List<Long> excluidos, String motivo) {
+                                               PlanAdaptationAttempt intento, List<Long> excluidos, String motivo,
+                                               NoFactibleReason codigo) {
         tx.executeWithoutResult(status -> regeneraciones.save(new SafeRegenerationAttempt(userId,
                 medida.weeklyMetricId(), medida.measuredPlanId(), newWeekStart, intento.getId(),
-                intento.getRejectionReason(), excluidos, Outcome.NO_FACTIBLE, null, motivo)));
+                intento.getRejectionReason(), excluidos, motivo, codigo)));
         log.error("REGENERACION_SEGURA_NO_FACTIBLE usuario {} semana {}: {}", userId, newWeekStart, motivo);
         return Optional.empty();
     }

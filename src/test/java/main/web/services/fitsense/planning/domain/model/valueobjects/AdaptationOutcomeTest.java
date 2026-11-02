@@ -81,10 +81,14 @@ class AdaptationOutcomeTest {
     }
 
     @Test
-    @DisplayName("contrato: los campos del recurso no cambian de nombre ni de orden")
+    @DisplayName("contrato: los campos del recurso no cambian de nombre ni de orden; los nuevos van detras")
     void camposDelContrato() {
+        var campos = java.util.Arrays.stream(AdaptationOutcome.class.getRecordComponents())
+                .map(java.lang.reflect.RecordComponent::getName).toList();
         assertEquals(List.of("attemptId", "weekStartDate", "resultingPlanId", "resultado", "estado", "decision",
-                "llamadasIa", "motivos", "sesiones"), java.util.Arrays.stream(AdaptationOutcome.class.getRecordComponents())
-                .map(java.lang.reflect.RecordComponent::getName).toList());
+                "llamadasIa", "motivos", "sesiones"), campos.subList(0, 9), "los nueve de siempre, igual");
+        // Fase 2.1 del cierre definitivo: solo aditivos (AdaptationOutcomeContratoTest prueba la compatibilidad JSON).
+        assertEquals(List.of("estadoPublicacion", "motivoCodigo", "motivoTexto", "codigos", "sesionAfectada",
+                "restricciones"), campos.subList(9, campos.size()));
     }
 }
