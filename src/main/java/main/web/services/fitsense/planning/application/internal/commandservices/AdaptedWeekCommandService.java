@@ -294,7 +294,7 @@ public class AdaptedWeekCommandService {
                 var informe = resultado.conservacion();
                 for (var motivo : bloqueados) informe = informe.conPasoBloqueado(motivo);
                 return new AdaptedWeekResult(resultado.estado(), resultado.motivo(), resultado.semana(),
-                        resultado.source(), informe, resultado.problemas());
+                        resultado.source(), informe, resultado.problemas(), resultado.codigos());
             }
             bloqueados.add("%s de la sesion %d (ejercicio %d): %s".formatted(paso.tipo(), paso.origen(),
                     paso.exerciseId(), resultado.problemas()));
@@ -305,7 +305,7 @@ public class AdaptedWeekCommandService {
         var informe = copia.conservacion();
         for (var motivo : bloqueados) informe = informe.conPasoBloqueado(motivo);
         return new AdaptedWeekResult(copia.estado(), copia.motivo(), copia.semana(), copia.source(),
-                informe, copia.problemas());
+                informe, copia.problemas(), copia.codigos());
     }
 
     private static Map<Long, CandidateExercise> porId(List<CandidateExercise> elegibles) {
@@ -386,7 +386,8 @@ public class AdaptedWeekCommandService {
             var notas = new java.util.ArrayList<>(r.conservacion().correccionesDelBackend());
             notas.add(main.web.services.fitsense.planning.domain.services.FactibilidadPreviaIA.NOTA + imposible.get());
             return new Intento(new AdaptedWeekResult(r.estado(), r.motivo(), r.semana(), r.source(),
-                    r.conservacion().conCorreccionesDelBackend(notas), r.problemas()), respaldo.snapshotJson(),
+                    r.conservacion().conCorreccionesDelBackend(notas), r.problemas(), r.codigos()),
+                    respaldo.snapshotJson(),
                     respaldo.llamadas());
         }
 

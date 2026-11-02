@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.domain.services;
 
+import main.web.services.fitsense.planning.domain.model.valueobjects.NoFactibleReason;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedWeekResult;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport;
@@ -299,13 +300,14 @@ public class AdaptedWeekProducer {
             if (!masTrabajo.isEmpty())
                 return AdaptedWeekResult.noFactible(AdaptedWeekResult.Motivo.RESPALDO_IA, ConservationReport.vacio(),
                         List.of("P-03: la sustitucion determinista de las sesiones %s sube el trabajo (%s); ante"
-                                .formatted(conSeguridad, masTrabajo) + " dolor no se anade trabajo."));
+                                .formatted(conSeguridad, masTrabajo) + " dolor no se anade trabajo."),
+                        List.of(NoFactibleReason.TRABAJO_SUPERIOR_AL_PERMITIDO));
             var notas = new ArrayList<>(r.conservacion().correccionesDelBackend());
             notas.add(NOTA_REGENERACION_SEGURA + "sesiones %s resueltas sin IA por sustitucion %s de %s"
                     .formatted(conSeguridad, SafetySubstitutionPolicy.REGLA, r.conservacion().sustituciones().stream()
                             .map(x -> x.quitado() + "->" + x.puesto()).toList()));
             return new AdaptedWeekResult(r.estado(), r.motivo(), r.semana(), r.source(),
-                    r.conservacion().conCorreccionesDelBackend(notas), r.problemas());
+                    r.conservacion().conCorreccionesDelBackend(notas), r.problemas(), r.codigos());
         }
 
         if (!conSeguridad.isEmpty())
@@ -313,7 +315,8 @@ public class AdaptedWeekProducer {
                     ConservationReport.vacio(), List.of(
                             ("Sin respuesta de la IA no se puede resolver el dolor de las sesiones %s:"
                                     + " conservarlas volveria a publicar el ejercicio que dolio.")
-                                    .formatted(conSeguridad)));
+                                    .formatted(conSeguridad)),
+                    List.of(NoFactibleReason.DOLOR_SIN_RESOLUCION_SEGURA));
 
         // Sin dolor, se conserva la semana entera. Las senaladas quedan como
         // conservadas: la adaptacion no ocurrio, y eso es un hecho que hay que
@@ -484,15 +487,22 @@ public class AdaptedWeekProducer {
         // Primero lo que no tuvo sustituto seguro: es el motivo de fondo, y los
         // V1 que provoca el ejercicio que se quedo son su consecuencia.
         var problemas = new ArrayList<>(sinSustituto);
-        problemas.addAll(informe.problems());
-        problemas.addAll(estricta.revisar(borradorPara(semana, source, informe), context, informe));
+        var deValidacion = new ArrayList<>(informe.problems());
+        deValidacion.addAll(estricta.revisar(borradorPara(semana, source, informe), context, informe));
+        problemas.addAll(deValidacion);
 
-        if (!problemas.isEmpty())
-            return AdaptedWeekResult.noFactible(motivo, informe, problemas);
+        if (!problemas.isEmpty()) {
+            // El codigo lo decide QUE lista tiene problemas, no lo que dicen: el de fondo primero.
+            var codigos = new ArrayList<NoFactibleReason>();
+            if (!sinSustituto.isEmpty()) codigos.add(NoFactibleReason.SIN_SUSTITUTO_SEGURO);
+            if (!deValidacion.isEmpty()) codigos.add(NoFactibleReason.SEMANA_NO_VALIDA);
+            return AdaptedWeekResult.noFactible(motivo, informe, problemas, codigos);
+        }
 
         if (semana.isEmpty())
             return AdaptedWeekResult.noFactible(motivo, informe,
-                    List.of("La semana propuesta no tiene ninguna sesion."));
+                    List.of("La semana propuesta no tiene ninguna sesion."),
+                    List.of(NoFactibleReason.SEMANA_SIN_SESIONES));
 
         return new AdaptedWeekResult(AdaptedWeekResult.Estado.PUBLICABLE, motivo,
                 semana, source, informe, List.of());
