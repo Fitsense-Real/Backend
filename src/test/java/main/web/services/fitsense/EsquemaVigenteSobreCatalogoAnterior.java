@@ -32,7 +32,9 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V43 (P-02 y P-03): dos tablas nuevas, sin datos del catalogo.
             "43:db/migration/V43__pain_memory_and_safe_regeneration.sql",
             // V44 (version de la politica de planificacion): dos columnas nullable, sin datos.
-            "44:db/migration/V44__planning_policy_version.sql");
+            "44:db/migration/V44__planning_policy_version.sql",
+            // V44_1 (codigos del NO_FACTIBLE): dos columnas NULL y dos CHECK, sin datos.
+            "44.1:db/migration/V44_1__adaptation_reason_codes.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {
