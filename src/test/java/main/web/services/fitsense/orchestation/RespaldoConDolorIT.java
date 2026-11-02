@@ -156,8 +156,14 @@ class RespaldoConDolorIT {
                     }
             assertEquals(1, cambios, "una sola sustitucion");
             assertTrue(String.valueOf(ev.get("conservation_report")).contains("REGENERACION_SEGURA"));
-            assertEquals("REGENERACION_SEGURA_SUSTITUCION", adaptaciones.forPlan(nuevo).orElseThrow().resultado(),
-                    "la API lo distingue de una copia");
+            var api = adaptaciones.forPlan(nuevo).orElseThrow();
+            assertEquals("REGENERACION_SEGURA_SUSTITUCION", api.resultado(), "la API lo distingue de una copia");
+            // Fase 2.1: publicado, sin codigo de no factible; la sesion afectada es la del dolor.
+            assertEquals("PUBLICADO", api.estadoPublicacion());
+            assertNull(api.motivoCodigo());
+            assertEquals(List.of(), api.codigos());
+            assertNull(jdbc.queryForObject("SELECT reason_codes::text FROM plan_adaptation_attempts WHERE attempt_id = ?",
+                    String.class, ev.get("attempt_id")), "un estado que publica no registra codigos");
         }
         assertFalse(contiene(nuevo, dolio), "lo que dolio no vuelve");
 
@@ -236,6 +242,28 @@ class RespaldoConDolorIT {
             assertEquals(List.of(), InvariantesRespaldo.sinPublicar(jdbc, u, S1.plusWeeks(1), ev, List.of(SIN_SUSTITUTO)));
             assertTrue(String.valueOf(ev.get("rejection_reason")).contains("SUST-SEG-1"),
                     "el motivo dice que no hay sustituto SUST-SEG-1: " + ev.get("rejection_reason"));
+            // Fase 2.1: el codigo lo puso la regla que decidio (columna V44_1), no se deduce del texto.
+            var codigos = jdbc.queryForList("SELECT unnest(reason_codes) FROM plan_adaptation_attempts"
+                    + " WHERE attempt_id = ?", String.class, ev.get("attempt_id"));
+            assertEquals("SIN_SUSTITUTO_SEGURO", codigos.get(0), "codigo de fondo en V32: " + codigos);
+            var api = adaptaciones.history(u).get(adaptaciones.history(u).size() - 1);
+            assertEquals("NO_FACTIBLE_POR_SEGURIDAD", api.resultado(), "el estado de siempre se conserva");
+            assertEquals("NO_PUBLICADO", api.estadoPublicacion());
+            assertEquals("SIN_SUSTITUTO_SEGURO", api.motivoCodigo());
+            assertNotNull(api.motivoTexto());
+            assertEquals("SIN_SUSTITUTO_SEGURO", api.codigos().get(0));
+            var w = sesionesDe(plan).get(sesion);
+            assertNotNull(api.sesionAfectada(), "la sesion del dolor consta");
+            assertEquals(w, api.sesionAfectada().plannedWorkoutId());
+            var regenerado = jdbc.queryForList("SELECT reason_code FROM safe_regeneration_attempts WHERE user_id = ?",
+                    String.class, u);
+            if (!regenerado.isEmpty()) {
+                assertNotNull(regenerado.get(0), "P-03 nivel 2 NO_FACTIBLE registra su codigo");
+                assertTrue(api.codigos().contains(regenerado.get(0)), "y la API lo lista: " + api.codigos());
+                assertTrue(api.restricciones().stream().anyMatch(r -> r.exerciseId() == SIN_SUSTITUTO
+                        && "EXCLUSION_DOLOR".equals(r.tipo())), "la restriccion que impidio la semana: " + api);
+            }
+            System.out.println("RESPALDO_C_API " + api);
         } else {
             // P-03 nivel 2 (regeneracion con reglas, politica aprobada) encontro una semana valida: lo excluido no
             // vuelve. No se exige; se registra para el informe.
@@ -297,7 +325,7 @@ class RespaldoConDolorIT {
     }
 
     private Map<String, Object> ultimo(long u) {
-        return jdbc.queryForMap("SELECT decision, status, generation_source, ai_calls, targeted_interventions::text,"
+        return jdbc.queryForMap("SELECT attempt_id, decision, status, generation_source, ai_calls, targeted_interventions::text,"
                 + " conservation_report::text, rejection_reason FROM plan_adaptation_attempts WHERE user_id = ?"
                 + " ORDER BY attempt_id DESC LIMIT 1", u);
     }
