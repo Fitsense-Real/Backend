@@ -18,10 +18,10 @@
 | Batería, `PLAN-C2D-EF-0.1` | 7b6f666 | 225 | 223 | 222 | **1** | 2 |
 | Batería, `PLAN-C2D-V4-EF-0.1` | 7b6f666 | 225 | 223 | 222 | **1** | 2 |
 | `LinajeIntegridadIT` + `PoliticasP123IT`, las 4 políticas | 97befb6 | 4 × 40 | 4 × 40 | 4 × 40 | 0 | 0 |
-| **Batería, `PLAN-HIST-1`** | **97befb6** | PENDIENTE_BAT_HIST |
-| **Batería, `PLAN-C2D-0.1`** | **97befb6** | PENDIENTE_BAT_C2D |
-| **Batería, `PLAN-C2D-EF-0.1`** | **97befb6** | PENDIENTE_BAT_EF |
-| **Batería, `PLAN-C2D-V4-EF-0.1`** | **97befb6** | PENDIENTE_BAT_V4EF |
+| **Batería, `PLAN-HIST-1`** | **97befb6** | 225 | 223 | 223 | 0 | 2 |
+| **Batería, `PLAN-C2D-0.1`** | **97befb6** | 225 | 223 | 223 | 0 | 2 |
+| **Batería, `PLAN-C2D-EF-0.1`** | **97befb6** | 225 | 223 | 223 | 0 | 2 |
+| **Batería, `PLAN-C2D-V4-EF-0.1`** | **97befb6** | 225 | 223 | 223 | 0 | 2 |
 | Seis ciclos reales `CicloReal*IT` (HIST, C2-D, C2-D-V4, C2-D-EF, C2-D-V4-EF, C2-D-EF-LW02) | 7b6f666 | 6 | 6 | 6 | 0 | 0 |
 | `ComparacionPerfilesIT` (960 × 5 políticas) | 7b6f666 | 1 | 1 | 1 | 0 | 0 |
 | REPLAY de 100 semanas (`CampanaP123Cohorte02IT`) | bc05ec9 (PR #20: `generation` más el reloj; mismo `src/main` que `generation`) | 2 | 1 | 1 | 0 | 1 |
@@ -45,7 +45,8 @@
 
 **CI de GitHub (`verify`):**
 - 7b6f666: ejecución #103, **success**.
-- 97befb6: ver `CIERRE_ESTABILIZACION.md` §A.
+- 97befb6: ejecución #105, **success**.
+- bd023df (entregables): ejecución #107, **success**.
 
 ## 2. Comparación con la regresión anterior (1e42519)
 
@@ -53,7 +54,7 @@
 |---|---|---|---|
 | Unitarias | 1.028 | **1.046** | +18: `TrainingWeekTest` (PR #19) |
 | Integración contabilizadas / ejecutadas / omitidas | 492 / 438 / 54 | **492 / 438 / 54** | Sin cambios |
-| Baterías | 223/225 cada una | **Ver §1** (97befb6) | — |
+| Baterías | 223/225 cada una | **223/225 cada una** (97befb6) | Sin cambios, tras corregir la prueba que dependía de la fecha |
 | Ciclos reales | (dentro de las campañas anteriores) | **6/6** | Ahora con el reloj de pruebas |
 | 960 perfiles | SHA `c582fce2…` / `ee9d2111…` | **Los mismos** | Sin cambios |
 
@@ -62,7 +63,7 @@
 | Grupo | Dónde | Resultado |
 |---|---|---|
 | Unitarias e integración | §1 | 0 fallos |
-| HIST, C2D, C2D-EF y C2D-V4-EF | §1 (97befb6) | Ver §1 |
+| HIST, C2D, C2D-EF y C2D-V4-EF | §1 (97befb6) | 223/225 cada una, 0 fallos |
 | V4-C | `TrazaV4CTest` (15), `V4CValidadorRealTest`, `BrechaRedondeoV4Test`, `PoliticaV4CCicloIT` (3), `TrazaHistoricaIT` | 0 fallos |
 | V20, V24, V8C | `V20*`, `GeneracionReferencia*IT`, `ConservationValidator*Test`, `HerenciaD8IT` y `AdaptacionCompletaIT` en la completa y en las baterías | 0 fallos |
 | D8, P-02, P-03 | `HerenciaD8IT`, `PoliticasP123IT` (39 + 1), `DuracionForzadaIT` y `AdaptacionCompletaIT` | 0 fallos |

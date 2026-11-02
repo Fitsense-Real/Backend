@@ -35,8 +35,8 @@ Se conservan todas las evidencias anteriores.
 | **Commit de `generation`** | **dd61837730370d4510fe21f0bc9a14bf62c1a767**. Árbol idéntico a 33bac15; `src/main` sin cambios |
 | **CI de `generation`** | **success** (#101 por `push` y #102 del PR #1). Es el primer verde desde el 2-nov |
 | **PR #17 actualizado** | *Merge* de `generation` sin conflictos (bbf4e16), más dos commits solo de pruebas: 7b6f666 (`CicloRealPoliticaBase`) y 97befb6 (`LinajeIntegridadIT` y `PoliticasP123IT`). `src/main` sin cambios. Sigue **en borrador**, con `PLAN-HIST-1` por defecto y los indicadores apagados. Ver `ACTUALIZACION_PR17.md` |
-| **Regresión del PR #17** | 1.046 unitarias; integración 492/438/54 (contabilizadas/ejecutadas/omitidas); 6/6 ciclos reales; 960 perfiles idénticos byte a byte; baterías: PENDIENTE_BATERIAS. Ver `REGRESION_PR17_ACTUALIZADO.md` |
-| **CI del PR #17** | 7b6f666: **success** (#103). Último commit: PENDIENTE_CI17 |
+| **Regresión del PR #17** | 1.046 unitarias; integración 492/438/54 (contabilizadas/ejecutadas/omitidas); 6/6 ciclos reales; 960 perfiles idénticos byte a byte; 4 baterías (HIST, C2-D, C2-D-EF, C2-D-V4-EF) con 223/225 cada una sobre 97befb6, 0 fallos. Ver `REGRESION_PR17_ACTUALIZADO.md` |
+| **CI del PR #17** | **success** en 7b6f666 (#103), 97befb6 (#105) y bd023df (#107). El commit final de entregables se comprueba al subirlo |
 
 **Despliegues y migraciones remotas:** ninguno iniciado por esta sesión. El único workflow es `CI` (Testcontainers, sin secretos). No hay acceso a Neon ni a Railway.
 
@@ -48,7 +48,7 @@ Se conservan todas las evidencias anteriores.
 | **REPLAY de 100 semanas** | **Ejecutada.** Evidencia idéntica a la histórica salvo marcas de tiempo (`REPLAY_100_SEMANAS.md`) |
 | **Resultados** | Mvp8 en ensayo seco 1/1. Reincorporación en modo seco 1/1, idéntica byte a byte a su evidencia. Con una semana ya vencida, 0 errores de vencimiento |
 | **Limitaciones** | Ni `ReincorporacionIaRealIT` ni Mvp8 se han ejecutado con IA real (Replicate no autorizado). El conjunto `estres` de Mvp8 falla por P-01 (perfil de 15 min); no depende de la fecha y no se ha cambiado |
-| **PR independiente** | **Fitsense-Real/Backend#20**, en borrador y sin fusionar. CI de bc05ec9 **success**; último commit: PENDIENTE_CI20 |
+| **PR independiente** | **Fitsense-Real/Backend#20**, en borrador y sin fusionar. CI **success** en bc05ec9 (#104) y d4717b9 (#106) |
 
 ## C. Respaldo
 
@@ -122,7 +122,7 @@ Ver `VERIFICACION_POLITICAS_ADAPTACION.md`.
 | 1 | PR #19 fusionado correctamente | **Sí** (dd61837) |
 | 2 | CI de `generation` verde | **Sí** (#101) |
 | 3 | PR #17 actualizado desde `generation` | **Sí** (bbf4e16, *merge*) |
-| 4 | CI del último commit del PR #17 verde | PENDIENTE_CI17 |
+| 4 | CI del último commit del PR #17 verde | **Sí** (97befb6 #105, bd023df #107; los commits posteriores solo tocan documentación) |
 | 5 | Política histórica intacta | **Sí** |
 | 6 | 960 perfiles sin cambios inesperados | **Sí** (byte a byte) |
 | 7 | Laboratorios corregidos o con limitaciones documentadas | **Sí** |
