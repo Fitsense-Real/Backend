@@ -183,14 +183,24 @@ public class TrainingPlanController {
 
         // fetchDetails y no fetchNames: la app necesita el gif y la atribucion
         // para pintar la pantalla del ejercicio sin una llamada por cada uno.
-        return WeeklyTrainingPlanResourceFromEntityAssembler.toResourceFromEntity(
-                plan, externalCatalogService.fetchDetails(exerciseIds),
+        var catalogo = externalCatalogService.fetchDetails(exerciseIds);
+        var base = WeeklyTrainingPlanResourceFromEntityAssembler.toResourceFromEntity(
+                plan, catalogo,
                 EffortGuidance.forLevel(fitnessLevelOf(plan)),
                 // Un plan guardado no se revalida solo: las sesiones abiertas se
                 // comprueban contra la seguridad de HOY (INC-CAT-1374 y otras).
                 publishedPlanSafety.conflictos(plan),
                 adaptaciones.forPlan(plan.getId()).orElse(null));
+        // V44 · campos opcionales, cada uno con su indicador (desactivados: el recurso de siempre).
+        return main.web.services.fitsense.planning.interfaces.rest.transform.DuracionYAerobicaAssembler.enriquecer(
+                base, plan, catalogo, jsonSupport, duracionVisible, metricaAerobica);
     }
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.api.duracion-estimada.enabled:false}")
+    private boolean duracionVisible;
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.metricas.aerobica.enabled:false}")
+    private boolean metricaAerobica;
 
     /**
      * El nivel con el que SE GENERO el plan, leido de input_snapshot, y no el

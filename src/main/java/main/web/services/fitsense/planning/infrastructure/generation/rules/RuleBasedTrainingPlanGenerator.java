@@ -79,6 +79,88 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     private final int durationToRepsDivisor;
     private final SessionDurationEstimator durationEstimator;
 
+    /**
+     * OPCION EXPERIMENTAL, DESACTIVADA (orden de implementacion controlada, fase 8): en LOSE_WEIGHT, al colocar la
+     * fuerza secundaria, preferir un grupo grande que la semana aun no trabaja. No crea obligaciones nuevas, no cambia
+     * dosis ni tiempo y pasa por el mismo selector (V15, V18, V22). Cambia la composicion de planes validos: requiere
+     * aprobacion separada y una version de politica antes de activarse fuera del laboratorio.
+     */
+    @Value("${fitsense.generation.lose-weight.preferir-grupo-no-cubierto:false}")
+    private boolean preferirGrupoNoCubiertoLW;
+
+    /** Version de la correccion de la preferencia (trazada en el plan cuando la opcion esta encendida). */
+    public static final String VERSION_PREFERENCIA_LW = "LW-PREF-0.2";
+
+    /**
+     * LW-PREF-0.2 (correccion de los efectos de la 0.1): la semana se construye SIEMPRE igual que sin la opcion. Solo
+     * si tiene una brecha real (un grupo grande con candidatos resistidos elegibles y ninguna colocacion resistida)
+     * se construye la alternativa con la preferencia, y se acepta solo si reduce la brecha y el validador no le
+     * encuentra ningun problema nuevo (ni V15 ni otro). Si no, se conserva la original: un plan sin brecha no
+     * cambia y un plan valido no pasa a invalido.
+     */
+    PlanDraft conPreferenciaLW(PlanGenerationContext context, PlanDraft base) {
+        int brechaBase = brechaGruposGrandes(context, base);
+        if (brechaBase == 0) return base;
+        var alternativa = new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
+                .preferirGrupoNoCubierto(true)
+                .construir(this::finalizar);
+        if (brechaGruposGrandes(context, alternativa) >= brechaBase) return base;
+        var pBase = problemasLW(base, context);
+        var pAlt = problemasLW(alternativa, context);
+        var codigosBase = pBase.stream().map(RuleBasedTrainingPlanGenerator::codigo).collect(java.util.stream.Collectors.toSet());
+        boolean sinNuevos = pAlt.size() <= pBase.size()
+                && pAlt.stream().map(RuleBasedTrainingPlanGenerator::codigo).allMatch(codigosBase::contains);
+        return sinNuevos ? alternativa : base;
+    }
+
+    private static String codigo(String problema) {
+        int i = problema.indexOf(':');
+        return i < 0 ? problema : problema.substring(0, i).trim();
+    }
+
+    private List<String> problemasLW(PlanDraft d, PlanGenerationContext context) {
+        var validador = new main.web.services.fitsense.planning.domain.services.PlanDraftValidator(durationEstimator,
+                main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement.ENFORCE_WHEN_SATISFIABLE,
+                main.web.services.fitsense.planning.domain.services.DoseEnforcement.ENFORCE);
+        try {
+            validador.validate(d, context, durationToRepsDivisor,
+                    main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport.vacio());
+            return List.of();
+        } catch (main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException e) {
+            return e.problems();
+        }
+    }
+
+    /** Grupos grandes con algun candidato resistido elegible que la semana no trabaja con ninguna colocacion resistida. */
+    public static int brechaGruposGrandes(PlanGenerationContext context, PlanDraft d) {
+        var complementos = main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy
+                .complementos(context.availableExercises(), context.profile().goalType());
+        int max = context.effectiveMaxDifficulty();
+        java.util.function.Predicate<CandidateExercise> resistido = c -> {
+            var clase = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.claseDe(c);
+            return !complementos.contains(c.exerciseId())
+                    && (clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                    || clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.RESISTIDO);
+        };
+        var porId = context.availableExercises().stream()
+                .collect(java.util.stream.Collectors.toMap(CandidateExercise::exerciseId, c -> c, (a, b) -> a));
+        var cubiertos = d.workouts().stream().flatMap(w -> w.exercises().stream())
+                .map(e -> porId.get(e.exerciseId())).filter(java.util.Objects::nonNull).filter(resistido)
+                .map(CandidateExercise::bodyPartCode).collect(java.util.stream.Collectors.toSet());
+        int brecha = 0;
+        for (var g : CapabilityWeekBuilder.GRUPOS_GRANDES) {
+            boolean hay = context.availableExercises().stream()
+                    .anyMatch(c -> c.difficulty() <= max && g.equals(c.bodyPartCode()) && resistido.test(c));
+            if (hay && !cubiertos.contains(g)) brecha++;
+        }
+        return brecha;
+    }
+
+    /** Para el laboratorio: activa o desactiva la opcion en esta instancia. */
+    public void setPreferirGrupoNoCubiertoLW(boolean v) {
+        this.preferirGrupoNoCubiertoLW = v;
+    }
+
     public RuleBasedTrainingPlanGenerator(
             @Value("${fitsense.volume.duration-to-reps-divisor:30}") int durationToRepsDivisor,
             SessionDurationEstimator durationEstimator) {
@@ -91,16 +173,121 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         return GenerationSource.RULE_ENGINE;
     }
 
+    /**
+     * EF-0.1: primero se genera exactamente como sin EF. Si ese plan ya cumple VEF, se conserva identico (cambiar la
+     * eleccion de un plan funcionalmente valido solo por cambiar el conjunto de candidatos no mejora nada). Solo si
+     * no la cumple se genera con la elegibilidad funcional. Sin EF, el camino es el de siempre.
+     */
     @Override
     public PlanDraft generate(PlanGenerationContext context, List<String> previousProblems) {
+        var d = generarSegunPolitica(context, previousProblems);
+        return reparacionSustitucionV20 ? repararPorSustitucion(context, d) : d;
+    }
+
+    private PlanDraft generarSegunPolitica(PlanGenerationContext context, List<String> previousProblems) {
+        if (context.policy().elegibilidadFuncional()) {
+            var comoSiempre = generarCon(context.conPolitica(
+                    main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
+                            .sinElegibilidad(context.policy())), previousProblems);
+            if (main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
+                    .problemas(comoSiempre, context, null).isEmpty()) return comoSiempre;
+        }
+        return generarCon(context, previousProblems);
+    }
+
+    // ===================================================================== REP-SUST-0.1 (experimental, apagada)
+
+    /** Version de la reparacion por sustitucion (trazada en el plan cuando la opcion esta encendida). */
+    public static final String VERSION_REPARACION_SUSTITUCION = "REP-SUST-0.1";
+    static final int MAX_PASOS_REPARACION = 6;
+
+    /**
+     * REP-SUST-0.1: si la UNICA infraccion de la semana es V20 y el verificador de saturacion de C2-D demuestra que
+     * SUSTITUIR un ejercicio por otro elegible de dosis base mas larga alarga la sesion corta sin romper ninguna otra
+     * regla (V4, V15, V18, V22, V24, V25 y, con EF, VEF), se aplica esa sustitucion. Se repite, como mucho
+     * {@value #MAX_PASOS_REPARACION} veces, mientras la sustitucion siga siendo la mejora demostrada. No anade
+     * ejercicios ni series, no cambia dosis (la sustituta lleva su dosis base 4D) y no relaja C2-D: si el plan sigue
+     * corto, C2-D vuelve a evaluar su saturacion con las reglas de siempre. Determinista: el verificador recorre los
+     * candidatos por id. Fuera de ese caso devuelve el borrador tal cual.
+     */
+    PlanDraft repararPorSustitucion(PlanGenerationContext context, PlanDraft d) {
+        if (d == null || context.prescription() == null) return d;
+        var sinC2D = context.conPolitica(new main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy(
+                context.policy().id(), context.policy().candidata(), false, context.policy().v4Segundos(),
+                context.policy().elegibilidadFuncional(), context.policy().descripcion()));
+        // El validador COMPLETO (V24 y V25 por capacidades incluidas): una sustitucion que alarga la sesion pero deja
+        // una capacidad sin cubrir no es una mejora.
+        var validador = new main.web.services.fitsense.planning.domain.services.PlanDraftValidator(durationEstimator,
+                main.web.services.fitsense.planning.domain.services.SlotCoverageEnforcement.ENFORCE_WHEN_SATISFIABLE,
+                main.web.services.fitsense.planning.domain.services.DoseEnforcement.ENFORCE,
+                main.web.services.fitsense.planning.domain.services.DoseEnforcement.ENFORCE);
+        var actual = d;
+        for (int paso = 0; paso < MAX_PASOS_REPARACION; paso++) {
+            var p = problemasCon(validador, actual, sinC2D);
+            if (p.isEmpty() || !p.stream().allMatch(x -> x.startsWith("V20:"))) return actual;
+            var r = validador.evaluarC2D(actual, sinC2D, durationToRepsDivisor,
+                    main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport.vacio());
+            if (!"SUSTITUIR".equals(r.movimiento()) || r.mejorado() == null) return actual;
+            // Solo una sustitucion que conserva la CLASE del ejercicio (estructural por estructural, resistido por
+            // resistido, cardio por cardio...): cambiar fuerza por cardio para llenar minutos no es la misma sesion.
+            if (!conservaClase(actual, r.mejorado(), context)) return actual;
+            actual = r.mejorado();
+        }
+        return actual;
+    }
+
+    private List<String> problemasCon(main.web.services.fitsense.planning.domain.services.PlanDraftValidator v,
+                                      PlanDraft d, PlanGenerationContext context) {
+        try {
+            v.validate(d, context, durationToRepsDivisor,
+                    main.web.services.fitsense.planning.domain.model.valueobjects.ConservationReport.vacio());
+            return List.of();
+        } catch (main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException e) {
+            return e.problems();
+        }
+    }
+
+    /** Si cada ejercicio cambiado entre los dos borradores conserva su clase de capacidad. */
+    static boolean conservaClase(PlanDraft antes, PlanDraft despues, PlanGenerationContext context) {
+        var porId = context.availableExercises().stream()
+                .collect(java.util.stream.Collectors.toMap(CandidateExercise::exerciseId, c -> c, (a, b) -> a));
+        for (int i = 0; i < antes.workouts().size(); i++) {
+            var a = antes.workouts().get(i).exercises();
+            var b = despues.workouts().get(i).exercises();
+            if (a.size() != b.size()) return false;
+            for (int j = 0; j < a.size(); j++) {
+                if (java.util.Objects.equals(a.get(j).exerciseId(), b.get(j).exerciseId())) continue;
+                var ca = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                        .claseDe(porId.get(a.get(j).exerciseId()));
+                var cb = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                        .claseDe(porId.get(b.get(j).exerciseId()));
+                if (ca != cb) return false;
+            }
+        }
+        return true;
+    }
+
+    @Value("${fitsense.generation.reparacion-sustitucion-v20:false}")
+    private boolean reparacionSustitucionV20;
+
+    /** Para el laboratorio: activa o desactiva la reparacion en esta instancia. */
+    public void setReparacionSustitucionV20(boolean v) {
+        this.reparacionSustitucionV20 = v;
+    }
+
+    private PlanDraft generarCon(PlanGenerationContext context, List<String> previousProblems) {
         // 4A v6 + 4D v4: INCREASE_STRENGTH, LOSE_WEIGHT y GENERAL_FITNESS se
         // generan por capacidades. GAIN_MUSCLE sigue exactamente por el camino
         // de abajo (4D v3), que ya cumple.
         if (context.profile() != null
                 && main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
                 .gobiernaGeneracion(context.profile().goalType()))
-            return new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
+        {
+            var base = new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
                     .construir(this::finalizar);
+            if (!preferirGrupoNoCubiertoLW || !"LOSE_WEIGHT".equals(context.profile().goalType())) return base;
+            return conPreferenciaLW(context, base);
+        }
 
         var profile = context.profile();
         // Division semanal (WeeklySplitPlanner): la misma que recibe la IA como
@@ -143,9 +330,14 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 // cardio, OTHER o en revision de clasificacion no ocupan una
                 // colocacion de la sesion de hipertrofia.
                 .filter(candidate -> !dosisFijada || puedeDemostrarHipertrofia(candidate))
+                // EF-0.1 (solo con una version de politica que la incluye): lo que no cuenta como trabajo resistido.
+                .filter(candidate -> !context.policy().elegibilidadFuncional()
+                        || main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional
+                        .excluidoGlobal(candidate).isEmpty())
                 .toList();
         var selector = new ExerciseSelector(seleccionables,
                 context.effectiveMaxDifficulty(), recentlyUsed, random);
+        selector.elegibilidadFuncional(context.policy().elegibilidadFuncional());
 
         // Seleccion estructural, solo con la dosis fijada. Con los demas
         // objetivos el modo queda apagado y el selector se comporta igual que

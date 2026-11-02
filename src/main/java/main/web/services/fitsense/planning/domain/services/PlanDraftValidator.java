@@ -135,6 +135,51 @@ public class PlanDraftValidator {
      */
     public void validate(PlanDraft draft, PlanGenerationContext context,
                          int durationToRepsDivisor, ConservationReport conservation) {
+        var problems = problemas(draft, context, durationToRepsDivisor, conservation);
+        // C2-D (solo con una version que lo incluye): V20 deja de bloquear si es la UNICA infraccion y las sesiones
+        // cortas estan saturadas, comprobado con estas mismas reglas. Nada del borrador cambia.
+        if (aplicaC2D(context, conservation, problems)) {
+            var r = evaluarC2D(draft, context, durationToRepsDivisor, conservation);
+            if (r.saturada()) {
+                LOG_C2D.info("C2D_EXCEPCION usuario {} semana {} politica {}: sesiones {} bajo el piso de V20 aceptadas"
+                                + " por saturacion ({} evaluaciones)", context.userId(), context.weekStartDate(),
+                        context.policy().id(), r.sesionesCortas(), r.evaluaciones());
+                return;
+            }
+            LOG_C2D.info("C2D_SIN_EXCEPCION usuario {} semana {} politica {}: {} - {} ({} evaluaciones)",
+                    context.userId(), context.weekStartDate(), context.policy().id(), r.estado(), r.motivo(),
+                    r.evaluaciones());
+        }
+        if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
+    }
+
+    private static final org.slf4j.Logger LOG_C2D = org.slf4j.LoggerFactory.getLogger("fitsense.politica.c2d");
+
+    /**
+     * Condicion estricta de C2-D: version con C2-D; hay problemas y TODOS son de V20; sin orden de volumen (D8 ya
+     * exime de V20) y sin autorizaciones ni reducciones de V8C, que se gestionan con su propia politica.
+     */
+    static boolean aplicaC2D(PlanGenerationContext context, ConservationReport conservation, List<String> problems) {
+        if (context == null || !context.policy().c2d() || problems.isEmpty()) return false;
+        if (!problems.stream().allMatch(p -> p != null && p.trim().startsWith("V20:"))) return false;
+        if (context.adjustment() != null && context.adjustment().isActive()) return false;
+        if (conservation != null && (!conservation.dosisAutorizadas().isEmpty()
+                || !conservation.fechasConDuracionReducible().isEmpty() || !conservation.problems().isEmpty()))
+            return false;
+        return true;
+    }
+
+    /** El veredicto de saturacion de C2-D para un borrador (lo usa validate y el laboratorio). */
+    public SaturacionContenidoV20.Resultado evaluarC2D(PlanDraft draft, PlanGenerationContext context,
+                                                       int durationToRepsDivisor, ConservationReport conservation) {
+        var c = conservation == null ? ConservationReport.vacio() : conservation;
+        return SaturacionContenidoV20.evaluar(draft, context, d -> problemas(d, context, durationToRepsDivisor, c),
+                durationEstimator, SaturacionContenidoV20.PRESUPUESTO);
+    }
+
+    /** Todas las validaciones, sin la excepcion C2-D. */
+    private List<String> problemas(PlanDraft draft, PlanGenerationContext context,
+                                   int durationToRepsDivisor, ConservationReport conservation) {
         var problems = new ArrayList<String>();
 
         var eligible = context.availableExercises().stream()
@@ -150,6 +195,7 @@ public class PlanDraftValidator {
         validatePrescriptionRanges(draft, context, eligible, problems);
         validateRecovery(draft, eligible, problems);
         validateArmSplit(draft, eligible, problems);
+        if (context.policy().elegibilidadFuncional()) validateElegibilidadFuncional(draft, context, eligible, problems);
         appendSplitSuggestion(context, problems);
         validateReductionDoesNotIncrease(draft, context, eligible, problems);
         validateMinimumDurationAndRest(draft, context, conservation, problems);
@@ -161,7 +207,7 @@ public class PlanDraftValidator {
         validateCapabilityCoverage(conservation.dosisAutorizadas().isEmpty() ? draft
                 : conDosisBase(draft, context, eligible, conservation), context, eligible, problems);
 
-        if (!problems.isEmpty()) throw new InvalidPlanDraftException(problems);
+        return problems;
     }
 
     /**
@@ -1541,6 +1587,22 @@ public class PlanDraftValidator {
                                     forbidden, workout.focus(),
                                     workout.focus() == WorkoutFocus.PUSH ? "triceps" : "biceps")));
         }
+    }
+
+    /**
+     * VEF (elegibilidad funcional EF-0.1, solo con una version de politica que la incluye). Dos comprobaciones:
+     * <ol>
+     *   <li>cada ejercicio resistido que no es complemento tiene un patron compatible con el enfoque de la sesion
+     *       (un empuje no cuenta como trabajo de PULL; un patron de tronco con zona distinta de "waist" no cuenta como
+     *       trabajo resistido de esa zona);</li>
+     *   <li>una sesion PUSH, PULL o LEGS tiene al menos un ejercicio de su patron principal. Si el catalogo elegible
+     *       no tiene ninguno, se dice: es un limite de catalogo o de equipamiento, no algo que se rellene con otro
+     *       movimiento.</li>
+     * </ol>
+     */
+    private void validateElegibilidadFuncional(PlanDraft draft, PlanGenerationContext context,
+                                               Map<Long, CandidateExercise> eligible, List<String> problems) {
+        problems.addAll(ElegibilidadFuncional.problemas(draft, context, eligible));
     }
 
     /**

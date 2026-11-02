@@ -11,8 +11,10 @@ import java.util.*;
 /**
  * V44 · TRAZA DE LA POLITICA con la que se publica un plan (columna {@code planning_policy_trace}). Dominio puro.
  * <p>
- * Por sesion: segundos estimados (la formula de V17/V20), minutos declarados, % de M, si queda bajo el piso de V20
- * y si estaba exenta por V8C (reduccion autorizada).
+ * Por sesion: segundos estimados (la formula de V17/V20), minutos declarados, % de M, si queda bajo el piso de V20,
+ * si estaba exenta por V8C (reduccion autorizada) y si se publico por la EXCEPCION C2-D. Una sesion bajo el piso
+ * que no esta exenta solo puede estar publicada por C2-D: el validador la habria rechazado con cualquier otra
+ * version.
  * <p>
  * MINUTOS: V4 (historica y V4-C), los generadores y el contrato con la IA usan los minutos CONFIGURADOS del perfil
  * ({@code profile.sessionMinutes()}); V20 y la duracion de la semana usan los EFECTIVOS
@@ -44,10 +46,13 @@ public final class PlanningPolicyTrace {
         t.put("politica", politica.id());
         t.put("version_calculo", versionCalculo);
         var params = new LinkedHashMap<String, Object>();
+        params.put("c2d", politica.c2d());
         params.put("v4", politica.v4Segundos() ? "SEGUNDOS" : "HISTORICO");
         params.put("piso_v20_pct", ctx.prescription() == null ? null : ctx.prescription().floorPct());
         params.put("piso_v20_segundos", piso);
         params.put("tolerancia_v4_pct", PlanningPolicy.TOLERANCIA_V4_PCT);
+        // Solo en las versiones con EF: la traza de las demas no cambia.
+        if (politica.elegibilidadFuncional()) params.put("elegibilidad_funcional", ElegibilidadFuncional.VERSION);
         params.put("limite_v4", politica.v4Segundos()
                 ? Map.of("segundos", PlanningPolicy.limiteV4Segundos(m))
                 : Map.of("minutos_declarados", (int) Math.round(m * 1.15)));
@@ -65,11 +70,14 @@ public final class PlanningPolicyTrace {
         t.put("origen", origen == null ? null : origen.name());
         t.put("contexto", contexto);
         var lista = new ArrayList<Map<String, Object>>();
+        int excepciones = 0;
         for (var w : sesiones) {
             if (w == null) continue;
             Long s = ctx.prescription() == null ? null : estimador.estimateSeconds(w, ctx.prescription());
             boolean bajo = s != null && piso > 0 && s < piso;
             boolean exenta = exentasV8C != null && exentasV8C.contains(w.scheduledDate());
+            boolean c2d = bajo && !exenta && politica.c2d();
+            if (c2d) excepciones++;
             var x = new LinkedHashMap<String, Object>();
             x.put("fecha", String.valueOf(w.scheduledDate()));
             x.put("segundos_estimados", s);
@@ -81,9 +89,11 @@ public final class PlanningPolicyTrace {
                     ? !politica.excedeTecho(s, w.expectedDurationMinutes(), perfil)
                     : w.expectedDurationMinutes() <= techoMinutos);
             x.put("exenta_v8c", exenta);
+            x.put("excepcion_c2d", c2d);
             lista.add(x);
         }
         t.put("sesiones", lista);
+        t.put("excepciones_c2d", excepciones);
         return t;
     }
 }

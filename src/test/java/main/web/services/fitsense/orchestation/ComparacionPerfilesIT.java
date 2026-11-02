@@ -82,7 +82,7 @@ class ComparacionPerfilesIT {
     static int secuencia;
 
     List<String> politicas() {
-        return List.of("PLAN-HIST-1", "PLAN-V4-0.1");
+        return List.of("PLAN-HIST-1", "PLAN-C2D-0.1", "PLAN-C2D-V4-0.1", "PLAN-C2D-EF-0.1", "PLAN-C2D-V4-EF-0.1");
     }
 
     PlanGenerationContext conPolitica(PlanGenerationContext c, String id) {
@@ -94,9 +94,16 @@ class ComparacionPerfilesIT {
                 c.adjustment(), c.previousWeek(), e, c.safety(), c.prescription(), c.policy());
     }
 
-    /** Sin C2-D en la rama aislada. */
+    /** Estado de C2-D (como en las matrices): solo si la version tiene C2-D y sin ella todo es V20. */
     String[] saturacion(PlanDraft d, PlanGenerationContext ctx, String id, int div, List<String> prob) {
-        return null;
+        var pol = ctx.policy();
+        if (!pol.c2d() || d == null) return null;
+        var sin = ctx.conPolitica(new PlanningPolicy(pol.id(), pol.candidata(), false, pol.v4Segundos(),
+                pol.elegibilidadFuncional(), pol.descripcion()));
+        var p = problemas(d, sin, div);
+        if (p.isEmpty() || !p.stream().allMatch(x -> x.startsWith("V20:"))) return null;
+        var r = validador.evaluarC2D(d, ctx, div, ConservationReport.vacio());
+        return new String[]{r.estado().name(), r.motivo()};
     }
 
     @Test

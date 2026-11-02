@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  *   <li>{@code fitsense.planning.policy} (por defecto {@code PLAN-HIST-1}): una version del catalogo cerrado de
  *       {@link PlanningPolicy}. Desconocida: el contexto no arranca.</li>
  *   <li>{@code fitsense.planning.policy.allow-candidates} (por defecto {@code false}): una version candidata
- *       (hoy, V4-C) exige ademas este permiso explicito; sin el, el contexto no arranca. Asi una
+ *       (C2-D, V4-C o su combinacion) exige ademas este permiso explicito; sin el, el contexto no arranca. Asi una
  *       version candidata no se activa por un error de configuracion.</li>
  * </ul>
  * No hay ningun interruptor que active varias politicas a la vez: cada version del catalogo es una combinacion

@@ -4,6 +4,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateEx
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
 
+import main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -104,6 +105,18 @@ class ExerciseSelector {
         this.preferirEstructurales = activo;
     }
 
+    /** Elegibilidad funcional EF-0.1 (solo con una version de politica que la incluye). Apagada por defecto. */
+    private boolean funcional = false;
+
+    void elegibilidadFuncional(boolean activa) {
+        this.funcional = activa;
+    }
+
+    /** V22 y, con EF-0.1, la compatibilidad patron-enfoque. */
+    boolean admite(WorkoutFocus focus, CandidateExercise candidate) {
+        return allowedIn(focus, candidate) && (!funcional || ElegibilidadFuncional.compatible(focus, candidate));
+    }
+
     /**
      * Los slots que aun faltan en la semana, en el orden fijo de
      * {@code MandatorySlot.ALL} para que dos corridas se comparen.
@@ -163,6 +176,20 @@ class ExerciseSelector {
                 picked.add(candidate.get());
                 porGrupo.merge(candidate.get().bodyPartCode(), 1, Integer::sum);
             }
+        }
+
+        // EF-0.1: la sesion necesita su patron principal (traccion en PULL, empuje en PUSH, rodilla o cadera en
+        //    LEGS). Si no salio ya por slot y existe en el enfoque, va el primero; si no existe, no se fuerza nada
+        //    (el validador lo dice: NO_FACTIBLE por catalogo o equipamiento).
+        if (funcional && count > 0 && !ElegibilidadFuncional.ancla(focus).isEmpty()
+                && picked.stream().noneMatch(c -> ElegibilidadFuncional.esAncla(focus, c))) {
+            var ancla = next(focus, picked, porGrupo, tope, true, c -> ElegibilidadFuncional.esAncla(focus, c))
+                    .or(() -> next(focus, picked, porGrupo, tope, false, c -> ElegibilidadFuncional.esAncla(focus, c)));
+            ancla.ifPresent(c -> {
+                if (picked.size() >= count) return;
+                picked.add(c);
+                porGrupo.merge(c.bodyPartCode(), 1, Integer::sum);
+            });
         }
 
         // 1. Cobertura (20.3): uno de cada grupo, los grandes primero. Si la
@@ -315,7 +342,7 @@ class ExerciseSelector {
 
     private List<CandidateExercise> pool(String bodyPartCode, WorkoutFocus focus) {
         return byBodyPart.getOrDefault(bodyPartCode, List.of()).stream()
-                .filter(candidate -> allowedIn(focus, candidate))
+                .filter(candidate -> admite(focus, candidate))
                 .toList();
     }
 
