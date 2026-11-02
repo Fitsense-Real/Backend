@@ -1,5 +1,6 @@
 package main.web.services.fitsense.orchestation;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -31,7 +32,6 @@ import main.web.services.fitsense.profiling.domain.services.UserProfileCommandSe
 import main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException;
 import main.web.services.fitsense.shared.domain.exceptions.ResourceNotFoundException;
 import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
-import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -91,6 +91,8 @@ class PoliticasP123IT {
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
     @MockitoBean ReplicateSessionFixGenerator ia;
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos (ver RelojPruebas). */
+    @MockitoBean main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
     @MockitoSpyBean ReplicateTrainingPlanGenerator iaGeneracion;
     @MockitoSpyBean SafetyExclusionResolver exclusionesSeguridad;
     @MockitoSpyBean PlanGenerationPipeline pipeline;
@@ -110,7 +112,8 @@ class PoliticasP123IT {
     @Autowired WebApplicationContext contexto;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
-    static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    /** Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas). */
+    static final LocalDate S1 = RelojPruebas.SEMANA_REFERENCIA;
     static final List<String> GIMNASIO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
     static final String CLAVE = "Clave-de-prueba-123";
     /** Para la prueba de reinicio: lo registrado antes de cerrar el contexto. */
@@ -775,6 +778,7 @@ class PoliticasP123IT {
 
     /** Ejecuta la sesion completa; si {@code conDolor} no es null, ese ejercicio se marca con dolor y no se hace. */
     private void hacer(long u, long plannedWorkoutId, Long conDolor) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long sesion = sesiones.handle(new StartWorkoutSessionCommand(u, plannedWorkoutId)).orElseThrow().getId();
         var filas = jdbc.queryForList("SELECT planned_exercise_id, exercise_id, prescription_type, planned_sets,"
                 + " planned_reps, planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
