@@ -1,5 +1,6 @@
 package main.web.services.fitsense.orchestation;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -78,8 +79,13 @@ class CampanaP123Cohorte02IT {
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos (ver RelojPruebas). */
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
+
     static final String COHORTE = "FITSENSE_STRESS_P123_COHORT_02";
-    static final LocalDate S1 = LocalDate.of(2026, 11, 2);
+    /** Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas). */
+    static final LocalDate S1 = RelojPruebas.SEMANA_REFERENCIA;
     static final int SEMANAS = 10;
     static final int EXTENSION = 16;
     static final Path SALIDA = Path.of("docs/FitSense/campana_p123/evidencia");
@@ -442,6 +448,7 @@ class CampanaP123Cohorte02IT {
      * fatiga o dificultad: la mitad).
      */
     private void sesion(long u, long w, double fraccion, SkipReason motivoParcial, SkipReason marcar, int rpe) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
         var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
                 + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"

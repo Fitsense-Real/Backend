@@ -1,5 +1,6 @@
 package main.web.services.fitsense.orchestation;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -69,6 +70,8 @@ class LinajeIntegridadIT {
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
     @MockitoBean ReplicateSessionFixGenerator ia;
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos (ver RelojPruebas). */
+    @MockitoBean main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
 
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlanningContextFacade planning;
@@ -80,7 +83,8 @@ class LinajeIntegridadIT {
     @Autowired JdbcTemplate jdbc;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
-    static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    /** Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas). */
+    static final LocalDate S1 = RelojPruebas.SEMANA_REFERENCIA;
     static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
     static final Path CONSULTA = Path.of("docs/FitSense/consultas/linaje_v31_v32.sql");
 
@@ -306,6 +310,7 @@ class LinajeIntegridadIT {
             long w = ids.get(i);
             switch (dias[i]) {
                 case HECHO -> {
+                    RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
                     long sesion = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
                     for (var f : jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets,"
                             + " planned_reps, planned_duration_seconds FROM planned_workout_exercises"

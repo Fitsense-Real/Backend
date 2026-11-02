@@ -22,8 +22,13 @@ import java.time.LocalDate;
  */
 public final class RelojPruebas {
 
-    /** Lunes de la semana con la que se capturaron las referencias. */
-    public static final LocalDate SEMANA_REFERENCIA = LocalDate.of(2026, 11, 2);
+    /**
+     * Lunes de la semana con la que se capturaron las referencias. Solo para diagnosticos, se puede mover con
+     * {@code -Dfitsense.pruebas.semana-referencia=AAAA-MM-DD} (por ejemplo, para reproducir con otra semilla la
+     * observacion del respaldo multisemana); sin la propiedad, siempre 2026-11-02.
+     */
+    public static final LocalDate SEMANA_REFERENCIA =
+            LocalDate.parse(System.getProperty("fitsense.pruebas.semana-referencia", "2026-11-02"));
 
     static {
         if (SEMANA_REFERENCIA.getDayOfWeek() != DayOfWeek.MONDAY)
