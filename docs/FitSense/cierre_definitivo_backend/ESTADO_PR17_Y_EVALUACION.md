@@ -77,6 +77,23 @@ Para A2: antes de usar C2-D con participantes hacen falta **al menos 10 planes c
 
    **Se recomienda esperar a la evaluación.** La decisión es tuya.
 
+## 4 bis. Ajustes técnicos para cuando el PR #17 absorba `generation`
+
+Con #22 y #25 fusionados, el PR #17 tendrá que incorporar dos cambios. Ambos están **probados en la combinación local C** (`REGRESION_CIERRE_BACKEND.md` §3) y **no se han subido**, porque la orden no autoriza tocar el PR #17.
+
+| # | Ajuste | Por qué |
+|---|---|---|
+| 1 | `MigracionV45IT` parte de la última versión **anterior a 45**, no de `"44"` | Con V44_1 y V44_2 delante, migrar de 44 a 45 aplica 3 migraciones, no 1 |
+| 2 | `EsquemaVigenteSobreCatalogoAnterior.SOLO_ESQUEMA` con 44.1, 44.2 y 45, por ese orden (conflicto de fusión en la misma línea) | Las pruebas con catálogo anclado aplican aparte las migraciones de solo esquema; sin ellas fallan 37 IT |
+
+Con los dos ajustes, la regresión del PR #17 + 5 PR queda en verde:
+- 1.059 unitarias;
+- 514 IT, con 57 omitidas;
+- 4 × 225 en las baterías;
+- ciclo real 6/6;
+- 960 × 5 idéntico a la referencia;
+- REPLAY idéntico.
+
 ## 5. Cierre con la política histórica
 
 | Estado | Qué incluye |

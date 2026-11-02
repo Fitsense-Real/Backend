@@ -17,9 +17,11 @@
 | **Datos existentes** | V44_1 solo añade columnas NULL (las filas anteriores quedan sin código). V44_2 solo crea una tabla. V45 está revisada en el PR #17 | `MigracionV44_1IT` y `MigracionV44_2IT`: sobre un esquema histórico con datos, **ninguna columna, restricción ni fila anterior cambia** |
 | **Integridad** | `ck_paa_reason_codes_solo_sin_plan` (solo hay códigos sin plan publicado), `ck_sra_reason_code_solo_no_factible`, `uq_prt_token_hash`, `ck_prt_hash_sha256`, `ck_prt_caducidad`, `ck_prt_uso`, y FK `password_reset_tokens.user_id → users` | Las mismas pruebas; `RecuperacionContrasenaIT` |
 | **Índices** | `ix_prt_user_created (user_id, created_at)` para el límite de solicitudes. `reason_codes` no necesita índice (se lee por `attempt_id`) | — |
-| **Arranque repetido** | Un segundo `migrate` no aplica nada y `validate` es correcto | `MigracionV43IT`, `MigracionV44IT`, `MigracionV44_1IT`, `MigracionV44_2IT`; arranque real del *jar* local (44 migraciones) |
+| **Arranque repetido** | Un segundo `migrate` no aplica nada y `validate` es correcto | `MigracionV43IT`, `MigracionV44IT`, `MigracionV44_1IT`, `MigracionV44_2IT`; arranque real del *jar* combinado en base limpia: 46 migraciones (`generation` + 5 PR) y 47 (con el PR #17); el segundo arranque dice «Schema up to date» |
 | **Dependencias** | V44_1 depende de V32 (`plan_adaptation_attempts`) y V43 (`safe_regeneration_attempts`). V44_2 depende de V1 (`users`) | — |
 | **Validación de Hibernate** | `ddl-auto=validate` arranca con las 46/47 | Regresión completa en `REGRESION_CIERRE_BACKEND.md` |
+
+**Conflicto de fusión conocido entre #22 y #25.** Los dos añaden una línea al mismo punto de `EsquemaVigenteSobreCatalogoAnterior.SOLO_ESQUEMA` (prueba, no producción). El segundo en fusionarse debe quedarse con **las dos** entradas, en orden: 44.1 y después 44.2. Sin ellas fallan 37 IT con catálogo anclado. `MigracionV44_2IT` ya no depende del orden (3f31a4b).
 
 **Orden de fusión recomendado:** #22 antes que #25. Si se invierte, no pasa nada mientras **ninguna base compartida** haya aplicado V44_2 antes de V44_1. Flyway rechaza una versión anterior a la última aplicada (`outOfOrder=false`), así que:
 - se fusionan los dos;
