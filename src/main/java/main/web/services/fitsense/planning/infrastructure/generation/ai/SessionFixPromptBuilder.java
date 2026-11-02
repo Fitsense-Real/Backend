@@ -235,6 +235,9 @@ public class SessionFixPromptBuilder {
                     .append(" s (constraints.max_session_seconds), calculados a partir de los ejercicios aunque"
                             + " declares menos minutos.\n");
 
+        if (context.policy().elegibilidadFuncional())
+            prompt.append(main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional.reglaParaIA());
+
         prompt.append(sesionesSenaladas(context, derivation, adjustment));
 
         var snapshotJson = json.write(SessionFixInputSnapshot.of(full));

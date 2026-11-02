@@ -30,8 +30,10 @@ class ContratoV4CIATest {
     void snapshot() {
         var json = new JsonSupport();
         var hist = json.write(PlanInputSnapshot.of(ctx(PlanningPolicy.HISTORICA)));
+        var c2d = json.write(PlanInputSnapshot.of(ctx(PlanningPolicy.C2D)));
         var v4c = json.write(PlanInputSnapshot.of(ctx(PlanningPolicy.V4C)));
         assertFalse(hist.contains("max_session_seconds"), "la historica no cambia el contrato");
+        assertEquals(hist, c2d, "C2-D no cambia lo que ve la IA");
         assertTrue(v4c.contains("\"max_session_seconds\":2070"), v4c);
         assertEquals(hist, v4c.replace(",\"max_session_seconds\":2070", ""), "es el unico campo nuevo");
         var fix = json.write(SessionFixInputSnapshot.of(PlanInputSnapshot.of(ctx(PlanningPolicy.V4C))));
@@ -40,17 +42,21 @@ class ContratoV4CIATest {
                 .contains("max_session_seconds"));
     }
 
-    /** El prompt de generacion con la historica no cambia respecto al de la rama base (sin reglas nuevas). */
+    /** EF-0.1: la regla funcional llega a la IA solo con una version EF; con las demas, prompt y JSON identicos. */
     @Test
-    void promptHistoricoSinCambios() {
+    void elegibilidadFuncionalSoloConEF() {
         var b = new PlanPromptBuilder(new JsonSupport());
+        var json = new JsonSupport();
+        String regla = main.web.services.fitsense.planning.domain.services.ElegibilidadFuncional.reglaParaIA();
         var hist = b.build(ctx(PlanningPolicy.HISTORICA), "{}", null);
-        var legado = b.build(new PlanGenerationContext(7L, (short) 1, PromptCapacidadesTest.LUNES,
-                PromptCapacidadesTest.LUNES.plusDays(6), ctx(PlanningPolicy.HISTORICA).profile(), PlanAdjustment.none(),
-                PreviousWeekSummary.empty(), PromptCapacidadesTest.ELEGIBLES, SafetyProfile.none(), P), "{}", null);
-        assertEquals(legado, hist, "el constructor de siempre equivale a la historica");
-        assertFalse(hist.contains("max_session_seconds"));
-        assertFalse(hist.contains("ELEGIBILIDAD FUNCIONAL"), "EF no forma parte de esta rama");
+        var c2d = b.build(ctx(PlanningPolicy.C2D), "{}", null);
+        var ef = b.build(ctx(PlanningPolicy.C2D_EF), "{}", null);
+        assertFalse(hist.contains("ELEGIBILIDAD FUNCIONAL"));
+        assertEquals(hist, c2d);
+        assertTrue(ef.contains(regla), "la regla de VEF, tal cual");
+        assertEquals(c2d, ef.replace(regla, ""), "es el unico cambio del prompt");
+        assertEquals(json.write(PlanInputSnapshot.of(ctx(PlanningPolicy.C2D))),
+                json.write(PlanInputSnapshot.of(ctx(PlanningPolicy.C2D_EF))), "EF no cambia el JSON");
     }
 
     @Test

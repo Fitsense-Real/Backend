@@ -84,7 +84,7 @@ public class WeeklyTrainingPlan
     @Column(name = "planning_policy", length = 32)
     private String planningPolicy;
 
-    /** V44: traza de la politica (parametros efectivos, segundos estimados, limite V4, contexto). */
+    /** V44: traza de la politica (parametros efectivos, excepciones C2-D, segundos, limite V4, contexto). */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "planning_policy_trace", columnDefinition = "jsonb")
     private String planningPolicyTrace;

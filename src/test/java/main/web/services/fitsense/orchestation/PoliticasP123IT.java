@@ -106,6 +106,7 @@ class PoliticasP123IT {
     @Autowired PainMemoryService dolor;
     @Autowired UserSafetyExclusionRepository exclusiones;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.application.internal.commandservices.PlanningPolicySelector politicas;
     @Autowired WebApplicationContext contexto;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
@@ -160,15 +161,65 @@ class PoliticasP123IT {
         int piso = (int) Math.ceil(minutos * 0.70);
         try {
             long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
-            for (var d : jdbc.queryForList("SELECT expected_duration_minutes FROM planned_workouts WHERE plan_id = ?",
-                    Integer.class, plan)) {
+            var politica = politicas.activa();
+            assertEquals(politica.id(), jdbc.queryForObject("SELECT planning_policy FROM weekly_training_plans"
+                    + " WHERE plan_id = ?", String.class, plan), "el plan guarda la version con la que se valido");
+            assertEquals("70", jdbc.queryForObject("SELECT params->'prescription'->>'session_minutes_floor_pct' FROM"
+                    + " calculation_configs WHERE is_active", String.class), "el piso del generador sigue en el 70 %");
+            var excepciones = excepcionesC2D(plan);
+            for (var w : jdbc.queryForList("SELECT scheduled_date::text f, expected_duration_minutes d FROM planned_workouts"
+                    + " WHERE plan_id = ?", plan)) {
+                int d = ((Number) w.get("d")).intValue();
                 assertTrue(d <= techo, objetivo + ": sesion de " + d + " min con techo " + techo);
-                // La generacion inicial no hereda D8: ninguna sesion por debajo del piso de V20.
-                assertTrue(d >= piso - 1, objetivo + ": sesion inicial de " + d + " min bajo el piso " + piso);
+                if (d >= piso - 1) continue;
+                // La generacion inicial no hereda D8. Bajo el piso de V20 solo puede haber una sesion si la version
+                // tiene C2-D y la excepcion por saturacion DEMOSTRADA quedo registrada en la traza del plan.
+                assertTrue(politica.c2d(), objetivo + " (" + politica.id() + "): sesion inicial de " + d
+                        + " min bajo el piso " + piso + " sin C2-D");
+                assertTrue(excepciones.contains(String.valueOf(w.get("f"))), objetivo + " (" + politica.id()
+                        + "): sesion de " + d + " min bajo el piso sin excepcion C2-D registrada");
             }
-            System.out.println("P01_LIMITE " + objetivo + " " + minutos + " PLAN " + plan);
+            if (politica.elegibilidadFuncional()) sinFalsaCobertura(plan, objetivo);
+            System.out.println("P01_LIMITE " + objetivo + " " + minutos + " " + politica.id() + " PLAN " + plan
+                    + " excepciones_c2d=" + excepciones);
         } catch (DomainRuleViolationException e) {
             System.out.println("P01_LIMITE " + objetivo + " " + minutos + " SIN_PLAN " + e.getMessage());
+        }
+    }
+
+    /** Fechas de las sesiones publicadas por la excepcion C2-D, segun la traza del plan (V44). */
+    private java.util.Set<String> excepcionesC2D(long plan) {
+        var json = jdbc.queryForObject("SELECT planning_policy_trace::text FROM weekly_training_plans WHERE plan_id = ?",
+                String.class, plan);
+        var fechas = new java.util.TreeSet<String>();
+        if (json == null) return fechas;
+        try {
+            var arbol = new com.fasterxml.jackson.databind.ObjectMapper().readTree(json);
+            for (var s : arbol.path("sesiones"))
+                if (s.path("excepcion_c2d").asBoolean(false)) fechas.add(s.path("fecha").asText());
+        } catch (Exception e) {
+            fail("traza ilegible: " + e.getMessage());
+        }
+        return fechas;
+    }
+
+    /** EF: ningun PULL con trabajo resistido sin traccion, y ningun empuje en PULL ni traccion en PUSH. */
+    private void sinFalsaCobertura(long plan, GoalType objetivo) {
+        for (var w : jdbc.queryForList("SELECT pw.planned_workout_id id, pw.focus_code f, string_agg(coalesce("
+                + "e.movement_pattern, '-'), ' ') p FROM planned_workouts pw JOIN planned_workout_exercises x ON"
+                + " x.planned_workout_id = pw.planned_workout_id JOIN exercises e ON e.exercise_id = x.exercise_id"
+                + " WHERE pw.plan_id = ? GROUP BY pw.planned_workout_id, pw.focus_code", plan)) {
+            var pat = new java.util.HashSet<>(java.util.Arrays.asList(String.valueOf(w.get("p")).split(" ")));
+            String foco = String.valueOf(w.get("f"));
+            if ("PULL".equals(foco)) {
+                assertFalse(pat.contains("HORIZONTAL_PUSH") || pat.contains("VERTICAL_PUSH"), objetivo + ": empuje en PULL " + pat);
+                boolean resistido = pat.stream().anyMatch(x -> !java.util.Set.of("-", "OTHER", "MOBILITY",
+                        "LOCOMOTION_CARDIO", "BALANCE_CONTROL").contains(x));
+                assertTrue(!resistido || pat.contains("HORIZONTAL_PULL") || pat.contains("VERTICAL_PULL"),
+                        objetivo + ": PULL sin traccion real " + pat);
+            }
+            if ("PUSH".equals(foco))
+                assertFalse(pat.contains("HORIZONTAL_PULL") || pat.contains("VERTICAL_PULL"), objetivo + ": traccion en PUSH " + pat);
         }
     }
 

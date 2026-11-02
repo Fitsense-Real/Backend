@@ -108,5 +108,7 @@ class V4CValidadorRealTest {
         var r = v4(d, hist.conPolitica(PlanningPolicy.V4C));
         assertEquals(1, r.size(), r.toString());
         assertTrue(r.get(0).contains("2550 s") && r.get(0).contains("2070 s"), r.get(0));
+        assertFalse(v4(d, hist.conPolitica(PlanningPolicy.C2D_V4C)).isEmpty(), "la combinada tambien");
+        assertTrue(v4(d, hist.conPolitica(PlanningPolicy.C2D)).isEmpty(), "C2-D sola no cambia V4");
     }
 }
