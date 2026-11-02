@@ -1,5 +1,6 @@
 package main.web.services.fitsense.orchestation;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -22,7 +23,6 @@ import main.web.services.fitsense.profiling.domain.services.UserProfileCommandSe
 import main.web.services.fitsense.shared.domain.model.valueobjects.ContextoFaltaDeTiempo;
 import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion;
-import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,6 +71,8 @@ class ValidacionMultisemanaIT {
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
     @MockitoBean ReplicateSessionFixGenerator ia;
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos. */
+    @MockitoBean main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
 
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlanningContextFacade planning;
@@ -82,7 +84,8 @@ class ValidacionMultisemanaIT {
     @Autowired JdbcTemplate jdbc;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
-    static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    /** Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas). */
+    static final LocalDate S1 = RelojPruebas.SEMANA_REFERENCIA;
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine",
             "bench", "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine");
 
@@ -433,6 +436,7 @@ class ValidacionMultisemanaIT {
     }
 
     private void ejecutar(long u, long planId, Dia... dias) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ? ORDER BY scheduled_date",
                 Long.class, planId);
         for (int i = 0; i < ids.size(); i++) {

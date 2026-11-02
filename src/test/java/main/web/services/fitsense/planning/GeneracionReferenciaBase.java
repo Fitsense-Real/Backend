@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyPlanCommand;
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
@@ -12,7 +13,6 @@ import main.web.services.fitsense.profiling.domain.model.valueobjects.FitnessLev
 import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
 import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
 import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
-import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,8 @@ abstract class GeneracionReferenciaBase {
     @DisplayName("los planes iniciales de los 72 perfiles de referencia coinciden con la referencia")
     void generacionIntacta() throws Exception {
         var referencia = referencia();
-        var semana = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+        // Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas).
+        var semana = RelojPruebas.SEMANA_REFERENCIA;
         var lineas = new ArrayList<String>();
         int n = 0;
         for (var objetivo : GoalType.values())
