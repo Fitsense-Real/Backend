@@ -1,4 +1,4 @@
-# PostgreSQL 16 solo para desarrollo local (perfil «local»). Credenciales de
+# PostgreSQL 16 solo para desarrollo local (perfil «local-dev»). Credenciales de
 # desarrollo; los datos viven en el volumen fitsense-local-data.
 #   docker compose -f docker-compose.local.yml up -d
 #   docker compose -f docker-compose.local.yml down          # parar

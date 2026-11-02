@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prueba de humo de la API con un cliente HTTP independiente (curl), contra un
-# backend LOCAL (perfil «local»). No usa Flutter. Crea un usuario nuevo con un
+# backend LOCAL (perfil «local-dev»). No usa Flutter. Crea un usuario nuevo con un
 # correo de dominio reservado (.invalid) y recorre la primera ruta del MVP.
 #
 #   ./scripts/smoke-local.sh [URL_BASE]      (por defecto http://localhost:8080/api/v1)

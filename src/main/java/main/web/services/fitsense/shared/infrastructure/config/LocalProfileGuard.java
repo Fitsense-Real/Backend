@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Con el perfil {@code local}, impide arrancar contra una base que no sea local (cierre definitivo, 3.1). Evita que
+ * Con el perfil {@code local} o {@code local-dev}, impide arrancar contra una base que no sea local (cierre definitivo, 3.1). Evita que
  * una variable de entorno olvidada (p. ej. una URL de Neon o Railway) haga que el desarrollo o las pruebas manuales
  * escriban en una base compartida. Fuera del perfil local no hace nada.
  * <p>
@@ -26,7 +26,7 @@ public class LocalProfileGuard implements EnvironmentPostProcessor, Ordered {
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment entorno, SpringApplication aplicacion) {
-        if (!entorno.acceptsProfiles(Profiles.of("local"))) return;
+        if (!entorno.acceptsProfiles(Profiles.of("local | local-dev"))) return;
         comprobar(entorno.getProperty("spring.datasource.url", ""),
                 entorno.getProperty("fitsense.ai.enabled", Boolean.class, false));
     }

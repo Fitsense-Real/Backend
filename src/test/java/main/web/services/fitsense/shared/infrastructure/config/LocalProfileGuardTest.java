@@ -13,6 +13,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class LocalProfileGuardTest {
 
     @Test
+    @DisplayName("el perfil local-dev o local activa el bloqueo antes de conectar; sin perfil no actua")
+    void perfiles() {
+        var guardia = new LocalProfileGuard();
+        for (var perfil : new String[]{"local", "local-dev"}) {
+            var env = new org.springframework.mock.env.MockEnvironment()
+                    .withProperty("spring.datasource.url", "jdbc:postgresql://x.neon.tech/neondb");
+            env.setActiveProfiles(perfil);
+            assertThrows(IllegalStateException.class, () -> guardia.postProcessEnvironment(env, null), perfil);
+        }
+        var prod = new org.springframework.mock.env.MockEnvironment()
+                .withProperty("spring.datasource.url", "jdbc:postgresql://x.neon.tech/neondb");
+        assertDoesNotThrow(() -> guardia.postProcessEnvironment(prod, null), "produccion no se ve afectada");
+    }
+
+    @Test
     @DisplayName("acepta bases locales")
     void locales() {
         for (var url : new String[]{"jdbc:postgresql://localhost:5432/fitsense",
@@ -34,13 +49,13 @@ class LocalProfileGuardTest {
     }
 
     @Test
-    @DisplayName("application-local.properties: base local por defecto, IA apagada, sin Neon/Railway ni token real")
+    @DisplayName("application-local-dev.properties: base local por defecto, IA apagada, sin Neon/Railway ni token real")
     void archivoDelPerfil() throws Exception {
         var p = new Properties();
-        try (var in = Files.newInputStream(Path.of("src/main/resources/application-local.properties"))) {
+        try (var in = Files.newInputStream(Path.of("src/main/resources/application-local-dev.properties"))) {
             p.load(in);
         }
-        var texto = Files.readString(Path.of("src/main/resources/application-local.properties")).toLowerCase();
+        var texto = Files.readString(Path.of("src/main/resources/application-local-dev.properties")).toLowerCase();
         assertFalse(texto.contains("neon.tech") || texto.contains("railway.app") || texto.contains("neondb"));
         assertEquals("false", p.getProperty("fitsense.ai.enabled"));
         assertEquals("", p.getProperty("fitsense.ai.api-token"));
