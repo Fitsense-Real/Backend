@@ -36,7 +36,13 @@ class MigracionV44_2IT {
                 postgres.getPassword()));
         assertTrue(postgres.getJdbcUrl().startsWith("jdbc:postgresql://localhost:"), "solo base efimera local");
 
-        flyway("44").migrate();
+        // El historico es todo lo anterior a V44_2: V44 y, si ya esta fusionado, V44_1 (los dos PR son
+        // independientes y el orden de fusion no debe romper esta prueba).
+        var anterior = java.util.Arrays.stream(flyway("44.2").info().all())
+                .map(org.flywaydb.core.api.MigrationInfo::getVersion)
+                .filter(v -> v != null && v.isNewerThan("44") && !v.isAtLeast("44.2"))
+                .reduce((a, b) -> b).map(Object::toString).orElse("44");
+        flyway(anterior).migrate();
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
                 + " VALUES ('h442@pruebas.invalid', 'x', 'Historico', now(), now())");
         long u = jdbc.queryForObject("SELECT user_id FROM users", Long.class);
