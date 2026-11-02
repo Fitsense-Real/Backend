@@ -6,6 +6,7 @@ import ch.qos.logback.core.AppenderBase;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.execution.domain.model.commands.FinishWorkoutSessionCommand;
 import main.web.services.fitsense.execution.domain.model.commands.RecordSessionExerciseCommand;
 import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
@@ -122,6 +123,10 @@ class CampanaMvp8UsuariosIT {
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
+    /** El reloj lo controla la prueba: sin barrido horario de entrenamientos vencidos (ver RelojPruebas). */
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    main.web.services.fitsense.planning.infrastructure.scheduling.OverdueWorkoutScheduler vencidas;
+
     @MockitoSpyBean ReplicateSessionFixGenerator correcciones;
     @MockitoSpyBean ReplicateTrainingPlanGenerator generador;
 
@@ -164,7 +169,8 @@ class CampanaMvp8UsuariosIT {
     static final int HILOS = Integer.getInteger("fitsense.campana.hilos", ESTRES ? 8 : 4);
     static final int SEMANAS = ESTRES ? 10 : 8;
     static final double USD_ENTRADA = 0.25, USD_SALIDA = 2.00;
-    static final LocalDate S1 = LocalDate.of(2026, 11, 2);
+    /** Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas). */
+    static final LocalDate S1 = RelojPruebas.SEMANA_REFERENCIA;
 
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine",
             "bench", "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine");
@@ -930,6 +936,7 @@ class CampanaMvp8UsuariosIT {
     }
 
     private void hecha(long u, Ses s, short rpe) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long id = sesiones.handle(new StartWorkoutSessionCommand(u, s.id())).orElseThrow().getId();
         for (var e : s.ejercicios()) completo(u, id, e);
         sesiones.handle(new FinishWorkoutSessionCommand(u, id, rpe, (short) 4, (short) s.minutos()));
@@ -937,6 +944,7 @@ class CampanaMvp8UsuariosIT {
 
     /** La primera mitad de los ejercicios completos; el resto dejado por el motivo. */
     private void parcial(long u, Ses s, SkipReason motivo, short rpe) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long id = sesiones.handle(new StartWorkoutSessionCommand(u, s.id())).orElseThrow().getId();
         int hechos = Math.max(1, s.ejercicios().size() / 2);
         for (int i = 0; i < s.ejercicios().size(); i++) {
@@ -949,6 +957,7 @@ class CampanaMvp8UsuariosIT {
 
     /** Todo completo salvo el primer ejercicio de fuerza (o el primero), dejado por dolor. */
     private void dolorEnUnEjercicio(long u, Ses s, short rpe) {
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long id = sesiones.handle(new StartWorkoutSessionCommand(u, s.id())).orElseThrow().getId();
         var conDolor = s.ejercicios().stream().filter(e -> "SETS_REPS".equals(e.tipo())).findFirst()
                 .orElse(s.ejercicios().get(0));
