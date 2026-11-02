@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning;
 
+import main.web.services.fitsense.RelojPruebas;
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyPlanCommand;
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
@@ -11,7 +12,6 @@ import main.web.services.fitsense.profiling.domain.model.valueobjects.FitnessLev
 import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
 import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
 import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
-import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -40,7 +40,8 @@ abstract class Usuario31Base {
     @Autowired PlanDraftValidator validador;
     @Autowired JdbcTemplate jdbc;
 
-    static final LocalDate LUNES = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    /** Semana fija: la semilla del motor de reglas depende de la semana (ver RelojPruebas). */
+    static final LocalDate LUNES = RelojPruebas.SEMANA_REFERENCIA;
     static final LocalDate SABADO = LUNES.plusDays(5), DOMINGO = LUNES.plusDays(6);
 
     static final List<String> EQUIPO = List.of("ab wheel", "balance board", "band", "barbell", "bench", "body weight",
