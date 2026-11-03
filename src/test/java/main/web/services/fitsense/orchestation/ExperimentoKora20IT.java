@@ -104,6 +104,9 @@ class ExperimentoKora20IT {
     static final String GUION_TIPO = System.getProperty("fitsense.experimento.kora20.guion", "V2");
     /** H1 (experimental): regla de patron de V8C, conjunto (por defecto de la aplicacion) o multiconjunto. */
     static final String V8C_PATRON = System.getProperty("fitsense.experimento.kora20.v8c-patron", "");
+    /** H12 (prototipos): politica de VARIANTE (historica | reduccion-demostrable) y maximo de sustituciones (0 = sin). */
+    static final String VARIANTE_POLITICA = System.getProperty("fitsense.experimento.kora20.variante-politica", "");
+    static final String VARIANTE_MAX = System.getProperty("fitsense.experimento.kora20.variante-max", "");
     static final LocalDate S3 = LocalDate.of(2026, 11, 16);
     /**
      * {@code proxy}: la credencial de Replicate la inyecta el proxy del entorno (secreto de red) en las peticiones a
@@ -134,6 +137,8 @@ class ExperimentoKora20IT {
         if (IA && !PREFER_WAIT.isBlank()) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
         if (!PROMPT.isBlank()) r.add("fitsense.ai.adaptation.prompt-version", () -> PROMPT);
         if (!V8C_PATRON.isBlank()) r.add("fitsense.adaptation.v8c.pattern-rule", () -> V8C_PATRON);
+        if (!VARIANTE_POLITICA.isBlank()) r.add("fitsense.adaptation.variante.policy", () -> VARIANTE_POLITICA);
+        if (!VARIANTE_MAX.isBlank()) r.add("fitsense.adaptation.variante.max-sustituciones", () -> VARIANTE_MAX);
         if (GUION) r.add("fitsense.ai.base-url", () -> "http://127.0.0.1:9/guion-sin-red");
         r.add("fitsense.ai.api-token", () -> GUION ? "guion-sin-red" : !IA ? "" : CREDENCIAL_PROXY ? "marcador-credencial-inyectada-por-el-proxy"
                 : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), ""));
@@ -207,6 +212,8 @@ class ExperimentoKora20IT {
         cfg.put("modelo", generador.modelName());
         cfg.put("prompt_adaptacion", promptBuilder.version());
         cfg.put("v8c_regla_patron", conservacion.reglaPatron());
+        cfg.put("variante_politica", conservacion.politicaVariante());
+        cfg.put("variante_max_sustituciones", conservacion.maxSustituciones());
         cfg.put("perfiles", PERFILES.isBlank() ? "03_PERFILES_U01_U20.csv (congelados)" : PERFILES);
         cfg.put("semanas", SEMANAS);
         if (GUION) cfg.put("guion", GUION_TIPO);
@@ -230,6 +237,8 @@ class ExperimentoKora20IT {
         var incid = new ArrayList<String>();
         sem2.clear();
         sig2.clear();
+        sem3.clear();
+        sig3.clear();
 
         for (var p : lista) ejecutarUsuario(p, false, gen, planIni, ejec, adh, dec, sig, res, incid);
         if (IA && GEMELOS) for (var p : lista) ejecutarGemelo(p, gen, planIni, incid);
@@ -244,6 +253,10 @@ class ExperimentoKora20IT {
         if (SEMANAS >= 2) {
             csv("semana2.csv", sem2);
             csv("plan_siguiente_semana2.csv", sig2);
+        }
+        if (SEMANAS >= 3) {
+            csv("semana3.csv", sem3);
+            csv("plan_siguiente_semana3.csv", sig3);
         }
         escribir("incidencias.log", incid);
         if (IA_O_GUION) escribir("trazas_ia.jsonl", trazasIa);
@@ -260,6 +273,8 @@ class ExperimentoKora20IT {
                                  List<Map<String, Object>> res, List<String> incid) {
         String id = p.get("id");
         etiquetaActual = id + "/adaptacion";
+        perfilActual = p;
+        semanaActual = 1;
         var r = new LinkedHashMap<String, Object>();
         r.put("id", id);
         r.put("objetivo", p.get("objetivo"));
@@ -414,7 +429,10 @@ class ExperimentoKora20IT {
         }
         r.put("violaciones_linaje", violaciones());
         res.add(r);
-        if (SEMANAS >= 2 && siguiente.isPresent()) semana2(p, u, siguiente.get(), incid);
+        if (SEMANAS >= 2 && siguiente.isPresent()) {
+            var s3 = semanaN(2, p, u, siguiente.get(), incid);
+            if (SEMANAS >= 3 && s3.isPresent()) semanaN(3, p, u, s3.get(), incid);
+        }
     }
 
     /** Etapa C: la generacion inicial con IA de un gemelo del perfil (solo se mide la generacion). */
@@ -734,21 +752,42 @@ class ExperimentoKora20IT {
 
     static final List<Map<String, Object>> sem2 = new ArrayList<>();
     static final List<Map<String, Object>> sig2 = new ArrayList<>();
+    static final List<Map<String, Object>> sem3 = new ArrayList<>();
+    static final List<Map<String, Object>> sig3 = new ArrayList<>();
+    /** Perfil y semana (1, 2, 3) en curso: el guion H12 los usa para elegir la estrategia de cada sesion. */
+    static volatile Perfil perfilActual;
+    static volatile int semanaActual = 1;
+
+    /** El valor de una columna para la semana n: la de esa semana, si no la de la anterior, ..., si no la base. */
+    static String deSemana(Perfil p, String columna, int n) {
+        for (int k = n; k >= 2; k--) {
+            String v = p.c().get(columna + "_semana" + k);
+            if (v != null && !v.isBlank()) return v;
+        }
+        return p.get(columna);
+    }
 
     /**
      * Semana 2: se ejecuta el plan publicado para S2 con el patron {@code secuencia_semana2} (o el de la semana 1) y
      * sus motivos, y se cierra el ciclo S2 -> S3 con los mismos servicios. Registra la decision, V32, las llamadas y la
      * comparacion sesion a sesion del plan de S3 con el medido de S2.
      */
-    private void semana2(Perfil p, long u, long planS2, List<String> incid) {
+    /**
+     * La semana n (2 o 3): ejecuta el plan medido segun secuencia_semana{n} y corre el ciclo de esa semana. Las
+     * columnas que no existen para la semana n se heredan de la anterior y, al final, de la base. Devuelve el plan
+     * publicado para la semana n+1.
+     */
+    private Optional<Long> semanaN(int n, Perfil p, long u, long planS2, List<String> incid) {
         String id = p.get("id");
-        etiquetaActual = id + "/adaptacion_s2";
+        etiquetaActual = id + "/adaptacion_s" + n;
+        perfilActual = p;
+        semanaActual = n;
+        var semL = n == 2 ? sem2 : sem3;
+        var sigL = n == 2 ? sig2 : sig3;
+        LocalDate medida = S1.plusWeeks(n - 1), proxima = S1.plusWeeks(n);
         var medidas = sesionesDe(planS2);
-        String sec = p.c().getOrDefault("secuencia_semana2", "");
-        String[] patron = (sec == null || sec.isBlank() ? p.get("secuencia") : sec).split("/");
-        String m2 = p.c().getOrDefault("motivo_omision_s2_semana2", ""), m3 = p.c().getOrDefault("motivo_omision_s3_semana2", "");
-        String[] motivos = {"", m2 == null || m2.isBlank() ? p.get("motivo_omision_s2") : m2,
-                m3 == null || m3.isBlank() ? p.get("motivo_omision_s3") : m3};
+        String[] patron = deSemana(p, "secuencia", n).split("/");
+        String[] motivos = {"", deSemana(p, "motivo_omision_s2", n), deSemana(p, "motivo_omision_s3", n)};
         RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         for (int i = 0; i < medidas.size() && i < 3; i++) {
             long w = medidas.get(i);
@@ -762,37 +801,37 @@ class ExperimentoKora20IT {
                     default -> throw new IllegalStateException("patron desconocido " + patron[i]);
                 }
             } catch (RuntimeException e) {
-                incid.add(id + " SEMANA2 EJECUCION S" + (i + 1) + " " + patron[i] + " ERROR " + e);
+                incid.add(id + " SEMANA" + n + " EJECUCION S" + (i + 1) + " " + patron[i] + " ERROR " + e);
             }
         }
         Optional<Long> siguiente = Optional.empty();
         String error = null;
         int antes = llamadas.get();
         try {
-            siguiente = ciclo.runFor(u, S2, S3);
+            siguiente = ciclo.runFor(u, medida, proxima);
         } catch (RuntimeException e) {
             error = e.getClass().getSimpleName() + ": " + e.getMessage();
-            incid.add(id + " SEMANA2 CICLO ERROR " + error);
+            incid.add(id + " SEMANA" + n + " CICLO ERROR " + error);
         }
         var m = jdbc.queryForList("SELECT weighted_adherence_pct, observed_adherence_pct, registration_coverage_pct"
-                + " FROM weekly_user_metrics WHERE user_id = ? AND week_start_date = ?", u, S2);
+                + " FROM weekly_user_metrics WHERE user_id = ? AND week_start_date = ?", u, medida);
         var v32 = jdbc.queryForList("SELECT attempt_id, decision, status, generation_source, ai_calls,"
                 + " targeted_sessions::text, targeted_interventions::text, applied_sessions::text,"
                 + " no_effect_sessions::text, conserved_sessions::text, resulting_plan_id, rejection_reason"
                 + " FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id", u);
         var r = new LinkedHashMap<String, Object>();
         r.put("id", id);
-        r.put("plan_medido_s2", planS2);
-        r.put("secuencia_semana2", String.join("/", patron));
+        r.put("plan_medido_s" + n, planS2);
+        r.put("secuencia_semana" + n, String.join("/", patron));
         if (!m.isEmpty()) {
-            r.put("Aw_s2", m.get(0).get("weighted_adherence_pct"));
-            r.put("Aobs_s2", m.get(0).get("observed_adherence_pct"));
-            r.put("C_s2", m.get(0).get("registration_coverage_pct"));
+            r.put("Aw_s" + n, m.get(0).get("weighted_adherence_pct"));
+            r.put("Aobs_s" + n, m.get(0).get("observed_adherence_pct"));
+            r.put("C_s" + n, m.get(0).get("registration_coverage_pct"));
         }
         r.put("filas_v32", v32.size());
         if (!v32.isEmpty()) r.putAll(v32.get(v32.size() - 1));
-        r.put("llamadas_ia_s2", llamadas.get() - antes);
-        r.put("error_ciclo_s2", error);
+        r.put("llamadas_ia_s" + n, llamadas.get() - antes);
+        r.put("error_ciclo_s" + n, error);
         var cambiadas = new ArrayList<String>();
         if (siguiente.isPresent()) {
             var nuevas = sesionesDe(siguiente.get());
@@ -807,15 +846,16 @@ class ExperimentoKora20IT {
                 f.put("igual_a_la_medida", a.equals(b));
                 f.put("medida", a);
                 f.put("siguiente", b);
-                sig2.add(f);
+                sigL.add(f);
                 if (!a.equals(b)) cambiadas.add("S" + (i + 1));
             }
-            r.put("plan_s3", "PUBLICADO (plan " + siguiente.get() + ", " + jdbc.queryForObject("SELECT generation_source"
+            r.put("plan_s" + (n + 1), "PUBLICADO (plan " + siguiente.get() + ", " + jdbc.queryForObject("SELECT generation_source"
                     + " FROM weekly_training_plans WHERE plan_id = ?", String.class, siguiente.get()) + ")");
-        } else r.put("plan_s3", "NO PUBLICADO" + (error == null ? "" : " (" + error + ")"));
-        r.put("sesiones_cambiadas_s3", cambiadas.isEmpty() ? "ninguna" : String.join("|", cambiadas));
+        } else r.put("plan_s" + (n + 1), "NO PUBLICADO" + (error == null ? "" : " (" + error + ")"));
+        r.put("sesiones_cambiadas_s" + (n + 1), cambiadas.isEmpty() ? "ninguna" : String.join("|", cambiadas));
         r.put("violaciones_linaje", violaciones());
-        sem2.add(r);
+        semL.add(r);
+        return siguiente;
     }
 
     // ================================================================== GUION (sin red)
@@ -845,7 +885,18 @@ class ExperimentoKora20IT {
         var acciones = new ArrayList<String>();
         var factibles = main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion
                 .calcular(ctx, der);
-        if ("COMBINADOS".equals(GUION_TIPO) && !etiquetaActual.endsWith("_s2")
+        if ("H12".equals(GUION_TIPO) && perfilActual != null
+                && !deSemana(perfilActual, "guion_h12", semanaActual).isBlank()) {
+            h12(intento, ctx, der, factibles, sesiones, acciones);
+            String salida = "{\"schema_version\":\"FIX-1.0\",\"rationale\":\"guion H12\",\"sessions\":["
+                    + String.join(",", sesiones) + "]}";
+            traza.put("acciones", String.join(" | ", acciones));
+            traza.put("resultado", "RESPUESTA_GUION");
+            traza.put("salida", salida);
+            trazasIa.add(json(traza));
+            return new ReplicateSessionFixGenerator.RawFix(prompt.snapshotJson(), salida);
+        }
+        if ("COMBINADOS".equals(GUION_TIPO) && semanaActual == 1
                 && combinados(etiquetaActual.split("/")[0], intento, ctx, der, factibles, sesiones, acciones)) {
             String salida = "{\"schema_version\":\"FIX-1.0\",\"rationale\":\"guion COMBINADOS\",\"sessions\":["
                     + String.join(",", sesiones) + "]}";
@@ -885,6 +936,148 @@ class ExperimentoKora20IT {
         traza.put("salida", salida);
         trazasIa.add(json(traza));
         return new ReplicateSessionFixGenerator.RawFix(prompt.snapshotJson(), salida);
+    }
+
+    // ------------------------------------------------------------------ H12
+
+    /**
+     * Guion H12 (escenarios controlados de la fase 5 de la orden H1/H12). La columna guion_h12 (o
+     * guion_h12_semana{n}) dice, por sesion, que hace el «modelo» en el INTENTO 1, p. ej.
+     * {@code S2=LATERAL_TODO;S3=DOSIS}. En el intento 2 responde como un modelo que cumple H12-A (CUMPLIDOR): solo
+     * sustitutos de MENOR dificultad y reducciones de dosis que caben; si no hay nada, omite la sesion. En el intento 3
+     * omite todo. Estrategias:
+     * <ul>
+     *   <li>LATERAL_TODO / LATERAL_UNO: sustitutos de la MISMA dificultad y la misma dosis (todos / el primero);</li>
+     *   <li>LATERAL_EQUIPO: el primer sustituto lateral con OTRO equipamiento (otra demanda, sin medida en el
+     *       catalogo);</li>
+     *   <li>MENOR / MENOR_UNO: sustitutos de MENOR dificultad y la misma dosis (todos / el primero);</li>
+     *   <li>DOSIS: la primera reduccion de dosis que ofrece V2, quepa o no; sin ninguna (GM), una repeticion menos
+     *       (V24 la debe rechazar);</li>
+     *   <li>CAMBIO_MUSCULO: el primer sustituto de la misma dosis con otro musculo principal;</li>
+     *   <li>VIOLA_H1: el sustituto de un patron reemplaza tambien a un ejercicio de OTRO patron (#12b);</li>
+     *   <li>CUMPLIDOR: lo del intento 2; OMITIR: omite.</li>
+     * </ul>
+     */
+    private void h12(int intento,
+                     main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext ctx,
+                     main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation der,
+                     List<main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion.Sesion> fs,
+                     List<String> sesiones, List<String> acciones) {
+        var cat = ctx.availableExercises().stream().collect(Collectors.toMap(
+                main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId, x -> x, (a, b) -> a));
+        var menores = main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion
+                .calcular(ctx, der, true).stream().collect(Collectors.toMap(f -> f.plannedWorkoutId(), f -> f));
+        var orden = der.workouts().stream().sorted(java.util.Comparator.comparing(d -> d.workout().scheduledDate()))
+                .map(d -> d.sourcePlannedWorkoutId()).toList();
+        var plan = new LinkedHashMap<String, String>();
+        for (var parte : deSemana(perfilActual, "guion_h12", semanaActual).split(";")) {
+            var kv = parte.split("=");
+            if (kv.length == 2) plan.put(kv[0].strip(), kv[1].strip());
+        }
+        for (var f : fs) {
+            var a = new Ses(f, der);
+            String clave = "S" + (orden.indexOf(f.plannedWorkoutId()) + 1);
+            String estrategia = intento >= 3 ? "OMITIR" : intento == 2 ? "CUMPLIDOR" : plan.getOrDefault(clave, "CUMPLIDOR");
+            var fm = menores.get(f.plannedWorkoutId());
+            java.util.function.BiFunction<Long, Boolean, List<Long>> lateral = (id, mismoEquipo) -> a.mismaDosis(id).stream()
+                    .filter(x -> indice(a.ej, x) < 0 && cat.get(x) != null && cat.get(id) != null
+                            && cat.get(x).difficulty() == cat.get(id).difficulty()
+                            && (mismoEquipo == null || mismoEquipo == java.util.Objects.equals(
+                            cat.get(x).equipmentCode(), cat.get(id).equipmentCode())))
+                    .toList();
+            java.util.function.Function<Long, List<Long>> menor = id -> fm == null ? List.of()
+                    : fm.sustitutos().stream().filter(x -> x.mismaDosis() && x.reemplaza() == id)
+                    .map(x -> x.exerciseId()).filter(x -> indice(a.ej, x) < 0).toList();
+            switch (estrategia) {
+                case "LATERAL_TODO", "LATERAL_UNO", "LATERAL_EQUIPO" -> {
+                    boolean otroEquipo = "LATERAL_EQUIPO".equals(estrategia) && a.ej.stream()
+                            .anyMatch(e -> !lateral.apply(e.exerciseId(), Boolean.FALSE).isEmpty());
+                    if ("LATERAL_EQUIPO".equals(estrategia) && !otroEquipo)
+                        a.hecho.add("LATERAL_EQUIPO sin sustituto lateral de otro equipamiento: se usa el mismo equipamiento");
+                    for (var e : List.copyOf(a.ej)) {
+                        var m = lateral.apply(e.exerciseId(), otroEquipo ? Boolean.FALSE : null);
+                        if (m.isEmpty()) continue;
+                        a.sustituir(e.exerciseId(), m.get(0), estrategia + " " + e.exerciseId() + "(dif "
+                                + cat.get(e.exerciseId()).difficulty() + ")->" + m.get(0) + "(dif " + cat.get(m.get(0)).difficulty()
+                                + ", " + cat.get(m.get(0)).equipmentCode() + ")");
+                        if (!"LATERAL_TODO".equals(estrategia)) break;
+                    }
+                }
+                case "MENOR", "MENOR_UNO" -> {
+                    for (var e : List.copyOf(a.ej)) {
+                        var m = menor.apply(e.exerciseId());
+                        if (m.isEmpty()) continue;
+                        a.sustituir(e.exerciseId(), m.get(0), estrategia + " " + e.exerciseId() + "(dif "
+                                + cat.get(e.exerciseId()).difficulty() + ")->" + m.get(0) + "(dif " + cat.get(m.get(0)).difficulty() + ")");
+                        if ("MENOR_UNO".equals(estrategia)) break;
+                    }
+                }
+                case "DOSIS" -> {
+                    if (!f.opciones().isEmpty()) {
+                        var o = f.opciones().get(0);
+                        aplicarOpcion(a.ej, o);
+                        a.hecho.add("DOSIS " + o.exerciseId() + " " + o.antes() + "->" + o.despues() + " retira "
+                                + o.segundosRetirados() + " s (" + (o.cabe() ? "cabe" : "NO cabe") + ", margen " + f.margen() + ")");
+                    } else {
+                        long r = a.nth("SETS_REPS", 0);
+                        var x = a.ej.get(indice(a.ej, r));
+                        a.dosis(r, null, x.plannedReps() - 1, null, "DOSIS sin opciones (4D): reps-1 " + r + " (prohibida)");
+                    }
+                }
+                case "CAMBIO_MUSCULO" -> {
+                    for (var e : List.copyOf(a.ej)) {
+                        var c0 = cat.get(e.exerciseId());
+                        var m = a.mismaDosis(e.exerciseId()).stream().filter(x -> indice(a.ej, x) < 0 && cat.get(x) != null
+                                && c0 != null && !java.util.Objects.equals(cat.get(x).targetMuscle(), c0.targetMuscle())).toList();
+                        if (m.isEmpty()) continue;
+                        a.sustituir(e.exerciseId(), m.get(0), "CAMBIO_MUSCULO " + e.exerciseId() + "(" + c0.targetMuscle()
+                                + ", dif " + c0.difficulty() + ")->" + m.get(0) + "(" + cat.get(m.get(0)).targetMuscle()
+                                + ", dif " + cat.get(m.get(0)).difficulty() + ")");
+                        break;
+                    }
+                }
+                case "VIOLA_H1" -> {
+                    long p1 = -1, p2 = -1;
+                    List<Long> subs = List.of();
+                    for (var e : a.ej) {
+                        var m = a.mismaDosis(e.exerciseId()).stream().filter(x -> indice(a.ej, x) < 0).toList();
+                        if (m.size() >= 2) { p1 = e.exerciseId(); subs = m; break; }
+                    }
+                    final long q1 = p1;
+                    if (p1 > 0) p2 = a.ej.stream().map(x -> x.exerciseId()).filter(x -> cat.get(x) != null && cat.get(q1) != null
+                            && !cat.get(q1).movementPattern().equals(cat.get(x).movementPattern())).findFirst().orElse(-1L);
+                    if (p1 > 0 && p2 > 0) {
+                        a.sustituir(p1, subs.get(0), "VIOLA_H1 " + p1 + "(" + cat.get(p1).movementPattern() + ")->" + subs.get(0));
+                        a.sustituir(p2, subs.get(1), "VIOLA_H1 " + p2 + "(" + cat.get(p2).movementPattern() + ")->" + subs.get(1)
+                                + "(" + cat.get(subs.get(1)).movementPattern() + ")");
+                    }
+                }
+                case "CUMPLIDOR" -> {
+                    for (var e : List.copyOf(a.ej)) {
+                        var m = menor.apply(e.exerciseId());
+                        if (!m.isEmpty()) a.sustituir(e.exerciseId(), m.get(0), "CUMPLIDOR menor " + e.exerciseId()
+                                + "->" + m.get(0));
+                    }
+                    long suma = 0;
+                    var tocados = new java.util.HashSet<Long>();
+                    for (var o : f.opciones()) {
+                        if (!o.cabe() || tocados.contains(o.exerciseId()) || indice(a.ej, o.exerciseId()) < 0) continue;
+                        if (f.margen() != null && suma + o.segundosRetirados() > f.margen()) continue;
+                        aplicarOpcion(a.ej, o);
+                        suma += o.segundosRetirados();
+                        tocados.add(o.exerciseId());
+                        a.hecho.add("CUMPLIDOR dosis " + o.exerciseId() + " " + o.antes() + "->" + o.despues());
+                    }
+                }
+                default -> { }
+            }
+            if (a.ej.equals(new Ses(f, der).ej) || "OMITIR".equals(estrategia)) {
+                acciones.add(f.plannedWorkoutId() + " " + clave + " i" + intento + " " + estrategia + ": OMITIDA (sin cambio aplicable)");
+            } else {
+                sesiones.add(a.json());
+                acciones.add(f.plannedWorkoutId() + " " + clave + " i" + intento + " " + estrategia + ": " + String.join(", ", a.hecho));
+            }
+        }
     }
 
     // ------------------------------------------------------------------ COMBINADOS

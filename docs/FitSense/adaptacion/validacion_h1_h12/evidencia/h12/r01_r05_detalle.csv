@@ -1,0 +1,57 @@
+corrida,semana,usuario,objetivo,nivel,sesion,motivo,posicion,original,nombre_original,dificultad_original,patron_original,musculo_original,dosis_original,sustituto,nombre_sustituto,dificultad_sustituto,patron_sustituto,musculo_sustituto,dosis_nueva,duracion_s,duracion_nueva_s,minimo_v20_s,margen_s,era_sustituto_de_semana_1
+RC1_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,1,933,kneeling push-up (male),1,HORIZONTAL_PUSH,pectorals,3x10 r90,1098,push-up (wall) v. 2,1,HORIZONTAL_PUSH,pectorals,3x10 r90,2118,2118,1890,228,False
+RC1_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,2,143,band underhand pulldown,1,VERTICAL_PULL,lats,3x10 r90,114,band close-grip pulldown,1,VERTICAL_PULL,lats,3x10 r90,2118,2118,1890,228,False
+RC1_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,3,1195,self assisted inverse leg curl,1,KNEE_DOMINANT,hamstrings,3x10 r90,144,band squat,1,KNEE_DOMINANT,glutes,3x10 r90,2118,2118,1890,228,False
+RC1_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,4,101,band shoulder press,1,VERTICAL_PUSH,delts,3x10 r90,739,dumbbell seated shoulder press,1,VERTICAL_PUSH,delts,3x10 r90,2118,2118,1890,228,False
+RC1_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,5,110,band lying straight leg raise,1,TRUNK_FLEXION,abs,2x13 r90,57,3/4 sit-up,1,TRUNK_FLEXION,abs,2x13 r90,2118,2118,1890,228,False
+RC1_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,6,1099,push-up plus,1,HORIZONTAL_PUSH,pectorals,3x10 r90,460,chest tap push-up (male),1,HORIZONTAL_PUSH,pectorals,3x10 r90,2118,2118,1890,228,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,1,862,gorilla chin,1,VERTICAL_PULL,abs,2x10 r120,74,assisted parallel close grip pull-up,1,VERTICAL_PULL,lats,2x10 r120,2520,2520,2520,0,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,2,988,lever chest press,1,HORIZONTAL_PUSH,pectorals,2x8 r120,72,assisted chest dip (kneeling),1,HORIZONTAL_PUSH,pectorals,2x8 r120,2520,2520,2520,0,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,3,1191,side-to-side chin,1,VERTICAL_PULL,lats,2x8 r120,75,assisted pull-up,1,VERTICAL_PULL,lats,2x8 r120,2520,2520,2520,0,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,4,1046,lever seated leg curl,1,KNEE_DOMINANT,hamstrings,2x8 r120,327,cable assisted inverse leg curl,1,KNEE_DOMINANT,hamstrings,2x8 r120,2520,2520,2520,0,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,5,987,lever military press,1,VERTICAL_PUSH,delts,2x8 r120,101,band shoulder press,1,VERTICAL_PUSH,delts,2x8 r120,2520,2520,2520,0,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,6,1092,machine inner chest press,1,HORIZONTAL_PUSH,pectorals,2x8 r120,313,bench dip (knees bent),1,HORIZONTAL_PUSH,triceps,2x8 r120,2520,2520,2520,0,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,7,1054,mountain climber,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,,,,,,3x90s r60,2520,2520,2520,0,False
+RC1_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,8,253,bear crawl,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,,,,,,3x90s r60,2520,2520,2520,0,False
+RC1_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,1,1098,push-up (wall) v. 2,1,HORIZONTAL_PUSH,pectorals,3x10 r90,129,band close-grip push-up,1,HORIZONTAL_PUSH,triceps,3x10 r90,2118,2118,1890,228,True
+RC1_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,2,114,band close-grip pulldown,1,VERTICAL_PULL,lats,3x10 r90,,,,,,3x10 r90,2118,2118,1890,228,False
+RC1_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,3,144,band squat,1,KNEE_DOMINANT,glutes,3x10 r90,,,,,,3x10 r90,2118,2118,1890,228,False
+RC1_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,4,739,dumbbell seated shoulder press,1,VERTICAL_PUSH,delts,3x10 r90,136,band twisting overhead press,1,VERTICAL_PUSH,delts,3x10 r90,2118,2118,1890,228,True
+RC1_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,5,57,3/4 sit-up,1,TRUNK_FLEXION,abs,2x13 r90,,,,,,2x13 r90,2118,2118,1890,228,False
+RC1_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,6,460,chest tap push-up (male),1,HORIZONTAL_PUSH,pectorals,3x10 r90,494,clock push-up,1,HORIZONTAL_PUSH,pectorals,3x10 r90,2118,2118,1890,228,True
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,1,74,assisted parallel close grip pull-up,1,VERTICAL_PULL,lats,2x10 r120,,,,,,2x10 r120,2520,2520,2520,0,False
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,2,72,assisted chest dip (kneeling),1,HORIZONTAL_PUSH,pectorals,2x8 r120,,,,,,2x8 r120,2520,2520,2520,0,False
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,3,75,assisted pull-up,1,VERTICAL_PULL,lats,2x8 r120,,,,,,2x8 r120,2520,2520,2520,0,False
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,4,327,cable assisted inverse leg curl,1,KNEE_DOMINANT,hamstrings,2x8 r120,,,,,,2x8 r120,2520,2520,2520,0,False
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,5,101,band shoulder press,1,VERTICAL_PUSH,delts,2x8 r120,,,,,,2x8 r120,2520,2520,2520,0,False
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,6,313,bench dip (knees bent),1,HORIZONTAL_PUSH,triceps,2x8 r120,,,,,,2x8 r120,2520,2520,2520,0,False
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,7,1054,mountain climber,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,,,,,,3x90s r60,2520,2520,2520,0,False
+RC1_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,8,253,bear crawl,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,,,,,,3x90s r60,2520,2520,2520,0,False
+RC2_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,1,933,kneeling push-up (male),1,HORIZONTAL_PUSH,pectorals,3x10 r90,129,band close-grip push-up,1,HORIZONTAL_PUSH,triceps,3x10 r90,2118,2118,1890,228,False
+RC2_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,2,143,band underhand pulldown,1,VERTICAL_PULL,lats,3x10 r90,115,band fixed back close grip pulldown,1,VERTICAL_PULL,lats,3x10 r90,2118,2118,1890,228,False
+RC2_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,3,1195,self assisted inverse leg curl,1,KNEE_DOMINANT,hamstrings,3x10 r90,144,band squat,1,KNEE_DOMINANT,glutes,3x10 r90,2118,2118,1890,228,False
+RC2_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,4,101,band shoulder press,1,VERTICAL_PUSH,delts,3x10 r90,704,dumbbell seated alternate press,1,VERTICAL_PUSH,delts,3x10 r90,2118,2118,1890,228,False
+RC2_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,5,110,band lying straight leg raise,1,TRUNK_FLEXION,abs,2x13 r90,63,arms overhead full sit-up (male),1,TRUNK_FLEXION,abs,2x13 r90,2118,2118,1890,228,False
+RC2_r1,1,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,6,1099,push-up plus,1,HORIZONTAL_PUSH,pectorals,3x10 r90,460,chest tap push-up (male),1,HORIZONTAL_PUSH,pectorals,3x10 r90,2118,2118,1890,228,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,1,862,gorilla chin,1,VERTICAL_PULL,abs,2x10 r120,74,assisted parallel close grip pull-up,1,VERTICAL_PULL,lats,2x10 r120,2520,2520,2520,0,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,2,988,lever chest press,1,HORIZONTAL_PUSH,pectorals,2x8 r120,72,assisted chest dip (kneeling),1,HORIZONTAL_PUSH,pectorals,2x8 r120,2520,2520,2520,0,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,3,1191,side-to-side chin,1,VERTICAL_PULL,lats,2x8 r120,75,assisted pull-up,1,VERTICAL_PULL,lats,2x8 r120,2520,2520,2520,0,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,4,1046,lever seated leg curl,1,KNEE_DOMINANT,hamstrings,2x8 r120,327,cable assisted inverse leg curl,1,KNEE_DOMINANT,hamstrings,2x8 r120,2520,2520,2520,0,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,5,987,lever military press,1,VERTICAL_PUSH,delts,2x8 r120,514,dumbbell bench seated press,1,VERTICAL_PUSH,delts,2x8 r120,2520,2520,2520,0,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,6,1092,machine inner chest press,1,HORIZONTAL_PUSH,pectorals,2x8 r120,73,assisted wide-grip chest dip (kneeling),1,HORIZONTAL_PUSH,pectorals,2x8 r120,2520,2520,2520,0,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,7,1054,mountain climber,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,1117,quick feet v. 2,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,2520,2520,2520,0,False
+RC2_r1,1,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,8,253,bear crawl,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,853,half knee bends (male),1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,2520,2520,2520,0,False
+RC2_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,1,129,band close-grip push-up,1,HORIZONTAL_PUSH,triceps,3x10 r90,509,close-grip push-up (on knees),1,HORIZONTAL_PUSH,triceps,3x10 r90,2118,2118,1890,228,True
+RC2_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,2,115,band fixed back close grip pulldown,1,VERTICAL_PULL,lats,3x10 r90,117,band kneeling one arm pulldown,1,VERTICAL_PULL,lats,3x10 r90,2118,2118,1890,228,True
+RC2_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,3,144,band squat,1,KNEE_DOMINANT,glutes,3x10 r90,1076,march sit (wall),1,KNEE_DOMINANT,glutes,3x10 r90,2118,2118,1890,228,True
+RC2_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,4,704,dumbbell seated alternate press,1,VERTICAL_PUSH,delts,3x10 r90,739,dumbbell seated shoulder press,1,VERTICAL_PUSH,delts,3x10 r90,2118,2118,1890,228,True
+RC2_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,5,63,arms overhead full sit-up (male),1,TRUNK_FLEXION,abs,2x13 r90,57,3/4 sit-up,1,TRUNK_FLEXION,abs,2x13 r90,2118,2118,1890,228,True
+RC2_r1,2,R01,GAIN_MUSCLE,BEGINNER,S2,TOO_DIFFICULT,6,460,chest tap push-up (male),1,HORIZONTAL_PUSH,pectorals,3x10 r90,318,body-up,1,HORIZONTAL_PUSH,triceps,3x10 r90,2118,2118,1890,228,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,1,74,assisted parallel close grip pull-up,1,VERTICAL_PULL,lats,2x10 r120,76,assisted standing chin-up,1,VERTICAL_PULL,lats,2x10 r120,2520,2520,2520,0,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,2,72,assisted chest dip (kneeling),1,HORIZONTAL_PUSH,pectorals,2x8 r120,102,band bench press,1,HORIZONTAL_PUSH,pectorals,2x8 r120,2520,2520,2520,0,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,3,75,assisted pull-up,1,VERTICAL_PULL,lats,2x8 r120,113,band assisted pull-up,1,VERTICAL_PULL,lats,2x8 r120,2520,2520,2520,0,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,4,327,cable assisted inverse leg curl,1,KNEE_DOMINANT,hamstrings,2x8 r120,915,inverse leg curl (bench support),1,KNEE_DOMINANT,hamstrings,2x8 r120,2520,2520,2520,0,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,5,514,dumbbell bench seated press,1,VERTICAL_PUSH,delts,2x8 r120,101,band shoulder press,1,VERTICAL_PUSH,delts,2x8 r120,2520,2520,2520,0,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,6,73,assisted wide-grip chest dip (kneeling),1,HORIZONTAL_PUSH,pectorals,2x8 r120,313,bench dip (knees bent),1,HORIZONTAL_PUSH,triceps,2x8 r120,2520,2520,2520,0,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,7,1117,quick feet v. 2,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,1054,mountain climber,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,2520,2520,2520,0,True
+RC2_r1,2,R05,LOSE_WEIGHT,BEGINNER,S2,TOO_DIFFICULT,8,853,half knee bends (male),1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,253,bear crawl,1,LOCOMOTION_CARDIO,cardiovascular system,3x90s r60,2520,2520,2520,0,True

@@ -80,11 +80,20 @@ public final class FactibilidadAdaptacion {
 
     /** La factibilidad de cada sesion senalada que va a la IA, en el orden de la orden. */
     public static List<Sesion> calcular(PlanGenerationContext context, WeekDerivation derivation) {
+        return calcular(context, derivation, false);
+    }
+
+    /**
+     * @param soloMenorDificultad H12-A (prototipo experimental): en VARIANTE_MAS_SENCILLA_O_CARGA solo se admiten
+     *                            sustitutos de MENOR dificultad que el ejercicio que reemplazan.
+     */
+    public static List<Sesion> calcular(PlanGenerationContext context, WeekDerivation derivation,
+                                        boolean soloMenorDificultad) {
         var adjustment = context.adjustment();
         if (adjustment == null) return List.of();
         var lista = new ArrayList<Sesion>();
         for (var s : adjustment.sesionesParaIA()) {
-            var sesion = calcular(context, derivation, s);
+            var sesion = calcular(context, derivation, s, soloMenorDificultad);
             if (sesion != null) lista.add(sesion);
         }
         return lista;
@@ -92,6 +101,11 @@ public final class FactibilidadAdaptacion {
 
     static Sesion calcular(PlanGenerationContext context, WeekDerivation derivation,
                            PlanAdjustment.TargetedSession senalada) {
+        return calcular(context, derivation, senalada, false);
+    }
+
+    static Sesion calcular(PlanGenerationContext context, WeekDerivation derivation,
+                           PlanAdjustment.TargetedSession senalada, boolean soloMenorDificultad) {
         var params = context.prescription();
         var propia = derivation.from(senalada.plannedWorkoutId()).map(d -> d.workout()).orElse(null);
         if (params == null || propia == null || propia.exercises() == null || propia.exercises().isEmpty())
@@ -144,7 +158,9 @@ public final class FactibilidadAdaptacion {
 
         var sustitutos = new ArrayList<Sustituto>();
         if (intervencion.permiteSustituirEjercicio())
-            sustitutosAdmitidos(context, derivation, senalada.plannedWorkoutId(), propia).forEach((reemplazado, ids) -> {
+            sustitutosAdmitidos(context, derivation, senalada.plannedWorkoutId(), propia,
+                    soloMenorDificultad && intervencion == TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)
+                    .forEach((reemplazado, ids) -> {
                 var actual = propia.exercises().stream().filter(x -> reemplazado.equals(x.exerciseId())).findFirst()
                         .orElse(null);
                 for (var id : ids)
@@ -174,6 +190,12 @@ public final class FactibilidadAdaptacion {
      */
     static Map<Long, List<Long>> sustitutosAdmitidos(PlanGenerationContext context, WeekDerivation derivation,
                                                      Long id, PlanDraft.DraftWorkout propia) {
+        return sustitutosAdmitidos(context, derivation, id, propia, false);
+    }
+
+    static Map<Long, List<Long>> sustitutosAdmitidos(PlanGenerationContext context, WeekDerivation derivation,
+                                                     Long id, PlanDraft.DraftWorkout propia,
+                                                     boolean soloMenorDificultad) {
         var resultado = new LinkedHashMap<Long, List<Long>>();
         if (context.availableExercises() == null) return resultado;
         var enSesion = propia.exercises().stream().map(PlanDraft.DraftExercise::exerciseId).collect(Collectors.toSet());
@@ -195,7 +217,8 @@ public final class FactibilidadAdaptacion {
                     .filter(c -> actual.movementPattern().equals(c.movementPattern()))
                     .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
                             && !dolieron.contains(c.exerciseId()))
-                    .filter(c -> c.difficulty() <= actual.difficulty())
+                    .filter(c -> soloMenorDificultad ? c.difficulty() < actual.difficulty()
+                            : c.difficulty() <= actual.difficulty())
                     .map(CandidateExercise::exerciseId)
                     .sorted().limit(6).toList());
         }

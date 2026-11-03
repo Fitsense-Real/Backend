@@ -1,0 +1,13 @@
+HEAD 5773f9a44e1b9fb01a94e06ab061c2946c11d426
+default_full exit=0
+960_replay_default exit=0
+d109a3daa156d6d28bdfbebf109e5b5066bee8213c3663b21ad7b177dd18a859  /tmp/claude-0/-home-user/d726e240-bf6c-5000-9fec-bb22a3143d76/scratchpad/c960_default/planes.csv
+d227848ba040e73af459b052ab518f67d0b80af55cc731cbe2a455f5abe265ef  /tmp/claude-0/-home-user/d726e240-bf6c-5000-9fec-bb22a3143d76/scratchpad/c960_default/colocaciones.csv
+960_replay_h1 exit=0
+d109a3daa156d6d28bdfbebf109e5b5066bee8213c3663b21ad7b177dd18a859  /tmp/claude-0/-home-user/d726e240-bf6c-5000-9fec-bb22a3143d76/scratchpad/c960_h1/planes.csv
+d227848ba040e73af459b052ab518f67d0b80af55cc731cbe2a455f5abe265ef  /tmp/claude-0/-home-user/d726e240-bf6c-5000-9fec-bb22a3143d76/scratchpad/c960_h1/colocaciones.csv
+960_replay_h1a exit=0
+d109a3daa156d6d28bdfbebf109e5b5066bee8213c3663b21ad7b177dd18a859  /tmp/claude-0/-home-user/d726e240-bf6c-5000-9fec-bb22a3143d76/scratchpad/c960_h1a/planes.csv
+d227848ba040e73af459b052ab518f67d0b80af55cc731cbe2a455f5abe265ef  /tmp/claude-0/-home-user/d726e240-bf6c-5000-9fec-bb22a3143d76/scratchpad/c960_h1a/colocaciones.csv
+h1a_full exit=1
+FIN

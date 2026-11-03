@@ -1,0 +1,7 @@
+# default_full, commit 5773f9a, mvnw -o -B -ntp verify -Pintegration
+[INFO] Tests run: 1119, Failures: 0, Errors: 0, Skipped: 1
+[INFO] Tests run: 489, Failures: 0, Errors: 0, Skipped: 37
+[INFO] BUILD SUCCESS
+[INFO] Total time:  12:34 min
+# avisos de regla experimental en contextos de Spring (fase IT): 0
+# fallos:

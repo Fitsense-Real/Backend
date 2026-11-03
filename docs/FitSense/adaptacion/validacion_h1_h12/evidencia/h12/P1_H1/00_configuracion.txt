@@ -1,0 +1,23 @@
+modo: GUION
+commit: 5773f9a44e1b9fb01a94e06ab061c2946c11d426
+fecha_ejecucion_utc: 2026-11-03T15:13:55.133238238Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+ejercicios_activos: 1219
+ia_habilitada: true
+modelo: gpt-5-mini
+prompt_adaptacion: FIX-PR-2.0-EXP
+v8c_regla_patron: MULTICONJUNTO
+variante_politica: HISTORICA
+variante_max_sustituciones: 0
+perfiles: docs/FitSense/adaptacion/validacion_h1_h12/evidencia/h12/PERFILES_ESCENARIOS_H12.csv
+semanas: 3
+guion: H12
+gemelos_generacion_ia: false
+credencial: ninguna (guion local, sin red)
+comprobacion_cuenta_http: -1
+prefer_wait_seconds: 60 (valor por defecto)
+limite: 90 predicciones / USD 10.0 (supuesto max 0.1 por llamada)
+politica_por_defecto: PLAN-HIST-1 (allow-candidates=false)
+progresion: false
