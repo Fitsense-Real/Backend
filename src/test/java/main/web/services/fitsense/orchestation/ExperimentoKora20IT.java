@@ -621,20 +621,29 @@ class ExperimentoKora20IT {
 
     /** Una prediccion real, contada antes de hacerse: al llegar al limite no se llama (se registra). */
     private Object proveedor(org.mockito.invocation.InvocationOnMock inv, String tipo) throws Throwable {
+        // Todo lo del laboratorio ANTES de contar y de llamar, y sin poder romper la llamada (intento 1 de la etapa C:
+        // String.valueOf(inv.getArgument(0)) se resolvia como valueOf(char[]) y lanzaba ClassCastException).
+        var traza = new LinkedHashMap<String, Object>();
+        traza.put("etiqueta", etiquetaActual);
+        traza.put("tipo", tipo);
+        traza.put("intento", String.valueOf((Object) inv.getArgument(inv.getArguments().length - 1)));
+        String entrada;
+        try {
+            entrada = huella(String.valueOf((Object) inv.getArgument(0)) + "|" + String.valueOf((Object) inv.getArgument(1)));
+        } catch (RuntimeException e) {
+            entrada = "no_calculable:" + e.getClass().getSimpleName();
+        }
+        traza.put("huella_entrada", entrada);
         int n = llamadas.incrementAndGet();
         if (n > MAX_LLAMADAS || n * COSTE_MAX_POR_LLAMADA_USD > 10.0) {
             llamadas.decrementAndGet();
-            trazasIa.add(json(Map.of("etiqueta", etiquetaActual, "tipo", tipo, "resultado", "PRESUPUESTO_AGOTADO_SIN_LLAMADA")));
+            traza.put("resultado", "PRESUPUESTO_AGOTADO_SIN_LLAMADA");
+            trazasIa.add(json(traza));
             throw new main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException(
                     "PRESUPUESTO_AGOTADO del laboratorio: no se llama a Replicate");
         }
-        long t0 = System.nanoTime();
-        var traza = new LinkedHashMap<String, Object>();
         traza.put("n", n);
-        traza.put("etiqueta", etiquetaActual);
-        traza.put("tipo", tipo);
-        traza.put("intento", inv.getArgument(inv.getArguments().length - 1));
-        traza.put("huella_entrada", huella(String.valueOf(inv.getArgument(0)) + "|" + inv.getArgument(1)));
+        long t0 = System.nanoTime();
         try {
             Object salida = inv.callRealMethod();
             traza.put("resultado", "RESPUESTA");
