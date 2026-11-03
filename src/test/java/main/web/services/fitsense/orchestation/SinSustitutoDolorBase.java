@@ -220,6 +220,7 @@ abstract class SinSustitutoDolorBase {
         }
         var linea = new LinkedHashMap<String, Object>();
         linea.put("limite", v8c.limitaDificultad() ? "on" : "off");
+        linea.put("estrategia", v8c.estrategiaSustitucion().name());
         linea.put("config", c.config());
         linea.put("decision", semana1.get("decision"));
         linea.put("estado_v32", semana1.get("status"));
@@ -228,7 +229,7 @@ abstract class SinSustitutoDolorBase {
         linea.put("resultado_api", resultadoApi);
         linea.put("plan_semana_nueva", activo1.isPresent());
         linea.put("regeneracion_p03", regeneracion.isEmpty() ? "-" : regeneracion.get(0).get("outcome") + " "
-                + regeneracion.get(0).get("reason_code") + " excluidos=" + regeneracion.get(0).get("excluidos"));
+                + "plan=" + regeneracion.get(0).get("resulting_plan_id") + " motivo=" + regeneracion.get(0).get("reason_code") + " excluidos=" + regeneracion.get(0).get("excluidos"));
         linea.put("sustituto_del_135", sustituto);
         linea.put("dificultad_sustituto", difSustituto);
         linea.put("semana_siguiente", desenlace2);
