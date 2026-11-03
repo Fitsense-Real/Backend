@@ -116,6 +116,8 @@ class ExperimentoKora20IT {
     @Autowired UserRepository usuarios;
     @Autowired WeeklyCycleService ciclo;
     @Autowired JdbcTemplate jdbc;
+    /** Lo que ve el cliente en GET /users/me/plan/adaptations (laboratorio v2). */
+    @Autowired main.web.services.fitsense.planning.application.internal.queryservices.AdaptationOutcomeQueryService resultadosApi;
 
     // ---- trazas por usuario (las llena el espia del validador y del proveedor)
     static final AtomicInteger validaciones = new AtomicInteger();
@@ -300,6 +302,16 @@ class ExperimentoKora20IT {
         d.put("indices_senalados", indices(medidas, (String) d.get("targeted_sessions")));
         d.put("llamadas_ia_ciclo", llamadas.get() - llamadasAntes);
         d.put("error_ciclo", errorCiclo);
+        var api = resultadosApi.history(u);
+        if (!api.isEmpty()) {
+            var o = api.get(0);
+            d.put("api_resultado", o.resultado());
+            d.put("api_estado", o.estado());
+            d.put("api_estado_publicacion", o.estadoPublicacion());
+            d.put("api_motivo_codigo", o.motivoCodigo());
+            d.put("api_motivos", String.join(" || ", o.motivos()));
+        }
+        d.put("api_filas", api.size());
         dec.add(d);
 
         r.put("Aw", metr.get("weighted_adherence_pct"));
@@ -309,6 +321,7 @@ class ExperimentoKora20IT {
         r.put("estado_v32", d.get("status"));
         r.put("sesiones_senaladas", d.get("indices_senalados"));
         r.put("llamadas_ia", d.get("ai_calls"));
+        r.put("resultado_api", d.get("api_resultado"));
         if (siguiente.isPresent()) {
             long nuevo = siguiente.get();
             var nuevas = sesionesDe(nuevo);
