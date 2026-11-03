@@ -111,4 +111,16 @@ En el plan publicado ya se corrigen con las frases de §2. Corregir su redacció
 
 ## 5. Regresión de esta rama
 
-Ver `03_REGRESION_Y_CI.md` §4 (rama de textos): unitarias, IT y CI del commit final.
+Ejecución local de `mvnw -o -B -ntp verify -Pintegration` sobre `1e01832`: código `4bd511a` sobre la candidata `79ec110`, con PostgreSQL efímero.
+
+**Una omitida no es una superada.**
+
+| Bloque | Ejecutadas | Superadas | Fallidas | Errores | Omitidas (*opt-in*) | Frente a la candidata |
+|---|---:|---:|---:|---:|---:|---|
+| Unitarias | 1.114 | 1.113 | **0** | **0** | 1 | +9 (`DescripcionAdaptacionTest`) |
+| Integración | 496 | 459 | **0** | **0** | 37 | +1 (`ConservacionPatronH1IT.justificacionVerificable`) |
+
+- Las omitidas son las mismas *opt-in* que en la candidata (`03` §1).
+- El cambio solo afecta al texto `adjustment_reason`: no cambia el plan publicado, la decisión ni la adherencia.
+- Por eso la comparación de 960 perfiles (solo generación) y la REPLAY (sin adaptación por IA) no dependen de él, y no se repitieron aquí.
+- **CI:** ver el PR de esta rama.
