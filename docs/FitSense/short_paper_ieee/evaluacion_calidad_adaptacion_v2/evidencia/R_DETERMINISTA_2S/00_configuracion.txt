@@ -1,0 +1,19 @@
+modo: DETERMINISTA
+commit: 7af7c0ff95c47f2bdc53f5dbb87949ca7fb90a8f
+fecha_ejecucion_utc: 2026-11-03T05:04:27.467685250Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+ejercicios_activos: 1219
+ia_habilitada: false
+modelo: gpt-5-mini
+prompt_adaptacion: FIX-PR-2.0-EXP
+perfiles: docs/FitSense/short_paper_ieee/evaluacion_calidad_adaptacion_v2/10_PERFILES_SINTETICOS_R01_R08.csv
+semanas: 2
+gemelos_generacion_ia: false
+credencial: ninguna
+comprobacion_cuenta_http: -1
+prefer_wait_seconds: 60 (valor por defecto)
+limite: 90 predicciones / USD 10.0 (supuesto max 0.1 por llamada)
+politica_por_defecto: PLAN-HIST-1 (allow-candidates=false)
+progresion: false
