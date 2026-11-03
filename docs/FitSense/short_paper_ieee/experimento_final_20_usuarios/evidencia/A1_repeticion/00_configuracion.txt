@@ -1,0 +1,11 @@
+modo: DETERMINISTA
+commit: 2c0cc8b20ecb783e1cd85618451900e6b738ef79
+fecha_ejecucion_utc: 2026-11-03T01:08:01.617246726Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+ejercicios_activos: 1219
+ia_habilitada: false
+modelo: gpt-5-mini
+politica_por_defecto: PLAN-HIST-1 (allow-candidates=false)
+progresion: false
