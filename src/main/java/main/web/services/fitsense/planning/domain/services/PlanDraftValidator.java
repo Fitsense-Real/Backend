@@ -28,9 +28,10 @@ public class PlanDraftValidator {
 
     /** Pisos de 18.4. No dependen de configuracion porque son limites de seguridad. */
     private static final int MIN_EXERCISES_PER_SESSION = 2;
-    private static final int MIN_SETS = 2;
-    private static final int MIN_REPS = 6;
-    private static final int MIN_DURATION_SECONDS = 20;
+    // Publicos solo para leerlos (prompt V2 experimental, FactibilidadAdaptacion): mismo valor, misma regla.
+    public static final int MIN_SETS = 2;
+    public static final int MIN_REPS = 6;
+    public static final int MIN_DURATION_SECONDS = 20;
 
     private final SessionDurationEstimator durationEstimator;
 
