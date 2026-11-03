@@ -50,6 +50,30 @@ class ConservacionPatronH1IT extends ConservacionPatronH1Base {
     }
 
     @Test
+    @DisplayName("justificacion verificable: el adjustment_reason publicado describe el cambio real (menor, igual o mayor dificultad registrada)")
+    void justificacionVerificable() {
+        var c = caso();
+        long nuevo = proponer(c, c.a1(), c.b1())
+                .orElseThrow(() -> new AssertionError("no publico: " + intento(c.p())));
+        String texto = jdbc.queryForObject("SELECT adjustment_reason FROM weekly_training_plans WHERE plan_id = ?",
+                String.class, nuevo);
+        assertFalse(texto.toLowerCase(java.util.Locale.ROOT).contains("bajamos la exigencia"), texto);
+        assertTrue(texto.contains("Nos dijiste que una sesión te resultó difícil."), texto);
+        int dA = dificultad(c.a1()) < dificultad(c.a().id()) ? 1 : 0, dB = dificultad(c.b1()) < dificultad(c.b().id()) ? 1 : 0;
+        int mA = dificultad(c.a1()) > dificultad(c.a().id()) ? 1 : 0, mB = dificultad(c.b1()) > dificultad(c.b().id()) ? 1 : 0;
+        assertFalse(texto.contains("Adherencia observada"), texto);
+        if (dA + dB > 0) assertTrue(texto.contains("usamos una variante registrada como de menor dificultad"), texto);
+        if (mA + mB > 0) assertTrue(texto.contains("registrado como de mayor dificultad")
+                || texto.contains("registrados como de mayor dificultad"), texto);
+        if (dA + dB + mA + mB < 2) assertTrue(texto.contains("con la misma dificultad registrada: es una alternativa, no"
+                + " necesariamente más fácil"), texto);
+    }
+
+    private int dificultad(long id) {
+        return jdbc.queryForObject("SELECT difficulty_level FROM exercises WHERE exercise_id = ?", Integer.class, id);
+    }
+
+    @Test
     @DisplayName("distribucion correcta (cada sustituto de su patron): publicada; no senaladas intactas")
     void distribucionCorrectaPublicada() {
         var c = caso();
