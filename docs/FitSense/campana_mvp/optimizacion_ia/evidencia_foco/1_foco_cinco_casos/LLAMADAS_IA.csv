@@ -1,0 +1,4 @@
+etiqueta,operacion,user_id,intento,latencia_ms,rechazos_previos,error
+U02 · s3,ADAPTACION,3,1,30631,,
+U02 · s3,ADAPTACION,3,2,39188,"V17: el entrenamiento del 2026-11-29 declara 23 minutos pero su contenido dura unos 16 (desvio de 44 %, maximo 20 %). Declara lo que dure el contenido final, despues de corregir lo demas. | V20: el entrenamiento del 2026-11-29 dura unos 948 s y el minimo es 1260 s (70 % de 30 minutos): le faltan 312 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso. | V24: el ejercicio 1054 del 2026-11-29 no lleva la dosis de ninguna capacidad de LOSE_WEIGHT. Usa exactamente una de: [CARDIO 3x90 s, descanso 60 s].",
+U02 · s5,ADAPTACION,3,1,23440,,

@@ -22,8 +22,33 @@ public record PlanGenerationContext(
         PreviousWeekSummary previousWeek,
         List<CandidateExercise> availableExercises,
         SafetyProfile safety,
-        PrescriptionParams prescription
+        PrescriptionParams prescription,
+        /**
+         * Version de la politica de planificacion (generacion y validacion). Nunca null: el constructor de diez
+         * argumentos, el de toda la base anterior, la fija en {@link PlanningPolicy#HISTORICA}. NO viaja en
+         * input_snapshot (que tiene su propio DTO): solo cambia el contrato de la IA si la version activa V4-C.
+         */
+        PlanningPolicy policy
 ) {
+    public PlanGenerationContext {
+        if (policy == null) policy = PlanningPolicy.HISTORICA;
+    }
+
+    /** El de siempre: politica historica. */
+    public PlanGenerationContext(Long userId, short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate,
+                                 PlanningProfile profile, PlanAdjustment adjustment, PreviousWeekSummary previousWeek,
+                                 List<CandidateExercise> availableExercises, SafetyProfile safety,
+                                 PrescriptionParams prescription) {
+        this(userId, weekNumber, weekStartDate, weekEndDate, profile, adjustment, previousWeek, availableExercises,
+                safety, prescription, PlanningPolicy.HISTORICA);
+    }
+
+    /** Copia con otra politica (mismo contenido). */
+    public PlanGenerationContext conPolitica(PlanningPolicy otra) {
+        return new PlanGenerationContext(userId, weekNumber, weekStartDate, weekEndDate, profile, adjustment,
+                previousWeek, availableExercises, safety, prescription, otra);
+    }
+
     /**
      * GEN-IN-1.1 (V18, principios P-1.0): input_snapshot suma principles_version,
      * user.equipment_codes y available_exercises[].prescription_type, y cambia
@@ -54,9 +79,54 @@ public record PlanGenerationContext(
      * lo mismo que verifica V16); constraints.rep_limits pasa a max_reps y se
      * retira min_reps_for_level; se suma prompt_version.
      * <p>
+     * GEN-IN-1.9: cada available_exercise suma movement_pattern (V26, Step 3A).
+     * Es un campo ANADIDO: nada se quita ni cambia de nombre, asi que un lector
+     * de GEN-IN-1.8 sigue entendiendo un snapshot 1.9 y al contrario. Sube la
+     * version porque el VALIDADOR lo usa para la cobertura de los cuatro slots
+     * de 4C, y el contrato de input_snapshot es que una validacion se pueda
+     * reproducir meses despues con lo que el snapshot guarda.
+     * <p>
+     * NO sube principles_version ni prompt_version: el texto que recibe la IA no
+     * cambia. Consecuencia conocida y aceptada: la IA ve el dato pero no una
+     * instruccion de cubrir los cuatro slots, asi que la cobertura al primer
+     * intento queda al azar y es el mensaje de rechazo del reintento el que se
+     * la ensena. Cambiar eso exige subir P-1.2, que esta congelado.
+     * <p>
      * Los snapshots antiguos siguen siendo legibles con su version.
+     * <p>
+     * GEN-IN-1.10 (P-1.3, 16/10/2026): cada available_exercise suma slot y
+     * clase_dosis, y constraints suma dosis_por_clase, max_colocaciones_dia,
+     * minutos_utiles_dia y slots_exigibles. Todo sale de MvpDosePolicy y de
+     * SlotCoveragePolicy; ningun numero se escribe a mano en el contrato.
+     * <p>
+     * Esta version SI sube principles_version y prompt_version, y cierra lo que
+     * el parrafo de 1.9 dejo declarado: la IA pasa a recibir una instruccion
+     * sobre esos campos. La decision se tomo con la medicion del plan 15
+     * delante -36, 12 y 30 incumplimientos en tres intentos, y los 11 del
+     * intento 2 todos de inversion estructural/relleno- y la aprobaron Juan el
+     * 16/10 y Daniel ese mismo dia.
+     * <p>
+     * Campos ANADIDOS otra vez: nada se quita ni cambia de nombre. Pero la
+     * compatibilidad en las dos direcciones NO se da por supuesta, que es lo
+     * que esta clase afirmo en 1.9 sin probarlo: la fijan las dos pruebas de
+     * {@code PlanInputSnapshotDosisTest}, una por direccion.
+     * <p>
+     * Solo con GAIN_MUSCLE llevan valor. Con los otros cuatro objetivos los
+     * campos viajan en null, porque el ObjectMapper de JsonSupport no tiene
+     * NON_NULL configurado: el CONTRATO cambia para los cinco, aunque la
+     * instruccion solo aparezca en uno.
+     * <p>
+     * GEN-IN-1.12 (24/10/2026): mas corto sin quitar ningun ejercicio. Las
+     * dosis por capacidad viajan una vez, en {@code capacidades.dosis}, y cada
+     * ejercicio cita sus codigos; los campos nulos de cada ejercicio ya no se
+     * envian; {@code capacidades.candidatos_escasos} lista las principales con
+     * pocos candidatos. El prompt de GENERAL_FITNESS en gimnasio bajaba de
+     * 466 000 caracteres.
+     * <p>
+     * GEN-IN-1.13 (26/10/2026): {@code slot} viaja tambien en los objetivos por
+     * capacidades que exigen los slots de 4C (INCREASE_STRENGTH, GENERAL_FITNESS).
      */
-    public static final String SCHEMA_VERSION = "GEN-IN-1.8";
+    public static final String SCHEMA_VERSION = "GEN-IN-1.13";
 
     /**
      * Dificultad maxima efectiva: la del perfil, salvo que el ajuste ordene

@@ -1,6 +1,13 @@
 package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy;
+import main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy;
+import main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy;
+import main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy;
+import main.web.services.fitsense.planning.domain.services.GoalFeasibilityPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.model.valueobjects.TargetPrescription;
 import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
@@ -107,7 +114,130 @@ public record PlanInputSnapshot(
              * Solo con REDUCE_VOLUME: tope de series y repeticiones de cada
              * ejercicio que ya estaba la semana anterior (V19). null si no aplica.
              */
-            @JsonProperty("reduce_volume_caps") List<ReduceVolumeCap> reduceVolumeCaps) {}
+            @JsonProperty("reduce_volume_caps") List<ReduceVolumeCap> reduceVolumeCaps,
+            /**
+             * GEN-IN-1.10 (P-1.3): la tabla de dosis de 4D v3, una fila por
+             * clase. {@code null} cuando el objetivo no es {@code GAIN_MUSCLE}.
+             */
+            @JsonProperty("dosis_por_clase") List<DosisPorClase> dosisPorClase,
+            /** 4D v2 §5: {@code MvpDosePolicy.MAX_COLOC_DIA}. Se aplica siempre, incluso si el tiempo sobra. */
+            @JsonProperty("max_colocaciones_dia") Integer maxColocacionesDia,
+            /** 4D v2 §5: el 85 % de session_minutes, ya en minutos. */
+            @JsonProperty("minutos_utiles_dia") Double minutosUtilesDia,
+            /**
+             * 4C §5: los slots que el backend va a EXIGIR en la semana.
+             * <p>
+             * No son «los cuatro» por constante: es
+             * {@code SlotCoveragePolicy.requiredOf(ofEligible(...))}, la
+             * INTERSECCION de los cuatro con los que el conjunto elegible puede
+             * cubrir, calculada de los mismos candidatos que viajan en este
+             * snapshot. Para un perfil con un slot vacio son tres, y la
+             * instruccion dira tres.
+             * <p>
+             * Si el prompt exigiera cuatro y el validador tres, habriamos
+             * construido otra contradiccion como la de V16 con 4D.
+             */
+            @JsonProperty("slots_exigibles") List<String> slotsExigibles,
+            /**
+             * GEN-IN-1.11 (4A v6 + 4D v4): que capacidades exige el objetivo y
+             * cuales son factibles con este conjunto elegible. {@code null} con
+             * GAIN_MUSCLE, que sigue con la tabla de 4D v3.
+             */
+            @JsonProperty("capacidades") CapacidadesObjetivo capacidades,
+            /**
+             * V44 · solo con una politica V4-C: el techo de V4 en SEGUNDOS (M x 60 x 1,15), calculado por el backend a
+             * partir del contenido. Con la politica historica es null y NO se serializa: el contrato historico no
+             * cambia.
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("max_session_seconds") Long maxSessionSeconds) {
+
+        /** Compatibilidad con GEN-IN-1.13: sin techo en segundos (politica historica). */
+        public Constraints(short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate, int daysPerWeek,
+                           List<Short> availableDays, int sessionMinutes, String trainingLocation,
+                           int maxDifficultyLevel, Integer maxReps, Integer targetReps, Integer targetSets,
+                           Integer minSessionMinutes, Integer minExercisesPerSession, Integer maxRestSeconds,
+                           List<SuggestedSession> suggestedSplit, List<ReduceVolumeCap> reduceVolumeCaps,
+                           List<DosisPorClase> dosisPorClase, Integer maxColocacionesDia, Double minutosUtilesDia,
+                           List<String> slotsExigibles, CapacidadesObjetivo capacidades) {
+            this(weekNumber, weekStartDate, weekEndDate, daysPerWeek, availableDays, sessionMinutes,
+                    trainingLocation, maxDifficultyLevel, maxReps, targetReps, targetSets, minSessionMinutes,
+                    minExercisesPerSession, maxRestSeconds, suggestedSplit, reduceVolumeCaps, dosisPorClase,
+                    maxColocacionesDia, minutosUtilesDia, slotsExigibles, capacidades, null);
+        }
+
+        /** Compatibilidad con GEN-IN-1.10: sin capacidades. */
+        public Constraints(short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate, int daysPerWeek,
+                           List<Short> availableDays, int sessionMinutes, String trainingLocation,
+                           int maxDifficultyLevel, Integer maxReps, Integer targetReps, Integer targetSets,
+                           Integer minSessionMinutes, Integer minExercisesPerSession, Integer maxRestSeconds,
+                           List<SuggestedSession> suggestedSplit, List<ReduceVolumeCap> reduceVolumeCaps,
+                           List<DosisPorClase> dosisPorClase, Integer maxColocacionesDia, Double minutosUtilesDia,
+                           List<String> slotsExigibles) {
+            this(weekNumber, weekStartDate, weekEndDate, daysPerWeek, availableDays, sessionMinutes,
+                    trainingLocation, maxDifficultyLevel, maxReps, targetReps, targetSets, minSessionMinutes,
+                    minExercisesPerSession, maxRestSeconds, suggestedSplit, reduceVolumeCaps, dosisPorClase,
+                    maxColocacionesDia, minutosUtilesDia, slotsExigibles, null, null);
+        }
+    }
+
+    /**
+     * GEN-IN-1.11 · las capacidades del objetivo, desde
+     * {@code GoalCapabilityPolicy} y {@code CapabilityCoveragePolicy}: las mismas
+     * que exige V25.
+     *
+     * @param noFactibles principales que el conjunto elegible no permite, con
+     *                    su motivo: no se exigen y la semana sale PARCIAL
+     */
+    public record CapacidadesObjetivo(
+            @JsonProperty("version") String version,
+            @JsonProperty("principales") List<String> principales,
+            @JsonProperty("secundarias") List<String> secundarias,
+            @JsonProperty("principales_factibles") List<String> principalesFactibles,
+            @JsonProperty("no_factibles") Map<String, String> noFactibles,
+            /**
+             * GEN-IN-1.12: las dosis distintas UNA vez, con un codigo que cada
+             * ejercicio cita en {@code dosis}. Repetirlas en cada ejercicio era
+             * la mitad del prompt (229 000 de 466 000 caracteres con
+             * GENERAL_FITNESS en gimnasio). El codigo empieza por la capacidad.
+             */
+            @JsonProperty("dosis") List<DosisCodificada> dosis,
+            /**
+             * GEN-IN-1.12: para cada principal factible con pocos candidatos,
+             * sus exercise_id. Son las que se omitian (CARDIO y MOBILITY en el
+             * plan 53): con cientos de ejercicios, encontrarlas es lo dificil.
+             */
+            @JsonProperty("candidatos_escasos") Map<String, List<Long>> candidatosEscasos) {
+
+        /** Compatibilidad con GEN-IN-1.11. */
+        public CapacidadesObjetivo(String version, List<String> principales, List<String> secundarias,
+                                   List<String> principalesFactibles, Map<String, String> noFactibles) {
+            this(version, principales, secundarias, principalesFactibles, noFactibles, null, null);
+        }
+    }
+
+    /** GEN-IN-1.12: una dosis de {@code capacidades.dosis}, con su codigo. */
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public record DosisCodificada(
+            @JsonProperty("codigo") String codigo,
+            @JsonProperty("capacidad") String capacidad,
+            @JsonProperty("series") int series,
+            @JsonProperty("series_max") int seriesMax,
+            @JsonProperty("reps") Integer reps,
+            @JsonProperty("segundos") Integer segundos,
+            @JsonProperty("descanso_segundos") int descansoSegundos) {}
+
+    /** Con cuantos candidatos o menos una principal se lista con sus ids. */
+    static final int CANDIDATOS_ESCASOS = 40;
+
+    /** GEN-IN-1.11 · una dosis admitida para un ejercicio, la que exige V24. */
+    public record DosisCapacidad(
+            @JsonProperty("capacidad") String capacidad,
+            @JsonProperty("series") int series,
+            @JsonProperty("series_max") int seriesMax,
+            @JsonProperty("reps") Integer reps,
+            @JsonProperty("segundos") Integer segundos,
+            @JsonProperty("descanso_segundos") int descansoSegundos) {}
 
     public record ReduceVolumeCap(
             @JsonProperty("exercise_id") long exerciseId,
@@ -188,6 +318,7 @@ public record PlanInputSnapshot(
             @JsonProperty("exercise_status") String exerciseStatus,
             @JsonProperty("skip_reason") String skipReason) {}
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public record AvailableExercise(
             @JsonProperty("exercise_id") Long exerciseId,
             String name,
@@ -207,7 +338,178 @@ public record PlanInputSnapshot(
              * numero que verifica V16 (RepLimits.minRepsFor con zona y nivel).
              * null en los de duracion o sin limites en la configuracion.
              */
-            @JsonProperty("min_reps") Integer minReps) {}
+            @JsonProperty("min_reps") Integer minReps,
+            /**
+             * GEN-IN-1.9: patron de movimiento del Step 3A (V26).
+             * <p>
+             * Viaja porque el VALIDADOR lo usa, y el contrato de este tipo es
+             * que todo lo que el validador necesita este aqui: «una validacion
+             * puede reproducirse meses despues». Sin este campo, la cobertura de
+             * 4C se habria calculado con un dato que el snapshot no guarda, y un
+             * rechazo por cobertura no se podria reproducir desde la evidencia.
+             * <p>
+             * No cambia el TEXTO del prompt. La IA recibe el campo pero ninguna
+             * instruccion sobre el: el texto de principios P-1.2 esta congelado
+             * y subirlo es una decision de diseno del estudio, no una
+             * consecuencia tecnica de esta validacion.
+             * <p>
+             * GEN-IN-1.10: esa decision ya se tomo, con la medicion del plan 15
+             * delante. Ver {@link #slot} y {@link #claseDosis}.
+             */
+            @JsonProperty("movement_pattern") String movementPattern,
+            /**
+             * GEN-IN-1.10: el slot de 4C al que pertenece el patron, ya
+             * resuelto. Es {@code movement_pattern} traducido por
+             * {@code MandatorySlot}, no un dato nuevo: viaja para que la IA no
+             * tenga que conocer la tabla de 17 patrones.
+             * <p>
+             * {@code null} si el patron no es ninguno de los cuatro slots, si no
+             * hay patron, o si el objetivo no es {@code GAIN_MUSCLE}.
+             * <p>
+             * SI viaja en las colocaciones {@code DURATION}, al contrario que
+             * {@link #claseDosis}: la cobertura de 4C cuenta posiciones sin mirar
+             * el tipo de prescripcion, asi que una plancha puede cubrir un slot
+             * aunque no reciba dosis. Es lo que ya hace
+             * {@code SlotCoveragePolicy.ofDraft}.
+             */
+            @JsonProperty("slot") String slot,
+            /**
+             * GEN-IN-1.10 (P-1.3): la fila de {@code constraints.dosis_por_clase}
+             * que le corresponde, una de las cuatro de
+             * {@code MvpDosePolicy.ClaseDosis}.
+             * <p>
+             * POR QUE LA CLAVE Y NO LA DOSIS. Repetir series, repeticiones y
+             * descanso en los 256 candidatos anade un 37 % al prompt; la clave
+             * mas una tabla unica anade un 18 %. Y el intento 2 del plan 15 ya
+             * consumio el 82 % de los 210 s de presupuesto.
+             * <p>
+             * {@code null} en tres casos, y cada uno por un motivo distinto:
+             * cuando el objetivo no es {@code GAIN_MUSCLE} -4D no lo gobierna-;
+             * cuando {@code prescription_type} es {@code DURATION} -la politica
+             * clasifica por slot y zona, no mira el tipo, asi que adjuntar la
+             * clave le inventaria una dosis de series y repeticiones a un
+             * ejercicio de sosten, justo lo que 4D v2 §4 regla 4 prohibe-; y
+             * cuando no hay forma de clasificarlo.
+             */
+            @JsonProperty("clase_dosis") String claseDosis,
+            /**
+             * GEN-IN-1.11: las dosis con las que este ejercicio demuestra cada
+             * capacidad del objetivo; usa exactamente una. {@code null} con
+             * GAIN_MUSCLE (manda {@code clase_dosis}).
+             */
+            @JsonIgnore List<DosisCapacidad> dosisPorCapacidad,
+            /**
+             * GEN-IN-1.12: los codigos de {@code constraints.capacidades.dosis}
+             * que admite este ejercicio. Es lo que viaja: la lista completa de
+             * arriba sigue disponible en Java, pero ya no se serializa.
+             */
+            @JsonProperty("dosis") List<String> dosis) {
+
+        /** Compatibilidad con GEN-IN-1.10. */
+        public AvailableExercise(Long exerciseId, String name, String bodyPart, String equipment, int difficulty,
+                                 String prescriptionType, String targetMuscle, Integer minReps,
+                                 String movementPattern, String slot, String claseDosis) {
+            this(exerciseId, name, bodyPart, equipment, difficulty, prescriptionType, targetMuscle, minReps,
+                    movementPattern, slot, claseDosis, null, null);
+        }
+    }
+
+    /**
+     * GEN-IN-1.10 (P-1.3): una fila de la tabla de dosis, generada recorriendo
+     * {@code MvpDosePolicy.tablaDosis()}. Ningun numero se escribe a mano aqui:
+     * condicion de Juan, para que el validador y la IA usen la misma referencia.
+     */
+    public record DosisPorClase(
+            @JsonProperty("clase") String clase,
+            @JsonProperty("series") int series,
+            @JsonProperty("reps") int reps,
+            @JsonProperty("descanso_segundos") int descansoSegundos,
+            /**
+             * 4D v3.2: hasta cuantas series admite la clase. Igual a {@code series} salvo en
+             * RELLENO_ZONA_PEQUENA, donde la serie adicional solo vale si sin ella la sesion no
+             * llega al minimo de V20 (y V24 la rechaza si sobra).
+             */
+            @JsonProperty("series_max") int seriesMax,
+            /**
+             * Coste de 4D v2 §5: {@code series x (reps x 3 s + descanso)}, en
+             * minutos. Viaja ya calculado para que comprobar
+             * {@code minutos_utiles_dia} sea una SUMA y no una formula.
+             * <p>
+             * Es el mismo numero que cobra el validador, que usa
+             * {@code costeSegundos(false)}: sin el doble por lado, que sigue
+             * pendiente de revision manual. La formula de V17 -la de la regla 17
+             * del prompt, con calentamiento y transiciones- es DISTINTA y
+             * responde a otra pregunta; las dos se conservan a proposito.
+             */
+            @JsonProperty("coste_minutos") double costeMinutos) {}
+
+    private static List<DosisCapacidad> dosisPorCapacidad(
+            main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise c,
+            main.web.services.fitsense.planning.domain.model.valueobjects.PlanningProfile profile,
+            main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams.RepLimits limites) {
+        return CapabilityPrescriptionPolicy.admisibles(c, profile.goalType(), profile.fitnessLevel()).stream()
+                .map(cap -> CapabilityPrescriptionPolicy.dosis(cap, c, profile.goalType(), profile.fitnessLevel(), limites))
+                .flatMap(java.util.Optional::stream)
+                .map(d -> new DosisCapacidad(d.capacidad().name(), d.series(), d.seriesMax(),
+                        d.reps() == null ? null : (int) d.reps(), d.segundos(), d.descanso()))
+                .toList();
+    }
+
+    /**
+     * Codigo estable por dosis distinta: la capacidad y un numero, en el orden
+     * de la propia dosis (no del catalogo barajado), para que el mismo
+     * conjunto de dosis de siempre los mismos codigos.
+     */
+    private static Map<DosisCapacidad, String> codigosDeDosis(java.util.Collection<List<DosisCapacidad>> todas) {
+        var distintas = new java.util.TreeSet<DosisCapacidad>(java.util.Comparator
+                .comparing(DosisCapacidad::capacidad)
+                .thenComparingInt(DosisCapacidad::series)
+                .thenComparingInt(DosisCapacidad::seriesMax)
+                .thenComparing(DosisCapacidad::reps, java.util.Comparator.nullsFirst(java.util.Comparator.naturalOrder()))
+                .thenComparing(DosisCapacidad::segundos, java.util.Comparator.nullsFirst(java.util.Comparator.naturalOrder()))
+                .thenComparingInt(DosisCapacidad::descansoSegundos));
+        todas.forEach(distintas::addAll);
+        var codigos = new java.util.LinkedHashMap<DosisCapacidad, String>();
+        var porCapacidad = new java.util.HashMap<String, Integer>();
+        for (var d : distintas)
+            codigos.put(d, d.capacidad() + "_" + porCapacidad.merge(d.capacidad(), 1, Integer::sum));
+        return codigos;
+    }
+
+    private static CapacidadesObjetivo capacidades(PlanGenerationContext context,
+            main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams.RepLimits limites,
+            Map<DosisCapacidad, String> codigos, Map<Long, List<DosisCapacidad>> dosisDe) {
+        var profile = context.profile();
+        var g = GoalCapabilityPolicy.forGoal(profile.goalType()).orElseThrow();
+        var f = CapabilityCoveragePolicy.factibilidad(profile.goalType(), profile.fitnessLevel(),
+                context.availableExercises(), limites);
+        var factibles = CapabilityCoveragePolicy.principalesFactibles(f, profile.goalType());
+        var noFactibles = new java.util.TreeMap<String, String>();
+        g.primaries().stream().filter(c -> !factibles.contains(c))
+                .forEach(c -> noFactibles.put(c.name(), f.containsKey(c) ? f.get(c).motivo() : "sin datos"));
+        return new CapacidadesObjetivo(CapabilityPrescriptionPolicy.VERSION,
+                g.primaries().stream().map(Enum::name).toList(),
+                g.candidateSecondariesFor(profile.fitnessLevel()).stream()
+                        .filter(c -> CapabilityPrescriptionPolicy.asignables(profile.goalType(), profile.fitnessLevel())
+                                .contains(c)).map(Enum::name).toList(),
+                factibles.stream().map(Enum::name).toList(), noFactibles,
+                codigos.entrySet().stream().map(e -> new DosisCodificada(e.getValue(), e.getKey().capacidad(),
+                        e.getKey().series(), e.getKey().seriesMax(), e.getKey().reps(), e.getKey().segundos(),
+                        e.getKey().descansoSegundos())).toList(),
+                candidatosEscasos(factibles, dosisDe));
+    }
+
+    private static Map<String, List<Long>> candidatosEscasos(java.util.Set<GoalCapabilityPolicy.Capability> factibles,
+                                                            Map<Long, List<DosisCapacidad>> dosisDe) {
+        var escasos = new java.util.TreeMap<String, List<Long>>();
+        for (var cap : factibles) {
+            var ids = dosisDe.entrySet().stream()
+                    .filter(e -> e.getValue().stream().anyMatch(d -> d.capacidad().equals(cap.name())))
+                    .map(Map.Entry::getKey).sorted().toList();
+            if (!ids.isEmpty() && ids.size() <= CANDIDATOS_ESCASOS) escasos.put(cap.name(), ids);
+        }
+        return escasos;
+    }
 
     public static PlanInputSnapshot of(PlanGenerationContext context) {
         var profile = context.profile();
@@ -221,6 +523,21 @@ public record PlanInputSnapshot(
         var objetivo = TargetPrescription.forGoal(profile.goalType());
         var minExercises = minExercisesOrNull(context, objetivo);
 
+        // GEN-IN-1.10 (P-1.3). Un solo interruptor para todo lo de 4D: los
+        // campos nuevos van a null y la instruccion no aparece cuando el
+        // objetivo no es GAIN_MUSCLE. Los otros cuatro objetivos no reciben
+        // ninguna regla de dosis que no les corresponda.
+        boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
+        // GEN-IN-1.11: el resto de objetivos, por capacidades (4D v4).
+        boolean porCapacidades = CapabilityPrescriptionPolicy.gobiernaGeneracion(profile.goalType());
+
+        // GEN-IN-1.12: las dosis por capacidad de cada candidato se calculan una
+        // vez; la tabla de codigos sale de todas ellas.
+        var dosisDe = new java.util.LinkedHashMap<Long, List<DosisCapacidad>>();
+        if (porCapacidades)
+            context.availableExercises().forEach(c -> dosisDe.put(c.exerciseId(), dosisPorCapacidad(c, profile, limites)));
+        var codigos = codigosDeDosis(dosisDe.values());
+
         var constraints = new Constraints(context.weekNumber(), context.weekStartDate(),
                 context.weekEndDate(), context.effectiveDaysPerWeek(), profile.availableDays(),
                 context.effectiveSessionMinutes(), profile.trainingLocation(),
@@ -233,7 +550,25 @@ public record PlanInputSnapshot(
                 context.suggestedSplit().stream()
                         .map(session -> suggestedSession(session, minExercises))
                         .toList(),
-                reduceVolumeCapsOrNull(context));
+                reduceVolumeCapsOrNull(context),
+                !dosisFijada ? null : tablaDosis(),
+                // El tope de V24 tambien para los objetivos por capacidades: antes
+                // se validaba sin decirselo a la IA (plan 55, intento 1: nueve
+                // colocaciones por dia).
+                dosisFijada ? MvpDosePolicy.maxColocaciones(context.effectiveSessionMinutes())
+                        : porCapacidades ? CapabilityPrescriptionPolicy.MAX_COLOC_DIA : null,
+                !dosisFijada ? null
+                        : MvpDosePolicy.presupuestoDiarioSegundos(context.effectiveSessionMinutes()) / 60.0,
+                // 4C: tambien a los objetivos por capacidades que exigen slots
+                // (V23 se los exige); GAIN_MUSCLE igual que antes.
+                !dosisFijada && !(porCapacidades
+                        && GoalFeasibilityPolicy.exigeSlotsResistidos(profile.goalType())) ? null
+                        : slotsExigibles(context),
+                !porCapacidades ? null : capacidades(context, limites, codigos, dosisDe),
+                context.policy().v4Segundos()
+                        ? main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy
+                                .limiteV4Segundos(context.profile().sessionMinutes())
+                        : null);
 
         var adjustment = context.adjustment() == null ? null : new Adjustment(
                 context.adjustment().types().stream().map(Enum::name).toList(),
@@ -283,14 +618,35 @@ public record PlanInputSnapshot(
         // participante en la misma semana ve el catalogo en el mismo orden, y
         // un plan se puede reproducir al depurar.
         var porGrupo = new java.util.LinkedHashMap<String, java.util.List<AvailableExercise>>();
-        context.availableExercises().forEach(candidate -> porGrupo
-                .computeIfAbsent(candidate.bodyPartCode(), key -> new java.util.ArrayList<>())
-                .add(new AvailableExercise(candidate.exerciseId(), candidate.name(),
-                        candidate.bodyPartCode(), candidate.equipmentCode(), candidate.difficulty(),
-                        candidate.defaultPrescription() == null ? null
-                                : candidate.defaultPrescription().name(),
-                        candidate.targetMuscle(),
-                        minRepsOrNull(candidate, limites, profile.fitnessLevel()))));
+        context.availableExercises().forEach(candidate -> {
+            var dosis = !porCapacidades ? null : dosisDe.get(candidate.exerciseId());
+            // Por capacidades, un ejercicio sin dosis admisible (en revision de
+            // clasificacion, o que no aporta nada al objetivo) no se ofrece: V24
+            // lo rechazaria.
+            if (porCapacidades && dosis.isEmpty()) return;
+            // Orden de optimizacion (31/10/2026), B1: en GAIN_MUSCLE, lo que no puede demostrar
+            // hipertrofia (duracion, o clase sin hipertrofia) no se ofrece: V24 lo rechaza siempre y
+            // el motor de reglas ya lo excluye. Eran 11 de los rechazos de las 48 predicciones.
+            if (dosisFijada && !puedeDemostrarHipertrofia(candidate)) return;
+            var etiquetas = etiquetasDe(candidate, dosisFijada);
+            // GEN-IN-1.13: el slot de 4C viaja tambien a los objetivos por
+            // capacidades que lo exigen (INCREASE_STRENGTH, GENERAL_FITNESS):
+            // V23 y la V25 de fuerza lo cuentan, y sin el la IA tenia que
+            // deducirlo del patron.
+            if (!dosisFijada && porCapacidades && GoalFeasibilityPolicy.exigeSlotsResistidos(profile.goalType()))
+                etiquetas = new EtiquetasDosis(main.web.services.fitsense.planning.domain.model.valueobjects
+                        .MandatorySlot.of(candidate).map(Enum::name).orElse(null), null);
+            porGrupo.computeIfAbsent(candidate.bodyPartCode(), key -> new java.util.ArrayList<>())
+                    .add(new AvailableExercise(candidate.exerciseId(), candidate.name(),
+                            candidate.bodyPartCode(), candidate.equipmentCode(), candidate.difficulty(),
+                            candidate.defaultPrescription() == null ? null
+                                    : candidate.defaultPrescription().name(),
+                            candidate.targetMuscle(),
+                            minRepsOrNull(candidate, limites, profile.fitnessLevel()),
+                            candidate.movementPattern(),
+                            etiquetas.slot(), etiquetas.claseDosis(), dosis,
+                            dosis == null ? null : dosis.stream().map(codigos::get).toList()));
+        });
 
         var random = new java.util.Random(
                 context.userId() * 1_000_003L + context.weekStartDate().toEpochDay());
@@ -338,6 +694,35 @@ public record PlanInputSnapshot(
      * calentamiento + n x (trabajo + descanso) + (n - 1) x transicion >= minimo.
      * Es una referencia: si la IA usa mas series o mas repeticiones, necesitara
      * menos ejercicios.
+     * <p>
+     * <b>GEN-IN-1.10b, 16/10/2026.</b> Con {@code GAIN_MUSCLE} la dosis NO es la
+     * del objetivo, es la de {@link MvpDosePolicy}. Calcular este numero con
+     * {@code target_sets x target_reps} daba <b>9</b> para el primer perfil
+     * -45 min, piso V20 de 31- contra un tope de <b>6</b> colocaciones de 4D v2
+     * §5: el prompt llevaba los dos numeros a la vez y <b>ninguna propuesta
+     * podia cumplir los dos</b>. Con la dosis de 4D sale 5.
+     * <p>
+     * Hallazgo que lo motivo: en el plan 15 la IA propuso 10, 6 y 9
+     * colocaciones en los tres intentos, y 9 es el valor literal de este campo.
+     * Evidencia circunstancial, no causalidad demostrada.
+     * <p>
+     * ESTO NO CAMBIA NADA PARA LOS OTROS CUATRO OBJETIVOS: siguen por
+     * {@link TargetPrescription}, con el mismo calculo de antes.
+     * <p>
+     * <b>EL 5 ES UNA REFERENCIA OPTIMISTA, NO UNA GARANTIA.</b> Sale de
+     * {@code ESTRUCTURAL_ESTANDAR}, y solo se alcanza si el dia es casi todo
+     * estructural. Medido con el estimador de V17 y el piso de 31:
+     * <pre>
+     *   5 colocaciones: solo pasan las 5 estructurales (31,5 min).
+     *                   Con un solo relleno ya cae a 29,5 y V20 rechaza.
+     *   6 colocaciones: pasan con 3 estructurales o mas (31,0 min, margen cero).
+     *                   Con 2 estructurales cae a 29,0 y V20 rechaza.
+     * </pre>
+     * Si el dia fuera todo relleno, la misma formula pediria <b>8</b>
+     * ejercicios, por encima del tope de 6: ese caso es insatisfacible y no se
+     * arregla publicando otro numero. <b>La autoridad sigue siendo V20 sobre el
+     * borrador concreto</b>; este campo es una pista para armarlo, no una
+     * promesa de que pase.
      */
     private static Integer minExercisesOrNull(PlanGenerationContext context,
                                               TargetPrescription objetivo) {
@@ -345,14 +730,116 @@ public record PlanInputSnapshot(
         var params = context.prescription();
         if (minMinutos == null || params == null) return null;
 
-        int series = objetivo.setsFor(context.profile().fitnessLevel());
-        int porEjercicio = series * objetivo.reps() * params.secondsPerRepOrDefault()
-                + Math.max(0, series - 1) * objetivo.restSeconds();
-        int transicion = params.transitionSecondsOrDefault();
+        // La dosis de referencia: la de 4D donde 4D manda, la del objetivo donde
+        // no. Sale de la politica, no de constantes nuevas.
+        var dosis4D = MvpDosePolicy.aplicaA(context.profile().goalType())
+                ? MvpDosePolicy.ClaseDosis.ESTRUCTURAL_ESTANDAR.dosis()
+                : null;
+
+        int series   = dosis4D != null ? dosis4D.series()
+                : objetivo.setsFor(context.profile().fitnessLevel());
+        int reps     = dosis4D != null ? dosis4D.reps()             : objetivo.reps();
+        int descanso = dosis4D != null ? dosis4D.descansoSegundos() : objetivo.restSeconds();
+
+        return minExercisesPara(minMinutos, series, reps, descanso,
+                params.secondsPerRepOrDefault(), params.transitionSecondsOrDefault(),
+                params.warmupMinutesOrDefault());
+    }
+
+    /**
+     * La aritmetica sola, sin contexto. Se separo para poder probarla con los
+     * numeros del perfil real sin construir un {@code PlanGenerationContext}
+     * completo: es la unica parte de este calculo que puede equivocarse en un
+     * numero, y era justo la que no estaba cubierta.
+     * <p>
+     * No cambio ni una operacion respecto a la version anterior.
+     */
+    static Integer minExercisesPara(int minMinutos, int series, int reps, int descanso,
+                                    int segundosPorRep, int transicion, int warmupMinutos) {
+        int porEjercicio = series * reps * segundosPorRep + Math.max(0, series - 1) * descanso;
         if (porEjercicio + transicion <= 0) return null;
 
-        int restante = minMinutos * 60 - params.warmupMinutesOrDefault() * 60 + transicion;
+        int restante = minMinutos * 60 - warmupMinutos * 60 + transicion;
         return Math.max(2, (int) Math.ceil(restante / (double) (porEjercicio + transicion)));
+    }
+
+    /**
+     * GEN-IN-1.10 (P-1.3): lo que 4D anade a un candidato. Paquete-privado y con
+     * el candidato como unica entrada para que se pueda probar sin construir un
+     * {@code PlanGenerationContext} completo.
+     */
+    record EtiquetasDosis(String slot, String claseDosis) {}
+
+    private static final EtiquetasDosis SIN_ETIQUETAS = new EtiquetasDosis(null, null);
+
+    /**
+     * El slot y la clase de dosis de un candidato, o nulos.
+     * <p>
+     * Tres reglas, cada una con su motivo:
+     * <ol>
+     *   <li>objetivo distinto de {@code GAIN_MUSCLE}: 4D no lo gobierna, no viaja
+     *       nada;</li>
+     *   <li>{@code DURATION}: viaja el slot pero NO la clase de dosis. La
+     *       politica clasifica por slot y zona sin mirar el tipo de
+     *       prescripcion, asi que adjuntarle la clave le inventaria una dosis de
+     *       series y repeticiones. Es la misma abstencion que ya hace el
+     *       validador antes de llamar a la politica;</li>
+     *   <li>el resto: slot y clase, los dos de {@code MvpDosePolicy}.</li>
+     * </ol>
+     * Un candidato SIN PATRON recibe {@code slot} nulo y clase
+     * {@code RELLENO_*}, porque es exactamente la dosis que el validador le va a
+     * exigir. Coincidir con el validador es la condicion que manda; que el
+     * criterio deba abstenerse en ese caso es una pregunta abierta de 4D, no
+     * algo que el prompt pueda arreglar por su cuenta.
+     */
+    static EtiquetasDosis etiquetasDe(
+            main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise candidate,
+            boolean dosisFijada) {
+        if (!dosisFijada || candidate == null) return SIN_ETIQUETAS;
+
+        var slot = main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot.of(candidate);
+        String nombreSlot = slot.map(Enum::name).orElse(null);
+
+        if (candidate.defaultPrescription()
+                == main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.DURATION)
+            return new EtiquetasDosis(nombreSlot, null);
+
+        return new EtiquetasDosis(nombreSlot,
+                MvpDosePolicy.claseDosis(slot, candidate.bodyPartCode())
+                        .map(Enum::name).orElse(null));
+    }
+
+    /** El mismo criterio que el motor de reglas para GAIN_MUSCLE: estructural o resistido de repeticiones. */
+    private static boolean puedeDemostrarHipertrofia(
+            main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise c) {
+        if (c.defaultPrescription() == main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.DURATION)
+            return false;
+        var clase = CapabilityPrescriptionPolicy.claseDe(c);
+        return clase == CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL || clase == CapabilityPrescriptionPolicy.Clase.RESISTIDO;
+    }
+
+    /** La tabla de 4D v3, recorriendo la politica. Ninguna fila escrita a mano. */
+    static List<DosisPorClase> tablaDosis() {
+        return MvpDosePolicy.tablaDosis().stream()
+                .map(clase -> {
+                    var dosis = clase.dosis();
+                    return new DosisPorClase(clase.name(), dosis.series(), dosis.reps(),
+                            dosis.descansoSegundos(), dosis.seriesMax(), dosis.costeSegundos(false) / 60.0);
+                })
+                .toList();
+    }
+
+    /**
+     * Los slots que el backend va a exigir, de los mismos candidatos que viajan.
+     * {@code null} si no sale ninguno: exigir una lista vacia no significa nada
+     * y un {@code []} en el prompt se lee como «ninguno».
+     */
+    private static List<String> slotsExigibles(PlanGenerationContext context) {
+        var exigibles = main.web.services.fitsense.planning.domain.services.SlotCoveragePolicy
+                .requiredOf(main.web.services.fitsense.planning.domain.services.SlotCoveragePolicy
+                        .ofEligible(context.availableExercises()))
+                .stream().map(Enum::name).toList();
+        return exigibles.isEmpty() ? null : exigibles;
     }
 
     /** Mismo calculo que V16: sin limites completos en la configuracion, V16 no valida. */

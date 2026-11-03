@@ -244,6 +244,15 @@ public class WorkoutSession extends AuditableAbstractAggregateRoot<WorkoutSessio
         return thresholds.classify(completionPercentage.doubleValue());
     }
 
+    /**
+     * Si algun ejercicio se dejo por dolor o molestias, aunque no sea la causa mas
+     * repetida. La causa dominante no lo garantiza: un dolor frente a dos fatigas da
+     * fatiga, y un empate es arbitrario. La seguridad no se decide por mayoria.
+     */
+    public boolean algunEjercicioConDolor() {
+        return exercises.stream().anyMatch(e -> e.getSkipReason() == SkipReason.PAIN_OR_DISCOMFORT);
+    }
+
     /** Causa dominante de los ejercicios saltados. Insumo del ajuste. */
     public Optional<SkipReason> dominantSkipReason() {
         return exercises.stream()

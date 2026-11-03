@@ -14,6 +14,8 @@ import java.util.Optional;
 @Repository
 public interface WeeklyTrainingPlanRepository extends JpaRepository<WeeklyTrainingPlan, Long> {
 
+    boolean existsByUserId(Long userId);
+
     Optional<WeeklyTrainingPlan> findByUserIdAndWeekStartDateAndStatus(
             Long userId, LocalDate weekStartDate, PlanStatus status);
 

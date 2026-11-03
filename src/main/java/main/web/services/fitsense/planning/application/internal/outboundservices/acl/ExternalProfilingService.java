@@ -36,7 +36,17 @@ public class ExternalProfilingService {
                 snapshot.availableDays(),
                 snapshot.sessionMinutes(),
                 snapshot.equipmentCodes(),
-                snapshot.blockedExerciseIds()
+                snapshot.blockedExerciseIds(),
+                // El ACL traduce: profiling habla de "permisos del perfil" y
+                // planning de "lo declarado" para SafetyProfile. Son el mismo
+                // dato con el nombre de cada contexto.
+                new main.web.services.fitsense.planning.domain.model.valueobjects
+                        .SafetyProfile.Declaradas(
+                        snapshot.allowances().allowHighImpact(),
+                        snapshot.allowances().allowFloorExercises(),
+                        snapshot.allowances().allowKneelingExercises(),
+                        snapshot.allowances().allowHangingExercises(),
+                        snapshot.allowances().allowOverheadExercises())
         ));
     }
 }

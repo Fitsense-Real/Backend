@@ -1,0 +1,2 @@
+usuario,user_id,objetivo,nivel,dias_disponibles,dias_por_semana_declarados,lugar,entorno,equipamiento,minutos,sexo,nacimiento,altura_cm,peso_kg,impacto,suelo,rodillas,colgado,sobre_cabeza,plan_inicial,corte
+U02,1,LOSE_WEIGHT,BEGINNER,"[6, 7]",2,HOME,"casa, equipamiento limitado (peso corporal y banda)","[body weight, band]",30,FEMALE,1988-07-02,162,84,false,true,true,false,true,"RULE_ENGINE, 0 llamadas",fin del foco (semana 5)

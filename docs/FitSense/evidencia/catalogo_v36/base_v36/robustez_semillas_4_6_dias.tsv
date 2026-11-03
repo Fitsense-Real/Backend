@@ -1,0 +1,291 @@
+perfil	semilla	resultado
+LOSE_WEIGHT/BEGINNER/4d/45/GYM	1	VALIDA
+LOSE_WEIGHT/BEGINNER/4d/45/CASA	1	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/GYM	1	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/CASA	1	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/GYM	1	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/CASA	1	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/GYM	1	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/CASA	1	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/5d/45/GYM	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 153. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/5d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 154. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/GYM	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 155. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 156. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/4d/45/GYM	1	VALIDA
+LOSE_WEIGHT/ADVANCED/4d/45/CASA	1	VALIDA
+LOSE_WEIGHT/ADVANCED/5d/45/GYM	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 159. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/5d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 160. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/GYM	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 161. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 162. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+GAIN_MUSCLE/BEGINNER/4d/45/GYM	1	VALIDA
+GAIN_MUSCLE/BEGINNER/4d/45/CASA	1	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/GYM	1	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/CASA	1	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/GYM	1	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/CASA	1	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/GYM	1	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/CASA	1	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/GYM	1	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/CASA	1	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/GYM	1	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/CASA	1	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/GYM	1	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/CASA	1	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/GYM	1	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/CASA	1	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/GYM	1	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/CASA	1	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/GYM	1	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/CASA	1	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/GYM	1	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/CASA	1	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/GYM	1	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/CASA	1	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/GYM	1	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/CASA	1	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/GYM	1	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/CASA	1	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/GYM	1	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 208. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/INTERMEDIATE/6d/45/GYM	1	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/6d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 210. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/ADVANCED/4d/45/GYM	1	VALIDA
+GENERAL_FITNESS/ADVANCED/4d/45/CASA	1	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/GYM	1	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 214. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/ADVANCED/6d/45/GYM	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 215. Ultimos problemas: V22: el entrenamiento PULL del 2026-11-06 incluye el ejercicio 1322 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/ADVANCED/6d/45/CASA	1	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 216. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+LOSE_WEIGHT/BEGINNER/4d/45/GYM	2	VALIDA
+LOSE_WEIGHT/BEGINNER/4d/45/CASA	2	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/GYM	2	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/CASA	2	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/GYM	2	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/CASA	2	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/GYM	2	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/CASA	2	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/5d/45/GYM	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 225. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/5d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 226. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/GYM	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 227. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 228. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/4d/45/GYM	2	VALIDA
+LOSE_WEIGHT/ADVANCED/4d/45/CASA	2	VALIDA
+LOSE_WEIGHT/ADVANCED/5d/45/GYM	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 231. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/5d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 232. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/GYM	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 233. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 234. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+GAIN_MUSCLE/BEGINNER/4d/45/GYM	2	VALIDA
+GAIN_MUSCLE/BEGINNER/4d/45/CASA	2	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/GYM	2	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/CASA	2	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/GYM	2	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/CASA	2	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/GYM	2	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/CASA	2	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/GYM	2	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/CASA	2	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/GYM	2	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/CASA	2	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/GYM	2	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/CASA	2	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/GYM	2	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/CASA	2	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/GYM	2	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/CASA	2	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/GYM	2	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/CASA	2	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/GYM	2	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/CASA	2	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/GYM	2	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/CASA	2	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/GYM	2	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/CASA	2	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/GYM	2	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/CASA	2	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/GYM	2	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 280. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/INTERMEDIATE/6d/45/GYM	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 281. Ultimos problemas: V22: el entrenamiento PULL del 2026-11-03 incluye el ejercicio 1119 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/INTERMEDIATE/6d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 282. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V22: el entrenamiento PULL del 2026-11-03 incluye el ejercicio 1322 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/ADVANCED/4d/45/GYM	2	VALIDA
+GENERAL_FITNESS/ADVANCED/4d/45/CASA	2	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/GYM	2	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 286. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/ADVANCED/6d/45/GYM	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 287. Ultimos problemas: V22: el entrenamiento PULL del 2026-11-03 incluye el ejercicio 1322 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/ADVANCED/6d/45/CASA	2	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 288. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+LOSE_WEIGHT/BEGINNER/4d/45/GYM	3	VALIDA
+LOSE_WEIGHT/BEGINNER/4d/45/CASA	3	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/GYM	3	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/CASA	3	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/GYM	3	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/CASA	3	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/GYM	3	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/CASA	3	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/5d/45/GYM	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 297. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/5d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 298. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/GYM	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 299. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 300. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/4d/45/GYM	3	VALIDA
+LOSE_WEIGHT/ADVANCED/4d/45/CASA	3	VALIDA
+LOSE_WEIGHT/ADVANCED/5d/45/GYM	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 303. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/5d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 304. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/GYM	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 305. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 306. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+GAIN_MUSCLE/BEGINNER/4d/45/GYM	3	VALIDA
+GAIN_MUSCLE/BEGINNER/4d/45/CASA	3	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/GYM	3	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/CASA	3	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/GYM	3	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/CASA	3	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/GYM	3	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/CASA	3	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/GYM	3	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/CASA	3	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/GYM	3	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/CASA	3	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/GYM	3	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/CASA	3	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/GYM	3	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/CASA	3	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/GYM	3	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/CASA	3	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/GYM	3	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/CASA	3	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/GYM	3	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/CASA	3	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/GYM	3	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/CASA	3	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/GYM	3	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/CASA	3	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/GYM	3	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/CASA	3	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/GYM	3	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 352. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/INTERMEDIATE/6d/45/GYM	3	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/6d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 354. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/ADVANCED/4d/45/GYM	3	VALIDA
+GENERAL_FITNESS/ADVANCED/4d/45/CASA	3	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/GYM	3	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 358. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V22: el entrenamiento PULL del 2026-11-03 incluye el ejercicio 1322 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/ADVANCED/6d/45/GYM	3	VALIDA
+GENERAL_FITNESS/ADVANCED/6d/45/CASA	3	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 360. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+LOSE_WEIGHT/BEGINNER/4d/45/GYM	4	VALIDA
+LOSE_WEIGHT/BEGINNER/4d/45/CASA	4	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/GYM	4	VALIDA
+LOSE_WEIGHT/BEGINNER/5d/45/CASA	4	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/GYM	4	VALIDA
+LOSE_WEIGHT/BEGINNER/6d/45/CASA	4	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/GYM	4	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/4d/45/CASA	4	VALIDA
+LOSE_WEIGHT/INTERMEDIATE/5d/45/GYM	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 369. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/5d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 370. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/GYM	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 371. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/INTERMEDIATE/6d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 372. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/4d/45/GYM	4	VALIDA
+LOSE_WEIGHT/ADVANCED/4d/45/CASA	4	VALIDA
+LOSE_WEIGHT/ADVANCED/5d/45/GYM	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 375. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/5d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 376. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/GYM	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 377. Ultimos problemas: V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+LOSE_WEIGHT/ADVANCED/6d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 378. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V15: el entrenamiento del 2026-11-04 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs]. | V15: el entrenamiento del 2026-11-07 tiene enfoque LEGS y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs].
+GAIN_MUSCLE/BEGINNER/4d/45/GYM	4	VALIDA
+GAIN_MUSCLE/BEGINNER/4d/45/CASA	4	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/GYM	4	VALIDA
+GAIN_MUSCLE/BEGINNER/5d/45/CASA	4	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/GYM	4	VALIDA
+GAIN_MUSCLE/BEGINNER/6d/45/CASA	4	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/GYM	4	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/4d/45/CASA	4	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/GYM	4	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/5d/45/CASA	4	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/GYM	4	VALIDA
+GAIN_MUSCLE/INTERMEDIATE/6d/45/CASA	4	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/GYM	4	VALIDA
+GAIN_MUSCLE/ADVANCED/4d/45/CASA	4	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/GYM	4	VALIDA
+GAIN_MUSCLE/ADVANCED/5d/45/CASA	4	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/GYM	4	VALIDA
+GAIN_MUSCLE/ADVANCED/6d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/BEGINNER/4d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/BEGINNER/5d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/BEGINNER/6d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/4d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/5d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/INTERMEDIATE/6d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/ADVANCED/4d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/ADVANCED/5d/45/CASA	4	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/GYM	4	VALIDA
+INCREASE_STRENGTH/ADVANCED/6d/45/CASA	4	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/GYM	4	VALIDA
+GENERAL_FITNESS/BEGINNER/4d/45/CASA	4	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/GYM	4	VALIDA
+GENERAL_FITNESS/BEGINNER/5d/45/CASA	4	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/GYM	4	VALIDA
+GENERAL_FITNESS/BEGINNER/6d/45/CASA	4	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/GYM	4	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/4d/45/CASA	4	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/GYM	4	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/5d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 424. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V22: el entrenamiento PULL del 2026-11-03 incluye el ejercicio 1322 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/INTERMEDIATE/6d/45/GYM	4	VALIDA
+GENERAL_FITNESS/INTERMEDIATE/6d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 426. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms]. | V22: el entrenamiento PULL del 2026-11-03 incluye el ejercicio 1322 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/ADVANCED/4d/45/GYM	4	VALIDA
+GENERAL_FITNESS/ADVANCED/4d/45/CASA	4	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/GYM	4	VALIDA
+GENERAL_FITNESS/ADVANCED/5d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 430. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+GENERAL_FITNESS/ADVANCED/6d/45/GYM	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 431. Ultimos problemas: V22: el entrenamiento PULL del 2026-11-03 incluye el ejercicio 1119 de triceps; PULL admite solo biceps.
+GENERAL_FITNESS/ADVANCED/6d/45/CASA	4	SIN_PLAN PlanGenerationFailedException: No se pudo generar un plan valido para el usuario 432. Ultimos problemas: V15: el entrenamiento del 2026-11-03 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+
+# sin plan por perfil (de 4): {GENERAL_FITNESS/ADVANCED/5d/45/CASA=4, GENERAL_FITNESS/ADVANCED/6d/45/CASA=4, GENERAL_FITNESS/ADVANCED/6d/45/GYM=3, GENERAL_FITNESS/INTERMEDIATE/5d/45/CASA=4, GENERAL_FITNESS/INTERMEDIATE/6d/45/CASA=4, GENERAL_FITNESS/INTERMEDIATE/6d/45/GYM=1, LOSE_WEIGHT/ADVANCED/5d/45/CASA=4, LOSE_WEIGHT/ADVANCED/5d/45/GYM=4, LOSE_WEIGHT/ADVANCED/6d/45/CASA=4, LOSE_WEIGHT/ADVANCED/6d/45/GYM=4, LOSE_WEIGHT/INTERMEDIATE/5d/45/CASA=4, LOSE_WEIGHT/INTERMEDIATE/5d/45/GYM=4, LOSE_WEIGHT/INTERMEDIATE/6d/45/CASA=4, LOSE_WEIGHT/INTERMEDIATE/6d/45/GYM=4}

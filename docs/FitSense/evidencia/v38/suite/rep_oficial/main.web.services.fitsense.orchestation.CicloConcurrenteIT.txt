@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.orchestation.CicloConcurrenteIT
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 40.98 s -- in main.web.services.fitsense.orchestation.CicloConcurrenteIT

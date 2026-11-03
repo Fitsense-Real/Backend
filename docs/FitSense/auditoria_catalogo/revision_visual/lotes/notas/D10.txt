@@ -1,0 +1,4 @@
+235|CONFIRMADO|BAJA|equipment|barbell|barbell + rack (no modelado)|Peso muerto desde soportes
+127|CONFIRMADO|MEDIA|equipment|band|band + bench o cajon|Pie trasero sobre un cajon
+199|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench|Pie trasero en un banco
+280|CONFIRMADO|MEDIA|equipment|barbell|barbell + step platform|Salta sobre un step

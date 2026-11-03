@@ -1,0 +1,14 @@
+1222|CONFIRMADO|MEDIA|equipment|smith machine|smith machine + bench|Banco en la multipower
+1284|CONFIRMADO|MEDIA|equipment|smith machine|smith machine + bench|Banco en la multipower
+633|CONFIRMADO|MEDIA|movement_pattern|VERTICAL_PUSH|HORIZONTAL_PUSH|Press tumbado sobre balon
+633|CONFIRMADO|BAJA|requires_overhead|true|false|Press tumbado (restriccion de mas)
+96|CONFIRMADO|MEDIA|equipment|band|band + step platform|Antepie sobre un step
+97|CONFIRMADO|MEDIA|equipment|sin step|+ step platform|Antepie sobre un step
+260|CONFIRMADO|MEDIA|equipment|sin step|+ step platform|Antepie sobre un step
+738|CONFIRMADO|MEDIA|equipment|sin step|+ step platform|Antepie sobre un step
+1056|CONFIRMADO|MEDIA|equipment|body weight|bench|Manos en un banco
+1276|PENDIENTE_CRITERIO|BAJA|equipment|smith machine|smith machine + bench (convencion de los sentados)|Sentado en un banco
+1278|PENDIENTE_CRITERIO|BAJA|equipment|smith machine|smith machine + bench (convencion de los sentados)|Sentado en un banco
+1278|CONFIRMADO|BAJA|axial_load|true|false|Sentado, la carga va sobre los muslos
+295|CONFIRMADO|MEDIA|equipment|plyo box|bench|Baja desde un banco
+295|PENDIENTE_CRITERIO|BAJA|high_impact|true|false (probable)|Bajada a una pierna sin salto

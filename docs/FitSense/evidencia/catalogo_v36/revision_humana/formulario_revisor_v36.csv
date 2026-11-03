@@ -1,0 +1,10 @@
+ficha,exercise_id,revisor,fecha,criterio_sha256,dificultad_1_3,alto_impacto_si_no,patron,body_part,musculo_objetivo,suelo_si_no,brazos_arriba_si_no,inversion_si_no,implemento,instrucciones_coinciden_si_no,diferencia_instrucciones,mantener_en_mvp_si_no,observaciones
+A,609,,,,,,,,,,,,,,,,
+B,1333,,,,,,,,,,,,,,,,
+C,725,,,,,,,,,,,,,,,,
+D,1059,,,,,,,,,,,,,,,,
+E,1267,,,,,,,,,,,,,,,,
+F,872,,,,,,,,,,,,,,,,
+G,760,,,,,,,,,,,,,,,,
+H,1296,,,,,,,,,,,,,,,,
+I,527,,,,,,,,,,,,,,,,

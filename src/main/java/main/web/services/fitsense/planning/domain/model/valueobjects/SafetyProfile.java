@@ -24,7 +24,11 @@ package main.web.services.fitsense.planning.domain.model.valueobjects;
 public record SafetyProfile(
         boolean excludeHighImpact,
         boolean excludeFloorWork,
-        boolean excludeAxialLoad
+        boolean excludeAxialLoad,
+        boolean excludeKneeling,
+        boolean excludeHanging,
+        boolean excludeOverhead,
+        boolean excludeInversion
 ) {
 
     /** Desde esta edad se retiran saltos, pliometria y levantamientos olimpicos. */
@@ -38,6 +42,55 @@ public record SafetyProfile(
 
     public static SafetyProfile forAge(int age) {
         return forAgeAndLevel(age, null);
+    }
+
+    /**
+     * Lo que el participante declara que NO puede hacer. Son las cinco columnas
+     * allow_* que V25 anadio a user_profiles el 28/09 y que Java no leia.
+     * <p>
+     * V25 fija la regla, literal: las declaraciones "se suman a la politica
+     * automatica; nunca la relajan". Por eso aqui se combinan con OR y no hay
+     * forma de que un allow_* en true vuelva a admitir lo que la edad retiro.
+     * <p>
+     * Un true en cada campo significa PUEDE. Ausente -null- se interpreta como
+     * puede, que es el DEFAULT TRUE de la migracion.
+     */
+    public record Declaradas(
+            Boolean allowHighImpact,
+            Boolean allowFloorExercises,
+            Boolean allowKneelingExercises,
+            Boolean allowHangingExercises,
+            Boolean allowOverheadExercises
+    ) {
+        public static Declaradas sinLimitaciones() {
+            return new Declaradas(true, true, true, true, true);
+        }
+
+        private static boolean prohibe(Boolean permite) {
+            return Boolean.FALSE.equals(permite);
+        }
+    }
+
+    /**
+     * La politica por edad y nivel MAS lo que el participante declaro.
+     * <p>
+     * requires_inversion no tiene columna allow_* en V25 ni corte propio por
+     * edad: se retira con la misma edad que la carga axial, porque es la
+     * restriccion documentada mas cercana. Queda declarado como criterio de
+     * diseno, no como dato del perfil.
+     */
+    public static SafetyProfile forAgeLevelAndDeclared(int age, String fitnessLevel,
+                                                       Declaradas declaradas) {
+        var d = declaradas == null ? Declaradas.sinLimitaciones() : declaradas;
+        var politica = forAgeAndLevel(age, fitnessLevel);
+        return new SafetyProfile(
+                politica.excludeHighImpact() || Declaradas.prohibe(d.allowHighImpact()),
+                politica.excludeFloorWork()  || Declaradas.prohibe(d.allowFloorExercises()),
+                politica.excludeAxialLoad(),
+                Declaradas.prohibe(d.allowKneelingExercises()),
+                Declaradas.prohibe(d.allowHangingExercises()),
+                Declaradas.prohibe(d.allowOverheadExercises()),
+                age >= EDAD_SIN_CARGA_AXIAL);
     }
 
     /**
@@ -55,15 +108,19 @@ public record SafetyProfile(
         return new SafetyProfile(
                 age >= EDAD_SIN_IMPACTO || "BEGINNER".equals(fitnessLevel),
                 age >= EDAD_SIN_SUELO,
+                age >= EDAD_SIN_CARGA_AXIAL,
+                false, false, false,
                 age >= EDAD_SIN_CARGA_AXIAL);
     }
 
     public static SafetyProfile none() {
-        return new SafetyProfile(false, false, false);
+        return new SafetyProfile(false, false, false, false, false, false, false);
     }
 
     public boolean hasRestrictions() {
-        return excludeHighImpact || excludeFloorWork || excludeAxialLoad;
+        return excludeHighImpact || excludeFloorWork || excludeAxialLoad
+                || excludeKneeling || excludeHanging || excludeOverhead
+                || excludeInversion;
     }
 
     /**
@@ -78,7 +135,15 @@ public record SafetyProfile(
         if (excludeHighImpact)
             partes.append("Evita cualquier movimiento explosivo o de impacto, aunque el ejercicio lo permita. ");
         if (excludeAxialLoad)
-            partes.append("Evita cargar peso sobre la columna y las posiciones invertidas. ");
+            partes.append("Evita cargar peso sobre la columna y el cuello. ");
+        if (excludeInversion)
+            partes.append("Evita las posiciones con la cabeza por debajo del corazon. ");
+        if (excludeKneeling)
+            partes.append("Evita apoyar las rodillas en el suelo. ");
+        if (excludeHanging)
+            partes.append("Evita suspenderse de una barra. ");
+        if (excludeOverhead)
+            partes.append("Evita llevar los brazos por encima de la cabeza. ");
         if (excludeFloorWork)
             partes.append("Evita ejercicios que obliguen a bajar al suelo y levantarse. ");
         partes.append("Prefiere rangos de movimiento moderados y progresion conservadora.");

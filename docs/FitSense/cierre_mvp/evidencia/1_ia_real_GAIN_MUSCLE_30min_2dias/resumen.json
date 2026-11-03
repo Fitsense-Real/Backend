@@ -1,0 +1,17 @@
+{
+  "llamadas_live" : 1,
+  "respuestas_replay" : 0,
+  "max_llamadas" : 8,
+  "escenarios" : [ "E1: ACORTAR APLICADA con 1 llamada(s); retira 480 2x10/90", "E1: retirada real del 480 en s1, reincorporacion publicada para s11 y entrenada; pasos [s2 mantenimiento, s3 PROGRESION 144, s4 PROGRESION 72, s5 PROGRESION 144, s6 PROGRESION 72, s7 PROGRESION 125, s8 PROGRESION 715, s9 PROGRESION 125, s10 REINCORPORACION 480]" ],
+  "predicciones" : [ {
+    "etapa" : "E1 · B/C",
+    "prediction_id" : "4rckyzeapdrmw0d1j02atkdqf4",
+    "total_ms" : 23939,
+    "resultado" : "SUCCEEDED",
+    "modelo" : "openai/gpt-5-structured",
+    "tokens_entrada" : 54741,
+    "tokens_salida" : 1738,
+    "predict_time_s" : 20.473673756,
+    "coste_estimado_usd" : 0.01716125
+  } ]
+}

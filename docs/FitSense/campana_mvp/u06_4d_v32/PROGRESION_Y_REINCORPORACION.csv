@@ -1,0 +1,6 @@
+usuario,semana,tipo,sesion_origen,ejercicio,dosis_antes,dosis_despues,volumen_antes,volumen_despues,volumen_base,techo,incremento_pct,estado_reserva,resultado
+U06,2,PROGRESION,6,517,"{""reps"":10,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":11,""series"":3,""descanso"":90,""segundos"":null}",210,213,210,231,1.43,,PUBLICADO
+U06,3,PROGRESION,12,354,"{""reps"":10,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":11,""series"":3,""descanso"":90,""segundos"":null}",210,213,210,231,1.43,,PUBLICADO
+U06,4,PROGRESION,18,1014,"{""reps"":13,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":14,""series"":3,""descanso"":90,""segundos"":null}",228,231,228,250,1.32,,PUBLICADO
+U06,7,PROGRESION,34,517,"{""reps"":10,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":11,""series"":3,""descanso"":90,""segundos"":null}",210,213,210,231,1.43,,PUBLICADO
+U06,8,PROGRESION,40,815,"{""reps"":13,""series"":2,""descanso"":90,""segundos"":null}","{""reps"":14,""series"":2,""descanso"":90,""segundos"":null}",233,235,233,256,0.86,,PUBLICADO

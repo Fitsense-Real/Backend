@@ -1,0 +1,17 @@
+271|PENDIENTE_CRITERIO|MEDIA|movement_pattern|HORIZONTAL_PULL|SHOULDER_RAISE o SCAPULAR_ELEVATION|Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+472|PENDIENTE_CRITERIO|MEDIA|movement_pattern|HORIZONTAL_PULL|SHOULDER_RAISE o SCAPULAR_ELEVATION|Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+663|PENDIENTE_CRITERIO|MEDIA|movement_pattern|HORIZONTAL_PULL|SHOULDER_RAISE o SCAPULAR_ELEVATION|Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+780|PENDIENTE_CRITERIO|MEDIA|movement_pattern|HORIZONTAL_PULL|SHOULDER_RAISE o SCAPULAR_ELEVATION|Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+1283|PENDIENTE_CRITERIO|MEDIA|movement_pattern|HORIZONTAL_PULL|SHOULDER_RAISE o SCAPULAR_ELEVATION|Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+375|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco
+696|PROBABLE|ALTA|requires_kneeling|false|true|Rodilla y mano sobre el banco
+696|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|
+573|CONFIRMADO|ALTA|requires_overhead|false|true|El brazo llega por encima de la cabeza
+577|PENDIENTE_CRITERIO|MEDIA|combinado|shoulders / SHOULDER_RAISE|sentadilla + elevacion lateral|
+699|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Pecho apoyado en un banco inclinado
+700|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Pecho apoyado en un banco inclinado
+701|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Pecho apoyado en un banco inclinado
+697|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+741|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Tumbado de lado en un banco
+741|CONFIRMADO|BAJA|requires_floor|true|false|En banco (restriccion de mas)
+979|CONFIRMADO|ALTA|requires_overhead|false|true|La barra sube por encima de la cabeza

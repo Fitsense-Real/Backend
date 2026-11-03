@@ -1,7 +1,9 @@
 package main.web.services.fitsense.profiling.application.internal.commandservices;
 
 import main.web.services.fitsense.profiling.application.internal.outboundservices.acl.ExternalIamService;
+import main.web.services.fitsense.profiling.application.internal.outboundservices.acl.ExternalPlanningService;
 import main.web.services.fitsense.profiling.domain.exceptions.UserProfileAlreadyExistsException;
+import main.web.services.fitsense.profiling.domain.exceptions.UserProfileLockedException;
 import main.web.services.fitsense.profiling.domain.exceptions.UserProfileNotFoundException;
 import main.web.services.fitsense.profiling.domain.model.aggregates.UserProfile;
 import main.web.services.fitsense.profiling.domain.model.commands.CreateUserProfileCommand;
@@ -19,11 +21,14 @@ public class UserProfileCommandServiceImpl implements UserProfileCommandService 
 
     private final UserProfileRepository userProfileRepository;
     private final ExternalIamService externalIamService;
+    private final ExternalPlanningService externalPlanningService;
 
     public UserProfileCommandServiceImpl(UserProfileRepository userProfileRepository,
-                                         ExternalIamService externalIamService) {
+                                         ExternalIamService externalIamService,
+                                         ExternalPlanningService externalPlanningService) {
         this.userProfileRepository = userProfileRepository;
         this.externalIamService = externalIamService;
+        this.externalPlanningService = externalPlanningService;
     }
 
     @Override
@@ -43,6 +48,9 @@ public class UserProfileCommandServiceImpl implements UserProfileCommandService 
     public Optional<UserProfile> handle(UpdateUserProfileCommand command) {
         var profile = userProfileRepository.findById(command.userId())
                 .orElseThrow(() -> new UserProfileNotFoundException(command.userId()));
+        // Regla del estudio: desde el primer plan, el perfil no cambia.
+        if (externalPlanningService.userHasAnyPlan(command.userId()))
+            throw new UserProfileLockedException(command.userId());
 
         profile.update(command);
         return Optional.of(userProfileRepository.save(profile));

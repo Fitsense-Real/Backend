@@ -1,0 +1,21 @@
+[ {
+  "user_id" : 1,
+  "attempt_id" : 3,
+  "intervencion" : "VARIANTE_MAS_SENCILLA_O_CARGA",
+  "origen" : 6,
+  "derivada" : 8,
+  "scheduled_date" : 1795910400000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+}, {
+  "user_id" : 1,
+  "attempt_id" : 5,
+  "intervencion" : "INVESTIGAR_CAMBIO_MINIMO",
+  "origen" : 9,
+  "derivada" : 11,
+  "scheduled_date" : 1797033600000,
+  "a_s" : null,
+  "resultado" : "SIN_INFORMACION",
+  "misma_causa" : false
+} ]

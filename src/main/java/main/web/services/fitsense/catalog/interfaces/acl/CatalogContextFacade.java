@@ -37,7 +37,11 @@ public class CatalogContextFacade {
     /**
      * @param excludeHighImpact fuera saltos y pliometria
      * @param excludeFloorWork  fuera lo que exige bajar al suelo
-     * @param excludeAxialLoad  fuera carga axial e invertidos
+     * @param excludeAxialLoad  fuera carga sobre columna o cuello
+     * @param excludeKneeling   fuera lo que exige apoyar las rodillas
+     * @param excludeHanging    fuera lo que exige suspenderse
+     * @param excludeOverhead   fuera lo que exige los brazos sobre la cabeza
+     * @param excludeInversion  fuera las posiciones con la cabeza bajo el corazon
      */
     @Transactional(readOnly = true)
     public List<EligibleExerciseView> fetchEligibleExercises(List<String> equipmentCodes,
@@ -46,10 +50,15 @@ public class CatalogContextFacade {
                                                              List<Long> blockedExerciseIds,
                                                              boolean excludeHighImpact,
                                                              boolean excludeFloorWork,
-                                                             boolean excludeAxialLoad) {
+                                                             boolean excludeAxialLoad,
+                                                             boolean excludeKneeling,
+                                                             boolean excludeHanging,
+                                                             boolean excludeOverhead,
+                                                             boolean excludeInversion) {
         var query = new GetEligibleExercisesQuery(equipmentCodes, excludeGymOnly,
                 maxDifficultyLevel, blockedExerciseIds,
-                excludeHighImpact, excludeFloorWork, excludeAxialLoad);
+                excludeHighImpact, excludeFloorWork, excludeAxialLoad,
+                excludeKneeling, excludeHanging, excludeOverhead, excludeInversion);
 
         var bodyParts = indexBodyParts();
         var equipment = indexEquipment();
@@ -76,6 +85,20 @@ public class CatalogContextFacade {
     }
 
     /** Nombre para mostrar de un conjunto de ids. */
+    /** Las banderas de seguridad de cada ejercicio pedido, exista o no en el conjunto elegible. */
+    @Transactional(readOnly = true)
+    public Map<Long, ExerciseSafetyFlagsView> fetchSafetyFlags(Set<Long> exerciseIds) {
+        if (exerciseIds == null || exerciseIds.isEmpty()) return Map.of();
+        return exerciseIds.stream()
+                .map(id -> exerciseQueryService.handle(new GetExerciseByIdQuery(id)))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(Exercise::getId, e -> new ExerciseSafetyFlagsView(e.getId(),
+                        e.isActive(), e.isHighImpact(), e.isRequiresFloor(), e.isAxialLoad(),
+                        e.isRequiresKneeling(), e.isRequiresHanging(), e.isRequiresOverhead(),
+                        e.isRequiresInversion()), (a, b) -> a));
+    }
+
     @Transactional(readOnly = true)
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return fetchDetails(exerciseIds).entrySet().stream()
@@ -107,6 +130,8 @@ public class CatalogContextFacade {
                 exercise.getDefaultPrescription().name(),
                 exercise.getGifPath(),
                 exercise.getImagePath(),
-                exercise.getMediaAttribution());
+                exercise.getMediaAttribution(),
+                // V26. Hasta ahora ninguna clase Java leia esta columna.
+                exercise.getMovementPattern());
     }
 }

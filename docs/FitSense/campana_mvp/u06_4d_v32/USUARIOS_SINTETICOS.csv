@@ -1,0 +1,2 @@
+usuario,user_id,objetivo,nivel,dias_disponibles,dias_por_semana_declarados,lugar,entorno,equipamiento,minutos,sexo,nacimiento,altura_cm,peso_kg,impacto,suelo,rodillas,colgado,sobre_cabeza,plan_inicial,corte
+U06,1,GAIN_MUSCLE,ADVANCED,"[1, 3, 4, 6, 7]",5,GYM,gimnasio completo,"[body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]",60,MALE,1996-01-17,180,82,true,true,true,true,true,"AI, 3 llamadas",

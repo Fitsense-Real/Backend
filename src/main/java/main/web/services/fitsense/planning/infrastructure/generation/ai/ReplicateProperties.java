@@ -19,8 +19,10 @@ public record ReplicateProperties(
         String baseUrl,
         String model,
         String reasoningEffort,
-        int timeoutSeconds
+        int timeoutSeconds,
+        int preferWaitSeconds
 ) {
+
     public ReplicateProperties {
         if (baseUrl == null || baseUrl.isBlank())
             baseUrl = "https://api.replicate.com/v1/models/openai/gpt-5-structured/predictions";
@@ -31,6 +33,13 @@ public record ReplicateProperties(
         // reglas sin gastar el segundo intento. El intento valido del plan 31
         // habia tardado unos 100 s.
         if (timeoutSeconds <= 0) timeoutSeconds = 150;
+        // Cuanto retiene Replicate el POST (cabecera Prefer: wait) antes de
+        // devolver la prediccion en curso, que entonces se sondea. 60 s es el
+        // maximo de Replicate y el valor de siempre. Se puede BAJAR para pasar por
+        // un proxy o balanceador que corte antes las peticiones abiertas: si el
+        // POST se corta, la prediccion sigue corriendo (y cobrandose) y nadie la
+        // lee. Detectado el 27/10/2026 con un proxy que cortaba a los 30 s.
+        if (preferWaitSeconds <= 0 || preferWaitSeconds > 60) preferWaitSeconds = 60;
     }
 
     /**

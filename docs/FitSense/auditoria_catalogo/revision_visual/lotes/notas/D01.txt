@@ -1,0 +1,8 @@
+306|CONFIRMADO|MEDIA|equipment|body weight|espaldera (no modelada)|Rema con toalla agarrado a una espaldera
+387|CONFIRMADO|ALTA|requires_overhead|false|true|Polea alta, brazo por encima de la cabeza al inicio
+387|PROBABLE|MEDIA|movement_pattern|HORIZONTAL_PULL|VERTICAL_PULL|
+486|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco
+636|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Mano apoyada en un banco
+981|CONFIRMADO|MEDIA|equipment|barbell|landmine + barbell|Barra anclada (remo T)
+1072|CONFIRMADO|MEDIA|equipment|body weight|toalla + anclaje (no modelado)|Toalla atada a un poste
+481|CONFIRMADO|ALTA|requires_overhead|false|true|Brazos por encima de la cabeza al inicio (polea alta)

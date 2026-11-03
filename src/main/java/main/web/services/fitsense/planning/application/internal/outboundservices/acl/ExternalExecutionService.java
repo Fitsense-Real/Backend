@@ -26,6 +26,11 @@ public class ExternalExecutionService {
         this.executionContextFacade = executionContextFacade;
     }
 
+    /** Si el entrenamiento tiene una sesion en curso. */
+    public boolean hasOpenSession(Long plannedWorkoutId) {
+        return executionContextFacade.hasOpenSession(plannedWorkoutId);
+    }
+
     /** Clave: planned_workout_id. Un entrenamiento sin sesion que cuente no aparece. */
     public Map<Long, WorkoutResultView> fetchResultsByWorkout(Collection<Long> plannedWorkoutIds) {
         return executionContextFacade.fetchCountedResults(plannedWorkoutIds).stream()

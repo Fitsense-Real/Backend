@@ -13,5 +13,6 @@ public record UserResource(
         String participantCode,
         OffsetDateTime enrolledAt,
         OffsetDateTime withdrawnAt,
-        OffsetDateTime lastLoginAt
+        OffsetDateTime lastLoginAt,
+        String role
 ) {}

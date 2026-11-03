@@ -51,7 +51,8 @@ public class ProfilingContextFacade {
                 profile.maxDifficultyLevel(),
                 profile.equipmentCodesAsList(),
                 profile.blockedExerciseIdsAsList(),
-                profile.getHealthNotes()
+                profile.getHealthNotes(),
+                profile.allowancesOrDefault()
         );
     }
 }

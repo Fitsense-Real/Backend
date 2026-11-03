@@ -1,6 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
+import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
 import main.web.services.fitsense.planning.domain.services.TrainingPlanGenerator;
 import org.springframework.stereotype.Component;
@@ -92,6 +93,15 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
 
     @Override
     public PlanDraft generate(PlanGenerationContext context, List<String> previousProblems) {
+        // 4A v6 + 4D v4: INCREASE_STRENGTH, LOSE_WEIGHT y GENERAL_FITNESS se
+        // generan por capacidades. GAIN_MUSCLE sigue exactamente por el camino
+        // de abajo (4D v3), que ya cumple.
+        if (context.profile() != null
+                && main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
+                .gobiernaGeneracion(context.profile().goalType()))
+            return new CapabilityWeekBuilder(context, durationEstimator, seedFor(context))
+                    .construir(this::finalizar);
+
         var profile = context.profile();
         // Division semanal (WeeklySplitPlanner): la misma que recibe la IA como
         // suggested_split y la que usa el validador para sus mensajes.
@@ -105,10 +115,49 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         int exercisesPerSession = sessionMinutes < SHORT_SESSION_MINUTES
                 ? EXERCISES_SHORT_SESSION : EXERCISES_PER_SESSION;
 
+        // 4D v3, solo GAIN_MUSCLE: la dosis la fija MvpDosePolicy y el relleno
+        // tiene dos limites EXPLICITOS -el tope de colocaciones y el presupuesto
+        // de §5-, no el efecto indirecto de que una dosis mas pesada llegue
+        // antes al piso de duracion.
+        boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
+        // 4D v3.1: siete colocaciones con sesiones de 60 minutos o mas.
+        int topeColocaciones = dosisFijada
+                ? Math.min(MvpDosePolicy.maxColocaciones(sessionMinutes), MAX_EXERCISES_PER_SESSION)
+                : MAX_EXERCISES_PER_SESSION;
+        double presupuestoDia = dosisFijada
+                ? MvpDosePolicy.presupuestoDiarioSegundos(sessionMinutes)
+                : Double.MAX_VALUE;
+
         var random = new Random(seedFor(context));
         var recentlyUsed = new HashSet<>(context.previousWeek().exerciseIdsUsedLast7Days());
-        var selector = new ExerciseSelector(context.availableExercises(),
+        // Paso 2: los complementos de capacidad (cardio, movilidad que solo
+        // entran por 4A v6) no son trabajo de un enfoque y el selector elige por
+        // zona. Quitarlos deja la lista igual que antes del Paso 2, asi que el
+        // motor de reglas produce exactamente la misma semana.
+        var complementos = main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy
+                .complementos(context.availableExercises(), profile.goalType());
+        var seleccionables = context.availableExercises().stream()
+                .filter(candidate -> !complementos.contains(candidate.exerciseId()))
+                // 4D v3.1: en GAIN_MUSCLE solo se elige lo que puede demostrar
+                // hipertrofia -estructural o resistido verificado-. Movilidad,
+                // cardio, OTHER o en revision de clasificacion no ocupan una
+                // colocacion de la sesion de hipertrofia.
+                .filter(candidate -> !dosisFijada || puedeDemostrarHipertrofia(candidate))
+                .toList();
+        var selector = new ExerciseSelector(seleccionables,
                 context.effectiveMaxDifficulty(), recentlyUsed, random);
+
+        // Seleccion estructural, solo con la dosis fijada. Con los demas
+        // objetivos el modo queda apagado y el selector se comporta igual que
+        // antes, linea por linea.
+        selector.preferirEstructurales(dosisFijada);
+
+        // 4C §5 es SEMANAL: se arrastran los slots que faltan de un dia al
+        // siguiente, y solo los que de verdad tienen candidatos elegibles. Un
+        // slot vacio no se exige -eso es un hallazgo de la comprobacion previa,
+        // no algo que forzar en la seleccion-.
+        var slotsPorCubrir = new java.util.LinkedHashSet<MandatorySlot>();
+        if (dosisFijada) MandatorySlot.ALL.stream().filter(selector::haySlot).forEach(slotsPorCubrir::add);
 
         var prescription = TargetPrescription.forGoal(profile.goalType());
 
@@ -128,12 +177,17 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             boolean consecutive = i > 0 && dates.get(i - 1).plusDays(1).equals(dates.get(i));
             // V18: nada del dia anterior si los dias estan pegados.
             selector.block(consecutive ? previousDayIds : Set.of());
+            selector.slotsPendientes(slotsPorCubrir);
             var picked = new ArrayList<>(selector.pick(focus, exercisesPerSession));
 
             var exercises = new ArrayList<PlanDraft.DraftExercise>();
             for (var candidate : picked) {
                 exercises.add(toDraftExercise(candidate, prescription, context));
             }
+            // 4D v3.1: el dia cabe en el presupuesto de §5 DESDE la seleccion.
+            // Con sesiones cortas eso significa menos colocaciones; los slots que
+            // no entran hoy siguen pendientes y los cubre otro dia de la semana.
+            if (dosisFijada) recortarAlPresupuesto(picked, exercises, presupuestoDia, topeColocaciones);
 
             // V20: sin orden de volumen, la sesion llega al minimo de minutos
             // con trabajo, nunca alargando descansos. Orden (plan 29): ejercicios
@@ -141,27 +195,64 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // series en pequenos -> ejercicios sin topes -> 3 series en esos.
             if (minimumMinutes > 0 && context.prescription() != null) {
                 var date = dates.get(i);
-                java.util.function.BooleanSupplier falta = () -> durationEstimator.estimateMinutes(
-                        new PlanDraft.DraftWorkout(date, focus, nameOf(focus), sessionMinutes, exercises),
-                        context.prescription()) < minimumMinutes;
+                java.util.function.BooleanSupplier falta = () -> segundosDe(date, focus, sessionMinutes,
+                        exercises, context) < PlanDraftValidator.minimumSessionSeconds(context);
 
-                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, true);
-                raiseSetsUntilMinimum(picked, exercises, falta, true);
-                raiseSetsUntilMinimum(picked, exercises, falta, false);
-                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, false);
-                raiseSetsUntilMinimum(picked, exercises, falta, false);
+                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, true,
+                        topeColocaciones, presupuestoDia, dosisFijada);
+                // 4D v3: con la dosis fijada NO se suben series. El numero de
+                // series lo decide la capacidad, y subirlo para llegar al piso
+                // de duracion seria incumplir la dosis obligatoria para cumplir
+                // V20. Si con el tope de colocaciones no se llega al piso, se
+                // queda corto y V20 lo dira: es un dato, no algo que tapar
+                // rompiendo 4D.
+                if (!dosisFijada) {
+                    raiseSetsUntilMinimum(picked, exercises, falta, true);
+                    raiseSetsUntilMinimum(picked, exercises, falta, false);
+                }
+                addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, false,
+                        topeColocaciones, presupuestoDia, dosisFijada);
+                if (!dosisFijada) raiseSetsUntilMinimum(picked, exercises, falta, false);
+            }
+
+            // REPASO DE V20 (16/10). Si el dia sigue por debajo del piso, se
+            // SUSTITUYE una colocacion de relleno por una estructural: 270 s
+            // contra 150 s en el estimador, o sea +2 minutos por cambio. Nunca
+            // se borra relleno -eso baja la duracion y empeora V20- y nunca se
+            // toca la dosis. Si no hay estructural disponible, el dia se queda
+            // corto y V20 lo dira: es un dato, no algo que tapar.
+            if (dosisFijada && minimumMinutes > 0 && context.prescription() != null) {
+                sustituirRellenoPorEstructural(selector, focus, picked, exercises, prescription,
+                        context, dates.get(i), sessionMinutes, minimumMinutes, presupuestoDia);
+                // 4D v3.2/v3.3: si con la composicion de siempre el dia sigue por debajo del piso, la
+                // serie adicional del relleno (zona pequena; biceps en PULL), de una en una y solo
+                // mientras falte.
+                var date = dates.get(i);
+                ampliarRelleno(focus, picked, exercises, () -> segundosDe(date, focus, sessionMinutes,
+                        exercises, context) < PlanDraftValidator.minimumSessionSeconds(context), presupuestoDia);
             }
 
             // V4/V17: si el contenido supera el techo del perfil, se quitan
             // ejercicios del final. Antes se declaraba el techo con un contenido
             // mayor y V17 lo rechazaba (fuerza, 4x6 con 120 s, en 30 minutos).
             if (context.prescription() != null) {
-                while (exercises.size() > 2 && durationEstimator.estimateMinutes(new PlanDraft.DraftWorkout(
-                                dates.get(i), focus, nameOf(focus), sessionMinutes, exercises),
-                        context.prescription()) > techo) {
+                // V4 con la politica del contexto: HISTORICA compara minutos con techo (igual que siempre);
+                // V4-C compara los segundos estimados con M x 60 x 1,15, el mismo limite del validador.
+                while (exercises.size() > 2 && excedeTecho(context, new PlanDraft.DraftWorkout(
+                        dates.get(i), focus, nameOf(focus), sessionMinutes, exercises), techo)) {
                     exercises.remove(exercises.size() - 1);
                 }
             }
+            // Lo que este dia cubrio deja de pedirse en los siguientes.
+            if (dosisFijada) {
+                var idsDelDia = exercises.stream().map(PlanDraft.DraftExercise::exerciseId)
+                        .collect(java.util.stream.Collectors.toSet());
+                picked.stream()
+                        .filter(candidate -> idsDelDia.contains(candidate.exerciseId()))
+                        .forEach(candidate -> MandatorySlot.of(candidate)
+                                .ifPresent(slotsPorCubrir::remove));
+            }
+
             previousDayIds = exercises.stream().map(PlanDraft.DraftExercise::exerciseId)
                     .collect(java.util.stream.Collectors.toSet());
             // Provisional: la duracion definitiva se calcula despues de reducir
@@ -185,19 +276,214 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         return withRationale(withEstimatedDurations(adjusted, context), context);
     }
 
+    /**
+     * El cierre comun a los dos caminos: topes de V19, reductor de 20.5 (sin
+     * orden de volumen no hacen nada), duracion estimada y justificacion.
+     */
+    PlanDraft finalizar(PlanDraft draft, PlanGenerationContext context, String justificacion) {
+        var capped = applyReductionCaps(draft, context);
+        var adjusted = new VolumeReducer(durationToRepsDivisor).apply(capped, context);
+        var conDuracion = withEstimatedDurations(adjusted, context);
+        return new PlanDraft(conDuracion.source(), conDuracion.modelName(), conDuracion.planName(),
+                conDuracion.volume(durationToRepsDivisor), justificacion, conDuracion.workouts());
+    }
+
     // ------------------------------------------------------------ duracion (V20)
 
     private void addUntilMinimum(ExerciseSelector selector, WorkoutFocus focus,
                                  List<CandidateExercise> picked,
                                  List<PlanDraft.DraftExercise> exercises,
                                  TargetPrescription prescription, PlanGenerationContext context,
-                                 java.util.function.BooleanSupplier falta, boolean respetarTopes) {
-        while (exercises.size() < MAX_EXERCISES_PER_SESSION && falta.getAsBoolean()) {
-            var extra = selector.pickAdditional(focus, picked, respetarTopes);
+                                 java.util.function.BooleanSupplier falta, boolean respetarTopes,
+                                 int tope, double presupuestoSegundos, boolean estructuralPrimero) {
+        while (exercises.size() < tope && falta.getAsBoolean()) {
+            // Con la dosis fijada se pide primero una ESTRUCTURAL: aporta 270 s
+            // al estimador contra 150 s de una de relleno, asi que es lo unico
+            // que de verdad acerca al piso dentro del tope de seis. El relleno
+            // entra solo si no queda ninguna estructural que cumpla V15, V18 y
+            // V22 -esa es la condicion 3-.
+            var extra = estructuralPrimero
+                    ? selector.pickAdditional(focus, picked, respetarTopes, ExerciseSelector.ESTRUCTURAL)
+                    .or(() -> selector.pickAdditional(focus, picked, respetarTopes))
+                    : selector.pickAdditional(focus, picked, respetarTopes);
             if (extra.isEmpty()) return;
+
+            var nueva = toDraftExercise(extra.get(), prescription, context);
+
+            // 4D v3: no se anade nada que saque el dia del presupuesto de §5.
+            // Se comprueba ANTES de anadir, con el candidato ya convertido, para
+            // no tener que deshacerlo. Con los demas objetivos el presupuesto es
+            // infinito y esto no cambia nada.
+            if (presupuestoSegundos < Double.MAX_VALUE) {
+                double conLaNueva = costeSegundos4D(exercises) + costeSegundos4D(nueva);
+                if (conLaNueva > presupuestoSegundos) return;
+            }
+
             picked.add(extra.get());
-            exercises.add(toDraftExercise(extra.get(), prescription, context));
+            exercises.add(nueva);
         }
+    }
+
+    /**
+     * REPASO DE V20: cambia colocaciones de relleno por estructurales, una a
+     * una, hasta que el dia llegue al piso o no queden candidatos.
+     * <p>
+     * Por que SUSTITUIR y no quitar ni anadir: quitar relleno BAJA la duracion
+     * y empeora V20 -condicion explicita de Juan-, y anadir choca con el tope de
+     * seis de 4D v2 §5, que no se toca. Cambiar un relleno por una estructural
+     * mantiene el numero de colocaciones y suma unos 2 minutos al estimador.
+     * <p>
+     * Cada cambio se comprueba ANTES de aceptarlo: si sacara el dia del
+     * presupuesto de §5, se descarta y se prueba con otro relleno. Si ninguno
+     * sirve, el dia se queda como estaba y V20 decide.
+     *
+     * @return cuantas sustituciones se hicieron
+     */
+    private int sustituirRellenoPorEstructural(
+            ExerciseSelector selector, WorkoutFocus focus,
+            List<CandidateExercise> picked, List<PlanDraft.DraftExercise> exercises,
+            TargetPrescription prescription, PlanGenerationContext context,
+            LocalDate date, int sessionMinutes, int minimumMinutes,
+            double presupuestoSegundos) {
+
+        int hechas = 0;
+        boolean seguir = true;
+        while (seguir && segundosDe(date, focus, sessionMinutes, exercises, context)
+                < PlanDraftValidator.minimumSessionSeconds(context)) {
+            seguir = false;
+
+            // picked y exercises van en paralelo (mismo indice): se recorre al
+            // reves para que el primer relleno que se cambie sea el ultimo
+            // anadido, no el que entro por cobertura de grupo.
+            for (int k = exercises.size() - 1; k >= 0; k--) {
+                var actual = picked.get(k);
+                if (MandatorySlot.of(actual).isPresent()) continue;   // ya es estructural
+
+                var reemplazo = selector.estructuralQueSustituyaA(focus, picked, actual);
+                if (reemplazo.isEmpty()) continue;
+
+                // V15: el cambio no puede dejar la sesion con menos de dos grupos del enfoque si
+                // los tenia (a 60 min dejaba los dias LEGS solo con upper legs).
+                var conCambio = new ArrayList<>(picked);
+                conCambio.set(k, reemplazo.get());
+                if (gruposDelEnfoque(focus, conCambio) < Math.min(2, gruposDelEnfoque(focus, picked))) continue;
+
+                var nueva = toDraftExercise(reemplazo.get(), prescription, context);
+                double conElCambio = costeSegundos4D(exercises)
+                        - costeSegundos4D(exercises.get(k)) + costeSegundos4D(nueva);
+                if (conElCambio > presupuestoSegundos) continue;   // probar con otro relleno
+
+                picked.set(k, reemplazo.get());
+                exercises.set(k, nueva);
+                hechas++;
+                seguir = true;
+                break;
+            }
+        }
+        return hechas;
+    }
+
+    private static long gruposDelEnfoque(WorkoutFocus focus, List<CandidateExercise> lista) {
+        return lista.stream().map(CandidateExercise::bodyPartCode).filter(focus::accepts).distinct().count();
+    }
+
+    /**
+     * 4D v3.2/v3.3: sube el relleno que admite serie adicional (zona pequena 2x13; biceps 2x10 en
+     * PULL) a esa serie, de una colocacion en una y en orden, solo mientras la sesion no llegue al
+     * piso de V20 y sin salir del presupuesto de 4D §5. Las demas colocaciones no se tocan.
+     */
+    private void ampliarRelleno(WorkoutFocus focus, List<CandidateExercise> picked,
+                                List<PlanDraft.DraftExercise> exercises,
+                                java.util.function.BooleanSupplier falta, double presupuestoSegundos) {
+        for (int k = 0; k < exercises.size() && falta.getAsBoolean(); k++) {
+            var d = MvpDosePolicy.dosisPara(MandatorySlot.of(picked.get(k)), picked.get(k).bodyPartCode()).orElse(null);
+            var e = exercises.get(k);
+            if (d == null) continue;
+            short seriesMax = MvpDosePolicy.seriesMaxEn(d, focus, picked.get(k).bodyPartCode());
+            if (seriesMax <= d.series() || e.prescriptionType() != PrescriptionType.SETS_REPS
+                    || e.plannedSets() == null || e.plannedSets() != d.series()) continue;
+            var ampliada = new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), seriesMax,
+                    e.plannedReps(), e.plannedDurationSeconds(), e.targetLoadKg(), e.restSeconds(), e.notes());
+            if (costeSegundos4D(exercises) - costeSegundos4D(e) + costeSegundos4D(ampliada) > presupuestoSegundos)
+                continue;
+            exercises.set(k, ampliada);
+        }
+    }
+
+    /** Estructural o resistido de REPETICIONES: 4D v3 no tiene dosis de hipertrofia para la duracion. */
+    private static boolean puedeDemostrarHipertrofia(CandidateExercise c) {
+        if (c.defaultPrescription() == PrescriptionType.DURATION) return false;
+        var clase = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.claseDe(c);
+        return clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                || clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.RESISTIDO;
+    }
+
+    /**
+     * Quita colocaciones hasta que el dia quepa en el presupuesto de 4D §5 y en
+     * el tope de colocaciones. Primero relleno; despues estructurales cuyo slot
+     * ya esta en el dia; siempre, si se puede, de un grupo repetido para no
+     * romper V15. Nunca baja de dos.
+     */
+    private void recortarAlPresupuesto(List<CandidateExercise> picked, List<PlanDraft.DraftExercise> exercises,
+                                       double presupuestoSegundos, int tope) {
+        while (exercises.size() > 2
+                && (exercises.size() > tope || costeSegundos4D(exercises) > presupuestoSegundos)) {
+            int quitar = -1;
+            for (int ronda = 0; ronda < 4 && quitar < 0; ronda++)
+                for (int k = picked.size() - 1; k >= 0 && quitar < 0; k--) {
+                    var c = picked.get(k);
+                    final int idx = k;
+                    var slot = MandatorySlot.of(c);
+                    boolean estructural = slot.isPresent();
+                    boolean grupoRepetido = java.util.stream.IntStream.range(0, picked.size())
+                            .filter(j -> j != idx).anyMatch(j -> Objects.equals(picked.get(j).bodyPartCode(), c.bodyPartCode()));
+                    boolean slotRepetido = estructural && java.util.stream.IntStream.range(0, picked.size())
+                            .filter(j -> j != idx).anyMatch(j -> MandatorySlot.of(picked.get(j)).equals(slot));
+                    // V15 (investigacion 30-120 del PR #16, CASO A F0313): un relleno UNICO de su grupo no sale si
+                    // con el el dia baja de dos grupos; antes se quitaba la pantorrilla del LEGS de 30 minutos y el
+                    // dia quedaba solo con «upper legs». Sale entonces una estructural de slot y grupo repetidos.
+                    long gruposSin = java.util.stream.IntStream.range(0, picked.size()).filter(j -> j != idx)
+                            .mapToObj(j -> picked.get(j).bodyPartCode()).distinct().count();
+                    boolean vale = switch (ronda) {
+                        case 0 -> !estructural && grupoRepetido;
+                        case 1 -> !estructural && (grupoRepetido || gruposSin >= 2);
+                        case 2 -> slotRepetido && grupoRepetido;
+                        default -> grupoRepetido;
+                    };
+                    if (vale) quitar = k;
+                }
+            if (quitar < 0) quitar = picked.size() - 1;
+            picked.remove(quitar);
+            exercises.remove(quitar);
+        }
+    }
+
+    /** La duracion que vera V20: los segundos del estimador, sin redondear. */
+    private long segundosDe(LocalDate date, WorkoutFocus focus, int sessionMinutes,
+                            List<PlanDraft.DraftExercise> exercises, PlanGenerationContext context) {
+        return durationEstimator.estimateSeconds(new PlanDraft.DraftWorkout(
+                date, focus, nameOf(focus), sessionMinutes, exercises), context.prescription());
+    }
+
+    /** Coste del dia por 4D v2 §5, sobre lo que ya hay en la sesion. */
+    private double costeSegundos4D(List<PlanDraft.DraftExercise> exercises) {
+        double total = 0;
+        for (var e : exercises) total += costeSegundos4D(e);
+        return total;
+    }
+
+    /**
+     * Coste de una colocacion por 4D v2 §5: el descanso se cobra despues de cada
+     * serie, tambien la ultima. Las de DURACION se saltan, como en el validador:
+     * 4D v2 §4 regla 4 se abstiene con ellas, y el presupuesto queda por tanto
+     * OPTIMISTA.
+     */
+    private double costeSegundos4D(PlanDraft.DraftExercise e) {
+        if (e == null || e.prescriptionType() != PrescriptionType.SETS_REPS) return 0;
+        int series = e.plannedSets() == null ? 0 : e.plannedSets();
+        int reps = e.plannedReps() == null ? 0 : e.plannedReps();
+        int descanso = e.restSeconds() == null ? 0 : e.restSeconds();
+        return series * (reps * MvpDosePolicy.SEG_POR_REP + descanso);
     }
 
     /**
@@ -268,6 +554,20 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 .map(PreviousWeekSummary.LoadReference::loadKg)
                 .orElse(null);
 
+        // 4D v3: con GAIN_MUSCLE manda MvpDosePolicy y NADA MAS. Es la unica
+        // autoridad de dosis para ese objetivo, incluida la excepcion de zona
+        // pequena, asi que aqui no se vuelven a escribir sus valores ni se
+        // aplican los de TargetPrescription. El resto de objetivos sigue por el
+        // camino de abajo, sin ningun cambio.
+        var dosis4D = MvpDosePolicy.aplicaA(context.profile().goalType())
+                ? MvpDosePolicy.dosisPara(MandatorySlot.of(candidate), candidate.bodyPartCode())
+                : Optional.<MvpDosePolicy.Dosis>empty();
+        if (dosis4D.isPresent()) {
+            var d = dosis4D.get();
+            return new PlanDraft.DraftExercise(candidate.exerciseId(), PrescriptionType.SETS_REPS,
+                    d.series(), d.reps(), null, suggestedLoad, d.descansoSegundos(), null);
+        }
+
         // Minimo por zona (migracion V20): la tabla por objetivo pone 6
         // repeticiones para fuerza, y 6 elevaciones de talon no son coherentes.
         var limites = context.prescription() == null ? null : context.prescription().repLimits();
@@ -304,15 +604,16 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         var prescription = context.prescription();
         if (prescription == null) return draft;
 
-        // La validacion 4 sigue mandando: nunca por encima del techo del perfil.
-        int techo = context.profile().maxSessionMinutes();
-
+        // Se declara lo que dura el contenido, SIN recortarlo al techo (campana de estres, 31/10/2026).
+        // Antes se declaraba min(techo, estimado): V4 compara el techo con lo DECLARADO, asi que una
+        // sesion de 21 minutos para un perfil de 15 se publicaba declarando 17 y V4 la daba por buena
+        // (V17 tolera un 20 %). Con la duracion real, V4 rechaza lo que de verdad se pasa del techo.
         var workouts = draft.workouts().stream()
                 .map(workout -> new PlanDraft.DraftWorkout(
                         workout.scheduledDate(),
                         workout.focus(),
                         workout.name(),
-                        Math.min(techo, durationEstimator.estimateMinutes(workout, prescription)),
+                        durationEstimator.estimateMinutes(workout, prescription),
                         workout.exercises()))
                 .toList();
 
@@ -344,7 +645,14 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     /** Semilla estable: mismo usuario y misma semana, mismo plan. */
-    private long seedFor(PlanGenerationContext context) {
+    long seedFor(PlanGenerationContext context) {
         return context.userId() * 1_000_003L + context.weekStartDate().toEpochDay();
+    }
+
+    private boolean excedeTecho(PlanGenerationContext context, PlanDraft.DraftWorkout w, int techo) {
+        int minutos = durationEstimator.estimateMinutes(w, context.prescription());
+        if (!context.policy().v4Segundos()) return minutos > techo;
+        return context.policy().excedeTecho(durationEstimator.estimateSeconds(w, context.prescription()), minutos,
+                context.profile().sessionMinutes());
     }
 }

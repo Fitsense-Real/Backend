@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,13 +25,60 @@ public record PreviousWeekSummary(
         Map<String, Integer> bodyPartDistribution,
         List<WorkoutOutcome> workouts,
         List<PrescriptionOutcome> prescriptions,
-        List<Long> exerciseIdsUsedLast7Days
+        List<Long> exerciseIdsUsedLast7Days,
+        /**
+         * D8. Las sesiones de esta semana cuya duracion reducida viene de un
+         * ACORTAR_O_REORGANIZAR aplicado, heredada por copias identicas (V31 +
+         * V32). Solo sirve para que V8C mantenga la exencion de V20 en su copia;
+         * no viaja al prompt.
+         */
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        Set<Long> reduccionAutorizada,
+        /**
+         * V34. Por sesion de esta semana, los ejercicios cuya dosis -distinta o
+         * no de la exacta- llego por un paso de progresion o una reduccion de la
+         * IA registrados en V32, con el linaje V31 integro desde ahi. Es lo
+         * unico que V8C puede convertir en una dosis HEREDADA para V24. Vacio
+         * con la progresion y la V24 por capacidades apagadas. No viaja al prompt.
+         */
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        Map<Long, Set<Long>> dosisConLinaje
 ) {
+
+    public PreviousWeekSummary {
+        reduccionAutorizada = reduccionAutorizada == null ? Set.of() : Set.copyOf(reduccionAutorizada);
+        dosisConLinaje = dosisConLinaje == null ? Map.of() : Map.copyOf(dosisConLinaje);
+    }
+
+    /** Sin dosis heredadas: la forma de D8. */
+    public PreviousWeekSummary(BigDecimal weightedAdherencePct, BigDecimal averageSessionRpe, Integer totalVolume,
+                               Map<String, Integer> bodyPartDistribution, List<WorkoutOutcome> workouts,
+                               List<PrescriptionOutcome> prescriptions, List<Long> exerciseIdsUsedLast7Days,
+                               Set<Long> reduccionAutorizada) {
+        this(weightedAdherencePct, averageSessionRpe, totalVolume, bodyPartDistribution, workouts, prescriptions,
+                exerciseIdsUsedLast7Days, reduccionAutorizada, Map.of());
+    }
+
+    /** Sin reducciones heredadas: la forma de siempre. */
+    public PreviousWeekSummary(BigDecimal weightedAdherencePct, BigDecimal averageSessionRpe, Integer totalVolume,
+                               Map<String, Integer> bodyPartDistribution, List<WorkoutOutcome> workouts,
+                               List<PrescriptionOutcome> prescriptions, List<Long> exerciseIdsUsedLast7Days) {
+        this(weightedAdherencePct, averageSessionRpe, totalVolume, bodyPartDistribution, workouts, prescriptions,
+                exerciseIdsUsedLast7Days, Set.of());
+    }
     /**
      * Un dia de entrenamiento. recorded = false significa que no hay sesion que
      * cuente: no se registro, que NO es lo mismo que haberlo hecho al 0 %.
      */
     public record WorkoutOutcome(
+            /**
+             * V31. El identificador del entrenamiento previsto. Es lo que
+             * permite construir la derivacion al copiar: la fecha cambia entre
+             * semanas y el esquema ni siquiera impide dos entrenamientos el
+             * mismo dia -solo hay unicidad por display_order-, asi que no
+             * identifica univocamente ni dentro de la misma semana.
+             */
+            Long plannedWorkoutId,
             LocalDate scheduledDate,
             String focusCode,
             String workoutStatus,
@@ -40,7 +88,11 @@ public record PreviousWeekSummary(
             String sessionStatus,
             /** Por dia: la persona lo reporta al terminar cada sesion. */
             Short sessionRpe,
-            BigDecimal completionPct
+            BigDecimal completionPct,
+            /** V31. Para copiar la sesion con su nombre, no con uno inventado. */
+            String workoutName,
+            /** V31. Duracion indicada, para reconstruir la sesion conservada. */
+            short expectedDurationMinutes
     ) {}
 
     /**
@@ -51,6 +103,8 @@ public record PreviousWeekSummary(
      * dato de ese ejercicio.
      */
     public record PrescriptionOutcome(
+            /** V31. A que entrenamiento pertenece, sin depender de la fecha. */
+            Long plannedWorkoutId,
             LocalDate scheduledDate,
             Long exerciseId,
             String name,
@@ -66,7 +120,16 @@ public record PreviousWeekSummary(
             BigDecimal completionPct,
             String exerciseStatus,
             String skipReason,
-            String status
+            String status,
+            /**
+             * V31. El descanso prescrito.
+             * <p>
+             * Falta aqui hasta hoy, y hacia falta: el descanso es parte de la
+             * DOSIS que 4D exige exacta -90 s para un estructural-, asi que un
+             * plan conservado sin el fallaria la validacion de dosis aunque
+             * hubiera copiado bien las series y las repeticiones.
+             */
+            Short restSeconds
     ) {}
 
     public static final String NOT_RECORDED = "NOT_RECORDED";

@@ -1,0 +1,8 @@
+usuario,total_ms,fases_ms
+U02,394228,"{prepare=69, validar=15, normalizar=1, persist=81, generate=394058}"
+U01,96209,"{prepare=652, validar=33, normalizar=2, persist=49, generate=95486}"
+U04,78709,"{prepare=678, validar=12, normalizar=0, persist=69, generate=77930}"
+U03,260227,"{prepare=543, validar=18, normalizar=0, persist=44, generate=259607}"
+U06,461568,"{prepare=762, validar=22, normalizar=0, persist=82, generate=460697}"
+U05,59920,"{prepare=543, validar=6, normalizar=0, persist=90, generate=59249}"
+U08,97297,"{prepare=701, validar=16, normalizar=0, persist=72, generate=96498}"
