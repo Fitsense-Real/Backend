@@ -85,6 +85,18 @@ class ExperimentoKora20IT {
     static final String MODO = System.getProperty("fitsense.experimento.kora20.modo", "DETERMINISTA");
     static final boolean IA = "REPLICATE".equals(MODO);
     /**
+     * GUION (experimento prompt V2, pruebas sin red): el flujo de adaptacion es el real -orden, contexto, prompt,
+     * V8C, validador estricto, V32- pero la respuesta del modelo la escribe el laboratorio a partir de la
+     * factibilidad de V2. Sirve para comprobar con la base y los validadores reales que lo que V2 llama factible
+     * se acepta y lo que llama no factible se rechaza. Nunca llama a Replicate (url local inexistente).
+     */
+    static final boolean GUION = "GUION".equals(MODO);
+    static final boolean IA_O_GUION = IA || GUION;
+    /** Experimento C1/C2: sin generacion inicial con IA (sin gemelos). Por defecto, como en la etapa C. */
+    static final boolean GEMELOS = Boolean.parseBoolean(System.getProperty("fitsense.experimento.kora20.gemelos", "true"));
+    /** v1 | v2: fija fitsense.ai.adaptation.prompt-version. Vacio = la del backend (v1). */
+    static final String PROMPT = System.getProperty("fitsense.experimento.kora20.prompt", "");
+    /**
      * {@code proxy}: la credencial de Replicate la inyecta el proxy del entorno (secreto de red) en las peticiones a
      * api.replicate.com; el laboratorio nunca la ve. El backend exige un token no vacio, asi que recibe un marcador.
      */
@@ -98,7 +110,10 @@ class ExperimentoKora20IT {
     /** Variacion de transporte registrada (anexo 2): espera sincrona del POST antes de pasar al sondeo. */
     static final String PREFER_WAIT = System.getProperty("fitsense.experimento.kora20.prefer-wait", "");
     /** Coste maximo supuesto por prediccion (conservador; la campana MVP observo ~US$ 0,02): 90 x 0,10 = 9 < 10. */
-    static final double COSTE_MAX_POR_LLAMADA_USD = 0.10;
+    static final double COSTE_MAX_POR_LLAMADA_USD = Double.parseDouble(
+            System.getProperty("fitsense.experimento.kora20.coste-por-llamada", "0.10"));
+    /** Gasto maximo estimado de ESTA ejecucion (etapa C: 10; experimento C1/C2: la parte de los USD 5 asignada). */
+    static final double MAX_USD = Double.parseDouble(System.getProperty("fitsense.experimento.kora20.max-usd", "10.0"));
 
     @Container
     @ServiceConnection
@@ -106,9 +121,11 @@ class ExperimentoKora20IT {
 
     @DynamicPropertySource
     static void ia(DynamicPropertyRegistry r) {
-        r.add("fitsense.ai.enabled", () -> String.valueOf(IA));
+        r.add("fitsense.ai.enabled", () -> String.valueOf(IA_O_GUION));
         if (IA && !PREFER_WAIT.isBlank()) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
-        r.add("fitsense.ai.api-token", () -> !IA ? "" : CREDENCIAL_PROXY ? "marcador-credencial-inyectada-por-el-proxy"
+        if (!PROMPT.isBlank()) r.add("fitsense.ai.adaptation.prompt-version", () -> PROMPT);
+        if (GUION) r.add("fitsense.ai.base-url", () -> "http://127.0.0.1:9/guion-sin-red");
+        r.add("fitsense.ai.api-token", () -> GUION ? "guion-sin-red" : !IA ? "" : CREDENCIAL_PROXY ? "marcador-credencial-inyectada-por-el-proxy"
                 : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), ""));
     }
 
@@ -118,6 +135,7 @@ class ExperimentoKora20IT {
     @MockitoSpyBean ReplicateTrainingPlanGenerator generador;
     @MockitoSpyBean ReplicateSessionFixGenerator correcciones;
 
+    @Autowired main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilder promptBuilder;
     @Autowired UserCommandService cuentas;
     @Autowired UserProfileCommandService perfiles;
     @Autowired PlanningContextFacade planning;
@@ -176,10 +194,13 @@ class ExperimentoKora20IT {
         cfg.put("ejercicios_activos", jdbc.queryForObject("SELECT count(*) FROM exercises WHERE is_active", Integer.class));
         cfg.put("ia_habilitada", generador.isEnabled());
         cfg.put("modelo", generador.modelName());
-        cfg.put("credencial", !IA ? "ninguna" : CREDENCIAL_PROXY ? "secreto de red inyectado por el proxy (no visible)" : "variable REPLICATE_API_TOKEN");
+        cfg.put("prompt_adaptacion", promptBuilder.version());
+        cfg.put("gemelos_generacion_ia", IA && GEMELOS);
+        cfg.put("credencial", GUION ? "ninguna (guion local, sin red)" : !IA ? "ninguna" : CREDENCIAL_PROXY ? "secreto de red inyectado por el proxy (no visible)" : "variable REPLICATE_API_TOKEN");
         cfg.put("comprobacion_cuenta_http", cuenta);
         cfg.put("prefer_wait_seconds", PREFER_WAIT.isBlank() ? "60 (valor por defecto)" : PREFER_WAIT + " (variacion registrada, anexo 2)");
-        cfg.put("limite", MAX_LLAMADAS + " predicciones / USD 10 (supuesto max " + COSTE_MAX_POR_LLAMADA_USD + " por llamada)");
+        cfg.put("limite", MAX_LLAMADAS + " predicciones / USD " + MAX_USD + " (supuesto max " + COSTE_MAX_POR_LLAMADA_USD
+                + " por llamada)");
         cfg.put("politica_por_defecto", "PLAN-HIST-1 (allow-candidates=false)");
         cfg.put("progresion", "false");
         escribir("00_configuracion.txt", cfg.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).toList());
@@ -194,7 +215,7 @@ class ExperimentoKora20IT {
         var incid = new ArrayList<String>();
 
         for (var p : lista) ejecutarUsuario(p, false, gen, planIni, ejec, adh, dec, sig, res, incid);
-        if (IA) for (var p : lista) ejecutarGemelo(p, gen, planIni, incid);
+        if (IA && GEMELOS) for (var p : lista) ejecutarGemelo(p, gen, planIni, incid);
 
         csv("generacion.csv", gen);
         csv("plan_inicial.csv", planIni);
@@ -204,7 +225,7 @@ class ExperimentoKora20IT {
         csv("plan_siguiente.csv", sig);
         csv("resultados_20.csv", res);
         escribir("incidencias.log", incid);
-        if (IA) escribir("trazas_ia.jsonl", trazasIa);
+        if (IA_O_GUION) escribir("trazas_ia.jsonl", trazasIa);
         escribir("99_resumen.txt", List.of("usuarios=" + res.size(), "llamadas_proveedor=" + llamadas.get(),
                 "incidencias=" + incid.size()));
         System.out.println("KORA20 " + MODO + " -> " + SALIDA + " usuarios=" + res.size() + " llamadas=" + llamadas.get());
@@ -241,14 +262,14 @@ class ExperimentoKora20IT {
         rechazosValidacion.clear();
         Optional<Long> plan;
         String errorGen = null;
-        if (IA) doReturn(false).when(generador).isEnabled(); // copia controlada: mismo plan inicial que la etapa A
+        if (IA_O_GUION) doReturn(false).when(generador).isEnabled(); // copia controlada: mismo plan inicial que la etapa A
         try {
             plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null);
         } catch (RuntimeException e) {
             plan = Optional.empty();
             errorGen = e.getClass().getSimpleName() + ": " + e.getMessage();
         } finally {
-            if (IA) doCallRealMethod().when(generador).isEnabled();
+            if (IA_O_GUION) doCallRealMethod().when(generador).isEnabled();
         }
         gen.add(filaGeneracion(id, "U", u, plan, errorGen));
         if (plan.isEmpty()) {
@@ -619,6 +640,12 @@ class ExperimentoKora20IT {
                 throw e;
             }
         }).when(validador).validate(any(), any(), anyInt(), any());
+        if (GUION) {
+            doThrow(new IllegalStateException("GUION: la generacion inicial no llama a ningun proveedor"))
+                    .when(generador).requestOutput(any(), any(), anyInt());
+            doAnswer(this::guion).when(correcciones).pedirRespuesta(any(), any(), any(), any(), anyInt());
+            return;
+        }
         if (!IA) return;
         doAnswer(inv -> proveedor(inv, "GENERACION")).when(generador).requestOutput(any(), any(), anyInt());
         doAnswer(inv -> proveedor(inv, "ADAPTACION")).when(correcciones).pedirRespuesta(any(), any(), any(), any(), anyInt());
@@ -639,8 +666,9 @@ class ExperimentoKora20IT {
             entrada = "no_calculable:" + e.getClass().getSimpleName();
         }
         traza.put("huella_entrada", entrada);
+        if ("ADAPTACION".equals(tipo)) guardarPrompt(inv, traza);
         int n = llamadas.incrementAndGet();
-        if (n > MAX_LLAMADAS || n * COSTE_MAX_POR_LLAMADA_USD > 10.0) {
+        if (n > MAX_LLAMADAS || n * COSTE_MAX_POR_LLAMADA_USD > MAX_USD + 1e-9) {
             llamadas.decrementAndGet();
             traza.put("resultado", "PRESUPUESTO_AGOTADO_SIN_LLAMADA");
             trazasIa.add(json(traza));
@@ -662,6 +690,151 @@ class ExperimentoKora20IT {
             traza.put("ms", (System.nanoTime() - t0) / 1_000_000);
             trazasIa.add(json(traza));
         }
+    }
+
+    /** Guarda el prompt exacto de una adaptacion (lo reconstruye con el mismo constructor y los mismos datos). */
+    private void guardarPrompt(org.mockito.invocation.InvocationOnMock inv, Map<String, Object> traza) {
+        try {
+            var prompt = promptBuilder.build(inv.getArgument(0), inv.getArgument(1), inv.getArgument(2),
+                    inv.getArgument(3));
+            traza.put("prompt_version", promptBuilder.version());
+            traza.put("prompt_chars", prompt.text().length());
+            var dir = SALIDA.resolve("prompts");
+            Files.createDirectories(dir);
+            Files.writeString(dir.resolve(etiquetaActual.replace('/', '_') + "_i" + traza.get("intento") + ".txt"),
+                    prompt.text());
+        } catch (Exception e) {
+            traza.put("prompt_guardado", "no: " + e.getClass().getSimpleName());
+        }
+    }
+
+    // ================================================================== GUION (sin red)
+
+    /**
+     * La respuesta del «modelo» en el modo GUION, escrita a partir de la factibilidad V2 de cada sesion:
+     * <ul>
+     *   <li>intento 1: si V2 marca alguna opcion como [NO cabe], se aplica (el backend debe rechazarla por V20). Si V2
+     *       dice que no hay ningun cambio factible, se aplica una reduccion de dosis prohibida (una repeticion menos
+     *       en el primer ejercicio; en GAIN_MUSCLE la debe rechazar V24). Si no, se aplica lo valido;</li>
+     *   <li>intento 2 y siguientes: lo que V2 llama valido -sustitutos de la misma dosis (hasta 2) y reducciones
+     *       [cabe] mientras la suma quepa en el margen-; si V2 dice que no hay solucion, se omite la sesion.</li>
+     * </ul>
+     * Asi la base y los validadores reales juzgan cada clase de afirmacion de V2.
+     */
+    private Object guion(org.mockito.invocation.InvocationOnMock inv) throws IOException {
+        main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext ctx = inv.getArgument(0);
+        main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation der = inv.getArgument(1);
+        int intento = inv.getArgument(4);
+        var traza = new LinkedHashMap<String, Object>();
+        traza.put("etiqueta", etiquetaActual);
+        traza.put("tipo", "ADAPTACION_GUION");
+        traza.put("intento", String.valueOf(intento));
+        guardarPrompt(inv, traza);
+        var prompt = promptBuilder.build(ctx, der, inv.getArgument(2), inv.getArgument(3));
+        var sesiones = new ArrayList<String>();
+        var acciones = new ArrayList<String>();
+        for (var f : main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion
+                .calcular(ctx, der)) {
+            var w = der.from(f.plannedWorkoutId()).orElseThrow().workout();
+            var ej = new ArrayList<>(w.exercises());
+            String accion;
+            var noCabe = f.opciones().stream().filter(o -> !o.cabe()).findFirst();
+            if (intento == 1 && noCabe.isPresent()) {
+                aplicarOpcion(ej, noCabe.get());
+                accion = "NO_CABE " + noCabe.get().exerciseId() + " " + noCabe.get().despues();
+            } else if (intento == 1 && !f.hayCambioFactible()) {
+                var primero = ej.stream().filter(x -> x.plannedReps() != null).findFirst().orElse(ej.get(0));
+                ej.set(ej.indexOf(primero), new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft
+                        .DraftExercise(primero.exerciseId(), primero.prescriptionType(), primero.plannedSets(),
+                        primero.plannedReps() == null ? null : (short) (primero.plannedReps() - 1),
+                        primero.plannedDurationSeconds(), primero.targetLoadKg(), primero.restSeconds(), null));
+                accion = "PROHIBIDA reps-1 " + primero.exerciseId();
+            } else if (!f.hayCambioFactible()) {
+                accion = "OMITIDA (V2: sin solucion)";
+            } else {
+                accion = "VALIDA " + aplicarValido(f, ej);
+            }
+            acciones.add(f.plannedWorkoutId() + ": " + accion);
+            if (!accion.startsWith("OMITIDA")) sesiones.add(sesionJson(f.plannedWorkoutId(), w.scheduledDate(), ej));
+        }
+        String salida = "{\"schema_version\":\"FIX-1.0\",\"rationale\":\"guion del laboratorio\",\"sessions\":["
+                + String.join(",", sesiones) + "]}";
+        traza.put("acciones", String.join(" | ", acciones));
+        traza.put("resultado", "RESPUESTA_GUION");
+        traza.put("salida", salida);
+        trazasIa.add(json(traza));
+        return new ReplicateSessionFixGenerator.RawFix(prompt.snapshotJson(), salida);
+    }
+
+    private static String aplicarValido(
+            main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion.Sesion f,
+            List<main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise> ej) {
+        var hecho = new ArrayList<String>();
+        var usados = new HashSet<Long>();
+        int sustituidos = 0;
+        for (var s : f.sustitutos()) {
+            if (sustituidos >= 2 || !s.mismaDosis() || usados.contains(s.exerciseId()) || usados.contains(s.reemplaza()))
+                continue;
+            var i = indice(ej, s.reemplaza());
+            if (i < 0) continue;
+            var x = ej.get(i);
+            ej.set(i, new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise(
+                    s.exerciseId(), x.prescriptionType(), x.plannedSets(), x.plannedReps(), x.plannedDurationSeconds(),
+                    null, x.restSeconds(), null));
+            usados.add(s.exerciseId());
+            usados.add(s.reemplaza());
+            sustituidos++;
+            hecho.add(s.reemplaza() + "->" + s.exerciseId());
+        }
+        long suma = 0;
+        var ordenadas = new ArrayList<>(f.opciones());
+        ordenadas.sort(Comparator.comparingLong(
+                main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion.Opcion::segundosRetirados));
+        var tocados = new HashSet<Long>();
+        for (var o : ordenadas) {
+            if (!o.cabe() || usados.contains(o.exerciseId()) || tocados.contains(o.exerciseId())) continue;
+            if (f.margen() != null && suma + o.segundosRetirados() > f.margen()) continue;
+            aplicarOpcion(ej, o);
+            suma += o.segundosRetirados();
+            tocados.add(o.exerciseId());
+            hecho.add(o.exerciseId() + " " + o.antes() + "->" + o.despues());
+        }
+        return String.join(", ", hecho) + " (retira " + suma + " s, margen " + f.margen() + ")";
+    }
+
+    private static int indice(List<main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise> ej,
+                              Long id) {
+        for (int i = 0; i < ej.size(); i++) if (id.equals(ej.get(i).exerciseId())) return i;
+        return -1;
+    }
+
+    private static void aplicarOpcion(
+            List<main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise> ej,
+            main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion.Opcion o) {
+        int i = indice(ej, o.exerciseId());
+        var x = ej.get(i);
+        var m = java.util.regex.Pattern.compile("(\\d+)x(\\d+)").matcher(o.despues());
+        var d = java.util.regex.Pattern.compile("(\\d+) series? de (\\d+) s").matcher(o.despues());
+        if (m.matches())
+            ej.set(i, new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise(
+                    x.exerciseId(), x.prescriptionType(), Short.valueOf(m.group(1)), Short.valueOf(m.group(2)), null,
+                    x.targetLoadKg(), x.restSeconds(), null));
+        else if (d.matches())
+            ej.set(i, new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise(
+                    x.exerciseId(), x.prescriptionType(), Short.valueOf(d.group(1)), null, Integer.valueOf(d.group(2)),
+                    x.targetLoadKg(), x.restSeconds(), null));
+        else throw new IllegalStateException("dosis no reconocida: " + o.despues());
+    }
+
+    private static String sesionJson(Long id, LocalDate fecha,
+                                     List<main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise> ej) {
+        return "{\"source_planned_workout_id\":" + id + ",\"scheduled_date\":\"" + fecha
+                + "\",\"expected_duration_minutes\":null,\"change_reason\":\"guion del laboratorio\",\"exercises\":["
+                + ej.stream().map(x -> "{\"exercise_id\":" + x.exerciseId() + ",\"prescription_type\":\""
+                + x.prescriptionType() + "\",\"planned_sets\":" + x.plannedSets() + ",\"planned_reps\":" + x.plannedReps()
+                + ",\"planned_duration_seconds\":" + x.plannedDurationSeconds() + ",\"target_load_kg\":"
+                + x.targetLoadKg() + ",\"rest_seconds\":" + x.restSeconds() + ",\"notes\":null}")
+                .collect(Collectors.joining(",")) + "]}";
     }
 
     private static String huella(String s) {
