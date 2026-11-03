@@ -2,7 +2,7 @@
 
 **Estado:**
 - **Preparado y congelado.**
-- **La fase con Replicate NO se ha ejecutado:** espera tu aprobación del presupuesto (fase 8.1).
+- **La fase con Replicate se ejecutó** después de tu aprobación de la opción A (anexos 1 y 2). Las secciones 1–5 se conservan tal como se congelaron.
 - Las fases sin coste (perfiles, ejecución determinista y GUION, continuidad de dos semanas) **ya se ejecutaron** con estos mismos perfiles (`11`).
 
 ## 1. Perfiles (congelados antes de ejecutar)
@@ -110,3 +110,27 @@ mvnw -o -Pintegration verify -Dtest=none -Dit.test=ExperimentoKora20IT \
 - total: 60 predicciones y USD 3,00 estimados;
 - el código evaluado es el de este *commit* (sin cambios en `src/main` respecto a `51c145b`);
 - carpetas: `evidencia/RC1_r1` y `evidencia/RC2_r1`.
+
+## Anexo 2 (03/11/2026): ejecución
+
+**Se ejecutó lo aprobado, en el orden fijado, sin repeticiones y sin cambiar el prompt.**
+
+| | RC1_r1 (C1, `v1`) | RC2_r1 (C2, `v2`) |
+|---|---:|---:|
+| Verificación previa | `GET /v1/account` = 200 (proxy), base efímera nueva, catálogo V44_2 (`00_configuracion.txt`) | Ídem |
+| *Commit* ejecutado | `52f8bb4` | `597dbaa` (solo añade la evidencia de RC1; `src/main` sin cambios) |
+| Predicciones | 22 de 30 | 13 de 30 |
+| Estado de las predicciones | 22 `succeeded` | 13 `succeeded` |
+| *Tokens* de entrada / salida | 741.080 / 72.097 | 410.482 / 36.149 |
+| Coste (a 0,25 y 2,00 US$ por millón) | **US$ 0,3295** | **US$ 0,1749** |
+| Coste por predicción | US$ 0,015 | US$ 0,013 |
+| Latencia media por predicción (cliente) | 32,7 s | 28,3 s |
+| Límite alcanzado | No | No |
+| Fallos técnicos o repeticiones | 0 | 0 |
+| Incidencias | 1: R02 NO_FACTIBLE en la generación (ya prevista, H6) | Ídem |
+
+**Total de la fase:** 35 predicciones y **US$ 0,50**, frente a un máximo aprobado de 60 y USD 3,00.
+
+**El supuesto de 0,05 por predicción era conservador**: el coste real fue de unos 0,014 por predicción (cada predicción de la cohorte R usó entre 8.437 y 68.186 *tokens* de entrada).
+
+**Resultados:** `12`, `13`, `14` §4 y `16`. **Evidencia:** `evidencia/RC1_r1`, `evidencia/RC2_r1` (cada predicción en JSON, en `predicciones_replicate/`).
