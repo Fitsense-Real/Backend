@@ -145,3 +145,18 @@ Sean a1 y a2 las aplicadas en C1 r1 y C1 r2, y b1 y b2 las de C2 r1 y C2 r2.
 - No se modifica el short paper ni el experimento original.
 - No se repiten resultados de forma selectiva.
 - No se amplía el presupuesto.
+
+---
+
+## Anexo 1 (03/11/2026, posterior a las corridas): corrección de un conteo, no del método
+
+**§7** dice «sesiones señaladas con cambio efectivo (de 14)». Es un error de conteo al redactar. Los 8 casos elegibles tienen **12** sesiones señaladas: U03 1, U04 2, U08 1, U09 2, U13 1, U14 2, U18 1 y U19 2. De ellas, **10 son factibles**, porque U03 S15 y U04 S21 son F3 (`03`).
+
+Los resultados se informan sobre esas 12 y 10, en `15` y `17`. **Ninguna métrica, umbral ni regla de clasificación cambia.**
+
+## Anexo 2 (03/11/2026): ejecución
+
+- Las 4 corridas se ejecutaron en el orden congelado (C1 r1, C2 r1, C2 r2, C1 r2), una vez cada una.
+- No hubo fallos técnicos ni repeticiones.
+- No se alcanzó ninguna guarda de presupuesto: 46 predicciones y US$ 0,69 en total.
+- **Herramienta:** el script de descarga de predicciones se corrigió antes de la primera llamada para enviar un nombre de cliente genérico, porque Replicate devolvía 403 al de `urllib`. No afecta al código evaluado ni al protocolo.

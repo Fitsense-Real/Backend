@@ -1,0 +1,86 @@
+{
+ "C1_r1": {
+  "aplicadas": 6,
+  "sin_efecto": 2,
+  "sesiones_cambiadas": 7,
+  "llamadas": 15,
+  "rechazadas": 7,
+  "tokens_entrada": 521982,
+  "tokens_salida": 46022,
+  "usd": 0.2224,
+  "ms_proveedor": 408810,
+  "seguridad": {
+   "planes_invalidos": 0,
+   "cambios_no_senaladas": 0,
+   "dosis_no_autorizada": 0,
+   "bajo_minimo_v20": 0,
+   "reincorporaciones": 0,
+   "excluidos": 0,
+   "violaciones_linaje": 0,
+   "controles_con_llamadas": 0
+  }
+ },
+ "C2_r1": {
+  "aplicadas": 7,
+  "sin_efecto": 1,
+  "sesiones_cambiadas": 10,
+  "llamadas": 8,
+  "rechazadas": 0,
+  "tokens_entrada": 291118,
+  "tokens_salida": 24181,
+  "usd": 0.1212,
+  "ms_proveedor": 209113,
+  "seguridad": {
+   "planes_invalidos": 0,
+   "cambios_no_senaladas": 0,
+   "dosis_no_autorizada": 0,
+   "bajo_minimo_v20": 0,
+   "reincorporaciones": 0,
+   "excluidos": 0,
+   "violaciones_linaje": 0,
+   "controles_con_llamadas": 0
+  }
+ },
+ "C2_r2": {
+  "aplicadas": 7,
+  "sin_efecto": 1,
+  "sesiones_cambiadas": 10,
+  "llamadas": 8,
+  "rechazadas": 0,
+  "tokens_entrada": 291118,
+  "tokens_salida": 23223,
+  "usd": 0.1192,
+  "ms_proveedor": 213288,
+  "seguridad": {
+   "planes_invalidos": 0,
+   "cambios_no_senaladas": 0,
+   "dosis_no_autorizada": 0,
+   "bajo_minimo_v20": 0,
+   "reincorporaciones": 0,
+   "excluidos": 0,
+   "violaciones_linaje": 0,
+   "controles_con_llamadas": 0
+  }
+ },
+ "C1_r2": {
+  "aplicadas": 5,
+  "sin_efecto": 2,
+  "sesiones_cambiadas": 5,
+  "llamadas": 15,
+  "rechazadas": 8,
+  "tokens_entrada": 488931,
+  "tokens_salida": 54395,
+  "usd": 0.231,
+  "ms_proveedor": 481399,
+  "seguridad": {
+   "planes_invalidos": 0,
+   "cambios_no_senaladas": 0,
+   "dosis_no_autorizada": 0,
+   "bajo_minimo_v20": 0,
+   "reincorporaciones": 0,
+   "excluidos": 0,
+   "violaciones_linaje": 0,
+   "controles_con_llamadas": 0
+  }
+ }
+}

@@ -1,0 +1,107 @@
+corrida,condicion,id,sesion,tipo,ejercicio_antes,ejercicio_despues,nombre,dosis_antes,dosis_despues,patron_antes,patron_despues,musculo_antes,musculo_despues,equipo_despues,dificultad_antes,dificultad_despues,sube_dosis,descanso_igual
+C1_r1,C1,U04,S2,SUSTITUCION,380,72,Press inclinado a una mano en polea -> Fondos de pecho asistidos (de rodillas),3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,leverage machine,2,1,,
+C1_r1,C1,U04,S2,SUSTITUCION,389,77,Jalón con cable -> Dominada asistida de pie,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,leverage machine,2,1,,
+C1_r1,C1,U04,S2,SUSTITUCION,360,148,Peso muerto con cable -> Peso muerto de piernas rígidas con banda,3x10 r90,3x10 r90,HIP_HINGE,HIP_HINGE,glutes,glutes,band,2,1,,
+C1_r1,C1,U04,S2,SUSTITUCION,779,136,Press con palma hacia adentro de pie -> Press por encima de la cabeza con giro y banda,3x10 r90,3x10 r90,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,band,2,1,,
+C1_r1,C1,U04,S2,SUSTITUCION,1236,144,Hack squat smith -> Sentadilla con banda,3x10 r90,3x10 r90,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,2,1,,
+C1_r1,C1,U04,S2,SUSTITUCION,580,313,Curl inclinado con mancuerna -> Fondos en banco con rodillas flexionadas,3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,triceps,bench,1,1,,
+C1_r1,C1,U04,S2,SUSTITUCION,392,114,Jalón trasero con cable -> Jalón con agarre cerrado,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,2,1,,
+C1_r1,C1,U08,S3,DOSIS,323,323,Press de banca con cable,3x10 r90,3x8 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,cable,2,2,False,True
+C1_r1,C1,U08,S3,DOSIS,487,487,Jalón trasero ancho por detrás de la cabeza,3x10 r90,3x8 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,cable,2,2,False,True
+C1_r1,C1,U09,S2,SUSTITUCION,540,72,Press de banca declinado con mancuerna -> Fondos de pecho asistidos (de rodillas),3x6 r150,3x6 r150,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,leverage machine,2,1,,
+C1_r1,C1,U13,S3,DOSIS,1117,1117,Pies rápidos v. 2,3x90s r60,2x90s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C1_r1,C1,U14,S2,SUSTITUCION,933,494,Flexión de rodillas en apoyo -> Flexión en reloj,2x8 r120,2x8 r120,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,,
+C1_r1,C1,U14,S2,SUSTITUCION,116,115,Jalón bajo con banda y agarre supino -> Jalón cercano con banda y agarre estrecho,2x8 r120,2x8 r120,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,,
+C1_r1,C1,U14,S2,SUSTITUCION,1315,144,Zancada caminando -> Sentadilla con banda,2x8 r120,2x8 r120,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,1,1,,
+C1_r1,C1,U14,S2,SUSTITUCION,705,101,Press de hombro alterno sentado -> Press de hombros con banda,2x8 r120,2x8 r120,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,band,1,1,,
+C1_r1,C1,U19,S2,DOSIS,135,135,"Remo de deltoides traseros con banda, de pie",2x10 r90,2x8 r90,HORIZONTAL_PULL,HORIZONTAL_PULL,delts,delts,band,1,1,False,True
+C1_r1,C1,U19,S2,DOSIS,1111,1111,Flexión con patada de pierna externa,2x10 r90,2x8 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C1_r1,C1,U19,S2,DOSIS,116,116,Jalón bajo con banda y agarre supino,2x10 r90,2x8 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C1_r1,C1,U19,S2,DOSIS,460,460,Flexión con toques de pecho,2x15 r45,2x12 r45,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C1_r1,C1,U19,S2,DOSIS,120,120,Encogimiento de hombros con banda,2x15 r45,2x12 r45,SCAPULAR_ELEVATION,SCAPULAR_ELEVATION,traps,traps,band,1,1,False,True
+C1_r1,C1,U19,S2,DOSIS,144,144,Sentadilla con banda,2x15 r45,2x12 r45,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,1,1,False,True
+C1_r1,C1,U19,S3,DOSIS,725,725,Curl de bíceps sentado con press de hombro,2x10 r90,2x8 r90,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,dumbbell,1,1,False,True
+C1_r1,C1,U19,S3,DOSIS,1262,1262,Flexión con desplazamiento de araña,2x10 r90,2x8 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C1_r1,C1,U19,S3,DOSIS,115,115,Jalón cercano con banda y agarre estrecho,2x10 r90,2x8 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C1_r1,C1,U19,S3,DOSIS,1095,1095,Empuje y tracción con peso corporal,2x15 r45,2x12 r45,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C1_r1,C1,U19,S3,DOSIS,143,143,Jalón con agarre supino,2x15 r45,2x12 r45,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C1_r1,C1,U19,S3,DOSIS,1311,1311,Abductor de cadera externo con pierna recta,2x15 r45,2x12 r45,HIP_ABDUCTION_ADDUCTION,HIP_ABDUCTION_ADDUCTION,abductors,abductors,body weight,1,1,False,True
+C2_r1,C2,U04,S2,SUSTITUCION,380,72,Press inclinado a una mano en polea -> Fondos de pecho asistidos (de rodillas),3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,leverage machine,2,1,,
+C2_r1,C2,U04,S2,SUSTITUCION,389,75,Jalón con cable -> Dominada asistida,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,leverage machine,2,1,,
+C2_r1,C2,U04,S2,SUSTITUCION,360,148,Peso muerto con cable -> Peso muerto de piernas rígidas con banda,3x10 r90,3x10 r90,HIP_HINGE,HIP_HINGE,glutes,glutes,band,2,1,,
+C2_r1,C2,U04,S2,SUSTITUCION,779,101,Press con palma hacia adentro de pie -> Press de hombros con banda,3x10 r90,3x10 r90,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,band,2,1,,
+C2_r1,C2,U04,S2,SUSTITUCION,1236,144,Hack squat smith -> Sentadilla con banda,3x10 r90,3x10 r90,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,2,1,,
+C2_r1,C2,U04,S2,SUSTITUCION,580,73,Curl inclinado con mancuerna -> Dip de pecho con agarre ancho asistido (rodillas),3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,leverage machine,1,1,,
+C2_r1,C2,U04,S2,SUSTITUCION,392,71,Jalón trasero con cable -> Jalón lateral alterno,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,cable,2,2,,
+C2_r1,C2,U08,S3,DOSIS,323,323,Press de banca con cable,3x10 r90,3x9 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,cable,2,2,False,True
+C2_r1,C2,U08,S3,DOSIS,487,487,Jalón trasero ancho por detrás de la cabeza,3x10 r90,3x9 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,cable,2,2,False,True
+C2_r1,C2,U09,S2,DOSIS,380,380,Press inclinado a una mano en polea,3x10 r90,3x9 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,cable,2,2,False,True
+C2_r1,C2,U09,S2,DOSIS,1039,1039,Remo T-bar con palanca,3x10 r90,3x9 r90,HORIZONTAL_PULL,HORIZONTAL_PULL,upper back,upper back,leverage machine,1,1,False,True
+C2_r1,C2,U09,S2,SUSTITUCION,540,102,Press de banca declinado con mancuerna -> Press de banca con banda,3x6 r150,3x6 r150,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,band,2,1,,
+C2_r1,C2,U09,S2,SUSTITUCION,775,313,Elevación de codo y push-up invertido -> Fondos en banco con rodillas flexionadas,3x6 r150,3x6 r150,HORIZONTAL_PUSH,HORIZONTAL_PUSH,upper back,triceps,bench,1,1,,
+C2_r1,C2,U09,S2,SUSTITUCION,780,119,Remo vertical con mancuerna -> Remo sentado a una mano con giro,3x6 r150,3x6 r150,HORIZONTAL_PULL,HORIZONTAL_PULL,delts,upper back,band,2,1,,
+C2_r1,C2,U09,S3,DOSIS,1284,1284,Press de agarre invertido con Smith,3x10 r90,3x9 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,smith machine,2,2,False,True
+C2_r1,C2,U09,S3,DOSIS,117,117,Jalón a una mano de rodillas con banda,3x10 r90,3x9 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C2_r1,C2,U13,S3,DOSIS,1117,1117,Pies rápidos v. 2,3x90s r60,2x90s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r1,C2,U14,S2,DOSIS,853,853,Media sentadilla,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r1,C2,U14,S2,DOSIS,1117,1117,Pies rápidos v. 2,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r1,C2,U14,S3,DOSIS,1093,1093,Empujar para correr,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r1,C2,U14,S3,DOSIS,1054,1054,Escalador,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r1,C2,U18,S3,DOSIS,1054,1054,Escalador,3x90s r60,2x90s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r1,C2,U19,S2,DOSIS,853,853,Media sentadilla,3x90s r60,2x90s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r1,C2,U19,S3,DOSIS,1054,1054,Escalador,3x90s r60,2x90s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U04,S2,SUSTITUCION,380,72,Press inclinado a una mano en polea -> Fondos de pecho asistidos (de rodillas),3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,leverage machine,2,1,,
+C2_r2,C2,U04,S2,SUSTITUCION,389,74,Jalón con cable -> Dominada paralela con agarre estrecho asistida,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,leverage machine,2,1,,
+C2_r2,C2,U04,S2,SUSTITUCION,360,148,Peso muerto con cable -> Peso muerto de piernas rígidas con banda,3x10 r90,3x10 r90,HIP_HINGE,HIP_HINGE,glutes,glutes,band,2,1,,
+C2_r2,C2,U04,S2,SUSTITUCION,779,101,Press con palma hacia adentro de pie -> Press de hombros con banda,3x10 r90,3x10 r90,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,band,2,1,,
+C2_r2,C2,U04,S2,SUSTITUCION,1236,144,Hack squat smith -> Sentadilla con banda,3x10 r90,3x10 r90,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,2,1,,
+C2_r2,C2,U04,S2,SUSTITUCION,580,129,Curl inclinado con mancuerna -> Flexión con agarre cerrado,3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,triceps,band,1,1,,
+C2_r2,C2,U04,S2,SUSTITUCION,392,75,Jalón trasero con cable -> Dominada asistida,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,leverage machine,2,1,,
+C2_r2,C2,U08,S3,DOSIS,323,323,Press de banca con cable,3x10 r90,3x8 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,cable,2,2,False,True
+C2_r2,C2,U08,S3,DOSIS,487,487,Jalón trasero ancho por detrás de la cabeza,3x10 r90,3x8 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,cable,2,2,False,True
+C2_r2,C2,U09,S2,DOSIS,380,380,Press inclinado a una mano en polea,3x10 r90,3x9 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,cable,2,2,False,True
+C2_r2,C2,U09,S2,DOSIS,1039,1039,Remo T-bar con palanca,3x10 r90,3x9 r90,HORIZONTAL_PULL,HORIZONTAL_PULL,upper back,upper back,leverage machine,1,1,False,True
+C2_r2,C2,U09,S2,SUSTITUCION,540,102,Press de banca declinado con mancuerna -> Press de banca con banda,3x6 r150,3x6 r150,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,band,2,1,,
+C2_r2,C2,U09,S2,SUSTITUCION,780,119,Remo vertical con mancuerna -> Remo sentado a una mano con giro,3x6 r150,3x6 r150,HORIZONTAL_PULL,HORIZONTAL_PULL,delts,upper back,band,2,1,,
+C2_r2,C2,U09,S3,DOSIS,1284,1284,Press de agarre invertido con Smith,3x10 r90,3x9 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,smith machine,2,2,False,True
+C2_r2,C2,U09,S3,DOSIS,117,117,Jalón a una mano de rodillas con banda,3x10 r90,3x9 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C2_r2,C2,U13,S3,DOSIS,1117,1117,Pies rápidos v. 2,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U13,S3,DOSIS,853,853,Media sentadilla,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U14,S2,DOSIS,853,853,Media sentadilla,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U14,S2,SUSTITUCION,1315,144,Zancada caminando -> Sentadilla con banda,2x8 r120,2x8 r120,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,1,1,,
+C2_r2,C2,U14,S2,SUSTITUCION,1117,253,Pies rápidos v. 2 -> Gateo de oso,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,,
+C2_r2,C2,U14,S3,DOSIS,1093,1093,Empujar para correr,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U14,S3,DOSIS,1054,1054,Escalador,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U18,S3,DOSIS,1054,1054,Escalador,3x90s r60,2x90s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,135,135,"Remo de deltoides traseros con banda, de pie",2x10 r90,2x9 r90,HORIZONTAL_PULL,HORIZONTAL_PULL,delts,delts,band,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,1111,1111,Flexión con patada de pierna externa,2x10 r90,2x9 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,116,116,Jalón bajo con banda y agarre supino,2x10 r90,2x9 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,460,460,Flexión con toques de pecho,2x15 r45,2x14 r45,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,120,120,Encogimiento de hombros con banda,2x15 r45,2x14 r45,SCAPULAR_ELEVATION,SCAPULAR_ELEVATION,traps,traps,band,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,144,144,Sentadilla con banda,2x15 r45,2x14 r45,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,853,853,Media sentadilla,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U19,S2,DOSIS,1260,1260,Estiramiento lateral de pie,2x30s r15,2x20s r15,MOBILITY,MOBILITY,lats,lats,body weight,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,725,725,Curl de bíceps sentado con press de hombro,2x10 r90,2x9 r90,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,dumbbell,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,1262,1262,Flexión con desplazamiento de araña,2x10 r90,2x9 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,115,115,Jalón cercano con banda y agarre estrecho,2x10 r90,2x9 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,1095,1095,Empuje y tracción con peso corporal,2x15 r45,2x14 r45,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,body weight,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,143,143,Jalón con agarre supino,2x15 r45,2x14 r45,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,1311,1311,Abductor de cadera externo con pierna recta,2x15 r45,2x14 r45,HIP_ABDUCTION_ADDUCTION,HIP_ABDUCTION_ADDUCTION,abductors,abductors,body weight,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,1054,1054,Escalador,3x90s r60,3x80s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C2_r2,C2,U19,S3,DOSIS,1322,1322,Estiramiento de tríceps,2x30s r15,2x20s r15,MOBILITY,MOBILITY,triceps,triceps,body weight,1,1,False,True
+C1_r2,C1,U04,S2,SUSTITUCION,380,72,Press inclinado a una mano en polea -> Fondos de pecho asistidos (de rodillas),3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,leverage machine,2,1,,
+C1_r2,C1,U04,S2,SUSTITUCION,389,114,Jalón con cable -> Jalón con agarre cerrado,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,2,1,,
+C1_r2,C1,U04,S2,SUSTITUCION,360,125,Peso muerto con cable -> Pase de banda,3x10 r90,3x10 r90,HIP_HINGE,HIP_HINGE,glutes,glutes,band,2,1,,
+C1_r2,C1,U04,S2,SUSTITUCION,779,101,Press con palma hacia adentro de pie -> Press de hombros con banda,3x10 r90,3x10 r90,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,band,2,1,,
+C1_r2,C1,U04,S2,SUSTITUCION,1236,144,Hack squat smith -> Sentadilla con banda,3x10 r90,3x10 r90,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,2,1,,
+C1_r2,C1,U04,S2,SUSTITUCION,580,102,Curl inclinado con mancuerna -> Press de banca con banda,3x10 r90,3x10 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,band,1,1,,
+C1_r2,C1,U04,S2,SUSTITUCION,392,75,Jalón trasero con cable -> Dominada asistida,3x10 r90,3x10 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,leverage machine,2,1,,
+C1_r2,C1,U08,S3,DOSIS,323,323,Press de banca con cable,3x10 r90,3x8 r90,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,pectorals,cable,2,2,False,True
+C1_r2,C1,U08,S3,DOSIS,487,487,Jalón trasero ancho por detrás de la cabeza,3x10 r90,3x8 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,cable,2,2,False,True
+C1_r2,C1,U09,S3,DOSIS,117,117,Jalón a una mano de rodillas con banda,3x10 r90,3x8 r90,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,False,True
+C1_r2,C1,U13,S3,DOSIS,1117,1117,Pies rápidos v. 2,3x90s r60,3x75s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C1_r2,C1,U13,S3,DOSIS,853,853,Media sentadilla,3x90s r60,3x75s r60,LOCOMOTION_CARDIO,LOCOMOTION_CARDIO,cardiovascular system,cardiovascular system,body weight,1,1,False,True
+C1_r2,C1,U14,S2,SUSTITUCION,933,318,Flexión de rodillas en apoyo -> Levantamiento de cuerpo,2x8 r120,2x8 r120,HORIZONTAL_PUSH,HORIZONTAL_PUSH,pectorals,triceps,body weight,1,1,,
+C1_r2,C1,U14,S2,SUSTITUCION,116,115,Jalón bajo con banda y agarre supino -> Jalón cercano con banda y agarre estrecho,2x8 r120,2x8 r120,VERTICAL_PULL,VERTICAL_PULL,lats,lats,band,1,1,,
+C1_r2,C1,U14,S2,SUSTITUCION,1315,144,Zancada caminando -> Sentadilla con banda,2x8 r120,2x8 r120,KNEE_DOMINANT,KNEE_DOMINANT,glutes,glutes,band,1,1,,
+C1_r2,C1,U14,S2,SUSTITUCION,705,101,Press de hombro alterno sentado -> Press de hombros con banda,2x8 r120,2x8 r120,VERTICAL_PUSH,VERTICAL_PUSH,delts,delts,band,1,1,,
