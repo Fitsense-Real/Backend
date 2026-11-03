@@ -1,0 +1,38 @@
+# Regresion completa (unitarias + IT, -Pintegration) con FITSENSE_V8C_PATTERN_RULE=multiconjunto, commit fdcd110, 03/11/2026
+# contextos de Spring que registraron la regla experimental: 91
+[INFO] Tests run: 1105, Failures: 0, Errors: 0, Skipped: 1
+[INFO] Tests run: 489, Failures: 0, Errors: 0, Skipped: 37
+[INFO] BUILD SUCCESS
+[INFO] Total time:  13:03 min
+# clases IT con fallos o errores:
+0
+# clases IT omitidas enteras (opt-in):
+Campana MVP: 8 usuarios x 8 semanas con IA real, adaptacion, progresion y reincorporacion
+Campana con Replicate real ? generacion y adaptacion en los cuatro objetivos
+Comparacion perfil a perfil: volcado de planes completos
+Evaluacion ? generacion de 4-6 dias y V20 al 70 % exacto (motor de reglas, sin IA)
+Evaluacion limpia ? 72 perfiles nuevos, 10 semanas con la progresion encendida
+Experimento Kora: 20 usuarios x 3 sesiones con los servicios reales
+H1 ? impacto historico: V8C real, conjunto frente a multiconjunto, sobre las sesiones publicadas
+Investigacion ? factibilidad de 30-120 min por objetivo, nivel, dias y equipo (motor de reglas)
+Lectura ? planes existentes frente a la V24 por capacidades (A: hoy, B: progresion encendida)
+Lectura directa (sin Docker) ? planes existentes frente a la V24 por capacidades
+Neon ? el bloqueo del ciclo usa el endpoint directo y una sesion estable (solo lectura)
+P2-D ? corrida de evidencia ? correccion real de Replicate (v16)
+P2-D ? las invariantes de V33 en la base, no en Java
+P2-D ? plan y evidencia, o ninguno de los dos (v2 ? 21/10/2026)
+P2-D ? tg_paa_coherencia rechaza al COMMIT, no en la sentencia
+Reincorporacion con IA real: adapta, cumple, progresa, reincorpora y se entrena
+Validacion multisemana: escenarios humanos con el ciclo real, en los cuatro objetivos
+[INFO] Tests run: 1105, Failures: 0, Errors: 0, Skipped: 1
+[INFO] Tests run: 489, Failures: 0, Errors: 0, Skipped: 37
+main.web.services.fitsense.lectura.SemillaLecturaIT
+main.web.services.fitsense.orchestation.A01AdaptacionRealIT
+main.web.services.fitsense.orchestation.CampanaP123Cohorte02IT
+main.web.services.fitsense.orchestation.DiagnosticoRespaldoMultisemanaIT
+main.web.services.fitsense.planning.DiagnosticoV20ComposicionIT
+main.web.services.fitsense.planning.GeneracionReferenciaCandidataIT
+main.web.services.fitsense.planning.ImpactoRestriccionesIT
+main.web.services.fitsense.planning.ProgresionFactibilidadIT
+main.web.services.fitsense.planning.ProgresionReservaIT
+main.web.services.fitsense.planning.domain.services.AnalisisSustitucion1373IT
