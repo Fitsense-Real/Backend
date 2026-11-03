@@ -1,0 +1,21 @@
+ID,Patron,Decision determinista,Necesita IA,Llamadas,Propuesta,Validacion,Rechazos,Reintentos,Respaldo,Resultado publicado
+U01,E1 H/H/H,NO_CHANGE,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U02,E2 H/H/P40,NO_CHANGE o ADAPT_LOCALIZED (P40 real),No (CAUSA_NO_REGISTRADA no la pide),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U03,E3 H/H/O,ADAPT_LOCALIZED,Si (REVISAR_CARGA),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U04,E4 H/O/O,ADAPT_EXPANDED,Si (VARIANTE + INVESTIGAR),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U05,E5 H/N/N,INSUFFICIENT_DATA,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U06,E1 H/H/H,NO_CHANGE,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U07,E2 H/H/P40,NO_CHANGE o ADAPT_LOCALIZED (P40 real),No (CAUSA_NO_REGISTRADA no la pide),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U08,E3 H/H/O,ADAPT_LOCALIZED,Si (REVISAR_CARGA),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U09,E4 H/O/O,ADAPT_EXPANDED,Si (VARIANTE + INVESTIGAR),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U10,E5 H/N/N,INSUFFICIENT_DATA,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U11,E1 H/H/H,NO_CHANGE,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U12,E2 H/H/P40,NO_CHANGE o ADAPT_LOCALIZED (P40 real),No (CAUSA_NO_REGISTRADA no la pide),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U13,E3 H/H/O,ADAPT_LOCALIZED,Si (REVISAR_CARGA),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U14,E4 H/O/O,ADAPT_EXPANDED,Si (VARIANTE + INVESTIGAR),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U15,E5 H/N/N,INSUFFICIENT_DATA,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U16,E1 H/H/H,NO_CHANGE,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U17,E2 H/H/P40,NO_CHANGE o ADAPT_LOCALIZED (P40 real),No (CAUSA_NO_REGISTRADA no la pide),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U18,E3 H/H/O,ADAPT_LOCALIZED,Si (REVISAR_CARGA),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U19,E4 H/O/O,ADAPT_EXPANDED,Si (VARIANTE + INVESTIGAR),NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
+U20,E5 H/N/N,INSUFFICIENT_DATA,No,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-
