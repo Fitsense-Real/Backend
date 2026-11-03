@@ -1,0 +1,20 @@
+modo: GUION
+commit: 51c145b2887e621acc52fc81605f58e64edd0a5c+lab-local
+fecha_ejecucion_utc: 2026-11-03T05:00:57.078352178Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+ejercicios_activos: 1219
+ia_habilitada: true
+modelo: gpt-5-mini
+prompt_adaptacion: FIX-PR-2.0-EXP
+perfiles: 03_PERFILES_U01_U20.csv (congelados)
+semanas: 2
+guion: COMBINADOS
+gemelos_generacion_ia: false
+credencial: ninguna (guion local, sin red)
+comprobacion_cuenta_http: -1
+prefer_wait_seconds: 60 (valor por defecto)
+limite: 90 predicciones / USD 10.0 (supuesto max 0.1 por llamada)
+politica_por_defecto: PLAN-HIST-1 (allow-candidates=false)
+progresion: false
