@@ -14,6 +14,9 @@
 | D8 | Adherencia por ejercicio = ejecutada / prescrita | Coincide, con un **tope del 100 %** y la media de la sesión sobre los ejercicios **prescritos** (sin registro = 0) | 01 §2.1–2.2 | Mencionar el tope del 100 % |
 | D9 | «Adherencia ponderada» | Cada sesión pesa 1 (el nombre `weighted_adherence_pct` es histórico) | H6 | Usar «promedio por sesión» |
 | D10 | Datos insuficientes por debajo del 50 % | Coincide (C ≥ 50 % es suficiente) | U05, U10, U15, U20 | — |
+| D11 | (Según cómo se describa) La IA adapta el plan | Con Replicate real, **4 de 8** adaptaciones elegibles se aplicaron. Las otras 4 propuestas superaron la validación pero no cambiaron nada efectivo. Hubo 5 propuestas rechazadas, todas por V20, con hasta 3 intentos | `16`, `18` | Informar la tasa real (4/8) y que los validadores rechazaron 5 de 13 propuestas |
+| D12 | (Según cómo se describa) La IA genera el plan inicial | Con IA, 20/20 planes válidos; 2 necesitaron un segundo intento (rechazos de V24 y V15). Tardan unos 98 s por plan (mediana) | `15`, `19` | Dar el tiempo y el número de intentos; sin la IA, el motor de reglas genera en menos de 1 s |
+| D13 | — | Solo **8 de 20** casos requieren IA en la adaptación. Las métricas y las decisiones no dependen de ella (idénticas con y sin IA) | `20` | Separar claramente el núcleo determinista (medir y decidir) del componente generativo (proponer) |
 
 **Coinciden sin matices:**
 - Aobs y la cobertura;

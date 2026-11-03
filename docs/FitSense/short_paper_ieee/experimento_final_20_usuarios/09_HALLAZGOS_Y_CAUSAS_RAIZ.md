@@ -95,3 +95,18 @@
 - **Sesiones no señaladas que cambiaron:** 0. Ninguna sesión cambió en ningún plan siguiente.
 - **Omisión declarada frente a ausencia de registro:** el backend las distingue (SKIPPED con motivo frente a sin registro).
 - **Llamadas a Replicate:** 0.
+
+
+---
+
+# Hallazgos de la etapa C (Replicate real)
+
+| # | Hallazgo | Categoría | Acción |
+|---|---|---|---|
+| H8 | **Intento 1:** el espía del laboratorio lanzaba `ClassCastException` (`String.valueOf(char[])`) antes de llamar. Hubo 0 predicciones | **A** | Corregido en el laboratorio (`c63bad2`). Intento conservado |
+| H9 | **Intento 2:** el proxy de esta sesión corta a los 30 s (502). Con la espera síncrona por defecto de 60 s se perdieron 7 de 12 respuestas que Replicate sí completó y cobra. Después, el disyuntor dejó de llamar | **E**, por el entorno. No es un defecto de la lógica | Anexo 2: `prefer-wait-seconds=25`, una propiedad existente. **Propuesta P3:** valorar 25–30 s como valor por defecto para tolerar intermediarios con límite de 30 s. Sería un cambio de configuración de producción y queda pendiente de tu decisión |
+| H10 | **Sustituciones de la IA en VARIANTE_MAS_SENCILLA_O_CARGA** (U04 S2: 7 ejercicios; U09 S2: 6), comprobadas en el catálogo:<br>• **las 13 conservan el patrón de movimiento y el músculo objetivo**;<br>• la dificultad baja de 2 a 1 en 8 y es igual en 5 (ninguna sube);<br>• la dosis no cambia (3×10 o 3×6, con los mismos descansos).<br>Dos observaciones:<br>• **(a)** el ejercicio 580 se llama en español «Curl inclinado con mancuerna», pero el catálogo lo clasifica como HORIZONTAL_PUSH y pectorales, así que su sustitución por «Press de banca con banda» es coherente. **El nombre parece mal traducido**;<br>• **(b)** V8C comprueba el patrón **por conjunto** (cada añadido tiene un patrón de entre los retirados) y la dificultad máxima del perfil (V6), pero **no** que cada variante sea menos difícil que la que sustituye. En estos datos no hizo falta: ninguna subió | **Observación.** Ningún defecto demostrado: ninguna regla vigente se incumplió | Ninguna. El catálogo y los validadores no se tocan (prohibido). **P4** (pendiente de tu decisión): revisar el nombre del 580 y valorar exigir «dificultad ≤ la del sustituido» en VARIANTE. La adecuación clínica sigue necesitando revisión profesional |
+| H11 | 4 de 8 propuestas aceptadas no cambiaron nada efectivo (`SIN_EFECTO`). En 3 de ellas, el intento anterior acortaba la sesión por debajo de V20 | Comportamiento válido (**G**). El sistema conserva antes de publicar algo inválido | Ninguna |
+| H12 | Las 5 propuestas de adaptación rechazadas lo fueron por **V20** (duración mínima del 70 %). El modelo tiende a acortar ante fatiga, dificultad o falta de motivación | Comportamiento válido (**G**). Los validadores protegen | Ninguna. Es dato para el artículo |
+
+**Defectos del backend demostrados en la etapa C: 0.**

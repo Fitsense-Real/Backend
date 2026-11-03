@@ -57,10 +57,40 @@
 | NO_FACTIBLE | 0 |
 | Violaciones de restricciones o de linaje (V31/V32) | **0** |
 
-## 14.5. Replicate
+## 14.5. Replicate (etapa C, intento válido; `13`, `18`, `19`)
 
-**No ejecutado.** No hay operaciones con llamada, propuestas, rechazos, reintentos, respaldos por fallo de la IA, tiempos ni costes. Lo único que se puede adelantar con los datos de A es el número de operaciones que **habrían sido elegibles** para la IA:
-- **8 adaptaciones** (E3 y E4), con un máximo de 24 llamadas;
-- **20 generaciones iniciales** en los gemelos, con un máximo de 60.
+| Indicador | Generación inicial (20 gemelos) | Adaptación (U01–U20) |
+|---|---:|---:|
+| Operaciones elegibles para la IA | 20 | **8** de 20 (E3 y E4) |
+| Llamadas reales | 22 | 13 |
+| Propuestas recibidas | 22 | 13 |
+| Propuestas rechazadas por los validadores | 2 (V24, V15) | 5 (todas V20) |
+| Reintentos | 2 | 5 |
+| Propuestas aceptadas | 20 | 8 |
+| … con cambios efectivos | 20 planes publicados con origen `AI` | **4** adaptaciones aplicadas (U04, U09, U13, U14) |
+| … sin cambios efectivos | — | 4 (`SIN_EFECTO`) |
+| Respaldos por fallo de la IA | 0 | 0 |
+| Espera mediana (mín.–máx.) | 97,8 s (62,9–139,8) | 35,1 s (10,6–63,5) |
+| Coste estimado | US$ 0,56 | US$ 0,21 |
 
-**No se usa el 100 % de planes publicados como tasa de éxito de nada relacionado con la IA:** todos salieron del motor de reglas o de la copia determinista.
+**Totales:**
+- **Llamadas:** 35 en el intento válido; 47 en el día, contando las 12 del intento 2.
+- **Coste:** ~US$ 0,76, o ~US$ 0,99 en el día. Es una estimación por tokens; la cifra oficial está en Replicate.
+
+**Tasa de éxito de la IA, sin contar respaldos:**
+- **adaptación:** 4 de 8 operaciones con un cambio aplicado (50 %). 8 de 13 propuestas superaron la validación (62 %);
+- **generación:** 20 de 22 propuestas superaron la validación (91 %), y 18 de 20 planes al primer intento.
+
+## 14.6. Comparación entre modalidades (`20`)
+
+| Indicador | A1 (sin IA) | C (Replicate) |
+|---|---:|---:|
+| Planes iniciales válidos | 20/20 (reglas) | 20/20 (IA) |
+| Métricas y decisiones | Iguales | **Idénticas a A1** en los 20 casos |
+| Adaptaciones aplicadas | 0 | **4** |
+| Respaldos | 8 | 0 |
+| Sin efecto | 2 (U07, U12) | 6 (U07 y U12 sin IA; U03, U08, U18 y U19 con IA) |
+| Sesiones cambiadas | 0 | 5, todas señaladas |
+| Sesiones no señaladas cambiadas | 0 | **0** |
+| Violaciones | 0 | **0** |
+| Rutinas inválidas publicadas | 0 | **0** |

@@ -28,3 +28,11 @@ Ejecutada en la rama del laboratorio, con PostgreSQL efímero:
 | Bloqueo de la etapa C sin token | El modo REPLICATE falla en la guarda previa («BLOQUEADO…») con **0 llamadas** y sin crear evidencia (`evidencia/C_bloqueo/intento_sin_token.log`) |
 
 **Conclusión:** sin cambios en producción, el comportamiento histórico sigue igual. La REPLAY y los 960 perfiles detectan regresiones, pero **no sustituyen** a la cohorte experimental de 20 usuarios.
+
+## 4. Etapa C: comparabilidad con A
+
+- **Plan inicial:** en la ejecución válida de C, el de U01–U20 es **idéntico byte a byte** al de A1 (400 filas).
+- **Medición y decisión:** también idénticas a A1 (`ejecucion.csv`, `adherencia.csv`, decisiones, sesiones señaladas e intervenciones).
+- **Por tanto,** las diferencias en la adaptación se deben solo a las propuestas de Replicate.
+
+**La salida del modelo no es determinista.** La etapa C no se repitió para buscar mejores respuestas. Los intentos 1 y 2 se conservan como fallidos (laboratorio y proxy), y solo el 3 se usa como resultado.

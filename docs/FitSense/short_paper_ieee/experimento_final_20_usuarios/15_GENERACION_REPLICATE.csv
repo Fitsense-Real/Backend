@@ -1,21 +1,21 @@
-ID,Objetivo,Llamada al proveedor,Modelo y version,Huella del contexto,Respuesta,Validacion,Reintentos,Respaldo,Plan publicado,Tiempo (ms),Coste
-U01G,GM,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U02G,GM,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U03G,GM,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U04G,GM,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U05G,GM,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U06G,FU,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U07G,FU,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U08G,FU,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U09G,FU,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U10G,FU,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U11G,PP,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U12G,PP,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U13G,PP,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U14G,PP,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U15G,PP,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U16G,AG,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U17G,AG,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U18G,AG,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U19G,AG,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
-U20G,AG,NO EJECUTADO: sin REPLICATE_API_TOKEN en la sesion (0 llamadas),-,-,-,-,-,-,-,-,-
+ID,Objetivo,Llamadas al proveedor,Modelo,Huellas del contexto,Respuestas,Rechazos de validacion,Motivos de rechazo,Reintentos,Respaldo motor de reglas,Resultado,Origen del plan publicado,Estructura,Tiempo total proveedor (s),Tokens entrada,Tokens salida,Coste estimado USD
+U01G,01,1,gpt-5-mini,cf39be2f7ac8b14b,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 43min 7ej | 2026-11-04 FULL_BODY 43min 7ej | 2026-11-06 FULL_BODY 43min 7ej,94.5,54819,6382,0.0265
+U02G,02,1,gpt-5-mini,5a6ad128fb610a26,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 43min 7ej | 2026-11-04 FULL_BODY 43min 7ej | 2026-11-06 FULL_BODY 43min 7ej,110.2,54819,8586,0.0309
+U03G,03,1,gpt-5-mini,ba60fcbc25b8f75d,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 43min 7ej | 2026-11-04 FULL_BODY 43min 7ej | 2026-11-06 FULL_BODY 43min 7ej,139.8,54819,7693,0.0291
+U04G,04,1,gpt-5-mini,2a6361b89b020877,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 43min 7ej | 2026-11-04 FULL_BODY 43min 7ej | 2026-11-06 FULL_BODY 43min 7ej,79.0,54819,6228,0.0262
+U05G,05,2,gpt-5-mini,e0c83b652efac221 | 8ecf7d108a20aa87,2,1,"intento 1: V24: el ejercicio 548 del 2026-11-04 lleva 3x10 con 120 s de descanso y 4D v2 exige 3x10, descanso 90 s (HYPERTROPHY). Ajusta la dosis exactamente a la de su capacidad; si no cabe en el dia, quita una colocacion en vez d",1,no,PUBLICADO,AI,2026-11-02 FULL_BODY 43min 7ej | 2026-11-04 FULL_BODY 43min 7ej | 2026-11-06 FULL_BODY 43min 7ej,246.0,111902,18552,0.065
+U06G,06,1,gpt-5-mini,bd8423c5b4a55e5e,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 48min 8ej | 2026-11-04 FULL_BODY 48min 8ej | 2026-11-06 FULL_BODY 48min 8ej,97.9,56859,8981,0.0322
+U07G,07,1,gpt-5-mini,1b2edab5b5a95b93,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 45min 7ej | 2026-11-04 FULL_BODY 44min 7ej | 2026-11-06 FULL_BODY 44min 7ej,78.7,56859,8291,0.0308
+U08G,08,1,gpt-5-mini,d1a7b5c67d5664fa,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 42min 7ej | 2026-11-04 FULL_BODY 42min 7ej | 2026-11-06 FULL_BODY 43min 7ej,100.9,56859,9537,0.0333
+U09G,09,1,gpt-5-mini,489994f672dc15e7,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 42min 7ej | 2026-11-04 FULL_BODY 42min 7ej | 2026-11-06 FULL_BODY 42min 7ej,94.7,56859,8964,0.0321
+U10G,10,1,gpt-5-mini,7a6a9e043fb848eb,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 45min 7ej | 2026-11-04 FULL_BODY 42min 7ej | 2026-11-06 FULL_BODY 43min 7ej,107.1,56859,9502,0.0332
+U11G,11,1,gpt-5-mini,6831183d2c5e1ad6,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 42min 8ej | 2026-11-04 FULL_BODY 42min 8ej | 2026-11-06 FULL_BODY 42min 8ej,72.6,9729,6043,0.0145
+U12G,12,1,gpt-5-mini,668019bc96372411,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 42min 8ej | 2026-11-04 FULL_BODY 42min 8ej | 2026-11-06 FULL_BODY 42min 8ej,62.9,9729,6213,0.0149
+U13G,13,1,gpt-5-mini,423b57baf0c8b887,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 34min 6ej | 2026-11-04 FULL_BODY 34min 6ej | 2026-11-06 FULL_BODY 34min 6ej,72.3,9729,6024,0.0145
+U14G,14,2,gpt-5-mini,5273979c383278e4 | 515843dfbf138c6e,2,1,intento 1: V15: el entrenamiento del 2026-11-04 dedica 4 de 6 ejercicios a upper legs. Reparte entre los grupos del enfoque FULL_BODY.],1,no,PUBLICADO,AI,2026-11-02 FULL_BODY 42min 8ej | 2026-11-04 FULL_BODY 42min 8ej | 2026-11-06 FULL_BODY 42min 8ej,145.0,21468,14370,0.0341
+U15G,15,1,gpt-5-mini,acc3a25f985e52db,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 42min 8ej | 2026-11-04 FULL_BODY 42min 8ej | 2026-11-06 FULL_BODY 42min 8ej,82.0,9729,7144,0.0167
+U16G,16,1,gpt-5-mini,a9aa1f707dad4e29,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 32min 7ej | 2026-11-04 FULL_BODY 32min 7ej | 2026-11-06 FULL_BODY 32min 7ej,113.0,22503,9562,0.0247
+U17G,17,1,gpt-5-mini,c26060a56dd40706,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 32min 7ej | 2026-11-04 FULL_BODY 33min 7ej | 2026-11-06 FULL_BODY 32min 7ej,97.6,22503,9409,0.0244
+U18G,18,1,gpt-5-mini,c8f219099076f65e,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 35min 8ej | 2026-11-04 FULL_BODY 35min 8ej | 2026-11-06 FULL_BODY 35min 8ej,107.0,22503,9742,0.0251
+U19G,19,1,gpt-5-mini,d2a23a58d0d81637,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 33min 7ej | 2026-11-04 FULL_BODY 33min 7ej | 2026-11-06 FULL_BODY 33min 7ej,104.0,22503,8992,0.0236
+U20G,20,1,gpt-5-mini,ed2d4f99312c9295,1,0,,0,no,PUBLICADO,AI,2026-11-02 FULL_BODY 36min 8ej | 2026-11-04 FULL_BODY 35min 8ej | 2026-11-06 FULL_BODY 36min 8ej,109.9,22503,9944,0.0255

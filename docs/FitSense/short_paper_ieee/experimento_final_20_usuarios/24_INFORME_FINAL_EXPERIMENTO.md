@@ -1,104 +1,103 @@
 # Informe final del experimento: 20 usuarios sintéticos × 3 sesiones
 
-**Backend:** `generation` `0974fb3` (`backend-mvp-1.0`).
-**Rama del laboratorio:** `lab/experimento-kora-20usuarios`.
+**Backend:** `generation` `0974fb3` (`backend-mvp-1.0`), **sin cambios en producción**.
+**Laboratorio:** `lab/experimento-kora-20usuarios`.
 **El artículo no se ha modificado.**
 
 ## Resumen
 
-**Etapa A (determinista):** ejecutada (A0), repetida tras la revisión (A1) y repetida otra vez desde una base vacía. Las tres son **idénticas**.
+### Etapa A (determinista)
+A0, A1 y su repetición son **idénticas**.
 - 20/20 planes iniciales válidos.
-- Métricas exactas frente al recálculo independiente en 20/20.
-- 18/20 decisiones coinciden con el oráculo del artículo. Las 2 que no (U07, U12) son el efecto del P40 real (39,26 % y 38,33 %) sobre el umbral estricto del 80 %.
+- Aw, Aobs y C exactos frente al recálculo independiente en 20/20.
+- 18/20 decisiones iguales al oráculo del artículo. U07 y U12 difieren porque el P40 real es 39,26 % y 38,33 %.
+- Sin IA, las 8 decisiones de adaptar terminan en respaldo (la misma semana).
 
-**Etapa B:** **ningún defecto del backend** demostrado, así que no hay correcciones de producción. Hay 7 hallazgos metodológicos o de laboratorio (`09`).
+### Etapa B
+**Ningún defecto del backend demostrado**, así que no hay correcciones de producción. Los hallazgos están en `09`.
 
-**Etapa C (Replicate real):** **no ejecutada.** La sesión no tiene `REPLICATE_API_TOKEN`.
-- 0 llamadas y US$ 0.
-- El laboratorio está preparado, con límite de 90 llamadas / USD 10 y guarda de base local, y está comprobado que se bloquea sin token.
-- **No hay ningún resultado de la IA inventado.**
+### Etapa C (Replicate real, `gpt-5-mini`)
+- **Generación inicial con IA:** 20/20 planes válidos con origen `AI`. 18 al primer intento; 2 rechazos de los validadores (V24 y V15) corregidos al segundo.
+- **Adaptación:** de 20 casos, solo **8 requieren IA**. Resultado: **4 adaptaciones aplicadas**, 4 sin efecto y 0 respaldos. Los validadores rechazaron 5 de 13 propuestas, todas por V20 (duración mínima).
+- **Seguridad:** ninguna sesión no señalada cambió, 0 violaciones y 0 rutinas inválidas publicadas.
+- **Igualdad con A:** las métricas y decisiones son idénticas a las de A1.
+- **Consumo:** 35 predicciones en el intento válido (47 en el día) y **unos US$ 0,99 en total**, una estimación por tokens; la cifra oficial está en Replicate.
+- **Intentos fallidos, conservados:** uno por un error del laboratorio (0 predicciones) y otro por el corte del proxy a los 30 s.
 
-## Tabla de los 20 casos
+## Tabla de los 20 casos (resultado V32: original, corregido y con Replicate)
 
-| ID | Obj. | Patrón | A0: Aw/Aobs/C · decisión · resultado | A1 (corregido) | C (Replicate) |
-|---|---|---|---|---|---|
-| U01 | GM | E1 H/H/H | 100.00/100.00/100.00 · NO_CHANGE · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U02 | GM | E2 H/H/P40 | 80.00/80.00/100.00 · NO_CHANGE · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U03 | GM | E3 H/H/O | 66.67/66.67/100.00 · ADAPT_LOCALIZED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U04 | GM | E4 H/O/O | 33.33/33.33/100.00 · ADAPT_EXPANDED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U05 | GM | E5 H/N/N | 33.33/100.00/33.33 · INSUFFICIENT_DATA · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U06 | FU | E1 H/H/H | 100.00/100.00/100.00 · NO_CHANGE · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U07 | FU | E2 H/H/P40 | 79.75/79.75/100.00 · ADAPT_LOCALIZED · SIN_EFECTO | = A0 · API CONSERVACION_DELIBERADA | No ejecutado (sin token) |
-| U08 | FU | E3 H/H/O | 66.67/66.67/100.00 · ADAPT_LOCALIZED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U09 | FU | E4 H/O/O | 33.33/33.33/100.00 · ADAPT_EXPANDED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U10 | FU | E5 H/N/N | 33.33/100.00/33.33 · INSUFFICIENT_DATA · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U11 | PP | E1 H/H/H | 100.00/100.00/100.00 · NO_CHANGE · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U12 | PP | E2 H/H/P40 | 79.44/79.44/100.00 · ADAPT_LOCALIZED · SIN_EFECTO | = A0 · API CONSERVACION_DELIBERADA | No ejecutado (sin token) |
-| U13 | PP | E3 H/H/O | 66.67/66.67/100.00 · ADAPT_LOCALIZED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U14 | PP | E4 H/O/O | 33.33/33.33/100.00 · ADAPT_EXPANDED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U15 | PP | E5 H/N/N | 33.33/100.00/33.33 · INSUFFICIENT_DATA · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U16 | AG | E1 H/H/H | 100.00/100.00/100.00 · NO_CHANGE · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U17 | AG | E2 H/H/P40 | 80.00/80.00/100.00 · NO_CHANGE · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
-| U18 | AG | E3 H/H/O | 66.67/66.67/100.00 · ADAPT_LOCALIZED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U19 | AG | E4 H/O/O | 33.33/33.33/100.00 · ADAPT_EXPANDED · RESPALDO | = A0 · API RESPALDO_SIN_IA | No ejecutado (sin token) |
-| U20 | AG | E5 H/N/N | 33.33/100.00/33.33 · INSUFFICIENT_DATA · SIN_ORDEN | = A0 · API SIN_ADAPTACION | No ejecutado (sin token) |
+| ID | Obj. | Patrón | Aw/Aobs/C | Decisión | A0 (original) | A1 (corregido) | C (Replicate) |
+|---|---|---|---|---|---|---|---|
+| U01 | GM | E1 H/H/H | 100.00/100.00/100.00 | NO_CHANGE | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U02 | GM | E2 H/H/P40 | 80.00/80.00/100.00 | NO_CHANGE | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U03 | GM | E3 H/H/O | 66.67/66.67/100.00 | ADAPT_LOCALIZED | RESPALDO | RESPALDO | SIN_EFECTO (1 ll.) |
+| U04 | GM | E4 H/O/O | 33.33/33.33/100.00 | ADAPT_EXPANDED | RESPALDO | RESPALDO | APLICADA (1 ll.) · cambió S2 |
+| U05 | GM | E5 H/N/N | 33.33/100.00/33.33 | INSUFFICIENT_DATA | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U06 | FU | E1 H/H/H | 100.00/100.00/100.00 | NO_CHANGE | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U07 | FU | E2 H/H/P40 | 79.75/79.75/100.00 | ADAPT_LOCALIZED | SIN_EFECTO | SIN_EFECTO | SIN_EFECTO |
+| U08 | FU | E3 H/H/O | 66.67/66.67/100.00 | ADAPT_LOCALIZED | RESPALDO | RESPALDO | SIN_EFECTO (2 ll.) |
+| U09 | FU | E4 H/O/O | 33.33/33.33/100.00 | ADAPT_EXPANDED | RESPALDO | RESPALDO | APLICADA (3 ll.) · cambió S2 |
+| U10 | FU | E5 H/N/N | 33.33/100.00/33.33 | INSUFFICIENT_DATA | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U11 | PP | E1 H/H/H | 100.00/100.00/100.00 | NO_CHANGE | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U12 | PP | E2 H/H/P40 | 79.44/79.44/100.00 | ADAPT_LOCALIZED | SIN_EFECTO | SIN_EFECTO | SIN_EFECTO |
+| U13 | PP | E3 H/H/O | 66.67/66.67/100.00 | ADAPT_LOCALIZED | RESPALDO | RESPALDO | APLICADA (1 ll.) · cambió S3 |
+| U14 | PP | E4 H/O/O | 33.33/33.33/100.00 | ADAPT_EXPANDED | RESPALDO | RESPALDO | APLICADA (1 ll.) · cambió S2|S3 |
+| U15 | PP | E5 H/N/N | 33.33/100.00/33.33 | INSUFFICIENT_DATA | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U16 | AG | E1 H/H/H | 100.00/100.00/100.00 | NO_CHANGE | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U17 | AG | E2 H/H/P40 | 80.00/80.00/100.00 | NO_CHANGE | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
+| U18 | AG | E3 H/H/O | 66.67/66.67/100.00 | ADAPT_LOCALIZED | RESPALDO | RESPALDO | SIN_EFECTO (2 ll.) |
+| U19 | AG | E4 H/O/O | 33.33/33.33/100.00 | ADAPT_EXPANDED | RESPALDO | RESPALDO | SIN_EFECTO (2 ll.) |
+| U20 | AG | E5 H/N/N | 33.33/100.00/33.33 | INSUFFICIENT_DATA | SIN_ORDEN | SIN_ORDEN | SIN_ORDEN |
 
-Los valores son Aw/Aobs/C en %. «= A0» significa idéntico a A0.
+«ll.» = llamadas reales a Replicate. Los valores Aw/Aobs/C son iguales en A0, A1 y C.
 
 ## Respuestas (orden §17)
 
-1. **¿Se ejecutaron los veinte usuarios?** Sí, en la etapa determinista: tres veces (A0, A1 y la repetición), todas completas. En la etapa C, no.
+1. **¿Se ejecutaron los veinte usuarios?** Sí, en A0, A1, la repetición de A1 y C (más los 20 gemelos de la generación con IA).
 2. **¿Qué configuración se utilizó?**
-   - `0974fb3`, con 46 migraciones (hasta V44_2) y 1.219 ejercicios activos;
-   - `PLAN-HIST-1`, `allow-candidates=false`, progresión apagada e IA apagada;
-   - PostgreSQL 16 efímero y reloj controlado;
-   - perfiles congelados (`02`, `03`), semilla `userId × 1.000.003 + 20.759`.
-3. **¿Cuántos planes iniciales se generaron correctamente?** 20/20, con el motor de reglas, en 1 intento y con 0 problemas de validación.
-4. **¿Qué perfiles fueron rechazados?** Ninguno.
-5. **¿Coincide la fórmula del artículo con el backend?** La dosis, la sesión, Aw, Aobs, C y el umbral del 50 % coinciden. **La decisión usa Aobs, no Aw** (D1), lo que no afecta a estos 20 casos. Hay además reglas que el artículo no menciona (D6).
-6. **¿Cómo contabiliza las sesiones parciales?**
-   - Cada ejercicio vale 100 × ejecutado / prescrito, con 2 decimales y un tope del 100 %.
-   - La sesión es la media sobre los ejercicios prescritos.
-   - Con ≥ 30 % la sesión queda PARTIAL y cuenta su porcentaje real en Aw y en Aobs.
-7. **¿Se alcanzó exactamente P40?** En U02 y U17 sí (40,00). En U07 (39,26) y U12 (38,33) no: la regla del protocolo (cada ejercicio al 40 % redondeado) no da el 40 % con 18 o 16 repeticiones. Un reparto desigual sí lo habría dado, pero no se cambió la entrada después de ver el resultado (P1).
-8. **¿Coinciden Aw, Aobs y C?**
-   - Con el recálculo independiente: 20/20, con error 0,00.
-   - Con el oráculo teórico: C 20/20; Aw y Aobs 18/20 (U07 −0,25 pp y U12 −0,56 pp, por P40).
-9. **¿Se distingue la omisión declarada de la ausencia de registro?** Sí:
-   - la omisión con motivo cuenta como registro al 0 % (E3, E4);
-   - la ausencia no cuenta (E5: C = 33,33 y Aobs = 100).
-10. **¿Cuántas decisiones coincidieron con el oráculo?** 18/20.
-11. **¿Qué casos no coincidieron?** U07 y U12: el backend decidió `ADAPT_LOCALIZED` y el oráculo esperaba «sin cambio». El resultado fue `SIN_EFECTO`, una conservación deliberada porque no hay causa registrada.
-12. **¿Diferencias metodológicas o defectos reales?**
-    - Metodológicas o de laboratorio: H1–H7 (`09`).
-    - Defectos reales: **0**.
-13. **¿Cuántos defectos se corrigieron?** 0, porque no había ninguno demostrado.
+   - `0974fb3`, 46 migraciones, 1.219 ejercicios activos;
+   - `PLAN-HIST-1`, `allow-candidates=false`, progresión apagada;
+   - PostgreSQL 16 efímero, reloj controlado, semillas `userId × 1.000.003 + 20.759`;
+   - en C: `gpt-5-mini` sobre `openai/gpt-5-structured`, credencial inyectada por el proxy y `prefer-wait-seconds=25` (anexo 2).
+3. **¿Cuántos planes iniciales se generaron correctamente?** 20/20 con el motor de reglas y 20/20 con Replicate.
+4. **¿Qué perfiles fueron rechazados?** Ninguno de forma definitiva. Con IA hubo 2 propuestas rechazadas (U05G por V24 y U14G por V15) que se corrigieron al segundo intento.
+5. **¿Coincide la fórmula del artículo con el backend?** La dosis, la sesión, Aw, Aobs, C y el umbral del 50 % coinciden. **La decisión usa Aobs, no Aw** (D1), sin efecto en estos 20 casos.
+6. **¿Cómo contabiliza las sesiones parciales?** Por ejercicio, ejecutado / prescrito con un tope del 100 %. La sesión es la media sobre los ejercicios prescritos y cuenta con su porcentaje real.
+7. **¿Se alcanzó exactamente P40?** En U02 y U17 sí. En U07 y U12, no (39,26 y 38,33) con la regla uniforme congelada; con un reparto desigual sí se habría podido (P1).
+8. **¿Coinciden Aw, Aobs y C?** Con el recálculo independiente, 20/20. Con el oráculo teórico, C 20/20 y Aw/Aobs 18/20.
+9. **¿Se distingue la omisión declarada de la ausencia de registro?** Sí: la omisión cuenta como registro al 0 %; la ausencia no cuenta.
+10. **¿Cuántas decisiones coincidieron con el oráculo?** 18/20, en A y en C.
+11. **¿Qué casos no coincidieron?** U07 y U12 (`ADAPT_LOCALIZED` en lugar de «sin cambio»).
+12. **¿Diferencias metodológicas o defectos reales?** Hallazgos H1–H12, todos de laboratorio, entorno, metodología u observación. **Defectos reales del backend: 0.**
+13. **¿Cuántos defectos se corrigieron?** Del backend, 0. Del laboratorio, 1 (H8).
 14. **¿Qué archivos de producción cambiaron?** Ninguno.
-15. **¿Cómo cambiaron los resultados tras las correcciones?** No cambiaron: A1 es idéntica a A0 (`12`).
-16. **¿Se ejecutó Replicate real en los veinte escenarios?** **No**, por falta de token. Bloqueo documentado (`13`, `evidencia/C_bloqueo`).
-17. **¿Cuántas llamadas reales se realizaron?** 0.
-18. **¿Cuántas propuestas de la IA fueron válidas?** No aplica, porque no hubo propuestas.
-19. **¿Cuántas fueron rechazadas?** No aplica.
-20. **¿Cuántos reintentos y respaldos se usaron?**
-    - Con Replicate: no aplica.
-    - En la etapa A hubo **8 respaldos sin IA** (E3 y E4) y 0 reintentos. No son fallos de la IA.
-21. **¿Cuántas adaptaciones se aplicaron realmente?** 0. Sin IA, las 8 decisiones de adaptar terminaron en respaldo, y las 2 de U07/U12 en conservación deliberada.
-22. **¿Cuántas sesiones no afectadas permanecieron intactas?** 46 de 46. Las 14 señaladas tampoco cambiaron.
-23. **¿Se publicó alguna rutina inválida?** No. 20 planes iniciales y 20 siguientes validados, con 0 violaciones de linaje.
-24. **¿Diferencias entre el motor determinista y Replicate?** No se pueden medir sin la etapa C. Lo que sí se sabe es que solo 8 de los 20 casos requieren IA en la adaptación (`20`).
-25. **¿Cuál fue el consumo del proveedor?** US$ 0 y 0 solicitudes.
-26. **¿La ejecución determinista fue reproducible?** Sí, de forma idéntica en tres bases distintas (`12`, `22`).
+15. **¿Cómo cambiaron los resultados tras las correcciones?** No cambiaron: A1 = A0.
+16. **¿Se ejecutó Replicate real en los veinte escenarios?** Sí. Los 20 pasaron por el ciclo con la IA activa; la política solo llamó a la IA en los 8 que la requieren, y además se generaron 20 planes con IA.
+17. **¿Cuántas llamadas reales se realizaron?** 35 en el intento válido (22 de generación y 13 de adaptación). 47 en el día, contando las 12 del intento 2.
+18. **¿Cuántas propuestas de la IA fueron válidas?** 28 de 35: 20 de 22 en la generación y 8 de 13 en la adaptación.
+19. **¿Cuántas fueron rechazadas?** 7: 2 en la generación (V24, V15) y 5 en la adaptación (V20).
+20. **¿Cuántos reintentos y respaldos se usaron?** 7 reintentos (2 + 5) y **0 respaldos** en C. En A hubo 8 respaldos sin IA.
+21. **¿Cuántas adaptaciones se aplicaron realmente?** 4 (U04, U09, U13 y U14), con 5 sesiones cambiadas.
+22. **¿Cuántas sesiones no afectadas permanecieron intactas?** 46 de 46, en A y en C.
+23. **¿Se publicó alguna rutina inválida?** No. 0 violaciones en A y en C.
+24. **¿Diferencias entre el motor determinista y Replicate?**
+    - Las mismas métricas y decisiones.
+    - **Adaptación:** C aplica cambios en 4 de 8 casos, donde A publica la misma semana.
+    - **Generación:** C tarda unos 98 s por plan y A menos de 1 s (`20`).
+25. **¿Cuál fue el consumo del proveedor?** Unos US$ 0,76 en el intento válido y unos US$ 0,99 en el día (estimación por tokens: 1,78 M de entrada y 0,27 M de salida). La cifra oficial está en el panel de Replicate.
+26. **¿La ejecución determinista fue reproducible?** Sí, idéntica en tres bases. Además, el plan inicial de C es idéntico al de A1.
 27. **¿La regresión histórica sigue pasando?** Sí:
     - 1.043 unitarias y 489 de integración, con 0 fallos y 37 omitidas *opt-in*;
     - 960 perfiles idénticos;
-    - REPLAY idéntica (`22`).
-28. **¿Qué partes del artículo hay que corregir?** `23_DISCREPANCIAS_CON_EL_SHORT_PAPER.md`:
-    - la decisión usa Aobs y no Aw (D1);
-    - el alcance de la adaptación localizada y de la ampliada (D2, D3);
-    - **decidir adaptar no es lo mismo que adaptar**: sin IA, respaldo (D4);
-    - el P40 real (D5);
-    - las reglas adicionales (D6);
-    - la duración frente a los minutos disponibles (D7).
+    - REPLAY idéntica.
+    - Ninguna llamada a Replicate en la regresión.
+28. **¿Qué partes del artículo hay que corregir?** D1–D13 (`23`). Las principales:
+    - la decisión usa Aobs;
+    - el alcance de la adaptación localizada y de la ampliada;
+    - «decidir adaptar» no es lo mismo que «adaptación aplicada» (4/8 con IA, 0/8 sin IA);
+    - el P40 real;
+    - la duración frente a los minutos disponibles;
+    - los tiempos y rechazos de la IA.
 
     Antes hay que cotejar con el .docx, que no estaba disponible.
 
@@ -106,15 +105,15 @@ Los valores son Aw/Aobs/C en %. «= A0» significa idéntico a A0.
 
 | Condición | Estado |
 |---|---|
-| Resultados observados y trazables de U01–U20 | ✅ Etapa A |
-| Resultados anteriores a cualquier corrección conservados | ✅ A0 en su propio commit (`33d8d06`) y nunca sobrescrito |
+| Resultados observados y trazables de U01–U20 | ✅ A0, A1 y C |
+| Resultados anteriores a las correcciones conservados | ✅ A0 (`33d8d06`), intentos 1 y 2 de C |
 | Diferencias explicadas | ✅ |
-| Defectos corregidos o pendientes | ✅ 0 defectos; 2 propuestas pendientes de tu decisión (P1, P2) |
-| Experimento determinista repetido | ✅ A1 y su repetición |
-| Etapa con Replicate real | ⛔ **Bloqueada y documentada** (sin token). No hay resultados inventados |
-| Propuestas, rechazos, reintentos y respaldos registrados | Parcial: respaldos de la etapa A registrados; los de la IA quedan pendientes de la etapa C |
-| Sin cambios funcionales no autorizados | ✅ Ningún cambio en `src/main` |
+| Defectos corregidos o identificados | ✅ 0 en el backend; 1 en el laboratorio, corregido; propuestas P1–P4 pendientes de tu decisión |
+| Experimento determinista repetido | ✅ |
+| Etapa con Replicate real dentro del límite | ✅ 47 de 90 predicciones y ~US$ 0,99 de US$ 10 |
+| Propuestas, rechazos, reintentos y respaldos registrados | ✅ (`14`–`18`) |
+| Sin cambios funcionales no autorizados | ✅ |
 | Regresión histórica sin diferencias | ✅ |
 | Sin despliegue, migraciones remotas ni Flutter | ✅ |
 
-**La evaluación queda terminada en las etapas A y B. La etapa C está pendiente únicamente del token.**
+**La evaluación queda terminada.**
