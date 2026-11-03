@@ -1,0 +1,8 @@
+id,Aw_backend,Aobs_backend,C_backend,Aw_recalculo_independiente,Aobs_recalculo_independiente,C_recalculo_independiente,cumplimiento_por_sesion_recalculado,weighted_adherence_pct,observed_adherence_pct,registration_coverage_pct,scheduled_workouts,valid_workouts,skipped_workouts,completed_workouts,recorded_workouts,frequency_adherence_pct,workout_adherence_pct,exercise_adherence_pct,average_session_rpe
+R01,33.33,33.33,100.00,33.33,33.33,100.00,100.0000|0.0000|0.0000,33.33,33.33,100.00,3,1,2,1,3,33.33,33.33,29.41,6.00
+R03,33.33,33.33,100.00,33.33,33.33,100.00,100.0000|0.0000|0.0000,33.33,33.33,100.00,3,1,2,1,3,33.33,33.33,33.33,6.00
+R04,66.67,66.67,100.00,66.67,66.67,100.00,100.0000|100.0000|0.0000,66.67,66.67,100.00,3,2,1,2,3,66.67,66.67,66.67,6.00
+R05,33.33,33.33,100.00,33.33,33.33,100.00,100.0000|0.0000|0.0000,33.33,33.33,100.00,3,1,2,1,3,33.33,33.33,33.33,6.00
+R06,46.67,70.00,66.67,46.67,70.00,66.67,100.0000|40.0000|sin_registro,46.67,70.00,66.67,3,2,0,1,2,66.67,33.33,33.33,5.50
+R07,66.67,66.67,100.00,66.67,66.67,100.00,100.0000|100.0000|0.0000,66.67,66.67,100.00,3,2,1,2,3,66.67,66.67,66.67,6.00
+R08,33.33,50.00,66.67,33.33,50.00,66.67,sin_registro|0.0000|100.0000,33.33,50.00,66.67,3,1,1,1,2,33.33,33.33,35.29,6.00

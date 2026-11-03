@@ -1,0 +1,3 @@
+usuarios=8
+llamadas_proveedor=0
+incidencias=1

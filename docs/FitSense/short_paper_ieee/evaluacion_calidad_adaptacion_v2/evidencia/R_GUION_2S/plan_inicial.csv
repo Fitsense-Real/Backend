@@ -1,0 +1,231 @@
+id,plan,plan_id,planned_workout_id,scheduled_date,focus_code,expected_duration_minutes,exercise_order,exercise_id,ejercicio,prescription_type,planned_sets,planned_reps,planned_duration_seconds,rest_seconds
+R01,inicial,1,1,2026-11-02,FULL_BODY,32,1,939,Abdominal patada,SETS_REPS,3,10,,90
+R01,inicial,1,1,2026-11-02,FULL_BODY,32,2,121,Extensión de cadera inclinada con banda,SETS_REPS,3,10,,90
+R01,inicial,1,1,2026-11-02,FULL_BODY,32,3,1098,Flexión en pared versión 2,SETS_REPS,3,10,,90
+R01,inicial,1,1,2026-11-02,FULL_BODY,32,4,117,Jalón a una mano de rodillas con banda,SETS_REPS,3,10,,90
+R01,inicial,1,1,2026-11-02,FULL_BODY,32,5,1111,Flexión con patada de pierna externa,SETS_REPS,3,10,,90
+R01,inicial,1,2,2026-11-04,FULL_BODY,35,1,933,Flexión de rodillas en apoyo,SETS_REPS,3,10,,90
+R01,inicial,1,2,2026-11-04,FULL_BODY,35,2,143,Jalón con agarre supino,SETS_REPS,3,10,,90
+R01,inicial,1,2,2026-11-04,FULL_BODY,35,3,1195,Curl invertido de piernas asistido,SETS_REPS,3,10,,90
+R01,inicial,1,2,2026-11-04,FULL_BODY,35,4,101,Press de hombros con banda,SETS_REPS,3,10,,90
+R01,inicial,1,2,2026-11-04,FULL_BODY,35,5,110,Elevación de piernas rectas acostado con banda,SETS_REPS,2,13,,90
+R01,inicial,1,2,2026-11-04,FULL_BODY,35,6,1099,Flexión de brazos con extensión de hombro,SETS_REPS,3,10,,90
+R01,inicial,1,3,2026-11-06,FULL_BODY,33,1,1096,Flexión,SETS_REPS,3,10,,90
+R01,inicial,1,3,2026-11-06,FULL_BODY,33,2,775,Elevación de codo y push-up invertido,SETS_REPS,3,10,,90
+R01,inicial,1,3,2026-11-06,FULL_BODY,33,3,121,Extensión de cadera inclinada con banda,SETS_REPS,3,10,,90
+R01,inicial,1,3,2026-11-06,FULL_BODY,33,4,708,Elevación lateral sentado con mancuerna,SETS_REPS,2,10,,90
+R01,inicial,1,3,2026-11-06,FULL_BODY,33,5,499,Crunch cruzado,SETS_REPS,2,13,,90
+R01,inicial,1,3,2026-11-06,FULL_BODY,33,6,933,Flexión de rodillas en apoyo,SETS_REPS,3,10,,90
+R01,siguiente,2,4,2026-11-09,FULL_BODY,32,1,939,Abdominal patada,SETS_REPS,3,10,,90
+R01,siguiente,2,4,2026-11-09,FULL_BODY,32,2,121,Extensión de cadera inclinada con banda,SETS_REPS,3,10,,90
+R01,siguiente,2,4,2026-11-09,FULL_BODY,32,3,1098,Flexión en pared versión 2,SETS_REPS,3,10,,90
+R01,siguiente,2,4,2026-11-09,FULL_BODY,32,4,117,Jalón a una mano de rodillas con banda,SETS_REPS,3,10,,90
+R01,siguiente,2,4,2026-11-09,FULL_BODY,32,5,1111,Flexión con patada de pierna externa,SETS_REPS,3,10,,90
+R01,siguiente,2,5,2026-11-11,FULL_BODY,35,1,129,Flexión con agarre cerrado,SETS_REPS,3,10,,90
+R01,siguiente,2,5,2026-11-11,FULL_BODY,35,2,114,Jalón con agarre cerrado,SETS_REPS,3,10,,90
+R01,siguiente,2,5,2026-11-11,FULL_BODY,35,3,1195,Curl invertido de piernas asistido,SETS_REPS,3,10,,90
+R01,siguiente,2,5,2026-11-11,FULL_BODY,35,4,101,Press de hombros con banda,SETS_REPS,3,10,,90
+R01,siguiente,2,5,2026-11-11,FULL_BODY,35,5,110,Elevación de piernas rectas acostado con banda,SETS_REPS,2,13,,90
+R01,siguiente,2,5,2026-11-11,FULL_BODY,35,6,1099,Flexión de brazos con extensión de hombro,SETS_REPS,3,10,,90
+R01,siguiente,2,6,2026-11-13,FULL_BODY,33,1,1096,Flexión,SETS_REPS,3,10,,90
+R01,siguiente,2,6,2026-11-13,FULL_BODY,33,2,775,Elevación de codo y push-up invertido,SETS_REPS,3,10,,90
+R01,siguiente,2,6,2026-11-13,FULL_BODY,33,3,121,Extensión de cadera inclinada con banda,SETS_REPS,3,10,,90
+R01,siguiente,2,6,2026-11-13,FULL_BODY,33,4,708,Elevación lateral sentado con mancuerna,SETS_REPS,2,10,,90
+R01,siguiente,2,6,2026-11-13,FULL_BODY,33,5,499,Crunch cruzado,SETS_REPS,2,13,,90
+R01,siguiente,2,6,2026-11-13,FULL_BODY,33,6,933,Flexión de rodillas en apoyo,SETS_REPS,3,10,,90
+R03,inicial,4,10,2026-11-02,FULL_BODY,23,1,1076,Sentadilla marcha (contra la pared),SETS_REPS,2,8,,120
+R03,inicial,4,10,2026-11-02,FULL_BODY,23,2,125,Pase de banda,SETS_REPS,2,8,,120
+R03,inicial,4,10,2026-11-02,FULL_BODY,23,3,1111,Flexión con patada de pierna externa,SETS_REPS,2,8,,120
+R03,inicial,4,10,2026-11-02,FULL_BODY,23,4,116,Jalón bajo con banda y agarre supino,SETS_REPS,2,8,,120
+R03,inicial,4,10,2026-11-02,FULL_BODY,23,5,1154,Press de hombro sentado con banda,SETS_REPS,2,10,,90
+R03,inicial,4,11,2026-11-04,FULL_BODY,23,1,1098,Flexión en pared versión 2,SETS_REPS,2,8,,120
+R03,inicial,4,11,2026-11-04,FULL_BODY,23,2,117,Jalón a una mano de rodillas con banda,SETS_REPS,2,8,,120
+R03,inicial,4,11,2026-11-04,FULL_BODY,23,3,1103,Sentadilla de baño,SETS_REPS,2,8,,120
+R03,inicial,4,11,2026-11-04,FULL_BODY,23,4,136,Press por encima de la cabeza con giro y banda,SETS_REPS,2,8,,120
+R03,inicial,4,11,2026-11-04,FULL_BODY,23,5,496,Flexión con caída controlada,SETS_REPS,2,10,,90
+R03,inicial,4,12,2026-11-06,FULL_BODY,23,1,494,Flexión en reloj,SETS_REPS,2,8,,120
+R03,inicial,4,12,2026-11-06,FULL_BODY,23,2,116,Jalón bajo con banda y agarre supino,SETS_REPS,2,8,,120
+R03,inicial,4,12,2026-11-06,FULL_BODY,23,3,507,Sentadilla curtsy,SETS_REPS,2,8,,120
+R03,inicial,4,12,2026-11-06,FULL_BODY,23,4,1154,Press de hombro sentado con banda,SETS_REPS,2,8,,120
+R03,inicial,4,12,2026-11-06,FULL_BODY,23,5,1097,Flexión en pared,SETS_REPS,2,10,,90
+R03,siguiente,5,13,2026-11-09,FULL_BODY,23,1,1076,Sentadilla marcha (contra la pared),SETS_REPS,2,8,,120
+R03,siguiente,5,13,2026-11-09,FULL_BODY,23,2,125,Pase de banda,SETS_REPS,2,8,,120
+R03,siguiente,5,13,2026-11-09,FULL_BODY,23,3,1111,Flexión con patada de pierna externa,SETS_REPS,2,8,,120
+R03,siguiente,5,13,2026-11-09,FULL_BODY,23,4,116,Jalón bajo con banda y agarre supino,SETS_REPS,2,8,,120
+R03,siguiente,5,13,2026-11-09,FULL_BODY,23,5,1154,Press de hombro sentado con banda,SETS_REPS,2,10,,90
+R03,siguiente,5,14,2026-11-11,FULL_BODY,23,1,129,Flexión con agarre cerrado,SETS_REPS,2,8,,120
+R03,siguiente,5,14,2026-11-11,FULL_BODY,23,2,114,Jalón con agarre cerrado,SETS_REPS,2,8,,120
+R03,siguiente,5,14,2026-11-11,FULL_BODY,23,3,1103,Sentadilla de baño,SETS_REPS,2,8,,120
+R03,siguiente,5,14,2026-11-11,FULL_BODY,23,4,136,Press por encima de la cabeza con giro y banda,SETS_REPS,2,8,,120
+R03,siguiente,5,14,2026-11-11,FULL_BODY,23,5,496,Flexión con caída controlada,SETS_REPS,2,9,,90
+R03,siguiente,5,15,2026-11-13,FULL_BODY,23,1,494,Flexión en reloj,SETS_REPS,2,8,,120
+R03,siguiente,5,15,2026-11-13,FULL_BODY,23,2,116,Jalón bajo con banda y agarre supino,SETS_REPS,2,8,,120
+R03,siguiente,5,15,2026-11-13,FULL_BODY,23,3,507,Sentadilla curtsy,SETS_REPS,2,8,,120
+R03,siguiente,5,15,2026-11-13,FULL_BODY,23,4,1154,Press de hombro sentado con banda,SETS_REPS,2,8,,120
+R03,siguiente,5,15,2026-11-13,FULL_BODY,23,5,1097,Flexión en pared,SETS_REPS,2,9,,90
+R04,inicial,7,19,2026-11-03,FULL_BODY,32,1,1236,Hack squat smith,SETS_REPS,3,6,,150
+R04,inicial,7,19,2026-11-03,FULL_BODY,32,2,142,Peso muerto con piernas rectas con banda,SETS_REPS,3,6,,150
+R04,inicial,7,19,2026-11-03,FULL_BODY,32,3,1092,Press de pecho interno en máquina,SETS_REPS,3,6,,150
+R04,inicial,7,19,2026-11-03,FULL_BODY,32,4,862,Dominada gorila,SETS_REPS,3,10,,150
+R04,inicial,7,20,2026-11-05,FULL_BODY,32,1,542,Press martillo declinado con mancuerna,SETS_REPS,3,6,,150
+R04,inicial,7,20,2026-11-05,FULL_BODY,32,2,350,Remo sentado en piso con agarre amplio,SETS_REPS,3,6,,150
+R04,inicial,7,20,2026-11-05,FULL_BODY,32,3,1196,Curl de piernas invertido asistido,SETS_REPS,3,6,,150
+R04,inicial,7,20,2026-11-05,FULL_BODY,32,4,221,Press militar sentado con barra,SETS_REPS,3,6,,150
+R04,inicial,7,21,2026-11-07,FULL_BODY,32,1,341,Press inclinado con cable,SETS_REPS,3,6,,150
+R04,inicial,7,21,2026-11-07,FULL_BODY,32,2,115,Jalón cercano con banda y agarre estrecho,SETS_REPS,3,6,,150
+R04,inicial,7,21,2026-11-07,FULL_BODY,32,3,790,Paso pasante sumo con mancuerna,SETS_REPS,3,6,,150
+R04,inicial,7,21,2026-11-07,FULL_BODY,32,4,1024,Prensa de hombro con palanca v. 3,SETS_REPS,3,6,,150
+R04,siguiente,8,22,2026-11-10,FULL_BODY,32,1,1236,Hack squat smith,SETS_REPS,3,6,,150
+R04,siguiente,8,22,2026-11-10,FULL_BODY,32,2,142,Peso muerto con piernas rectas con banda,SETS_REPS,3,6,,150
+R04,siguiente,8,22,2026-11-10,FULL_BODY,32,3,1092,Press de pecho interno en máquina,SETS_REPS,3,6,,150
+R04,siguiente,8,22,2026-11-10,FULL_BODY,32,4,862,Dominada gorila,SETS_REPS,3,10,,150
+R04,siguiente,8,23,2026-11-12,FULL_BODY,32,1,542,Press martillo declinado con mancuerna,SETS_REPS,3,6,,150
+R04,siguiente,8,23,2026-11-12,FULL_BODY,32,2,350,Remo sentado en piso con agarre amplio,SETS_REPS,3,6,,150
+R04,siguiente,8,23,2026-11-12,FULL_BODY,32,3,1196,Curl de piernas invertido asistido,SETS_REPS,3,6,,150
+R04,siguiente,8,23,2026-11-12,FULL_BODY,32,4,221,Press militar sentado con barra,SETS_REPS,3,6,,150
+R04,siguiente,8,24,2026-11-14,FULL_BODY,32,1,341,Press inclinado con cable,SETS_REPS,3,6,,150
+R04,siguiente,8,24,2026-11-14,FULL_BODY,32,2,115,Jalón cercano con banda y agarre estrecho,SETS_REPS,3,6,,150
+R04,siguiente,8,24,2026-11-14,FULL_BODY,32,3,790,Paso pasante sumo con mancuerna,SETS_REPS,3,6,,150
+R04,siguiente,8,24,2026-11-14,FULL_BODY,32,4,1024,Prensa de hombro con palanca v. 3,SETS_REPS,3,6,,150
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,1,915,Curl femoral invertido con banco,SETS_REPS,2,8,,120
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,2,1073,Puente de glúteos bajo en el suelo,SETS_REPS,2,8,,120
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,3,1098,Flexión en pared versión 2,SETS_REPS,2,8,,120
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,4,862,Dominada gorila,SETS_REPS,2,10,,120
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,5,912,Remo invertido en banco,SETS_REPS,2,8,,120
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,6,987,Press militar con palanca,SETS_REPS,2,8,,120
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,7,853,Media sentadilla,DURATION,3,,90,60
+R05,inicial,10,28,2026-11-02,FULL_BODY,42,8,1117,Pies rápidos v. 2,DURATION,3,,90,60
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,1,862,Dominada gorila,SETS_REPS,2,10,,120
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,2,988,Press de pecho con palanca,SETS_REPS,2,8,,120
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,3,1191,Chin de lado a lateral,SETS_REPS,2,8,,120
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,4,1046,Curl de piernas sentado,SETS_REPS,2,8,,120
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,5,987,Press militar con palanca,SETS_REPS,2,8,,120
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,6,1092,Press de pecho interno en máquina,SETS_REPS,2,8,,120
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,7,1054,Escalador,DURATION,3,,90,60
+R05,inicial,10,29,2026-11-04,FULL_BODY,42,8,253,Gateo de oso,DURATION,3,,90,60
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,1,862,Dominada gorila,SETS_REPS,2,10,,120
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,2,991,Press de pecho inclinado con palanca,SETS_REPS,2,8,,120
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,3,350,Remo sentado en piso con agarre amplio,SETS_REPS,2,8,,120
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,4,1195,Curl invertido de piernas asistido,SETS_REPS,2,8,,120
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,5,1024,Prensa de hombro con palanca v. 3,SETS_REPS,2,8,,120
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,6,102,Press de banca con banda,SETS_REPS,2,8,,120
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,7,1093,Empujar para correr,DURATION,3,,90,60
+R05,inicial,10,30,2026-11-06,FULL_BODY,42,8,253,Gateo de oso,DURATION,3,,90,60
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,1,915,Curl femoral invertido con banco,SETS_REPS,2,8,,120
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,2,1073,Puente de glúteos bajo en el suelo,SETS_REPS,2,8,,120
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,3,1098,Flexión en pared versión 2,SETS_REPS,2,8,,120
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,4,862,Dominada gorila,SETS_REPS,2,10,,120
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,5,912,Remo invertido en banco,SETS_REPS,2,8,,120
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,6,987,Press militar con palanca,SETS_REPS,2,8,,120
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,7,853,Media sentadilla,DURATION,3,,90,60
+R05,siguiente,11,31,2026-11-09,FULL_BODY,42,8,1117,Pies rápidos v. 2,DURATION,3,,90,60
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,1,862,Dominada gorila,SETS_REPS,2,10,,120
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,2,72,Fondos de pecho asistidos (de rodillas),SETS_REPS,2,8,,120
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,3,74,Dominada paralela con agarre estrecho asistida,SETS_REPS,2,8,,120
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,4,1046,Curl de piernas sentado,SETS_REPS,2,8,,120
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,5,987,Press militar con palanca,SETS_REPS,2,8,,120
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,6,1092,Press de pecho interno en máquina,SETS_REPS,2,8,,120
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,7,1054,Escalador,DURATION,3,,90,60
+R05,siguiente,11,32,2026-11-11,FULL_BODY,42,8,253,Gateo de oso,DURATION,3,,90,60
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,1,862,Dominada gorila,SETS_REPS,2,10,,120
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,2,991,Press de pecho inclinado con palanca,SETS_REPS,2,8,,120
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,3,350,Remo sentado en piso con agarre amplio,SETS_REPS,2,8,,120
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,4,1195,Curl invertido de piernas asistido,SETS_REPS,2,8,,120
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,5,1024,Prensa de hombro con palanca v. 3,SETS_REPS,2,8,,120
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,6,102,Press de banca con banda,SETS_REPS,2,8,,120
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,7,1093,Empujar para correr,DURATION,3,,90,60
+R05,siguiente,11,33,2026-11-13,FULL_BODY,42,8,253,Gateo de oso,DURATION,3,,90,60
+R06,inicial,13,37,2026-11-03,FULL_BODY,22,1,1333,Carrera con zancadas amplias,DURATION,3,,120,60
+R06,inicial,13,37,2026-11-03,FULL_BODY,22,2,1176,Saltos estilo patinador,DURATION,3,,120,60
+R06,inicial,13,38,2026-11-05,FULL_BODY,22,1,1135,Saltos tijera,DURATION,3,,120,60
+R06,inicial,13,38,2026-11-05,FULL_BODY,22,2,1133,Correr,DURATION,3,,120,60
+R06,inicial,13,39,2026-11-07,FULL_BODY,22,1,854,Rodillas altas contra la pared,DURATION,3,,120,60
+R06,inicial,13,39,2026-11-07,FULL_BODY,22,2,1175,Carrera de zancada corta,DURATION,3,,120,60
+R06,siguiente,14,40,2026-11-10,FULL_BODY,22,1,1333,Carrera con zancadas amplias,DURATION,3,,120,60
+R06,siguiente,14,40,2026-11-10,FULL_BODY,22,2,1176,Saltos estilo patinador,DURATION,3,,120,60
+R06,siguiente,14,41,2026-11-12,FULL_BODY,22,1,1135,Saltos tijera,DURATION,3,,120,60
+R06,siguiente,14,41,2026-11-12,FULL_BODY,22,2,1133,Correr,DURATION,3,,120,60
+R06,siguiente,14,42,2026-11-14,FULL_BODY,22,1,854,Rodillas altas contra la pared,DURATION,3,,120,60
+R06,siguiente,14,42,2026-11-14,FULL_BODY,22,2,1175,Carrera de zancada corta,DURATION,3,,120,60
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,1,877,Zancada hacia adelante (hombre),SETS_REPS,3,8,,120
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,2,878,Marcha en puente de glúteos,SETS_REPS,3,8,,120
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,3,775,Elevación de codo y push-up invertido,SETS_REPS,3,8,,120
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,4,704,Press alterno sentado con mancuerna,SETS_REPS,2,10,,90
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,5,494,Flexión en reloj,SETS_REPS,2,10,,90
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,6,821,Flexión Pike en balón,SETS_REPS,3,15,,45
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,7,253,Gateo de oso,DURATION,3,,90,60
+R07,inicial,16,46,2026-11-02,FULL_BODY,44,8,1151,Estiramiento de glúteos sentado,DURATION,2,,30,15
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,1,704,Press alterno sentado con mancuerna,SETS_REPS,3,10,,90
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,2,1097,Flexión en pared,SETS_REPS,3,10,,90
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,3,775,Elevación de codo y push-up invertido,SETS_REPS,2,10,,90
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,4,1058,Flexión hindú modificada,SETS_REPS,3,15,,45
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,5,805,Extensión de espalda con brazos extendidos en balón,SETS_REPS,3,15,,45
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,6,1073,Puente de glúteos bajo en el suelo,SETS_REPS,3,15,,45
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,7,1093,Empujar para correr,DURATION,3,,90,60
+R07,inicial,16,47,2026-11-04,FULL_BODY,43,8,1322,Estiramiento de tríceps,DURATION,2,,30,15
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,1,704,Press alterno sentado con mancuerna,SETS_REPS,3,10,,90
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,2,1098,Flexión en pared versión 2,SETS_REPS,3,10,,90
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,3,1315,Zancada caminando,SETS_REPS,2,10,,90
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,4,1095,Empuje y tracción con peso corporal,SETS_REPS,3,15,,45
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,5,775,Elevación de codo y push-up invertido,SETS_REPS,3,15,,45
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,6,1200,Adducción de cadera lateral (hombre),SETS_REPS,3,15,,45
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,7,1054,Escalador,DURATION,3,,90,60
+R07,inicial,16,48,2026-11-06,FULL_BODY,43,8,1053,Estiramiento lateral de cuello,DURATION,2,,30,15
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,1,877,Zancada hacia adelante (hombre),SETS_REPS,3,8,,120
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,2,878,Marcha en puente de glúteos,SETS_REPS,3,8,,120
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,3,775,Elevación de codo y push-up invertido,SETS_REPS,3,8,,120
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,4,704,Press alterno sentado con mancuerna,SETS_REPS,2,10,,90
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,5,494,Flexión en reloj,SETS_REPS,2,10,,90
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,6,821,Flexión Pike en balón,SETS_REPS,3,15,,45
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,7,253,Gateo de oso,DURATION,3,,90,60
+R07,siguiente,17,49,2026-11-09,FULL_BODY,44,8,1151,Estiramiento de glúteos sentado,DURATION,2,,30,15
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,1,704,Press alterno sentado con mancuerna,SETS_REPS,3,10,,90
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,2,1097,Flexión en pared,SETS_REPS,3,10,,90
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,3,775,Elevación de codo y push-up invertido,SETS_REPS,2,10,,90
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,4,1058,Flexión hindú modificada,SETS_REPS,3,15,,45
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,5,805,Extensión de espalda con brazos extendidos en balón,SETS_REPS,3,15,,45
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,6,1073,Puente de glúteos bajo en el suelo,SETS_REPS,3,15,,45
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,7,1093,Empujar para correr,DURATION,3,,90,60
+R07,siguiente,17,50,2026-11-11,FULL_BODY,43,8,1322,Estiramiento de tríceps,DURATION,2,,30,15
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,1,704,Press alterno sentado con mancuerna,SETS_REPS,3,9,,90
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,2,1098,Flexión en pared versión 2,SETS_REPS,3,9,,90
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,3,1315,Zancada caminando,SETS_REPS,2,9,,90
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,4,1095,Empuje y tracción con peso corporal,SETS_REPS,3,15,,45
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,5,775,Elevación de codo y push-up invertido,SETS_REPS,3,15,,45
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,6,1200,Adducción de cadera lateral (hombre),SETS_REPS,3,15,,45
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,7,1054,Escalador,DURATION,3,,90,60
+R07,siguiente,17,51,2026-11-13,FULL_BODY,42,8,1053,Estiramiento lateral de cuello,DURATION,2,,30,15
+R08,inicial,19,55,2026-11-03,FULL_BODY,37,1,1103,Sentadilla de baño,SETS_REPS,3,6,,150
+R08,inicial,19,55,2026-11-03,FULL_BODY,37,2,1073,Puente de glúteos bajo en el suelo,SETS_REPS,3,6,,150
+R08,inicial,19,55,2026-11-03,FULL_BODY,37,3,72,Fondos de pecho asistidos (de rodillas),SETS_REPS,3,18,,45
+R08,inicial,19,55,2026-11-03,FULL_BODY,37,4,295,Salto a caja con una pierna estabilización,SETS_REPS,2,12,,30
+R08,inicial,19,55,2026-11-03,FULL_BODY,37,5,1117,Pies rápidos v. 2,DURATION,3,,120,60
+R08,inicial,19,55,2026-11-03,FULL_BODY,37,6,1255,Estiramiento de gemelos de pie,DURATION,2,,30,15
+R08,inicial,19,56,2026-11-05,FULL_BODY,35,1,1026,Press de pecho en palanca de pie,SETS_REPS,3,6,,150
+R08,inicial,19,56,2026-11-05,FULL_BODY,35,2,862,Dominada gorila,SETS_REPS,3,10,,150
+R08,inicial,19,56,2026-11-05,FULL_BODY,35,3,540,Press de banca declinado con mancuerna,SETS_REPS,3,18,,45
+R08,inicial,19,56,2026-11-05,FULL_BODY,35,4,1333,Carrera con zancadas amplias,DURATION,3,,120,60
+R08,inicial,19,56,2026-11-05,FULL_BODY,35,5,1260,Estiramiento lateral de pie,DURATION,2,,30,15
+R08,inicial,19,57,2026-11-07,FULL_BODY,37,1,862,Dominada gorila,SETS_REPS,3,13,,90
+R08,inicial,19,57,2026-11-07,FULL_BODY,37,2,1285,Press de banca ancho con barra Smith,SETS_REPS,3,18,,45
+R08,inicial,19,57,2026-11-07,FULL_BODY,37,3,518,Remo inclinado con mancuerna,SETS_REPS,3,18,,45
+R08,inicial,19,57,2026-11-07,FULL_BODY,37,4,519,Sentadilla con mancuerna en banco,SETS_REPS,3,18,,45
+R08,inicial,19,57,2026-11-07,FULL_BODY,37,5,1093,Empujar para correr,DURATION,3,,120,60
+R08,inicial,19,57,2026-11-07,FULL_BODY,37,6,1137,Estiramiento deltoides posterior,DURATION,2,,30,15
+R08,siguiente,20,58,2026-11-10,FULL_BODY,37,1,1103,Sentadilla de baño,SETS_REPS,3,6,,150
+R08,siguiente,20,58,2026-11-10,FULL_BODY,37,2,1073,Puente de glúteos bajo en el suelo,SETS_REPS,3,6,,150
+R08,siguiente,20,58,2026-11-10,FULL_BODY,37,3,72,Fondos de pecho asistidos (de rodillas),SETS_REPS,3,18,,45
+R08,siguiente,20,58,2026-11-10,FULL_BODY,37,4,295,Salto a caja con una pierna estabilización,SETS_REPS,2,12,,30
+R08,siguiente,20,58,2026-11-10,FULL_BODY,37,5,1117,Pies rápidos v. 2,DURATION,3,,120,60
+R08,siguiente,20,58,2026-11-10,FULL_BODY,37,6,1255,Estiramiento de gemelos de pie,DURATION,2,,30,15
+R08,siguiente,20,59,2026-11-12,FULL_BODY,34,1,72,Fondos de pecho asistidos (de rodillas),SETS_REPS,3,6,,150
+R08,siguiente,20,59,2026-11-12,FULL_BODY,34,2,862,Dominada gorila,SETS_REPS,3,10,,150
+R08,siguiente,20,59,2026-11-12,FULL_BODY,34,3,56,Flexión arquero,SETS_REPS,3,18,,45
+R08,siguiente,20,59,2026-11-12,FULL_BODY,34,4,1333,Carrera con zancadas amplias,DURATION,3,,110,60
+R08,siguiente,20,59,2026-11-12,FULL_BODY,34,5,1260,Estiramiento lateral de pie,DURATION,2,,20,15
+R08,siguiente,20,60,2026-11-14,FULL_BODY,37,1,862,Dominada gorila,SETS_REPS,3,13,,90
+R08,siguiente,20,60,2026-11-14,FULL_BODY,37,2,1285,Press de banca ancho con barra Smith,SETS_REPS,3,18,,45
+R08,siguiente,20,60,2026-11-14,FULL_BODY,37,3,518,Remo inclinado con mancuerna,SETS_REPS,3,18,,45
+R08,siguiente,20,60,2026-11-14,FULL_BODY,37,4,519,Sentadilla con mancuerna en banco,SETS_REPS,3,18,,45
+R08,siguiente,20,60,2026-11-14,FULL_BODY,37,5,1093,Empujar para correr,DURATION,3,,120,60
+R08,siguiente,20,60,2026-11-14,FULL_BODY,37,6,1137,Estiramiento deltoides posterior,DURATION,2,,30,15

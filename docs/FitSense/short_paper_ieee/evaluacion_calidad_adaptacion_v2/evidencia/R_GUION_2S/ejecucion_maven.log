@@ -1,0 +1,611 @@
+Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=33119 -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes=
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< pe.fitsense:fitsense-backend >--------------------
+[INFO] Building FitSense Backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ fitsense-backend ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 47 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ fitsense-backend ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ fitsense-backend ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ fitsense-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 197 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /home/user/wt_v2/src/test/java/main/web/services/fitsense/execution/EjecucionEntrenamientosIT.java: Some input files use or override a deprecated API.
+[INFO] /home/user/wt_v2/src/test/java/main/web/services/fitsense/execution/EjecucionEntrenamientosIT.java: Recompile with -Xlint:deprecation for details.
+[INFO] /home/user/wt_v2/src/test/java/main/web/services/fitsense/planning/application/internal/commandservices/AdaptedWeekCommandServiceTest.java: Some input files use unchecked or unsafe operations.
+[INFO] /home/user/wt_v2/src/test/java/main/web/services/fitsense/planning/application/internal/commandservices/AdaptedWeekCommandServiceTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ fitsense-backend ---
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ fitsense-backend ---
+[INFO] 
+[INFO] --- spring-boot:4.1.1:repackage (repackage) @ fitsense-backend ---
+[INFO] Replacing main artifact /home/user/wt_v2/target/fitsense-backend-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /home/user/wt_v2/target/fitsense-backend-0.0.1-SNAPSHOT.jar.original
+[INFO] 
+[INFO] --- failsafe:3.5.6:integration-test (default) @ fitsense-backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=33119 -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes=
+[INFO] Running Experimento Kora: 20 usuarios x 3 sesiones con los servicios reales
+05:04:45.805 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+05:04:45.808 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+05:04:45.828 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 2.0.5
+05:04:45.964 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+05:04:46.288 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+05:04:46.289 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+05:04:46.304 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 29.9.2
+  API Version: 1.56
+  Operating System: Ubuntu 24.04.5 LTS
+  Total Memory: 16091 MB
+05:04:46.374 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Creating container for image: testcontainers/ryuk:0.14.0
+05:04:46.377 [main] INFO org.testcontainers.utility.RegistryAuthLocator -- Failure when attempting to lookup auth config. Please ignore if you don't have images in an authenticated registry. Details: (dockerImageName: testcontainers/ryuk:0.14.0, configFile: /root/.docker/config.json, configEnv: DOCKER_AUTH_CONFIG). Falling back to docker-java default behaviour. Exception message: Status 404: No config supplied. Checked in order: /root/.docker/config.json (file not found), DOCKER_AUTH_CONFIG (not set)
+05:04:46.467 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 is starting: 610b8cc5196bb3be048d7f361f6e8d44d831b23de4b8ff46f3b1e657e9e1a00f
+05:04:46.713 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 started in PT0.339231666S
+05:04:46.721 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+05:04:46.721 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+05:04:46.721 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+05:04:46.722 [main] INFO tc.postgres:16-alpine -- Creating container for image: postgres:16-alpine
+05:04:46.763 [main] INFO tc.postgres:16-alpine -- Container postgres:16-alpine is starting: db7f15e83440dface006a8c23905e496ea7684d8bb7e57b17c4a2b37f905dde0
+05:04:47.967 [main] INFO tc.postgres:16-alpine -- Container postgres:16-alpine started in PT1.245119274S
+05:04:47.968 [main] INFO tc.postgres:16-alpine -- Container is started (JDBC URL: jdbc:postgresql://localhost:32775/test?loggerLevel=OFF)
+05:04:48.049 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [main.web.services.fitsense.orchestation.ExperimentoKora20IT]: ExperimentoKora20IT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:04:48.201 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration main.web.services.fitsense.FitsenseApplication for test class main.web.services.fitsense.orchestation.ExperimentoKora20IT
+05:04:48.259 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [main.web.services.fitsense.orchestation.ExperimentoKora20IT]: ExperimentoKora20IT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+05:04:48.265 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration main.web.services.fitsense.FitsenseApplication for test class main.web.services.fitsense.orchestation.ExperimentoKora20IT
+05:04:48.322 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-11-03T05:04:48.677Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.o.ExperimentoKora20IT            : Starting ExperimentoKora20IT using Java 21.0.12.1 with PID 6494 (started by root in /home/user/wt_v2)
+2026-11-03T05:04:48.679Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.o.ExperimentoKora20IT            : No active profile set, falling back to 1 default profile: "default"
+2026-11-03T05:04:49.469Z  INFO 6494 --- [Fitsense] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-03T05:04:49.562Z  INFO 6494 --- [Fitsense] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 85 ms. Found 15 JPA repository interfaces.
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/root/.m2/repository/net/bytebuddy/byte-buddy-agent/1.18.11/byte-buddy-agent-1.18.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-11-03T05:04:51.012Z  INFO 6494 --- [Fitsense] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:32775/test?loggerLevel=OFF (PostgreSQL 16.15)
+2026-11-03T05:04:51.137Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-11-03T05:04:51.140Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 46 migrations (execution time 00:00.085s)
+2026-11-03T05:04:51.153Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-11-03T05:04:51.229Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-11-03T05:04:51.239Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - users and profiles"
+2026-11-03T05:04:51.279Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - catalog"
+2026-11-03T05:04:51.302Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - catalog data"
+2026-11-03T05:04:51.318Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - planning"
+2026-11-03T05:04:51.348Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - execution"
+2026-11-03T05:04:51.374Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - metrics and config"
+2026-11-03T05:04:51.405Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - config data"
+2026-11-03T05:04:51.415Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - catalog seed minimal"
+2026-11-03T05:04:51.567Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - catalog full"
+2026-11-03T05:04:51.740Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - exercise safety flags"
+2026-11-03T05:04:51.905Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V10 aplicada: banderas de seguridad y dificultad derivadas
+2026-11-03T05:04:51.923Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - catalog translations and activation"
+2026-11-03T05:04:52.009Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V11 aplicada: 1324 traducidos, 1225 activos, 405 para HOME+BEGINNER
+2026-11-03T05:04:52.017Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - prescription ranges"
+2026-11-03T05:04:52.020Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V12 aplicada: MVP-1.1 activa con rangos de prescripcion
+2026-11-03T05:04:52.026Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - study design"
+2026-11-03T05:04:52.037Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "14 - duration estimation"
+2026-11-03T05:04:52.040Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V14 aplicada: MVP-1.2 activa con estimacion de duracion
+2026-11-03T05:04:52.045Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "15 - progression limits"
+2026-11-03T05:04:52.048Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V15 aplicada: MVP-1.3 activa, techo de progresion +25 %
+2026-11-03T05:04:52.053Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "16 - retroactive report limit"
+2026-11-03T05:04:52.056Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V16 aplicada: MVP-1.4 activa, limite retroactivo de 7 dias
+2026-11-03T05:04:52.062Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "17 - volume components"
+2026-11-03T05:04:52.074Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "18 - prescription principles"
+2026-11-03T05:04:52.127Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V18: MVP-1.4 desactivada, MVP-1.5 creada y activa
+2026-11-03T05:04:52.131Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V18 aplicada. Activos por duracion: 78, por repeticiones: 1147
+2026-11-03T05:04:52.140Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "19 - rebuild config from mvp14"
+2026-11-03T05:04:52.143Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V19: MVP-1.5 desactivada (0 diferencias), MVP-1.6 creada y activa
+2026-11-03T05:04:52.153Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "20 - prescription coherence"
+2026-11-03T05:04:52.155Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V20: MVP-1.7 creada y activa (desde MVP-1.6)
+2026-11-03T05:04:52.162Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "21 - catalog difficulty sync neon"
+2026-11-03T05:04:52.169Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V21 aplicada: 33 ejercicios con dificultad 3 (igual que Neon)
+2026-11-03T05:04:52.179Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "22 - equipment types for missing implements"
+2026-11-03T05:04:52.181Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V22: 14 codigos de equipamiento anadidos
+2026-11-03T05:04:52.186Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "23 - exercise equipment requirements"
+2026-11-03T05:04:52.231Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V23: 1027 requisitos sembrados desde equipment_id
+2026-11-03T05:04:52.243Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "24 - catalog review fixes"
+2026-11-03T05:04:52.311Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 35 candidatos en back para BEGINNER
+2026-11-03T05:04:52.311Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en cardio para BEGINNER
+2026-11-03T05:04:52.311Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 30 candidatos en chest para BEGINNER
+2026-11-03T05:04:52.313Z  WARN 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 6 candidatos en lower arms para BEGINNER (SQL State: 01000 - Error Code: 0)
+2026-11-03T05:04:52.313Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en lower legs para BEGINNER
+2026-11-03T05:04:52.313Z  WARN 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 2 candidatos en neck para BEGINNER (SQL State: 01000 - Error Code: 0)
+2026-11-03T05:04:52.313Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 22 candidatos en shoulders para BEGINNER
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 45 candidatos en upper arms para BEGINNER
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 64 candidatos en upper legs para BEGINNER
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 77 candidatos en waist para BEGINNER
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 49 candidatos en back para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en cardio para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 47 candidatos en chest para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 14 candidatos en lower arms para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 20 candidatos en lower legs para INTERMEDIATE
+2026-11-03T05:04:52.314Z  WARN 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 2 candidatos en neck para INTERMEDIATE (SQL State: 01000 - Error Code: 0)
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 57 candidatos en shoulders para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 104 candidatos en upper arms para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 81 candidatos en upper legs para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 79 candidatos en waist para INTERMEDIATE
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 50 candidatos en back para ADVANCED
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en cardio para ADVANCED
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 53 candidatos en chest para ADVANCED
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 16 candidatos en lower arms para ADVANCED
+2026-11-03T05:04:52.314Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 22 candidatos en lower legs para ADVANCED
+2026-11-03T05:04:52.314Z  WARN 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 2 candidatos en neck para ADVANCED (SQL State: 01000 - Error Code: 0)
+2026-11-03T05:04:52.315Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 68 candidatos en shoulders para ADVANCED
+2026-11-03T05:04:52.315Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 124 candidatos en upper arms para ADVANCED
+2026-11-03T05:04:52.315Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 85 candidatos en upper legs para ADVANCED
+2026-11-03T05:04:52.315Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 83 candidatos en waist para ADVANCED
+2026-11-03T05:04:52.358Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "25 - movement flags"
+2026-11-03T05:04:52.383Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: constraint "ck_exercises_hanging_is_overhead" of relation "exercises" does not exist, skipping
+2026-11-03T05:04:52.387Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V25: 47 activos requieren colgarse, 239 brazos sobre la cabeza, 32 rodillas, 33 inversion
+2026-11-03T05:04:52.401Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "26 - movement pattern"
+2026-11-03T05:04:52.439Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: constraint "ck_exercises_movement_pattern" of relation "exercises" does not exist, skipping
+2026-11-03T05:04:52.441Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: constraint "ck_exercises_activo_clasificado" of relation "exercises" does not exist, skipping
+2026-11-03T05:04:52.445Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V26: 1221 activos clasificados en 24 clases, 428 aislados
+2026-11-03T05:04:52.452Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "27 - exercise difficulty review"
+2026-11-03T05:04:52.478Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "28 - approve lower hip difficulty"
+2026-11-03T05:04:52.492Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "29 - exercise equipment requirements fixes"
+2026-11-03T05:04:52.523Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "30 - registration coverage"
+2026-11-03T05:04:52.528Z  INFO 6494 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V30: MVP-1.7 desactivada, MVP-1.8 creada y activa (parametros sin cambio)
+2026-11-03T05:04:52.535Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "31 - workout derivation"
+2026-11-03T05:04:52.555Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "32 - adaptation evidence"
+2026-11-03T05:04:52.587Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "33 - aplicada exige sesiones"
+2026-11-03T05:04:52.594Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "34 - progresion de sesiones"
+2026-11-03T05:04:52.623Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "35 - user roles"
+2026-11-03T05:04:52.630Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "36 - catalog review gif corrections"
+2026-11-03T05:04:52.646Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "37 - catalog safety corrections"
+2026-11-03T05:04:52.714Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "38 - catalog classification equipment"
+2026-11-03T05:04:52.828Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "39 - catalog functional equipment"
+2026-11-03T05:04:52.895Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "40 - catalog c4 c6"
+2026-11-03T05:04:52.914Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "41 - catalog c4 c6 fase2"
+2026-11-03T05:04:52.934Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "42 - adaptation lack of time context"
+2026-11-03T05:04:52.949Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "43 - pain memory and safe regeneration"
+2026-11-03T05:04:52.971Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "44 - planning policy version"
+2026-11-03T05:04:52.978Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "44.1 - adaptation reason codes"
+2026-11-03T05:04:52.992Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "44.2 - password reset tokens"
+2026-11-03T05:04:53.011Z  INFO 6494 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 46 migrations to schema "public", now at version v44.2 (execution time 00:01.224s)
+2026-11-03T05:04:53.152Z  INFO 6494 --- [Fitsense] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-11-03T05:04:53.192Z  INFO 6494 --- [Fitsense] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-11-03T05:04:53.359Z  INFO 6494 --- [Fitsense] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-03T05:04:53.383Z  INFO 6494 --- [Fitsense] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-03T05:04:53.415Z  INFO 6494 --- [Fitsense] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5df17e60
+2026-11-03T05:04:53.416Z  INFO 6494 --- [Fitsense] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-03T05:04:53.439Z  WARN 6494 --- [Fitsense] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-11-03T05:04:53.459Z  INFO 6494 --- [Fitsense] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:32775/test?loggerLevel=OFF]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.15
+	Default catalog/schema: test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-03T05:04:54.723Z  INFO 6494 --- [Fitsense] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-03T05:04:54.795Z  INFO 6494 --- [Fitsense] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-03T05:04:54.904Z  INFO 6494 --- [Fitsense] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-03T05:04:56.717Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanningPolicySelector   : POLITICA_PLANIFICACION PLAN-HIST-1
+2026-11-03T05:04:57.185Z  WARN 6494 --- [Fitsense] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-11-03T05:04:57.355Z  INFO 6494 --- [Fitsense] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-11-03T05:04:57.882Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.o.ExperimentoKora20IT            : Started ExperimentoKora20IT in 9.568 seconds (process running for 12.651)
+2026-11-03T05:04:58.538Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=1 objetivo=GAIN_MUSCLE seguros=233 elegibles=192 decisiones={ADMITIDO=192, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=16, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={}
+2026-11-03T05:04:58.561Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 1: LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO (192 elegibles, modo OBSERVE)
+2026-11-03T05:04:58.581Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=1 semana=1 version=4A-v6 objetivo=GAIN_MUSCLE veredicto=ROBUSTO principales=[HYPERTROPHY=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=16, LOWER_HIP=11, UPPER_PULL=8, UPPER_PUSH=36}]] secundarias=[STRENGTH=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=16, LOWER_HIP=11, UPPER_PULL=8, UPPER_PUSH=36}]] modo=OBSERVE
+2026-11-03T05:04:58.582Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=1 semana=1 version=4A-v6 objetivo=GAIN_MUSCLE principales=[HYPERTROPHY] secundarias=[STRENGTH] modo=OBSERVE
+2026-11-03T05:04:58.614Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 1 semana 1: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=8 UPPER_PULL=2 fuera_de_slot=3 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:04:58.617Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 1 (3 dias: [2026-11-02, 2026-11-04, 2026-11-06])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:04:58.619Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : DOSIS_4D usuario 1 semana 1: objetivo GAIN_MUSCLE ? 17 comprobadas ? 0 abstenciones (duracion o sin patron) ? 0 incumplimientos ? modo ENFORCE ? 4D v3 MVP GAIN_MUSCLE: estructural 3x10 descanso 90 s ? relleno 2x10 descanso 90 s ? zona pequena [lower legs, waist] +3 reps (relleno hasta 3 series solo para V20) ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+2026-11-03T05:04:58.625Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 1 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=GAIN_MUSCLE resultado=COMPLETO cubiertas=[HYPERTROPHY] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={HYPERTROPHY=17} slots_sin_cubrir=[]
+2026-11-03T05:04:58.627Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=1 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=GAIN_MUSCLE resultado=COMPLETO cubiertas=[HYPERTROPHY] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={HYPERTROPHY=17} slots_sin_cubrir=[]
+2026-11-03T05:04:58.630Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=1 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=GAIN_MUSCLE veredicto=PRINCIPALES_PRESENTES_PENDIENTE_4D principales=[HYPERTROPHY=PRESENTE_PENDIENTE_4D(14 colocaciones, 3 dias)] secundarias=[STRENGTH=PRESENTE_PENDIENTE_4D(14 colocaciones, 3 dias)] modo=OBSERVE
+2026-11-03T05:04:58.779Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 1 generado para el usuario 1 por RULE_ENGINE en 1 intento(s)
+2026-11-03T05:04:59.220Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 1 semana 2026-11-02: ADAPT_EXPANDED ? 2 sesion(es) senalada(s): [2026-11-04 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA), 2026-11-06 (FATIGUE -> REVISAR_CARGA_Y_RECUPERACION)] ? observada 33.33 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:04:59.319Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=1 objetivo=GAIN_MUSCLE seguros=233 elegibles=192 decisiones={ADMITIDO=192, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=16, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={}
+2026-11-03T05:04:59.321Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 1: LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO (192 elegibles, modo OBSERVE)
+2026-11-03T05:04:59.412Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 1 semana 2: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=8 UPPER_PULL=2 fuera_de_slot=3 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:04:59.413Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:04:59.413Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : DOSIS_4D usuario 1 semana 2: objetivo GAIN_MUSCLE ? 17 comprobadas ? 0 abstenciones (duracion o sin patron) ? 1 incumplimientos ? modo ENFORCE ? 4D v3 MVP GAIN_MUSCLE: estructural 3x10 descanso 90 s ? relleno 2x10 descanso 90 s ? zona pequena [lower legs, waist] +3 reps (relleno hasta 3 series solo para V20) ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+2026-11-03T05:04:59.414Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 1: la semana propuesta no pasa ? [V24: el ejercicio 1096 del 2026-11-13 lleva 3x9 con 90 s de descanso y 4D v2 exige 3x10, descanso 90 s (HYPERTROPHY). Ajusta la dosis exactamente a la de su capacidad; si no cabe en el dia, quita una colocacion en vez de recortar la dosis.]
+2026-11-03T05:04:59.428Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 1 semana 2: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=8 UPPER_PULL=2 fuera_de_slot=3 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:04:59.428Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:04:59.429Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : DOSIS_4D usuario 1 semana 2: objetivo GAIN_MUSCLE ? 17 comprobadas ? 0 abstenciones (duracion o sin patron) ? 0 incumplimientos ? modo ENFORCE ? 4D v3 MVP GAIN_MUSCLE: estructural 3x10 descanso 90 s ? relleno 2x10 descanso 90 s ? zona pequena [lower legs, waist] +3 reps (relleno hasta 3 series solo para V20) ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+2026-11-03T05:04:59.521Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 2 publicada para el usuario 1 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:04:59.525Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 1 ? decision ADAPT_EXPANDED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:04:59.788Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 1 semana 2026-11-09: ADAPT_EXPANDED ? 2 sesion(es) senalada(s): [2026-11-11 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA), 2026-11-13 (FATIGUE -> REVISAR_CARGA_Y_RECUPERACION)] ? observada 33.33 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:04:59.840Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=1 objetivo=GAIN_MUSCLE seguros=233 elegibles=192 decisiones={ADMITIDO=192, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=16, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={}
+2026-11-03T05:04:59.843Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 1: LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO (192 elegibles, modo OBSERVE)
+2026-11-03T05:04:59.889Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 1 semana 3: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=8 UPPER_PULL=2 fuera_de_slot=3 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:04:59.889Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-16, 2026-11-18, 2026-11-20])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:04:59.889Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : DOSIS_4D usuario 1 semana 3: objetivo GAIN_MUSCLE ? 17 comprobadas ? 0 abstenciones (duracion o sin patron) ? 1 incumplimientos ? modo ENFORCE ? 4D v3 MVP GAIN_MUSCLE: estructural 3x10 descanso 90 s ? relleno 2x10 descanso 90 s ? zona pequena [lower legs, waist] +3 reps (relleno hasta 3 series solo para V20) ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+2026-11-03T05:04:59.889Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 1: la semana propuesta no pasa ? [V24: el ejercicio 1096 del 2026-11-20 lleva 3x9 con 90 s de descanso y 4D v2 exige 3x10, descanso 90 s (HYPERTROPHY). Ajusta la dosis exactamente a la de su capacidad; si no cabe en el dia, quita una colocacion en vez de recortar la dosis.]
+2026-11-03T05:04:59.898Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 1 semana 3: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=36 UPPER_PULL=8 fuera_de_slot=121 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=8 UPPER_PULL=2 fuera_de_slot=3 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:04:59.899Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-16, 2026-11-18, 2026-11-20])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:04:59.899Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : DOSIS_4D usuario 1 semana 3: objetivo GAIN_MUSCLE ? 17 comprobadas ? 0 abstenciones (duracion o sin patron) ? 0 incumplimientos ? modo ENFORCE ? 4D v3 MVP GAIN_MUSCLE: estructural 3x10 descanso 90 s ? relleno 2x10 descanso 90 s ? zona pequena [lower legs, waist] +3 reps (relleno hasta 3 series solo para V20) ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+2026-11-03T05:04:59.936Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 3 publicada para el usuario 1 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:04:59.938Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 1 ? decision ADAPT_EXPANDED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:00.087Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=2 objetivo=GAIN_MUSCLE seguros=773 elegibles=698 decisiones={ADMITIDO=698, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=48, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+2026-11-03T05:05:00.090Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 2: LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO (698 elegibles, modo OBSERVE)
+2026-11-03T05:05:00.098Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=2 semana=1 version=4A-v6 objetivo=GAIN_MUSCLE veredicto=ROBUSTO principales=[HYPERTROPHY=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=58, LOWER_HIP=30, UPPER_PULL=100, UPPER_PUSH=134}]] secundarias=[STRENGTH=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=58, LOWER_HIP=30, UPPER_PULL=100, UPPER_PUSH=134}]] modo=OBSERVE
+2026-11-03T05:05:00.098Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=2 semana=1 version=4A-v6 objetivo=GAIN_MUSCLE principales=[HYPERTROPHY] secundarias=[STRENGTH] modo=OBSERVE
+2026-11-03T05:05:00.105Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 2 semana 1: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=1 LOWER_HIP=3 UPPER_PUSH=9 UPPER_PULL=8 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 21 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:00.105Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 2 ? Cobertura 4C posterior - semana 1 (3 dias: [2026-11-03, 2026-11-05, 2026-11-07])
+  LOWER_KNEE  -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  LOWER_HIP   -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  UPPER_PUSH  -> 9 colocaciones  | 3 dias | [3, 3, 3]
+  UPPER_PULL  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:00.106Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : DOSIS_4D usuario 2 semana 1: objetivo GAIN_MUSCLE ? 21 comprobadas ? 0 abstenciones (duracion o sin patron) ? 0 incumplimientos ? modo ENFORCE ? 4D v3 MVP GAIN_MUSCLE: estructural 3x10 descanso 90 s ? relleno 2x10 descanso 90 s ? zona pequena [lower legs, waist] +3 reps (relleno hasta 3 series solo para V20) ? maximo 7 colocaciones/dia ? util 85 % del tiempo de sesion
+2026-11-03T05:05:00.108Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 2 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=GAIN_MUSCLE resultado=COMPLETO cubiertas=[HYPERTROPHY] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={HYPERTROPHY=21} slots_sin_cubrir=[]
+2026-11-03T05:05:00.110Z ERROR 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : El motor de reglas tampoco produjo un plan valido para el usuario 2: [V20: el entrenamiento del 2026-11-03 dura unos 2577 s y el minimo es 3150 s (70 % de 75 minutos): le faltan 573 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-05 dura unos 2577 s y el minimo es 3150 s (70 % de 75 minutos): le faltan 573 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-07 dura unos 2577 s y el minimo es 3150 s (70 % de 75 minutos): le faltan 573 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:00.208Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=3 objetivo=INCREASE_STRENGTH seguros=209 elegibles=170 decisiones={ADMITIDO=170, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=14, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={}
+2026-11-03T05:05:00.210Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 3: LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=31 UPPER_PULL=8 fuera_de_slot=104 veredicto=ROBUSTO (170 elegibles, modo OBSERVE)
+2026-11-03T05:05:00.215Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=3 semana=1 version=4A-v6 objetivo=INCREASE_STRENGTH veredicto=ROBUSTO principales=[STRENGTH=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=16, LOWER_HIP=11, UPPER_PULL=8, UPPER_PUSH=31}]] secundarias=[HYPERTROPHY=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=16, LOWER_HIP=11, UPPER_PULL=8, UPPER_PUSH=31}], POWER=NO_APLICA] modo=OBSERVE
+2026-11-03T05:05:00.216Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=3 semana=1 version=4A-v6 objetivo=INCREASE_STRENGTH principales=[STRENGTH] secundarias=[HYPERTROPHY, POWER(CONDITIONAL,descartada_por_nivel_BEGINNER)] modo=OBSERVE
+2026-11-03T05:05:00.232Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 3 semana 1: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=31 UPPER_PULL=8 fuera_de_slot=104 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=3 LOWER_HIP=1 UPPER_PUSH=8 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 15 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:00.233Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 3 ? Cobertura 4C posterior - semana 1 (3 dias: [2026-11-02, 2026-11-04, 2026-11-06])
+  LOWER_KNEE  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:00.234Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 3 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=INCREASE_STRENGTH resultado=COMPLETO cubiertas=[STRENGTH] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY] colocaciones={HYPERTROPHY=3, STRENGTH=12} slots_sin_cubrir=[]
+2026-11-03T05:05:00.236Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=3 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=INCREASE_STRENGTH resultado=COMPLETO cubiertas=[STRENGTH] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY] colocaciones={HYPERTROPHY=3, STRENGTH=12} slots_sin_cubrir=[]
+2026-11-03T05:05:00.237Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=3 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=INCREASE_STRENGTH veredicto=PRINCIPALES_PRESENTES_PENDIENTE_4D principales=[STRENGTH=PRESENTE_PENDIENTE_4D(15 colocaciones, 3 dias)] secundarias=[HYPERTROPHY=PRESENTE_PENDIENTE_4D(15 colocaciones, 3 dias), POWER=NO_APLICA] modo=OBSERVE
+2026-11-03T05:05:00.284Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 4 generado para el usuario 3 por RULE_ENGINE en 1 intento(s)
+2026-11-03T05:05:00.506Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 3 semana 2026-11-02: ADAPT_EXPANDED ? 2 sesion(es) senalada(s): [2026-11-04 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA), 2026-11-06 (LACK_OF_MOTIVATION -> INVESTIGAR_CAMBIO_MINIMO)] ? observada 33.33 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:00.549Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=3 objetivo=INCREASE_STRENGTH seguros=209 elegibles=170 decisiones={ADMITIDO=170, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=14, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={}
+2026-11-03T05:05:00.551Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 3: LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=31 UPPER_PULL=8 fuera_de_slot=104 veredicto=ROBUSTO (170 elegibles, modo OBSERVE)
+2026-11-03T05:05:00.587Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 3 semana 2: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=31 UPPER_PULL=8 fuera_de_slot=104 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=3 LOWER_HIP=1 UPPER_PUSH=8 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 15 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:00.588Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 3 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
+  LOWER_KNEE  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:00.630Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 5 publicada para el usuario 3 ? origen AI ? motivo CORRECCION_IA ? V8C: 2 aplicadas, 0 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:00.632Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 3 ? decision ADAPT_EXPANDED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 2 aplicadas, 0 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:00.856Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 3 semana 2026-11-09: ADAPT_EXPANDED ? 2 sesion(es) senalada(s): [2026-11-11 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA), 2026-11-13 (LACK_OF_MOTIVATION -> INVESTIGAR_CAMBIO_MINIMO)] ? observada 33.33 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:00.903Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=3 objetivo=INCREASE_STRENGTH seguros=209 elegibles=170 decisiones={ADMITIDO=170, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=14, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={}
+2026-11-03T05:05:00.905Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 3: LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=31 UPPER_PULL=8 fuera_de_slot=104 veredicto=ROBUSTO (170 elegibles, modo OBSERVE)
+2026-11-03T05:05:00.946Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 3 semana 3: elegible [LOWER_KNEE=16 LOWER_HIP=11 UPPER_PUSH=31 UPPER_PULL=8 fuera_de_slot=104 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=3 LOWER_HIP=1 UPPER_PUSH=8 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 15 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:00.947Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 3 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-16, 2026-11-18, 2026-11-20])
+  LOWER_KNEE  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  UPPER_PUSH  -> 8 colocaciones  | 3 dias | [2, 3, 3]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:00.986Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 6 publicada para el usuario 3 ? origen AI ? motivo CORRECCION_IA ? V8C: 2 aplicadas, 0 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:00.988Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 3 ? decision ADAPT_EXPANDED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 2 aplicadas, 0 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:01.129Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=4 objetivo=INCREASE_STRENGTH seguros=773 elegibles=698 decisiones={ADMITIDO=698, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=48, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+2026-11-03T05:05:01.134Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 4: LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO (698 elegibles, modo OBSERVE)
+2026-11-03T05:05:01.139Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=4 semana=1 version=4A-v6 objetivo=INCREASE_STRENGTH veredicto=ROBUSTO principales=[STRENGTH=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=58, LOWER_HIP=30, UPPER_PULL=100, UPPER_PUSH=134}]] secundarias=[HYPERTROPHY=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=58, LOWER_HIP=30, UPPER_PULL=100, UPPER_PUSH=134}], POWER=NO_VERIFICABLE[]] modo=OBSERVE
+2026-11-03T05:05:01.139Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=4 semana=1 version=4A-v6 objetivo=INCREASE_STRENGTH principales=[STRENGTH] secundarias=[HYPERTROPHY, POWER(CONDITIONAL,candidata)] modo=OBSERVE
+2026-11-03T05:05:01.147Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 4 semana 1: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=5 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 12 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:01.148Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 4 ? Cobertura 4C posterior - semana 1 (3 dias: [2026-11-03, 2026-11-05, 2026-11-07])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 5 colocaciones  | 3 dias | [1, 2, 2]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:01.150Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 4 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=INCREASE_STRENGTH resultado=COMPLETO cubiertas=[STRENGTH] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={STRENGTH=12} slots_sin_cubrir=[]
+2026-11-03T05:05:01.153Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=4 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=INCREASE_STRENGTH resultado=COMPLETO cubiertas=[STRENGTH] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={STRENGTH=12} slots_sin_cubrir=[]
+2026-11-03T05:05:01.154Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=4 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=INCREASE_STRENGTH veredicto=PRINCIPALES_PRESENTES_PENDIENTE_4D principales=[STRENGTH=PRESENTE_PENDIENTE_4D(12 colocaciones, 3 dias)] secundarias=[HYPERTROPHY=PRESENTE_PENDIENTE_4D(12 colocaciones, 3 dias), POWER=NO_VERIFICABLE(0 colocaciones, 0 dias, sin ruta verificable)] modo=OBSERVE
+2026-11-03T05:05:01.193Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 7 generado para el usuario 4 por RULE_ENGINE en 1 intento(s)
+2026-11-03T05:05:01.481Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 4 semana 2026-11-02: ADAPT_LOCALIZED ? 1 sesion(es) senalada(s): [2026-11-07 (FATIGUE -> REVISAR_CARGA_Y_RECUPERACION)] ? observada 66.67 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:01.532Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=4 objetivo=INCREASE_STRENGTH seguros=773 elegibles=698 decisiones={ADMITIDO=698, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=48, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+2026-11-03T05:05:01.534Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 4: LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO (698 elegibles, modo OBSERVE)
+2026-11-03T05:05:01.570Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 4 semana 2: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=5 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 12 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:01.571Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 4 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-10, 2026-11-12, 2026-11-14])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 5 colocaciones  | 3 dias | [1, 2, 2]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:01.571Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 4: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-14 dura unos 1728 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 162 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:01.584Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 4 semana 2: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=5 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 12 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:01.584Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 4 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-10, 2026-11-12, 2026-11-14])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 5 colocaciones  | 3 dias | [1, 2, 2]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:01.618Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 8 publicada para el usuario 4 ? origen CONSERVED ? motivo SIN_EFECTO ? V8C: 0 aplicadas, 1 sin efecto, 2 conservadas, 0 problemas
+2026-11-03T05:05:01.620Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 4 ? decision ADAPT_LOCALIZED ? resultado SIN_EFECTO ? la IA no cambio nada ? V8C: 0 aplicadas, 1 sin efecto, 2 conservadas, 0 problemas
+2026-11-03T05:05:01.857Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 4 semana 2026-11-09: ADAPT_EXPANDED ? 2 sesion(es) senalada(s): [2026-11-12 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA), 2026-11-14 (FATIGUE -> REVISAR_CARGA_Y_RECUPERACION)] ? observada 33.33 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:01.909Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=4 objetivo=INCREASE_STRENGTH seguros=773 elegibles=698 decisiones={ADMITIDO=698, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=48, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+2026-11-03T05:05:01.912Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 4: LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO (698 elegibles, modo OBSERVE)
+2026-11-03T05:05:01.953Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 4 semana 3: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=5 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 12 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:01.954Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 4 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-17, 2026-11-19, 2026-11-21])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 5 colocaciones  | 3 dias | [1, 2, 2]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:01.954Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 4: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-19 dura unos 1728 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 162 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-21 dura unos 1728 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 162 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:01.966Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 4 semana 3: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=376 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=5 UPPER_PULL=3 fuera_de_slot=0 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 12 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:01.967Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 4 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-17, 2026-11-19, 2026-11-21])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  UPPER_PUSH  -> 5 colocaciones  | 3 dias | [1, 2, 2]
+  UPPER_PULL  -> 3 colocaciones  | 3 dias | [1, 1, 1]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:01.996Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 9 publicada para el usuario 4 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:01.998Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 4 ? decision ADAPT_EXPANDED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:02.115Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=5 objetivo=LOSE_WEIGHT seguros=418 elegibles=379 decisiones={ADMITIDO=374, ADMITIDO_POR_CAPACIDAD=5, EXCLUIDO_FUERA_DE_ENFOQUE=12, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={CARDIO=5}
+2026-11-03T05:05:02.119Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 5: LOWER_KNEE=25 LOWER_HIP=18 UPPER_PUSH=71 UPPER_PULL=55 fuera_de_slot=210 veredicto=ROBUSTO (379 elegibles, modo OBSERVE)
+2026-11-03T05:05:02.124Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=5 semana=1 version=4A-v6 objetivo=LOSE_WEIGHT veredicto=ROBUSTO principales=[CARDIO=ROBUSTO[LOCOMOCION_DIRECTA:ROBUSTO(5+3_en_revision),CIRCUITO:NO_VERIFICABLE]] secundarias=[STRENGTH=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=25, LOWER_HIP=18, UPPER_PULL=55, UPPER_PUSH=71}]] modo=OBSERVE
+2026-11-03T05:05:02.124Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : DIVERGENCIA_V23 user=5 objetivo=LOSE_WEIGHT: 4A v6 no exige los cuatro slots resistidos a este objetivo y V23 (4C) si. Sin cambios en V23 hasta que sean coherentes. modo=OBSERVE
+2026-11-03T05:05:02.124Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=5 semana=1 version=4A-v6 objetivo=LOSE_WEIGHT principales=[CARDIO] secundarias=[STRENGTH] modo=OBSERVE
+2026-11-03T05:05:02.133Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 5 semana 1: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:02.134Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 5 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=LOSE_WEIGHT resultado=COMPLETO cubiertas=[CARDIO] no_cubiertas={} omitidas=[] secundarias=[STRENGTH] colocaciones={STRENGTH=18, CARDIO=6} slots_sin_cubrir=[]
+2026-11-03T05:05:02.137Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=5 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=LOSE_WEIGHT resultado=COMPLETO cubiertas=[CARDIO] no_cubiertas={} omitidas=[] secundarias=[STRENGTH] colocaciones={STRENGTH=18, CARDIO=6} slots_sin_cubrir=[]
+2026-11-03T05:05:02.138Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=5 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=LOSE_WEIGHT veredicto=PRINCIPALES_PRESENTES_PENDIENTE_4D principales=[CARDIO=PRESENTE_PENDIENTE_4D(6 colocaciones, 3 dias)] secundarias=[STRENGTH=PRESENTE_PENDIENTE_4D(18 colocaciones, 3 dias)] modo=OBSERVE
+2026-11-03T05:05:02.169Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 10 generado para el usuario 5 por RULE_ENGINE en 1 intento(s)
+2026-11-03T05:05:02.396Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 5 semana 2026-11-02: ADAPT_EXPANDED ? 2 sesion(es) senalada(s): [2026-11-04 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA), 2026-11-06 (LACK_OF_MOTIVATION -> INVESTIGAR_CAMBIO_MINIMO)] ? observada 33.33 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:02.433Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=5 objetivo=LOSE_WEIGHT seguros=418 elegibles=379 decisiones={ADMITIDO=374, ADMITIDO_POR_CAPACIDAD=5, EXCLUIDO_FUERA_DE_ENFOQUE=12, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={CARDIO=5}
+2026-11-03T05:05:02.435Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 5: LOWER_KNEE=25 LOWER_HIP=18 UPPER_PUSH=71 UPPER_PULL=55 fuera_de_slot=210 veredicto=ROBUSTO (379 elegibles, modo OBSERVE)
+2026-11-03T05:05:02.460Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 5 semana 2: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:02.460Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 5: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-11 dura unos 2490 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 30 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 2490 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 30 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:02.469Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 5 semana 2: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:02.500Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 11 publicada para el usuario 5 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:02.502Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 5 ? decision ADAPT_EXPANDED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:02.720Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 5 semana 2026-11-09: ADAPT_EXPANDED ? 2 sesion(es) senalada(s): [2026-11-11 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA), 2026-11-13 (LACK_OF_MOTIVATION -> INVESTIGAR_CAMBIO_MINIMO)] ? observada 33.33 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:02.754Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=5 objetivo=LOSE_WEIGHT seguros=418 elegibles=379 decisiones={ADMITIDO=374, ADMITIDO_POR_CAPACIDAD=5, EXCLUIDO_FUERA_DE_ENFOQUE=12, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={CARDIO=5}
+2026-11-03T05:05:02.756Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 5: LOWER_KNEE=25 LOWER_HIP=18 UPPER_PUSH=71 UPPER_PULL=55 fuera_de_slot=210 veredicto=ROBUSTO (379 elegibles, modo OBSERVE)
+2026-11-03T05:05:02.791Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 5 semana 3: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:02.792Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 5: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-18 dura unos 2490 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 30 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-20 dura unos 2490 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 30 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:02.804Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 5 semana 3: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:02.840Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 12 publicada para el usuario 5 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:02.841Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 5 ? decision ADAPT_EXPANDED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 1 sin efecto, 1 conservadas, 0 problemas
+2026-11-03T05:05:02.959Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=6 objetivo=LOSE_WEIGHT seguros=187 elegibles=154 decisiones={ADMITIDO=137, ADMITIDO_POR_CAPACIDAD=17, EXCLUIDO_FUERA_DE_ENFOQUE=8, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={CARDIO=17}
+2026-11-03T05:05:02.960Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 6: LOWER_KNEE=19 LOWER_HIP=5 UPPER_PUSH=31 UPPER_PULL=0 fuera_de_slot=99 veredicto=NO_FACTIBLE (154 elegibles, modo OBSERVE)
+2026-11-03T05:05:02.961Z  WARN 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Usuario 6: Step 4C NO FACTIBLE (sin ejercicios elegibles para [UPPER_PULL]) y se genera plan igualmente, porque el modo es OBSERVE.
+2026-11-03T05:05:02.965Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=6 semana=1 version=4A-v6 objetivo=LOSE_WEIGHT veredicto=ROBUSTO principales=[CARDIO=ROBUSTO[LOCOMOCION_DIRECTA:ROBUSTO(17+5_en_revision),CIRCUITO:NO_VERIFICABLE]] secundarias=[STRENGTH=NO_FACTIBLE[SLOTS_RESISTIDOS:NO_FACTIBLE{LOWER_KNEE=19, LOWER_HIP=5, UPPER_PULL=0, UPPER_PUSH=31}]] modo=OBSERVE
+2026-11-03T05:05:02.965Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : DIVERGENCIA_V23 user=6 objetivo=LOSE_WEIGHT: 4A v6 no exige los cuatro slots resistidos a este objetivo y V23 (4C) si. Sin cambios en V23 hasta que sean coherentes. modo=OBSERVE
+2026-11-03T05:05:02.965Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=6 semana=1 version=4A-v6 objetivo=LOSE_WEIGHT principales=[CARDIO] secundarias=[STRENGTH] modo=OBSERVE
+2026-11-03T05:05:02.969Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 6 semana 1: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:02.970Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 6 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=LOSE_WEIGHT resultado=COMPLETO cubiertas=[CARDIO] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={CARDIO=6} slots_sin_cubrir=[]
+2026-11-03T05:05:02.971Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=6 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=LOSE_WEIGHT resultado=COMPLETO cubiertas=[CARDIO] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={CARDIO=6} slots_sin_cubrir=[]
+2026-11-03T05:05:02.971Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=6 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=LOSE_WEIGHT veredicto=PRINCIPALES_PRESENTES_PENDIENTE_4D principales=[CARDIO=PRESENTE_PENDIENTE_4D(6 colocaciones, 3 dias)] secundarias=[STRENGTH=AUSENTE(0 colocaciones, 0 dias, faltan slots [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL])] modo=OBSERVE
+2026-11-03T05:05:02.986Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 13 generado para el usuario 6 por RULE_ENGINE en 1 intento(s)
+2026-11-03T05:05:03.113Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 6 semana 2026-11-02: ADAPT_LOCALIZED ? 1 sesion(es) senalada(s): [2026-11-05 (sin motivo -> CAUSA_NO_REGISTRADA)] ? observada 70.00 ? cobertura 66.67 ? registradas 2/3
+2026-11-03T05:05:03.154Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=6 objetivo=LOSE_WEIGHT seguros=187 elegibles=154 decisiones={ADMITIDO=137, ADMITIDO_POR_CAPACIDAD=17, EXCLUIDO_FUERA_DE_ENFOQUE=8, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={CARDIO=17}
+2026-11-03T05:05:03.156Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 6: LOWER_KNEE=19 LOWER_HIP=5 UPPER_PUSH=31 UPPER_PULL=0 fuera_de_slot=99 veredicto=NO_FACTIBLE (154 elegibles, modo OBSERVE)
+2026-11-03T05:05:03.156Z  WARN 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Usuario 6: Step 4C NO FACTIBLE (sin ejercicios elegibles para [UPPER_PULL]) y se genera plan igualmente, porque el modo es OBSERVE.
+2026-11-03T05:05:03.174Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 6 semana 2: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:03.195Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 14 publicada para el usuario 6 ? origen CONSERVED ? motivo SIN_EFECTO ? V8C: 0 aplicadas, 1 sin efecto, 2 conservadas, 0 problemas
+2026-11-03T05:05:03.196Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 6 ? decision ADAPT_LOCALIZED ? resultado SIN_EFECTO ? la IA no cambio nada ? V8C: 0 aplicadas, 1 sin efecto, 2 conservadas, 0 problemas
+2026-11-03T05:05:03.340Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 6 semana 2026-11-09: ADAPT_LOCALIZED ? 1 sesion(es) senalada(s): [2026-11-14 (FATIGUE -> REVISAR_CARGA_Y_RECUPERACION)] ? observada 66.67 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:03.368Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=6 objetivo=LOSE_WEIGHT seguros=187 elegibles=154 decisiones={ADMITIDO=137, ADMITIDO_POR_CAPACIDAD=17, EXCLUIDO_FUERA_DE_ENFOQUE=8, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={CARDIO=17}
+2026-11-03T05:05:03.370Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 6: LOWER_KNEE=19 LOWER_HIP=5 UPPER_PUSH=31 UPPER_PULL=0 fuera_de_slot=99 veredicto=NO_FACTIBLE (154 elegibles, modo OBSERVE)
+2026-11-03T05:05:03.370Z  WARN 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Usuario 6: Step 4C NO FACTIBLE (sin ejercicios elegibles para [UPPER_PULL]) y se genera plan igualmente, porque el modo es OBSERVE.
+2026-11-03T05:05:03.393Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 6 semana 3: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:03.393Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 6: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-21 dura unos 1140 s y el minimo es 1260 s (70 % de 30 minutos): le faltan 120 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:03.400Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 6 semana 3: no se exige a LOSE_WEIGHT (4A v6)
+2026-11-03T05:05:03.419Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 15 publicada para el usuario 6 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas, 1 correccion(es) del respaldo
+2026-11-03T05:05:03.420Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 6 ? decision ADAPT_LOCALIZED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas, 1 correccion(es) del respaldo
+2026-11-03T05:05:03.539Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=7 objetivo=GENERAL_FITNESS seguros=219 elegibles=214 decisiones={ADMITIDO=173, ADMITIDO_POR_CAPACIDAD=41, EXCLUIDO_FUERA_DE_ENFOQUE=5, EXCLUIDO_ESTIRAMIENTO=0} complementos_por_capacidad={CARDIO=5, MOBILITY=36}
+2026-11-03T05:05:03.540Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 7: LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE (214 elegibles, modo OBSERVE)
+2026-11-03T05:05:03.541Z  WARN 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Usuario 7: Step 4C NO FACTIBLE (sin ejercicios elegibles para [UPPER_PULL]) y se genera plan igualmente, porque el modo es OBSERVE.
+2026-11-03T05:05:03.544Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=7 semana=1 version=4A-v6 objetivo=GENERAL_FITNESS veredicto=NO_FACTIBLE principales=[STRENGTH=NO_FACTIBLE[SLOTS_RESISTIDOS:NO_FACTIBLE{LOWER_KNEE=14, LOWER_HIP=6, UPPER_PULL=0, UPPER_PUSH=38}], MUSCULAR_ENDURANCE=ROBUSTO[RESISTENCIA_GENERAL:ROBUSTO(159+1_en_revision)], CARDIO=ROBUSTO[LOCOMOCION_DIRECTA:ROBUSTO(5+3_en_revision),CIRCUITO:NO_VERIFICABLE], MOBILITY=ROBUSTO[MOVILIDAD_DIRECTA:ROBUSTO(38+7_en_revision)]] secundarias=[HYPERTROPHY=NO_FACTIBLE[SLOTS_RESISTIDOS:NO_FACTIBLE{LOWER_KNEE=14, LOWER_HIP=6, UPPER_PULL=0, UPPER_PUSH=38}], BALANCE=NO_FACTIBLE[EQUILIBRIO_DIRECTO:NO_FACTIBLE(0)]] modo=OBSERVE
+2026-11-03T05:05:03.606Z  WARN 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : ESCASEZ user=7 objetivo=GENERAL_FITNESS motivos=[STRENGTH/SLOTS_RESISTIDOS: slots sin candidatos: [UPPER_PULL]] causas=[CARDIO:ROBUSTO(5)->ROBUSTO(15) si se levantara alto_impacto, STRENGTH:NO_FACTIBLE(0)->ROBUSTO(5) si se levantara nivel_2, MUSCULAR_ENDURANCE:ROBUSTO(159)->ROBUSTO(268) si se levantara nivel_2] (recuentos hipoteticos, no se aplica ninguno) modo=OBSERVE
+2026-11-03T05:05:03.606Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=7 semana=1 version=4A-v6 objetivo=GENERAL_FITNESS principales=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] secundarias=[HYPERTROPHY, BALANCE(OPPORTUNISTIC)] modo=OBSERVE
+2026-11-03T05:05:03.613Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 7 semana 1: elegible [LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=12 UPPER_PULL=0 fuera_de_slot=8 veredicto=NO_FACTIBLE] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH] ? faltan [] ? posiciones 24 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:03.613Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 7 ? Cobertura 4C posterior - semana 1 (3 dias: [2026-11-02, 2026-11-04, 2026-11-06])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  UPPER_PUSH  -> 12 colocaciones  | 3 dias | [4, 4, 4]
+  UPPER_PULL  -> 0 colocaciones  | 0 dias | [0, 0, 0]
+  Cobertura estructural: INCOMPLETA, faltan [UPPER_PULL]
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:03.615Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 7 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=GENERAL_FITNESS resultado=COMPLETO cubiertas=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY] colocaciones={HYPERTROPHY=8, STRENGTH=3, MUSCULAR_ENDURANCE=7, CARDIO=3, MOBILITY=3} slots_sin_cubrir=[]
+2026-11-03T05:05:03.616Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=7 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=GENERAL_FITNESS resultado=COMPLETO cubiertas=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY] colocaciones={HYPERTROPHY=8, STRENGTH=3, MUSCULAR_ENDURANCE=7, CARDIO=3, MOBILITY=3} slots_sin_cubrir=[]
+2026-11-03T05:05:03.617Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=7 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=GENERAL_FITNESS veredicto=PRINCIPAL_AUSENTE principales=[STRENGTH=AUSENTE(16 colocaciones, 3 dias, faltan slots [UPPER_PULL]), MUSCULAR_ENDURANCE=PRESENTE_PENDIENTE_4D(18 colocaciones, 3 dias), CARDIO=PRESENTE_PENDIENTE_4D(3 colocaciones, 3 dias), MOBILITY=PRESENTE_PENDIENTE_4D(3 colocaciones, 3 dias)] secundarias=[HYPERTROPHY=AUSENTE(16 colocaciones, 3 dias, faltan slots [UPPER_PULL]), BALANCE=AUSENTE(0 colocaciones, 0 dias)] modo=OBSERVE
+2026-11-03T05:05:03.649Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 16 generado para el usuario 7 por RULE_ENGINE en 1 intento(s)
+2026-11-03T05:05:03.928Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 7 semana 2026-11-02: ADAPT_LOCALIZED ? 1 sesion(es) senalada(s): [2026-11-06 (LACK_OF_MOTIVATION -> INVESTIGAR_CAMBIO_MINIMO)] ? observada 66.67 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:03.955Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=7 objetivo=GENERAL_FITNESS seguros=219 elegibles=214 decisiones={ADMITIDO=173, ADMITIDO_POR_CAPACIDAD=41, EXCLUIDO_FUERA_DE_ENFOQUE=5, EXCLUIDO_ESTIRAMIENTO=0} complementos_por_capacidad={CARDIO=5, MOBILITY=36}
+2026-11-03T05:05:03.957Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 7: LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE (214 elegibles, modo OBSERVE)
+2026-11-03T05:05:03.957Z  WARN 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Usuario 7: Step 4C NO FACTIBLE (sin ejercicios elegibles para [UPPER_PULL]) y se genera plan igualmente, porque el modo es OBSERVE.
+2026-11-03T05:05:03.980Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 7 semana 2: elegible [LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=12 UPPER_PULL=0 fuera_de_slot=8 veredicto=NO_FACTIBLE] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH] ? faltan [] ? posiciones 24 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:03.980Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 7 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  UPPER_PUSH  -> 12 colocaciones  | 3 dias | [4, 4, 4]
+  UPPER_PULL  -> 0 colocaciones  | 0 dias | [0, 0, 0]
+  Cobertura estructural: INCOMPLETA, faltan [UPPER_PULL]
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:03.980Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 7: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-13 dura unos 2430 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 90 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:03.989Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 7 semana 2: elegible [LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=12 UPPER_PULL=0 fuera_de_slot=8 veredicto=NO_FACTIBLE] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH] ? faltan [] ? posiciones 24 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:03.989Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 7 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  UPPER_PUSH  -> 12 colocaciones  | 3 dias | [4, 4, 4]
+  UPPER_PULL  -> 0 colocaciones  | 0 dias | [0, 0, 0]
+  Cobertura estructural: INCOMPLETA, faltan [UPPER_PULL]
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:04.017Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 17 publicada para el usuario 7 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas, 1 correccion(es) del respaldo
+2026-11-03T05:05:04.019Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 7 ? decision ADAPT_LOCALIZED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas, 1 correccion(es) del respaldo
+2026-11-03T05:05:04.303Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 7 semana 2026-11-09: ADAPT_LOCALIZED ? 1 sesion(es) senalada(s): [2026-11-13 (LACK_OF_MOTIVATION -> INVESTIGAR_CAMBIO_MINIMO)] ? observada 66.67 ? cobertura 100.00 ? registradas 3/3
+2026-11-03T05:05:04.336Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=7 objetivo=GENERAL_FITNESS seguros=219 elegibles=214 decisiones={ADMITIDO=173, ADMITIDO_POR_CAPACIDAD=41, EXCLUIDO_FUERA_DE_ENFOQUE=5, EXCLUIDO_ESTIRAMIENTO=0} complementos_por_capacidad={CARDIO=5, MOBILITY=36}
+2026-11-03T05:05:04.337Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 7: LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE (214 elegibles, modo OBSERVE)
+2026-11-03T05:05:04.338Z  WARN 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Usuario 7: Step 4C NO FACTIBLE (sin ejercicios elegibles para [UPPER_PULL]) y se genera plan igualmente, porque el modo es OBSERVE.
+2026-11-03T05:05:04.378Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 7 semana 3: elegible [LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=12 UPPER_PULL=0 fuera_de_slot=8 veredicto=NO_FACTIBLE] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH] ? faltan [] ? posiciones 24 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:04.378Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 7 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-16, 2026-11-18, 2026-11-20])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  UPPER_PUSH  -> 12 colocaciones  | 3 dias | [4, 4, 4]
+  UPPER_PULL  -> 0 colocaciones  | 0 dias | [0, 0, 0]
+  Cobertura estructural: INCOMPLETA, faltan [UPPER_PULL]
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:04.379Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 7: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-20 dura unos 2517 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 3 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:04.389Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 7 semana 3: elegible [LOWER_KNEE=14 LOWER_HIP=6 UPPER_PUSH=38 UPPER_PULL=0 fuera_de_slot=156 veredicto=NO_FACTIBLE] ? borrador [LOWER_KNEE=2 LOWER_HIP=2 UPPER_PUSH=12 UPPER_PULL=0 fuera_de_slot=8 veredicto=NO_FACTIBLE] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH] ? faltan [] ? posiciones 24 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:04.389Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 7 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-16, 2026-11-18, 2026-11-20])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 2 colocaciones  | 2 dias | [1, 1, 0]
+  UPPER_PUSH  -> 12 colocaciones  | 3 dias | [4, 4, 4]
+  UPPER_PULL  -> 0 colocaciones  | 0 dias | [0, 0, 0]
+  Cobertura estructural: INCOMPLETA, faltan [UPPER_PULL]
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:04.420Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 18 publicada para el usuario 7 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas
+2026-11-03T05:05:04.421Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 7 ? decision ADAPT_LOCALIZED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas
+2026-11-03T05:05:04.542Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=8 objetivo=GENERAL_FITNESS seguros=773 elegibles=748 decisiones={ADMITIDO=698, ADMITIDO_POR_CAPACIDAD=50, EXCLUIDO_FUERA_DE_ENFOQUE=25, EXCLUIDO_ESTIRAMIENTO=0} complementos_por_capacidad={CARDIO=19, MOBILITY=31}
+2026-11-03T05:05:04.544Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 8: LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=426 veredicto=ROBUSTO (748 elegibles, modo OBSERVE)
+2026-11-03T05:05:04.548Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=8 semana=1 version=4A-v6 objetivo=GENERAL_FITNESS veredicto=ROBUSTO principales=[STRENGTH=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=58, LOWER_HIP=30, UPPER_PULL=100, UPPER_PUSH=134}], MUSCULAR_ENDURANCE=ROBUSTO[RESISTENCIA_GENERAL:ROBUSTO(673+2_en_revision)], CARDIO=ROBUSTO[LOCOMOCION_DIRECTA:ROBUSTO(19+5_en_revision),CIRCUITO:NO_VERIFICABLE], MOBILITY=ROBUSTO[MOVILIDAD_DIRECTA:ROBUSTO(33+6_en_revision)]] secundarias=[HYPERTROPHY=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{LOWER_KNEE=58, LOWER_HIP=30, UPPER_PULL=100, UPPER_PUSH=134}], BALANCE=FRAGIL[EQUILIBRIO_DIRECTO:FRAGIL(1)]] modo=OBSERVE
+2026-11-03T05:05:04.549Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=8 semana=1 version=4A-v6 objetivo=GENERAL_FITNESS principales=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] secundarias=[HYPERTROPHY, BALANCE(OPPORTUNISTIC)] modo=OBSERVE
+2026-11-03T05:05:04.564Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 8 semana 1: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=426 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=1 UPPER_PUSH=4 UPPER_PULL=3 fuera_de_slot=7 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:04.564Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 8 ? Cobertura 4C posterior - semana 1 (3 dias: [2026-11-03, 2026-11-05, 2026-11-07])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  UPPER_PUSH  -> 4 colocaciones  | 3 dias | [1, 2, 1]
+  UPPER_PULL  -> 3 colocaciones  | 2 dias | [0, 1, 2]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:04.573Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 8 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=GENERAL_FITNESS resultado=COMPLETO cubiertas=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY, BALANCE] colocaciones={HYPERTROPHY=1, STRENGTH=4, MUSCULAR_ENDURANCE=5, CARDIO=3, MOBILITY=3, BALANCE=1} slots_sin_cubrir=[]
+2026-11-03T05:05:04.581Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=8 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=GENERAL_FITNESS resultado=COMPLETO cubiertas=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY, BALANCE] colocaciones={HYPERTROPHY=1, STRENGTH=4, MUSCULAR_ENDURANCE=5, CARDIO=3, MOBILITY=3, BALANCE=1} slots_sin_cubrir=[]
+2026-11-03T05:05:04.582Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=8 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=GENERAL_FITNESS veredicto=PRINCIPALES_PRESENTES_PENDIENTE_4D principales=[STRENGTH=PRESENTE_PENDIENTE_4D(10 colocaciones, 3 dias), MUSCULAR_ENDURANCE=PRESENTE_PENDIENTE_4D(10 colocaciones, 3 dias), CARDIO=PRESENTE_PENDIENTE_4D(3 colocaciones, 3 dias), MOBILITY=PRESENTE_PENDIENTE_4D(3 colocaciones, 3 dias)] secundarias=[HYPERTROPHY=PRESENTE_PENDIENTE_4D(10 colocaciones, 3 dias), BALANCE=PRESENTE_PENDIENTE_4D(1 colocaciones, 1 dias)] modo=OBSERVE
+2026-11-03T05:05:04.635Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 19 generado para el usuario 8 por RULE_ENGINE en 1 intento(s)
+2026-11-03T05:05:04.812Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 8 semana 2026-11-02: ADAPT_LOCALIZED ? 1 sesion(es) senalada(s): [2026-11-05 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA)] ? observada 50.00 ? cobertura 66.67 ? registradas 2/3
+2026-11-03T05:05:04.849Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=8 objetivo=GENERAL_FITNESS seguros=773 elegibles=748 decisiones={ADMITIDO=698, ADMITIDO_POR_CAPACIDAD=50, EXCLUIDO_FUERA_DE_ENFOQUE=25, EXCLUIDO_ESTIRAMIENTO=0} complementos_por_capacidad={CARDIO=19, MOBILITY=31}
+2026-11-03T05:05:04.851Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 8: LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=426 veredicto=ROBUSTO (748 elegibles, modo OBSERVE)
+2026-11-03T05:05:04.894Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 8 semana 2: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=426 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=1 UPPER_PUSH=4 UPPER_PULL=3 fuera_de_slot=7 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:04.895Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 8 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-10, 2026-11-12, 2026-11-14])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  UPPER_PUSH  -> 4 colocaciones  | 3 dias | [1, 2, 1]
+  UPPER_PULL  -> 3 colocaciones  | 2 dias | [0, 1, 2]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:04.921Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 20 publicada para el usuario 8 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas, 1 correccion(es) del respaldo
+2026-11-03T05:05:04.922Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 8 ? decision ADAPT_LOCALIZED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas, 1 correccion(es) del respaldo
+2026-11-03T05:05:05.129Z  INFO 6494 --- [Fitsense] [           main] a.i.c.UserInterventionCommandServiceImpl : ORDEN_ADAPTACION usuario 8 semana 2026-11-09: ADAPT_LOCALIZED ? 1 sesion(es) senalada(s): [2026-11-12 (TOO_DIFFICULT -> VARIANTE_MAS_SENCILLA_O_CARGA)] ? observada 50.00 ? cobertura 66.67 ? registradas 2/3
+2026-11-03T05:05:05.166Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=8 objetivo=GENERAL_FITNESS seguros=773 elegibles=748 decisiones={ADMITIDO=698, ADMITIDO_POR_CAPACIDAD=50, EXCLUIDO_FUERA_DE_ENFOQUE=25, EXCLUIDO_ESTIRAMIENTO=0} complementos_por_capacidad={CARDIO=19, MOBILITY=31}
+2026-11-03T05:05:05.167Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 8: LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=426 veredicto=ROBUSTO (748 elegibles, modo OBSERVE)
+2026-11-03T05:05:05.208Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 8 semana 3: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=426 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=1 UPPER_PUSH=4 UPPER_PULL=3 fuera_de_slot=7 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:05.208Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 8 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-17, 2026-11-19, 2026-11-21])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  UPPER_PUSH  -> 4 colocaciones  | 3 dias | [1, 2, 1]
+  UPPER_PULL  -> 3 colocaciones  | 2 dias | [0, 1, 2]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:05.209Z  WARN 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Intento 1 para el usuario 8: la semana propuesta no pasa ? [V20: el entrenamiento del 2026-11-19 dura unos 1873 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 17 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]
+2026-11-03T05:05:05.220Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 8 semana 3: elegible [LOWER_KNEE=58 LOWER_HIP=30 UPPER_PUSH=134 UPPER_PULL=100 fuera_de_slot=426 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=2 LOWER_HIP=1 UPPER_PUSH=4 UPPER_PULL=3 fuera_de_slot=7 veredicto=FRAGIL] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 17 ? modo ENFORCE_AI_ONLY
+2026-11-03T05:05:05.220Z  INFO 6494 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 8 ? Cobertura 4C posterior - semana 3 (3 dias: [2026-11-17, 2026-11-19, 2026-11-21])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [1, 0, 1]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [1, 0, 0]
+  UPPER_PUSH  -> 4 colocaciones  | 3 dias | [1, 2, 1]
+  UPPER_PULL  -> 3 colocaciones  | 2 dias | [0, 1, 2]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-03T05:05:05.251Z  INFO 6494 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 21 publicada para el usuario 8 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas
+2026-11-03T05:05:05.253Z  INFO 6494 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 8 ? decision ADAPT_LOCALIZED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas
+KORA20 GUION -> docs/FitSense/short_paper_ieee/evaluacion_calidad_adaptacion_v2/evidencia/R_GUION_2S usuarios=8 llamadas=0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.97 s -- in Experimento Kora: 20 usuarios x 3 sesiones con los servicios reales
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:3.5.6:verify (default) @ fitsense-backend ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  30.061 s
+[INFO] Finished at: 2026-11-03T05:05:06Z
+[INFO] ------------------------------------------------------------------------

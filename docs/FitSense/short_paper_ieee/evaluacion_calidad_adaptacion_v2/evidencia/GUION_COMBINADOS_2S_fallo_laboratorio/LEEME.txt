@@ -1,0 +1,1 @@
+Ejecucion interrumpida por un defecto del laboratorio (no del backend): el guion COMBINADOS desempaquetaba planned_reps nulo en ejercicios DURATION (ternario Short/short) -> NullPointerException dentro del ciclo de U13, U14, U18 (intento 2) y U19. Se conserva tal cual; la ejecucion valida es GUION_COMBINADOS_2S.
