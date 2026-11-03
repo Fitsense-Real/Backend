@@ -1,0 +1,10 @@
+# Barrido de unitarias con MULTICONJUNTO como regla por defecto del constructor sin argumentos (cambio TEMPORAL, no commiteado; base fdf12ba)
+[ERROR] Tests run: 11, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.023 s <<< FAILURE! -- in Diagnostico V8C: sustituciones (patron por conjunto, musculo, distribucion, numero, dificultad)
+[ERROR] main.web.services.fitsense.planning.domain.services.V8CDiagnosticoSustitucionesTest.distribucionNoSeConserva -- Time elapsed: 0.008 s <<< FAILURE!
+[ERROR] main.web.services.fitsense.planning.domain.services.V8CDiagnosticoSustitucionesTest.numeroNoSeLimita -- Time elapsed: 0.001 s <<< FAILURE!
+[ERROR] Tests run: 32, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.056 s <<< FAILURE! -- in H1 ? V8C: conservacion del patron (conjunto historico frente a multiconjunto candidato)
+[ERROR] main.web.services.fitsense.planning.domain.services.V8CConservacionPatronH1Test.porDefecto -- Time elapsed: 0 s <<< FAILURE!
+[ERROR]   V8CConservacionPatronH1Test.porDefecto:85 expected: <CONJUNTO> but was: <MULTICONJUNTO>
+[ERROR]   V8CDiagnosticoSustitucionesTest.distribucionNoSeConserva:126 [V8C: la sesion 2 anade 2 ejercicio(s) de patron HORIZONTAL_PUSH [73, 313] y solo retira 1 de ese patron [540]. Cada ejercicio anadido tiene que reemplazar a un retirado DISTINTO del mismo patron: la sesion no puede ganar ejercicios de un patron a costa de otro.] ==> expected: <true> but was: <false>
+[ERROR]   V8CDiagnosticoSustitucionesTest.numeroNoSeLimita:133 [V8C: la sesion 2 anade 2 ejercicio(s) de patron HORIZONTAL_PUSH [73, 313] y solo retira 1 de ese patron [540]. Cada ejercicio anadido tiene que reemplazar a un retirado DISTINTO del mismo patron: la sesion no puede ganar ejercicios de un patron a costa de otro.] ==> expected: <true> but was: <false>
+[ERROR] Tests run: 1104, Failures: 3, Errors: 0, Skipped: 0
