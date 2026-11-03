@@ -65,6 +65,55 @@ import java.util.stream.Collectors;
 public class ConservationValidator {
 
     /**
+     * COMO SE CONSERVA EL PATRON EN UNA SUSTITUCION NO MOTIVADA POR DOLOR (H1, experimental).
+     * <ul>
+     *   <li>{@link #CONJUNTO} (por defecto, el comportamiento historico): cada ejercicio anadido tiene un patron
+     *       que esta ENTRE los de los retirados. Retirar un tiron vertical y un empuje horizontal y anadir dos
+     *       empujes horizontales pasa, y la sesion pierde su tiron vertical.</li>
+     *   <li>{@link #MULTICONJUNTO} (correccion candidata H1, apagada por defecto): para cada patron, los
+     *       anadidos no pueden ser mas que los retirados DE ESE patron. Equivale a exigir que cada anadido se
+     *       empareje con un retirado distinto del mismo patron (no se puede usar dos veces el mismo retirado).
+     *       Retirar sin anadir sigue permitido donde ya lo estaba; la rama de dolor no cambia.</li>
+     * </ul>
+     * Se elige con {@code fitsense.adaptation.v8c.pattern-rule} ({@code conjunto} | {@code multiconjunto}).
+     */
+    public enum ReglaPatron {
+        CONJUNTO, MULTICONJUNTO;
+
+        public static ReglaPatron desde(String valor) {
+            String v = valor == null ? "" : valor.strip().toLowerCase(java.util.Locale.ROOT);
+            return switch (v) {
+                case "", "conjunto" -> CONJUNTO;
+                case "multiconjunto" -> MULTICONJUNTO;
+                default -> throw new IllegalArgumentException(
+                        "fitsense.adaptation.v8c.pattern-rule admite conjunto o multiconjunto, no '" + valor + "'.");
+            };
+        }
+    }
+
+    private final ReglaPatron reglaPatron;
+
+    /** La regla historica ({@link ReglaPatron#CONJUNTO}). */
+    public ConservationValidator() {
+        this(ReglaPatron.CONJUNTO);
+    }
+
+    public ConservationValidator(ReglaPatron reglaPatron) {
+        this.reglaPatron = reglaPatron == null ? ReglaPatron.CONJUNTO : reglaPatron;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ConservationValidator(@org.springframework.beans.factory.annotation.Value(
+            "${fitsense.adaptation.v8c.pattern-rule:conjunto}") String reglaPatron) {
+        this(ReglaPatron.desde(reglaPatron));
+    }
+
+    /** La regla de patron con la que valida esta instancia. */
+    public ReglaPatron reglaPatron() {
+        return reglaPatron;
+    }
+
+    /**
      * El divisor de volumen cuando quien llama no da el de la configuracion: el
      * valor por omision de {@code fitsense.volume.duration-to-reps-divisor}.
      * El productor de semanas adaptadas pasa siempre el de la configuracion.
@@ -1020,6 +1069,36 @@ public class ConservationValidator {
                         + "patron de movimiento.")
                         .formatted(origen, anadido, patron, patronesQuitados));
         }
+
+        if (reglaPatron == ReglaPatron.MULTICONJUNTO)
+            revisarMulticonjunto(origen, d, catalogo, patronesQuitados, problems);
+    }
+
+    /**
+     * H1 (experimental): LA SUSTITUCION NO CAMBIA LA DISTRIBUCION DE PATRONES. Para cada patron que ya figura
+     * entre los retirados (los demas ya los rechazo la comprobacion por conjunto), los anadidos de ese patron no
+     * pueden superar a los retirados de ese patron. Por el teorema de Hall, con la compatibilidad «mismo patron»
+     * esto es exactamente lo mismo que pedir una pareja retirado-anadido distinta para cada anadido.
+     */
+    private static void revisarMulticonjunto(Long origen, Diferencias d, Map<Long, CandidateExercise> catalogo,
+                                             Set<String> patronesQuitados, List<String> problems) {
+        var retirados = new TreeMap<String, List<Long>>();
+        for (var quitado : d.quitados())
+            retirados.computeIfAbsent(patron(quitado, catalogo), k -> new ArrayList<>()).add(quitado);
+        var anadidos = new TreeMap<String, List<Long>>();
+        for (var anadido : d.anadidos()) {
+            String patron = patron(anadido, catalogo);
+            if (patron != null && patronesQuitados.contains(patron))
+                anadidos.computeIfAbsent(patron, k -> new ArrayList<>()).add(anadido);
+        }
+        anadidos.forEach((patron, ids) -> {
+            var quitados = retirados.getOrDefault(patron, List.of());
+            if (ids.size() > quitados.size())
+                problems.add(("V8C: la sesion %d anade %d ejercicio(s) de patron %s %s y solo retira %d de ese "
+                        + "patron %s. Cada ejercicio anadido tiene que reemplazar a un retirado DISTINTO del mismo "
+                        + "patron: la sesion no puede ganar ejercicios de un patron a costa de otro.")
+                        .formatted(origen, ids.size(), patron, ids, quitados.size(), quitados));
+        });
     }
 
     private static String patron(Long exerciseId, Map<Long, CandidateExercise> catalogo) {
