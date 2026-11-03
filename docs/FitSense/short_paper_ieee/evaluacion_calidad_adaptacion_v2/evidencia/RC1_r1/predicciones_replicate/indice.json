@@ -1,0 +1,228 @@
+{
+ "ventana_utc": [
+  "2026-11-03T12:05:21.117791+00:00",
+  "2026-11-03T12:17:27.401792+00:00"
+ ],
+ "predicciones": [
+  {
+   "id": "5zwwcgxtn5rmy0d1m56bj4m7yg",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:05:22.729Z",
+   "tokens_entrada": 17615,
+   "tokens_salida": 4895,
+   "predict_time": 44.004797648
+  },
+  {
+   "id": "409qf13b81rmt0d1m56t3521f0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:06:07.936Z",
+   "tokens_entrada": 17607,
+   "tokens_salida": 4057,
+   "predict_time": 42.156264032
+  },
+  {
+   "id": "xkkaqkgvydrmy0d1m5794bk6a8",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:06:53.171Z",
+   "tokens_entrada": 15569,
+   "tokens_salida": 4438,
+   "predict_time": 39.740671935
+  },
+  {
+   "id": "86vbd65xhnrmr0d1m57baynghc",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:07:34.541Z",
+   "tokens_entrada": 15570,
+   "tokens_salida": 4420,
+   "predict_time": 35.568911738
+  },
+  {
+   "id": "mqd0a7anpxrmr0d1m57tv14mwg",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:08:13.495Z",
+   "tokens_entrada": 57268,
+   "tokens_salida": 2185,
+   "predict_time": 24.324025939
+  },
+  {
+   "id": "qa97rr5qenrmy0d1m57vvwzwe0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:08:38.517Z",
+   "tokens_entrada": 57807,
+   "tokens_salida": 1824,
+   "predict_time": 21.64961195
+  },
+  {
+   "id": "v7j9ccrffxrmy0d1m5887jkrrw",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:09:01.055Z",
+   "tokens_entrada": 57737,
+   "tokens_salida": 3277,
+   "predict_time": 29.738281671
+  },
+  {
+   "id": "ps35zfwbanrmy0d1m589wmpd3g",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:09:32.757Z",
+   "tokens_entrada": 58570,
+   "tokens_salida": 3872,
+   "predict_time": 43.151704353
+  },
+  {
+   "id": "8qxa99hv1hrmt0d1m58vggfnm0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:10:17.74Z",
+   "tokens_entrada": 16750,
+   "tokens_salida": 4229,
+   "predict_time": 41.778468767
+  },
+  {
+   "id": "q6qatbq92srmr0d1m58sq4gcvg",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:11:02.294Z",
+   "tokens_entrada": 16763,
+   "tokens_salida": 3584,
+   "predict_time": 32.958902672
+  },
+  {
+   "id": "gysn4fbgxnrmr0d1m5991rmdj8",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:11:37.069Z",
+   "tokens_entrada": 17503,
+   "tokens_salida": 2081,
+   "predict_time": 19.706983124
+  },
+  {
+   "id": "88fjtce3d9rmr0d1m59b4wqp3r",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:11:58.186Z",
+   "tokens_entrada": 8437,
+   "tokens_salida": 2757,
+   "predict_time": 31.014599027
+  },
+  {
+   "id": "rmfz95a05srmr0d1m59r6914ym",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:12:30.126Z",
+   "tokens_entrada": 8898,
+   "tokens_salida": 1024,
+   "predict_time": 9.022872111
+  },
+  {
+   "id": "a4efkdv7w1rmw0d1m59vtvgh0w",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:12:40.288Z",
+   "tokens_entrada": 20302,
+   "tokens_salida": 3983,
+   "predict_time": 30.467536781
+  },
+  {
+   "id": "7xf7d1q4adrmt0d1m59v13gb7c",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:13:12.147Z",
+   "tokens_entrada": 21051,
+   "tokens_salida": 2304,
+   "predict_time": 18.892690892
+  },
+  {
+   "id": "m1tt4vhg99rmr0d1m5abvxwbzr",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:13:31.594Z",
+   "tokens_entrada": 21131,
+   "tokens_salida": 4273,
+   "predict_time": 30.195869536
+  },
+  {
+   "id": "4qfykpxfchrmr0d1m5abznwa78",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:14:04.132Z",
+   "tokens_entrada": 20302,
+   "tokens_salida": 3662,
+   "predict_time": 39.110554825
+  },
+  {
+   "id": "vvhsvcjgs1rmw0d1m5at12bv54",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:14:45.448Z",
+   "tokens_entrada": 21072,
+   "tokens_salida": 741,
+   "predict_time": 8.14785562
+  },
+  {
+   "id": "xng5ewbmbdrmr0d1m5avhxrqqr",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:14:54.555Z",
+   "tokens_entrada": 67483,
+   "tokens_salida": 4557,
+   "predict_time": 43.974322896
+  },
+  {
+   "id": "vkpvxgh2rhrmr0d1m5b9jbr7x4",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:15:39.204Z",
+   "tokens_entrada": 68088,
+   "tokens_salida": 4390,
+   "predict_time": 42.61108918
+  },
+  {
+   "id": "b15jw5yh55rmt0d1m5baewsy70",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:16:23.849Z",
+   "tokens_entrada": 67472,
+   "tokens_salida": 4305,
+   "predict_time": 47.672936052
+  },
+  {
+   "id": "4cabcj4qndrmw0d1m5bvdye620",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T12:17:14.667Z",
+   "tokens_entrada": 68085,
+   "tokens_salida": 1239,
+   "predict_time": 12.408823067
+  }
+ ]
+}
