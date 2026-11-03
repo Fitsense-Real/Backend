@@ -84,6 +84,11 @@ class ExperimentoKora20IT {
 
     static final String MODO = System.getProperty("fitsense.experimento.kora20.modo", "DETERMINISTA");
     static final boolean IA = "REPLICATE".equals(MODO);
+    /**
+     * {@code proxy}: la credencial de Replicate la inyecta el proxy del entorno (secreto de red) en las peticiones a
+     * api.replicate.com; el laboratorio nunca la ve. El backend exige un token no vacio, asi que recibe un marcador.
+     */
+    static final boolean CREDENCIAL_PROXY = "proxy".equals(System.getProperty("fitsense.experimento.kora20.credencial", ""));
     static final Path DOCS = Path.of("docs/FitSense/short_paper_ieee/experimento_final_20_usuarios");
     static final Path SALIDA = Path.of(System.getProperty("fitsense.experimento.kora20.salida", "target/kora20"));
     static final LocalDate S1 = LocalDate.of(2026, 11, 2);
@@ -99,7 +104,8 @@ class ExperimentoKora20IT {
     @DynamicPropertySource
     static void ia(DynamicPropertyRegistry r) {
         r.add("fitsense.ai.enabled", () -> String.valueOf(IA));
-        r.add("fitsense.ai.api-token", () -> IA ? Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), "") : "");
+        r.add("fitsense.ai.api-token", () -> !IA ? "" : CREDENCIAL_PROXY ? "marcador-credencial-inyectada-por-el-proxy"
+                : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), ""));
     }
 
     /** El reloj lo controla el laboratorio: sin barrido horario (ver protocolo §5). */
@@ -138,7 +144,15 @@ class ExperimentoKora20IT {
                 "solo base efimera local: " + url);
         assertEquals(url.replaceAll("\\?.*", ""), Objects.requireNonNull(jdbc.getDataSource()).getConnection()
                 .getMetaData().getURL().replaceAll("\\?.*", ""), "el contexto usa la base efimera");
-        if (IA) assertFalse(Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), "").isBlank(),
+        int cuenta = -1;
+        if (IA && CREDENCIAL_PROXY) {
+            // Comprobacion GRATUITA (no es una prediccion): la cuenta responde 200 solo si el proxy inyecta credencial.
+            var resp = java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(
+                    java.net.URI.create("https://api.replicate.com/v1/account")).GET().build(),
+                    java.net.http.HttpResponse.BodyHandlers.discarding());
+            cuenta = resp.statusCode();
+            assertEquals(200, cuenta, "BLOQUEADO: el proxy no autentica en Replicate (ninguna llamada realizada)");
+        } else if (IA) assertFalse(Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), "").isBlank(),
                 "BLOQUEADO: sin REPLICATE_API_TOKEN no se ejecuta la etapa C (ninguna llamada realizada)");
         if (Files.exists(SALIDA)) try (var s = Files.list(SALIDA)) {
             assertTrue(s.findAny().isEmpty(), "la carpeta " + SALIDA + " ya tiene evidencia: no se sobrescribe");
@@ -158,6 +172,9 @@ class ExperimentoKora20IT {
         cfg.put("ejercicios_activos", jdbc.queryForObject("SELECT count(*) FROM exercises WHERE is_active", Integer.class));
         cfg.put("ia_habilitada", generador.isEnabled());
         cfg.put("modelo", generador.modelName());
+        cfg.put("credencial", !IA ? "ninguna" : CREDENCIAL_PROXY ? "secreto de red inyectado por el proxy (no visible)" : "variable REPLICATE_API_TOKEN");
+        cfg.put("comprobacion_cuenta_http", cuenta);
+        cfg.put("limite", MAX_LLAMADAS + " predicciones / USD 10 (supuesto max " + COSTE_MAX_POR_LLAMADA_USD + " por llamada)");
         cfg.put("politica_por_defecto", "PLAN-HIST-1 (allow-candidates=false)");
         cfg.put("progresion", "false");
         escribir("00_configuracion.txt", cfg.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).toList());

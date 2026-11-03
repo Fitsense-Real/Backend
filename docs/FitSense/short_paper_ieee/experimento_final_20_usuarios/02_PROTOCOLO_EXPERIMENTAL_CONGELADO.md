@@ -89,3 +89,21 @@ Los resultados además **se recalculan de forma independiente** a partir de las 
 - Cada ejecución escribe en una carpeta nueva (`evidencia/A0`, `evidencia/A1`, `evidencia/A1_repeticion`, `evidencia/C`). **El laboratorio se niega a escribir en una carpeta que ya tenga contenido.**
 - No se repite selectivamente ningún caso. Una ejecución se repite completa o no se repite.
 - Ningún atributo de perfil, patrón o motivo cambia tras observar resultados. Un perfil no factible se conserva como resultado.
+
+---
+
+## Anexo 1 (2026-11-03, antes de ejecutar la etapa C): credencial inyectada por el proxy
+
+**Qué cambia:**
+- La credencial de Replicate llega como **secreto de red**: el proxy del entorno la añade solo a las peticiones a `api.replicate.com`. No es una variable de entorno.
+- El laboratorio admite `-Dfitsense.experimento.kora20.credencial=proxy`:
+  - el backend recibe un marcador como `fitsense.ai.api-token` (exige un valor no vacío);
+  - antes de cualquier predicción, el laboratorio comprueba con `GET /v1/account`, una consulta gratuita, que el proxy autentica. Si no, aborta con 0 llamadas.
+
+**Qué no cambia:**
+- los perfiles, patrones, motivos, semillas, la política y los validadores;
+- el modelo (`gpt-5-mini` sobre `openai/gpt-5-structured`);
+- el límite de 90 predicciones / USD 10;
+- los 3 intentos por operación y que el laboratorio no reintente nada.
+
+El token nunca pasa por el laboratorio ni por la evidencia.
