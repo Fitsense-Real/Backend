@@ -50,6 +50,26 @@ class ConservacionPatronH1IT extends ConservacionPatronH1Base {
     }
 
     @Test
+    @DisplayName("justificacion verificable: el adjustment_reason publicado describe el cambio real, sin 'bajamos la exigencia'")
+    void justificacionVerificable() {
+        var c = caso();
+        long nuevo = proponer(c, c.a1(), c.b1())
+                .orElseThrow(() -> new AssertionError("no publico: " + intento(c.p())));
+        String texto = jdbc.queryForObject("SELECT adjustment_reason FROM weekly_training_plans WHERE plan_id = ?",
+                String.class, nuevo);
+        assertFalse(texto.toLowerCase(java.util.Locale.ROOT).contains("bajamos la exigencia"), texto);
+        assertTrue(texto.contains("Nos dijiste que una sesión te resultó difícil."), texto);
+        int dA = dificultad(c.a1()) < dificultad(c.a().id()) ? 1 : 0, dB = dificultad(c.b1()) < dificultad(c.b().id()) ? 1 : 0;
+        if (dA + dB > 0) assertTrue(texto.contains("usamos una variante de menor dificultad"), texto);
+        if (dA + dB < 2) assertTrue(texto.contains("del mismo nivel de dificultad: es una alternativa, no necesariamente"
+                + " más fácil"), texto);
+    }
+
+    private int dificultad(long id) {
+        return jdbc.queryForObject("SELECT difficulty_level FROM exercises WHERE exercise_id = ?", Integer.class, id);
+    }
+
+    @Test
     @DisplayName("distribucion correcta (cada sustituto de su patron): publicada; no senaladas intactas")
     void distribucionCorrectaPublicada() {
         var c = caso();
