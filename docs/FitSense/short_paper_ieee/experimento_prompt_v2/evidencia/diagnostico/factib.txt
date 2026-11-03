@@ -1,0 +1,199 @@
+====================================================================================================
+U03 GAIN_MUSCLE INTERMEDIATE prompt 192986 chars; tokens in 54721
+
+-- S15 motivo=sin dato, motivo registrado: FATIGUE | Revisar carga y recuperacion. Puedes ajustar la dosis. No sustituir ni
+   dur prompt 2550 / recalculada 2550 / minimo 2520 / MARGEN 30
+     380 Press inclinado a una mano en polea    3x10 r90 | min_reps 6 dif 2 HORIZONTAL_PUSH/pectorals clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 62
+     351 Remo alto en rodillas con cable        3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PULL/upper back clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 27
+     637 Femorales acostado con mancuerna       3x10 r90 | min_reps 6 dif 2 KNEE_DOMINANT/hamstrings clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 11
+     949 Press sentado con kettlebell           3x10 r90 | min_reps 6 dif 2 VERTICAL_PUSH/delts clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 36
+    1073 Puente de glúteos bajo en el suelo     3x10 r90 | min_reps 6 dif 1 HIP_EXTENSION/glutes clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 11
+     496 Flexión con caída controlada           3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PUSH/pectorals clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 35
+     436 Remo sentado en polea                  3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PULL/upper back clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 27
+   >> menor retirada unitaria 9 s; reducciones unitarias que caben en el margen: [(380, ('reps-1', 9)), (351, ('reps-1', 9)), (637, ('reps-1', 9)), (949, ('reps-1', 9)), (1073, ('reps-1', 9)), (496, ('reps-1', 9)), (436, ('reps-1', 9))]
+   intento 1: dur 2550 (retira 0 s; margen 30) 
+      cambios: []
+====================================================================================================
+U04 GAIN_MUSCLE INTERMEDIATE prompt 194831 chars; tokens in 55347
+
+-- S20 motivo=sin dato, motivo registrado: TOO_DIFFICULT | Buscar una variante mas sencilla del mismo patron de movimiento, o aju
+   dur prompt 2550 / recalculada 2550 / minimo 2520 / MARGEN 30
+     380 Press inclinado a una mano en polea    3x10 r90 | min_reps 6 dif 2 HORIZONTAL_PUSH/pectorals clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 62
+     389 Jalón con cable                        3x10 r90 | min_reps 6 dif 2 VERTICAL_PULL/lats clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 24
+     360 Peso muerto con cable                  3x10 r90 | min_reps 6 dif 2 HIP_HINGE/glutes clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 14
+     779 Press con palma hacia adentro de pie   3x10 r90 | min_reps 6 dif 2 VERTICAL_PUSH/delts clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 36
+    1236 Hack squat smith                       3x10 r90 | min_reps 6 dif 2 KNEE_DOMINANT/glutes clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 25
+     580 Curl inclinado con mancuerna           3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PUSH/pectorals clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 35
+     392 Jalón trasero con cable                3x10 r90 | min_reps 6 dif 2 VERTICAL_PULL/lats clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 24
+   >> menor retirada unitaria 9 s; reducciones unitarias que caben en el margen: [(380, ('reps-1', 9)), (389, ('reps-1', 9)), (360, ('reps-1', 9)), (779, ('reps-1', 9)), (1236, ('reps-1', 9)), (580, ('reps-1', 9)), (392, ('reps-1', 9))]
+   intento 1: dur 2550 (retira 0 s; margen 30) 
+      cambios: ['+72', '+77', '+148', '+101', '+144', '+102', '+75', '-380', '-389', '-360', '-779', '-1236', '-580', '-392']
+
+-- S21 motivo=sin dato, motivo registrado: LACK_OF_MOTIVATION | Investigar que dificulta mantener la rutina y proponer cambios pequeno
+   dur prompt 2550 / recalculada 2550 / minimo 2520 / MARGEN 30
+     588 Press con palma hacia abajo inclinada  3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PUSH/pectorals clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 34
+    1001 Remo alto con palanca                  3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PULL/upper back clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 28
+     142 Peso muerto con piernas rectas con ban 3x10 r90 | min_reps 6 dif 1 HIP_HINGE/hamstrings clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 0
+    1154 Press de hombro sentado con banda      3x10 r90 | min_reps 6 dif 1 VERTICAL_PUSH/delts clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 12
+    1042 Hiperextensión inversa con palanca     3x10 r90 | min_reps 6 dif 1 HIP_EXTENSION/glutes clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 11
+     580 Curl inclinado con mancuerna           3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PUSH/pectorals clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 34
+      77 Dominada asistida de pie               3x10 r90 | min_reps 6 dif 1 VERTICAL_PULL/lats clase ESTRUCTURAL_ESTANDAR | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 12
+   >> menor retirada unitaria 9 s; reducciones unitarias que caben en el margen: [(588, ('reps-1', 9)), (1001, ('reps-1', 9)), (142, ('reps-1', 9)), (1154, ('reps-1', 9)), (1042, ('reps-1', 9)), (580, ('reps-1', 9)), (77, ('reps-1', 9))]
+   intento 1: OMITIDA
+====================================================================================================
+U08 INCREASE_STRENGTH INTERMEDIATE prompt 189083 chars; tokens in 55873
+
+-- S45 motivo=sin dato, motivo registrado: FATIGUE | Revisar carga y recuperacion. Puedes ajustar la dosis. No sustituir ni
+   dur prompt 2556 / recalculada 2556 / minimo 2520 / MARGEN 36
+    1106 Flexión a plancha lateral              3x6 r150 | min_reps 6 dif 2 HORIZONTAL_PUSH/pectorals clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 62
+     994 Remo en palanca, agarre estrecho alter 3x6 r150 | min_reps 6 dif 1 HORIZONTAL_PULL/upper back clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 28
+    1265 Sentadilla con alcance por encima y gi 3x6 r150 | min_reps 6 dif 1 KNEE_DOMINANT/quads clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 8
+    1154 Press de hombro sentado con banda      3x6 r150 | min_reps 6 dif 1 VERTICAL_PUSH/delts clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 12
+     323 Press de banca con cable               3x10 r90 | min_reps 6 dif 2 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 62
+     487 Jalón trasero ancho por detrás de la c 3x10 r90 | min_reps 6 dif 2 VERTICAL_PULL/lats clase None | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 25
+   >> menor retirada unitaria 9 s; reducciones unitarias que caben en el margen: [(323, ('reps-1', 9)), (487, ('reps-1', 9))]
+   intento 1: dur 2184 (retira 372 s; margen 36) RECHAZO: V20: el entrenamiento del 2026-11-13 dura unos 2184 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 336 s. Agrega un ejercicio del enfoque o una serie a
+      cambios: ['1106:3x6r150->2x6r150', '994:3x6r150->2x6r150', '323:3x10r90->3x8r90', '487:3x10r90->3x8r90']
+   intento 2: OMITIDA
+====================================================================================================
+U09 INCREASE_STRENGTH INTERMEDIATE prompt 190805 chars; tokens in 56458
+
+-- S50 motivo=sin dato, motivo registrado: TOO_DIFFICULT | Buscar una variante mas sencilla del mismo patron de movimiento, o aju
+   dur prompt 2556 / recalculada 2556 / minimo 2520 / MARGEN 36
+     540 Press de banca declinado con mancuerna 3x6 r150 | min_reps 6 dif 2 HORIZONTAL_PUSH/pectorals clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 62
+     775 Elevación de codo y push-up invertido  3x6 r150 | min_reps 6 dif 1 HORIZONTAL_PUSH/upper back clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 0
+    1315 Zancada caminando                      3x6 r150 | min_reps 6 dif 1 KNEE_DOMINANT/glutes clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 6
+     780 Remo vertical con mancuerna            3x6 r150 | min_reps 6 dif 2 HORIZONTAL_PULL/delts clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 10
+     380 Press inclinado a una mano en polea    3x10 r90 | min_reps 6 dif 2 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 62
+    1039 Remo T-bar con palanca                 3x10 r90 | min_reps 6 dif 1 HORIZONTAL_PULL/upper back clase None | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 28
+   >> menor retirada unitaria 9 s; reducciones unitarias que caben en el margen: [(380, ('reps-1', 9)), (1039, ('reps-1', 9))]
+   intento 1: dur 1596 (retira 960 s; margen 36) RECHAZO: V20: el entrenamiento del 2026-11-11 dura unos 1596 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 924 s. Agrega un ejercicio del enfoque o una serie a
+      cambios: ['+72', '775:3x6r150->2x6r150', '1315:3x6r150->2x6r150', '+300', '380:3x10r90->2x6r90', '1039:3x10r90->2x6r90', '-540', '-780']
+   intento 2: dur 2124 (retira 432 s; margen 36) RECHAZO: V20: el entrenamiento del 2026-11-11 dura unos 2124 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 396 s. Agrega un ejercicio del enfoque o una serie a
+      cambios: ['+72', '+73', '+877', '+300', '+56', '+119', '-540', '-775', '-1315', '-780', '-380', '-1039']
+   intento 3: dur 2556 (retira 0 s; margen 36) 
+      cambios: ['+72', '+73', '+877', '+300', '+56', '+119', '-540', '-775', '-1315', '-780', '-380', '-1039']
+
+-- S51 motivo=sin dato, motivo registrado: LACK_OF_MOTIVATION | Investigar que dificulta mantener la rutina y proponer cambios pequeno
+   dur prompt 2556 / recalculada 2556 / minimo 2520 / MARGEN 36
+      73 Dip de pecho con agarre ancho asistido 3x6 r150 | min_reps 6 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 35
+    1228 Remo estrecho con Smith                3x6 r150 | min_reps 6 dif 2 HORIZONTAL_PULL/upper back clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 46
+    1196 Curl de piernas invertido asistido     3x6 r150 | min_reps 6 dif 1 KNEE_DOMINANT/hamstrings clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 8
+     705 Press de hombro alterno sentado        3x6 r150 | min_reps 6 dif 1 VERTICAL_PUSH/delts clase None | opciones [('series-1', 168)] | variantes mismo patron+musculo, dif<=: 12
+    1284 Press de agarre invertido con Smith    3x10 r90 | min_reps 6 dif 2 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 62
+     117 Jalón a una mano de rodillas con banda 3x10 r90 | min_reps 6 dif 1 VERTICAL_PULL/lats clase None | opciones [('reps-1', 9), ('series-1', 120)] | variantes mismo patron+musculo, dif<=: 12
+   >> menor retirada unitaria 9 s; reducciones unitarias que caben en el margen: [(1284, ('reps-1', 9)), (117, ('reps-1', 9))]
+   intento 1: dur 1644 (retira 912 s; margen 36) RECHAZO: V20: el entrenamiento del 2026-11-11 dura unos 1596 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 924 s. Agrega un ejercicio del enfoque o una serie a
+      cambios: ['73:3x6r150->2x6r150', '1228:3x6r150->2x6r150', '1196:3x6r150->2x6r150', '705:3x6r150->2x6r150', '1284:3x10r90->2x10r90', '117:3x10r90->2x10r90']
+   intento 2: dur 2220 (retira 336 s; margen 36) RECHAZO: V20: el entrenamiento del 2026-11-11 dura unos 2124 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 396 s. Agrega un ejercicio del enfoque o una serie a
+      cambios: ['73:3x6r150->2x6r150', '1196:3x6r150->2x6r150']
+   intento 3: dur 2556 (retira 0 s; margen 36) 
+      cambios: []
+====================================================================================================
+U13 LOSE_WEIGHT BEGINNER prompt 30958 chars; tokens in 8950
+
+-- S75 motivo=sin dato, motivo registrado: FATIGUE | Revisar carga y recuperacion. Puedes ajustar la dosis. No sustituir ni
+   dur prompt 2052 / recalculada 2052 / minimo 1890 / MARGEN 162
+    1113 Flexión pike a cobra                   2x8 r120 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [] | variantes mismo patron+musculo, dif<=: 16
+     116 Jalón bajo con banda y agarre supino   2x8 r120 | min_reps 8 dif 1 VERTICAL_PULL/lats clase None | opciones [] | variantes mismo patron+musculo, dif<=: 4
+    1059 Zancada con giro                       2x8 r120 | min_reps 8 dif 1 KNEE_DOMINANT/quads clase None | opciones [] | variantes mismo patron+musculo, dif<=: 5
+     704 Press alterno sentado con mancuerna    2x8 r120 | min_reps 8 dif 1 VERTICAL_PUSH/delts clase None | opciones [] | variantes mismo patron+musculo, dif<=: 7
+    1117 Pies rápidos v. 2                      3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 3
+     853 Media sentadilla                       3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 3
+   >> menor retirada unitaria 30 s; reducciones unitarias que caben en el margen: [(1117, ('series-1', 150)), (1117, ('-10 s', 30)), (853, ('series-1', 150)), (853, ('-10 s', 30))]
+   intento 1: dur 1902 (retira 150 s; margen 162) 
+      cambios: ['1117:3x90r60->2x90r60']
+====================================================================================================
+U14 LOSE_WEIGHT BEGINNER prompt 32701 chars; tokens in 9536
+
+-- S80 motivo=sin dato, motivo registrado: TOO_DIFFICULT | Buscar una variante mas sencilla del mismo patron de movimiento, o aju
+   dur prompt 2052 / recalculada 2052 / minimo 1890 / MARGEN 162
+     933 Flexión de rodillas en apoyo           2x8 r120 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [] | variantes mismo patron+musculo, dif<=: 16
+     116 Jalón bajo con banda y agarre supino   2x8 r120 | min_reps 8 dif 1 VERTICAL_PULL/lats clase None | opciones [] | variantes mismo patron+musculo, dif<=: 4
+    1315 Zancada caminando                      2x8 r120 | min_reps 8 dif 1 KNEE_DOMINANT/glutes clase None | opciones [] | variantes mismo patron+musculo, dif<=: 6
+     705 Press de hombro alterno sentado        2x8 r120 | min_reps 8 dif 1 VERTICAL_PUSH/delts clase None | opciones [] | variantes mismo patron+musculo, dif<=: 7
+     853 Media sentadilla                       3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 3
+    1117 Pies rápidos v. 2                      3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 3
+   >> menor retirada unitaria 30 s; reducciones unitarias que caben en el margen: [(853, ('series-1', 150)), (853, ('-10 s', 30)), (1117, ('series-1', 150)), (1117, ('-10 s', 30))]
+   intento 1: dur 1902 (retira 150 s; margen 162) 
+      cambios: ['1117:3x90r60->2x90r60']
+
+-- S81 motivo=sin dato, motivo registrado: LACK_OF_MOTIVATION | Investigar que dificulta mantener la rutina y proponer cambios pequeno
+   dur prompt 2052 / recalculada 2052 / minimo 1890 / MARGEN 162
+    1262 Flexión con desplazamiento de araña    2x8 r120 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [] | variantes mismo patron+musculo, dif<=: 16
+     119 Remo sentado a una mano con giro       2x8 r120 | min_reps 8 dif 1 HORIZONTAL_PULL/upper back clase None | opciones [] | variantes mismo patron+musculo, dif<=: 1
+    1114 Sentadilla de baño con apoyo           2x8 r120 | min_reps 8 dif 1 KNEE_DOMINANT/glutes clase None | opciones [] | variantes mismo patron+musculo, dif<=: 6
+     725 Curl de bíceps sentado con press de ho 2x8 r120 | min_reps 8 dif 1 VERTICAL_PUSH/delts clase None | opciones [] | variantes mismo patron+musculo, dif<=: 7
+    1093 Empujar para correr                    3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 3
+    1054 Escalador                              3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 3
+   >> menor retirada unitaria 30 s; reducciones unitarias que caben en el margen: [(1093, ('series-1', 150)), (1093, ('-10 s', 30)), (1054, ('series-1', 150)), (1054, ('-10 s', 30))]
+   intento 1: dur 1902 (retira 150 s; margen 162) 
+      cambios: ['1093:3x90r60->2x90r60']
+====================================================================================================
+U18 GENERAL_FITNESS BEGINNER prompt 71764 chars; tokens in 21270
+
+-- S105 motivo=sin dato, motivo registrado: FATIGUE | Revisar carga y recuperacion. Puedes ajustar la dosis. No sustituir ni
+   dur prompt 2040 / recalculada 2040 / minimo 1890 / MARGEN 150
+     101 Press de hombros con banda             2x10 r90 | min_reps 8 dif 1 VERTICAL_PUSH/delts clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 7
+    1097 Flexión en pared                       2x10 r90 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 15
+     775 Elevación de codo y push-up invertido  2x10 r90 | min_reps 8 dif 1 HORIZONTAL_PUSH/upper back clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 0
+    1334 Flexión con manos anchas               2x15 r45 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 15
+    1308 Toque de dos dedos de los pies         2x15 r45 | min_reps 8 dif 1 TRUNK_FLEXION/spine clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 1
+    1076 Sentadilla marcha (contra la pared)    2x15 r45 | min_reps 8 dif 1 KNEE_DOMINANT/glutes clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 6
+    1054 Escalador                              3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 4
+    1188 Estiramiento lumbar sentado            2x30s r15 | min_reps None dif 1 MOBILITY/lats clase None | opciones [('-10 s', 20)] | variantes mismo patron+musculo, dif<=: 3
+   >> menor retirada unitaria 6 s; reducciones unitarias que caben en el margen: [(101, ('reps-1', 6)), (1097, ('reps-1', 6)), (775, ('reps-1', 6)), (1334, ('reps-1', 6)), (1308, ('reps-1', 6)), (1076, ('reps-1', 6)), (1054, ('series-1', 150)), (1054, ('-10 s', 30)), (1188, ('-10 s', 20))]
+   intento 1: dur 1720 (retira 320 s; margen 150) RECHAZO: V20: el entrenamiento del 2026-11-13 dura unos 1720 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 170 s. Agrega un ejercicio del enfoque o una serie a
+      cambios: ['101:2x10r90->2x8r90', '1097:2x10r90->2x8r90', '775:2x10r90->2x8r90', '1334:2x15r45->2x12r45', '1308:2x15r45->2x12r45', '1076:2x15r45->2x12r45', '1054:3x90r60->2x60r60', '1188:2x30r15->2x20r15']
+   intento 2: OMITIDA
+====================================================================================================
+U19 GENERAL_FITNESS BEGINNER prompt 73777 chars; tokens in 21952
+
+-- S110 motivo=sin dato, motivo registrado: TOO_DIFFICULT | Buscar una variante mas sencilla del mismo patron de movimiento, o aju
+   dur prompt 2040 / recalculada 2040 / minimo 1890 / MARGEN 150
+     135 Remo de deltoides traseros con banda,  2x10 r90 | min_reps 8 dif 1 HORIZONTAL_PULL/delts clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 0
+    1111 Flexión con patada de pierna externa   2x10 r90 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 15
+     116 Jalón bajo con banda y agarre supino   2x10 r90 | min_reps 8 dif 1 VERTICAL_PULL/lats clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 4
+     460 Flexión con toques de pecho            2x15 r45 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 15
+     120 Encogimiento de hombros con banda      2x15 r45 | min_reps 8 dif 1 SCAPULAR_ELEVATION/traps clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 0
+     144 Sentadilla con banda                   2x15 r45 | min_reps 8 dif 1 KNEE_DOMINANT/glutes clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 6
+     853 Media sentadilla                       3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 4
+    1260 Estiramiento lateral de pie            2x30s r15 | min_reps None dif 1 MOBILITY/lats clase None | opciones [('-10 s', 20)] | variantes mismo patron+musculo, dif<=: 3
+   >> menor retirada unitaria 6 s; reducciones unitarias que caben en el margen: [(135, ('reps-1', 6)), (1111, ('reps-1', 6)), (116, ('reps-1', 6)), (460, ('reps-1', 6)), (120, ('reps-1', 6)), (144, ('reps-1', 6)), (853, ('series-1', 150)), (853, ('-10 s', 30)), (1260, ('-10 s', 20))]
+   intento 1: dur 1840 (retira 200 s; margen 150) RECHAZO: V20: el entrenamiento del 2026-11-11 dura unos 1840 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 50 s. Agrega un ejercicio del enfoque o una serie a 
+      cambios: ['+119', '+494', '116:2x10r90->2x8r90', '460:2x15r45->2x12r45', '120:2x15r45->2x12r45', '144:2x15r45->2x12r45', '853:3x90r60->3x60r60', '1260:2x30r15->2x20r15', '-135', '-1111']
+   intento 2: OMITIDA
+
+-- S111 motivo=sin dato, motivo registrado: LACK_OF_MOTIVATION | Investigar que dificulta mantener la rutina y proponer cambios pequeno
+   dur prompt 2040 / recalculada 2040 / minimo 1890 / MARGEN 150
+     725 Curl de bíceps sentado con press de ho 2x10 r90 | min_reps 8 dif 1 VERTICAL_PUSH/delts clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 7
+    1262 Flexión con desplazamiento de araña    2x10 r90 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 15
+     115 Jalón cercano con banda y agarre estre 2x10 r90 | min_reps 8 dif 1 VERTICAL_PULL/lats clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 3
+    1095 Empuje y tracción con peso corporal    2x15 r45 | min_reps 8 dif 1 HORIZONTAL_PUSH/pectorals clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 15
+     143 Jalón con agarre supino                2x15 r45 | min_reps 8 dif 1 VERTICAL_PULL/lats clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 3
+    1311 Abductor de cadera externo con pierna  2x15 r45 | min_reps 8 dif 1 HIP_ABDUCTION_ADDUCTION/abductors clase None | opciones [('reps-1', 6)] | variantes mismo patron+musculo, dif<=: 3
+    1054 Escalador                              3x90s r60 | min_reps None dif 1 LOCOMOTION_CARDIO/cardiovascular system clase None | opciones [('series-1', 150), ('-10 s', 30)] | variantes mismo patron+musculo, dif<=: 4
+    1322 Estiramiento de tríceps                2x30s r15 | min_reps None dif 1 MOBILITY/triceps clase None | opciones [('-10 s', 20)] | variantes mismo patron+musculo, dif<=: 1
+   >> menor retirada unitaria 6 s; reducciones unitarias que caben en el margen: [(725, ('reps-1', 6)), (1262, ('reps-1', 6)), (115, ('reps-1', 6)), (1095, ('reps-1', 6)), (143, ('reps-1', 6)), (1311, ('reps-1', 6)), (1054, ('series-1', 150)), (1054, ('-10 s', 30)), (1322, ('-10 s', 20))]
+   intento 1: dur 1840 (retira 200 s; margen 150) RECHAZO: V20: el entrenamiento del 2026-11-11 dura unos 1840 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 50 s. Agrega un ejercicio del enfoque o una serie a 
+      cambios: ['725:2x10r90->2x8r90', '1262:2x10r90->2x8r90', '115:2x10r90->2x8r90', '1095:2x15r45->2x12r45', '143:2x15r45->2x12r45', '1311:2x15r45->2x12r45', '1054:3x90r60->3x60r60', '1322:2x30r15->2x20r15']
+   intento 2: OMITIDA
+
+
+###### DESGLOSE POR CAMBIO DE LAS PROPUESTAS RECHAZADAS ######
+U08 i1 S45 margen 36 retira 372: [('1106 3x6->2x6', 168), ('994 3x6->2x6', 168), ('323 3x10->3x8', 18), ('487 3x10->3x8', 18)]
+    mayor subconjunto propio que cabe: ['323 3x10->3x8', '487 3x10->3x8'] (36 s)
+U09 i1 S50 margen 36 retira 960: [('775 3x6->2x6', 168), ('1315 3x6->2x6', 168), ('380 3x10->2x6', 144), ('1039 3x10->2x6', 144), ('sustituciones [540, 780]->[72, 300]', 336)]
+    mayor subconjunto propio que cabe: ninguno (0 s)
+U09 i2 S50 margen 36 retira 432: [('sustituciones [540, 775, 1315, 780, 380, 1039]->[72, 73, 877, 300, 56, 119]', 432)]
+    mayor subconjunto propio que cabe: ninguno (0 s)
+U09 i1 S51 margen 36 retira 912: [('73 3x6->2x6', 168), ('1228 3x6->2x6', 168), ('1196 3x6->2x6', 168), ('705 3x6->2x6', 168), ('1284 3x10->2x10', 120), ('117 3x10->2x10', 120)]
+    mayor subconjunto propio que cabe: ninguno (0 s)
+U09 i2 S51 margen 36 retira 336: [('73 3x6->2x6', 168), ('1196 3x6->2x6', 168)]
+    mayor subconjunto propio que cabe: ninguno (0 s)
+U18 i1 S105 margen 150 retira 320: [('101 2x10->2x8', 12), ('1097 2x10->2x8', 12), ('775 2x10->2x8', 12), ('1334 2x15->2x12', 18), ('1308 2x15->2x12', 18), ('1076 2x15->2x12', 18), ('1054 3x90s->2x60s', 210), ('1188 2x30s->2x20s', 20)]
+    mayor subconjunto propio que cabe: ['101 2x10->2x8', '1097 2x10->2x8', '775 2x10->2x8', '1334 2x15->2x12', '1308 2x15->2x12', '1076 2x15->2x12', '1188 2x30s->2x20s'] (110 s)
+U19 i1 S110 margen 150 retira 200: [('116 2x10->2x8', 12), ('460 2x15->2x12', 18), ('120 2x15->2x12', 18), ('144 2x15->2x12', 18), ('853 3x90s->3x60s', 90), ('1260 2x30s->2x20s', 20), ('sustituciones [135, 1111]->[119, 494]', 24)]
+    mayor subconjunto propio que cabe: ['116 2x10->2x8', '460 2x15->2x12', '120 2x15->2x12', '144 2x15->2x12', '1260 2x30s->2x20s', 'sustituciones [135, 1111]->[119, 494]'] (110 s)
+U19 i1 S111 margen 150 retira 200: [('725 2x10->2x8', 12), ('1262 2x10->2x8', 12), ('115 2x10->2x8', 12), ('1095 2x15->2x12', 18), ('143 2x15->2x12', 18), ('1311 2x15->2x12', 18), ('1054 3x90s->3x60s', 90), ('1322 2x30s->2x20s', 20)]
+    mayor subconjunto propio que cabe: ['725 2x10->2x8', '1262 2x10->2x8', '115 2x10->2x8', '1095 2x15->2x12', '143 2x15->2x12', '1311 2x15->2x12', '1322 2x30s->2x20s'] (110 s)

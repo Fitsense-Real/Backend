@@ -1,0 +1,88 @@
+{
+ "ventana_utc": [
+  "2026-11-03T03:56:32.490206+00:00",
+  "2026-11-03T04:00:13.634040+00:00"
+ ],
+ "predicciones": [
+  {
+   "id": "31dtvb1xwnrmt0d1ky6t991xn0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:56:36.197Z",
+   "tokens_entrada": 55097,
+   "tokens_salida": 391,
+   "predict_time": 4.226810437
+  },
+  {
+   "id": "0kh4m22kq1rmt0d1ky6v91jcvm",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:56:41.784Z",
+   "tokens_entrada": 56167,
+   "tokens_salida": 3077,
+   "predict_time": 26.261204312
+  },
+  {
+   "id": "ta5y60pdfsrmr0d1ky6t87xe68",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:57:12.958Z",
+   "tokens_entrada": 56498,
+   "tokens_salida": 1958,
+   "predict_time": 18.901743065
+  },
+  {
+   "id": "39f1q2gvwxrmw0d1ky7bsh3gew",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:57:33.031Z",
+   "tokens_entrada": 57736,
+   "tokens_salida": 3911,
+   "predict_time": 32.092466871
+  },
+  {
+   "id": "9mqxahnbjsrmr0d1ky790y4fa4",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:58:09.814Z",
+   "tokens_entrada": 9571,
+   "tokens_salida": 3324,
+   "predict_time": 21.463676915
+  },
+  {
+   "id": "6qh51182h5rmy0d1ky7tagz6m0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:58:32.073Z",
+   "tokens_entrada": 10788,
+   "tokens_salida": 3311,
+   "predict_time": 26.665842978
+  },
+  {
+   "id": "5xkwjf3tf9rmy0d1ky7r10f57c",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:59:02.778Z",
+   "tokens_entrada": 21944,
+   "tokens_salida": 4334,
+   "predict_time": 32.876384634
+  },
+  {
+   "id": "0e3nnqg52hrmt0d1ky8bhfczjg",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:59:38.26Z",
+   "tokens_entrada": 23317,
+   "tokens_salida": 3875,
+   "predict_time": 31.911698578
+  }
+ ]
+}

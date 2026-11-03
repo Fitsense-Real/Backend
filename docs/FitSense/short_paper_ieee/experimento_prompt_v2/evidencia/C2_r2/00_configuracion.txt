@@ -1,0 +1,17 @@
+modo: REPLICATE
+commit: 3430e7b9a464d00125928140e64e7b70d75f3659
+fecha_ejecucion_utc: 2026-11-03T04:00:58.733181888Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+ejercicios_activos: 1219
+ia_habilitada: true
+modelo: gpt-5-mini
+prompt_adaptacion: FIX-PR-2.0-EXP
+gemelos_generacion_ia: false
+credencial: secreto de red inyectado por el proxy (no visible)
+comprobacion_cuenta_http: 200
+prefer_wait_seconds: 25 (variacion registrada, anexo 2)
+limite: 30 predicciones / USD 1.2 (supuesto max 0.04 por llamada)
+politica_por_defecto: PLAN-HIST-1 (allow-candidates=false)
+progresion: false

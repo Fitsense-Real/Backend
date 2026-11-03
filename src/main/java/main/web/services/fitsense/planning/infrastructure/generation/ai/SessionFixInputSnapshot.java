@@ -114,6 +114,11 @@ public record SessionFixInputSnapshot(
      * ES el contrato de lo que el modelo puede ver en una adaptacion.
      */
     public static SessionFixInputSnapshot of(PlanInputSnapshot full) {
+        return of(full, SessionFixPromptBuilder.VERSION);
+    }
+
+    /** La misma proyeccion con la version de prompt que de verdad se envio (V1 o V2 experimental). */
+    public static SessionFixInputSnapshot of(PlanInputSnapshot full, String promptVersion) {
         if (full == null)
             throw new IllegalArgumentException(
                     "No hay datos de entrada que proyectar para la adaptacion.");
@@ -127,7 +132,7 @@ public record SessionFixInputSnapshot(
         return new SessionFixInputSnapshot(
                 VERSION,
                 full.principlesVersion(),
-                SessionFixPromptBuilder.VERSION,
+                promptVersion,
                 full.user(),
                 new Constraints(
                         c.weekNumber(),

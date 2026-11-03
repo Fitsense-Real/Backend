@@ -1,0 +1,17 @@
+modo: GUION
+commit: 429b449dec01559891d2345042bb2459fdb484b5
+fecha_ejecucion_utc: 2026-11-03T03:33:50.463902564Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+ejercicios_activos: 1219
+ia_habilitada: true
+modelo: gpt-5-mini
+prompt_adaptacion: FIX-PR-1.3
+gemelos_generacion_ia: false
+credencial: ninguna (guion local, sin red)
+comprobacion_cuenta_http: -1
+prefer_wait_seconds: 60 (valor por defecto)
+limite: 90 predicciones / USD 10.0 (supuesto max 0.1 por llamada)
+politica_por_defecto: PLAN-HIST-1 (allow-candidates=false)
+progresion: false

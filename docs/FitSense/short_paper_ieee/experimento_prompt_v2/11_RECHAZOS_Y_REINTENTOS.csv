@@ -1,0 +1,47 @@
+corrida,condicion,id,intento,prediccion_id,estado_replicate,ms,tokens_entrada,tokens_salida,resultado,codigos,motivos
+C1_r1,C1,U03,1,5ww56qgr8hrmy0d1ky3ba6sms0,SUCCEEDED,9028,54721,865,ACEPTADA,,
+C1_r1,C1,U04,1,d20dq81ww1rmr0d1ky3am1sz24,SUCCEEDED,44362,55347,4098,ACEPTADA,,
+C1_r1,C1,U08,1,pr3mr6qkqxrmt0d1ky38bd4bgm,SUCCEEDED,16133,55873,1836,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-13 dura unos 1620 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 900 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r1,C1,U08,2,nsenf4hk15rmt0d1ky3t4g3tp0,SUCCEEDED,16140,56535,2321,ACEPTADA,,
+C1_r1,C1,U09,1,zxxxhsvkqxrmt0d1ky3tymqyr0,SUCCEEDED,31748,56458,3279,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 1644 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 876 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 1812 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 708 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r1,C1,U09,2,470f8jffs1rmt0d1ky3vv4eysr,SUCCEEDED,34788,57500,3460,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 2268 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 252 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 2388 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 132 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r1,C1,U09,3,9j30ydbqxhrmt0d1ky4brr0178,SUCCEEDED,28557,57633,3516,ACEPTADA,,
+C1_r1,C1,U13,1,r3g4k0fek1rmt0d1ky4ahpqeec,SUCCEEDED,22919,8950,3248,ACEPTADA,,
+C1_r1,C1,U14,1,r9baj129edrmy0d1ky4t0bv294,SUCCEEDED,34937,9536,3880,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 1632 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 258 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 1872 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 18 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r1,C1,U14,2,ehwvcyej3srmt0d1ky4tebkw7g,SUCCEEDED,31943,10596,2877,RECHAZADA,V8C,"V8C: la sesion 80 sustituye por el ejercicio 253, de patron LOCOMOTION_CARDIO, y los retirados son de patron [VERTICAL_PULL, VERTICAL_PUSH, HORIZONTAL_PUSH, KNEE_DOMINANT]. La sustitucion tiene que ser del mismo patron de movimiento."
+C1_r1,C1,U14,3,pknpj0jevdrmt0d1ky5aq40dh0,SUCCEEDED,38120,10380,4132,ACEPTADA,,
+C1_r1,C1,U18,1,xf29hffahdrmr0d1ky59ms3hh0,SUCCEEDED,20913,21270,3287,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-13 dura unos 1780 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 110 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r1,C1,U18,2,mk3b2xhwn5rmr0d1ky5s6xp3vg,SUCCEEDED,6004,22023,824,ACEPTADA,,
+C1_r1,C1,U19,1,1vqs0gtn7hrmy0d1ky5vzt3ne0,SUCCEEDED,41322,21952,4943,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 1780 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 110 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 1780 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 110 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r1,C1,U19,2,5qx8yszpnsrmy0d1ky5rz0xs9w,SUCCEEDED,31896,23208,3456,ACEPTADA,,
+C2_r1,C2,U03,1,31dtvb1xwnrmt0d1ky6t991xn0,SUCCEEDED,5084,55097,391,ACEPTADA,,
+C2_r1,C2,U04,1,0kh4m22kq1rmt0d1ky6v91jcvm,SUCCEEDED,28653,56167,3077,ACEPTADA,,
+C2_r1,C2,U08,1,ta5y60pdfsrmr0d1ky6t87xe68,SUCCEEDED,19628,56498,1958,ACEPTADA,,
+C2_r1,C2,U09,1,39f1q2gvwxrmw0d1ky7bsh3gew,SUCCEEDED,34953,57736,3911,ACEPTADA,,
+C2_r1,C2,U13,1,9mqxahnbjsrmr0d1ky790y4fa4,SUCCEEDED,21834,9571,3324,ACEPTADA,,
+C2_r1,C2,U14,1,6qh51182h5rmy0d1ky7tagz6m0,SUCCEEDED,28638,10788,3311,ACEPTADA,,
+C2_r1,C2,U18,1,5xkwjf3tf9rmy0d1ky7r10f57c,SUCCEEDED,35186,21944,4334,ACEPTADA,,
+C2_r1,C2,U19,1,0e3nnqg52hrmt0d1ky8bhfczjg,SUCCEEDED,35137,23317,3875,ACEPTADA,,
+C2_r2,C2,U03,1,437484aeh1rmr0d1ky8vh03h9r,SUCCEEDED,5780,55097,550,ACEPTADA,,
+C2_r2,C2,U04,1,0arenwk6xsrmy0d1ky8rj46qv0,SUCCEEDED,35337,56167,2948,ACEPTADA,,
+C2_r2,C2,U08,1,n971q8ftdnrmy0d1ky8r1ddxw0,SUCCEEDED,18093,56498,2089,ACEPTADA,,
+C2_r2,C2,U09,1,z13n7922qnrmt0d1ky9aydbdyc,SUCCEEDED,28747,57736,3270,ACEPTADA,,
+C2_r2,C2,U13,1,e5q46d5tknrmw0d1ky99tjk6wg,SUCCEEDED,17352,9571,2465,ACEPTADA,,
+C2_r2,C2,U14,1,k1b65s7z6nrmw0d1ky9bwwceer,SUCCEEDED,34868,10788,3450,ACEPTADA,,
+C2_r2,C2,U18,1,tq23494eb1rmw0d1ky9vdb7h0w,SUCCEEDED,22558,21944,3278,ACEPTADA,,
+C2_r2,C2,U19,1,rw0wcp7865rmt0d1ky9sea5n80,SUCCEEDED,50553,23317,5173,ACEPTADA,,
+C1_r2,C1,U03,1,33e4h0y5f9rmy0d1kyav3ew9mm,SUCCEEDED,11502,54721,1230,ACEPTADA,,
+C1_r2,C1,U04,1,z6k9es7m6xrmw0d1kyas0774nc,SUCCEEDED,34900,55347,3713,ACEPTADA,,
+C1_r2,C1,U08,1,62rmf7w71hrmt0d1kyba5w6ma4,SUCCEEDED,21205,55873,2931,ACEPTADA,,
+C1_r2,C1,U09,1,c1pnk9evthrmw0d1kyb982kwac,SUCCEEDED,24879,56458,3248,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 1644 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 876 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 2436 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 84 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r2,C1,U09,2,fxmy3aswr5rmy0d1kybstq2kc4,SUCCEEDED,40994,57515,3926,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 2388 s y el minimo es 2520 s (70 % de 60 minutos): le faltan 132 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r2,C1,U09,3,0a775keww5rmy0d1kybsze8axm,SUCCEEDED,28564,57254,2924,ACEPTADA,,
+C1_r2,C1,U13,1,qpzggdakgdrmr0d1kyc8m8ry4m,SUCCEEDED,28677,8950,3361,ACEPTADA,,
+C1_r2,C1,U14,1,sm286k64qdrmy0d1kycbep2pxc,SUCCEEDED,44230,9536,4744,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 1842 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 48 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 1842 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 48 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r2,C1,U14,2,5k24c2khnhrmr0d1kycv0c7gkr,SUCCEEDED,37827,10630,4243,RECHAZADA,V8C,"V8C: la sesion 80 sustituye por el ejercicio 253, de patron LOCOMOTION_CARDIO, y los retirados son de patron [VERTICAL_PULL, VERTICAL_PUSH, HORIZONTAL_PUSH, KNEE_DOMINANT]. La sustitucion tiene que ser del mismo patron de movimiento."
+C1_r2,C1,U14,3,rmqdxy05chrmy0d1kydbjv59k4,SUCCEEDED,50776,10822,5071,ACEPTADA,,
+C1_r2,C1,U18,1,kya79kym35rmw0d1kydbhn416c,SUCCEEDED,22045,21270,3101,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-13 dura unos 1720 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 170 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r2,C1,U18,2,2g2fwr1ajdrmt0d1kyds36nhvg,SUCCEEDED,9225,22017,1309,ACEPTADA,,
+C1_r2,C1,U19,1,qqwq5mtfksrmr0d1kydv53592w,SUCCEEDED,40961,21952,5260,RECHAZADA,V20,"V20: el entrenamiento del 2026-11-11 dura unos 1780 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 110 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-13 dura unos 1780 s y el minimo es 1890 s (70 % de 45 minutos): le faltan 110 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso."
+C1_r2,C1,U19,2,crbf11ffp1rmt0d1kydr2rv7k0,SUCCEEDED,35175,23161,4179,RECHAZADA,V8C,"V8C: la sesion 110 sustituye por el ejercicio 253, de patron LOCOMOTION_CARDIO, y los retirados son de patron [VERTICAL_PULL, HORIZONTAL_PULL, KNEE_DOMINANT, HORIZONTAL_PUSH]. La sustitucion tiene que ser del mismo patron de movimiento., V8C: la sesion 111 esta senalada como INVESTIGAR_CAMBIO_MINIMO, que no autoriza sustituir ejercicios (anade [1117], quita []). Investigar que dificulta mantener la rutina y proponer cambios pequenos en la dosis. No sustituir ni retirar ejercicios, y no cambiar el dia."
+C1_r2,C1,U19,3,ckj016ks3hrmw0d1kye9ka7jym,SUCCEEDED,50439,23425,5155,RECHAZADA,V8C,"V8C: la sesion 110 sustituye por el ejercicio 1054, de patron LOCOMOTION_CARDIO, y los retirados son de patron [VERTICAL_PULL, HORIZONTAL_PULL, KNEE_DOMINANT, HORIZONTAL_PUSH]. La sustitucion tiene que ser del mismo patron de movimiento."
