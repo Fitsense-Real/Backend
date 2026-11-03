@@ -95,3 +95,18 @@ mvnw -o -Pintegration verify -Dtest=none -Dit.test=ExperimentoKora20IT \
   -Dfitsense.experimento.kora20.max-usd=<1.50|0.75> -Dfitsense.experimento.kora20.coste-por-llamada=0.05 \
   -Dfitsense.experimento.kora20.salida=docs/.../evidencia/<corrida>
 ```
+
+---
+
+## Anexo 1 (03/11/2026): aprobación y congelación de la ejecución
+
+**El responsable aprobó la opción A** («A»), antes de cualquier llamada.
+
+**Se ejecutarán, en este orden, sin repeticiones selectivas:**
+1. **RC1_r1:** `prompt=v1`, 2 semanas, `max-llamadas=30`, `max-usd=1.50`, `coste-por-llamada=0.05`;
+2. **RC2_r1:** `prompt=v2`, con los mismos parámetros.
+
+**Límites:**
+- total: 60 predicciones y USD 3,00 estimados;
+- el código evaluado es el de este *commit* (sin cambios en `src/main` respecto a `51c145b`);
+- carpetas: `evidencia/RC1_r1` y `evidencia/RC2_r1`.
