@@ -25,7 +25,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * DIAGNOSTICO (evaluacion de calidad del prompt V2): QUE COMPRUEBA V8C EN UNA SUSTITUCION Y QUE NO.
+ * DIAGNOSTICO (evaluacion de calidad del prompt V2): QUE COMPROBABA V8C EN UNA SUSTITUCION Y QUE NO, con la regla
+ * historica CONJUNTO fijada explicitamente (desde la candidata H1 la regla por defecto es MULTICONJUNTO).
  * <p>
  * No cambia V8C: DOCUMENTA su comportamiento vigente con los datos reales del catalogo (V44_2) de las sustituciones
  * observadas en las corridas C1/C2 y en la etapa C. Si una prueba de aqui empieza a fallar es porque V8C cambio; la
@@ -41,7 +42,8 @@ class V8CDiagnosticoSustitucionesTest {
 
     static final LocalDate L1 = LocalDate.of(2026, 11, 2);
     static final LocalDate L2 = LocalDate.of(2026, 11, 9);
-    final ConservationValidator v8c = new ConservationValidator();
+    /** La regla HISTORICA, explicita: este diagnostico documenta el comportamiento anterior a H1 (compatibilidad). */
+    final ConservationValidator v8c = new ConservationValidator(ConservationValidator.ReglaPatron.CONJUNTO);
 
     /** Datos reales del catalogo (evidencia/catalogo_exercises_v44_2.csv): id, zona, musculo, patron, dificultad. */
     static final Map<Long, CandidateExercise> CAT = new LinkedHashMap<>();

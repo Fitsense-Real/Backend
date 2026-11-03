@@ -102,7 +102,7 @@ class ExperimentoKora20IT {
     static final int SEMANAS = Integer.getInteger("fitsense.experimento.kora20.semanas", 1);
     /** Guion del modo GUION: V2 (por defecto) o COMBINADOS (escenarios de cambios combinados, semana 1). */
     static final String GUION_TIPO = System.getProperty("fitsense.experimento.kora20.guion", "V2");
-    /** H1 (experimental): regla de patron de V8C, conjunto (por defecto de la aplicacion) o multiconjunto. */
+    /** H1: regla de patron de V8C; vacia = la de la aplicacion (multiconjunto desde la candidata); conjunto = historica. */
     static final String V8C_PATRON = System.getProperty("fitsense.experimento.kora20.v8c-patron", "");
     static final LocalDate S3 = LocalDate.of(2026, 11, 16);
     /**

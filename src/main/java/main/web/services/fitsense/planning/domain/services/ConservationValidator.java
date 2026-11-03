@@ -67,15 +67,16 @@ public class ConservationValidator {
     /**
      * COMO SE CONSERVA EL PATRON EN UNA SUSTITUCION NO MOTIVADA POR DOLOR (H1, experimental).
      * <ul>
-     *   <li>{@link #CONJUNTO} (por defecto, el comportamiento historico): cada ejercicio anadido tiene un patron
+     *   <li>{@link #CONJUNTO} (el comportamiento historico, hoy solo por compatibilidad y reversion): cada ejercicio anadido tiene un patron
      *       que esta ENTRE los de los retirados. Retirar un tiron vertical y un empuje horizontal y anadir dos
      *       empujes horizontales pasa, y la sesion pierde su tiron vertical.</li>
-     *   <li>{@link #MULTICONJUNTO} (correccion candidata H1, apagada por defecto): para cada patron, los
+     *   <li>{@link #MULTICONJUNTO} (correccion H1, aprobada; POR DEFECTO desde la candidata): para cada patron, los
      *       anadidos no pueden ser mas que los retirados DE ESE patron. Equivale a exigir que cada anadido se
      *       empareje con un retirado distinto del mismo patron (no se puede usar dos veces el mismo retirado).
      *       Retirar sin anadir sigue permitido donde ya lo estaba; la rama de dolor no cambia.</li>
      * </ul>
-     * Se elige con {@code fitsense.adaptation.v8c.pattern-rule} ({@code conjunto} | {@code multiconjunto}).
+     * Se elige con {@code fitsense.adaptation.v8c.pattern-rule} ({@code multiconjunto} por defecto | {@code conjunto}
+     * para volver al comportamiento anterior).
      */
     public enum ReglaPatron {
         CONJUNTO, MULTICONJUNTO;
@@ -83,8 +84,8 @@ public class ConservationValidator {
         public static ReglaPatron desde(String valor) {
             String v = valor == null ? "" : valor.strip().toLowerCase(java.util.Locale.ROOT);
             return switch (v) {
-                case "", "conjunto" -> CONJUNTO;
-                case "multiconjunto" -> MULTICONJUNTO;
+                case "", "multiconjunto" -> MULTICONJUNTO;
+                case "conjunto" -> CONJUNTO;
                 default -> throw new IllegalArgumentException(
                         "fitsense.adaptation.v8c.pattern-rule admite conjunto o multiconjunto, no '" + valor + "'.");
             };
@@ -93,21 +94,21 @@ public class ConservationValidator {
 
     private final ReglaPatron reglaPatron;
 
-    /** La regla historica ({@link ReglaPatron#CONJUNTO}). */
+    /** La regla por defecto ({@link ReglaPatron#MULTICONJUNTO}). */
     public ConservationValidator() {
-        this(ReglaPatron.CONJUNTO);
+        this(ReglaPatron.MULTICONJUNTO);
     }
 
     public ConservationValidator(ReglaPatron reglaPatron) {
-        this.reglaPatron = reglaPatron == null ? ReglaPatron.CONJUNTO : reglaPatron;
-        if (this.reglaPatron != ReglaPatron.CONJUNTO)
+        this.reglaPatron = reglaPatron == null ? ReglaPatron.MULTICONJUNTO : reglaPatron;
+        if (this.reglaPatron == ReglaPatron.CONJUNTO)
             org.slf4j.LoggerFactory.getLogger(ConservationValidator.class)
-                    .warn("V8C: regla de patron EXPERIMENTAL activa: {} (H1).", this.reglaPatron);
+                    .warn("V8C: regla de patron HISTORICA activa: CONJUNTO (compatibilidad o reversion de H1).");
     }
 
     @org.springframework.beans.factory.annotation.Autowired
     public ConservationValidator(@org.springframework.beans.factory.annotation.Value(
-            "${fitsense.adaptation.v8c.pattern-rule:conjunto}") String reglaPatron) {
+            "${fitsense.adaptation.v8c.pattern-rule:multiconjunto}") String reglaPatron) {
         this(ReglaPatron.desde(reglaPatron));
     }
 

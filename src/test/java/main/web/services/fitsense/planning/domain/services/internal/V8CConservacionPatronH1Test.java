@@ -80,11 +80,11 @@ class V8CConservacionPatronH1Test {
     // ------------------------------------------------------------------------------------------------------------
 
     @Test
-    @DisplayName("0. Por defecto (sin configurar) la regla es la historica: CONJUNTO")
+    @DisplayName("0. Por defecto (sin configurar) la regla es MULTICONJUNTO; conjunto se elige explicitamente")
     void porDefecto() {
-        assertEquals(ReglaPatron.CONJUNTO, new ConservationValidator().reglaPatron());
+        assertEquals(ReglaPatron.MULTICONJUNTO, new ConservationValidator().reglaPatron());
         assertEquals(ReglaPatron.CONJUNTO, new ConservationValidator("conjunto").reglaPatron());
-        assertEquals(ReglaPatron.CONJUNTO, new ConservationValidator("").reglaPatron());
+        assertEquals(ReglaPatron.MULTICONJUNTO, new ConservationValidator("").reglaPatron());
         assertEquals(ReglaPatron.MULTICONJUNTO, new ConservationValidator(" Multiconjunto ").reglaPatron());
         assertThrows(IllegalArgumentException.class, () -> new ConservationValidator("pareja"));
     }
