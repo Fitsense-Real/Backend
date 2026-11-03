@@ -990,8 +990,12 @@ class ExperimentoKora20IT {
                     .map(x -> x.exerciseId()).filter(x -> indice(a.ej, x) < 0).toList();
             switch (estrategia) {
                 case "LATERAL_TODO", "LATERAL_UNO", "LATERAL_EQUIPO" -> {
+                    boolean otroEquipo = "LATERAL_EQUIPO".equals(estrategia) && a.ej.stream()
+                            .anyMatch(e -> !lateral.apply(e.exerciseId(), Boolean.FALSE).isEmpty());
+                    if ("LATERAL_EQUIPO".equals(estrategia) && !otroEquipo)
+                        a.hecho.add("LATERAL_EQUIPO sin sustituto lateral de otro equipamiento: se usa el mismo equipamiento");
                     for (var e : List.copyOf(a.ej)) {
-                        var m = lateral.apply(e.exerciseId(), "LATERAL_EQUIPO".equals(estrategia) ? Boolean.FALSE : null);
+                        var m = lateral.apply(e.exerciseId(), otroEquipo ? Boolean.FALSE : null);
                         if (m.isEmpty()) continue;
                         a.sustituir(e.exerciseId(), m.get(0), estrategia + " " + e.exerciseId() + "(dif "
                                 + cat.get(e.exerciseId()).difficulty() + ")->" + m.get(0) + "(dif " + cat.get(m.get(0)).difficulty()
@@ -1067,7 +1071,7 @@ class ExperimentoKora20IT {
                 }
                 default -> { }
             }
-            if (a.hecho.isEmpty() || "OMITIR".equals(estrategia)) {
+            if (a.ej.equals(new Ses(f, der).ej) || "OMITIR".equals(estrategia)) {
                 acciones.add(f.plannedWorkoutId() + " " + clave + " i" + intento + " " + estrategia + ": OMITIDA (sin cambio aplicable)");
             } else {
                 sesiones.add(a.json());
