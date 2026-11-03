@@ -379,7 +379,15 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         var adjustment = prepared.adjustment();
         var etiqueta = publicacion.etiquetaDeAjuste();
-        var motivo = publicacion.motivoDePublicacion(adjustment);
+        var motivoDecision = publicacion.motivoDePublicacion(adjustment);
+        // SOLO PRESENTACION: el texto que vera la persona describe lo que cambio de verdad (dificultad registrada,
+        // dosis, sustitucion lateral, no aplicada o conservada sin alternativa), no lo que la decision preveia.
+        var motivo = publicacion.decision().ordenaAdaptar() && adjustment != null && prepared.context() != null
+                ? main.web.services.fitsense.planning.domain.services.DescripcionAdaptacion.texto(motivoDecision,
+                adjustment, main.web.services.fitsense.planning.domain.services.DescripcionAdaptacion.clasificar(
+                        resultado, prepared.context().previousWeek(), prepared.context().availableExercises(),
+                        adjustment))
+                : motivoDecision;
 
         // REEMPLAZAR UN PLAN YA PUBLICADO EXIGE DECIR POR QUE.
         // nextVersionOf rechaza un motivo vacio, y con NO_CHANGE o

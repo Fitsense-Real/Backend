@@ -166,7 +166,10 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
         // verdad: no se aplico ningun ajuste porcentual. La adaptacion
         // localizada se registra entera en plan_adaptation_attempts (V32), que
         // existe para eso.
-        var decision = sinAjustePorcentual(orden.reason());
+        // P-T2/P-T3: el reason TECNICO de la orden se conserva tal cual (llega a planning y al snapshot); a
+        // message_shown va la INTENCION, en palabras de la persona y sin prometer un resultado.
+        var decision = sinAjustePorcentual(orden.reason(),
+                main.web.services.fitsense.adaptation.domain.services.MensajeDeIntervencion.intencion(orden));
 
         // uq_ui_metric: una sola fila por semana medida. Si ya existe se devuelve
         // con la orden recalculada, que es identica por ser determinista.
@@ -216,7 +219,15 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
      * @param motivo el {@code reason} de la orden. Puede venir vacio.
      */
     static AdjustmentDecision sinAjustePorcentual(String motivo) {
-        String mensaje = motivo == null || motivo.isBlank()
+        return sinAjustePorcentual(motivo, null);
+    }
+
+    /**
+     * Igual, con el texto para la persona aparte del motivo tecnico. {@code mensaje} vacio usa el motivo, como antes.
+     */
+    static AdjustmentDecision sinAjustePorcentual(String motivo, String mensajeParaLaPersona) {
+        String mensaje = mensajeParaLaPersona != null && !mensajeParaLaPersona.isBlank() ? mensajeParaLaPersona
+                : motivo == null || motivo.isBlank()
                 ? "Esta semana se mantiene la prescripcion anterior."
                 : motivo;
 

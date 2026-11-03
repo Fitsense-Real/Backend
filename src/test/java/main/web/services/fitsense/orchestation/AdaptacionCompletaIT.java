@@ -184,6 +184,27 @@ class AdaptacionCompletaIT {
                 "una sola peticion a la IA");
         assertEquals(cambian.isEmpty() ? "CONSERVED" : "AI", ev.get("generation_source"));
 
+        // 1b. Los dos textos de la API (P-T2/P-T3 y justificacion verificable): message_shown es la INTENCION de la
+        //     decision, escrita antes de adaptar, y adjustment_reason el RESULTADO publicado. Ninguno promete lo que
+        //     no ocurrio, y el motivo tecnico de la orden no llega a la persona.
+        String intencion = jdbc.queryForObject("SELECT message_shown FROM user_interventions WHERE user_id = ?",
+                String.class, u);
+        for (var promesa : List.of("bajamos", "acortamos", "subimos", "reducimos", "más fácil", "sencill"))
+            assertFalse(intencion.toLowerCase(java.util.Locale.ROOT).contains(promesa), intencion);
+        assertFalse(intencion.contains("Adherencia observada"), intencion);
+        if (escenario.cambiadas > 0) {
+            assertTrue(intencion.contains("Revisaremos"), intencion);
+            String resultado = jdbc.queryForObject("SELECT adjustment_reason FROM weekly_training_plans"
+                    + " WHERE plan_id = ?", String.class, planNuevo);
+            assertFalse(resultado.contains("Adherencia observada"), resultado);
+            if (cambian.isEmpty())
+                assertTrue(resultado.contains("no aplicamos cambios esta semana"), resultado);
+            else
+                assertTrue(resultado.contains("Retiramos " + cambian.size() + " ejercicio"), resultado);
+        } else {
+            assertTrue(intencion.contains("mantenemos"), intencion);
+        }
+
         // 2. Una sola version vigente, con linaje.
         assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?"
                 + " AND week_start_date = ? AND status = 'ACTIVE'", Integer.class, u, NUEVA));
