@@ -107,3 +107,17 @@ Los resultados además **se recalculan de forma independiente** a partir de las 
 - los 3 intentos por operación y que el laboratorio no reintente nada.
 
 El token nunca pasa por el laboratorio ni por la evidencia.
+
+## Anexo 2 (2026-11-03, tras el intento 2 de la etapa C): espera síncrona de 25 s
+
+**Por qué:** en el intento 2, el proxy de esta sesión cortó a los 30 s (502) 7 de las 12 predicciones, que Replicate sí completó (`evidencia/C_intento2_proxy_502`).
+
+**Cambio de configuración registrado:**
+- **`fitsense.ai.prefer-wait-seconds=25`** (antes 60, el valor por defecto) solo en el laboratorio. Es una propiedad existente del backend: con ella, el POST devuelve la predicción en curso antes de 30 s y el backend sigue con su sondeo de siempre (cada 3 s, hasta 150 s).
+- Límite de esta ejecución: **78 predicciones**, el total de 90 menos las 12 ya consumidas.
+
+**No cambia:**
+- el modelo, el *prompt*, la política, los validadores, los perfiles, los patrones ni las semillas;
+- los 3 intentos por operación.
+
+La etapa C se repite **completa** (no casos sueltos) en `evidencia/C`.

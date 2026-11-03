@@ -93,7 +93,10 @@ class ExperimentoKora20IT {
     static final Path SALIDA = Path.of(System.getProperty("fitsense.experimento.kora20.salida", "target/kora20"));
     static final LocalDate S1 = LocalDate.of(2026, 11, 2);
     static final LocalDate S2 = S1.plusWeeks(1);
-    static final int MAX_LLAMADAS = 90;
+    /** Predicciones de ESTA ejecucion: el total autorizado (90) menos las ya consumidas en intentos anteriores. */
+    static final int MAX_LLAMADAS = Integer.getInteger("fitsense.experimento.kora20.max-llamadas", 90);
+    /** Variacion de transporte registrada (anexo 2): espera sincrona del POST antes de pasar al sondeo. */
+    static final String PREFER_WAIT = System.getProperty("fitsense.experimento.kora20.prefer-wait", "");
     /** Coste maximo supuesto por prediccion (conservador; la campana MVP observo ~US$ 0,02): 90 x 0,10 = 9 < 10. */
     static final double COSTE_MAX_POR_LLAMADA_USD = 0.10;
 
@@ -104,6 +107,7 @@ class ExperimentoKora20IT {
     @DynamicPropertySource
     static void ia(DynamicPropertyRegistry r) {
         r.add("fitsense.ai.enabled", () -> String.valueOf(IA));
+        if (IA && !PREFER_WAIT.isBlank()) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
         r.add("fitsense.ai.api-token", () -> !IA ? "" : CREDENCIAL_PROXY ? "marcador-credencial-inyectada-por-el-proxy"
                 : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), ""));
     }
@@ -174,6 +178,7 @@ class ExperimentoKora20IT {
         cfg.put("modelo", generador.modelName());
         cfg.put("credencial", !IA ? "ninguna" : CREDENCIAL_PROXY ? "secreto de red inyectado por el proxy (no visible)" : "variable REPLICATE_API_TOKEN");
         cfg.put("comprobacion_cuenta_http", cuenta);
+        cfg.put("prefer_wait_seconds", PREFER_WAIT.isBlank() ? "60 (valor por defecto)" : PREFER_WAIT + " (variacion registrada, anexo 2)");
         cfg.put("limite", MAX_LLAMADAS + " predicciones / USD 10 (supuesto max " + COSTE_MAX_POR_LLAMADA_USD + " por llamada)");
         cfg.put("politica_por_defecto", "PLAN-HIST-1 (allow-candidates=false)");
         cfg.put("progresion", "false");
