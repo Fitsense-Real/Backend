@@ -28,6 +28,8 @@
 | K13 | En los escenarios con H12-A, una sesión que se adapta cada semana **por dosis** puede llegar al mínimo V20 en la semana 3 (E11: 3 → 1 → SIN_EFECTO) | F | `08` (E11) | Bajo: comportamiento ya conocido (H5 del PR #30) | Sin cambio; documentado |
 | K14 | El laboratorio pasa a admitir 3 semanas y el guion H12. Los valores por defecto reproducen lo anterior: `GUION_COMBINADOS` con 2 semanas da resultados idénticos (`02`) | L | `08` | — | — |
 | K15 | Las IT no comprueban de forma específica la regla H1 de extremo a extremo; solo el laboratorio *opt-in* lo hace | L | `05` | Bajo | Si se autoriza H1, añadir una IT del caso U04 que corra en CI |
+| K16 | Con H12-A, si el añadido no está en el catálogo elegible, el mensaje de H12-A repite el ejercicio que V8C ya rechazaba («no consta su patrón») | L | `12` §3 | Ninguno: el resultado es el mismo | Si se aprueba H12-A, omitir en su mensaje los añadidos sin ficha |
+| K17 | Con H12-A, la IT de control `AdaptacionRegresionIT.sinBloqueoLaVarianteSePublica` falla porque espera una VARIANTE lateral (919 → 124, dificultad 2 → 2) | F | `12` §3 | Ninguno con la regla apagada | Cambio esperado. Si se aprueba H12-A, adaptar el control a un sustituto de menor dificultad |
 
 **Defectos demostrados del backend (clase D): 0.** H1 era un hueco de la regla, no un error de implementación. H12 es una combinación de catálogo, política, prompt y falta de límite.
 

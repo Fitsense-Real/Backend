@@ -1,0 +1,20 @@
+# 960 perfiles + REPLAY 100 semanas, modo default
+[WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 69.50 s -- in main.web.services.fitsense.orchestation.CampanaP123Cohorte02IT
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 35.97 s -- in Comparacion perfil a perfil: volcado de planes completos
+[INFO] BUILD SUCCESS
+# sha256
+d109a3daa156d6d28bdfbebf109e5b5066bee8213c3663b21ad7b177dd18a859  c960_default/planes.csv
+d227848ba040e73af459b052ab518f67d0b80af55cc731cbe2a455f5abe265ef  c960_default/colocaciones.csv
+# git status de la evidencia de la REPLAY tras la ejecucion (se descarto con git checkout)
+ M docs/FitSense/campana_p123/evidencia/exclusiones_dolor.csv
+# diff (solo marcas de tiempo)
+diff --git a/docs/FitSense/campana_p123/evidencia/exclusiones_dolor.csv b/docs/FitSense/campana_p123/evidencia/exclusiones_dolor.csv
+index 0fa46cd..414588f 100644
+--- a/docs/FitSense/campana_p123/evidencia/exclusiones_dolor.csv
++++ b/docs/FitSense/campana_p123/evidencia/exclusiones_dolor.csv
+@@ -1,3 +1,3 @@
+ exclusion_id;user_id;exercise_id;reason;source_plan_id;source_planned_workout_id;source_planned_exercise_id;event_date;recorded_by;recorded_at;status;reactivated_at;reactivation_reason;reactivation_evidence
+-1;9;791;DOLOR_IDENTIFICADO;20;62;297;2026-11-09;CICLO_SEMANAL;2026-10-31 17:35:55.581403;REACTIVADA;2026-10-31 17:36:36.798021;confirmo que ya no siento molestias (simulado);CONFIRMACION_EXPLICITA_DEL_USUARIO user=9 ejercicio=791 via=POST /api/v1/users/me/pain-exclusions/791/reactivation en=2026-10-31T17:36:36.798021392Z, control de seguridad sin conflicto
+-2;7;129;DOLOR_IDENTIFICADO;42;133;610;2026-11-23;CICLO_SEMANAL;2026-10-31 17:36:09.756891;ACTIVA;;;
++1;9;791;DOLOR_IDENTIFICADO;20;62;297;2026-11-09;CICLO_SEMANAL;2026-11-03 15:30:53.383712;REACTIVADA;2026-11-03 15:31:15.530087;confirmo que ya no siento molestias (simulado);CONFIRMACION_EXPLICITA_DEL_USUARIO user=9 ejercicio=791 via=POST /api/v1/users/me/pain-exclusions/791/reactivation en=2026-11-03T15:31:15.530087226Z, control de seguridad sin conflicto
++2;7;129;DOLOR_IDENTIFICADO;42;133;610;2026-11-23;CICLO_SEMANAL;2026-11-03 15:31:01.317797;ACTIVA;;;

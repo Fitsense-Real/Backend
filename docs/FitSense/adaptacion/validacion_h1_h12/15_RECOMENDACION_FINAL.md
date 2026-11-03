@@ -32,8 +32,9 @@
    - en unitarias, con datos reales del catálogo: antes aceptada, después rechazada, y corregida aceptada;
    - de extremo a extremo: antes publicada con 3 HPUSH y 1 VPULL; después, rechazo y reintento con un VERTICAL_PULL (`02` §3).
 7. **¿Alguna regresión?** **No.**
-   - **Con la regla activa:** 1.105 unitarias y 489 IT, 0 fallos (`05` §2.3).
-   - **Con todo apagado:** ver `12`.
+   - **Con todo apagado:** 1.119 unitarias y 489 IT, 0 fallos (37 *opt-in*); 960 perfiles idénticos; REPLAY igual (`12` §1).
+   - **Con H1 activa:** 0 fallos en las IT completas; 960 y REPLAY idénticos (`12` §2).
+   - **Con H1 + H12-A activas (prototipo):** 1 fallo **esperado**, una IT de control que espera una VARIANTE lateral (`12` §3, K17).
    - **Único cambio de comportamiento:** «añadir 2 de un patrón retirando 1» fuera del dolor, declarado; 0 casos reales.
 8. **¿Por qué R01 y R05 cambiaban tantos ejercicios?** Por la combinación de (`06` §6):
    1. principiantes con `max_difficulty_level = 1`: todo su elegible tiene dificultad 1, así que no hay variante «más sencilla» en el catálogo;
@@ -101,15 +102,16 @@
 21. **¿Se conservó V24?** **Sí:** ninguna alternativa autoriza una dosis prohibida. En los escenarios, V24 rechazó la reducción en GM con las cuatro configuraciones (E12), y 0 dosis subidas (`08`).
 22. **¿Se conservaron V20 y la adherencia?**
     - **Sí:** V20 rechazó lo que no cabía en las cuatro configuraciones, y hay 0 sesiones publicadas bajo el mínimo.
-    - Aw, Aobs y la cobertura **no dependen** de V8C (se calculan antes). Las semanas 2–3 de los escenarios muestran las mismas métricas en las cuatro corridas (`12`).
-23. **¿La generación inicial sigue idéntica?** Ver `12`: 960 perfiles con las reglas apagadas y con H1 + H12-A activadas.
-24. **¿La REPLAY y los 960 perfiles siguen pasando?** Ver `12`.
-25. **¿Qué PR quedaron creados y con qué CI?** Ver `13`:
-    - [#31](https://github.com/Fitsense-Real/Backend/pull/31) H1;
-    - [#32](https://github.com/Fitsense-Real/Backend/pull/32) catálogo;
-    - el PR de H12.
-
-    Ninguno fusionado.
+    - Aw, Aobs y la cobertura **no dependen** de V8C (se calculan antes). `adherencia.csv` y las métricas de las semanas 2–3 son idénticos en las cuatro corridas de escenarios.
+    - Todas las IT de adherencia, V20, RESPALDO y SIN_EFECTO pasan con la configuración por defecto y con H1 (`11` §4, `12`).
+23. **¿La generación inicial sigue idéntica?**
+    - **Sí.** 960 perfiles **idénticos byte a byte** con las reglas apagadas, con H1 y con H1 + H12-A (`planes.csv d109a3da…`, `colocaciones.csv d227848b…`, los mismos que en `generation`).
+    - En los escenarios, `generacion.csv` y el plan inicial son idénticos en las 4 configuraciones (`12`, `11` §4).
+24. **¿La REPLAY y los 960 perfiles siguen pasando?** **Sí**, en las tres configuraciones. La REPLAY de 100 semanas solo difiere en 2 marcas de tiempo de `exclusiones_dolor.csv` (`12`).
+25. **¿Qué PR quedaron creados y con qué CI?** Tres, en borrador y sin fusionar (`13`):
+    - [#31](https://github.com/Fitsense-Real/Backend/pull/31) H1, CI verde en `77ca7dc`;
+    - [#32](https://github.com/Fitsense-Real/Backend/pull/32) catálogo, verde en `4d43ee1`;
+    - [#33](https://github.com/Fitsense-Real/Backend/pull/33) H12, verde en `a38b312`. El *push* final solo añade documentos.
 26. **¿Qué cambios concretos recomiendo autorizar?**
     1. **Activar H1** (`fitsense.adaptation.v8c.pattern-rule=multiconjunto`), con una IT del caso U04 en CI (K15).
     2. **Llevar H12-A a evaluación profesional** (§19 a) y, si se aprueba, activar `fitsense.adaptation.variante.policy=reduccion-demostrable` y validarlo en una última corrida con Replicate (el prompt con sustitutos < ya está preparado).
