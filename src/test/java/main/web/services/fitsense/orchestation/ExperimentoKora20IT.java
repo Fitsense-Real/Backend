@@ -102,6 +102,8 @@ class ExperimentoKora20IT {
     static final int SEMANAS = Integer.getInteger("fitsense.experimento.kora20.semanas", 1);
     /** Guion del modo GUION: V2 (por defecto) o COMBINADOS (escenarios de cambios combinados, semana 1). */
     static final String GUION_TIPO = System.getProperty("fitsense.experimento.kora20.guion", "V2");
+    /** H1 (experimental): regla de patron de V8C, conjunto (por defecto de la aplicacion) o multiconjunto. */
+    static final String V8C_PATRON = System.getProperty("fitsense.experimento.kora20.v8c-patron", "");
     static final LocalDate S3 = LocalDate.of(2026, 11, 16);
     /**
      * {@code proxy}: la credencial de Replicate la inyecta el proxy del entorno (secreto de red) en las peticiones a
@@ -131,6 +133,7 @@ class ExperimentoKora20IT {
         r.add("fitsense.ai.enabled", () -> String.valueOf(IA_O_GUION));
         if (IA && !PREFER_WAIT.isBlank()) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
         if (!PROMPT.isBlank()) r.add("fitsense.ai.adaptation.prompt-version", () -> PROMPT);
+        if (!V8C_PATRON.isBlank()) r.add("fitsense.adaptation.v8c.pattern-rule", () -> V8C_PATRON);
         if (GUION) r.add("fitsense.ai.base-url", () -> "http://127.0.0.1:9/guion-sin-red");
         r.add("fitsense.ai.api-token", () -> GUION ? "guion-sin-red" : !IA ? "" : CREDENCIAL_PROXY ? "marcador-credencial-inyectada-por-el-proxy"
                 : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), ""));
@@ -143,6 +146,7 @@ class ExperimentoKora20IT {
     @MockitoSpyBean ReplicateSessionFixGenerator correcciones;
 
     @Autowired main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilder promptBuilder;
+    @Autowired main.web.services.fitsense.planning.domain.services.ConservationValidator conservacion;
     @Autowired UserCommandService cuentas;
     @Autowired UserProfileCommandService perfiles;
     @Autowired PlanningContextFacade planning;
@@ -202,6 +206,7 @@ class ExperimentoKora20IT {
         cfg.put("ia_habilitada", generador.isEnabled());
         cfg.put("modelo", generador.modelName());
         cfg.put("prompt_adaptacion", promptBuilder.version());
+        cfg.put("v8c_regla_patron", conservacion.reglaPatron());
         cfg.put("perfiles", PERFILES.isBlank() ? "03_PERFILES_U01_U20.csv (congelados)" : PERFILES);
         cfg.put("semanas", SEMANAS);
         if (GUION) cfg.put("guion", GUION_TIPO);
