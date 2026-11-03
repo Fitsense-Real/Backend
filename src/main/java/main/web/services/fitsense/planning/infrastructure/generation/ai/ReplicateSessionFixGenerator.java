@@ -120,7 +120,8 @@ public class ReplicateSessionFixGenerator {
         // devolver mas sesiones de las que se le pidieron. Y la etiqueta de la
         // peticion dice que esto fue una adaptacion, no una semana nueva.
         var output = transporte.call(prompt.text(),
-                ReplicateTrainingPlanGenerator.Peticion.deCorrecciones(senaladas(context).size()),
+                ReplicateTrainingPlanGenerator.Peticion.deCorrecciones(senaladas(context).size(),
+                        promptBuilder.version()),
                 context.userId(), context.weekNumber(), attempt);
 
         return new RawFix(prompt.snapshotJson(), output);
