@@ -91,24 +91,82 @@ public class ConservationValidator {
         }
     }
 
-    private final ReglaPatron reglaPatron;
+    /**
+     * H12 (PROTOTIPO EXPERIMENTAL, apagado por defecto): que exige una sustitucion de
+     * VARIANTE_MAS_SENCILLA_O_CARGA ({@code TOO_DIFFICULT}). No toca el dolor ni las demas intervenciones.
+     * <ul>
+     *   <li>{@link #HISTORICA}: la de siempre (mismo patron; la dificultad relativa no se compara).</li>
+     *   <li>{@link #REDUCCION_DEMOSTRABLE} (H12-A): cada anadido tiene que emparejarse con un retirado DISTINTO
+     *       del mismo patron y de MAYOR dificultad en el catalogo. Una sustitucion lateral (misma dificultad) se
+     *       rechaza; la reduccion de dosis que ya estaba permitida sigue permitida, y conservar la sesion sigue
+     *       siendo la respuesta cuando no hay ni variante de menor dificultad ni dosis que bajar.</li>
+     * </ul>
+     * Se elige con {@code fitsense.adaptation.variante.policy} ({@code historica} | {@code reduccion-demostrable}).
+     */
+    public enum PoliticaVariante {
+        HISTORICA, REDUCCION_DEMOSTRABLE;
 
-    /** La regla historica ({@link ReglaPatron#CONJUNTO}). */
+        public static PoliticaVariante desde(String valor) {
+            String v = valor == null ? "" : valor.strip().toLowerCase(java.util.Locale.ROOT);
+            return switch (v) {
+                case "", "historica" -> HISTORICA;
+                case "reduccion-demostrable" -> REDUCCION_DEMOSTRABLE;
+                default -> throw new IllegalArgumentException(
+                        "fitsense.adaptation.variante.policy admite historica o reduccion-demostrable, no '" + valor + "'.");
+            };
+        }
+    }
+
+    private final ReglaPatron reglaPatron;
+    private final PoliticaVariante politicaVariante;
+    /** H12-C (prototipo): maximo de ejercicios anadidos por sesion en VARIANTE; 0 = sin limite (historico). */
+    private final int maxSustituciones;
+
+    /** La regla historica ({@link ReglaPatron#CONJUNTO}, {@link PoliticaVariante#HISTORICA}, sin limite). */
     public ConservationValidator() {
         this(ReglaPatron.CONJUNTO);
     }
 
     public ConservationValidator(ReglaPatron reglaPatron) {
+        this(reglaPatron, PoliticaVariante.HISTORICA, 0);
+    }
+
+    public ConservationValidator(ReglaPatron reglaPatron, PoliticaVariante politicaVariante, int maxSustituciones) {
         this.reglaPatron = reglaPatron == null ? ReglaPatron.CONJUNTO : reglaPatron;
+        this.politicaVariante = politicaVariante == null ? PoliticaVariante.HISTORICA : politicaVariante;
+        if (maxSustituciones < 0)
+            throw new IllegalArgumentException("fitsense.adaptation.variante.max-sustituciones no puede ser negativo.");
+        this.maxSustituciones = maxSustituciones;
         if (this.reglaPatron != ReglaPatron.CONJUNTO)
             org.slf4j.LoggerFactory.getLogger(ConservationValidator.class)
                     .warn("V8C: regla de patron EXPERIMENTAL activa: {} (H1).", this.reglaPatron);
+        if (this.politicaVariante != PoliticaVariante.HISTORICA || this.maxSustituciones > 0)
+            org.slf4j.LoggerFactory.getLogger(ConservationValidator.class)
+                    .warn("V8C: politica de VARIANTE EXPERIMENTAL activa: {}, max-sustituciones={} (H12).",
+                            this.politicaVariante, this.maxSustituciones);
+    }
+
+    public ConservationValidator(String reglaPatron) {
+        this(ReglaPatron.desde(reglaPatron));
     }
 
     @org.springframework.beans.factory.annotation.Autowired
-    public ConservationValidator(@org.springframework.beans.factory.annotation.Value(
-            "${fitsense.adaptation.v8c.pattern-rule:conjunto}") String reglaPatron) {
-        this(ReglaPatron.desde(reglaPatron));
+    public ConservationValidator(
+            @org.springframework.beans.factory.annotation.Value("${fitsense.adaptation.v8c.pattern-rule:conjunto}")
+            String reglaPatron,
+            @org.springframework.beans.factory.annotation.Value("${fitsense.adaptation.variante.policy:historica}")
+            String politicaVariante,
+            @org.springframework.beans.factory.annotation.Value("${fitsense.adaptation.variante.max-sustituciones:0}")
+            int maxSustituciones) {
+        this(ReglaPatron.desde(reglaPatron), PoliticaVariante.desde(politicaVariante), maxSustituciones);
+    }
+
+    public PoliticaVariante politicaVariante() {
+        return politicaVariante;
+    }
+
+    public int maxSustituciones() {
+        return maxSustituciones;
     }
 
     /** La regla de patron con la que valida esta instancia. */
@@ -1075,6 +1133,62 @@ public class ConservationValidator {
 
         if (reglaPatron == ReglaPatron.MULTICONJUNTO)
             revisarMulticonjunto(origen, d, catalogo, patronesQuitados, problems);
+
+        // H12 (prototipos, apagados por defecto). Solo VARIANTE llega aqui sin dolor.
+        if (maxSustituciones > 0 && d.anadidos().size() > maxSustituciones)
+            problems.add(("V8C: la sesion %d sustituye %d ejercicios %s y la politica experimental H12-C admite como "
+                    + "maximo %d por sesion. Cambia solo los ejercicios que mas pueden facilitar la sesion; si no "
+                    + "hay ninguno que la facilite, conservala.")
+                    .formatted(origen, d.anadidos().size(), d.anadidos(), maxSustituciones));
+        if (politicaVariante == PoliticaVariante.REDUCCION_DEMOSTRABLE)
+            revisarReduccionDemostrable(origen, d, catalogo, problems);
+    }
+
+    /**
+     * H12-A (prototipo): cada anadido necesita un retirado DISTINTO del mismo patron y de mayor dificultad en el
+     * catalogo. Con un criterio por pareja (patron y dificultad) contar por patron ya no basta: se busca un
+     * emparejamiento maximo (caminos de aumento; las sesiones tienen menos de 10 ejercicios).
+     */
+    private static void revisarReduccionDemostrable(Long origen, Diferencias d, Map<Long, CandidateExercise> catalogo,
+                                                    List<String> problems) {
+        var anadidos = d.anadidos();
+        var quitados = d.quitados();
+        var parejaDeQuitado = new HashMap<Long, Long>();
+        var sinPareja = new ArrayList<Long>();
+        for (var a : anadidos)
+            if (!aumentar(a, anadidos, quitados, catalogo, parejaDeQuitado, new LinkedHashSet<>()))
+                sinPareja.add(a);
+        if (sinPareja.isEmpty()) return;
+        var detalle = sinPareja.stream().map(a -> {
+            var c = catalogo.get(a);
+            return a + " (" + (c == null ? "?" : c.movementPattern() + ", dificultad " + c.difficulty()) + ")";
+        }).toList();
+        var retirados = quitados.stream().map(q -> {
+            var c = catalogo.get(q);
+            return q + " (" + (c == null ? "?" : c.movementPattern() + ", dificultad " + c.difficulty()) + ")";
+        }).toList();
+        problems.add(("V8C: la sesion %d esta senalada por dificultad y %s no reducen la dificultad del catalogo "
+                + "respecto a ningun retirado libre del mismo patron (retirados: %s). Con la politica experimental "
+                + "H12-A una sustitucion tiene que ser de MENOR dificultad; si no existe, baja la dosis donde se "
+                + "permita o conserva la sesion.").formatted(origen, detalle, retirados));
+    }
+
+    private static boolean aumentar(Long anadido, List<Long> anadidos, List<Long> quitados,
+                                    Map<Long, CandidateExercise> catalogo, Map<Long, Long> parejaDeQuitado,
+                                    Set<Long> visitados) {
+        var ca = catalogo.get(anadido);
+        if (ca == null || ca.movementPattern() == null) return false;
+        for (var q : quitados) {
+            var cq = catalogo.get(q);
+            if (cq == null || !ca.movementPattern().equals(cq.movementPattern())) continue;
+            if (ca.difficulty() >= cq.difficulty() || !visitados.add(q)) continue;
+            var ocupado = parejaDeQuitado.get(q);
+            if (ocupado == null || aumentar(ocupado, anadidos, quitados, catalogo, parejaDeQuitado, visitados)) {
+                parejaDeQuitado.put(q, anadido);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

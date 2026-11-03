@@ -70,15 +70,27 @@ public class SessionFixPromptBuilder {
 
     private final JsonSupport json;
     private final boolean v2;
+    /** H12-A (prototipo, apagado): en VARIANTE solo se listan sustitutos de MENOR dificultad. */
+    private final boolean soloMenorDificultad;
 
     public SessionFixPromptBuilder(JsonSupport json) {
         this(json, "v1");
     }
 
+    public SessionFixPromptBuilder(JsonSupport json, String promptVersion) {
+        this(json, promptVersion, "historica");
+    }
+
     @org.springframework.beans.factory.annotation.Autowired
     public SessionFixPromptBuilder(JsonSupport json,
                                    @org.springframework.beans.factory.annotation.Value(
-                                           "${fitsense.ai.adaptation.prompt-version:v1}") String promptVersion) {
+                                           "${fitsense.ai.adaptation.prompt-version:v1}") String promptVersion,
+                                   @org.springframework.beans.factory.annotation.Value(
+                                           "${fitsense.adaptation.variante.policy:historica}") String politicaVariante) {
+        this.soloMenorDificultad = main.web.services.fitsense.planning.domain.services.ConservationValidator
+                .PoliticaVariante.desde(politicaVariante)
+                == main.web.services.fitsense.planning.domain.services.ConservationValidator.PoliticaVariante
+                .REDUCCION_DEMOSTRABLE;
         this.json = json;
         String v = promptVersion == null ? "v1" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
         if (!v.equals("v1") && !v.equals(PROPIEDAD_V2))
@@ -306,7 +318,7 @@ public class SessionFixPromptBuilder {
         var resultados = resultadosPorSesion(previous);
 
         var factibilidad = new LinkedHashMap<Long, FactibilidadAdaptacion.Sesion>();
-        if (v2) FactibilidadAdaptacion.calcular(context, derivation)
+        if (v2) FactibilidadAdaptacion.calcular(context, derivation, soloMenorDificultad)
                 .forEach(f -> factibilidad.put(f.plannedWorkoutId(), f));
 
         var bloque = new StringBuilder("\nSESIONES SENALADAS (");
@@ -454,6 +466,7 @@ public class SessionFixPromptBuilder {
             var porId = context.availableExercises().stream().collect(java.util.stream.Collectors.toMap(
                     main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId,
                     c -> c, (x, y) -> x));
+            boolean menor = soloMenorDificultad && intervencion == main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA;
             var lineas = new StringBuilder();
             for (var e : propia.exercises()) {
                 var actual = porId.get(e.exerciseId());
@@ -462,7 +475,8 @@ public class SessionFixPromptBuilder {
                         .filter(c -> actual.movementPattern().equals(c.movementPattern()))
                         .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
                                 && !dolieron.contains(c.exerciseId()))
-                        .filter(c -> c.difficulty() <= actual.difficulty())
+                        .filter(c -> menor ? c.difficulty() < actual.difficulty()
+                                : c.difficulty() <= actual.difficulty())
                         .map(main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId)
                         .sorted().limit(6).toList();
                 lineas.append("    ").append(e.exerciseId()).append(" (").append(actual.movementPattern()).append("): ")
@@ -470,7 +484,9 @@ public class SessionFixPromptBuilder {
             }
             if (!lineas.isEmpty())
                 b.append("  SUSTITUTOS ADMITIDOS (mismo patron, elegibles, no repetidos en dias pegados; usa su dosis"
-                        + " de available_exercises):\n").append(lineas);
+                        + " de available_exercises")
+                        .append(menor ? "; SOLO de MENOR dificultad que el que reemplazan: si un ejercicio no tiene"
+                                + " ninguno, no lo sustituyas" : "").append("):\n").append(lineas);
         }
         return b.toString();
     }
