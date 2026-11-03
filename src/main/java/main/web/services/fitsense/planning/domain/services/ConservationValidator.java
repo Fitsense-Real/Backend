@@ -100,6 +100,9 @@ public class ConservationValidator {
 
     public ConservationValidator(ReglaPatron reglaPatron) {
         this.reglaPatron = reglaPatron == null ? ReglaPatron.CONJUNTO : reglaPatron;
+        if (this.reglaPatron != ReglaPatron.CONJUNTO)
+            org.slf4j.LoggerFactory.getLogger(ConservationValidator.class)
+                    .warn("V8C: regla de patron EXPERIMENTAL activa: {} (H1).", this.reglaPatron);
     }
 
     @org.springframework.beans.factory.annotation.Autowired
