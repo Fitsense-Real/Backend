@@ -1,0 +1,158 @@
+{
+ "ventana_utc": [
+  "2026-11-03T03:48:44.000250+00:00",
+  "2026-11-03T03:55:44.558425+00:00"
+ ],
+ "predicciones": [
+  {
+   "id": "5ww56qgr8hrmy0d1ky3ba6sms0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:48:47.812Z",
+   "tokens_entrada": 54721,
+   "tokens_salida": 865,
+   "predict_time": 8.111810144
+  },
+  {
+   "id": "d20dq81ww1rmr0d1ky3am1sz24",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:48:57.184Z",
+   "tokens_entrada": 55347,
+   "tokens_salida": 4098,
+   "predict_time": 43.63991701
+  },
+  {
+   "id": "pr3mr6qkqxrmt0d1ky38bd4bgm",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:49:43.999Z",
+   "tokens_entrada": 55873,
+   "tokens_salida": 1836,
+   "predict_time": 15.729694846
+  },
+  {
+   "id": "nsenf4hk15rmt0d1ky3t4g3tp0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:50:00.201Z",
+   "tokens_entrada": 56535,
+   "tokens_salida": 2321,
+   "predict_time": 15.608156573
+  },
+  {
+   "id": "zxxxhsvkqxrmt0d1ky3tymqyr0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:50:16.767Z",
+   "tokens_entrada": 56458,
+   "tokens_salida": 3279,
+   "predict_time": 30.965070785
+  },
+  {
+   "id": "470f8jffs1rmt0d1ky3vv4eysr",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:50:48.52Z",
+   "tokens_entrada": 57500,
+   "tokens_salida": 3460,
+   "predict_time": 33.70508568
+  },
+  {
+   "id": "9j30ydbqxhrmt0d1ky4brr0178",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:51:23.372Z",
+   "tokens_entrada": 57633,
+   "tokens_salida": 3516,
+   "predict_time": 27.453544883
+  },
+  {
+   "id": "r3g4k0fek1rmt0d1ky4ahpqeec",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:51:53.752Z",
+   "tokens_entrada": 8950,
+   "tokens_salida": 3248,
+   "predict_time": 22.30386278
+  },
+  {
+   "id": "r9baj129edrmy0d1ky4t0bv294",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:52:17.011Z",
+   "tokens_entrada": 9536,
+   "tokens_salida": 3880,
+   "predict_time": 33.755389596
+  },
+  {
+   "id": "ehwvcyej3srmt0d1ky4tebkw7g",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:52:51.998Z",
+   "tokens_entrada": 10596,
+   "tokens_salida": 2877,
+   "predict_time": 31.111788508
+  },
+  {
+   "id": "pknpj0jevdrmt0d1ky5aq40dh0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:53:23.931Z",
+   "tokens_entrada": 10380,
+   "tokens_salida": 4132,
+   "predict_time": 35.784176675
+  },
+  {
+   "id": "xf29hffahdrmr0d1ky59ms3hh0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:54:03.787Z",
+   "tokens_entrada": 21270,
+   "tokens_salida": 3287,
+   "predict_time": 20.336889902
+  },
+  {
+   "id": "mk3b2xhwn5rmr0d1ky5s6xp3vg",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:54:24.809Z",
+   "tokens_entrada": 22023,
+   "tokens_salida": 824,
+   "predict_time": 5.458836662
+  },
+  {
+   "id": "1vqs0gtn7hrmy0d1ky5vzt3ne0",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:54:31.1Z",
+   "tokens_entrada": 21952,
+   "tokens_salida": 4943,
+   "predict_time": 39.259892896
+  },
+  {
+   "id": "5qx8yszpnsrmy0d1ky5rz0xs9w",
+   "en_registro": true,
+   "en_ventana": true,
+   "estado": "succeeded",
+   "creada": "2026-11-03T03:55:12.43Z",
+   "tokens_entrada": 23208,
+   "tokens_salida": 3456,
+   "predict_time": 30.99444389
+  }
+ ]
+}
