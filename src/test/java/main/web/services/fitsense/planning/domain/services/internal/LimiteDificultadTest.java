@@ -45,6 +45,55 @@ class LimiteDificultadTest {
         assertTrue(new ConservationValidator("multiconjunto", " ON ").limitaDificultad());
         assertThrows(IllegalArgumentException.class, () -> new ConservationValidator("multiconjunto", "si"));
         assertEquals(ReglaPatron.MULTICONJUNTO, new ConservationValidator("multiconjunto", "on").reglaPatron());
+        assertEquals(SafetySubstitutionPolicy.Estrategia.HISTORICA, new ConservationValidator().estrategiaSustitucion());
+        assertEquals(SafetySubstitutionPolicy.Estrategia.LIMITE,
+                new ConservationValidator("multiconjunto", "on").estrategiaSustitucion());
+        var c = new ConservationValidator("multiconjunto", "preferencia");
+        assertEquals(SafetySubstitutionPolicy.Estrategia.LIMITE_Y_PREFERENCIA, c.estrategiaSustitucion());
+        assertTrue(c.limitaDificultad(), "C tambien limita en V8C");
+    }
+
+    @Test
+    @DisplayName("9. Estrategia C: entre candidatos <= elige la dificultad mas cercana (igual antes que menor); B, por id")
+    void estrategiaC() {
+        var original = cand(70001L, 2);
+        Map<Long, CandidateExercise> e = new LinkedHashMap<>();
+        e.put(70002L, cand(70002L, 1));
+        e.put(70003L, cand(70003L, 2));
+        e.put(70004L, cand(70004L, 3));
+        assertEquals(70002L, SafetySubstitutionPolicy.elegir(original, null, e, Set.of(), Set.of(), null,
+                SafetySubstitutionPolicy.Estrategia.LIMITE).orElseThrow().exerciseId(), "B: id mas bajo de los <=");
+        assertEquals(70003L, SafetySubstitutionPolicy.elegir(original, null, e, Set.of(), Set.of(), null,
+                SafetySubstitutionPolicy.Estrategia.LIMITE_Y_PREFERENCIA).orElseThrow().exerciseId(), "C: igual");
+        assertEquals(70002L, SafetySubstitutionPolicy.elegir(original, null, e, Set.of(), Set.of(), null,
+                SafetySubstitutionPolicy.Estrategia.HISTORICA).orElseThrow().exerciseId(), "A: id, sin filtro");
+    }
+
+    @Test
+    @DisplayName("10. Estrategia C no pasa la dificultad por delante de la zona: un candidato de otra zona y misma dificultad pierde")
+    void preferenciaDetrasDeLaZona() {
+        var original = cand(70001L, 2);
+        Map<Long, CandidateExercise> e = new LinkedHashMap<>();
+        e.put(70002L, new CandidateExercise(70002L, "e", "chest", "body weight", 1, PrescriptionType.SETS_REPS,
+                "pectorals", "HORIZONTAL_PUSH"));
+        e.put(70003L, new CandidateExercise(70003L, "e", "upper arms", "body weight", 2, PrescriptionType.SETS_REPS,
+                "triceps", "HORIZONTAL_PUSH"));
+        assertEquals(70002L, SafetySubstitutionPolicy.elegir(original, null, e, Set.of(), Set.of(), null,
+                SafetySubstitutionPolicy.Estrategia.LIMITE_Y_PREFERENCIA).orElseThrow().exerciseId(),
+                "misma zona (chest) antes que dificultad igual en otra zona");
+    }
+
+    @Test
+    @DisplayName("11. Explicar un descarte: excluido en la sesion, mas dificil con limite, o el mismo")
+    void descartes() {
+        var original = cand(70001L, 1);
+        assertEquals(SafetySubstitutionPolicy.Etapa.ES_EL_MISMO, SafetySubstitutionPolicy.descarte(original, original,
+                null, Set.of(), Set.of(), null, true));
+        assertEquals(SafetySubstitutionPolicy.Etapa.NO_EN_LA_SESION_NI_CONTIGUO, SafetySubstitutionPolicy.descarte(
+                cand(70002L, 1), original, null, Set.of(70002L), Set.of(), null, true));
+        assertEquals(SafetySubstitutionPolicy.Etapa.DIFICULTAD_NO_MAYOR, SafetySubstitutionPolicy.descarte(
+                cand(70003L, 2), original, null, Set.of(), Set.of(), null, true));
+        assertNull(SafetySubstitutionPolicy.descarte(cand(70003L, 2), original, null, Set.of(), Set.of(), null, false));
     }
 
     @Test

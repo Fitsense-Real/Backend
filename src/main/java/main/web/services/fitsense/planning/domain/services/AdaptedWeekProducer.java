@@ -246,7 +246,7 @@ public class AdaptedWeekProducer {
         // le prohibe tocarla. Lo que trajo la IA no se repara: si no es
         // elegible, V1 lo rechaza.
         var reparada = SafetySubstitutionPolicy.reparar(adaptada.workouts(), context.previousWeek(),
-                exclusiones, eligible, context, conservation.limitaDificultad());
+                exclusiones, eligible, context, conservation.estrategiaSustitucion());
         var informe = conservation.validate(
                 new WeekDerivation(reparada.semana(), adaptada.sourcesWithoutDerived()),
                 context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones(), autorizarDosis,
@@ -360,7 +360,7 @@ public class AdaptedWeekProducer {
         // Conservar no es publicar lo que hoy es inseguro: lo heredado que dejo
         // de ser compatible por seguridad se sustituye, o la semana no sale.
         var reparada = SafetySubstitutionPolicy.reparar(origen, context.previousWeek(),
-                exclusiones, eligible, context, conservation.limitaDificultad());
+                exclusiones, eligible, context, conservation.estrategiaSustitucion());
         var informe = conservation.validateContinuidad(
                 new WeekDerivation(reparada.semana(), derivation.sourcesWithoutDerived()),
                 context.previousWeek(), eligible, exclusiones, reparada.sustituciones(), paso, autorizarDosis);

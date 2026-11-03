@@ -98,8 +98,10 @@ public class ConservationValidator {
      * LIMITE DE DIFICULTAD (candidato, APAGADO por defecto; pendiente de revision del responsable). Con el limite
      * activo, ante VARIANTE_MAS_SENCILLA_O_CARGA y SEGURIDAD_ANTE_DOLOR un sustituto no puede tener una dificultad
      * registrada mayor que la del ejercicio que reemplaza, y SUST-SEG-1 solo elige sustitutos de dificultad menor o
-     * igual. Se elige con {@code fitsense.adaptation.difficulty-guard} ({@code off} por defecto | {@code on}).
+     * igual. Se elige con {@code fitsense.adaptation.difficulty-guard}: {@code off} por defecto (A) | {@code on} (B) |
+     * {@code preferencia} (C: el limite y, en SUST-SEG-1, preferencia por la dificultad mas cercana sin superarla).
      */
+    private final SafetySubstitutionPolicy.Estrategia estrategia;
     private final boolean limitaDificultad;
 
     /** La regla por defecto ({@link ReglaPatron#MULTICONJUNTO}), sin limite de dificultad. */
@@ -112,7 +114,13 @@ public class ConservationValidator {
     }
 
     public ConservationValidator(ReglaPatron reglaPatron, boolean limitaDificultad) {
-        this.limitaDificultad = limitaDificultad;
+        this(reglaPatron, limitaDificultad ? SafetySubstitutionPolicy.Estrategia.LIMITE
+                : SafetySubstitutionPolicy.Estrategia.HISTORICA);
+    }
+
+    public ConservationValidator(ReglaPatron reglaPatron, SafetySubstitutionPolicy.Estrategia estrategia) {
+        this.estrategia = estrategia == null ? SafetySubstitutionPolicy.Estrategia.HISTORICA : estrategia;
+        this.limitaDificultad = this.estrategia.limita();
         this.reglaPatron = reglaPatron == null ? ReglaPatron.MULTICONJUNTO : reglaPatron;
         if (this.reglaPatron == ReglaPatron.CONJUNTO)
             org.slf4j.LoggerFactory.getLogger(ConservationValidator.class)
@@ -128,17 +136,23 @@ public class ConservationValidator {
             "${fitsense.adaptation.v8c.pattern-rule:multiconjunto}") String reglaPatron,
                                  @org.springframework.beans.factory.annotation.Value(
             "${fitsense.adaptation.difficulty-guard:off}") String limiteDificultad) {
-        this(ReglaPatron.desde(reglaPatron), limiteDesde(limiteDificultad));
+        this(ReglaPatron.desde(reglaPatron), estrategiaDesde(limiteDificultad));
     }
 
-    static boolean limiteDesde(String valor) {
+    static SafetySubstitutionPolicy.Estrategia estrategiaDesde(String valor) {
         String v = valor == null ? "" : valor.strip().toLowerCase(java.util.Locale.ROOT);
         return switch (v) {
-            case "", "off" -> false;
-            case "on" -> true;
+            case "", "off" -> SafetySubstitutionPolicy.Estrategia.HISTORICA;
+            case "on" -> SafetySubstitutionPolicy.Estrategia.LIMITE;
+            case "preferencia" -> SafetySubstitutionPolicy.Estrategia.LIMITE_Y_PREFERENCIA;
             default -> throw new IllegalArgumentException(
-                    "fitsense.adaptation.difficulty-guard admite off u on, no '" + valor + "'.");
+                    "fitsense.adaptation.difficulty-guard admite off, on o preferencia, no '" + valor + "'.");
         };
+    }
+
+    /** La estrategia de SUST-SEG-1 ante la dificultad (A por defecto). */
+    public SafetySubstitutionPolicy.Estrategia estrategiaSustitucion() {
+        return estrategia;
     }
 
     /** La regla de patron con la que valida esta instancia. */

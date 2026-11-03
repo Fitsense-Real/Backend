@@ -78,6 +78,17 @@ public final class SafetySubstitutionPolicy {
                                     Map<Long, CandidateExercise> elegibles,
                                     PlanGenerationContext context,
                                     boolean limitaDificultad) {
+        return reparar(semana, previa, exclusiones, elegibles, context,
+                limitaDificultad ? Estrategia.LIMITE : Estrategia.HISTORICA);
+    }
+
+    /** Igual, con la estrategia de dificultad explicita (A, B o C). */
+    public static Resultado reparar(List<DerivedWorkout> semana,
+                                    PreviousWeekSummary previa,
+                                    ExclusionesDeSeguridad exclusiones,
+                                    Map<Long, CandidateExercise> elegibles,
+                                    PlanGenerationContext context,
+                                    Estrategia estrategia) {
         if (exclusiones == null || exclusiones.vacias() || semana == null)
             return new Resultado(semana == null ? List.of() : semana, List.of(), List.of());
 
@@ -110,7 +121,7 @@ public final class SafetySubstitutionPolicy {
                     continue;
                 }
                 var original = exclusiones.originales().get(e.exerciseId());
-                var sustituto = elegir(original, sesion.focus(), elegibles, enSesion, contiguos, context, limitaDificultad);
+                var sustituto = elegir(original, sesion.focus(), elegibles, enSesion, contiguos, context, estrategia);
                 if (sustituto.isEmpty()) {
                     problemas.add(("SEGURIDAD: el ejercicio %d de la sesion %d (%s) dejo de ser compatible "
                             + "por seguridad (%s) y no hay sustituto elegible con la regla %s: mismo slot (%s), "
@@ -139,36 +150,88 @@ public final class SafetySubstitutionPolicy {
         return new Resultado(nuevaSemana, sustituciones, problemas);
     }
 
+    /**
+     * COMO ELIGE SUST-SEG-1 ANTE LA DIFICULTAD (candidato, {@code fitsense.adaptation.difficulty-guard}).
+     * <ul>
+     *   <li>{@link #HISTORICA} (A, por defecto): sin limite; orden zona, patron, musculo, id.</li>
+     *   <li>{@link #LIMITE} (B, {@code on}): solo candidatos de dificultad registrada &lt;= la del original; mismo
+     *       orden.</li>
+     *   <li>{@link #LIMITE_Y_PREFERENCIA} (C, {@code preferencia}): el mismo filtro y, como ULTIMO criterio antes del
+     *       id, la dificultad mas cercana a la del original sin superarla (igual antes que menor). La preferencia va
+     *       detras de zona, patron y musculo: no puede cambiar ninguno de ellos.</li>
+     * </ul>
+     * Las restricciones de seguridad y elegibilidad ({@link Etapa}) son las mismas en las tres.
+     */
+    public enum Estrategia {
+        HISTORICA, LIMITE, LIMITE_Y_PREFERENCIA;
+
+        public boolean limita() {
+            return this != HISTORICA;
+        }
+    }
+
+    /**
+     * Las restricciones OBLIGATORIAS de SUST-SEG-1, en el orden en que se comprueban. Un candidato se descarta por la
+     * primera que no cumple. {@link #DIFICULTAD_NO_MAYOR} solo se aplica con {@link Estrategia#limita()}.
+     */
+    public enum Etapa {
+        ES_EL_MISMO, MISMO_SLOT, MISMA_PRESCRIPCION, MISMO_COMPLEMENTO, ZONA_DEL_ENFOQUE, BRAZO_DEL_ENFOQUE,
+        NO_EN_REVISION, NO_EN_LA_SESION_NI_CONTIGUO, DIFICULTAD_NO_MAYOR
+    }
+
     static Optional<CandidateExercise> elegir(CandidateExercise original, WorkoutFocus enfoque,
                                               Map<Long, CandidateExercise> elegibles, Set<Long> enSesion,
                                               Set<Long> contiguos, PlanGenerationContext context) {
-        return elegir(original, enfoque, elegibles, enSesion, contiguos, context, false);
+        return elegir(original, enfoque, elegibles, enSesion, contiguos, context, Estrategia.HISTORICA);
     }
 
     static Optional<CandidateExercise> elegir(CandidateExercise original, WorkoutFocus enfoque,
                                               Map<Long, CandidateExercise> elegibles, Set<Long> enSesion,
                                               Set<Long> contiguos, PlanGenerationContext context,
                                               boolean limitaDificultad) {
+        return elegir(original, enfoque, elegibles, enSesion, contiguos, context,
+                limitaDificultad ? Estrategia.LIMITE : Estrategia.HISTORICA);
+    }
+
+    static Optional<CandidateExercise> elegir(CandidateExercise original, WorkoutFocus enfoque,
+                                              Map<Long, CandidateExercise> elegibles, Set<Long> enSesion,
+                                              Set<Long> contiguos, PlanGenerationContext context,
+                                              Estrategia estrategia) {
         if (original == null || elegibles == null) return Optional.empty();
-        String objetivo = context == null || context.profile() == null ? null : context.profile().goalType();
-        var slot = MandatorySlot.of(original);
-        boolean complemento = CatalogEligibilityPolicy.esComplemento(original, objetivo);
+        String objetivo = objetivo(context);
+        var orden = Comparator.comparing((CandidateExercise c) -> !Objects.equals(c.bodyPartCode(), original.bodyPartCode()))
+                .thenComparing(c -> !Objects.equals(c.movementPattern(), original.movementPattern()))
+                .thenComparing(c -> !Objects.equals(c.targetMuscle(), original.targetMuscle()));
+        if (estrategia == Estrategia.LIMITE_Y_PREFERENCIA)
+            orden = orden.thenComparingInt(c -> original.difficulty() - c.difficulty());
         return elegibles.values().stream()
-                .filter(c -> c.exerciseId() != null && !c.exerciseId().equals(original.exerciseId()))
-                .filter(c -> MandatorySlot.of(c).equals(slot))
-                .filter(c -> c.defaultPrescription() == original.defaultPrescription())
-                .filter(c -> CatalogEligibilityPolicy.esComplemento(c, objetivo) == complemento)
-                .filter(c -> enfoque == null || enfoque.accepts(c.bodyPartCode())
-                        || Objects.equals(c.bodyPartCode(), original.bodyPartCode()))
-                .filter(c -> admiteBrazo(enfoque, c))
-                .filter(c -> !GoalFeasibilityPolicy.enRevision(c))
-                .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId()))
-                .filter(c -> !limitaDificultad || c.difficulty() <= original.difficulty())
-                .sorted(Comparator.comparing((CandidateExercise c) -> !Objects.equals(c.bodyPartCode(), original.bodyPartCode()))
-                        .thenComparing(c -> !Objects.equals(c.movementPattern(), original.movementPattern()))
-                        .thenComparing(c -> !Objects.equals(c.targetMuscle(), original.targetMuscle()))
-                        .thenComparing(CandidateExercise::exerciseId))
+                .filter(c -> descarte(c, original, enfoque, enSesion, contiguos, objetivo, estrategia.limita()) == null)
+                .sorted(orden.thenComparing(CandidateExercise::exerciseId))
                 .findFirst();
+    }
+
+    /**
+     * La primera restriccion obligatoria que {@code c} no cumple como sustituto de {@code original}, o {@code null} si
+     * las cumple todas. Es la MISMA comprobacion que usa {@link #elegir}: sirve para explicar un descarte.
+     */
+    static Etapa descarte(CandidateExercise c, CandidateExercise original, WorkoutFocus enfoque, Set<Long> enSesion,
+                          Set<Long> contiguos, String objetivo, boolean limitaDificultad) {
+        if (c.exerciseId() == null || c.exerciseId().equals(original.exerciseId())) return Etapa.ES_EL_MISMO;
+        if (!MandatorySlot.of(c).equals(MandatorySlot.of(original))) return Etapa.MISMO_SLOT;
+        if (c.defaultPrescription() != original.defaultPrescription()) return Etapa.MISMA_PRESCRIPCION;
+        if (CatalogEligibilityPolicy.esComplemento(c, objetivo) != CatalogEligibilityPolicy.esComplemento(original, objetivo))
+            return Etapa.MISMO_COMPLEMENTO;
+        if (!(enfoque == null || enfoque.accepts(c.bodyPartCode()) || Objects.equals(c.bodyPartCode(), original.bodyPartCode())))
+            return Etapa.ZONA_DEL_ENFOQUE;
+        if (!admiteBrazo(enfoque, c)) return Etapa.BRAZO_DEL_ENFOQUE;
+        if (GoalFeasibilityPolicy.enRevision(c)) return Etapa.NO_EN_REVISION;
+        if (enSesion.contains(c.exerciseId()) || contiguos.contains(c.exerciseId())) return Etapa.NO_EN_LA_SESION_NI_CONTIGUO;
+        if (limitaDificultad && c.difficulty() > original.difficulty()) return Etapa.DIFICULTAD_NO_MAYOR;
+        return null;
+    }
+
+    static String objetivo(PlanGenerationContext context) {
+        return context == null || context.profile() == null ? null : context.profile().goalType();
     }
 
     /** V22: en PUSH no biceps, en PULL no triceps, dentro de upper arms. */
