@@ -28,7 +28,7 @@ def abrir():
 
 
 def get(op, url):
-    with op.open(urllib.request.Request(url, headers={"Accept": "application/json"}), timeout=60) as r:
+    with op.open(urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "fitsense-laboratorio/1.0"}), timeout=60) as r:
         return json.loads(r.read().decode())
 
 
