@@ -20,7 +20,7 @@ La REPLAY compara contra la evidencia guardada en `generation` (`docs/FitSense/c
 | Rama | Commit | 960: `planes.csv` | 960: `colocaciones.csv` | REPLAY | Cambia en la evidencia |
 |---|---|---|---|---|---|
 | PR A (H1) | `983e216` | **idéntico** | **idéntico** | **pasa** | solo `exclusiones_dolor.csv`: 2 filas, únicamente `recorded_at` y `reactivated_at` (reloj real) |
-| PR B (textos) | ver `09` | ver `09` | ver `09` | ver `09` | ver `09` |
+| PR B (textos) | `cc2bf7b` | **idéntico** | **idéntico** | **pasa** | igual que A: solo 2 marcas de tiempo (detalle en `06` §3, rama del PR B) |
 
 **Pruebas:** 3 ejecutadas, 2 superadas, 0 fallidas, 1 omitida (modo inspección, `fitsense.campana.p123.inspeccion`). La REPLAY en sí se ejecutó y pasó.
 
