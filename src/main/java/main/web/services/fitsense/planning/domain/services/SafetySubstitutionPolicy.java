@@ -64,6 +64,20 @@ public final class SafetySubstitutionPolicy {
                                     ExclusionesDeSeguridad exclusiones,
                                     Map<Long, CandidateExercise> elegibles,
                                     PlanGenerationContext context) {
+        return reparar(semana, previa, exclusiones, elegibles, context, false);
+    }
+
+    /**
+     * Igual, con el LIMITE DE DIFICULTAD candidato ({@code fitsense.adaptation.difficulty-guard=on}): el sustituto no
+     * puede tener una dificultad registrada mayor que la del original. Sin sustituto que lo cumpla, se informa como
+     * cualquier falta de sustituto: no se publica una sustitucion que no cumple la regla.
+     */
+    public static Resultado reparar(List<DerivedWorkout> semana,
+                                    PreviousWeekSummary previa,
+                                    ExclusionesDeSeguridad exclusiones,
+                                    Map<Long, CandidateExercise> elegibles,
+                                    PlanGenerationContext context,
+                                    boolean limitaDificultad) {
         if (exclusiones == null || exclusiones.vacias() || semana == null)
             return new Resultado(semana == null ? List.of() : semana, List.of(), List.of());
 
@@ -96,7 +110,7 @@ public final class SafetySubstitutionPolicy {
                     continue;
                 }
                 var original = exclusiones.originales().get(e.exerciseId());
-                var sustituto = elegir(original, sesion.focus(), elegibles, enSesion, contiguos, context);
+                var sustituto = elegir(original, sesion.focus(), elegibles, enSesion, contiguos, context, limitaDificultad);
                 if (sustituto.isEmpty()) {
                     problemas.add(("SEGURIDAD: el ejercicio %d de la sesion %d (%s) dejo de ser compatible "
                             + "por seguridad (%s) y no hay sustituto elegible con la regla %s: mismo slot (%s), "
@@ -128,6 +142,13 @@ public final class SafetySubstitutionPolicy {
     static Optional<CandidateExercise> elegir(CandidateExercise original, WorkoutFocus enfoque,
                                               Map<Long, CandidateExercise> elegibles, Set<Long> enSesion,
                                               Set<Long> contiguos, PlanGenerationContext context) {
+        return elegir(original, enfoque, elegibles, enSesion, contiguos, context, false);
+    }
+
+    static Optional<CandidateExercise> elegir(CandidateExercise original, WorkoutFocus enfoque,
+                                              Map<Long, CandidateExercise> elegibles, Set<Long> enSesion,
+                                              Set<Long> contiguos, PlanGenerationContext context,
+                                              boolean limitaDificultad) {
         if (original == null || elegibles == null) return Optional.empty();
         String objetivo = context == null || context.profile() == null ? null : context.profile().goalType();
         var slot = MandatorySlot.of(original);
@@ -142,6 +163,7 @@ public final class SafetySubstitutionPolicy {
                 .filter(c -> admiteBrazo(enfoque, c))
                 .filter(c -> !GoalFeasibilityPolicy.enRevision(c))
                 .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId()))
+                .filter(c -> !limitaDificultad || c.difficulty() <= original.difficulty())
                 .sorted(Comparator.comparing((CandidateExercise c) -> !Objects.equals(c.bodyPartCode(), original.bodyPartCode()))
                         .thenComparing(c -> !Objects.equals(c.movementPattern(), original.movementPattern()))
                         .thenComparing(c -> !Objects.equals(c.targetMuscle(), original.targetMuscle()))

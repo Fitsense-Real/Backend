@@ -94,27 +94,61 @@ public class ConservationValidator {
 
     private final ReglaPatron reglaPatron;
 
-    /** La regla por defecto ({@link ReglaPatron#MULTICONJUNTO}). */
+    /**
+     * LIMITE DE DIFICULTAD (candidato, APAGADO por defecto; pendiente de revision del responsable). Con el limite
+     * activo, ante VARIANTE_MAS_SENCILLA_O_CARGA y SEGURIDAD_ANTE_DOLOR un sustituto no puede tener una dificultad
+     * registrada mayor que la del ejercicio que reemplaza, y SUST-SEG-1 solo elige sustitutos de dificultad menor o
+     * igual. Se elige con {@code fitsense.adaptation.difficulty-guard} ({@code off} por defecto | {@code on}).
+     */
+    private final boolean limitaDificultad;
+
+    /** La regla por defecto ({@link ReglaPatron#MULTICONJUNTO}), sin limite de dificultad. */
     public ConservationValidator() {
         this(ReglaPatron.MULTICONJUNTO);
     }
 
     public ConservationValidator(ReglaPatron reglaPatron) {
+        this(reglaPatron, false);
+    }
+
+    public ConservationValidator(ReglaPatron reglaPatron, boolean limitaDificultad) {
+        this.limitaDificultad = limitaDificultad;
         this.reglaPatron = reglaPatron == null ? ReglaPatron.MULTICONJUNTO : reglaPatron;
         if (this.reglaPatron == ReglaPatron.CONJUNTO)
             org.slf4j.LoggerFactory.getLogger(ConservationValidator.class)
                     .warn("V8C: regla de patron HISTORICA activa: CONJUNTO (compatibilidad o reversion de H1).");
     }
 
+    public ConservationValidator(String reglaPatron) {
+        this(ReglaPatron.desde(reglaPatron));
+    }
+
     @org.springframework.beans.factory.annotation.Autowired
     public ConservationValidator(@org.springframework.beans.factory.annotation.Value(
-            "${fitsense.adaptation.v8c.pattern-rule:multiconjunto}") String reglaPatron) {
-        this(ReglaPatron.desde(reglaPatron));
+            "${fitsense.adaptation.v8c.pattern-rule:multiconjunto}") String reglaPatron,
+                                 @org.springframework.beans.factory.annotation.Value(
+            "${fitsense.adaptation.difficulty-guard:off}") String limiteDificultad) {
+        this(ReglaPatron.desde(reglaPatron), limiteDesde(limiteDificultad));
+    }
+
+    static boolean limiteDesde(String valor) {
+        String v = valor == null ? "" : valor.strip().toLowerCase(java.util.Locale.ROOT);
+        return switch (v) {
+            case "", "off" -> false;
+            case "on" -> true;
+            default -> throw new IllegalArgumentException(
+                    "fitsense.adaptation.difficulty-guard admite off u on, no '" + valor + "'.");
+        };
     }
 
     /** La regla de patron con la que valida esta instancia. */
     public ReglaPatron reglaPatron() {
         return reglaPatron;
+    }
+
+    /** Si esta instancia aplica el limite de dificultad (candidato; apagado por defecto). */
+    public boolean limitaDificultad() {
+        return limitaDificultad;
     }
 
     /**
@@ -308,6 +342,10 @@ public class ConservationValidator {
         var dolorPorSesion = indexarDolor(previous);
         var conDolorDeSesion = indexarDolorDeSesion(previous);
         var catalogo = eligible == null ? Map.<Long, CandidateExercise>of() : eligible;
+        // Solo para el limite de dificultad: el ejercicio que dolio ya no es elegible, pero su ficha esta en las
+        // exclusiones. No se usa para nada mas (la elegibilidad sigue siendo la de catalogo).
+        var conocidos = new java.util.HashMap<Long, CandidateExercise>(catalogo);
+        if (causas != null) causas.originales().forEach(conocidos::putIfAbsent);
 
         var admitidas = new ArrayList<SustitucionSeguridad>();
         var vistos = new LinkedHashSet<Long>();
@@ -423,7 +461,7 @@ public class ConservationValidator {
                         conLinaje, problems, autorizarDosis ? dosisAutorizadas : null);
                 boolean dosisRechazada = problems.size() > antesDeLaDosis;
                 revisarSenalada(origen, anterior, derivada, intervencion, diferencias,
-                        dolieron, segura, catalogo, cargasPorSesion.getOrDefault(origen, Map.of()),
+                        dolieron, segura, catalogo, conocidos, cargasPorSesion.getOrDefault(origen, Map.of()),
                         dosisPorSesion.getOrDefault(origen, Map.of()), divisorVolumen,
                         problems, aplicadas, sinEfecto);
                 // TOPE DECLARADO (DISENO_ADAPTACION_CONTEXTUAL v0.3, §2): si la persona dijo que suele
@@ -730,6 +768,7 @@ public class ConservationValidator {
                                  Diferencias d, Set<Long> dolieron,
                                  boolean seguridadResuelta,
                                  Map<Long, CandidateExercise> catalogo,
+                                 Map<Long, CandidateExercise> conocidos,
                                  Map<Long, java.math.BigDecimal> cargasAnteriores,
                                  Map<Long, Dosis> dosisAnterior, int divisorVolumen,
                                  List<String> problems, List<Long> aplicadas,
@@ -751,7 +790,7 @@ public class ConservationValidator {
                             d.diaNuevo(), intervencion.instruccion()));
 
         if (!d.anadidos().isEmpty() || !d.quitados().isEmpty())
-            revisarSustitucion(origen, intervencion, d, dolieron, catalogo, derivada, dosisAnterior,
+            revisarSustitucion(origen, intervencion, d, dolieron, catalogo, conocidos, derivada, dosisAnterior,
                     divisorVolumen, problems);
 
         if (!d.dosisCambiada().isEmpty() && !intervencion.permiteCambiarDosis())
@@ -916,7 +955,7 @@ public class ConservationValidator {
 
     private void revisarSustitucion(Long origen, TipoIntervencion intervencion, Diferencias d,
                                     Set<Long> dolieron, Map<Long, CandidateExercise> catalogo,
-                                    DerivedWorkout derivada, Map<Long, Dosis> dosisAnterior,
+                                    Map<Long, CandidateExercise> conocidos, DerivedWorkout derivada, Map<Long, Dosis> dosisAnterior,
                                     int divisorVolumen, List<String> problems) {
 
         if (!intervencion.permiteSustituirEjercicio()) {
@@ -1038,6 +1077,8 @@ public class ConservationValidator {
                 problems.add(("V8C: la sesion %d esta senalada por dolor y su volumen sube de %d a %d. Ante "
                         + "dolor no se aumenta el trabajo: sustituye con la misma dosis o menos.")
                         .formatted(origen, antes, despues));
+            if (limitaDificultad)
+                revisarDificultad(origen, intervencion, d.quitados(), d.anadidos(), conocidos, false, problems);
             return;
         }
 
@@ -1076,6 +1117,51 @@ public class ConservationValidator {
 
         if (reglaPatron == ReglaPatron.MULTICONJUNTO)
             revisarMulticonjunto(origen, d, catalogo, patronesQuitados, problems);
+        if (limitaDificultad && intervencion == TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)
+            revisarDificultad(origen, intervencion, d.quitados(), d.anadidos(), conocidos, true, problems);
+    }
+
+    /**
+     * LIMITE DE DIFICULTAD (candidato, solo con {@code fitsense.adaptation.difficulty-guard=on}). Cada anadido tiene
+     * que poder emparejarse con un retirado DISTINTO de dificultad registrada mayor o igual: en VARIANTE dentro del
+     * mismo patron, ante dolor entre todos los retirados (ahi no se exige el patron). Ordenando los dos lados de mayor a
+     * menor, el emparejamiento existe si y solo si cada anadido no supera al retirado de su misma posicion. Un
+     * ejercicio sin ficha no se compara (lo que falte lo informan las demas comprobaciones). Si hay mas anadidos que
+     * retirados, los sobrantes se comparan con el retirado mas dificil: el exceso lo rechazan otras reglas.
+     */
+    private static void revisarDificultad(Long origen, TipoIntervencion intervencion, List<Long> quitados,
+                                          List<Long> anadidos, Map<Long, CandidateExercise> conocidos,
+                                          boolean porPatron, List<String> problems) {
+        var retirados = new TreeMap<String, List<CandidateExercise>>();
+        for (var q : quitados) {
+            var c = conocidos.get(q);
+            if (c != null) retirados.computeIfAbsent(porPatron ? String.valueOf(c.movementPattern()) : "*",
+                    k -> new ArrayList<>()).add(c);
+        }
+        var nuevos = new TreeMap<String, List<CandidateExercise>>();
+        for (var a : anadidos) {
+            var c = conocidos.get(a);
+            if (c != null) nuevos.computeIfAbsent(porPatron ? String.valueOf(c.movementPattern()) : "*",
+                    k -> new ArrayList<>()).add(c);
+        }
+        java.util.Comparator<CandidateExercise> desc = java.util.Comparator
+                .comparingInt(CandidateExercise::difficulty).reversed().thenComparing(CandidateExercise::exerciseId);
+        nuevos.forEach((grupo, lista) -> {
+            var ret = retirados.getOrDefault(grupo, List.of()).stream().sorted(desc).toList();
+            if (ret.isEmpty()) return;
+            var ana = lista.stream().sorted(desc).toList();
+            for (int i = 0; i < ana.size(); i++) {
+                var a = ana.get(i);
+                var r = ret.get(Math.min(i, ret.size() - 1));
+                if (a.difficulty() > r.difficulty())
+                    problems.add(("V8C: la sesion %d esta senalada como %s y sustituye por el ejercicio %d, de "
+                            + "dificultad registrada %d, cuando el retirado que le corresponde (%d) tiene %d. Con el "
+                            + "limite de dificultad activo, un sustituto no puede ser de dificultad registrada mayor "
+                            + "que la del ejercicio que reemplaza.")
+                            .formatted(origen, intervencion, a.exerciseId(), a.difficulty(), r.exerciseId(),
+                                    r.difficulty()));
+            }
+        });
     }
 
     /**

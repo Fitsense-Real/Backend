@@ -173,7 +173,7 @@ public class PublishedPlanSafetyRepairService {
 
         // FASE 3 · sustituir y validar la semana entera.
         var reparada = SafetySubstitutionPolicy.reparar(leido.semana(), contexto.previousWeek(), exclusiones,
-                elegibles, contexto);
+                elegibles, contexto, v8c.limitaDificultad());
         if (!reparada.problemas().isEmpty())
             return registrar(userId, week, Resultado.de(Estado.SIN_SUSTITUTO, leido.planId(), leido.conflictos(),
                     reparada.problemas()));
