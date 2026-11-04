@@ -1,0 +1,7 @@
+HEAD 720d058f9d7ea4f85a3c6b22c4743c3670b690cf
+960+replay exit=0
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 1
+9fbf308523dd12b02e5e4c0f3aaf6a98b71eff6d1dd845b7c59e60bcb275279d  planes.csv
+2c96f885ccb6d5c39223410fdfa4814325f063a222628849cd4353aa0504c7d3  colocaciones.csv
+ 5 files changed, 30 insertions(+), 30 deletions(-)
+FIN

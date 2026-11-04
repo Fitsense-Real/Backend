@@ -1,0 +1,289 @@
+Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=40429 -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes=
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< pe.fitsense:fitsense-backend >--------------------
+[INFO] Building FitSense Backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ fitsense-backend ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 47 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ fitsense-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 423 source files with javac [debug parameters release 21] to target/classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /home/user/wt_gm75b/src/main/java/main/web/services/fitsense/shared/interfaces/rest/GlobalExceptionHandler.java: /home/user/wt_gm75b/src/main/java/main/web/services/fitsense/shared/interfaces/rest/GlobalExceptionHandler.java uses or overrides a deprecated API.
+[INFO] /home/user/wt_gm75b/src/main/java/main/web/services/fitsense/shared/interfaces/rest/GlobalExceptionHandler.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ fitsense-backend ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ fitsense-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 228 source files with javac [debug parameters release 21] to target/test-classes
+[INFO] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[INFO] /home/user/wt_gm75b/src/test/java/main/web/services/fitsense/execution/EjecucionEntrenamientosIT.java: Some input files use or override a deprecated API.
+[INFO] /home/user/wt_gm75b/src/test/java/main/web/services/fitsense/execution/EjecucionEntrenamientosIT.java: Recompile with -Xlint:deprecation for details.
+[INFO] /home/user/wt_gm75b/src/test/java/main/web/services/fitsense/planning/application/internal/commandservices/AdaptedWeekCommandServiceTest.java: Some input files use unchecked or unsafe operations.
+[INFO] /home/user/wt_gm75b/src/test/java/main/web/services/fitsense/planning/application/internal/commandservices/AdaptedWeekCommandServiceTest.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ fitsense-backend ---
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ fitsense-backend ---
+[INFO] Building jar: /home/user/wt_gm75b/target/fitsense-backend-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:4.1.1:repackage (repackage) @ fitsense-backend ---
+[INFO] Replacing main artifact /home/user/wt_gm75b/target/fitsense-backend-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /home/user/wt_gm75b/target/fitsense-backend-0.0.1-SNAPSHOT.jar.original
+[INFO] 
+[INFO] --- failsafe:3.5.6:integration-test (default) @ fitsense-backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStoreType=JKS -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=40429 -Dhttp.nonProxyHosts=localhost|127.0.0.1|::1|127.*|0.*|::|169.254.*|api.anthropic.com|api-staging.anthropic.com|api-pr-preview.anthropic.com|mcp-proxy.anthropic.com|mcp-proxy-staging.anthropic.com|registry.npmjs.org|jsr.io|npm.jsr.io|pypi.org|files.pythonhosted.org|index.crates.io|proxy.golang.org|host.docker.internal|10.*|172.16.*|172.17.*|172.18.*|172.19.*|172.20.*|172.21.*|172.22.*|172.23.*|172.24.*|172.25.*|172.26.*|172.27.*|172.28.*|172.29.*|172.30.*|172.31.*|192.168.*|100.64.0.0/10|*.svc.cluster.local|*.svc.cluster.local -Djdk.http.auth.tunneling.disabledSchemes= -Djdk.http.auth.proxying.disabledSchemes=
+[INFO] Running Registro R0548: la generacion inicial (GM intermedio, casa, 7 dias, 75 min) no pasa V20
+19:28:19.648 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+19:28:19.661 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+19:28:19.768 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 2.0.5
+19:28:20.180 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+19:28:21.224 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+19:28:21.228 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+19:28:21.274 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 29.9.2
+  API Version: 1.56
+  Operating System: Ubuntu 24.04.5 LTS
+  Total Memory: 16091 MB
+19:28:21.501 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Creating container for image: testcontainers/ryuk:0.14.0
+19:28:21.510 [main] INFO org.testcontainers.utility.RegistryAuthLocator -- Failure when attempting to lookup auth config. Please ignore if you don't have images in an authenticated registry. Details: (dockerImageName: testcontainers/ryuk:0.14.0, configFile: /root/.docker/config.json, configEnv: DOCKER_AUTH_CONFIG). Falling back to docker-java default behaviour. Exception message: Status 404: No config supplied. Checked in order: /root/.docker/config.json (file not found), DOCKER_AUTH_CONFIG (not set)
+19:28:21.958 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 is starting: 0938b7edf8c691d88c4a77b38f9e08026ca31c6394bacf52d9a4c3d79004f162
+19:28:22.594 [main] INFO tc.testcontainers/ryuk:0.14.0 -- Container testcontainers/ryuk:0.14.0 started in PT1.092249466S
+19:28:22.616 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+19:28:22.618 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+19:28:22.619 [main] INFO org.testcontainers.DockerClientFactory -- ?? Docker server version should be at least 1.6.0
+19:28:22.620 [main] INFO tc.postgres:16-alpine -- Creating container for image: postgres:16-alpine
+19:28:22.770 [main] INFO tc.postgres:16-alpine -- Container postgres:16-alpine is starting: 8eb07ddf68a1203c9e828a5bc70c2a938f89b8d44695fdd0f60f33f24c2d5057
+19:28:25.723 [main] INFO tc.postgres:16-alpine -- Container postgres:16-alpine started in PT3.103081286S
+19:28:25.725 [main] INFO tc.postgres:16-alpine -- Container is started (JDBC URL: jdbc:postgresql://localhost:32777/test?loggerLevel=OFF)
+19:28:25.923 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [main.web.services.fitsense.orchestation.GeneracionR0548V20IT]: GeneracionR0548V20IT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+19:28:26.368 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration main.web.services.fitsense.FitsenseApplication for test class main.web.services.fitsense.orchestation.GeneracionR0548V20IT
+19:28:26.574 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [main.web.services.fitsense.orchestation.GeneracionR0548V20IT]: GeneracionR0548V20IT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+19:28:26.575 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [main.web.services.fitsense.orchestation.SinSustitutoDolorBase]: SinSustitutoDolorBase does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+19:28:26.586 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration main.web.services.fitsense.FitsenseApplication for test class main.web.services.fitsense.orchestation.GeneracionR0548V20IT
+19:28:26.734 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-11-04T19:28:27.750Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.o.GeneracionR0548V20IT           : Starting GeneracionR0548V20IT using Java 21.0.12.1 with PID 3328 (started by root in /home/user/wt_gm75b)
+2026-11-04T19:28:27.759Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.o.GeneracionR0548V20IT           : No active profile set, falling back to 1 default profile: "default"
+2026-11-04T19:28:30.456Z  INFO 3328 --- [Fitsense] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-04T19:28:30.855Z  INFO 3328 --- [Fitsense] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 383 ms. Found 15 JPA repository interfaces.
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build as described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/root/.m2/repository/net/bytebuddy/byte-buddy-agent/1.18.11/byte-buddy-agent-1.18.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-11-04T19:28:34.952Z  INFO 3328 --- [Fitsense] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:32777/test?loggerLevel=OFF (PostgreSQL 16.15)
+2026-11-04T19:28:35.302Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-11-04T19:28:35.317Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 46 migrations (execution time 00:00.237s)
+2026-11-04T19:28:35.364Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-11-04T19:28:35.510Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-11-04T19:28:35.530Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - users and profiles"
+2026-11-04T19:28:35.638Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - catalog"
+2026-11-04T19:28:35.736Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - catalog data"
+2026-11-04T19:28:35.782Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - planning"
+2026-11-04T19:28:35.859Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - execution"
+2026-11-04T19:28:35.911Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - metrics and config"
+2026-11-04T19:28:35.965Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - config data"
+2026-11-04T19:28:35.991Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - catalog seed minimal"
+2026-11-04T19:28:36.334Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - catalog full"
+2026-11-04T19:28:36.761Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - exercise safety flags"
+2026-11-04T19:28:37.094Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V10 aplicada: banderas de seguridad y dificultad derivadas
+2026-11-04T19:28:37.118Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - catalog translations and activation"
+2026-11-04T19:28:37.510Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V11 aplicada: 1324 traducidos, 1225 activos, 405 para HOME+BEGINNER
+2026-11-04T19:28:37.527Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - prescription ranges"
+2026-11-04T19:28:37.535Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V12 aplicada: MVP-1.1 activa con rangos de prescripcion
+2026-11-04T19:28:37.555Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - study design"
+2026-11-04T19:28:37.599Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "14 - duration estimation"
+2026-11-04T19:28:37.614Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V14 aplicada: MVP-1.2 activa con estimacion de duracion
+2026-11-04T19:28:37.625Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "15 - progression limits"
+2026-11-04T19:28:37.629Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V15 aplicada: MVP-1.3 activa, techo de progresion +25 %
+2026-11-04T19:28:37.638Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "16 - retroactive report limit"
+2026-11-04T19:28:37.644Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V16 aplicada: MVP-1.4 activa, limite retroactivo de 7 dias
+2026-11-04T19:28:37.659Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "17 - volume components"
+2026-11-04T19:28:37.687Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "18 - prescription principles"
+2026-11-04T19:28:37.858Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V18: MVP-1.4 desactivada, MVP-1.5 creada y activa
+2026-11-04T19:28:37.866Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V18 aplicada. Activos por duracion: 78, por repeticiones: 1147
+2026-11-04T19:28:37.877Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "19 - rebuild config from mvp14"
+2026-11-04T19:28:37.888Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V19: MVP-1.5 desactivada (0 diferencias), MVP-1.6 creada y activa
+2026-11-04T19:28:37.900Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "20 - prescription coherence"
+2026-11-04T19:28:37.904Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V20: MVP-1.7 creada y activa (desde MVP-1.6)
+2026-11-04T19:28:37.916Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "21 - catalog difficulty sync neon"
+2026-11-04T19:28:37.929Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V21 aplicada: 33 ejercicios con dificultad 3 (igual que Neon)
+2026-11-04T19:28:37.953Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "22 - equipment types for missing implements"
+2026-11-04T19:28:37.958Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V22: 14 codigos de equipamiento anadidos
+2026-11-04T19:28:37.971Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "23 - exercise equipment requirements"
+2026-11-04T19:28:38.084Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V23: 1027 requisitos sembrados desde equipment_id
+2026-11-04T19:28:38.111Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "24 - catalog review fixes"
+2026-11-04T19:28:38.255Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 35 candidatos en back para BEGINNER
+2026-11-04T19:28:38.255Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en cardio para BEGINNER
+2026-11-04T19:28:38.255Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 30 candidatos en chest para BEGINNER
+2026-11-04T19:28:38.258Z  WARN 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 6 candidatos en lower arms para BEGINNER (SQL State: 01000 - Error Code: 0)
+2026-11-04T19:28:38.258Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en lower legs para BEGINNER
+2026-11-04T19:28:38.259Z  WARN 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 2 candidatos en neck para BEGINNER (SQL State: 01000 - Error Code: 0)
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 22 candidatos en shoulders para BEGINNER
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 45 candidatos en upper arms para BEGINNER
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 64 candidatos en upper legs para BEGINNER
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 77 candidatos en waist para BEGINNER
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 49 candidatos en back para INTERMEDIATE
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en cardio para INTERMEDIATE
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 47 candidatos en chest para INTERMEDIATE
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 14 candidatos en lower arms para INTERMEDIATE
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 20 candidatos en lower legs para INTERMEDIATE
+2026-11-04T19:28:38.259Z  WARN 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 2 candidatos en neck para INTERMEDIATE (SQL State: 01000 - Error Code: 0)
+2026-11-04T19:28:38.259Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 57 candidatos en shoulders para INTERMEDIATE
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 104 candidatos en upper arms para INTERMEDIATE
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 81 candidatos en upper legs para INTERMEDIATE
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 79 candidatos en waist para INTERMEDIATE
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 50 candidatos en back para ADVANCED
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 12 candidatos en cardio para ADVANCED
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 53 candidatos en chest para ADVANCED
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 16 candidatos en lower arms para ADVANCED
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 22 candidatos en lower legs para ADVANCED
+2026-11-04T19:28:38.260Z  WARN 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: solo 2 candidatos en neck para ADVANCED (SQL State: 01000 - Error Code: 0)
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 68 candidatos en shoulders para ADVANCED
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 124 candidatos en upper arms para ADVANCED
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 85 candidatos en upper legs para ADVANCED
+2026-11-04T19:28:38.260Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V24: 83 candidatos en waist para ADVANCED
+2026-11-04T19:28:38.372Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "25 - movement flags"
+2026-11-04T19:28:38.486Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: constraint "ck_exercises_hanging_is_overhead" of relation "exercises" does not exist, skipping
+2026-11-04T19:28:38.495Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V25: 47 activos requieren colgarse, 239 brazos sobre la cabeza, 32 rodillas, 33 inversion
+2026-11-04T19:28:38.535Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "26 - movement pattern"
+2026-11-04T19:28:38.679Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: constraint "ck_exercises_movement_pattern" of relation "exercises" does not exist, skipping
+2026-11-04T19:28:38.686Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: constraint "ck_exercises_activo_clasificado" of relation "exercises" does not exist, skipping
+2026-11-04T19:28:38.696Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V26: 1221 activos clasificados en 24 clases, 428 aislados
+2026-11-04T19:28:38.722Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "27 - exercise difficulty review"
+2026-11-04T19:28:38.795Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "28 - approve lower hip difficulty"
+2026-11-04T19:28:38.850Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "29 - exercise equipment requirements fixes"
+2026-11-04T19:28:38.958Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "30 - registration coverage"
+2026-11-04T19:28:38.974Z  INFO 3328 --- [Fitsense] [           main] o.f.c.i.s.DefaultSqlScriptExecutor       : DB: V30: MVP-1.7 desactivada, MVP-1.8 creada y activa (parametros sin cambio)
+2026-11-04T19:28:38.989Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "31 - workout derivation"
+2026-11-04T19:28:39.034Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "32 - adaptation evidence"
+2026-11-04T19:28:39.111Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "33 - aplicada exige sesiones"
+2026-11-04T19:28:39.133Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "34 - progresion de sesiones"
+2026-11-04T19:28:39.150Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "35 - user roles"
+2026-11-04T19:28:39.172Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "36 - catalog review gif corrections"
+2026-11-04T19:28:39.208Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "37 - catalog safety corrections"
+2026-11-04T19:28:39.381Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "38 - catalog classification equipment"
+2026-11-04T19:28:39.642Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "39 - catalog functional equipment"
+2026-11-04T19:28:39.776Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "40 - catalog c4 c6"
+2026-11-04T19:28:39.811Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "41 - catalog c4 c6 fase2"
+2026-11-04T19:28:39.863Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "42 - adaptation lack of time context"
+2026-11-04T19:28:39.894Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "43 - pain memory and safe regeneration"
+2026-11-04T19:28:39.955Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "44 - planning policy version"
+2026-11-04T19:28:39.979Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "44.1 - adaptation reason codes"
+2026-11-04T19:28:39.996Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "44.2 - password reset tokens"
+2026-11-04T19:28:40.030Z  INFO 3328 --- [Fitsense] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 46 migrations to schema "public", now at version v44.2 (execution time 00:03.232s)
+2026-11-04T19:28:40.400Z  INFO 3328 --- [Fitsense] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-11-04T19:28:40.596Z  INFO 3328 --- [Fitsense] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.5.Final
+2026-11-04T19:28:41.180Z  INFO 3328 --- [Fitsense] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-04T19:28:41.298Z  INFO 3328 --- [Fitsense] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-04T19:28:41.350Z  INFO 3328 --- [Fitsense] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@84180e2
+2026-11-04T19:28:41.353Z  INFO 3328 --- [Fitsense] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-04T19:28:41.431Z  WARN 3328 --- [Fitsense] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-11-04T19:28:41.473Z  INFO 3328 --- [Fitsense] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:32777/test?loggerLevel=OFF]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.15
+	Default catalog/schema: test/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-11-04T19:28:44.872Z  INFO 3328 --- [Fitsense] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-04T19:28:45.068Z  INFO 3328 --- [Fitsense] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-11-04T19:28:45.366Z  INFO 3328 --- [Fitsense] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-04T19:28:49.919Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanningPolicySelector   : POLITICA_PLANIFICACION PLAN-HIST-1
+2026-11-04T19:28:51.563Z  WARN 3328 --- [Fitsense] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-11-04T19:28:51.808Z  INFO 3328 --- [Fitsense] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-11-04T19:28:52.884Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.o.GeneracionR0548V20IT           : Started GeneracionR0548V20IT in 26.161 seconds (process running for 35.374)
+2026-11-04T19:28:54.133Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=548 objetivo=GAIN_MUSCLE seguros=356 elegibles=295 decisiones={ADMITIDO=295, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=36, EXCLUIDO_ESTIRAMIENTO=25} complementos_por_capacidad={}
+2026-11-04T19:28:54.151Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 548: LOWER_KNEE=30 LOWER_HIP=17 UPPER_PUSH=56 UPPER_PULL=14 fuera_de_slot=178 veredicto=ROBUSTO (295 elegibles, modo OBSERVE)
+2026-11-04T19:28:54.213Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : FACTIBILIDAD_POOL user=548 semana=1 version=4A-v6 objetivo=GAIN_MUSCLE veredicto=ROBUSTO principales=[HYPERTROPHY=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{UPPER_PULL=14, LOWER_KNEE=30, UPPER_PUSH=56, LOWER_HIP=17}]] secundarias=[STRENGTH=ROBUSTO[SLOTS_RESISTIDOS:ROBUSTO{UPPER_PULL=14, LOWER_KNEE=30, UPPER_PUSH=56, LOWER_HIP=17}]] modo=OBSERVE
+2026-11-04T19:28:54.215Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : CAPACIDADES_4A user=548 semana=1 version=4A-v6 objetivo=GAIN_MUSCLE principales=[HYPERTROPHY] secundarias=[STRENGTH] modo=OBSERVE
+2026-11-04T19:28:54.301Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Cobertura 4C del usuario 548 semana 1: elegible [LOWER_KNEE=30 LOWER_HIP=17 UPPER_PUSH=56 UPPER_PULL=14 fuera_de_slot=178 veredicto=ROBUSTO] ? borrador [LOWER_KNEE=11 LOWER_HIP=5 UPPER_PUSH=18 UPPER_PULL=16 fuera_de_slot=4 veredicto=ROBUSTO] ? exigibles [LOWER_KNEE, LOWER_HIP, UPPER_PUSH, UPPER_PULL] ? faltan [] ? posiciones 54 ? modo ENFORCE_AI_ONLY
+2026-11-04T19:28:54.305Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 548 ? Cobertura 4C posterior - semana 1 (6 dias: [2026-11-02, 2026-11-03, 2026-11-04, 2026-11-06, 2026-11-07, 2026-11-08])
+  LOWER_KNEE  -> 11 colocaciones  | 2 dias | [0, 0, 5, 0, 0, 6]
+  LOWER_HIP   -> 5 colocaciones  | 2 dias | [0, 0, 3, 0, 0, 2]
+  UPPER_PUSH  -> 18 colocaciones  | 3 dias | [8, 0, 0, 9, 1, 0]
+  UPPER_PULL  -> 16 colocaciones  | 3 dias | [1, 8, 0, 0, 7, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)
+2026-11-04T19:28:54.313Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : DOSIS_4D usuario 548 semana 1: objetivo GAIN_MUSCLE ? 54 comprobadas ? 0 abstenciones (duracion o sin patron) ? 0 incumplimientos ? modo ENFORCE ? 4D v3 MVP GAIN_MUSCLE: estructural 3x10 descanso 90 s ? relleno 2x10 descanso 90 s ? zona pequena [lower legs, waist] +3 reps (relleno hasta 3 series solo para V20) ? maximo 9 colocaciones/dia ? util 85 % del tiempo de sesion
+2026-11-04T19:28:54.337Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.d.services.PlanDraftValidator  : COBERTURA_CAPACIDADES usuario 548 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=GAIN_MUSCLE resultado=COMPLETO cubiertas=[HYPERTROPHY] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={HYPERTROPHY=52} slots_sin_cubrir=[]
+2026-11-04T19:28:54.357Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.PlanGenerationPipeline   : COBERTURA_SEMANA user=548 semana=1 origen=RULE_ENGINE version=4D-v4 objetivo=GAIN_MUSCLE resultado=COMPLETO cubiertas=[HYPERTROPHY] no_cubiertas={} omitidas=[] secundarias=[] colocaciones={HYPERTROPHY=52} slots_sin_cubrir=[]
+2026-11-04T19:28:54.364Z  INFO 3328 --- [Fitsense] [           main] m.w.s.f.p.a.i.c.GoalFeasibilityObserver  : COBERTURA_SEMANAL user=548 semana=1 origen=RULE_ENGINE version=4A-v6 objetivo=GAIN_MUSCLE veredicto=PRINCIPALES_PRESENTES_PENDIENTE_4D principales=[HYPERTROPHY=PRESENTE_PENDIENTE_4D(50 colocaciones, 6 dias)] secundarias=[STRENGTH=PRESENTE_PENDIENTE_4D(50 colocaciones, 6 dias)] modo=OBSERVE
+2026-11-04T19:28:54.811Z  INFO 3328 --- [Fitsense] [           main] i.c.WeeklyTrainingPlanCommandServiceImpl : Plan 1 generado para el usuario 548 por RULE_ENGINE en 1 intento(s)
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 36.24 s <<< FAILURE! -- in Registro R0548: la generacion inicial (GM intermedio, casa, 7 dias, 75 min) no pasa V20
+[ERROR] main.web.services.fitsense.orchestation.GeneracionR0548V20IT.generacionInicialNoPasaV20 -- Time elapsed: 1.948 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected main.web.services.fitsense.planning.domain.exceptions.PlanGenerationFailedException to be thrown, but nothing was thrown.
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:159)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:74)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3223)
+	at main.web.services.fitsense.orchestation.GeneracionR0548V20IT.generacionInicialNoPasaV20(GeneracionR0548V20IT.java:51)
+
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   GeneracionR0548V20IT.generacionInicialNoPasaV20:51 Expected main.web.services.fitsense.planning.domain.exceptions.PlanGenerationFailedException to be thrown, but nothing was thrown.
+[INFO] 
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- failsafe:3.5.6:verify (default) @ fitsense-backend ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:18 min
+[INFO] Finished at: 2026-11-04T19:28:56Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-failsafe-plugin:3.5.6:verify (default) on project fitsense-backend: There are test failures.
+[ERROR] 
+[ERROR] See /home/user/wt_gm75b/target/failsafe-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
