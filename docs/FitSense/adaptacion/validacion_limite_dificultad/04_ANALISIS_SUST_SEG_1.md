@@ -107,7 +107,13 @@ Sobre la última fila: en el catálogo V44_2 hay 17 ejercicios de shoulders y HO
 
 Si eso es correcto o es un hueco del catálogo lo decide una persona profesional (14, R-4). **No se modifica el catálogo ni la dificultad del 135.**
 
-En los 24, el desenlace con el límite **no** es una sustitución insegura: es la salida segura del 03 (NO_FACTIBLE y luego regeneración P-03 nivel 2). El laboratorio de los 22 perfiles (08) lo comprueba de extremo a extremo.
+En los 24, el desenlace con el límite **no** es una sustitución insegura: es la salida segura del 03. El laboratorio de los 22 perfiles (08) lo comprueba de extremo a extremo, con la misma semana y semilla que el barrido:
+
+| Desenlace con B y C | Perfiles |
+|---|---:|
+| NO_FACTIBLE y regeneración P-03 publicada | 14 |
+| NO_FACTIBLE y P-03 no factible (`TRABAJO_SUPERIOR_AL_PERMITIDO`): **semana sin plan** | 7 |
+| Plan inicial no válido (R0548), independiente del límite | 1 |
 
 ## 4. Recomendación de estrategia
 

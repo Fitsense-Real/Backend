@@ -29,7 +29,7 @@ En las pruebas unitarias el ejercicio que dolió es el 70001 (dificultad 2, ches
 | **G** | La IA propone uno más difícil ante dolor (580 dif 1 → 56 dif 2) | aceptada (hoy) | **rechazada** por el límite | rechazada | `casoG`; de extremo a extremo, N08 (09) |
 | **H** | Tres intentos de IA inválidos | respaldo completo | respaldo completo con SUST-SEG-1 ≤ | ídem | `RespaldoConDolorIT`, cuya IA rechaza siempre; `LimiteDificultadTooDifficultIT` (3 intentos y luego CONSERVED); N08 en el REPLAY |
 | **I** | Varios candidatos y solo uno válido; 100 órdenes de inserción aleatorios con semilla fija | siempre 70002 | siempre 70004 | siempre 70004 | `casoI`: un único resultado en las 100 vueltas |
-| **J** | La sesión ya fue adaptada antes: historial y exclusiones | — | se respetan | se respetan | N08 en el REPLAY (9 semanas posteriores, 09) y `RespaldoConDolorIT.B`: la semana siguiente conserva el sustituto y no reincorpora lo que dolió |
+| **J** | La sesión ya fue adaptada antes: historial y exclusiones | — | se respetan | se respetan | N08 en el REPLAY (8 semanas posteriores, 09) y `RespaldoConDolorIT.B`: la semana siguiente conserva el sustituto y no reincorpora lo que dolió |
 
 En todos los casos se comprueban además dos invariantes:
 - `invarianteNoReintroduce`: con sustituto, lo que dolió desaparece de la sesión; sin sustituto, queda **declarado** como problema y `revisarYCerrar` impide publicarlo;

@@ -41,12 +41,12 @@ Las respuestas valen para el 135 sin sustituto con el límite encendido (B o C).
 |---|---|---|---|
 | 1 | ¿Se retira el ejercicio que provocó dolor? | **Sí.** No aparece en ningún plan publicado de la semana nueva ni de la siguiente. | Invariantes 1 y 2 de `SinSustitutoDolorBase.recorrer` |
 | 2 | ¿Se conserva ese mismo ejercicio? | **No.** El respaldo no lo conserva: NO_FACTIBLE. La regeneración no lo incluye: está fuera del elegible y hay comprobación explícita. | `flujo_135_ABC.csv`: `{SIN_SUSTITUTO_SEGURO,SEMANA_NO_VALIDA}` y luego `PUBLICADO ... excluidos={135}` |
-| 3 | ¿Se conserva la sesión completa? | **No.** La semana se **regenera** entera por reglas (P-03 nivel 2), con dosis base. | `resultado_api = REGENERACION_SEGURA_REGLAS` |
+| 3 | ¿Se conserva la sesión completa? | **No.** La semana se **regenera** entera por reglas (P-03 nivel 2), con dosis base. En 7 de 21 perfiles ni siquiera eso: esa semana queda sin plan (08). | `resultado_api = REGENERACION_SEGURA_REGLAS` |
 | 4 | ¿Se intenta otra alternativa de seguridad? | **Sí:**<br>1. IA, si está activa;<br>2. SUST-SEG-1;<br>3. regeneración P-03 nivel 2.<br>No hay más intentos: el ciclo termina. | Mismo CSV; un solo intento V32 y un único intento P-03 |
 | 5 | ¿Se devuelve `SIN_EFECTO`? | **No.** El estado V32 es `NO_FACTIBLE`. `SIN_EFECTO` es para propuestas que no cambian nada, y aquí no hay propuesta publicable. | `estado_v32 = NO_FACTIBLE` |
 | 6 | ¿Se utiliza `RESPALDO`? | **Se intenta y no basta.** RESPALDO con sustitución solo se publica si SUST-SEG-1 encuentra sustituto. Con A (off) sí lo encuentra: 780, de dificultad 2. | Fila `off` de `flujo_135_ABC.csv`: `RESPALDO / CONSERVED / [780] / 2` |
 | 7 | ¿El resultado puede ser `NO_FACTIBLE`? | **Sí.** Es el desenlace de la adaptación localizada. Si además P-03 nivel 2 no pudiera publicar (excluido que reaparece o trabajo superior), la semana quedaría NO_FACTIBLE con motivo. | `NoFactibleReason`, `SafeRegenerationService` |
-| 8 | ¿Se publica algún plan nuevo? | **Sí, el de P-03 nivel 2**, sin el 135. En los 22 perfiles: ver 08. | `plan_semana_nueva = true` y `PUBLICADO plan=…` |
+| 8 | ¿Se publica algún plan nuevo? | **Depende del perfil.** En 14 de los 21 perfiles reproducidos se publica el plan de P-03 nivel 2, sin el 135. En **7 no se publica nada esa semana**: la regeneración supera el trabajo de la semana medida (`TRABAJO_SUPERIOR_AL_PERMITIDO`), la API devuelve `NO_FACTIBLE_POR_SEGURIDAD` y la semana siguiente el ciclo genera un plan nuevo sin el 135. | `plan_semana_nueva = true` y `PUBLICADO plan=…` |
 | 9 | ¿Quedan registradas las exclusiones por dolor? | **Sí:** `user_safety_exclusions` en `ACTIVA` / `DOLOR_IDENTIFICADO`, y `excluded_exercise_ids` en `safe_regeneration_attempts`. | Aserción P-02 de la base; columna `excluidos={135}` |
 | 10 | ¿Puede el ejercicio excluido reaparecer posteriormente? | **No sin reactivación explícita** del participante: `POST /api/v1/users/me/pain-exclusions/{id}/reactivation`, que pasa el control de seguridad. La semana siguiente, sin dolor, tampoco lo trae. | Invariante 2; `semana_siguiente = NO_CHANGE/SIN_ORDEN/plan` |
 | 11 | ¿Cómo se informa a la aplicación móvil? | Por tres vías:<br>• `GET /api/v1/users/me/plan/adaptations`: `resultado = REGENERACION_SEGURA_REGLAS`, con el plan regenerado.<br>• `message_shown` de la intervención: la intención, del tipo «Reportaste molestias. Revisaremos por seguridad…».<br>• El plan activo nuevo en `GET /users/me/plan/current`.<br>Con A el resultado es `REGENERACION_SEGURA_SUSTITUCION`. | `AdaptationOutcomeQueryService`; columna `resultado_api` |
@@ -75,12 +75,12 @@ Hay una salvedad que va al 14 (R-2):
 | Operación pedida | ¿Existe? | Dónde |
 |---|---|---|
 | Retirar el ejercicio afectado | **Sí, como sustitución o regeneración, no como retirada simple.** Ante dolor, V8C acepta retirar sin añadir (`dolorBajaOIgualORetira`). Pero la retirada sin sustituto **no** la hace el respaldo determinista: la hace P-03 nivel 2 regenerando. | V8C rama de dolor; `SafeRegenerationService` |
-| Conservar solo el resto de la sesión | **No existe como operación determinista** del respaldo. No se crea: la orden lo prohíbe sin demostrar antes que hace falta, y no hace falta porque P-03 nivel 2 cubre el caso. | — |
+| Conservar solo el resto de la sesión | **No existe como operación determinista** del respaldo y **no se crea**: la orden lo prohíbe sin demostrar antes que hace falta. **El laboratorio sí lo demuestra para una parte de los casos:**<br>• en 14/21 perfiles, P-03 nivel 2 cubre el caso;<br>• en **7/21**, la semana queda sin plan.<br>La propuesta («retirar solo el ejercicio sin sustituto y conservar el resto, sin añadir trabajo») queda en el 14 (R-3) y el 15 como cambio separado, **pendiente de autorización**. | 08 |
 | Buscar otra sustitución compatible | **Sí:** SUST-SEG-1. | `SafetySubstitutionPolicy` |
 | Declarar que no hay alternativa segura | **Sí:** `NO_FACTIBLE` / `SIN_SUSTITUTO_SEGURO` y `SIN_SUSTITUTO` en planes publicados. | `AdaptedWeekProducer`; `PublishedPlanSafetyRepairService` |
 | Solicitar revisión de la prescripción | **Parcial:** el texto `SEGURIDAD: ... Requiere intervención` queda en V32 y en el resultado de la API. No hay una cola de revisión profesional. | V32 `rejection_reason` |
 
-**No se modifica el respaldo ni se añade ningún mecanismo.**
+**No se modifica el respaldo ni se añade ningún mecanismo.** La necesidad de una salida intermedia queda demostrada para 7 de 21 perfiles; decidirla corresponde al responsable (15).
 
 ## 5. Diferencia funcional A → B/C en el flujo
 
@@ -88,6 +88,6 @@ Hay una salvedad que va al 14 (R-2):
 |---|---|---|
 | SUST-SEG-1 para el 135 | 780 (dif 2) o 663 (dif 3) | ninguno |
 | V32 | `RESPALDO` / `CONSERVED` | `NO_FACTIBLE` (`SIN_SUSTITUTO_SEGURO`) |
-| Publicado | copia de la semana con 135 → 780 (linaje V31) | semana regenerada por reglas sin el 135 (sin linaje V31) |
+| Publicado | copia de la semana con 135 → 780 (dif 2) o 663 (dif 3), con linaje V31, en 21/21 perfiles | semana regenerada por reglas sin el 135 (sin linaje V31) en 14/21; **ninguno** en 7/21: semana sin plan |
 | Dificultad del trabajo que sustituye al 135 | sube | no hay sustituto 1:1; la semana se rehace con dosis base |
-| API | `REGENERACION_SEGURA_SUSTITUCION` | `REGENERACION_SEGURA_REGLAS` |
+| API | `REGENERACION_SEGURA_SUSTITUCION` | `REGENERACION_SEGURA_REGLAS` (14) o `NO_FACTIBLE_POR_SEGURIDAD` (7) |
