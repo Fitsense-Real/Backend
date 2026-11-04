@@ -122,7 +122,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
         // 4D v3.1: siete colocaciones con sesiones de 60 minutos o mas.
         int topeColocaciones = dosisFijada
-                ? Math.min(MvpDosePolicy.maxColocaciones(sessionMinutes), MAX_EXERCISES_PER_SESSION)
+                ? Math.max(Math.min(MvpDosePolicy.maxColocaciones(sessionMinutes), MAX_EXERCISES_PER_SESSION),
+                MvpDosePolicy.maxColocaciones(sessionMinutes)) // prototipo 4D v3.4: el tope de 4D manda en GM
                 : MAX_EXERCISES_PER_SESSION;
         double presupuestoDia = dosisFijada
                 ? MvpDosePolicy.presupuestoDiarioSegundos(sessionMinutes)
