@@ -4,6 +4,8 @@
 
 El prototipo vive en una rama de laboratorio aparte, **`lab/k20-gm-tope-derivado`** (`720d058`, evidencia en `7605e30`). **No está en la candidata** `eval/final-ieee-k20-v2`.
 
+> **Actualización (04/11/2026):** aprobada como opción A e **integrada en la candidata como 4D v3.4** (`ADENDA_4D_v3_4.md`, `11` §4D v3.4). Al integrarla se corrigió el texto de los rangos (61–68 → 8; 69–75 → 9). La rejilla de 30–75 encontró el mismo defecto en 53–59 min (C-8, no integrado).
+
 ## 1. Síntoma
 
 | Caso | Perfil | Resultado |
