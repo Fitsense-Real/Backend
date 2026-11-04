@@ -16,13 +16,16 @@ main.web.services.fitsense.p2d.ConservacionPatronH1IT.reglaPorDefecto"
 
 fallidas() {
   python3 -I - target/surefire-reports target/failsafe-reports <<'PY'
-import sys, glob, xml.etree.ElementTree as ET
+import os, sys, glob, xml.etree.ElementTree as ET
 out = set()
 for d in sys.argv[1:]:
     for f in glob.glob(d + "/TEST-*.xml"):
+        # La clase sale del nombre del fichero (TEST-<clase>.xml): con @DisplayName, JUnit 5 pone el nombre
+        # visible en el atributo classname.
+        clase = os.path.basename(f)[len("TEST-"):-len(".xml")]
         for tc in ET.parse(f).getroot().iter("testcase"):
             if tc.find("failure") is not None or tc.find("error") is not None:
-                out.add(tc.get("classname") + "." + tc.get("name").split("(")[0])
+                out.add(clase + "." + tc.get("name").split("(")[0])
 print("\n".join(sorted(out)))
 PY
 }
