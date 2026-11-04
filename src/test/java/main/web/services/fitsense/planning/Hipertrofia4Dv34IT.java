@@ -45,17 +45,19 @@ import static org.junit.jupiter.api.Assertions.*;
  *       {@code MvpDosePolicy.maxColocaciones(m)}; dosis de 4D (SETS_REPS, 2-3 series, 10 o 13 repeticiones, 90 s);
  *       V20 (contenido &gt;= 70 % de m); V4 (contenido &lt;= m + 15 %); V13 (el enfoque no se repite en dias
  *       consecutivos).</li>
- *   <li>Gimnasio y casa con material generan en TODOS los minutos de 30 a 75 con 3 y 4 dias.</li>
+ *   <li>Gimnasio y casa con material generan en TODOS los minutos de 30 a 75 con 3 y 4 dias (desde C-8, tambien
+ *       peso corporal: ningun fallo).</li>
  *   <li>Ningun fallo, en ningun equipamiento, es el de 4D v3.1 (V20 con el tope de 7 por encima de 60 min).</li>
  *   <li>Los fallos que haya con peso corporal se REGISTRAN con su motivo (no se exigen ni se esconden).</li>
  * </ol>
- * RESULTADO DE LA PRIMERA EJECUCION (04/11/2026), REGISTRADO Y NO OCULTADO: el criterio 2 NO se cumple. Fallan los
- * 42 perfiles intermedios de 53 a 59 minutos (14 por equipamiento, con 3 y con 4 dias), todos por V20: el tope de 6 de
- * 4D v3.1 da 2.220 s y el piso va de 2.226 s (53 min) a 2.478 s (59 min). Es el MISMO defecto de cobertura que 4D
- * v3.4 corrige por encima de 60 minutos; queda fuera de lo aprobado y se registra como C-8
- * (docs/FitSense/short_paper_ieee/k20_adaptacion_real/04_CAMBIOS_CANDIDATOS.md). Esta prueba lo AFIRMA, igual que
- * R0548 afirmaba el suyo: si C-8 se aprueba, la afirmacion debe pasar a "ningun fallo". Los criterios 1 y 3 se
- * cumplen (0 violaciones en 270 semanas publicadas) y no hay fallos fuera de 53-59.
+ * REGISTRO HISTORICO (no se borra). Primera ejecucion, 04/11/2026, con 4D v3.4 sin C-8: el criterio 2 NO se cumplio.
+ * Fallaron los 42 perfiles intermedios de 53 a 59 minutos (14 por equipamiento, con 3 y con 4 dias), todos por V20: el
+ * tope de 6 de 4D v3.1 daba 2.220 s y el piso iba de 2.226 s (53 min) a 2.478 s (59 min). Hasta C-8 la prueba AFIRMABA
+ * ese fallo. Evidencia: docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/v34/rejilla_gm.
+ * <p>
+ * DESDE C-8 (aprobada; misma derivacion, 7 colocaciones de 53 a 59) es una PRUEBA PERMANENTE DE EXITO: los 312
+ * perfiles generan y cumplen los criterios 1 y 3.
+ * <p>
  * El TOPE DE 9 frente al limite general de 8: {@code RuleBasedTrainingPlanGenerator.MAX_EXERCISES_PER_SESSION} y
  * {@code CapabilityPrescriptionPolicy.MAX_COLOC_DIA} (8) son los topes de los objetivos SIN dosis fija; en
  * GAIN_MUSCLE el tope lo fija 4D (V24 GM usa {@code MvpDosePolicy.maxColocaciones}), como ya pasaba con el 6 y el 7.
@@ -69,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.*;
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token="
 })
-@DisplayName("4D v3.4: GAIN_MUSCLE genera planes validos en cada minuto de 30 a 75 (rejilla de 312 perfiles)")
+@DisplayName("4D v3.4 + C-8: GAIN_MUSCLE genera planes validos en cada minuto de 30 a 75 (rejilla de 312 perfiles)")
 class Hipertrofia4Dv34IT {
 
     @Container
@@ -257,14 +259,8 @@ class Hipertrofia4Dv34IT {
         var deV31 = fallos.entrySet().stream().filter(f -> f.getValue().contains("V20")
                 && Integer.parseInt(f.getKey().substring(f.getKey().lastIndexOf('-') + 1)) > 60).toList();
         assertTrue(deV31.isEmpty(), "fallos de V20 por encima de 60 min: " + deV31);
-        // 2 (registro de C-8): los UNICOS fallos son los intermedios de 53-59 minutos, todos por V20 y en los tres
-        // equipamientos; ningun otro perfil (ni principiante ni avanzado, ni otro minuto) falla.
-        var esperados = new TreeSet<String>();
-        for (var eq : EQUIPOS.keySet())
-            for (int d : List.of(3, 4))
-                for (int m = 53; m <= 59; m++) esperados.add("GM-I-%s-%dd-%d".formatted(eq, d, m));
-        assertEquals(esperados, new TreeSet<>(fallos.keySet()), "fallos de la rejilla (C-8: 53-59 min)");
-        assertTrue(fallos.values().stream().allMatch(v -> v.contains("V20:")), "todos por V20: " + fallos);
+        // 2: los 312 perfiles generan (gimnasio, casa con material y peso corporal; 30-75 minutos; 3 y 4 dias).
+        assertEquals(Map.of(), fallos, "ningun perfil sin plan valido (C-8)");
         // 4: los motivos quedan en planes.csv.
     }
 }

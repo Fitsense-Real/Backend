@@ -77,16 +77,33 @@ public final class MvpDosePolicy {
     public static final int MAX_COLOC_DIA_SESION_LARGA = 7;
     public static final int MINUTOS_SESION_LARGA = 60;
 
-    /** El tope de colocaciones del dia para una sesion de esos minutos (4D v3.1). */
+    /**
+     * El tope de colocaciones del dia para una sesion de esos minutos (4D v3.1, v3.4 y C-8).
+     * <p>
+     * 4D v3.4 + C-8 (docs/FitSense/ADENDA_4D_v3_4.md): el tope es el MAXIMO entre el de 4D v3.1 (6 por debajo de
+     * 60 minutos, 7 desde 60) y el MINIMO numero de colocaciones con la dosis estructural de 4D (3x10, 90 s) cuyo
+     * contenido llega al piso de V20 (70 %). Da 6 de 30 a 52, 7 de 53 a 60, 8 de 61 a 68 y 9 de 69 a 75: los valores
+     * de 4D v3.1 en 30, 45 y 60 no cambian. V20, la dosis, el descanso y el presupuesto no cambian.
+     */
     public static int maxColocaciones(int sessionMinutes) {
-        if (sessionMinutes < MINUTOS_SESION_LARGA) return MAX_COLOC_DIA;
-        // 4D v3.4 (docs/FitSense/ADENDA_4D_v3_4.md): por encima de 60 minutos el tope es el MINIMO numero de
-        // colocaciones con la dosis estructural de 4D (3x10, 90 s) cuyo contenido llega al piso de V20 (70 %). Con
-        // 60 minutos da 7, el valor de 4D v3.1; de 61 a 68 da 8 y de 69 a 75 da 9. V20, la dosis y el presupuesto no cambian.
+        return Math.max(topeV31(sessionMinutes), topeDerivadoDeV20(sessionMinutes));
+    }
+
+    /** El tope de 4D v3.1: 6 por debajo de 60 minutos, 7 desde 60. */
+    static int topeV31(int sessionMinutes) {
+        return sessionMinutes < MINUTOS_SESION_LARGA ? MAX_COLOC_DIA : MAX_COLOC_DIA_SESION_LARGA;
+    }
+
+    /** Minimo de colocaciones estructurales de 4D cuyo contenido llega al piso de V20 con esos minutos. */
+    static int topeDerivadoDeV20(int sessionMinutes) {
         long piso = (sessionMinutes * 60L * PISO_V20_PCT + 99) / 100;
         long porColocacion = SEGUNDOS_COLOCACION_ESTRUCTURAL + SEGUNDOS_TRANSICION;
-        int derivado = (int) Math.ceil((piso - SEGUNDOS_CALENTAMIENTO + SEGUNDOS_TRANSICION) / (double) porColocacion);
-        return Math.max(MAX_COLOC_DIA_SESION_LARGA, derivado);
+        return (int) Math.ceil((piso - SEGUNDOS_CALENTAMIENTO + SEGUNDOS_TRANSICION) / (double) porColocacion);
+    }
+
+    /** Para los mensajes: "v3.4" si el tope viene de la derivacion de V20 (53-59 y 61-75 min), "v3.1" si no. */
+    public static String versionDelTope(int sessionMinutes) {
+        return topeDerivadoDeV20(sessionMinutes) > topeV31(sessionMinutes) ? "v3.4" : "v3.1";
     }
 
     /**
