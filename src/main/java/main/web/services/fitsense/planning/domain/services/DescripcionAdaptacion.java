@@ -66,10 +66,19 @@ public final class DescripcionAdaptacion {
                 && informe.correccionesDelBackend().stream()
                 .anyMatch(c -> c != null && c.startsWith(AdaptationOutcome.NOTA_FACTIBILIDAD));
         var aplicadas = informe == null || informe.aplicadas() == null ? List.<Long>of() : informe.aplicadas();
+        // RETIRADA LOCALIZADA POR DOLOR (candidata, solo con fitsense.adaptation.pain-localized-removal=on): la sesion
+        // senalada SI cambio (se retiro lo que dolio), aunque no la aplicara la IA. Se describe lo que cambio de verdad
+        // en vez de decir que se mantuvo. Sin esa nota (el interruptor apagado) el texto es el de siempre.
+        boolean retiradaSegura = informe != null && informe.correccionesDelBackend() != null
+                && informe.correccionesDelBackend().stream()
+                .anyMatch(c -> c != null && c.startsWith(AdaptedWeekProducer.NOTA_RETIRADA_SEGURA));
         for (var senalada : orden.targetedSessions()) {
             Long id = senalada.plannedWorkoutId();
             var derivada = resultado.semana().stream().filter(d -> id.equals(d.sourcePlannedWorkoutId())).findFirst();
-            if (!aplicadas.contains(id) || derivada.isEmpty()) {
+            boolean cambioDeSeguridad = retiradaSegura && derivada.isPresent() && senalada.intervencion() != null
+                    && senalada.intervencion().exigeRevisionDeSeguridad()
+                    && !mismosEjercicios(id, previa, derivada.get());
+            if ((!aplicadas.contains(id) && !cambioDeSeguridad) || derivada.isEmpty()) {
                 sumar(conteo, sinAlternativa ? Cambio.CONSERVADA_SIN_ALTERNATIVA : Cambio.NO_APLICADA, 1);
                 continue;
             }
@@ -135,6 +144,15 @@ public final class DescripcionAdaptacion {
         }
         // Lo retirado que no se reemplazo es una retirada, haya o no otras sustituciones en la sesion.
         if (!quitados.isEmpty()) sumar(conteo, Cambio.RETIRADA, quitados.size());
+    }
+
+    private static boolean mismosEjercicios(Long id, PreviousWeekSummary previa, DerivedWorkout derivada) {
+        if (previa == null || previa.prescriptions() == null) return true;
+        var antes = previa.prescriptions().stream().filter(p -> id.equals(p.plannedWorkoutId()))
+                .map(PreviousWeekSummary.PrescriptionOutcome::exerciseId).collect(java.util.stream.Collectors.toSet());
+        var despues = derivada.workout().exercises().stream().map(PlanDraft.DraftExercise::exerciseId)
+                .collect(java.util.stream.Collectors.toSet());
+        return antes.equals(despues);
     }
 
     private static boolean menorDosis(PreviousWeekSummary.PrescriptionOutcome antes, PlanDraft.DraftExercise n) {
