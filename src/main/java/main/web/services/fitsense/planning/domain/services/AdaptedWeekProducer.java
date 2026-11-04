@@ -13,6 +13,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgresion;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
+import main.web.services.fitsense.planning.domain.model.valueobjects.RetiradaSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 
 import java.util.ArrayList;
@@ -60,6 +61,11 @@ public class AdaptedWeekProducer {
 
     /** P-03: la nota que deja en V32 (correcciones_del_backend) una sesion de dolor resuelta sin IA. */
     public static final String NOTA_REGENERACION_SEGURA = "REGENERACION_SEGURA: ";
+    /**
+     * Nota de la RETIRADA LOCALIZADA POR DOLOR (candidata, apagada por defecto) en
+     * {@code correcciones_del_backend}. No empieza por {@link #NOTA_REGENERACION_SEGURA}: no es una sustitucion.
+     */
+    public static final String NOTA_RETIRADA_SEGURA = "RETIRADA_SEGURA: ";
 
     /**
      * P-03: si lo que dolio en cada sesion senalada por seguridad esta excluido con causa verificada. Con
@@ -130,6 +136,14 @@ public class AdaptedWeekProducer {
      * adaptacion (D-P11: nunca la segunda sin las reducciones autorizadas).
      */
     private final boolean autorizarDosis;
+    /**
+     * RETIRADA LOCALIZADA POR DOLOR (candidata, {@code fitsense.adaptation.pain-localized-removal}, APAGADA por
+     * defecto). Entre la sustitucion SUST-SEG-1 y la regeneracion P-03: si lo que dolio no tiene sustituto compatible,
+     * se intenta retirar SOLO ese ejercicio de su sesion senalada y conservar el resto, y se publica unicamente si
+     * pasa V8C y la validacion estricta entera. Si no, el NO_FACTIBLE de siempre y P-03 sin cambios.
+     */
+    private final boolean retiradaLocalizada;
+    private final boolean retiradaSolicitada;
 
     public AdaptedWeekProducer(SessionFixApplier applier,
                                ConservationValidator conservation,
@@ -137,11 +151,33 @@ public class AdaptedWeekProducer {
         this(applier, conservation, estricta, false);
     }
 
-    /** @param progresion {@code fitsense.adaptation.progression.enabled} */
+    /** {@code off} (por defecto) o {@code on}; cualquier otro valor es un error de configuracion. */
+    public static boolean retiradaDesde(String valor) {
+        String v = valor == null ? "" : valor.trim().toLowerCase(java.util.Locale.ROOT);
+        return switch (v) {
+            case "", "off" -> false;
+            case "on" -> true;
+            default -> throw new IllegalArgumentException(
+                    "fitsense.adaptation.pain-localized-removal admite off u on, no «" + valor + "».");
+        };
+    }
+
     public AdaptedWeekProducer(SessionFixApplier applier,
                                ConservationValidator conservation,
                                StrictPlanValidation estricta,
                                boolean progresion) {
+        this(applier, conservation, estricta, progresion, false);
+    }
+
+    /**
+     * @param progresion         {@code fitsense.adaptation.progression.enabled}
+     * @param retiradaLocalizada {@code fitsense.adaptation.pain-localized-removal}
+     */
+    public AdaptedWeekProducer(SessionFixApplier applier,
+                               ConservationValidator conservation,
+                               StrictPlanValidation estricta,
+                               boolean progresion,
+                               boolean retiradaLocalizada) {
         if (estricta == null)
             throw new IllegalArgumentException("Sin validacion estricta no se adapta nada.");
 
@@ -160,6 +196,21 @@ public class AdaptedWeekProducer {
         this.conservation = conservation;
         this.estricta = estricta;
         this.autorizarDosis = progresion || estricta.validaCapacidades();
+        // DECISION DEL RESPONSABLE (cierre del PR #39): la retirada localizada NO es independiente del limite de
+        // dificultad. Solo actua si el limite esta encendido (on o preferencia); con el limite apagado queda inactiva
+        // aunque se pida, y el respaldo es el de siempre.
+        this.retiradaSolicitada = retiradaLocalizada;
+        this.retiradaLocalizada = retiradaLocalizada && conservation != null && conservation.limitaDificultad();
+    }
+
+    /** Si se pidio la retirada por configuracion, aunque no actue por tener el limite apagado. */
+    public boolean retiradaSolicitada() {
+        return retiradaSolicitada;
+    }
+
+    /** Si la retirada localizada ACTUA: pedida por configuracion y con el limite de dificultad encendido. */
+    public boolean retiradaLocalizada() {
+        return retiradaLocalizada;
     }
 
     /**
@@ -246,7 +297,7 @@ public class AdaptedWeekProducer {
         // le prohibe tocarla. Lo que trajo la IA no se repara: si no es
         // elegible, V1 lo rechaza.
         var reparada = SafetySubstitutionPolicy.reparar(adaptada.workouts(), context.previousWeek(),
-                exclusiones, eligible, context);
+                exclusiones, eligible, context, conservation.estrategiaSustitucion());
         var informe = conservation.validate(
                 new WeekDerivation(reparada.semana(), adaptada.sourcesWithoutDerived()),
                 context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones(), autorizarDosis,
@@ -294,7 +345,9 @@ public class AdaptedWeekProducer {
         if (!conSeguridad.isEmpty() && cubiertoPorMemoriaDelDolor(conSeguridad, context.previousWeek(), exclusiones)) {
             var r = continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, exclusiones,
                     null);
-            if (!r.publicable()) return r;
+            if (!r.publicable())
+                return retiradaLocalizada && r.codigos().contains(NoFactibleReason.SIN_SUSTITUTO_SEGURO)
+                        ? retirar(context, derivation, eligible, exclusiones, conSeguridad, r) : r;
             // Ante dolor no se anade trabajo: ninguna sesion del dolor puede salir con mas volumen que la medida.
             var masTrabajo = masTrabajoQueLaMedida(conSeguridad, context.previousWeek(), r.semana());
             if (!masTrabajo.isEmpty())
@@ -323,6 +376,105 @@ public class AdaptedWeekProducer {
         // registrar, no un plan invalido.
         return continuidad(context, derivation, AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, exclusiones,
                 null);
+    }
+
+    /**
+     * RETIRADA LOCALIZADA POR DOLOR (candidata, apagada por defecto). Solo se llega aqui con el interruptor encendido,
+     * desde el respaldo con dolor cubierto por P-02 y cuando la continuidad salio NO_FACTIBLE por falta de sustituto
+     * seguro. Se parte de la MISMA copia reparada (SUST-SEG-1 sustituye lo que puede) y:
+     * <ol>
+     *   <li>de las sesiones senaladas por dolor se retira SOLO lo excluido por dolor registrado que siguio sin
+     *       sustituto; nada se anade, ninguna otra dosis cambia y los minutos los calcula el estimador;</li>
+     *   <li>si lo que queda sin sustituto tiene otra causa (bloqueo, equipamiento...) o esta tambien en una sesion NO
+     *       senalada, no se retira nada: una sesion no senalada no se modifica por esta via;</li>
+     *   <li>V8C de continuidad comprueba cada retirada ({@link RetiradaSeguridad}) y la validacion estricta (V1-V25,
+     *       V20, V24/4D...) la semana entera; ante dolor el trabajo no puede subir.</li>
+     * </ol>
+     * Si algo falla, se devuelve el NO_FACTIBLE original con el motivo añadido, y P-03 sigue como siempre.
+     */
+    private AdaptedWeekResult retirar(PlanGenerationContext context, WeekDerivation derivation,
+                                      Map<Long, CandidateExercise> eligible, ExclusionesDeSeguridad exclusiones,
+                                      List<Long> conSeguridad, AdaptedWeekResult sinRetirada) {
+        var correcciones = new ArrayList<String>();
+        var origen = sinCargasInvalidas(derivation.workouts(), context, correcciones);
+        var reparada = SafetySubstitutionPolicy.reparar(origen, context.previousWeek(), exclusiones, eligible, context,
+                conservation.estrategiaSustitucion());
+        var semana = new ArrayList<DerivedWorkout>();
+        var retiradas = new ArrayList<RetiradaSeguridad>();
+        var noAplica = new ArrayList<String>();
+        for (var d : reparada.semana()) {
+            var w = d.workout();
+            var quitar = w.exercises().stream().filter(e -> exclusiones.incluye(e.exerciseId())).toList();
+            if (quitar.isEmpty()) {
+                semana.add(d);
+                continue;
+            }
+            for (var e : quitar) {
+                String motivo = exclusiones.motivos().get(e.exerciseId());
+                if (motivo == null || !motivo.contains(SafetyConflictPolicy.DOLOR_REGISTRADO))
+                    noAplica.add(("el ejercicio %d de la sesion %d sigue sin sustituto y su causa (%s) no es el dolor"
+                            + " registrado").formatted(e.exerciseId(), d.sourcePlannedWorkoutId(), motivo));
+                else if (!conSeguridad.contains(d.sourcePlannedWorkoutId()))
+                    noAplica.add(("el ejercicio %d esta tambien en la sesion %d, que no se senalo por dolor: una sesion"
+                            + " no senalada no se modifica por esta via").formatted(e.exerciseId(),
+                            d.sourcePlannedWorkoutId()));
+            }
+            var quedan = w.exercises().stream().filter(e -> !exclusiones.incluye(e.exerciseId())).toList();
+            if (quedan.isEmpty()) {
+                noAplica.add("la sesion %d se quedaria sin ejercicios".formatted(d.sourcePlannedWorkoutId()));
+                semana.add(d);
+                continue;
+            }
+            int minutos = context.prescription() == null ? w.expectedDurationMinutes()
+                    : ESTIMADOR.estimateMinutes(new PlanDraft.DraftWorkout(w.scheduledDate(), w.focus(), w.name(), 0,
+                    quedan), context.prescription());
+            for (var e : quitar) {
+                var ficha = exclusiones.originales().get(e.exerciseId());
+                retiradas.add(new RetiradaSeguridad(d.sourcePlannedWorkoutId(), w.scheduledDate(), e.exerciseId(),
+                        ficha == null ? null : ficha.movementPattern(),
+                        exclusiones.motivos().getOrDefault(e.exerciseId(), "-"),
+                        e.plannedSets() + "x" + (e.plannedReps() != null ? e.plannedReps()
+                                : e.plannedDurationSeconds() + " s") + " descanso " + e.restSeconds(),
+                        w.expectedDurationMinutes(), minutos));
+            }
+            semana.add(new DerivedWorkout(d.sourcePlannedWorkoutId(), new PlanDraft.DraftWorkout(w.scheduledDate(),
+                    w.focus(), w.name(), minutos, quedan)));
+        }
+        if (retiradas.isEmpty()) noAplica.add("no hay ningun ejercicio excluido por dolor que retirar");
+        if (!noAplica.isEmpty()) return sinRetiradaPorque(sinRetirada, noAplica);
+
+        var informe = conservation.validateContinuidad(new WeekDerivation(semana, derivation.sourcesWithoutDerived()),
+                context.previousWeek(), eligible, exclusiones, reparada.sustituciones(), retiradas, null,
+                autorizarDosis);
+        if (!correcciones.isEmpty()) informe = informe.conCorreccionesDelBackend(correcciones);
+        var r = revisarYCerrar(context, semana, informe, GenerationSource.CONSERVED,
+                AdaptedWeekResult.Motivo.RESPALDO_IA, eligible, List.of());
+        if (!r.publicable()) return sinRetiradaPorque(sinRetirada, r.problemas());
+        var masTrabajo = masTrabajoQueLaMedida(conSeguridad, context.previousWeek(), r.semana());
+        if (!masTrabajo.isEmpty())
+            return sinRetiradaPorque(sinRetirada, List.of("sube el trabajo (" + masTrabajo + ")"));
+
+        var notas = new ArrayList<>(r.conservacion().correccionesDelBackend());
+        if (!r.conservacion().sustituciones().isEmpty())
+            notas.add(NOTA_REGENERACION_SEGURA + "sesiones %s resueltas sin IA por sustitucion %s de %s"
+                    .formatted(conSeguridad, SafetySubstitutionPolicy.REGLA, r.conservacion().sustituciones().stream()
+                            .map(x -> x.quitado() + "->" + x.puesto()).toList()));
+        notas.add(NOTA_RETIRADA_SEGURA + ("sesiones %s: sin sustituto %s compatible, se retira %s (dolor registrado)"
+                + " y se conserva el resto; minutos %s").formatted(
+                retiradas.stream().map(RetiradaSeguridad::sesionOrigen).distinct().toList(),
+                SafetySubstitutionPolicy.REGLA, retiradas.stream().map(RetiradaSeguridad::quitado).toList(),
+                retiradas.stream().map(x -> x.sesionOrigen() + ":" + x.minutosAntes() + "->" + x.minutosDespues())
+                        .distinct().toList()));
+        return new AdaptedWeekResult(r.estado(), r.motivo(), r.semana(), r.source(),
+                r.conservacion().conCorreccionesDelBackend(notas), r.problemas(), r.codigos());
+    }
+
+    /** El NO_FACTIBLE de siempre, con el motivo por el que la retirada localizada no se pudo publicar. */
+    private static AdaptedWeekResult sinRetiradaPorque(AdaptedWeekResult sinRetirada, List<String> motivos) {
+        var problemas = new ArrayList<>(sinRetirada.problemas());
+        problemas.add("RETIRADA_LOCALIZADA no aplicable: " + String.join(" | ", motivos));
+        return AdaptedWeekResult.noFactible(sinRetirada.motivo(), sinRetirada.conservacion(), problemas,
+                sinRetirada.codigos());
     }
 
     /**
@@ -360,7 +512,7 @@ public class AdaptedWeekProducer {
         // Conservar no es publicar lo que hoy es inseguro: lo heredado que dejo
         // de ser compatible por seguridad se sustituye, o la semana no sale.
         var reparada = SafetySubstitutionPolicy.reparar(origen, context.previousWeek(),
-                exclusiones, eligible, context);
+                exclusiones, eligible, context, conservation.estrategiaSustitucion());
         var informe = conservation.validateContinuidad(
                 new WeekDerivation(reparada.semana(), derivation.sourcesWithoutDerived()),
                 context.previousWeek(), eligible, exclusiones, reparada.sustituciones(), paso, autorizarDosis);

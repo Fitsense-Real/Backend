@@ -1,0 +1,9 @@
+2026-11-04T00:23:07.768Z  INFO 26208 --- [Fitsense] [           main] .w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 3 ? decision ADAPT_LOCALIZED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas
+[ERROR] Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 9.368 s <<< FAILURE! -- in H1 ? V8C multiconjunto (por defecto): el caso U04 de extremo a extremo
+[ERROR] main.web.services.fitsense.p2d.ConservacionPatronH1IT.reglaPorDefecto -- Time elapsed: 0.007 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: el limite de dificultad candidato esta APAGADO por defecto ==> expected: <false> but was: <true>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertFalse.failNotFalse(AssertFalse.java:69)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:41)
+	at org.junit.jupiter.api.Assertions.assertFalse(Assertions.java:255)

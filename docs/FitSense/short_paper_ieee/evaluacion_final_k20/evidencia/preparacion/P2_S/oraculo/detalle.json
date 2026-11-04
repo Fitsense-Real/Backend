@@ -1,0 +1,937 @@
+[
+ {
+  "id": "U01",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "100.00",
+   "Aobs": "100.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "NO_CHANGE",
+   "backend": "NO_CHANGE",
+   "senaladas": [],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    1,
+    2,
+    3
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U02",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "80.00",
+   "Aobs": "80.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "40.00"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "NO_CHANGE",
+   "backend": "NO_CHANGE",
+   "senaladas": [],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    10,
+    11,
+    12
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U03",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": "ADAPT_LOCALIZED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_EFECTO",
+   "source": "CONSERVED",
+   "ai_calls": "2",
+   "applied": [],
+   "no_effect": [
+    21
+   ],
+   "conserved": [
+    19,
+    20
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U04",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": "ADAPT_EXPANDED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "2",
+   "applied": [
+    29
+   ],
+   "no_effect": [
+    30
+   ],
+   "conserved": [
+    28
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 1 ejercicio usamos una variante registrada como de menor dificultad. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "U05",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "100.00",
+   "C": "33.33",
+   "por_sesion": [
+    "100.00",
+    "sin_registro",
+    "sin_registro"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "INSUFFICIENT_DATA",
+   "backend": "INSUFFICIENT_DATA",
+   "senaladas": [],
+   "teorico_articulo": "INSUFFICIENT_DATA",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    37,
+    38,
+    39
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U06",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "100.00",
+   "Aobs": "100.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "NO_CHANGE",
+   "backend": "NO_CHANGE",
+   "senaladas": [],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    46,
+    47,
+    48
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U07",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "79.75",
+   "Aobs": "79.75",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "39.26"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:CAUSA_NO_REGISTRADA"
+   ],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": false
+  },
+  "v32": {
+   "status": "SIN_EFECTO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    57
+   ],
+   "conserved": [
+    55,
+    56
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos la sesión que nos indicaste. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U08",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": "ADAPT_LOCALIZED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "2",
+   "applied": [
+    66
+   ],
+   "no_effect": [],
+   "conserved": [
+    64,
+    65
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "U09",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": "ADAPT_EXPANDED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "2",
+   "applied": [
+    74,
+    75
+   ],
+   "no_effect": [],
+   "conserved": [
+    73
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 1 ejercicio usamos una variante registrada como de menor dificultad. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "U10",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "100.00",
+   "C": "33.33",
+   "por_sesion": [
+    "100.00",
+    "sin_registro",
+    "sin_registro"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "INSUFFICIENT_DATA",
+   "backend": "INSUFFICIENT_DATA",
+   "senaladas": [],
+   "teorico_articulo": "INSUFFICIENT_DATA",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    82,
+    83,
+    84
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U11",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "100.00",
+   "Aobs": "100.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "NO_CHANGE",
+   "backend": "NO_CHANGE",
+   "senaladas": [],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    91,
+    92,
+    93
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U12",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "79.44",
+   "Aobs": "79.44",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "38.33"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:CAUSA_NO_REGISTRADA"
+   ],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": false
+  },
+  "v32": {
+   "status": "SIN_EFECTO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    102
+   ],
+   "conserved": [
+    100,
+    101
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos la sesión que nos indicaste. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U13",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": "ADAPT_LOCALIZED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "2",
+   "applied": [
+    111
+   ],
+   "no_effect": [],
+   "conserved": [
+    109,
+    110
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "U14",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": "ADAPT_EXPANDED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "2",
+   "applied": [
+    119,
+    120
+   ],
+   "no_effect": [],
+   "conserved": [
+    118
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 2 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "U15",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "100.00",
+   "C": "33.33",
+   "por_sesion": [
+    "100.00",
+    "sin_registro",
+    "sin_registro"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "INSUFFICIENT_DATA",
+   "backend": "INSUFFICIENT_DATA",
+   "senaladas": [],
+   "teorico_articulo": "INSUFFICIENT_DATA",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    127,
+    128,
+    129
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U16",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "100.00",
+   "Aobs": "100.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "NO_CHANGE",
+   "backend": "NO_CHANGE",
+   "senaladas": [],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    136,
+    137,
+    138
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U17",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "80.00",
+   "Aobs": "80.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "40.00"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "NO_CHANGE",
+   "backend": "NO_CHANGE",
+   "senaladas": [],
+   "teorico_articulo": "NO_CHANGE",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    145,
+    146,
+    147
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "U18",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": "ADAPT_LOCALIZED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "2",
+   "applied": [
+    156
+   ],
+   "no_effect": [],
+   "conserved": [
+    154,
+    155
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "U19",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": "ADAPT_EXPANDED",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "2",
+   "applied": [
+    164,
+    165
+   ],
+   "no_effect": [],
+   "conserved": [
+    163
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 2 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "U20",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "100.00",
+   "C": "33.33",
+   "por_sesion": [
+    "100.00",
+    "sin_registro",
+    "sin_registro"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "INSUFFICIENT_DATA",
+   "backend": "INSUFFICIENT_DATA",
+   "senaladas": [],
+   "teorico_articulo": "INSUFFICIENT_DATA",
+   "coincide_teorico": true
+  },
+  "v32": {
+   "status": "SIN_ORDEN",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [],
+   "conserved": [
+    172,
+    173,
+    174
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ }
+]
