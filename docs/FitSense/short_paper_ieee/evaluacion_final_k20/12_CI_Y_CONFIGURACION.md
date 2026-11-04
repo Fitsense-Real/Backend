@@ -6,7 +6,7 @@
 | PR | [#40](https://github.com/Fitsense-Real/Backend/pull/40), borrador abierto solo para la CI (job `verify` = `mvnw verify -Pintegration`) |
 | SHA congelado | `a31c36bbb0c94eb99c84d8fcb37465797efec459` |
 | `src/main` | = `7ee69c2`: `generation` `76e15c5` + #38 + #39 + P3 |
-| CI | Ver la sección «Estado de la CI» al final (se actualiza en el commit de resultados) |
+| CI | **Verde** en `1986b2d` (mismo `src/` que el SHA congelado), run 41859969622 |
 | Regresión local | 1.185/0/0 unitarias · 480/0/41 integración (`11`) |
 | Base | PostgreSQL 16.15 efímero (Testcontainers). Ni Railway ni Neon |
 | Migraciones | 46 (última 44.2), checksum `9981294ded945dc1882bd26f2468c30f`. Ninguna nueva |
@@ -35,4 +35,10 @@ python3 -I docs/FitSense/short_paper_ieee/evaluacion_final_k20/herramientas/info
 
 ## Estado de la CI
 
-(se completa con el resultado del PR #40)
+| Commit | Run | Resultado |
+|---|---|---|
+| `1986b2d` | [41859969622](https://github.com/Fitsense-Real/Backend/actions/runs/41859969622) | **verify ✔ success** |
+| `a31c36b` | 41858257622 | Cancelada: la sustituyó el push siguiente |
+| `f41aafb` | 41857886460 | Cancelada: la sustituyó el push siguiente |
+
+`1986b2d` tiene el mismo `src/` que el SHA congelado `a31c36b` (`git diff --stat a31c36b 1986b2d -- src` vacío): solo añade evidencia y documentación. Por eso su CI verde vale para el código congelado.
