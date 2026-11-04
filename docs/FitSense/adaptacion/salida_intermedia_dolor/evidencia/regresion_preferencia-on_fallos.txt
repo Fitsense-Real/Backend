@@ -1,0 +1,9 @@
+[ERROR] Tests run: 4, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 6.398 s <<< FAILURE! -- in H1 ? V8C multiconjunto (por defecto): el caso U04 de extremo a extremo
+[ERROR] main.web.services.fitsense.p2d.ConservacionPatronH1IT.reglaPorDefecto -- Time elapsed: 0.007 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: el limite de dificultad candidato esta APAGADO por defecto ==> expected: <false> but was: <true>
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 7.128 s <<< FAILURE! -- in Retirada localizada: APAGADA por defecto
+[ERROR] main.web.services.fitsense.orchestation.RetiradaLocalizadaPorDefectoIT.apagadaPorDefecto -- Time elapsed: 0.004 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: la retirada localizada esta APAGADA por defecto ==> expected: <false> but was: <true>
+[ERROR] Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 14.23 s <<< FAILURE! -- in Respaldo forzado: con dolor y sustituto, sin dolor, y con dolor sin sustituto
+[ERROR] main.web.services.fitsense.orchestation.RespaldoConDolorIT.conDolorSinSustitutoNoPublicaNadaInvalido -- Time elapsed: 3.066 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: en la semana de referencia: NO_FACTIBLE sin publicar {attempt_id=4, decision=ADAPT_LOCALIZED, status=RESPALDO, generation_source=CONSERVED, ai_calls=3, targeted_interventions={SEGURIDAD_ANTE_DOLOR}, conservation_report={"pasos": [], "problems": [], "aplicadas": [], "sin_efecto": [], "conservadas": [103, 104, 105], "progresadas": [], "sustituciones": [], "pasos_bloqueados": [], "correcciones_del_backend": ["RETIRADA_SEGURA: sesiones [105]: sin sustituto SUST-SEG-1 compatible, se retira [1373] (dolor registrado) y se conserva el resto; minutos [105:37->34]"], "fechas_con_duracion_reducible": []}, rejection_reason=null} ==> expected: <true> but was: <false>

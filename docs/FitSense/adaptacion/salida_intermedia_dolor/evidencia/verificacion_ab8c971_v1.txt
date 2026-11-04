@@ -1,0 +1,27 @@
+# verificar_configuraciones.sh sobre ab8c971 (analizador v1, con el defecto de classname = @DisplayName)
+== 1. Configuracion por defecto
+OK: 0 fallos
+== 2. Configuracion experimental (difficulty-guard=preferencia, pain-localized-removal=on)
+DIFERENCIA con lo esperado.
+-- fallidas:
+H1 · V8C multiconjunto (por defecto): el caso U04 de extremo a extremo.reglaPorDefecto
+Respaldo forzado: con dolor y sustituto, sin dolor, y con dolor sin sustituto.conDolorSinSustitutoNoPublicaNadaInvalido
+Retirada localizada: APAGADA por defecto.apagadaPorDefecto
+-- esperadas:
+main.web.services.fitsense.orchestation.RespaldoConDolorIT.conDolorSinSustitutoNoPublicaNadaInvalido
+main.web.services.fitsense.orchestation.RetiradaLocalizadaPorDefectoIT.apagadaPorDefecto
+main.web.services.fitsense.p2d.ConservacionPatronH1IT.reglaPorDefecto
+exit=1
+
+# Totales (logs de maven)
+corrida 1 (defecto):
+[INFO] Tests run: 1185, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 521, Failures: 0, Errors: 0, Skipped: 42
+corrida 2 (experimental):
+[INFO] Tests run: 1185, Failures: 0, Errors: 0, Skipped: 0
+[ERROR] Tests run: 521, Failures: 3, Errors: 0, Skipped: 42
+
+# Analizador corregido (clase desde TEST-<clase>.xml) sobre los informes de la corrida 2:
+main.web.services.fitsense.orchestation.RespaldoConDolorIT.conDolorSinSustitutoNoPublicaNadaInvalido
+main.web.services.fitsense.orchestation.RetiradaLocalizadaPorDefectoIT.apagadaPorDefecto
+main.web.services.fitsense.p2d.ConservacionPatronH1IT.reglaPorDefecto
