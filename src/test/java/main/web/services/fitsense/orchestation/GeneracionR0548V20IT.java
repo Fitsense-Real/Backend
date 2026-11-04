@@ -54,7 +54,10 @@ class GeneracionR0548V20IT extends SinSustitutoDolorBase {
         var sesiones = jdbc.queryForList("SELECT pw.planned_workout_id, count(e.*) AS n FROM planned_workouts pw JOIN"
                 + " planned_workout_exercises e ON e.planned_workout_id = pw.planned_workout_id WHERE pw.plan_id = ?"
                 + " GROUP BY pw.planned_workout_id", plan);
-        assertEquals(7, sesiones.size(), "7 sesiones");
+        // 7 dias disponibles, 6 sesiones: el tope semanal de los niveles no principiantes (el mismo numero que el
+        // registro del fallo).
+        assertEquals(main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext
+                .MAX_SESSIONS_OTHERS, sesiones.size(), "6 sesiones (tope semanal)");
         for (var s : sesiones)
             assertTrue(((Number) s.get("n")).intValue() <= MvpDosePolicy.maxColocaciones(75),
                     "como mucho el tope de 4D v3.4 (9 colocaciones a 75 minutos): " + s);

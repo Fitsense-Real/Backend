@@ -555,8 +555,9 @@ public class PlanDraftValidator {
             int tope = MvpDosePolicy.maxColocaciones(minutos);
             if (colocaciones > tope)
                 incumplimientos.add(("V24: el entrenamiento del %s tiene %d colocaciones y el maximo "
-                        + "de 4D v3.1 para sesiones de %d minutos es %d.")
-                        .formatted(workout.scheduledDate(), colocaciones, minutos, tope));
+                        + "de 4D %s para sesiones de %d minutos es %d.")
+                        .formatted(workout.scheduledDate(), colocaciones,
+                                minutos > MvpDosePolicy.MINUTOS_SESION_LARGA ? "v3.4" : "v3.1", minutos, tope));
 
             double costeDia = 0;
             // 4D v3.2/v3.3: colocaciones de relleno con la serie adicional (zona pequena; biceps en PULL).
