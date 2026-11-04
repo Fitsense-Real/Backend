@@ -131,7 +131,7 @@ class EvaluacionK20IT {
             System.getProperty("fitsense.evaluacion.k20.coste-por-llamada", "0.05"));
     static final double MAX_USD = Double.parseDouble(System.getProperty("fitsense.evaluacion.k20.max-usd", "4.0"));
     static final String PREFER_WAIT = System.getProperty("fitsense.evaluacion.k20.prefer-wait", "25");
-    /** Candidata posterior (eval/final-ieee-k20-v2): v1 | v2. Vacio = la del backend (v1). */
+    /** Candidata posterior (eval/final-ieee-k20-v2): v1 | v2 | v2.1. Vacio = la del backend (v1). */
     static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
 
     static final Path K20 = Path.of("docs/FitSense/short_paper_ieee/evaluacion_final_k20");

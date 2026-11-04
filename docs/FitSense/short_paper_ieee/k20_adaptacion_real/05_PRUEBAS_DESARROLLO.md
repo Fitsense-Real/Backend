@@ -15,10 +15,15 @@
 | **DEV3_S21_U** | U01–U20 | IA simulada | V2.1 | **20/20 PASS** | `c0eab17e…` = **S congelada** |
 | **DEV4_D_H** | H01–H16 | Determinista | — | **15/16 PASS**, **H05 FAIL** (generación) | `6eadc8c6…` |
 | **DEV5_S21_H** | H01–H16 | IA simulada | V2.1 | **15/16 PASS**, H05 FAIL | `0b0d44e6…` |
+| **V34_D_U** (4D v3.4) | U01–U20 | Determinista | — | **20/20 PASS** | `f9f67973…` = **D congelada** (sin cambios) |
+| **V34_D_H** (4D v3.4) | H01–H16 | Determinista | — | **16/16 PASS**, **H05 PASS** | `1ac8992f…` = la del prototipo de laboratorio |
+| V34_S21_U (4D v3.4) | U01–U20 | IA simulada | V2.1 | (pendiente de esta corrida) | |
+| V34_S21_H (4D v3.4) | H01–H16 | IA simulada | V2.1 | (pendiente de esta corrida) | |
 
 **Lectura:**
 - En U, las huellas son **idénticas** a las de la evaluación congelada: portar V2/V2.1 no cambia nada fuera del texto del prompt.
-- **H05** (GAIN_MUSCLE avanzado, casa con mancuernas y bandas, 4 días de 75 min) no obtiene un plan inicial válido: V20 falta por 492–600 s en todas las sesiones. Es la familia de R0548 y queda registrado (`04` C-7, `13`). **No se elimina el caso.**
+- **Con 4D v3.4 (V34_*)**, H05 genera y pasa. U no cambia, porque sus perfiles GM son de 60 min, donde el tope sigue en 7. El fallo anterior de H05 queda registrado en la fila DEV4 y en `A1`.
+- **Antes de 4D v3.4:** **H05** (GAIN_MUSCLE avanzado, casa con mancuernas y bandas, 4 días de 75 min) no obtiene un plan inicial válido: V20 falta por 492–600 s en todas las sesiones. Es la familia de R0548 y queda registrado (`04` C-7, `13`). **No se elimina el caso.**
 
 ## Coherencia de V2/V2.1 con los validadores reales
 
