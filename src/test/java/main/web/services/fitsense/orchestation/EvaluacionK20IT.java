@@ -135,7 +135,10 @@ class EvaluacionK20IT {
     static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
 
     static final Path K20 = Path.of("docs/FitSense/short_paper_ieee/evaluacion_final_k20");
-    static final Path PERFILES = K20.resolve("entrada/03_PERFILES_U01_U20.csv");
+    /** Por defecto los 20 historicos; con -Dfitsense.evaluacion.k20.perfiles, otra cohorte (casos reservados). */
+    static final String PERFILES_OTROS = System.getProperty("fitsense.evaluacion.k20.perfiles", "");
+    static final Path PERFILES = PERFILES_OTROS.isBlank() ? K20.resolve("entrada/03_PERFILES_U01_U20.csv")
+            : Path.of(PERFILES_OTROS);
     /** SHA-256 del CSV historico (blob 95c2839 de lab/experimento-kora-20usuarios): los perfiles no cambian. */
     static final String SHA256_PERFILES = "584e2204ec8eb41ef95bb61b7fe6a6f6c90164a36fe920d1097dcae250ae2307";
     static final Path SALIDA = Path.of(System.getProperty("fitsense.evaluacion.k20.salida", "target/k20"));
@@ -209,7 +212,8 @@ class EvaluacionK20IT {
         String url = postgres.getJdbcUrl();
         assertTrue(url.startsWith("jdbc:postgresql://localhost:") || url.startsWith("jdbc:postgresql://127.0.0.1:"),
                 "solo base efimera local: " + url);
-        assertEquals(SHA256_PERFILES, sha256(Files.readAllBytes(PERFILES)), "los 20 perfiles son los historicos");
+        if (PERFILES_OTROS.isBlank())
+            assertEquals(SHA256_PERFILES, sha256(Files.readAllBytes(PERFILES)), "los 20 perfiles son los historicos");
         assertTrue(conservacion.limitaDificultad(), "candidata: limite de dificultad encendido (preferencia)");
         assertTrue(productor.retiradaLocalizada(), "candidata: retirada localizada activa (con el limite)");
         int cuenta = -1;
@@ -256,7 +260,7 @@ class EvaluacionK20IT {
         cfg.put("retirada_localizada", "solicitada=" + productor.retiradaSolicitada() + " activa=" + productor.retiradaLocalizada());
         cfg.put("progresion", "false");
         cfg.put("politica_por_defecto", "PLAN-HIST-1");
-        cfg.put("perfiles", PERFILES + " sha256=" + SHA256_PERFILES);
+        cfg.put("perfiles", PERFILES + " sha256=" + sha256(Files.readAllBytes(PERFILES)));
         cfg.put("semanas", "S1 " + S1 + " (medida, patron del perfil) -> S2 " + S2 + " (continuidad: todo hecho) -> S3 " + S3);
         cfg.put("gemelos_generacion_ia", REPLICATE && GEMELOS);
         cfg.put("credencial", SIMULADA ? "ninguna (IA simulada, sin red)" : !REPLICATE ? "ninguna"
@@ -340,7 +344,9 @@ class EvaluacionK20IT {
 
         // ---------------------------------------------------------- semana 1: el patron del perfil
         String[] patron = p.get("secuencia").split("/");
-        String[] motivos = {"", p.get("motivo_omision_s2"), p.get("motivo_omision_s3")};
+        String[] motivos = new String[Math.max(medidasCount(p), 3)];
+        for (int i = 0; i < motivos.length; i++)
+            motivos[i] = Objects.requireNonNullElse(p.c().get("motivo_omision_s" + (i + 1)), "");
         RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         for (int i = 0; i < medidas.size(); i++) {
             String paso = i < patron.length ? patron[i] : "N";
@@ -435,6 +441,10 @@ class EvaluacionK20IT {
     }
 
     /** El resultado de la adaptacion del ciclo (V32 via el servicio de la API) cuya semana medida es la indicada. */
+    private static int medidasCount(Perfil p) {
+        return p.get("secuencia").split("/").length;
+    }
+
     private void api(long u, Map<String, Object> r, String clave) {
         LocalDate semana = "ciclo1".equals(clave) ? S1 : S2;
         try {
@@ -1030,7 +1040,7 @@ class EvaluacionK20IT {
             for (int i = 0; i < cab.size(); i++) m.put(cab.get(i), i < v.size() ? v.get(i) : "");
             out.add(new Perfil(m));
         }
-        assertEquals(20, out.size(), "20 perfiles congelados");
+        if (PERFILES_OTROS.isBlank()) assertEquals(20, out.size(), "20 perfiles congelados");
         return out;
     }
 
