@@ -122,7 +122,12 @@ La primera versión del script dio aun así «DIFERENCIA», y el defecto estaba 
 - JUnit 5 escribe el `@DisplayName` en el atributo `classname` de los XML;
 - por eso los nombres no coincidían con la lista esperada.
 
-El analizador ahora toma la clase del nombre del fichero (`TEST-<clase>.xml`). Aplicado a los mismos informes de la corrida 2, devuelve exactamente las tres esperadas. La repetición completa del script corregido figura en `evidencia/verificacion_v2.txt`.
+El analizador ahora toma la clase del nombre del fichero (`TEST-<clase>.xml`). Aplicado a los mismos informes de la corrida 2, devuelve exactamente las tres esperadas. **Repetición completa del script corregido sobre `a6af02d`** (`evidencia/verificacion_v2.txt`): **exit 0**.
+- Corrida 1: 0 fallos.
+- Corrida 2: «fallan exactamente las 3 pruebas esperadas».
+- Los recuentos son los mismos de la tabla.
+
+CI `verify` sobre `a6af02d`: ✔, run 41780742850.
 
 ## Estado
 
