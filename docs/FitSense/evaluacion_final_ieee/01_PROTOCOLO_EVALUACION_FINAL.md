@@ -136,7 +136,7 @@ La generación inicial con IA (los «gemelos» del experimento anterior) es opci
 - al llegar al límite, no hay más llamadas;
 - carpetas nuevas: el arnés se niega a escribir en una carpeta con contenido.
 
-**Paro:** si D incumple algún criterio duro del `03` (A1–A5):
+**Paro:** si D o D′ incumplen algún criterio duro del `03` (A1–A7 con VC-B, A1–A6 con VC-A, y A9). Si R publica algo que incumple A1 o A2, R se detiene en ese punto y se informa como **hallazgo de seguridad**. En los dos casos:
 - se detiene la evaluación;
 - se informa la causa raíz;
 - no se pasa a R.
