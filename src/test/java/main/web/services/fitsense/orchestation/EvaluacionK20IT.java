@@ -189,6 +189,8 @@ class EvaluacionK20IT {
     static final List<Map<String, Object>> factibilidad = Collections.synchronizedList(new ArrayList<>());
     static final Map<String, Map<Long, List<Candidata>>> validasPorEtiqueta = new HashMap<>();
     static final AtomicInteger intentoActual = new AtomicInteger();
+    /** Rota la clase de propuesta invalida del intento 1 (subir una serie, sesion no senalada, sustituto mas dificil). */
+    static final AtomicInteger invalidas = new AtomicInteger();
 
     record Perfil(Map<String, String> c) {
         String get(String k) { return c.get(k); }
@@ -665,7 +667,7 @@ class EvaluacionK20IT {
         var acciones = new ArrayList<String>();
         var senaladas = ctx.adjustment().sesionesParaIA();
         if (intento == 1) {
-            int k = Math.floorMod(etiquetaActual.hashCode(), 3);
+            int k = Math.floorMod(invalidas.getAndIncrement(), 3); // por orden de usuario: las tres clases
             var primera = senaladas.get(0);
             var w = der.from(primera.plannedWorkoutId()).orElseThrow().workout();
             var ej = new ArrayList<>(w.exercises());
@@ -687,20 +689,29 @@ class EvaluacionK20IT {
                     accion = "INVALIDA_SUBE_SERIE " + ej.get(0).exerciseId();
                 }
             } else if (k == 2) {
+                // un sustituto MAS DIFICIL (mismo patron y zona) para el primer ejercicio que lo tenga en el catalogo
                 var elegibles = porId(ctx.availableExercises());
-                var original = ej.get(0);
-                var orig = elegibles.get(original.exerciseId());
-                var mas = ctx.availableExercises().stream().filter(c -> orig != null
-                        && c.difficulty() > orig.difficulty() && Objects.equals(c.movementPattern(), orig.movementPattern())
-                        && c.defaultPrescription() == original.prescriptionType()
-                        && w.exercises().stream().noneMatch(x -> x.exerciseId().equals(c.exerciseId()))).findFirst();
-                if (mas.isPresent()) {
-                    ej.set(0, conId(original, mas.get().exerciseId()));
-                    accion = "INVALIDA_SUSTITUTO_MAS_DIFICIL " + original.exerciseId() + "->" + mas.get().exerciseId();
-                } else {
-                    ej.set(0, conSeries(original, (original.plannedSets() == null ? 1 : original.plannedSets()) + 1));
-                    accion = "INVALIDA_SUBE_SERIE " + original.exerciseId();
+                String hecho = null;
+                for (int x = 0; x < ej.size() && hecho == null; x++) {
+                    var original = ej.get(x);
+                    var orig = elegibles.get(original.exerciseId());
+                    if (orig == null) continue;
+                    var mas = ctx.availableExercises().stream().filter(c -> c.difficulty() > orig.difficulty()
+                            && Objects.equals(c.movementPattern(), orig.movementPattern())
+                            && Objects.equals(c.bodyPartCode(), orig.bodyPartCode())
+                            && c.defaultPrescription() == original.prescriptionType()
+                            && w.exercises().stream().noneMatch(y -> y.exerciseId().equals(c.exerciseId()))).findFirst();
+                    if (mas.isPresent()) {
+                        ej.set(x, conId(original, mas.get().exerciseId()));
+                        hecho = "INVALIDA_SUSTITUTO_MAS_DIFICIL " + original.exerciseId() + "(d" + orig.difficulty() + ")->"
+                                + mas.get().exerciseId() + "(d" + mas.get().difficulty() + ")";
+                    }
                 }
+                if (hecho == null) {
+                    ej.set(0, conSeries(ej.get(0), (ej.get(0).plannedSets() == null ? 1 : ej.get(0).plannedSets()) + 1));
+                    hecho = "INVALIDA_SUBE_SERIE (sin sustituto mas dificil en el catalogo elegible) " + ej.get(0).exerciseId();
+                }
+                accion = hecho;
             } else {
                 ej.set(0, conSeries(ej.get(0), (ej.get(0).plannedSets() == null ? 1 : ej.get(0).plannedSets()) + 1));
                 accion = "INVALIDA_SUBE_SERIE " + ej.get(0).exerciseId();
