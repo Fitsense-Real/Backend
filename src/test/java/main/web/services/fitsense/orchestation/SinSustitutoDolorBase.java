@@ -170,7 +170,12 @@ abstract class SinSustitutoDolorBase {
      */
     Map<String, Object> recorrer() throws Exception {
         when(ia.isEnabled()).thenReturn(false);
-        var c = caso();
+        return recorrer(caso());
+    }
+
+    /** El mismo flujo para un caso dado (los 22 perfiles del barrido: SinSustitutoDolor24CasosIT). */
+    Map<String, Object> recorrer(Caso c) throws Exception {
+        when(ia.isEnabled()).thenReturn(false);
         ejecutar(c.usuario(), c.planMedido(), c.sesion135());
 
         // P-02 registra el dolor identificado del 135 al cerrar la semana (via ciclo).
