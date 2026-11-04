@@ -79,8 +79,26 @@ public final class MvpDosePolicy {
 
     /** El tope de colocaciones del dia para una sesion de esos minutos (4D v3.1). */
     public static int maxColocaciones(int sessionMinutes) {
-        return sessionMinutes >= MINUTOS_SESION_LARGA ? MAX_COLOC_DIA_SESION_LARGA : MAX_COLOC_DIA;
+        if (sessionMinutes < MINUTOS_SESION_LARGA) return MAX_COLOC_DIA;
+        // 4D v3.4 (docs/FitSense/ADENDA_4D_v3_4.md): por encima de 60 minutos el tope es el MINIMO numero de
+        // colocaciones con la dosis estructural de 4D (3x10, 90 s) cuyo contenido llega al piso de V20 (70 %). Con
+        // 60 minutos da 7, el valor de 4D v3.1; de 61 a 68 da 8 y de 69 a 75 da 9. V20, la dosis y el presupuesto no cambian.
+        long piso = (sessionMinutes * 60L * PISO_V20_PCT + 99) / 100;
+        long porColocacion = SEGUNDOS_COLOCACION_ESTRUCTURAL + SEGUNDOS_TRANSICION;
+        int derivado = (int) Math.ceil((piso - SEGUNDOS_CALENTAMIENTO + SEGUNDOS_TRANSICION) / (double) porColocacion);
+        return Math.max(MAX_COLOC_DIA_SESION_LARGA, derivado);
     }
+
+    /**
+     * 4D v3.4: los parametros del calculo, declarados aqui como en 4D v3.1 (que derivo el 7 de los mismos numeros):
+     * piso de V20 70 %, calentamiento 5 min y transicion 60 s de MVP-1.8, y la colocacion estructural de 4D. No leen
+     * la configuracion: si cambiaran, la prueba de coherencia {@code MvpDosePolicyTopeTest} lo detecta.
+     */
+    static final int PISO_V20_PCT = 70;
+    static final int SEGUNDOS_CALENTAMIENTO = 300;
+    static final int SEGUNDOS_TRANSICION = 60;
+    /** 3 series x 10 repeticiones x 3 s + 2 descansos de 90 s. */
+    static final int SEGUNDOS_COLOCACION_ESTRUCTURAL = 3 * 10 * 3 + 2 * 90;
 
     /** 4D v2 §6, DISENO, es D22. Objetivo, no condicion de rechazo. */
     public static final double FRAC_SECUNDARIA_OBJETIVO = 0.25;
