@@ -41,7 +41,7 @@ class MvpDosePolicyTopeTest {
     @DisplayName("Valores: 6 hasta 59 min; 7 a 60 (4D v3.1, sin cambios); 8 de 61 a 68; 9 de 69 a 75")
     void valores() {
         for (int m = 30; m <= 75; m++) {
-            int esperado = m < 60 ? 6 : m == 60 ? 7 : m <= 68 ? 8 : 9;
+            int esperado = m <= 52 ? 6 : m <= 60 ? 7 : m <= 68 ? 8 : 9; // C-8 (laboratorio)
             assertEquals(esperado, MvpDosePolicy.maxColocaciones(m), "minutos " + m);
         }
         assertEquals(7, MvpDosePolicy.maxColocaciones(60));
@@ -55,10 +55,11 @@ class MvpDosePolicyTopeTest {
     @Test
     @DisplayName("Coherencia con V20 (estimador real): desde 60 min el tope llega al piso y uno menos no llega (61-75)")
     void coherenciaConV20() {
-        for (int m = 60; m <= 75; m++) {
+        for (int m = 30; m <= 75; m++) {
             int tope = MvpDosePolicy.maxColocaciones(m);
+            if (m < 53) continue; // con 30-52 el tope 6 de 4D v3.1 ya llega
             assertTrue(contenido(tope) >= piso(m), "minutos " + m + ": " + contenido(tope) + " < " + piso(m));
-            if (m > 60) assertTrue(contenido(tope - 1) < piso(m), "minutos " + m + ": el tope no es el minimo");
+            if (m > 60 || m < 60) assertTrue(contenido(tope - 1) < piso(m), "minutos " + m + ": el tope no es el minimo");
         }
         assertEquals(2550, contenido(7), "7 colocaciones = 2.550 s (el contenido maximo de 4D v3.1)");
         assertTrue(contenido(7) < piso(61), "con 4D v3.1 ya no llegaba a 61 minutos (2.562 s)");

@@ -79,14 +79,16 @@ public final class MvpDosePolicy {
 
     /** El tope de colocaciones del dia para una sesion de esos minutos (4D v3.1). */
     public static int maxColocaciones(int sessionMinutes) {
-        if (sessionMinutes < MINUTOS_SESION_LARGA) return MAX_COLOC_DIA;
+        // LABORATORIO C-8 (lab/k20-gm-tope-53-59, NO aprobado): la misma derivacion tambien por debajo de 60 minutos.
+        // El minimo sigue siendo el de 4D v3.1 (6 o 7); de 53 a 59 el derivado da 7. Valores en 30, 45, 60 y 75 iguales.
+        int base = sessionMinutes < MINUTOS_SESION_LARGA ? MAX_COLOC_DIA : MAX_COLOC_DIA_SESION_LARGA;
         // 4D v3.4 (docs/FitSense/ADENDA_4D_v3_4.md): por encima de 60 minutos el tope es el MINIMO numero de
         // colocaciones con la dosis estructural de 4D (3x10, 90 s) cuyo contenido llega al piso de V20 (70 %). Con
         // 60 minutos da 7, el valor de 4D v3.1; de 61 a 68 da 8 y de 69 a 75 da 9. V20, la dosis y el presupuesto no cambian.
         long piso = (sessionMinutes * 60L * PISO_V20_PCT + 99) / 100;
         long porColocacion = SEGUNDOS_COLOCACION_ESTRUCTURAL + SEGUNDOS_TRANSICION;
         int derivado = (int) Math.ceil((piso - SEGUNDOS_CALENTAMIENTO + SEGUNDOS_TRANSICION) / (double) porColocacion);
-        return Math.max(MAX_COLOC_DIA_SESION_LARGA, derivado);
+        return Math.max(base, derivado);
     }
 
     /**

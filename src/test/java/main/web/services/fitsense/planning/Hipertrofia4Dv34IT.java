@@ -259,12 +259,7 @@ class Hipertrofia4Dv34IT {
         assertTrue(deV31.isEmpty(), "fallos de V20 por encima de 60 min: " + deV31);
         // 2 (registro de C-8): los UNICOS fallos son los intermedios de 53-59 minutos, todos por V20 y en los tres
         // equipamientos; ningun otro perfil (ni principiante ni avanzado, ni otro minuto) falla.
-        var esperados = new TreeSet<String>();
-        for (var eq : EQUIPOS.keySet())
-            for (int d : List.of(3, 4))
-                for (int m = 53; m <= 59; m++) esperados.add("GM-I-%s-%dd-%d".formatted(eq, d, m));
-        assertEquals(esperados, new TreeSet<>(fallos.keySet()), "fallos de la rejilla (C-8: 53-59 min)");
-        assertTrue(fallos.values().stream().allMatch(v -> v.contains("V20:")), "todos por V20: " + fallos);
+        assertEquals(Map.of(), fallos, "LABORATORIO C-8: ningun fallo");
         // 4: los motivos quedan en planes.csv.
     }
 }
