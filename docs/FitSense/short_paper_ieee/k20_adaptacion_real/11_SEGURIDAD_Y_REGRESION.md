@@ -22,4 +22,4 @@ No se modificó ninguna prueba histórica ni ningún validador.
 
 **Evidencia:**
 - `evidencia/regresion/regresion_6eb63c5_totales.txt`;
-- resumen de los 960 perfiles y la REPLAY: `scratchpad` → `evidencia/regresion/960_replay_resumen.txt`.
+- resumen de los 960 perfiles y la REPLAY: `evidencia/regresion/960_replay_resumen.txt` y `replay_*.diff`.
