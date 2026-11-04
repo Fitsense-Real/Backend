@@ -17,8 +17,8 @@
 | **DEV5_S21_H** | H01–H16 | IA simulada | V2.1 | **15/16 PASS**, H05 FAIL | `0b0d44e6…` |
 | **V34_D_U** (4D v3.4) | U01–U20 | Determinista | — | **20/20 PASS** | `f9f67973…` = **D congelada** (sin cambios) |
 | **V34_D_H** (4D v3.4) | H01–H16 | Determinista | — | **16/16 PASS**, **H05 PASS** | `1ac8992f…` = la del prototipo de laboratorio |
-| V34_S21_U (4D v3.4) | U01–U20 | IA simulada | V2.1 | (pendiente de esta corrida) | |
-| V34_S21_H (4D v3.4) | H01–H16 | IA simulada | V2.1 | (pendiente de esta corrida) | |
+| **V34_S21_U** (4D v3.4) | U01–U20 | IA simulada | V2.1 | **20/20 PASS** | `c0eab17e…` = **S congelada** (sin cambios) |
+| **V34_S21_H** (4D v3.4) | H01–H16 | IA simulada | V2.1 | **16/16 PASS**, H05 PASS | `a577eb1a…` (cambia frente a DEV5 porque H05 ya genera) |
 
 **Lectura:**
 - En U, las huellas son **idénticas** a las de la evaluación congelada: portar V2/V2.1 no cambia nada fuera del texto del prompt.
