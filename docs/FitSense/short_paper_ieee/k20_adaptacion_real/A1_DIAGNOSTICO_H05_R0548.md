@@ -48,7 +48,7 @@ Ninguno de ellos está en U01–U20 ni en H01–H16. Quedan registrados como lim
 
 | Opción | Qué cambia | ¿Toca V20 o el catálogo? | ¿Debilita algo? | Valoración |
 |---|---|---|---|---|
-| **A. 4D v3.4: tope de colocaciones derivado del piso de V20** por encima de 60 min: el mínimo número de colocaciones de 3×10/90 s que alcanza el 70 %. Da 7 con 60 min (sin cambios), **8 con 61–69** y **9 con 70–75** | `MvpDosePolicy.maxColocaciones` y el tope del motor de reglas para GM | No | No: la dosis, el descanso, el presupuesto del 85 %, V20, V24 y V25 se mantienen. V24 sigue exigiendo el tope, ahora coherente con V20 | **Recomendada.** Continúa exactamente la lógica de 4D v3.1, que derivó el 7 del mismo cálculo |
+| **A. 4D v3.4: tope de colocaciones derivado del piso de V20** por encima de 60 min: el mínimo número de colocaciones de 3×10/90 s que alcanza el 70 %. Da 7 con 60 min (sin cambios), **8 con 61–68** y **9 con 69–75** | `MvpDosePolicy.maxColocaciones` y el tope del motor de reglas para GM | No | No: la dosis, el descanso, el presupuesto del 85 %, V20, V24 y V25 se mantienen. V24 sigue exigiendo el tope, ahora coherente con V20 | **Recomendada.** Continúa exactamente la lógica de 4D v3.1, que derivó el 7 del mismo cálculo |
 | B. Serie adicional (4×10) también en colocaciones estructurales cuando falta tiempo | Tabla de dosis de 4D y el repaso del motor | No | Cambia la dosis de hipertrofia | Más compleja y más invasiva en la prescripción |
 | C. Limitar a GAIN_MUSCLE a 60 min en el perfil (P-01) | Validación del perfil | No | Rechaza una entrada que hoy se admite; H05 y R0548 no podrían crearse | No resuelve la generación; cambia el producto |
 | D. Generar 60 min para un perfil de 75 | Minutos efectivos | **Sí**: el piso de V20 se calcularía sobre 60 | **Sí** | **Descartada** |
@@ -83,7 +83,7 @@ Ninguno de ellos está en U01–U20 ni en H01–H16. Quedan registrados como lim
 
 1. **Adoptar la opción A como «4D v3.4»** en la candidata, con:
    - una adenda `ADENDA_4D_v3_4.md` que recoja el cálculo y la procedencia, como la v3.1;
-   - una prueba unitaria del tope por minutos (60 → 7; 61 → 8; 70 y 75 → 9);
+   - una prueba unitaria del tope por minutos (60 → 7; 61 y 68 → 8; 69 y 75 → 9);
    - una prueba de integración de generación GM de 75 min en gimnasio y en casa.
 2. **Convertir `GeneracionR0548V20IT`** en una prueba de éxito y **conservar el registro del fallo anterior**: su historia y este documento.
 3. **No tocar** V20, V24, V25, la dosis, el descanso ni el catálogo.
