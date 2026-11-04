@@ -64,7 +64,7 @@ Ninguno de ellos está en U01–U20 ni en H01–H16. Quedan registrados como lim
 |---|---|
 | Unitarias | 1.210/1.210 |
 | Integración de hipertrofia, V20, respaldo de 60 min y duración forzada (`Plan60HipertrofiaIT`, `RespaldoSesentaMinutosIT`, `GeneracionPorObjetivoIT`, `DuracionForzadaIT`, `V20*IT`) | 34/34 |
-| Regresión completa | Ver §8 |
+| Regresión completa | 1.210/0/0 unitarias · 480/0/42 integración (§8) |
 | **Matriz de 960** (las dos políticas, 1.920 filas) | **Solo cambian las 120 filas de GAIN_MUSCLE de 75 min**: 112 pasan de inválidas a válidas y 8 siguen inválidas (los 4 perfiles de peso corporal con 6–7 días, en las dos políticas, la misma familia de §3).<br>**Ninguna otra fila cambia**, ni en `planes.csv` ni en `colocaciones.csv`.<br>PLAN-HIST-1: de **875 a 931** válidos. Duración por sesión de GM a 75 min: 3.210–3.219 s (piso 3.150; techo V4 86 min) |
 | REPLAY de 100 semanas | **Idéntica** a la de la candidata |
 | R0548 | **Genera un plan válido**. `GeneracionR0548V20IT`, que afirmaba el fallo, falla ahora por la razón correcta |
@@ -104,4 +104,11 @@ El fallo se **detectó** al ejecutar H05 sin IA. La causa es general (60/60 en l
 
 ## 8. Regresión completa del prototipo
 
-(se completa en este mismo documento al terminar)
+`mvnw verify -Pintegration` sobre `720d058`, con la configuración por defecto:
+
+| Bloque | Resultado |
+|---|---|
+| Unitarias | **1.210 aprobadas, 0 fallidas, 0 omitidas** |
+| Integración | **522 ejecutadas: 480 aprobadas, 0 fallidas, 42 omitidas** (opt-in; las omitidas no cuentan como superadas) |
+
+Son los mismos totales que en la candidata sin el prototipo. Ninguna prueba existente exigía el tope de 7 por encima de 60 min, así que ninguna se ha modificado.
