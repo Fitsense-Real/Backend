@@ -68,8 +68,20 @@ public class SessionFixPromptBuilder {
     /** Valor de {@code fitsense.ai.adaptation.prompt-version} que activa V2. */
     public static final String PROPIEDAD_V2 = "v2";
 
+    /**
+     * V2.1 (candidata posterior K20, experimental): V2 mas tres indicaciones de PERTINENCIA en el texto, sin ninguna
+     * regla ni validador nuevo: (1) cambio minimo = UNA opcion sobre UN ejercicio; (2) ante «demasiado dificil»,
+     * sustitutos con su dificultad registrada y su musculo objetivo, primero los de menor dificultad del mismo musculo,
+     * y si no hay ninguno, bajar la dosis; (3) fatiga: bajar trabajo sin sustituir.
+     */
+    public static final String VERSION_V21 = "FIX-PR-2.1-EXP";
+
+    /** Valor de {@code fitsense.ai.adaptation.prompt-version} que activa V2.1. */
+    public static final String PROPIEDAD_V21 = "v2.1";
+
     private final JsonSupport json;
     private final boolean v2;
+    private final boolean v21;
 
     public SessionFixPromptBuilder(JsonSupport json) {
         this(json, "v1");
@@ -81,15 +93,16 @@ public class SessionFixPromptBuilder {
                                            "${fitsense.ai.adaptation.prompt-version:v1}") String promptVersion) {
         this.json = json;
         String v = promptVersion == null ? "v1" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
-        if (!v.equals("v1") && !v.equals(PROPIEDAD_V2))
+        if (!v.equals("v1") && !v.equals(PROPIEDAD_V2) && !v.equals(PROPIEDAD_V21))
             throw new IllegalArgumentException(
-                    "fitsense.ai.adaptation.prompt-version admite v1 o v2, no '" + promptVersion + "'.");
-        this.v2 = v.equals(PROPIEDAD_V2);
+                    "fitsense.ai.adaptation.prompt-version admite v1, v2 o v2.1, no '" + promptVersion + "'.");
+        this.v21 = v.equals(PROPIEDAD_V21);
+        this.v2 = v.equals(PROPIEDAD_V2) || v21;
     }
 
     /** La version de prompt que este constructor envia: {@link #VERSION} o {@link #VERSION_V2}. */
     public String version() {
-        return v2 ? VERSION_V2 : VERSION;
+        return v21 ? VERSION_V21 : v2 ? VERSION_V2 : VERSION;
     }
 
     /**
@@ -274,6 +287,13 @@ public class SessionFixPromptBuilder {
                 mejor que omitir la sesion; omitirla es lo correcto cuando F lo dice o cuando ninguna
                 opcion de D sirve al objetivo.
                 """);
+        if (v21) prompt.append("""
+                PERTINENCIA (prompt V2.1): ademas de caber, el cambio tiene que responder al motivo registrado.
+                Cansancio: baja trabajo (series, repeticiones o segundos) sin sustituir. Demasiado dificil: un
+                sustituto de MENOR dificultad registrada y del MISMO musculo objetivo, o menos dosis; uno de la misma
+                dificultad no lo hace mas facil. Falta de motivacion: cambio MINIMO, una sola opcion sobre un solo
+                ejercicio. Cambia lo justo: no reescribas la sesion entera.
+                """);
 
         prompt.append(sesionesSenaladas(context, derivation, adjustment));
 
@@ -350,7 +370,9 @@ public class SessionFixPromptBuilder {
             bloque.append("  QUE PUEDES CAMBIAR AQUI: ")
                     .append(intervencion.instruccion()).append('\n');
             bloque.append(contratoDeLaSesion(context, derivation, senalada, prescritos));
-            if (v2 && factibilidad.containsKey(id)) bloque.append(FactibilidadAdaptacion.texto(factibilidad.get(id)));
+            if (v2 && factibilidad.containsKey(id)) bloque.append(v21
+                    ? FactibilidadAdaptacion.textoV21(factibilidad.get(id), context.availableExercises())
+                    : FactibilidadAdaptacion.texto(factibilidad.get(id)));
             if (senalada.minutosDisponibles() != null)
                 bloque.append("  LIMITE DE TIEMPO: la persona declaro que suele tener ")
                         .append(senalada.minutosDisponibles())

@@ -131,6 +131,8 @@ class EvaluacionK20IT {
             System.getProperty("fitsense.evaluacion.k20.coste-por-llamada", "0.05"));
     static final double MAX_USD = Double.parseDouble(System.getProperty("fitsense.evaluacion.k20.max-usd", "4.0"));
     static final String PREFER_WAIT = System.getProperty("fitsense.evaluacion.k20.prefer-wait", "25");
+    /** Candidata posterior (eval/final-ieee-k20-v2): v1 | v2. Vacio = la del backend (v1). */
+    static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
 
     static final Path K20 = Path.of("docs/FitSense/short_paper_ieee/evaluacion_final_k20");
     static final Path PERFILES = K20.resolve("entrada/03_PERFILES_U01_U20.csv");
@@ -148,6 +150,7 @@ class EvaluacionK20IT {
     @DynamicPropertySource
     static void ia(DynamicPropertyRegistry r) {
         r.add("fitsense.ai.enabled", () -> String.valueOf(IA_ACTIVA));
+        if (!PROMPT.isBlank()) r.add("fitsense.ai.adaptation.prompt-version", () -> PROMPT);
         if (REPLICATE) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
         if (SIMULADA) r.add("fitsense.ai.base-url", () -> "http://127.0.0.1:9/ia-simulada-sin-red");
         r.add("fitsense.ai.api-token", () -> SIMULADA ? "ia-simulada-sin-red" : !REPLICATE ? ""
@@ -247,7 +250,7 @@ class EvaluacionK20IT {
                 + " ORDER BY exercise_id)) FROM exercises", String.class));
         cfg.put("ia_habilitada", generador.isEnabled());
         cfg.put("modelo", generador.modelName());
-        cfg.put("prompt_adaptacion", "V1 (SessionFixPromptBuilder; V2 no existe en la rama)");
+        cfg.put("prompt_adaptacion", promptBuilder.version());
         cfg.put("v8c_regla_patron", conservacion.reglaPatron());
         cfg.put("limite_dificultad", conservacion.estrategiaSustitucion() + " (limita=" + conservacion.limitaDificultad() + ")");
         cfg.put("retirada_localizada", "solicitada=" + productor.retiradaSolicitada() + " activa=" + productor.retiradaLocalizada());
@@ -272,6 +275,7 @@ class EvaluacionK20IT {
         csv("resultados_20.csv", res);
         csv("intentos_ia.csv", intentos);
         csv("factibilidad.csv", factibilidad);
+        csv("coherencia_v2.csv", coherencia);
         escribir("usuarios.csv", new ArrayList<>(List.of("id,user_id")) {{
             usuariosIds.forEach((k, v) -> add(k + "," + v));
         }});
@@ -795,6 +799,7 @@ class EvaluacionK20IT {
                     if (!"VALIDA".equals(veredicto)) motivos.merge(veredicto, 1, Integer::sum);
                 }
                 porSesion.put(s.plannedWorkoutId(), validas);
+                coherenciaV2(ctx, der, s.plannedWorkoutId(), candidatas, validas);
                 var f = new LinkedHashMap<String, Object>();
                 f.put("etiqueta", etiquetaActual);
                 f.put("sesion", s.plannedWorkoutId());
@@ -914,6 +919,59 @@ class EvaluacionK20IT {
                         + ",\"planned_duration_seconds\":" + x.plannedDurationSeconds() + ",\"target_load_kg\":"
                         + x.targetLoadKg() + ",\"rest_seconds\":" + x.restSeconds() + ",\"notes\":null}")
                 .collect(Collectors.joining(",")) + "]}";
+    }
+
+    static final List<Map<String, Object>> coherencia = Collections.synchronizedList(new ArrayList<>());
+
+    /**
+     * Lo que la factibilidad V2 (texto que recibe el modelo) dice de cada cambio simple, frente al veredicto REAL del
+     * productor y los validadores sobre el mismo cambio (sonda). Una discrepancia es informacion falsa en el prompt.
+     */
+    private void coherenciaV2(PlanGenerationContext ctx, WeekDerivation der, Long sesion, List<Candidata> candidatas,
+                              List<Candidata> validas) {
+        var f = main.web.services.fitsense.planning.infrastructure.generation.ai.FactibilidadAdaptacion.calcular(ctx, der)
+                .stream().filter(x -> x.plannedWorkoutId().equals(sesion)).findFirst().orElse(null);
+        var resumen = new LinkedHashMap<String, Object>();
+        resumen.put("etiqueta", etiquetaActual);
+        resumen.put("sesion", sesion);
+        resumen.put("elemento", "SESION");
+        resumen.put("v2", f == null ? "sin bloque" : "margen=" + f.margen() + " hayCambioFactible=" + f.hayCambioFactible());
+        resumen.put("sonda", "validas=" + validas.size());
+        resumen.put("coincide", f == null ? "" : String.valueOf(f.hayCambioFactible() == !validas.isEmpty()));
+        coherencia.add(resumen);
+        if (f == null) return;
+        for (var o : f.opciones()) {
+            var igual = candidatas.stream().filter(c -> c.descripcion().startsWith(o.exerciseId() + " ")
+                    && dosisDe(c, o.exerciseId()).equals(o.despues())).findFirst();
+            var m = new LinkedHashMap<String, Object>();
+            m.put("etiqueta", etiquetaActual);
+            m.put("sesion", sesion);
+            m.put("elemento", "OPCION " + o.exerciseId() + " " + o.antes() + "->" + o.despues() + " retira " + o.segundosRetirados());
+            m.put("v2", o.cabe() ? "cabe" : "NO cabe");
+            m.put("sonda", igual.isEmpty() ? "no probada" : validas.contains(igual.get()) ? "VALIDA" : "RECHAZADA");
+            m.put("coincide", igual.isEmpty() ? "" : String.valueOf(o.cabe() == validas.contains(igual.get())));
+            coherencia.add(m);
+        }
+        for (var x : f.sustitutos()) {
+            var igual = candidatas.stream().filter(c -> c.descripcion().startsWith(x.reemplaza() + "(")
+                    && c.descripcion().contains(")->" + x.exerciseId() + "(")).findFirst();
+            var m = new LinkedHashMap<String, Object>();
+            m.put("etiqueta", etiquetaActual);
+            m.put("sesion", sesion);
+            m.put("elemento", "SUSTITUTO " + x.reemplaza() + "->" + x.exerciseId());
+            m.put("v2", x.mismaDosis() ? "misma dosis" : "otra dosis");
+            m.put("sonda", igual.isEmpty() ? "no probada (otra zona o tipo)" : validas.contains(igual.get()) ? "VALIDA" : "RECHAZADA");
+            m.put("coincide", igual.isEmpty() || !x.mismaDosis() ? "" : String.valueOf(validas.contains(igual.get())));
+            coherencia.add(m);
+        }
+    }
+
+    private static String dosisDe(Candidata c, Long exerciseId) {
+        var e = c.ejercicios().stream().filter(x -> x.exerciseId().equals(exerciseId)).findFirst().orElseThrow();
+        if (e.prescriptionType() == PrescriptionType.DURATION)
+            return (e.plannedSets() == null ? "" : e.plannedSets() + (e.plannedSets() == 1 ? " serie de " : " series de "))
+                    + e.plannedDurationSeconds() + " s";
+        return e.plannedSets() + "x" + e.plannedReps();
     }
 
     // ================================================================== exportacion para el oraculo

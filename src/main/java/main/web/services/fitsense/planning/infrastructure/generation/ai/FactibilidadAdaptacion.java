@@ -272,6 +272,51 @@ public final class FactibilidadAdaptacion {
         };
     }
 
+    /**
+     * V2.1: el mismo bloque A-F de V2 con indicaciones de pertinencia. Solo describe con datos del catalogo elegible
+     * (dificultad registrada, musculo objetivo); no decide nada y el validador sigue siendo la autoridad.
+     */
+    static String textoV21(Sesion s, List<CandidateExercise> elegibles) {
+        var porId = elegibles == null ? Map.<Long, CandidateExercise>of() : elegibles.stream()
+                .collect(Collectors.toMap(CandidateExercise::exerciseId, Function.identity(), (x, y) -> x));
+        String base = texto(s);
+        var b = new StringBuilder();
+        if (s.intervencion() == TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO) {
+            // El cambio minimo es UNO: la invitacion de V2 a combinar cambios se sustituye.
+            base = base.replaceAll("(?m)^      Puedes combinar cambios.*\\n", "");
+            if (s.hayCambioFactible())
+                b.append("    G. CAMBIO MINIMO (V2.1): aplica UNA sola opcion [cabe] de D, sobre UN solo ejercicio.")
+                        .append(" No cambies mas ejercicios.\n");
+        } else if (s.intervencion() == TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA) {
+            b.append("    G. MAS FACIL (V2.1): dificultad registrada y musculo objetivo de cada ejercicio, y sus")
+                    .append(" sustitutos de MENOR dificultad del MISMO musculo que admiten la misma dosis:\n");
+            boolean alguno = false;
+            for (var id : s.dosisActual().keySet()) {
+                var c = porId.get(id);
+                if (c == null) continue;
+                var faciles = s.sustitutos().stream().filter(Sustituto::mismaDosis)
+                        .filter(x -> x.reemplaza().equals(id))
+                        .map(x -> porId.get(x.exerciseId())).filter(Objects::nonNull)
+                        .filter(x -> x.difficulty() < c.difficulty())
+                        .filter(x -> Objects.equals(x.targetMuscle(), c.targetMuscle()))
+                        .map(x -> x.exerciseId() + " (dif " + x.difficulty() + ")").toList();
+                alguno |= !faciles.isEmpty();
+                b.append("      - ").append(id).append(" (dif ").append(c.difficulty()).append(", ")
+                        .append(c.targetMuscle() == null ? "musculo sin dato" : c.targetMuscle()).append("): ")
+                        .append(faciles.isEmpty() ? "ninguno" : String.join(", ", faciles)).append('\n');
+            }
+            b.append(alguno
+                    ? "      Usa uno o dos de estos (con la dosis del reemplazado) o baja la dosis en D. Cambia lo justo.\n"
+                    : "      No hay ninguna variante de menor dificultad registrada del mismo musculo: para que resulte"
+                    + " mas facil, BAJA LA DOSIS con las opciones [cabe] de D. Un sustituto de la misma dificultad"
+                    + " no lo hace mas facil.\n");
+        } else if (s.intervencion() == TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION && s.hayCambioFactible()) {
+            b.append("    G. CANSANCIO (V2.1): baja trabajo con las opciones [cabe] de D (preferiblemente series o")
+                    .append(" segundos) en uno a tres ejercicios. No sustituyas.\n");
+        }
+        return base + b;
+    }
+
     /** El bloque A-F de una sesion, con los valores reales. */
     static String texto(Sesion s) {
         var b = new StringBuilder();
