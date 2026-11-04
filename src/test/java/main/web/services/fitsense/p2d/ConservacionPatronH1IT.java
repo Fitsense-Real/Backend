@@ -33,6 +33,7 @@ class ConservacionPatronH1IT extends ConservacionPatronH1Base {
     @DisplayName("la regla de produccion por defecto es MULTICONJUNTO")
     void reglaPorDefecto() {
         assertEquals(ReglaPatron.MULTICONJUNTO, v8c.reglaPatron());
+        assertFalse(v8c.limitaDificultad(), "el limite de dificultad candidato esta APAGADO por defecto");
     }
 
     @Test
