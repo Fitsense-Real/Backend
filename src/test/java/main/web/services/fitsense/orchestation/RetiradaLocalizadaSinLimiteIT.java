@@ -13,8 +13,9 @@ import static main.web.services.fitsense.profiling.domain.model.valueobjects.Goa
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * La retirada encendida con el limite APAGADO (A): como SUST-SEG-1 encuentra sustituto (780), la retirada no se usa.
- * Solo actua cuando no hay sustituto compatible.
+ * La retirada pedida con el limite APAGADO (A). DECISION DEL RESPONSABLE (cierre del PR #39): la retirada no es
+ * independiente del limite, asi que aqui queda INACTIVA aunque se pida; y SUST-SEG-1, sin limite, encuentra sustituto
+ * (780).
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
         "fitsense.adaptation.difficulty-guard=off",
         "fitsense.adaptation.pain-localized-removal=on"
 })
-@DisplayName("Retirada localizada encendida sin limite: si hay sustituto, se sustituye y no se retira nada")
+@DisplayName("Retirada localizada pedida sin limite: queda inactiva y el respaldo es el de siempre")
 class RetiradaLocalizadaSinLimiteIT extends RetiradaLocalizadaBase {
 
     @Container
@@ -34,6 +35,8 @@ class RetiradaLocalizadaSinLimiteIT extends RetiradaLocalizadaBase {
     @Test
     @DisplayName("R0521 con A: SUST-SEG-1 pone el 780; ninguna nota de retirada")
     void conSustitutoNoSeRetira() {
+        assertTrue(producer.retiradaSolicitada(), "se pidio por configuracion");
+        assertFalse(producer.retiradaLocalizada(), "pero con el limite apagado no actua");
         var e = escenario("R0521", GENERAL_FITNESS, INTERMEDIATE, 6, 30);
         assertEquals("RESPALDO", e.v32().get("status"));
         assertFalse(String.valueOf(e.v32().get("informe")).contains("RETIRADA_SEGURA"));

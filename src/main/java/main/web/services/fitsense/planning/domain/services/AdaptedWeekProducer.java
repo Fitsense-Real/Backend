@@ -143,6 +143,7 @@ public class AdaptedWeekProducer {
      * pasa V8C y la validacion estricta entera. Si no, el NO_FACTIBLE de siempre y P-03 sin cambios.
      */
     private final boolean retiradaLocalizada;
+    private final boolean retiradaSolicitada;
 
     public AdaptedWeekProducer(SessionFixApplier applier,
                                ConservationValidator conservation,
@@ -195,9 +196,19 @@ public class AdaptedWeekProducer {
         this.conservation = conservation;
         this.estricta = estricta;
         this.autorizarDosis = progresion || estricta.validaCapacidades();
-        this.retiradaLocalizada = retiradaLocalizada;
+        // DECISION DEL RESPONSABLE (cierre del PR #39): la retirada localizada NO es independiente del limite de
+        // dificultad. Solo actua si el limite esta encendido (on o preferencia); con el limite apagado queda inactiva
+        // aunque se pida, y el respaldo es el de siempre.
+        this.retiradaSolicitada = retiradaLocalizada;
+        this.retiradaLocalizada = retiradaLocalizada && conservation != null && conservation.limitaDificultad();
     }
 
+    /** Si se pidio la retirada por configuracion, aunque no actue por tener el limite apagado. */
+    public boolean retiradaSolicitada() {
+        return retiradaSolicitada;
+    }
+
+    /** Si la retirada localizada ACTUA: pedida por configuracion y con el limite de dificultad encendido. */
     public boolean retiradaLocalizada() {
         return retiradaLocalizada;
     }

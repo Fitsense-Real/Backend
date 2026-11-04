@@ -55,7 +55,12 @@ public class AdaptationWiringConfiguration {
                                                    @org.springframework.beans.factory.annotation.Value(
                                                            "${fitsense.adaptation.pain-localized-removal:off}")
                                                    String retiradaLocalizada) {
-        return new AdaptedWeekProducer(applier, conservation, estricta, progresion,
+        var producer = new AdaptedWeekProducer(applier, conservation, estricta, progresion,
                 AdaptedWeekProducer.retiradaDesde(retiradaLocalizada));
+        if (producer.retiradaSolicitada() && !producer.retiradaLocalizada())
+            org.slf4j.LoggerFactory.getLogger(AdaptationWiringConfiguration.class).warn(
+                    "fitsense.adaptation.pain-localized-removal=on se ignora: la retirada localizada solo actua con"
+                            + " fitsense.adaptation.difficulty-guard=on o preferencia.");
+        return producer;
     }
 }
