@@ -51,7 +51,11 @@ public class AdaptationWiringConfiguration {
                                                    StrictPlanValidation estricta,
                                                    @org.springframework.beans.factory.annotation.Value(
                                                            "${fitsense.adaptation.progression.enabled:false}")
-                                                   boolean progresion) {
-        return new AdaptedWeekProducer(applier, conservation, estricta, progresion);
+                                                   boolean progresion,
+                                                   @org.springframework.beans.factory.annotation.Value(
+                                                           "${fitsense.adaptation.pain-localized-removal:off}")
+                                                   String retiradaLocalizada) {
+        return new AdaptedWeekProducer(applier, conservation, estricta, progresion,
+                AdaptedWeekProducer.retiradaDesde(retiradaLocalizada));
     }
 }
