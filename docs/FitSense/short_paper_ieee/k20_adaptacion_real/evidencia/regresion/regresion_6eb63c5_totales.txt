@@ -1,0 +1,4 @@
+[INFO] Tests run: 1210, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 522, Failures: 0, Errors: 0, Skipped: 42
+[INFO] BUILD SUCCESS
+exit=0
