@@ -38,6 +38,9 @@ class SinSustitutoDolor24CasosIT extends SinSustitutoDolorBase {
     @ServiceConnection
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
+    /** La semana del barrido (ValidacionEstrategiasDificultadIT): los planes dependen de la semana. */
+    static final java.time.LocalDate SEMANA_DEL_BARRIDO = java.time.LocalDate.of(2026, 11, 2);
+
     record Perfil(String id, GoalType objetivo, FitnessLevel nivel, int dias, int minutos) {}
 
     static final GoalType LW = GoalType.LOSE_WEIGHT, GM = GoalType.GAIN_MUSCLE, FU = GoalType.INCREASE_STRENGTH,
@@ -58,12 +61,34 @@ class SinSustitutoDolor24CasosIT extends SinSustitutoDolorBase {
     @DisplayName("ninguno de los 22 perfiles vuelve a recibir el 135; el ciclo termina en todos")
     void veintidosPerfiles() throws Exception {
         for (var p : PERFILES) {
+            // La semilla del motor de reglas es userId x 1.000.003 + semana: el perfil Rnnnn del barrido fue el
+            // usuario nnnn. Se rellenan usuarios hasta que el siguiente tenga ese id.
+            long objetivoId = Long.parseLong(p.id().substring(1));
+            long ultimo = jdbc.queryForObject("SELECT COALESCE(MAX(user_id), 0) FROM users", Long.class);
+            while (ultimo < objetivoId - 1)
+                ultimo = jdbc.queryForObject("INSERT INTO users (email, password_hash, first_name,"
+                        + " consent_granted_at, enrolled_at) VALUES (?, 'x', 'Relleno', now(), now()) RETURNING user_id",
+                        Long.class, "relleno" + java.util.UUID.randomUUID() + "@pruebas.invalid");
             long u = participante(p.objetivo(), p.nivel(), p.dias(), p.minutos());
-            long plan = planning.generateWeeklyPlan(u, MEDIDA, PlanAdjustment.none(), null, null).orElseThrow();
+            long plan;
+            try {
+                plan = planning.generateWeeklyPlan(u, SEMANA_DEL_BARRIDO, PlanAdjustment.none(), null, null).orElseThrow();
+            } catch (RuntimeException e) {
+                // El barrido usa el borrador del motor de reglas SIN validar; el ciclo real lo valida (V1-V25).
+                var linea = new java.util.LinkedHashMap<String, Object>();
+                linea.put("limite", v8c.limitaDificultad() ? "on" : "off");
+                linea.put("estrategia", v8c.estrategiaSustitucion().name());
+                linea.put("config", p.id() + " " + List.of(p.objetivo(), p.nivel(), p.dias(), p.minutos()));
+                linea.put("decision", "GENERACION_INICIAL_NO_VALIDA (independiente del limite): "
+                        + String.valueOf(e.getMessage()).replace(';', ',').replace('\n', ' ').substring(0,
+                        Math.min(300, String.valueOf(e.getMessage()).length())));
+                escribir(linea);
+                continue;
+            }
             var sesiones = jdbc.queryForList("SELECT DISTINCT pw.planned_workout_id, pw.scheduled_date FROM planned_workouts pw"
                     + " JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id WHERE"
                     + " pw.plan_id = ? AND pwe.exercise_id = ? ORDER BY pw.scheduled_date", plan, EJ);
-            String etiqueta = p.id() + " " + List.of(p.objetivo(), p.nivel(), p.dias(), p.minutos())
+            String etiqueta = p.id() + (u == objetivoId ? "" : " (usuario " + u + ", no " + objetivoId + ")") + " " + List.of(p.objetivo(), p.nivel(), p.dias(), p.minutos())
                     + " sesiones_con_135=" + sesiones.size();
             if (sesiones.isEmpty()) {
                 var linea = new java.util.LinkedHashMap<String, Object>();
@@ -75,7 +100,7 @@ class SinSustitutoDolor24CasosIT extends SinSustitutoDolorBase {
                 continue;
             }
             long sesion = ((Number) sesiones.get(0).get("planned_workout_id")).longValue();
-            System.out.println("CASO_135 " + recorrer(new Caso(u, etiqueta, plan, sesion)));
+            System.out.println("CASO_135 " + recorrer(new Caso(u, etiqueta, plan, sesion), SEMANA_DEL_BARRIDO));
         }
     }
 }

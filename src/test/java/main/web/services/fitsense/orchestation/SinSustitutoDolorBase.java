@@ -119,6 +119,8 @@ abstract class SinSustitutoDolorBase {
 
     /** Todas las sesiones hechas; en la del 135 (si se pide), el 135 con dolor identificado y 0 hecho. */
     void ejecutar(long u, long plan, Long sesionConDolor) {
+        // Semana fija (pasada) en el laboratorio de los 22 perfiles: mismas condiciones que una semana futura.
+        main.web.services.fitsense.RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         var ws = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, plan);
         for (long w : ws) {
@@ -175,6 +177,12 @@ abstract class SinSustitutoDolorBase {
 
     /** El mismo flujo para un caso dado (los 22 perfiles del barrido: SinSustitutoDolor24CasosIT). */
     Map<String, Object> recorrer(Caso c) throws Exception {
+        return recorrer(c, MEDIDA);
+    }
+
+    /** El mismo flujo con otra semana medida (el laboratorio de los 22 perfiles usa la del barrido). */
+    Map<String, Object> recorrer(Caso c, LocalDate medida) throws Exception {
+        final LocalDate MEDIDA = medida, NUEVA = medida.plusWeeks(1), SIGUIENTE = medida.plusWeeks(2);
         when(ia.isEnabled()).thenReturn(false);
         ejecutar(c.usuario(), c.planMedido(), c.sesion135());
 
@@ -206,6 +214,21 @@ abstract class SinSustitutoDolorBase {
             var i2 = intento(c.usuario(), SIGUIENTE);
             desenlace2 = i2.getOrDefault("decision", "-") + "/" + i2.getOrDefault("status", "-") + "/"
                     + activo2.map(x -> "plan").orElse("sin_plan");
+        } else {
+            // SIN PLAN EN LA SEMANA NUEVA (NO_FACTIBLE por seguridad): ¿que hace el ciclo la semana siguiente?
+            String r;
+            try {
+                ciclo.runFor(c.usuario(), NUEVA, SIGUIENTE);
+                var activo2 = planActivo(c.usuario(), SIGUIENTE);
+                activo2.ifPresent(p -> assertFalse(ejerciciosDe(p).contains(EJ), "el 135 reaparece en la semana 3"));
+                var i2 = intento(c.usuario(), SIGUIENTE);
+                r = "tras_semana_sin_plan:" + (i2.isEmpty() ? "sin_intento_v32" : i2.get("decision") + "/" + i2.get("status"))
+                        + "/" + activo2.map(x -> "plan_sin_135").orElse("sin_plan");
+            } catch (RuntimeException e) {
+                r = "tras_semana_sin_plan:excepcion " + e.getClass().getSimpleName() + " "
+                        + String.valueOf(e.getMessage()).replace(';', ',').replace('\n', ' ');
+            }
+            desenlace2 = r.length() > 300 ? r.substring(0, 300) : r;
         }
 
         // El sustituto del 135 en la semana nueva, si la semana es la copia sustituida (mismo linaje).
