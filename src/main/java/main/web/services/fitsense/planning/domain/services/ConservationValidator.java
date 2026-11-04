@@ -11,6 +11,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
+import main.web.services.fitsense.planning.domain.model.valueobjects.RetiradaSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SustitucionSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion;
@@ -243,7 +244,7 @@ public class ConservationValidator {
                                        int divisorVolumen) {
         if (adjustment == null || !adjustment.adapta()) return ConservationReport.vacio();
 
-        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, null, autorizarDosis,
+        return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, List.of(), null, autorizarDosis,
                 divisorVolumen);
     }
 
@@ -302,8 +303,29 @@ public class ConservationValidator {
                                                   List<SustitucionSeguridad> autorizadas,
                                                   PasoProgresion paso,
                                                   boolean autorizarDosis) {
+        return validateContinuidad(derivation, previous, eligible, causas, autorizadas, List.of(), paso,
+                autorizarDosis);
+    }
+
+    /**
+     * Continuidad admitiendo ademas RETIRADAS LOCALIZADAS POR DOLOR (candidata,
+     * {@code fitsense.adaptation.pain-localized-removal}): ejercicios excluidos por dolor registrado que SUST-SEG-1 no
+     * pudo sustituir y que se retiran sin reemplazo. Ver {@link RetiradaSeguridad}. Con la lista vacia es exactamente
+     * la continuidad de siempre.
+     */
+    public ConservationReport validateContinuidad(WeekDerivation derivation,
+                                                  PreviousWeekSummary previous,
+                                                  Map<Long, CandidateExercise> eligible,
+                                                  ExclusionesDeSeguridad causas,
+                                                  List<SustitucionSeguridad> autorizadas,
+                                                  List<RetiradaSeguridad> retiradas,
+                                                  PasoProgresion paso,
+                                                  boolean autorizarDosis) {
+        if (retiradas != null && !retiradas.isEmpty() && paso != null)
+            return new ConservationReport(List.of("V8C: una retirada por seguridad no se combina con un paso de "
+                    + "progresion en la misma semana."), List.of(), List.of(), List.of(), Set.of());
         return revisar(derivation, previous, PlanAdjustment.none(), eligible, causas, autorizadas,
-                paso, autorizarDosis || paso != null, DIVISOR_POR_OMISION);
+                retiradas == null ? List.of() : retiradas, paso, autorizarDosis || paso != null, DIVISOR_POR_OMISION);
     }
 
     private ConservationReport revisar(WeekDerivation derivation,
@@ -312,6 +334,7 @@ public class ConservationValidator {
                                        Map<Long, CandidateExercise> eligible,
                                        ExclusionesDeSeguridad causas,
                                        List<SustitucionSeguridad> autorizadas,
+                                       List<RetiradaSeguridad> retiradas,
                                        PasoProgresion paso,
                                        boolean autorizarDosis,
                                        int divisorVolumen) {
@@ -362,6 +385,10 @@ public class ConservationValidator {
         if (causas != null) causas.originales().forEach(conocidos::putIfAbsent);
 
         var admitidas = new ArrayList<SustitucionSeguridad>();
+        var retiradasAdmitidas = new ArrayList<RetiradaSeguridad>();
+        // Para la cobertura del slot de lo retirado: todos los ejercicios de la semana nueva.
+        var idsDeLaSemana = derivation.workouts().stream().flatMap(w -> w.workout().exercises().stream())
+                .map(PlanDraft.DraftExercise::exerciseId).toList();
         var vistos = new LinkedHashSet<Long>();
         for (var derivada : derivation.workouts()) {
             Long origen = derivada.sourcePlannedWorkoutId();
@@ -389,6 +416,10 @@ public class ConservationValidator {
                     dosisPorSesion.getOrDefault(origen, Map.of()), catalogo,
                     causas == null ? ExclusionesDeSeguridad.ninguna() : causas,
                     autorizadas == null ? List.of() : autorizadas, admitidas, problems);
+            diferencias = neutralizarRetiradas(origen, anterior, derivada, diferencias,
+                    dosisPorSesion.getOrDefault(origen, Map.of()), catalogo, conocidos,
+                    causas == null ? ExclusionesDeSeguridad.ninguna() : causas, retiradas, idsDeLaSemana,
+                    retiradasAdmitidas, problems);
 
             // EL DOLOR SE COMPRUEBA ANTES DE SABER SI LA SESION ESTABA
             // SENALADA, Y SIN MIRAR SU TIPO DE INTERVENCION.
@@ -457,6 +488,7 @@ public class ConservationValidator {
                 if (conservadas.contains(origen)
                         && previous.reduccionAutorizada().contains(origen)
                         && admitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
+                        && retiradasAdmitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
                         && derivada.workout().scheduledDate() != null)
                     fechasReducibles.add(derivada.workout().scheduledDate());
                 // V34: la copia identica conserva las dosis autorizadas con linaje.
@@ -517,6 +549,7 @@ public class ConservationValidator {
                         && !intervencion.exigeRevisionDeSeguridad()
                         && segura && dieron(dolieron, dolorDeSesion)
                         && admitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
+                        && retiradasAdmitidas.stream().noneMatch(s -> origen.equals(s.sesionOrigen()))
                         && ningunoExcluido(derivada, causas)
                         && mismoOrden(previous, origen, derivada))
                     fechasReducibles.add(derivada.workout().scheduledDate());
@@ -528,6 +561,11 @@ public class ConservationValidator {
         if (autorizadas != null)
             autorizadas.stream().filter(s -> !vistos.contains(s.sesionOrigen()))
                     .forEach(s -> problems.add(("V8C: se declara una sustitucion por seguridad en la sesion %d, "
+                            + "que no esta en la semana nueva.").formatted(s.sesionOrigen())));
+
+        if (retiradas != null)
+            retiradas.stream().filter(s -> !vistos.contains(s.sesionOrigen()))
+                    .forEach(s -> problems.add(("V8C: se declara una retirada por seguridad en la sesion %d, "
                             + "que no esta en la semana nueva.").formatted(s.sesionOrigen())));
 
         if (paso != null && !vistos.contains(paso.origen()))
@@ -714,6 +752,90 @@ public class ConservationValidator {
         return new Diferencias(List.copyOf(anadidos), List.copyOf(quitados), d.dosisCambiada(),
                 d.idsAnteriores(), d.idsNuevos(), d.diaMovido(), d.diaNuevo(), d.focoCambiado(), d.focoNuevo(),
                 d.minutosCambiados(), d.minutosNuevos());
+    }
+
+    /**
+     * RETIRADA LOCALIZADA POR DOLOR (candidata, apagada por defecto). Cada retirada declarada para esta sesion se
+     * comprueba y, solo si es legitima, deja de contar como diferencia: el ejercicio desaparecido y la bajada de minutos
+     * que su ausencia produce. Legitima es:
+     * <ol>
+     *   <li>el retirado estaba en esa sesion de la semana medida;</li>
+     *   <li>su causa de seguridad verificada es el DOLOR REGISTRADO (P-02), no un bloqueo ni el equipamiento;</li>
+     *   <li>ya no es elegible y no esta en la sesion nueva;</li>
+     *   <li>la sesion no anade nada, no quita nada mas y no cambia ninguna otra dosis (ademas de las sustituciones por
+     *       seguridad ya admitidas);</li>
+     *   <li>los minutos no suben;</li>
+     *   <li>si era una colocacion ESTRUCTURAL, su slot sigue cubierto por otro ejercicio de la semana nueva.</li>
+     * </ol>
+     * Nada de esto exime de la validacion estricta: V20, V24/4D, V23 y las demas juzgan despues la semana entera.
+     */
+    private Diferencias neutralizarRetiradas(Long origen, PreviousWeekSummary.WorkoutOutcome anterior,
+                                             DerivedWorkout derivada, Diferencias d,
+                                             Map<Long, Dosis> dosisAnterior,
+                                             Map<Long, CandidateExercise> catalogo,
+                                             Map<Long, CandidateExercise> conocidos,
+                                             ExclusionesDeSeguridad causas,
+                                             List<RetiradaSeguridad> retiradas,
+                                             List<Long> idsDeLaSemana,
+                                             List<RetiradaSeguridad> admitidas,
+                                             List<String> problems) {
+        var deEsta = retiradas == null ? List.<RetiradaSeguridad>of()
+                : retiradas.stream().filter(s -> origen.equals(s.sesionOrigen())).toList();
+        if (deEsta.isEmpty()) return d;
+
+        var quitados = new ArrayList<>(d.quitados());
+        var idsNuevos = derivada.workout().exercises().stream()
+                .map(PlanDraft.DraftExercise::exerciseId).collect(Collectors.toSet());
+        boolean admitida = false;
+        for (var s : deEsta) {
+            String motivo = null;
+            var causa = causas.motivos().get(s.quitado());
+            var ficha = conocidos.get(s.quitado());
+            var slot = ficha != null ? MandatorySlot.of(ficha) : MandatorySlot.ofMovementPattern(s.patronQuitado());
+            if (!dosisAnterior.containsKey(s.quitado()))
+                motivo = "el ejercicio %d no estaba en esa sesion de la semana medida".formatted(s.quitado());
+            else if (!causas.incluye(s.quitado()) || causa == null
+                    || !causa.contains(SafetyConflictPolicy.DOLOR_REGISTRADO))
+                motivo = ("el ejercicio %d no tiene el dolor registrado como causa verificada (%s): solo el dolor "
+                        + "autoriza a retirarlo sin sustituto").formatted(s.quitado(), causa);
+            else if (!causa.equals(s.motivo()))
+                motivo = "el motivo declarado para %d (%s) no es su causa verificada (%s)"
+                        .formatted(s.quitado(), s.motivo(), causa);
+            else if (catalogo.containsKey(s.quitado()))
+                motivo = "el ejercicio %d sigue siendo elegible: no hay motivo de seguridad".formatted(s.quitado());
+            else if (idsNuevos.contains(s.quitado()))
+                motivo = "la sesion sigue prescribiendo el ejercicio %d".formatted(s.quitado());
+            else if (slot.isPresent() && idsDeLaSemana.stream().map(conocidos::get).filter(java.util.Objects::nonNull)
+                    .noneMatch(c -> MandatorySlot.of(c).equals(slot)))
+                motivo = ("el ejercicio %d es una colocacion estructural (%s) y ningun otro ejercicio de la semana "
+                        + "nueva cubre ese slot").formatted(s.quitado(), slot.get());
+
+            if (motivo != null) {
+                problems.add("V8C: la retirada por seguridad de la sesion %d no se admite: %s."
+                        .formatted(origen, motivo));
+                continue;
+            }
+            quitados.remove(s.quitado());
+            admitidas.add(s);
+            admitida = true;
+        }
+        if (!admitida) return d;
+
+        // Con la retirada admitida, NADA MAS puede cambiar en la sesion: lo que queda se conserva tal cual.
+        if (!d.anadidos().isEmpty() || !quitados.isEmpty() || !d.dosisCambiada().isEmpty()) {
+            problems.add(("V8C: la sesion %d retira por seguridad %s y ademas anade %s, retira %s o cambia la dosis de "
+                    + "%s. Al retirar sin sustituto, lo demas se conserva tal cual.")
+                    .formatted(origen, admitidas.stream().filter(x -> origen.equals(x.sesionOrigen()))
+                            .map(RetiradaSeguridad::quitado).toList(), d.anadidos(), quitados, d.dosisCambiada()));
+            return d;
+        }
+        boolean minutosSuben = d.minutosCambiados() && d.minutosNuevos() > anterior.expectedDurationMinutes();
+        if (minutosSuben)
+            problems.add(("V8C: la sesion %d retira un ejercicio y declara %d minutos, mas que los %d de la semana "
+                    + "medida.").formatted(origen, d.minutosNuevos(), anterior.expectedDurationMinutes()));
+        return new Diferencias(d.anadidos(), List.copyOf(quitados), d.dosisCambiada(), d.idsAnteriores(),
+                d.idsNuevos(), d.diaMovido(), d.diaNuevo(), d.focoCambiado(), d.focoNuevo(),
+                minutosSuben && d.minutosCambiados(), d.minutosNuevos());
     }
 
     // =======================================================================

@@ -261,9 +261,42 @@ abstract class SinSustitutoDolorBase {
         linea.put("sustituto_del_135", sustituto);
         linea.put("dificultad_sustituto", difSustituto);
         linea.put("semana_siguiente", desenlace2);
-        linea.put("rechazo", String.valueOf(semana1.get("rejection_reason")).replace('\n', ' '));
+        linea.put("rechazo", String.valueOf(semana1.get("rejection_reason")).replace('\n', ' ').replace(';', ','));
+        // Validacion de la salida intermedia (retirada localizada): que se publico, cuanto trabajo y con que linaje.
+        linea.put("retirada_localizada", String.valueOf(semana1.get("informe")).contains("RETIRADA_SEGURA"));
+        var excluidos = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " status = 'ACTIVA' ORDER BY 1", Long.class, c.usuario());
+        linea.put("excluidos", excluidos);
+        long[] t0 = trabajoDe(c.planMedido());
+        linea.put("trabajo_antes", t0[0] + " reps / " + t0[1] + " s");
+        linea.put("trabajo_despues", activo1.map(x -> {
+            long[] t1 = trabajoDe(x);
+            return t1[0] + " reps / " + t1[1] + " s";
+        }).orElse("-"));
+        linea.put("dosis_cambiadas", activo1.map(x -> String.valueOf(dosisCambiadas(c.planMedido(), x))).orElse("-"));
+        linea.put("linaje", activo1.map(x -> jdbc.queryForObject("SELECT count(source_planned_workout_id) || '/' ||"
+                + " count(*) FROM planned_workouts WHERE plan_id = ?", String.class, x)).orElse("-"));
         escribir(linea);
         return linea;
+    }
+
+    long[] trabajoDe(long plan) {
+        var f = jdbc.queryForMap("SELECT COALESCE(SUM(COALESCE(pwe.planned_sets,1) * COALESCE(pwe.planned_reps,0)),0) AS r,"
+                + " COALESCE(SUM(COALESCE(pwe.planned_sets,1) * COALESCE(pwe.planned_duration_seconds,0)),0) AS s FROM"
+                + " planned_workouts pw JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id"
+                + " WHERE pw.plan_id = ?", plan);
+        return new long[]{((Number) f.get("r")).longValue(), ((Number) f.get("s")).longValue()};
+    }
+
+    /** Ejercicios presentes en la sesion medida y en su derivada (por linaje) con otra dosis o descanso. */
+    int dosisCambiadas(long medido, long nuevo) {
+        return jdbc.queryForObject("SELECT count(*) FROM planned_workouts n JOIN planned_workout_exercises ne ON"
+                + " ne.planned_workout_id = n.planned_workout_id JOIN planned_workout_exercises me ON"
+                + " me.planned_workout_id = n.source_planned_workout_id AND me.exercise_id = ne.exercise_id JOIN"
+                + " planned_workouts m ON m.planned_workout_id = me.planned_workout_id AND m.plan_id = ? WHERE n.plan_id = ?"
+                + " AND (me.planned_sets IS DISTINCT FROM ne.planned_sets OR me.planned_reps IS DISTINCT FROM ne.planned_reps"
+                + " OR me.planned_duration_seconds IS DISTINCT FROM ne.planned_duration_seconds"
+                + " OR me.rest_seconds IS DISTINCT FROM ne.rest_seconds)", Integer.class, medido, nuevo);
     }
 
     static void escribir(Map<String, Object> linea) throws Exception {
