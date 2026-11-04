@@ -75,7 +75,9 @@ public final class DescripcionAdaptacion {
         for (var senalada : orden.targetedSessions()) {
             Long id = senalada.plannedWorkoutId();
             var derivada = resultado.semana().stream().filter(d -> id.equals(d.sourcePlannedWorkoutId())).findFirst();
-            boolean cambioDeSeguridad = retiradaSegura && derivada.isPresent() && senalada.intervencion() != null
+            // P3 (evaluacion K20): una sesion con dolor que el respaldo cambio (sustitucion SUST-SEG-1 o retirada) se
+            // describe como cambio de seguridad aunque no lleve la nota de retirada; antes decia "no aplicamos cambios".
+            boolean cambioDeSeguridad = derivada.isPresent() && senalada.intervencion() != null
                     && senalada.intervencion().exigeRevisionDeSeguridad()
                     && !mismosEjercicios(id, previa, derivada.get());
             if ((!aplicadas.contains(id) && !cambioDeSeguridad) || derivada.isEmpty()) {

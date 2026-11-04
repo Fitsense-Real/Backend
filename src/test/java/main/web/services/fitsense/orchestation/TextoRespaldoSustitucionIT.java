@@ -2,7 +2,6 @@ package main.web.services.fitsense.orchestation;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.junit.jupiter.Container;
@@ -18,15 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * publicado ({@code adjustment_reason}) tiene que describir ese cambio. Configuracion POR DEFECTO (sin limite ni
  * retirada): es el comportamiento de {@code generation}. Perfil congelado R0521: el 135 duele y SUST-SEG-1 pone el 780.
  * <p>
- * REPRODUCCION DE UN DEFECTO CONFIRMADO (opt-in, {@code -Dfitsense.verificacion.p3=true}): HOY FALLA. El texto publicado
- * es «Reportaste molestias. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.», aunque
- * la sesion cambio (135 -> 780). Es opt-in solo para no dejar CI en rojo mientras la correccion (que cambia el texto
- * con la configuracion por defecto) espera aprobacion; no oculta nada: el fallo esta documentado en
- * docs/FitSense/adaptacion/salida_intermedia_dolor/11_CIERRE_PR39.md. Cuando se apruebe la correccion, quitar la
- * condicion y dejarla permanente.
+ * Rama de evaluacion K20: la correccion P3 esta aplicada en DescripcionAdaptacion y la prueba es PERMANENTE (antes
+ * opt-in, porque fallaba; ver docs/FitSense/adaptacion/salida_intermedia_dolor/11_CIERRE_PR39.md).
  */
 @Testcontainers
-@EnabledIfSystemProperty(named = "fitsense.verificacion.p3", matches = "true")
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
