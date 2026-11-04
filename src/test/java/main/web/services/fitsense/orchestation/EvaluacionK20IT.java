@@ -130,6 +130,21 @@ class EvaluacionK20IT {
     static final double COSTE_MAX_POR_LLAMADA_USD = Double.parseDouble(
             System.getProperty("fitsense.evaluacion.k20.coste-por-llamada", "0.05"));
     static final double MAX_USD = Double.parseDouble(System.getProperty("fitsense.evaluacion.k20.max-usd", "4.0"));
+    /**
+     * CONTROL DEL CONSUMO REAL (DEV-R): Replicate factura gpt-5-mini por tokens. Tras cada prediccion se leen sus
+     * metricas ({@code GET /v1/predictions/{id}}, gratuito) y se suma su coste con esta tarifa (USD por millon de
+     * tokens). Antes de cada prediccion se exige que el gasto MEDIDO mas una reserva de peor caso
+     * ({@link #COSTE_MAX_POR_LLAMADA_USD}) no pase de {@link #MAX_USD}. Si una prediccion cuesta mas que la reserva, o
+     * sus metricas no se pueden leer, se carga la reserva y NO se hace ninguna llamada mas (la cota dejo de ser segura).
+     */
+    static final double TARIFA_ENTRADA_USD_MILLON = Double.parseDouble(
+            System.getProperty("fitsense.evaluacion.k20.tarifa-entrada-usd-millon", "0.25"));
+    static final double TARIFA_SALIDA_USD_MILLON = Double.parseDouble(
+            System.getProperty("fitsense.evaluacion.k20.tarifa-salida-usd-millon", "2.00"));
+    static double usdMedido = 0;
+    static volatile String bloqueoPresupuesto = null;
+    static final java.util.Queue<String> tiemposReplicate = new java.util.concurrent.ConcurrentLinkedQueue<>();
+    static final List<String> metricasPredicciones = Collections.synchronizedList(new ArrayList<>());
     static final String PREFER_WAIT = System.getProperty("fitsense.evaluacion.k20.prefer-wait", "25");
     /** Candidata posterior (eval/final-ieee-k20-v2): v1 | v2 | v2.1. Vacio = la del backend (v1). */
     static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
@@ -266,8 +281,9 @@ class EvaluacionK20IT {
         cfg.put("credencial", SIMULADA ? "ninguna (IA simulada, sin red)" : !REPLICATE ? "ninguna"
                 : CREDENCIAL_PROXY ? "secreto de red inyectado por el proxy (no visible)" : "variable REPLICATE_API_TOKEN");
         cfg.put("comprobacion_cuenta_http", cuenta);
-        cfg.put("limite_ia", REPLICATE ? MAX_LLAMADAS + " predicciones / USD " + MAX_USD + " (supuesto " + COSTE_MAX_POR_LLAMADA_USD
-                + " por prediccion)" : "no aplica");
+        cfg.put("limite_ia", REPLICATE ? MAX_LLAMADAS + " predicciones / USD " + MAX_USD + " (reserva de peor caso "
+                + COSTE_MAX_POR_LLAMADA_USD + " por prediccion; gasto real medido por tokens a " + TARIFA_ENTRADA_USD_MILLON
+                + " / " + TARIFA_SALIDA_USD_MILLON + " USD por millon)" : "no aplica");
         escribir("00_configuracion.txt", cfg.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).toList());
 
         var res = new ArrayList<Map<String, Object>>();
@@ -286,8 +302,17 @@ class EvaluacionK20IT {
         escribir("incidencias.log", incid);
         escribir("trazas_ia.jsonl", trazasIa);
         exportarTablas();
+        if (REPLICATE) {
+            var m = new ArrayList<String>();
+            m.add("etiqueta,tipo,intento,prediction_id,tokens_entrada,tokens_salida,predict_time_s,ms,usd,usd_acumulado,estado");
+            m.addAll(metricasPredicciones);
+            escribir("predicciones_metricas.csv", m);
+            escribir("tiempos_replicate.log", new ArrayList<>(tiemposReplicate));
+        }
         escribir("99_resumen.txt", List.of("usuarios=" + res.size(), "llamadas_proveedor=" + llamadas.get(),
-                "incidencias=" + incid.size()));
+                "incidencias=" + incid.size(), "usd_medido=" + String.format(java.util.Locale.ROOT, "%.4f", usdMedido)
+                        + " (tarifa " + TARIFA_ENTRADA_USD_MILLON + " / " + TARIFA_SALIDA_USD_MILLON + " USD por millon)",
+                "bloqueo_presupuesto=" + Objects.requireNonNullElse(bloqueoPresupuesto, "ninguno")));
         System.out.println("K20 " + MODO + " -> " + SALIDA + " usuarios=" + res.size() + " llamadas=" + llamadas.get()
                 + " incidencias=" + incid.size());
     }
@@ -585,6 +610,16 @@ class EvaluacionK20IT {
             return;
         }
         if (!REPLICATE) return;
+        var appender = new ch.qos.logback.core.AppenderBase<ch.qos.logback.classic.spi.ILoggingEvent>() {
+            @Override
+            protected void append(ch.qos.logback.classic.spi.ILoggingEvent e) {
+                String t = e.getFormattedMessage();
+                if (t != null && t.startsWith("REPLICATE_TIMING")) tiemposReplicate.add(t);
+            }
+        };
+        appender.start();
+        ((ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ReplicateTrainingPlanGenerator.class))
+                .addAppender(appender);
         doAnswer(inv -> proveedor(inv, "GENERACION")).when(generador).requestOutput(any(), any());
         doAnswer(inv -> {
             int intento = inv.getArgument(4);
@@ -618,7 +653,13 @@ class EvaluacionK20IT {
             guardarPrompt(inv, traza);
         }
         int n = llamadas.incrementAndGet();
-        if (n > MAX_LLAMADAS || n * COSTE_MAX_POR_LLAMADA_USD > MAX_USD + 1e-9) {
+        boolean sinMargenReal;
+        synchronized (EvaluacionK20IT.class) {
+            sinMargenReal = usdMedido + COSTE_MAX_POR_LLAMADA_USD > MAX_USD + 1e-9;
+        }
+        if (n > MAX_LLAMADAS || n * COSTE_MAX_POR_LLAMADA_USD > MAX_USD + 1e-9 || sinMargenReal
+                || bloqueoPresupuesto != null) {
+            if (bloqueoPresupuesto != null) traza.put("bloqueo", bloqueoPresupuesto);
             llamadas.decrementAndGet();
             traza.put("resultado", "PRESUPUESTO_AGOTADO_SIN_LLAMADA");
             trazasIa.add(json(traza));
@@ -626,6 +667,7 @@ class EvaluacionK20IT {
                     "PRESUPUESTO_AGOTADO del laboratorio: no se llama a Replicate");
         }
         traza.put("n", n);
+        int tiemposAntes = tiemposReplicate.size();
         long t0 = System.nanoTime();
         try {
             Object salida = inv.callRealMethod();
@@ -638,8 +680,88 @@ class EvaluacionK20IT {
             throw e;
         } finally {
             traza.put("ms", (System.nanoTime() - t0) / 1_000_000);
+            if (REPLICATE) contabilizar(traza, tiemposAntes);
             trazasIa.add(json(traza));
         }
+    }
+
+    /** Lee las metricas de la prediccion recien hecha, suma su coste real y bloquea si la reserva no basto. */
+    private void contabilizar(Map<String, Object> traza, int tiemposAntes) {
+        var nuevas = new ArrayList<>(tiemposReplicate).subList(Math.min(tiemposAntes, tiemposReplicate.size()),
+                tiemposReplicate.size());
+        String id = nuevas.isEmpty() ? null : idPrediccion(nuevas.get(nuevas.size() - 1));
+        double usd = COSTE_MAX_POR_LLAMADA_USD;
+        String estado;
+        long entrada = -1, salida = -1;
+        double predict = -1;
+        var metricas = id == null ? null : metricasDe(id);
+        if (metricas == null) {
+            estado = "SIN_METRICAS_SE_CARGA_LA_RESERVA";
+            bloqueoPresupuesto = "sin metricas de la prediccion " + id + ": no se hacen mas llamadas";
+        } else {
+            entrada = metricas.path("token_input_count").asLong(-1);
+            salida = metricas.path("token_output_count").asLong(-1);
+            predict = metricas.path("predict_time").asDouble(-1);
+            if (entrada < 0 || salida < 0) {
+                estado = "METRICAS_INCOMPLETAS_SE_CARGA_LA_RESERVA";
+                bloqueoPresupuesto = "metricas incompletas de " + id + ": no se hacen mas llamadas";
+            } else {
+                usd = costeUsd(entrada, salida);
+                estado = "MEDIDO";
+                if (usd > COSTE_MAX_POR_LLAMADA_USD) {
+                    estado = "RESERVA_SUPERADA";
+                    bloqueoPresupuesto = "la prediccion " + id + " costo " + usd + " USD, mas que la reserva: no se"
+                            + " hacen mas llamadas";
+                }
+            }
+        }
+        double acumulado;
+        synchronized (EvaluacionK20IT.class) {
+            usdMedido += usd;
+            acumulado = usdMedido;
+        }
+        traza.put("prediction_id", id);
+        traza.put("tokens_entrada", entrada);
+        traza.put("tokens_salida", salida);
+        traza.put("predict_time_s", predict);
+        traza.put("usd", usd);
+        traza.put("usd_acumulado", acumulado);
+        traza.put("coste_estado", estado);
+        metricasPredicciones.add(String.join(",", String.valueOf(traza.get("etiqueta")), String.valueOf(traza.get("tipo")),
+                String.valueOf(traza.get("intento")), String.valueOf(id), String.valueOf(entrada), String.valueOf(salida),
+                String.valueOf(predict), String.valueOf(traza.get("ms")), String.format(java.util.Locale.ROOT, "%.6f", usd),
+                String.format(java.util.Locale.ROOT, "%.6f", acumulado), estado));
+    }
+
+    static double costeUsd(long tokensEntrada, long tokensSalida) {
+        return tokensEntrada / 1e6 * TARIFA_ENTRADA_USD_MILLON + tokensSalida / 1e6 * TARIFA_SALIDA_USD_MILLON;
+    }
+
+    static String idPrediccion(String lineaTiempos) {
+        var m = java.util.regex.Pattern.compile("prediction_id=(\\S+)").matcher(lineaTiempos);
+        return m.find() && !"desconocido".equals(m.group(1)) ? m.group(1) : null;
+    }
+
+    /** {@code metrics} de la prediccion (consulta gratuita), con 3 intentos; null si no se puede leer. */
+    static com.fasterxml.jackson.databind.JsonNode metricasDe(String id) {
+        var cliente = java.net.http.HttpClient.newBuilder().connectTimeout(java.time.Duration.ofSeconds(20)).build();
+        String credencial = CREDENCIAL_PROXY ? "proxy" : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), "");
+        for (int i = 0; i < 3; i++) {
+            try {
+                var r = cliente.send(java.net.http.HttpRequest.newBuilder(
+                                java.net.URI.create("https://api.replicate.com/v1/predictions/" + id))
+                        .header("Authorization", "Bearer " + credencial).timeout(java.time.Duration.ofSeconds(30))
+                        .GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+                if (r.statusCode() == 200) {
+                    var m = JSON.readTree(r.body()).path("metrics");
+                    if (m.has("token_input_count") && m.has("token_output_count")) return m;
+                }
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                // se reintenta; al tercer fallo se carga la reserva y se bloquea
+            }
+        }
+        return null;
     }
 
     private void guardarPrompt(org.mockito.invocation.InvocationOnMock inv, Map<String, Object> traza) {
