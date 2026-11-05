@@ -4,6 +4,8 @@
 - Se recalcula todo **desde la evidencia archivada**, no desde los documentos.
 - Ningún resultado anterior se modifica: las precisiones de §2 se recogen aquí, sin reescribir `17` ni `18`.
 
+**Evidencia F10:** `evidencia/k20_final_c2fbab3/` (23 corridas `.tar.gz`, `oraculos_f10.txt` y `barridos_f10.sha256`).
+
 **Herramientas:**
 - `herramientas/auditar_coherencia.py`: re-extrae los `.tar.gz` y re-ejecuta los oráculos.
 - `pre_replicate/clasificar_resultados.py`: PASS / ESPERADO_SIN_PLAN / DEFECTO.
@@ -47,8 +49,8 @@
 | K20 REV2 D = D′ | U `a662cb4d`, J `97228f04`, K `73f28d97`, L `83bd199a`, M `662e19cf`: **iguales a F8** |
 | K20 REV2 con IA simulada (y V2.1, y con fallo del proveedor) | U `84dfb6d2`, J `dafe6034`, K `8ad60c9b`, L `dc0ed02d`, M `e0cc3474`, fallo del proveedor `472de2bd`: **iguales a F8** |
 | Llamadas al proveedor | 0 en las 23 |
-| Barrido HIST (3.780 perfiles) | BARRIDO_HIST |
-| Barrido REV2 | BARRIDO_REV2 |
+| Barrido HIST (3.780 perfiles) | **Idéntico byte a byte** a `HIST_cierre` (y por tanto a `HIST_final`): `planes.csv` y `barrido_generacion.csv`; 3.641 válidos |
+| Barrido REV2 | **Idéntico byte a byte** a `REV2_cierre`: 3.776 válidos y 4 V25 (fuerza, 1 día de 30 min), con las cifras de §1 |
 | Regresión completa | 1.301 unitarias y 588 de integración, 0 fallos, sobre `cc76bd1` (`17` §1). `src/main` no ha cambiado desde entonces; la única prueba nueva (`p17CandidatasDesactivadas`) pasa, 7/7 en su clase |
 
 **Cambios de generación desde `d4556b1`:** `CapabilityWeekBuilder`, `CalidadDosis`, `FrecuenciaSemanal` y `PlanGenerationContext`. O solo actúan en el modo de dosis de REV2, o son refactorizaciones sin efecto. Lo demuestra que HIST sea idéntico byte a byte y que las huellas HIST no cambien.
