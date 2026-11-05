@@ -87,6 +87,28 @@ class FuerzaSinTiempoIT {
         }
     }
 
+    @Autowired main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade fachada;
+
+    /** La misma comprobacion por la fachada de planning (PlanAdjustment.none, la via del ciclo y del arnes K20). */
+    String generarPorFachada(long u) {
+        try {
+            assertTrue(fachada.generateWeeklyPlan(u, SEMANA,
+                    main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment.none(), null, null)
+                    .isPresent());
+            return null;
+        } catch (FuerzaSinTiempoException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Test
+    void porLaFachadaTambien() {
+        boolean rev2 = selector.activa().id().equals("PLAN-REV-2.0");
+        String r = generarPorFachada(usuario(FitnessLevel.INTERMEDIATE, GYM, 1, List.of((short) 1), 30));
+        if (rev2) assertTrue(r != null && r.startsWith(FuerzaSinTiempoException.CODIGO), String.valueOf(r));
+        else assertNull(r);
+    }
+
     boolean avisoPrevio(long u) {
         return limitaciones.limitationsFor(u).limitations().stream()
                 .anyMatch(l -> "TIME".equals(l.type()) && FuerzaSinTiempoException.CODIGO.equals(l.code()));

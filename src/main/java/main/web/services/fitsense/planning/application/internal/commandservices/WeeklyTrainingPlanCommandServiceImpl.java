@@ -239,7 +239,11 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         // Cierre REV2, fase 2 (alternativa C): en el PRIMER plan, si los slots de fuerza que V25 exige no caben con la
         // dosis de fuerza en el limite de V4 de la politica activa, se informa con alternativas en lugar de fallar con
         // un mensaje tecnico. No cambia V25, la dosis ni V4 (con la historica, 30 min admiten los 4: no salta).
-        if (prepared.command() != null && !prepared.command().replaceExisting() && prepared.command().adjustment() == null) {
+        // PRIMER plan del usuario por cualquier via (la API usa adjustment null; la fachada de planning, PlanAdjustment.none):
+        // semana 1 y sin reemplazo. Antes solo se miraba adjustment == null y por la fachada salia el fallo tecnico de V25
+        // (lo detecto la cohorte M, M29).
+        if (prepared.command() != null && !prepared.command().replaceExisting() && prepared.context() != null
+                && prepared.context().weekNumber() == 1) {
             var ctx = prepared.context();
             main.web.services.fitsense.planning.domain.services.CoberturaFuerzaTiempo.evaluar(ctx, ESTIMADOR_TRAZA)
                     .ifPresent(d -> {
