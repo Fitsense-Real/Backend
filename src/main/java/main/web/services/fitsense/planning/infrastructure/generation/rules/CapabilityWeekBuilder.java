@@ -646,6 +646,10 @@ class CapabilityWeekBuilder {
         return caps;
     }
 
+    static boolean esTraccion(CandidateExercise c) {
+        return c != null && ("HORIZONTAL_PULL".equals(c.movementPattern()) || "VERTICAL_PULL".equals(c.movementPattern()));
+    }
+
     /** Trabajo resistido de la semana (lo que cuenta para el volumen): estructural o resistido, no complemento. */
     private boolean esResistido(CandidateExercise c) {
         if (c == null || complementos.contains(c.exerciseId())) return false;
@@ -752,7 +756,13 @@ class CapabilityWeekBuilder {
             String g = grupo.get();
             java.util.function.Predicate<CandidateExercise> deGrupo = c -> g.equals(c.bodyPartCode());
             var actuales = new ArrayList<>(resistidosDia);
-            var extra = selector.pickAdditional(enfoque, actuales, true, deGrupo.and(cabeVolumen))
+            // P-G3: en una sesion PULL, mientras no tenga traccion, lo primero es un ejercicio de traccion.
+            java.util.function.Predicate<CandidateExercise> preferido = enfoque == WorkoutFocus.PULL
+                    && context.policy().pullReal() && dia.stream().noneMatch(col -> esTraccion(col.candidato()))
+                    ? deGrupo.and(CapabilityWeekBuilder::esTraccion) : deGrupo;
+            var extra = selector.pickAdditional(enfoque, actuales, true, preferido.and(cabeVolumen))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, preferido.and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, deGrupo.and(cabeVolumen)))
                     .or(() -> selector.pickAdditional(enfoque, actuales, false, deGrupo.and(cabeVolumen)));
             if (extra.isPresent()) {
                 Capability cap = "LOSE_WEIGHT".equals(objetivo) ? Capability.STRENGTH

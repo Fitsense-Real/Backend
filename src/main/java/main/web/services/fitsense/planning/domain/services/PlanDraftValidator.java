@@ -157,6 +157,7 @@ public class PlanDraftValidator {
         validateMvpDose(draft, context, eligible, conservation, problems);
         validateCapabilityDose(draft, context, eligible, conservation, problems);
         validateWeeklyVolume(draft, context, eligible, problems);
+        validateRealPull(draft, context, eligible, problems);
         // Una colocacion con dosis autorizada sigue acreditando la capacidad de su
         // dosis base (diseno §4.4). En la generacion no hay autorizaciones: el
         // borrador se evalua tal cual.
@@ -1604,6 +1605,29 @@ public class PlanDraftValidator {
                         + " politica %s). Reparte o quita trabajo de ese grupo.")
                         .formatted(n, g, techoSemana, nivel, context.policy().id()));
         });
+    }
+
+    /**
+     * Validacion 27 (P-G3, solo politicas con {@code pullReal}): una sesion PULL tiene al menos un ejercicio de
+     * traccion (HORIZONTAL_PULL o VERTICAL_PULL) cuando el conjunto elegible tiene alguno. Sin ninguno, la division
+     * ya no asigna PULL ({@code PlanGenerationContext#sinTraccionReal}). Con la politica historica no se aplica.
+     */
+    private void validateRealPull(PlanDraft draft, PlanGenerationContext context, Map<Long, CandidateExercise> eligible,
+                                  List<String> problems) {
+        if (context.policy() == null || !context.policy().pullReal()) return;
+        java.util.function.Predicate<CandidateExercise> traccion = c -> c != null
+                && ("HORIZONTAL_PULL".equals(c.movementPattern()) || "VERTICAL_PULL".equals(c.movementPattern()));
+        boolean hay = eligible.values().stream().anyMatch(traccion);
+        for (var w : draft.workouts()) {
+            if (w.focus() != WorkoutFocus.PULL) continue;
+            boolean tiene = w.exercises().stream().anyMatch(e -> traccion.test(eligible.get(e.exerciseId())));
+            if (!tiene)
+                problems.add((hay
+                        ? "V27: el entrenamiento PULL del %s no tiene ningun ejercicio de traccion (remo o jalon/dominada)"
+                        + " y hay ejercicios de traccion elegibles. Incluye al menos uno."
+                        : "V27: el entrenamiento del %s es PULL pero no hay ningun ejercicio de traccion elegible: no"
+                        + " debe haber sesiones PULL (usa superior/inferior).").formatted(w.scheduledDate()));
+        }
     }
 
     /**

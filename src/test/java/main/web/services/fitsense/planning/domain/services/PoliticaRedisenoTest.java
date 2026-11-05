@@ -145,6 +145,25 @@ class PoliticaRedisenoTest {
     }
 
     @Test
+    @DisplayName("V27: con REV2 una sesion PULL sin traccion se rechaza si hay traccion elegible; la historica no lo mira")
+    void v27() {
+        var elegibles = List.of(
+                new CandidateExercise(1L, "fondos de escapula", "back", "body weight", 1, PrescriptionType.SETS_REPS,
+                        null, "HORIZONTAL_PUSH", false),
+                new CandidateExercise(2L, "remo con banda", "back", "band", 1, PrescriptionType.SETS_REPS, null,
+                        "HORIZONTAL_PULL", false));
+        var pullSin = new PlanDraft(GenerationSource.RULE_ENGINE, null, "p", null, "r", List.of(new PlanDraft.DraftWorkout(
+                LUNES, WorkoutFocus.PULL, "s", 30, List.of(new PlanDraft.DraftExercise(1L, PrescriptionType.SETS_REPS,
+                (short) 3, (short) 10, null, null, (short) 90, null)))));
+        var pullCon = new PlanDraft(GenerationSource.RULE_ENGINE, null, "p", null, "r", List.of(new PlanDraft.DraftWorkout(
+                LUNES, WorkoutFocus.PULL, "s", 30, List.of(new PlanDraft.DraftExercise(2L, PrescriptionType.SETS_REPS,
+                (short) 3, (short) 10, null, null, (short) 90, null)))));
+        assertFalse(problemas(pullSin, ctx("LOSE_WEIGHT", "INTERMEDIATE", 45, PlanningPolicy.REV2, elegibles), "V27:").isEmpty());
+        assertTrue(problemas(pullCon, ctx("LOSE_WEIGHT", "INTERMEDIATE", 45, PlanningPolicy.REV2, elegibles), "V27:").isEmpty());
+        assertTrue(problemas(pullSin, ctx("LOSE_WEIGHT", "INTERMEDIATE", 45, PlanningPolicy.HISTORICA, elegibles), "V27:").isEmpty());
+    }
+
+    @Test
     @DisplayName("dosis semanal: techos y objetivos explicitos, el objetivo nunca supera el techo")
     void dosis() {
         for (var nivel : List.of("BEGINNER", "INTERMEDIATE", "ADVANCED"))
