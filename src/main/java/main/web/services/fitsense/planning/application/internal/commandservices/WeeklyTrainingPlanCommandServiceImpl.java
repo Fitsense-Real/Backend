@@ -102,9 +102,8 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                                    String nivel) {
         var lunes = main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek.containing(hoy).startDate();
         if (diasDisponibles == null || diasDisponibles.isEmpty()) return lunes;
-        int tope = "BEGINNER".equals(nivel) ? PlanGenerationContext.MAX_SESSIONS_BEGINNER
-                : PlanGenerationContext.MAX_SESSIONS_OTHERS;
-        int sesiones = Math.min(Math.min(diasPorSemana, tope), diasDisponibles.size());
+        int sesiones = main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal
+                .planificadas(diasPorSemana, nivel, diasDisponibles.size());
         var division = main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner
                 .plan(lunes, diasDisponibles, sesiones, 1);
         boolean algunaPasada = division.stream().anyMatch(s -> s.date().isBefore(hoy));
@@ -231,6 +230,17 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      */
     @Override
     public GeneratedPlan generate(PreparedPlanGeneration prepared) {
+        // Cierre REV2, fase 2 (alternativa C): en el PRIMER plan, si los slots de fuerza que V25 exige no caben con la
+        // dosis de fuerza en el limite de V4 de la politica activa, se informa con alternativas en lugar de fallar con
+        // un mensaje tecnico. No cambia V25, la dosis ni V4 (con la historica, 30 min admiten los 4: no salta).
+        if (prepared.command() != null && !prepared.command().replaceExisting() && prepared.command().adjustment() == null) {
+            var ctx = prepared.context();
+            main.web.services.fitsense.planning.domain.services.CoberturaFuerzaTiempo.evaluar(ctx, ESTIMADOR_TRAZA)
+                    .ifPresent(d -> {
+                        throw new main.web.services.fitsense.planning.domain.exceptions.FuerzaSinTiempoException(
+                                ctx.userId(), d, ctx.effectiveSessionMinutes());
+                    });
+        }
         if (feasibilityObserver != null) feasibilityObserver.antesDeGenerar(prepared.context());
         var result = pipeline.run(prepared.context(), prepared.divisor());
         if (feasibilityObserver != null)

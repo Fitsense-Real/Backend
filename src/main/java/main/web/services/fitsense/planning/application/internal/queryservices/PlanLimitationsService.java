@@ -70,6 +70,8 @@ public class PlanLimitationsService {
         List<CandidateExercise> elegibles;
         String objetivo;
         String nivel;
+        int diasPedidos;
+        java.util.Optional<Limitation> fuerzaTiempo;
         try {
             var ctx = commandService.prepare(
                     new GenerateWeeklyPlanCommand(userId, semana, null, true, null, null)).context();
@@ -77,12 +79,22 @@ public class PlanLimitationsService {
             vacios = SlotCoveragePolicy.ofEligible(elegibles).emptySlots();
             objetivo = ctx.profile().goalType();
             nivel = ctx.profile().fitnessLevel();
+            diasPedidos = ctx.profile().daysPerWeek();
+            fuerzaTiempo = main.web.services.fitsense.planning.domain.services.CoberturaFuerzaTiempo
+                    .evaluar(ctx, new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator())
+                    .map(d -> new Limitation("TIME", main.web.services.fitsense.planning.domain.exceptions
+                            .FuerzaSinTiempoException.CODIGO, "Tiempo para la fuerza",
+                            main.web.services.fitsense.planning.domain.exceptions.FuerzaSinTiempoException
+                                    .mensaje(d, ctx.effectiveSessionMinutes()).replaceFirst("^[A-Z_]+: ", ""),
+                            List.of()));
         } catch (InsufficientSlotCoverageException e) {
             // Modo que bloquea: no hay contexto, pero si los slots vacios.
             return new PlanLimitationsResource(semana, e.emptySlots().stream().map(this::deSlot).toList());
         }
 
         var limitaciones = new ArrayList<Limitation>();
+        frecuencia(diasPedidos, nivel).ifPresent(limitaciones::add);
+        fuerzaTiempo.ifPresent(limitaciones::add);
         vacios.stream().map(this::deSlot).forEach(limitaciones::add);
         GoalFeasibilityPolicy.evaluarPool(objetivo, nivel, elegibles).ifPresent(pool -> pool.principales().stream()
                 .filter(c -> c.aplica() && c.veredicto() == Veredicto.NO_FACTIBLE)
@@ -98,6 +110,26 @@ public class PlanLimitationsService {
                         List.of()))
                 .forEach(limitaciones::add));
         return new PlanLimitationsResource(semana, List.copyOf(limitaciones));
+    }
+
+    /**
+     * S-MAX (contrato de frecuencia, FrecuenciaSemanal): si el tope del nivel recorta los dias pedidos, el participante
+     * tiene que saber cuantas sesiones se programan y que completarlas es el 100 %. No cambia el tope.
+     */
+    static java.util.Optional<Limitation> frecuencia(int diasPedidos, String nivel) {
+        if (!main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal
+                .recortaPorNivel(diasPedidos, nivel)) return java.util.Optional.empty();
+        int sesiones = main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal.tope(nivel);
+        String n = switch (nivel == null ? "" : nivel) {
+            case "BEGINNER" -> "principiante";
+            case "ADVANCED" -> "avanzado";
+            default -> "intermedio";
+        };
+        return java.util.Optional.of(new Limitation("FREQUENCY", "S_MAX", "Sesiones por semana",
+                ("Indicaste %d días para entrenar. Con tu nivel (%s), tu plan programa %d sesiones por semana y deja "
+                        + "los demás días para recuperarte. Completar esas %d sesiones cuenta como el 100 %% de tu "
+                        + "plan.").formatted(diasPedidos, n, sesiones, sesiones),
+                List.of()));
     }
 
     private Limitation deSlot(MandatorySlot slot) {

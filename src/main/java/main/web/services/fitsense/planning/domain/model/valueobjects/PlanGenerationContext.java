@@ -139,8 +139,10 @@ public record PlanGenerationContext(
     }
 
     /** Tope de sesiones de fuerza por semana segun nivel (division semanal, P3). */
-    public static final int MAX_SESSIONS_BEGINNER = 4;
-    public static final int MAX_SESSIONS_OTHERS = 6;
+    public static final int MAX_SESSIONS_BEGINNER =
+            main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal.TOPE_PRINCIPIANTE;
+    public static final int MAX_SESSIONS_OTHERS =
+            main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal.TOPE_RESTO;
 
     /**
      * Sesiones de la semana: las del perfil (o las forzadas por REDUCE_DAYS),
@@ -152,8 +154,8 @@ public record PlanGenerationContext(
     public int effectiveDaysPerWeek() {
         int requested = adjustment != null && adjustment.forcedDaysPerWeek() != null
                 ? adjustment.forcedDaysPerWeek() : profile.daysPerWeek();
-        int cap = "BEGINNER".equals(profile.fitnessLevel()) ? MAX_SESSIONS_BEGINNER : MAX_SESSIONS_OTHERS;
-        return Math.min(requested, cap);
+        return main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal
+                .conTope(requested, profile.fitnessLevel());
     }
 
     /** Division sugerida para la semana, igual para IA, motor de reglas y validador. */

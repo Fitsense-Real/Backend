@@ -95,8 +95,8 @@ public class UserInterventionCommandServiceImpl implements UserInterventionComma
         // PlanGenerationContext.effectiveDaysPerWeek). Sin el tope, una
         // principiante con 6 dias recibiria "reducir a 5" y seguiria en 4: la
         // orden no tendria efecto.
-        int previousDays = profile.map(p -> Math.min(p.daysPerWeek(),
-                        "BEGINNER".equals(p.fitnessLevel()) ? 4 : 6))
+        int previousDays = profile.map(p -> main.web.services.fitsense.shared.domain.model.valueobjects
+                        .FrecuenciaSemanal.conTope(p.daysPerWeek(), p.fitnessLevel()))
                 .orElse(limits.minDaysPerWeek());
         int previousMinutes = profile.map(p -> (int) p.sessionMinutes())
                 .orElse(limits.minSessionMinutes());

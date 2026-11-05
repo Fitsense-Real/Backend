@@ -21,8 +21,17 @@ Politica PLAN-REV-2.0 (cambios aprobados en la orden del 05/11/2026, P-G1, P-G3;
     QINS  sesion insuficiente: menos de 3 ejercicios o menos de 6 series en total.
 Las cifras de V26O y QINS son las de DosisSemanalPolicy / CalidadDosis, todas [HP][PRO] (02_EVIDENCIA_DOSIS.md).
 
+Contrato de dias DIAS-1 (opcional, sufijo "+DIAS-1" en la politica; cierre de PLAN-REV-2.0, S-MAX):
+  SUSTITUYE la comprobacion historica "sesiones == days_per_week" (que ignoraba el tope por nivel) por:
+    esperadas = min(days_per_week, tope del nivel, |available_days|)   tope: BEGINNER 4, resto 6 (nadie 7)
+    DIAS1 rechaza: mas sesiones que el tope del nivel; mas que las esperadas; MENOS que las esperadas sin
+    justificacion (una intervencion REDUCE_DAYS registrada en user_interventions para ese plan, que admite de 1 a
+    las esperadas); planned_days_count distinto de las sesiones publicadas.
+  Las sesiones en dias no disponibles, fuera de la semana o repetidas siguen rechazadas por las comprobaciones de
+  siempre (no cambian). Se puede combinar con las dos politicas: PLAN-HIST-1+DIAS-1, PLAN-REV-2.0+DIAS-1.
+
 Uso:
-    python3 -I oraculo_k20_politica.py <PLAN-HIST-1|PLAN-REV-2.0> <carpeta> <perfiles.csv> [<teorico.csv>]
+    python3 -I oraculo_k20_politica.py <PLAN-HIST-1|PLAN-REV-2.0>[+DIAS-1] <carpeta> <perfiles.csv> [<teorico.csv>]
 Escribe en <carpeta>/oraculo_<politica>/ (no pisa <carpeta>/oraculo/).
 """
 import importlib.util
@@ -91,13 +100,50 @@ def validar_plan_rev2(mod, original):
     return validar
 
 
+TOPE_SESIONES = {"BEGINNER": 4}
+TOPE_RESTO = 6
+
+
+def comprobar_dias(n_sesiones, dias_pedidos, nivel, n_disponibles, reduce_dias, planificados, nombre):
+    """Contrato DIAS-1. Devuelve la lista de incumplimientos (vacia si cumple)."""
+    tope = TOPE_SESIONES.get(nivel, TOPE_RESTO)
+    esperadas = min(dias_pedidos, tope, n_disponibles)
+    problemas = []
+    if n_sesiones > tope:
+        problemas.append(f"{nombre}: DIAS1 {n_sesiones} sesiones superan el tope del nivel {nivel} ({tope})")
+    elif n_sesiones > esperadas:
+        problemas.append(f"{nombre}: DIAS1 {n_sesiones} sesiones y el contrato espera {esperadas}")
+    if n_sesiones < esperadas and not (reduce_dias and n_sesiones >= 1):
+        problemas.append(f"{nombre}: DIAS1 faltan sesiones sin justificacion ({n_sesiones} de {esperadas})")
+    if planificados is not None and planificados != n_sesiones:
+        problemas.append(f"{nombre}: DIAS1 planned_days_count={planificados} y hay {n_sesiones} sesiones")
+    return problemas
+
+
+def validar_plan_dias(mod, original):
+    def validar(D, plan, perfil, nombre):
+        problemas = [p for p in original(D, plan, perfil, nombre) if "sesiones y el perfil pide" not in p]
+        n = len(D.sesiones(int(plan["plan_id"])))
+        reduce_dias = any(r.get("resulting_plan_id") == plan["plan_id"] and "REDUCE_DAYS" in (r.get("adjustment_types") or "")
+                          for r in D.tab.get("user_interventions", []))
+        planificados = mod.entero(plan.get("planned_days_count"))
+        problemas += comprobar_dias(n, int(perfil["days_per_week"]), perfil["fitness_level"],
+                                    len(set(mod.lista_pg(perfil["available_days"]))), reduce_dias, planificados,
+                                    nombre)
+        return problemas
+    return validar
+
+
 def main():
     politica, carpeta = sys.argv[1], sys.argv[2]
-    if politica not in ("PLAN-HIST-1", "PLAN-REV-2.0"):
+    base, _, contrato = politica.partition("+")
+    if base not in ("PLAN-HIST-1", "PLAN-REV-2.0") or contrato not in ("", "DIAS-1"):
         sys.exit(f"politica desconocida: {politica}")
     mod = cargar_historico()
-    if politica == "PLAN-REV-2.0":
+    if base == "PLAN-REV-2.0":
         mod.validar_plan = validar_plan_rev2(mod, mod.validar_plan)
+    if contrato == "DIAS-1":
+        mod.validar_plan = validar_plan_dias(mod, mod.validar_plan)
     propio = os.path.join(carpeta, "oraculo")
     aparte = os.path.join(carpeta, ".oraculo_historico_aparte")
     destino = os.path.join(carpeta, "oraculo_" + politica)
