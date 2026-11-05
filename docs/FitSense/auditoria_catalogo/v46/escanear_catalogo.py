@@ -41,7 +41,7 @@ for i, d in cat.items():
     en, es = d["name_en"].lower(), d["name_es"].lower()
     if "curl" in es and "curl" not in en:
         add(i, "S2_TRADUCCION_CURL", f"«{d['name_es']}» traduce «{d['name_en']}», que no es un curl")
-    if re.search(r"\bfly\b|\bflye\b|breeding", en) and "reverse" not in en and (d["patron"] != "HORIZONTAL_ADDUCTION" or d["iso"] != "true"):
+    if re.search(r"\bfly\b|\bflye\b|breeding", en) and "reverse" not in en and "rear" not in en and (d["patron"] != "HORIZONTAL_ADDUCTION" or d["iso"] != "true"):
         add(i, "S3_APERTURA", f"apertura con patron {d['patron']} e is_isolation={d['iso']}")
     if "inverse leg curl" in en or "nordic" in en:
         add(i, "S4_NORDICO", f"curl nordico (excentrico) con dificultad {d['dif']}")
