@@ -74,10 +74,12 @@ class DiagnosticoGeneracionJ03IT {
             "CASA_MANCUERNAS_BANDAS", List.of("body weight", "dumbbell", "band"),
             "CASA_PESO_CORPORAL", List.of("body weight"));
     static final Map<Integer, List<Short>> DIAS = Map.of(
+            1, List.of((short) 1), 2, List.of((short) 1, (short) 4),
             3, List.of((short) 1, (short) 3, (short) 5),
             4, List.of((short) 1, (short) 2, (short) 4, (short) 5),
             5, List.of((short) 1, (short) 2, (short) 3, (short) 4, (short) 5),
-            6, List.of((short) 1, (short) 2, (short) 3, (short) 4, (short) 5, (short) 6));
+            6, List.of((short) 1, (short) 2, (short) 3, (short) 4, (short) 5, (short) 6),
+            7, List.of((short) 1, (short) 2, (short) 3, (short) 4, (short) 5, (short) 6, (short) 7));
 
     record Resultado(String accion, List<String> problemas) {}
 
@@ -180,11 +182,11 @@ class DiagnosticoGeneracionJ03IT {
         }
         Files.writeString(salida.resolve("borrador_motor.csv"), ses);
 
-        // Busqueda exhaustiva de un paso en cada sesion rechazada por V20.
+        // Busqueda exhaustiva de un paso en cada sesion rechazada (V20, V15 u otra regla de la sesion).
         var falladas = new ArrayList<Integer>();
         for (int i = 0; i < borrador.workouts().size(); i++) {
             String f = borrador.workouts().get(i).scheduledDate().toString();
-            if (base.stream().anyMatch(x -> x.startsWith("V20") && x.contains(f))) falladas.add(i);
+            if (base.stream().anyMatch(x -> x.contains(f))) falladas.add(i);
         }
         var busq = new StringBuilder("sesion,fecha,accion,id,capacidad,series,segundos_sesion,problemas_de_la_sesion,"
                 + "problemas_totales,codigos\n");
@@ -219,6 +221,24 @@ class DiagnosticoGeneracionJ03IT {
                 intentos.add(Map.entry("SERIE_MAS|" + e.exerciseId() + "|-|" + (e.plannedSets() + 1),
                         conSesion(borrador, i, ej)));
             }
+            // Sustitucion de UNA colocacion por cualquier candidato elegible con cualquier dosis admisible.
+            for (int k = 0; k < w.exercises().size(); k++)
+                for (var c : ctx.availableExercises()) {
+                    if (usados.contains(c.exerciseId())) continue;
+                    for (var cap : CapabilityPrescriptionPolicy.admisibles(c, obj, niv)) {
+                        var d = CapabilityPrescriptionPolicy.dosis(cap, c, obj, niv, p.repLimits());
+                        if (d.isEmpty()) continue;
+                        for (short n : new LinkedHashSet<Short>(List.of(d.get().series(), d.get().seriesMax()))) {
+                            var dn = d.get().conSeries(n);
+                            if (dn.isEmpty()) continue;
+                            var ej = new ArrayList<>(w.exercises());
+                            long sale = ej.get(k).exerciseId();
+                            ej.set(k, dn.get().prescribir(c.exerciseId(), null));
+                            intentos.add(Map.entry("SUSTITUYE_" + sale + "|" + c.exerciseId() + "|" + cap + "|" + n,
+                                    conSesion(borrador, i, ej)));
+                        }
+                    }
+                }
             var validos = new ArrayList<PlanDraft>();
             for (var it : intentos) {
                 var pr = problemas(it.getValue(), ctx, divisor);

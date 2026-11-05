@@ -836,7 +836,10 @@ public class PlanDraftValidator {
 
             // Ademas, ningun grupo puede acaparar mas de la mitad de la sesion
             // cuando el enfoque abarca varios.
-            if (esperados.size() >= 3 && deTrabajo.size() >= 4) {
+            // LAB P-G2 (apagado por omision; LaboratorioAuditoria): con el prototipo encendido la mitad solo se exige
+            // si el enfoque tiene al menos 2 grupos con material PRESCRIBIBLE, igual que el minimo de arriba.
+            boolean mitadAplicable = !LaboratorioAuditoria.v15MitadSobrePrescribibles() || disponibles >= 2;
+            if (esperados.size() >= 3 && deTrabajo.size() >= 4 && mitadAplicable) {
                 var porGrupo = deTrabajo.stream()
                         .map(exercise -> eligible.get(exercise.exerciseId()))
                         .filter(java.util.Objects::nonNull)

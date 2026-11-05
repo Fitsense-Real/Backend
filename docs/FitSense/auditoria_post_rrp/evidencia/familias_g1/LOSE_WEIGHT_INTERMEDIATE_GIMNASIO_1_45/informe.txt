@@ -1,0 +1,5 @@
+perfil: LOSE_WEIGHT INTERMEDIATE GIMNASIO 1 dias 45 min
+elegibles: 701 · piso V20: 1890 s · techo V4: 3105 s
+borrador del motor de reglas: VALIDO
+sesion 0 2026-11-02 FULL_BODY: 5 ejercicios, 2562 s
+redistribucion entre dias consecutivos: 0 de 0 sesiones arregladas; plan completo: VALIDO (existe solucion que el motor no encontro)

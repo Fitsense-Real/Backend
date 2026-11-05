@@ -1,0 +1,3 @@
+cd docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/EVALUACION_DEFINITIVA
+python3 -I ../../../../../auditoria_post_rrp/evidencia/adaptaciones/calidad_56.py SESIONES_FINALES.csv DIFERENCIAS_R_RP.csv
+grep -h -E "^(U03|U04|J01|J09|J13)/" ../R_U_rep/factibilidad.csv ../R_J/factibilidad.csv

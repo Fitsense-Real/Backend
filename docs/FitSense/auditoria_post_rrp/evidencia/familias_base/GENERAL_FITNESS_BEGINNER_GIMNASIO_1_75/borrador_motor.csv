@@ -1,0 +1,9 @@
+dia,fecha,enfoque,orden,id,nombre,grupo,patron,clase,tipo,series,reps,segundos,descanso,segundos_sesion,piso
+0,2026-11-02,FULL_BODY,1,1009,Curl de piernas acostado con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,SETS_REPS,3,8,null,120,2928,3150
+0,2026-11-02,FULL_BODY,2,1112,Inclinación pélvica hacia puente,upper legs,HIP_EXTENSION,ESTRUCTURAL,SETS_REPS,3,8,null,120,2928,3150
+0,2026-11-02,FULL_BODY,3,1146,Fondos de escápula,back,HORIZONTAL_PUSH,ESTRUCTURAL,SETS_REPS,3,8,null,120,2928,3150
+0,2026-11-02,FULL_BODY,4,135,"Remo de deltoides traseros con banda, de pie",shoulders,HORIZONTAL_PULL,ESTRUCTURAL,SETS_REPS,3,8,null,120,2928,3150
+0,2026-11-02,FULL_BODY,5,102,Press de banca con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,SETS_REPS,3,10,null,90,2928,3150
+0,2026-11-02,FULL_BODY,6,1092,Press de pecho interno en máquina,chest,HORIZONTAL_PUSH,ESTRUCTURAL,SETS_REPS,3,15,null,45,2928,3150
+0,2026-11-02,FULL_BODY,7,1093,Empujar para correr,cardio,LOCOMOTION_CARDIO,CARDIO,DURATION,3,null,90,60,2928,3150
+0,2026-11-02,FULL_BODY,8,454,Estiramiento de gemelos con manos contra la pared,lower legs,MOBILITY,MOVILIDAD,DURATION,2,null,30,15,2928,3150

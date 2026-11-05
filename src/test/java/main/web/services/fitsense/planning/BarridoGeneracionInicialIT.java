@@ -80,61 +80,83 @@ class BarridoGeneracionInicialIT {
         var salida = Path.of(System.getProperty("fitsense.barrido.salida", "target/barrido-generacion"));
         Files.createDirectories(salida);
         var csv = new StringBuilder("objetivo,nivel,equipo,dias,minutos,sesiones,resultado,codigos,seg_min_sesion,"
-                + "seg_max_sesion,piso_v20,deficit_max_s,primer_problema\n");
+                + "seg_max_sesion,piso_v20,deficit_max_s,semillas_extra,semillas_extra_validas,primer_problema\n");
+        // 1.a pasada: los mismos usuarios (y por tanto las mismas semillas) que el barrido original.
+        record Fila(GoalType o, FitnessLevel nv, String eq, int dias, int m, Evaluacion r) {}
+        var filas = new ArrayList<Fila>();
         for (var objetivo : GoalType.values())
             for (var nivel : FitnessLevel.values())
                 for (var equipo : EQUIPOS.keySet())
                     for (int dias = 1; dias <= 7; dias++)
-                        for (int m : MINUTOS) {
-                            n++;
-                            String email = "barrido" + n + "@pruebas.invalid";
-                            jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at,"
-                                    + " enrolled_at) VALUES (?, 'x', 'Barrido', now(), now())", email);
-                            long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
-                            perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1990, 6, 15),
-                                    BiologicalSex.FEMALE, new BigDecimal("168"), new BigDecimal("68"), null, nivel,
-                                    objetivo, "barrido", "GIMNASIO".equals(equipo) ? TrainingLocation.GYM
-                                    : TrainingLocation.HOME, (short) dias, DIAS.get(dias), (short) m,
-                                    EQUIPOS.get(equipo), List.of(), "Ninguna", true, true, true, true, true));
-                            String resultado, codigos = "", primero = "";
-                            long smin = -1, smax = -1, piso = -1, deficit = 0;
-                            int sesiones = 0;
-                            try {
-                                var prep = planComandos.prepare(new GenerateWeeklyPlanCommand(u, SEMANA, null, true,
-                                        null, null));
-                                var ctx = prep.context();
-                                piso = PlanDraftValidator.minimumSessionSeconds(ctx);
-                                var d = reglas.generate(ctx, List.of());
-                                sesiones = d.workouts().size();
-                                smin = Long.MAX_VALUE;
-                                for (var w : d.workouts()) {
-                                    long s = ESTIMADOR.estimateSeconds(w, ctx.prescription());
-                                    smin = Math.min(smin, s);
-                                    smax = Math.max(smax, s);
-                                    deficit = Math.max(deficit, piso - s);
-                                }
-                                try {
-                                    validador.validate(d, ctx, prep.divisor());
-                                    resultado = "VALIDO";
-                                } catch (InvalidPlanDraftException e) {
-                                    resultado = "INVALIDO";
-                                    var cs = new TreeSet<String>();
-                                    e.problems().forEach(x -> cs.add(x.contains(":") ? x.substring(0, x.indexOf(':'))
-                                            : "OTRO"));
-                                    codigos = String.join(" ", cs);
-                                    primero = e.problems().get(0);
-                                }
-                            } catch (RuntimeException e) {
-                                resultado = "SIN_BORRADOR";
-                                primero = e.getClass().getSimpleName() + ": " + e.getMessage();
-                            }
-                            primero = primero.replace("\"", "'").replace("\n", " ");
-                            if (primero.length() > 300) primero = primero.substring(0, 300);
-                            csv.append(String.join(",", objetivo.name(), nivel.name(), equipo, "" + dias, "" + m,
-                                    "" + sesiones, resultado, codigos, "" + smin, "" + smax, "" + piso,
-                                    "" + Math.max(0, deficit), "\"" + primero + "\"")).append('\n');
-                        }
+                        for (int m : MINUTOS)
+                            filas.add(new Fila(objetivo, nivel, equipo, dias, m, evaluar(objetivo, nivel, equipo, dias, m)));
+        // 2.a pasada: cada perfil INVALIDO con SEMILLAS_EXTRA usuarios nuevos (otras semillas del motor).
+        for (var f : filas) {
+            var r = f.r();
+            int semillasValidas = 0, semillasProbadas = 0;
+            if (!"VALIDO".equals(r.resultado()))
+                for (int k = 0; k < SEMILLAS_EXTRA; k++) {
+                    semillasProbadas++;
+                    if ("VALIDO".equals(evaluar(f.o(), f.nv(), f.eq(), f.dias(), f.m()).resultado())) semillasValidas++;
+                }
+            String primero = r.primero().replace("\"", "'").replace("\n", " ");
+            if (primero.length() > 300) primero = primero.substring(0, 300);
+            csv.append(String.join(",", f.o().name(), f.nv().name(), f.eq(), "" + f.dias(), "" + f.m(),
+                    "" + r.sesiones(), r.resultado(), r.codigos(), "" + r.smin(), "" + r.smax(),
+                    "" + r.piso(), "" + Math.max(0, r.deficit()), "" + semillasProbadas,
+                    "" + semillasValidas, "\"" + primero + "\"")).append('\n');
+        }
         Files.writeString(salida.resolve("barrido_generacion.csv"), csv);
         System.out.println("BARRIDO_GENERACION perfiles=" + n);
+    }
+
+    /** Semillas adicionales (otros usuarios: otra semilla del motor) para cada perfil INVALIDO. */
+    static final int SEMILLAS_EXTRA = Integer.getInteger("fitsense.barrido.semillas", 10);
+
+    record Evaluacion(String resultado, String codigos, String primero, long smin, long smax, long piso, long deficit,
+                      int sesiones) {}
+
+    Evaluacion evaluar(GoalType objetivo, FitnessLevel nivel, String equipo, int dias, int m) {
+        n++;
+        String email = "barrido" + n + "@pruebas.invalid";
+        jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at,"
+                + " enrolled_at) VALUES (?, 'x', 'Barrido', now(), now())", email);
+        long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
+        perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1990, 6, 15),
+                BiologicalSex.FEMALE, new BigDecimal("168"), new BigDecimal("68"), null, nivel,
+                objetivo, "barrido", "GIMNASIO".equals(equipo) ? TrainingLocation.GYM
+                : TrainingLocation.HOME, (short) dias, DIAS.get(dias), (short) m,
+                EQUIPOS.get(equipo), List.of(), "Ninguna", true, true, true, true, true));
+        String resultado, codigos = "", primero = "";
+        long smin = -1, smax = -1, piso = -1, deficit = 0;
+        int sesiones = 0;
+        try {
+            var prep = planComandos.prepare(new GenerateWeeklyPlanCommand(u, SEMANA, null, true, null, null));
+            var ctx = prep.context();
+            piso = PlanDraftValidator.minimumSessionSeconds(ctx);
+            var d = reglas.generate(ctx, List.of());
+            sesiones = d.workouts().size();
+            smin = Long.MAX_VALUE;
+            for (var w : d.workouts()) {
+                long s = ESTIMADOR.estimateSeconds(w, ctx.prescription());
+                smin = Math.min(smin, s);
+                smax = Math.max(smax, s);
+                deficit = Math.max(deficit, piso - s);
+            }
+            try {
+                validador.validate(d, ctx, prep.divisor());
+                resultado = "VALIDO";
+            } catch (InvalidPlanDraftException e) {
+                resultado = "INVALIDO";
+                var cs = new TreeSet<String>();
+                e.problems().forEach(x -> cs.add(x.contains(":") ? x.substring(0, x.indexOf(':')) : "OTRO"));
+                codigos = String.join(" ", cs);
+                primero = e.problems().get(0);
+            }
+        } catch (RuntimeException e) {
+            resultado = "SIN_BORRADOR";
+            primero = e.getClass().getSimpleName() + ": " + e.getMessage();
+        }
+        return new Evaluacion(resultado, codigos, primero, smin, smax, piso, deficit, sesiones);
     }
 }

@@ -1,0 +1,5 @@
+dia,fecha,enfoque,orden,id,nombre,grupo,patron,clase,tipo,series,reps,segundos,descanso,segundos_sesion,piso
+0,2026-11-02,FULL_BODY,1,327,Curl de piernas inverso asistido por cable,upper legs,KNEE_DOMINANT,ESTRUCTURAL,SETS_REPS,3,6,null,150,2148,1890
+0,2026-11-02,FULL_BODY,2,1202,Puente a una pierna con pierna extendida,upper legs,HIP_EXTENSION,ESTRUCTURAL,SETS_REPS,3,6,null,150,2148,1890
+0,2026-11-02,FULL_BODY,3,1325,Caminata en cinta inclinada,cardio,LOCOMOTION_CARDIO,CARDIO,DURATION,3,null,120,60,2148,1890
+0,2026-11-02,FULL_BODY,4,1333,Carrera con zancadas amplias,cardio,LOCOMOTION_CARDIO,CARDIO,DURATION,3,null,120,60,2148,1890

@@ -106,7 +106,8 @@ class CapabilityWeekBuilder {
 
     /**
      * Un cambio de {@link #asegurarGrupos}: GRUPOS si la sesion tenia un solo grupo del enfoque
-     * (incluido FULL_BODY, E1), MITAD si un grupo pasaba de la mitad (E2). Para las pruebas.
+     * (incluido FULL_BODY, E1), MITAD si un grupo pasaba de la mitad (E2), ANADIDO si no habia cambio
+     * posible y se anadio un ejercicio de otro grupo (AUD-G1). Para las pruebas.
      */
     record CambioGrupo(LocalDate fecha, WorkoutFocus enfoque, String motivo, long quitado, String grupoQuitado,
                        Capability capacidadQuitada, long elegido, String grupoElegido, Capability capacidadElegida) {}
@@ -469,7 +470,61 @@ class CapabilityWeekBuilder {
                 }
             }
         }
-        // Sin sustitucion factible: la sesion queda como estaba y el validador dira por que.
+        // AUD-G1 (auditoria post R/R', 05/11/2026): si ningun CAMBIO cumple y la sesion se quedo con UN solo grupo de
+        // trabajo, se ANADE un ejercicio de otro grupo del enfoque con la MISMA capacidad que el trabajo que ya tiene,
+        // siempre que quepa bajo el tope de colocaciones y el techo y respete la mitad de V15. Caso que lo motiva: una
+        // sesion FULL_BODY de LOSE_WEIGHT con dos fuerzas de pierna que cubren cada una un slot de 4C distinto (ninguna
+        // se puede quitar) y margen de sobra hasta el techo. No cambia ninguna regla, dosis ni validador: solo completa
+        // lo que V15 ya exigia, y una sesion que ya cumplia V15 no llega aqui.
+        if (dominante == null && cubiertos.size() < 2 && dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA)
+            anadirGrupo(fecha, enfoque, dia, trabajo, cubiertos, bloqueados, enDia);
+        // Sin sustitucion ni adicion factible: la sesion queda como estaba y el validador dira por que.
+    }
+
+    /** AUD-G1: anade (no cambia) un ejercicio de un grupo del enfoque que la sesion no trabaja. Ver asegurarGrupos. */
+    private void anadirGrupo(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, List<Colocacion> trabajo,
+                             Set<String> cubiertos, Set<Long> bloqueados, Set<Long> enDia) {
+        // La capacidad del trabajo resistido que ya tiene la sesion (la mas frecuente; a igualdad, la primera).
+        var capacidad = trabajo.stream()
+                .filter(col -> {
+                    var clase = CapabilityPrescriptionPolicy.claseDe(col.candidato());
+                    return clase == Clase.ESTRUCTURAL || clase == Clase.RESISTIDO;
+                })
+                .collect(Collectors.groupingBy(Colocacion::capacidad, LinkedHashMap::new, Collectors.counting()))
+                .entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(null);
+        if (capacidad == null) return;
+        boolean principal = trabajo.stream().filter(col -> col.capacidad() == capacidad)
+                .anyMatch(Colocacion::principal);
+        for (var grupo : enfoque.bodyPartCodes()) {
+            if (cubiertos.contains(grupo)) continue;
+            var candidatos = resistidos.stream()
+                    .filter(c -> grupo.equals(c.bodyPartCode()))
+                    .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                    .filter(c -> !bloqueados.contains(c.exerciseId()) && !enDia.contains(c.exerciseId()))
+                    .sorted(Comparator.comparing(CandidateExercise::exerciseId))
+                    .toList();
+            var ordenados = new ArrayList<CandidateExercise>();
+            for (var preferencia : List.<java.util.function.Predicate<CandidateExercise>>of(
+                    c -> !usadosEnSemana.contains(c.exerciseId()) && !recientes.contains(c.exerciseId()),
+                    c -> !usadosEnSemana.contains(c.exerciseId()),
+                    c -> true)) {
+                var opciones = new ArrayList<>(candidatos.stream().filter(preferencia)
+                        .filter(c -> !ordenados.contains(c)).toList());
+                Collections.shuffle(opciones, random);
+                ordenados.addAll(opciones);
+            }
+            for (var c : ordenados) {
+                var col = colocar(c, capacidad, principal);
+                if (col == null || col.capacidad() != capacidad) continue;
+                var con = new ArrayList<>(dia);
+                con.add(col);
+                if (excede(fecha, enfoque, con) || !respetaMitad(enfoque, con)) continue;
+                cambiosGrupo.add(new CambioGrupo(fecha, enfoque, "ANADIDO", 0L, null, null,
+                        col.candidato().exerciseId(), col.candidato().bodyPartCode(), col.capacidad()));
+                dia.add(col);
+                return;
+            }
+        }
     }
 
     /**
@@ -744,6 +799,12 @@ class CapabilityWeekBuilder {
         var trabajo = dia.stream().map(Colocacion::candidato)
                 .filter(c -> !complementos.contains(c.exerciseId())).toList();
         if (enfoque.bodyPartCodes().size() < 3 || trabajo.size() < 4) return true;
+        // LAB P-G2 (apagado por omision): el mismo criterio que el prototipo del validador.
+        if (main.web.services.fitsense.planning.domain.services.LaboratorioAuditoria.v15MitadSobrePrescribibles()
+                && enfoque.bodyPartCodes().stream().filter(g -> resistidos.stream()
+                        .anyMatch(c -> g.equals(c.bodyPartCode()) && ExerciseSelector.allowedIn(enfoque, c)))
+                        .count() < 2)
+            return true;
         var porGrupo = trabajo.stream().collect(Collectors.groupingBy(CandidateExercise::bodyPartCode,
                 Collectors.counting()));
         return porGrupo.values().stream().allMatch(n -> n <= trabajo.size() / 2);
