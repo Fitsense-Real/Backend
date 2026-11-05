@@ -666,12 +666,13 @@ class EvaluacionK20IT {
             guardarPrompt(inv, traza);
         }
         int n = llamadas.incrementAndGet();
-        boolean sinMargenReal;
+        boolean puede;
         synchronized (EvaluacionK20IT.class) {
-            sinMargenReal = usdMedido + COSTE_MAX_POR_LLAMADA_USD > MAX_USD + 1e-9;
+            // Mismas condiciones que antes, ahora en la clase pura ControlPresupuestoK20 (probada sin red).
+            puede = ControlPresupuestoK20.puedeLlamar(n, MAX_LLAMADAS, usdMedido, COSTE_MAX_POR_LLAMADA_USD, MAX_USD,
+                    bloqueoPresupuesto);
         }
-        if (n > MAX_LLAMADAS || n * COSTE_MAX_POR_LLAMADA_USD > MAX_USD + 1e-9 || sinMargenReal
-                || bloqueoPresupuesto != null) {
+        if (!puede) {
             if (bloqueoPresupuesto != null) traza.put("bloqueo", bloqueoPresupuesto);
             llamadas.decrementAndGet();
             traza.put("resultado", "PRESUPUESTO_AGOTADO_SIN_LLAMADA");
@@ -707,31 +708,30 @@ class EvaluacionK20IT {
         String estado;
         long entrada = -1, salida = -1;
         double predict = -1;
-        var metricas = id == null ? null : metricasDe(id);
         boolean fallida = "ERROR_PROVEEDOR".equals(traza.get("resultado"));
-        if (metricas == null) {
-            estado = "SIN_METRICAS_SE_CARGA_LA_RESERVA";
-            if (bloqueaSinMetricas(SIN_METRICAS, fallida))
-                bloqueoPresupuesto = "sin metricas de la prediccion " + id + ": no se hacen mas llamadas";
-            else
-                estado = "FALLIDA_SIN_METRICAS_SE_CARGA_LA_RESERVA_SIN_BLOQUEO";
-        } else {
-            entrada = metricas.path("token_input_count").asLong(-1);
-            salida = metricas.path("token_output_count").asLong(-1);
-            predict = metricas.path("predict_time").asDouble(-1);
-            if (entrada < 0 || salida < 0) {
-                estado = "METRICAS_INCOMPLETAS_SE_CARGA_LA_RESERVA";
-                bloqueoPresupuesto = "metricas incompletas de " + id + ": no se hacen mas llamadas";
-            } else {
-                usd = costeUsd(entrada, salida);
-                estado = "MEDIDO";
-                if (usd > COSTE_MAX_POR_LLAMADA_USD) {
-                    estado = "RESERVA_SUPERADA";
-                    bloqueoPresupuesto = "la prediccion " + id + " costo " + usd + " USD, mas que la reserva: no se"
-                            + " hacen mas llamadas";
-                }
-            }
+        // P-H1: estado final en el proveedor. Si el backend se rindio (tiempo agotado) con la prediccion aun en curso y
+        // la politica es RESERVA_SIN_BLOQUEO, se pide su CANCELACION (no consume tokens) y se vuelve a consultar.
+        var pred = id == null ? null : prediccionDe(id);
+        var estadoProv = estadoDe(pred);
+        if (fallida && estadoProv == ControlPresupuestoK20.EstadoProveedor.EN_CURSO
+                && ControlPresupuestoK20.RESERVA_SIN_BLOQUEO.equals(SIN_METRICAS)) {
+            cancelar(id);
+            pred = prediccionDe(id);
+            estadoProv = estadoDe(pred);
+            traza.put("cancelacion_solicitada", true);
         }
+        var metricas = pred == null ? null : pred.path("metrics");
+        Long te = metricas != null && metricas.has("token_input_count") ? metricas.path("token_input_count").asLong() : null;
+        Long ts = metricas != null && metricas.has("token_output_count") ? metricas.path("token_output_count").asLong() : null;
+        if (te != null) entrada = te;
+        if (ts != null) salida = ts;
+        if (metricas != null) predict = metricas.path("predict_time").asDouble(-1);
+        var cont = ControlPresupuestoK20.contabilizar(SIN_METRICAS, fallida, estadoProv, te, ts,
+                COSTE_MAX_POR_LLAMADA_USD, TARIFA_ENTRADA_USD_MILLON, TARIFA_SALIDA_USD_MILLON, id);
+        usd = cont.usd();
+        estado = cont.estado();
+        if (cont.bloqueo() != null) bloqueoPresupuesto = cont.bloqueo();
+        traza.put("estado_proveedor", String.valueOf(estadoProv));
         double acumulado;
         synchronized (EvaluacionK20IT.class) {
             usdMedido += usd;
@@ -757,6 +757,51 @@ class EvaluacionK20IT {
     static String idPrediccion(String lineaTiempos) {
         var m = java.util.regex.Pattern.compile("prediction_id=(\\S+)").matcher(lineaTiempos);
         return m.find() && !"desconocido".equals(m.group(1)) ? m.group(1) : null;
+    }
+
+    /** La prediccion completa (consulta gratuita GET), con 3 intentos; null si no se puede leer. */
+    static com.fasterxml.jackson.databind.JsonNode prediccionDe(String id) {
+        var cliente = java.net.http.HttpClient.newBuilder().connectTimeout(java.time.Duration.ofSeconds(20)).build();
+        String credencial = CREDENCIAL_PROXY ? "proxy" : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), "");
+        for (int i = 0; i < 3; i++) {
+            try {
+                var r = cliente.send(java.net.http.HttpRequest.newBuilder(
+                                java.net.URI.create("https://api.replicate.com/v1/predictions/" + id))
+                        .header("Authorization", "Bearer " + credencial).timeout(java.time.Duration.ofSeconds(30))
+                        .GET().build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+                if (r.statusCode() == 200) return JSON.readTree(r.body());
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                // se reintenta; tras el tercer fallo, null (estado DESCONOCIDO: bloquea)
+            }
+        }
+        return null;
+    }
+
+    static ControlPresupuestoK20.EstadoProveedor estadoDe(com.fasterxml.jackson.databind.JsonNode pred) {
+        if (pred == null) return ControlPresupuestoK20.EstadoProveedor.DESCONOCIDO;
+        return switch (pred.path("status").asText("")) {
+            case "succeeded" -> ControlPresupuestoK20.EstadoProveedor.SUCCEEDED;
+            case "failed" -> ControlPresupuestoK20.EstadoProveedor.FAILED;
+            case "canceled" -> ControlPresupuestoK20.EstadoProveedor.CANCELED;
+            case "starting", "processing" -> ControlPresupuestoK20.EstadoProveedor.EN_CURSO;
+            default -> ControlPresupuestoK20.EstadoProveedor.DESCONOCIDO;
+        };
+    }
+
+    /** Pide la cancelacion de una prediccion en curso (POST /cancel: no crea predicciones ni consume tokens). */
+    static void cancelar(String id) {
+        try {
+            String credencial = CREDENCIAL_PROXY ? "proxy" : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), "");
+            java.net.http.HttpClient.newHttpClient().send(java.net.http.HttpRequest.newBuilder(
+                            java.net.URI.create("https://api.replicate.com/v1/predictions/" + id + "/cancel"))
+                    .header("Authorization", "Bearer " + credencial).timeout(java.time.Duration.ofSeconds(30))
+                    .POST(java.net.http.HttpRequest.BodyPublishers.noBody()).build(),
+                    java.net.http.HttpResponse.BodyHandlers.discarding());
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            // Si la cancelacion falla, la nueva consulta seguira EN_CURSO y se bloqueara.
+        }
     }
 
     /** {@code metrics} de la prediccion (consulta gratuita), con 3 intentos; null si no se puede leer. */

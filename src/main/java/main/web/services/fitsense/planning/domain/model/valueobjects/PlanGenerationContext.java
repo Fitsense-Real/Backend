@@ -161,7 +161,18 @@ public record PlanGenerationContext(
     suggestedSplit() {
         int sessions = Math.min(effectiveDaysPerWeek(), profile.availableDays().size());
         return main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.plan(
-                weekStartDate, profile.availableDays(), sessions, weekNumber);
+                weekStartDate, profile.availableDays(), sessions, weekNumber, sinTraccionReal());
+    }
+
+    /**
+     * P-G3 (rediseno R/R'): con la politica que lo activa, ¿falta el patron de traccion (HORIZONTAL_PULL o
+     * VERTICAL_PULL) en el conjunto elegible? Entonces la division no crea sesiones PULL sin traccion. Con la
+     * politica historica, siempre false: la division no cambia.
+     */
+    public boolean sinTraccionReal() {
+        if (policy == null || !policy.pullReal() || availableExercises == null) return false;
+        return availableExercises.stream().noneMatch(c -> MandatorySlot.of(c).filter(s -> s == MandatorySlot.UPPER_PULL)
+                .isPresent());
     }
 
     public int effectiveSessionMinutes() {
