@@ -86,6 +86,11 @@ public final class PlanningPolicyTrace {
             lista.add(x);
         }
         t.put("sesiones", lista);
+        // Rediseno P-G1 (solo politicas sin piso de V20): calidad de la dosis y clase de cada sesion. La traza de la
+        // politica historica queda exactamente igual.
+        if (!politica.pisoV20() && ctx.profile() != null && ctx.availableExercises() != null)
+            t.put("dosis", CalidadDosis.evaluar(ctx, sesiones.stream().filter(java.util.Objects::nonNull).toList(),
+                    estimador));
         return t;
     }
 }

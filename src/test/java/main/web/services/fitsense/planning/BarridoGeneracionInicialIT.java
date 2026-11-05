@@ -107,7 +107,7 @@ class BarridoGeneracionInicialIT {
             csv.append(String.join(",", f.o().name(), f.nv().name(), f.eq(), "" + f.dias(), "" + f.m(),
                     "" + r.sesiones(), r.resultado(), r.codigos(), "" + r.smin(), "" + r.smax(),
                     "" + r.piso(), "" + Math.max(0, r.deficit()), "" + semillasProbadas,
-                    "" + semillasValidas, r.metricas().isEmpty() ? ",,,,,,,,,,,," : r.metricas(), r.dg3(),
+                    "" + semillasValidas, r.metricas().isEmpty() ? ",,,,,,,,,,,,,,," : r.metricas(), r.dg3(),
                     "\"" + primero + "\"")).append('\n');
             planes.append(r.plan());
         }
@@ -124,7 +124,8 @@ class BarridoGeneracionInicialIT {
 
     /** Cabecera de las metricas de calidad (rediseno P-G1): mismas columnas en todas las politicas. */
     static final String CAB_METRICAS = "politica,ej_min,ej_max,seg_medio,pct_tiempo_medio,series_grupo_max,grupo_max,"
-            + "aerobico_trabajo_min,alto_impacto,moderado_impacto,pull_sin_traccion,dificultad_max,grupos_bajo_objetivo";
+            + "aerobico_trabajo_min,alto_impacto,moderado_impacto,pull_sin_traccion,dificultad_max,grupos_bajo_objetivo,"
+            + "sesiones_insuficientes,sesiones_cortas_razonables,estado_dosis";
 
     String metricas(main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext ctx,
                     main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft d) {
@@ -172,10 +173,15 @@ class BarridoGeneracionInicialIT {
                 .count();
         int n = Math.max(1, d.workouts().size());
         long medio = segTotal / n;
+        var calidad = main.web.services.fitsense.planning.domain.services.CalidadDosis.evaluar(ctx, d.workouts(), ESTIMADOR);
+        @SuppressWarnings("unchecked")
+        var clasesSes = (List<Map<String, Object>>) calidad.get("sesiones");
+        long insuf = clasesSes.stream().filter(x -> "INSUFICIENTE".equals(x.get("clase"))).count();
+        long cortas = clasesSes.stream().filter(x -> "CORTA_RAZONABLE".equals(x.get("clase"))).count();
         return String.join(",", ctx.policy().id(), "" + (ejMin == Integer.MAX_VALUE ? 0 : ejMin), "" + ejMax, "" + medio,
                 String.format(java.util.Locale.ROOT, "%.1f", 100.0 * medio / (ctx.profile().sessionMinutes() * 60.0)),
                 "" + seriesMax, grupoMax, "" + (aerobico / 60), "" + alto, "" + moderado, "" + pullSin, "" + difMax,
-                "" + bajo);
+                "" + bajo, "" + insuf, "" + cortas, "" + calidad.get("estado"));
     }
 
     static String plan(String clave, main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft d) {
