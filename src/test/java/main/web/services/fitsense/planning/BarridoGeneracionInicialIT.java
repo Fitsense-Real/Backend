@@ -80,6 +80,14 @@ class BarridoGeneracionInicialIT {
     void barrido() throws Exception {
         var salida = Path.of(System.getProperty("fitsense.barrido.salida", "target/barrido-generacion"));
         Files.createDirectories(salida);
+        // Auditoria del catalogo (rama aislada, solo pruebas): variante CONTRAFACTUAL del catalogo aplicada en la base
+        // efimera despues de Flyway y antes del barrido. Vacio por defecto: no cambia ningun barrido anterior.
+        String sqlPrevio = System.getProperty("fitsense.barrido.sql-previo", "");
+        if (!sqlPrevio.isBlank()) {
+            String sql = Files.readString(Path.of(sqlPrevio));
+            jdbc.execute(sql);
+            Files.writeString(salida.resolve("sql_previo.sql"), sql);
+        }
         var csv = new StringBuilder("objetivo,nivel,equipo,dias,minutos,sesiones,resultado,codigos,seg_min_sesion,"
                 + "seg_max_sesion,piso_v20,deficit_max_s,semillas_extra,semillas_extra_validas," + CAB_METRICAS
                 + ",dg3,primer_problema\n");
