@@ -38,7 +38,8 @@ class PoliticaPlanificacionTest {
         assertTrue(PlanningPolicy.V4C.v4Segundos() && PlanningPolicy.V4C.candidata());
         assertFalse(PlanningPolicy.HISTORICA.v4Segundos());
         assertFalse(PlanningPolicy.HISTORICA.candidata());
-        assertEquals(2, PlanningPolicy.CATALOGO.size());
+        // Rediseno R/R' (05/11/2026): + PLAN-DUR-A-0.1, PLAN-DUR-B-0.1 y PLAN-REV-2.0 (candidatas; PoliticaRedisenoTest).
+        assertEquals(5, PlanningPolicy.CATALOGO.size());
     }
 
     @Test
