@@ -63,11 +63,11 @@ def medir(nombre, pol):
 
 res = {}
 for pol in ("PLAN-REV-2.0", "PLAN-HIST-1"):
-    if not os.path.isdir(os.path.join(D, f"{BASE}_{pol}")): continue
+    if not os.path.exists(os.path.join(D, f"{BASE}_{pol}", "barrido_generacion.csv")): continue
     mb, pb, ub, fb = medir(BASE, pol)
     res[(BASE, pol)] = mb
     for v in VARS:
-        if not os.path.isdir(os.path.join(D, f"{v}_{pol}")): continue
+        if not os.path.exists(os.path.join(D, f"{v}_{pol}", "barrido_generacion.csv")): continue
         mv, pv, uv, fv = medir(v, pol)
         cambiados = sum(1 for k in set(pb) | set(pv)
                         if sorted((e["fecha"], e["ejercicio"], e["series"], e["reps"], e["segundos"]) for e in pb.get(k, []))
