@@ -360,6 +360,9 @@ class CapabilityWeekBuilder {
             // unico grupo de trabajo pudiendo tener dos, o con un grupo por encima
             // de la mitad: se cambia una colocacion por otra de otro grupo.
             asegurarGrupos(fecha, enfoque, dia, bloqueados, ultimaSesion ? pendientesAlEmpezar : Set.of(), piso, techo);
+            // P-G3: una sesion PULL sin traccion cambia UNA colocacion de su enfoque por una de traccion (misma capacidad).
+            if (enfoque == WorkoutFocus.PULL && context.policy() != null && context.policy().pullReal())
+                asegurarTraccion(fecha, enfoque, dia, bloqueados);
 
             // Un slot se da por cubierto al COLOCAR, pero el recorte puede quitar
             // esa colocacion. Se recalcula con lo que queda: si no, el slot
@@ -644,6 +647,29 @@ class CapabilityWeekBuilder {
                     break;
                 }
         return caps;
+    }
+
+    /** P-G3: si la sesion PULL no tiene traccion y hay candidatos, cambia una colocacion resistida por una de traccion. */
+    private void asegurarTraccion(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, Set<Long> bloqueados) {
+        if (dia.stream().anyMatch(col -> esTraccion(col.candidato()))) return;
+        var enDia = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
+        var candidatos = resistidos.stream().filter(CapabilityWeekBuilder::esTraccion)
+                .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                .filter(c -> !bloqueados.contains(c.exerciseId()) && !enDia.contains(c.exerciseId()))
+                .sorted(Comparator.comparing(CandidateExercise::exerciseId)).toList();
+        for (int k = 0; k < dia.size(); k++) {
+            var sale = dia.get(k);
+            if (!esResistido(sale.candidato())) continue;
+            for (var c : candidatos) {
+                var col = colocar(c, sale.capacidad(), sale.principal());
+                if (col == null || col.capacidad() != sale.capacidad()) continue;
+                var con = new ArrayList<>(dia);
+                con.set(k, col);
+                if (excede(fecha, enfoque, con) || !respetaMitad(enfoque, con)) continue;
+                dia.set(k, col);
+                return;
+            }
+        }
     }
 
     static boolean esTraccion(CandidateExercise c) {
