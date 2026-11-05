@@ -4,7 +4,7 @@
 >
 > **Cómo se hizo:**
 > - El análisis de código (§0–§15) se hizo **en solo lectura** y cita cada afirmación con su archivo:línea.
-> - La ejecución de las pruebas de progresión que ya existen forma parte de la regresión completa de la fase 8. Sus resultados están en el documento 07 §2.
+> - La ejecución de las pruebas de progresión que ya existen forma parte de la regresión completa de la fase 8: `ProgresionIT` 24/24, `ProgresionCienPorCienIT` 5/5, `PendientesProgresionIT` 6/6, `CopiaSinIaIT` 12/12, `LinajeIntegridadIT` 1/1 y `Reincorporacion4DTest` 5/5, todas en verde (documento 07 §2).
 > - Los defectos marcados NO_VERIFICADO (H6, H8 y H14) **no se han reproducido en ejecución**. Se presentan como riesgos deducidos del código, no como hechos.
 >
 > **Respuestas cortas a la orden:**

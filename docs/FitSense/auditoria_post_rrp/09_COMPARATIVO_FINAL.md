@@ -20,9 +20,9 @@ Clasificación: **COMPROBADO / CORREGIDO / NO CUMPLE / PENDIENTE DE VALIDACIÓN 
 | Sesiones no factibles por políticas | 5 (U03 S3, U04 S3, J01 S4, J09 S4, J13 S3) | **Las mismas 5**, reproducidas por la sonda con IA simulada. **La nueva cohorte K añade 4** (K01, K09 y K13 de GM; **K10 de INCREASE_STRENGTH**). Causa: matriz de permisos de `TipoIntervencion` + 4D/V24 + V20 + V9. | **NO CUMPLE**: conflicto de política demostrado; corrección pendiente de aprobar (P-A1, P-A2) |
 | Adaptaciones factibles | 56/56 en dos corridas (R + R′, U y J) | **Sin IA real: NO EVALUADO.** Con IA simulada, todas las factibles de U, J y K se publican sin incumplimientos (U 10/10, J 18/18 y K 18/18 factibles publicadas; ACC/ALT de la IA simulada: U 10/0, J 17/1, K 15/3). | **COMPROBADO con un doble** / NO EVALUADO con Replicate |
 | Seguridad | 0 incumplimientos | 0 incumplimientos del oráculo v2 en D, D′ e IA simulada sobre U, J y K | **COMPROBADO** (con el oráculo v2; sin validación profesional) |
-| Regresión de los cuatro objetivos | Conforme al informe anterior | Unitarias 1.218, 0 fallos. Integración: ver documento 07 §2. `GeneracionReferenciaIT` 72/72 idénticos. | **COMPROBADO** (ver 07 §2) |
+| Regresión de los cuatro objetivos | Conforme al informe anterior | Unitarias 1.218 y de integración 525: **0 fallos** (43 opt-in omitidas). `GeneracionReferenciaIT` 72/72 idénticos. | **COMPROBADO** |
 | Generación inicial (barrido de 3.780 perfiles) | 154 sin plan (no medido antes de esta auditoría) | **139 sin plan.** +15 por AUD-G1 y 0 empeoran. | **CORREGIDO** (15) / **NO CUMPLE** (139, pendiente de decisión) |
-| Progresión y reincorporación | Apagada; sin evidencia en K20 | Sigue apagada. Las IT de progresión que ya existen pasan en la regresión. Hay discrepancias y riesgos documentados (H1–H15), sin corregir. | **PENDIENTE DE VALIDACIÓN** (y NO EVALUADO en K20) |
+| Progresión y reincorporación | Apagada; sin evidencia en K20 | Sigue apagada. Las IT de progresión que ya existen pasan en la regresión (`ProgresionIT` 24/24, 100 % 5/5, pendientes 6/6, copia sin IA 12/12, linaje 1/1). Hay discrepancias y riesgos documentados (H1–H15), sin corregir. | **PENDIENTE DE VALIDACIÓN** (y NO EVALUADO en K20) |
 | Nueva cohorte independiente | No aplica | K01–K16, publicada antes de ejecutarla (`28422fe`): **16/16** en D, D′ e IA simulada; 4 sesiones no factibles por política | **COMPROBADO** sin IA real; NO EVALUADO con Replicate |
 | Incidencias del proveedor | 2 predicciones fallidas sin métricas, que bloquearon el resto de su corrida | Causa analizada. Propuesta P-H1: una predicción **fallida** sin métricas carga la reserva sin bloquear, manteniendo la cota de presupuesto. Prueba unitaria en el laboratorio (`a87bccb`). | **PENDIENTE DE VALIDACIÓN** (aprobación del protocolo; NO EVALUADO con Replicate) |
 
@@ -81,7 +81,7 @@ Clasificación: **COMPROBADO / CORREGIDO / NO CUMPLE / PENDIENTE DE VALIDACIÓN 
 - 0 incumplimientos del oráculo.
 - Las sesiones factibles se adaptan y publican.
 - Lo no factible se detecta y se publica la copia, sin publicar planes inválidos.
-- Regresión sin fallos (ver 07 §2).
+- Regresión sin fallos: 1.218 unitarias + 525 de integración.
 - El barrido de 3.780 perfiles es reproducible y explica cada fallo.
 
 **8. ¿Qué resultados NO permiten afirmar una mejora real de adherencia?**

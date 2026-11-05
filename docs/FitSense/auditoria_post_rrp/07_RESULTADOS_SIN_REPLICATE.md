@@ -30,7 +30,32 @@ Prototipo encendido en el validador (`PlanDraftValidator`), el constructor (`Cap
 
 ## 2. Regresión completa
 
-_Se completa al terminar `verify -Pintegration` (§6)._
+Orden: `sh ./mvnw -o -B -ntp verify -Pintegration` sobre `7f2da39` (resumen en `evidencia/regresion/RESUMEN_REGRESION_7f2da39.txt`).
+
+| Conjunto | Ejecutadas | Fallos | Errores | Omitidas |
+|---|---|---|---|---|
+| Unitarias (surefire) | 1.218 | 0 | 0 | 1 |
+| Integración (failsafe, Testcontainers) | 525 | 0 | 0 | 43 (opt-in: K20, barridos, diagnósticos, IA real, factibilidad) |
+
+**Progresión y reincorporación** (incluidas en la regresión, con el interruptor encendido en la propia prueba):
+
+| Prueba | Resultado |
+|---|---|
+| `ProgresionIT` | 24/24 |
+| `ProgresionCienPorCienIT` | 5/5 |
+| `PendientesProgresionIT` | 6/6 |
+| `CopiaSinIaIT` | 12/12 |
+| `LinajeIntegridadIT` | 1/1 |
+| `Reincorporacion4DTest` | 5/5 |
+| Herencia D8 | 14/14 |
+| `ProgresionV24V8CTest` (incluye `apagadoNoHereda`, que **confirma** el riesgo H4) | Dentro de las unitarias, en verde |
+
+**Generación de referencia:**
+- `GeneracionReferenciaIT`: 72/72 idénticos.
+- Referencias V35, V36, V37, V39, V40 y candidata: en verde.
+- V24 de la generación inicial de los cuatro objetivos **sin cambios**.
+
+**Integración posterior:** al integrar los cambios de laboratorio (commit `6f8b1b9`: P-G2 en el selector, apagado; P-H1 opt-in en el arnés), se repitieron las unitarias (1.219, 0 fallos, una más por P-H1), `GeneracionReferenciaIT` y `V15CambioDeGrupoIT`: todas en verde.
 
 ## 3. D y D′ (modo DETERMINISTA, sin IA) sobre U, J y K
 
