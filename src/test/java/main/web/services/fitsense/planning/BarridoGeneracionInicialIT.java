@@ -54,6 +54,7 @@ class BarridoGeneracionInicialIT {
     @Autowired PlanDraftValidator validador;
     @Autowired @Qualifier("ruleBasedTrainingPlanGenerator") TrainingPlanGenerator reglas;
     @Autowired JdbcTemplate jdbc;
+    @Autowired main.web.services.fitsense.planning.application.internal.commandservices.PlanGenerationPipeline pipeline;
 
     static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
     static final LocalDate SEMANA = LocalDate.of(2026, 11, 2);
@@ -81,7 +82,7 @@ class BarridoGeneracionInicialIT {
         Files.createDirectories(salida);
         var csv = new StringBuilder("objetivo,nivel,equipo,dias,minutos,sesiones,resultado,codigos,seg_min_sesion,"
                 + "seg_max_sesion,piso_v20,deficit_max_s,semillas_extra,semillas_extra_validas," + CAB_METRICAS
-                + ",primer_problema\n");
+                + ",dg3,primer_problema\n");
         var planes = new StringBuilder("perfil,fecha,enfoque,ejercicio,tipo,series,reps,segundos,descanso\n");
         // 1.a pasada: los mismos usuarios (y por tanto las mismas semillas) que el barrido original.
         record Fila(GoalType o, FitnessLevel nv, String eq, int dias, int m, Evaluacion r) {}
@@ -106,7 +107,7 @@ class BarridoGeneracionInicialIT {
             csv.append(String.join(",", f.o().name(), f.nv().name(), f.eq(), "" + f.dias(), "" + f.m(),
                     "" + r.sesiones(), r.resultado(), r.codigos(), "" + r.smin(), "" + r.smax(),
                     "" + r.piso(), "" + Math.max(0, r.deficit()), "" + semillasProbadas,
-                    "" + semillasValidas, r.metricas().isEmpty() ? ",,,,,,,,,,,," : r.metricas(),
+                    "" + semillasValidas, r.metricas().isEmpty() ? ",,,,,,,,,,,," : r.metricas(), r.dg3(),
                     "\"" + primero + "\"")).append('\n');
             planes.append(r.plan());
         }
@@ -119,7 +120,7 @@ class BarridoGeneracionInicialIT {
     static final int SEMILLAS_EXTRA = Integer.getInteger("fitsense.barrido.semillas", 10);
 
     record Evaluacion(String resultado, String codigos, String primero, long smin, long smax, long piso, long deficit,
-                      int sesiones, String metricas, String plan) {}
+                      int sesiones, String metricas, String plan, String dg3) {}
 
     /** Cabecera de las metricas de calidad (rediseno P-G1): mismas columnas en todas las politicas. */
     static final String CAB_METRICAS = "politica,ej_min,ej_max,seg_medio,pct_tiempo_medio,series_grupo_max,grupo_max,"
@@ -198,7 +199,7 @@ class BarridoGeneracionInicialIT {
                 objetivo, "barrido", "GIMNASIO".equals(equipo) ? TrainingLocation.GYM
                 : TrainingLocation.HOME, (short) dias, DIAS.get(dias), (short) m,
                 EQUIPOS.get(equipo), List.of(), "Ninguna", true, true, true, true, true));
-        String resultado, codigos = "", primero = "", met = "", planTxt = "";
+        String resultado, codigos = "", primero = "", met = "", planTxt = "", dg3 = "";
         long smin = -1, smax = -1, piso = -1, deficit = 0;
         int sesiones = 0;
         try {
@@ -225,11 +226,18 @@ class BarridoGeneracionInicialIT {
                 e.problems().forEach(x -> cs.add(x.contains(":") ? x.substring(0, x.indexOf(':')) : "OTRO"));
                 codigos = String.join(" ", cs);
                 primero = e.problems().get(0);
+                // D-G3 (medicion): ¿lo rescata cada modo? (solo informativo; el resultado sigue siendo el del motor)
+                if (Boolean.getBoolean("fitsense.barrido.dg3")) {
+                    var semillas = pipeline.alternativaDeterminista(ctx, List.of(), prep.divisor(), "SEMILLAS");
+                    var reparacion = pipeline.alternativaDeterminista(ctx, List.of(), prep.divisor(), "REPARACION");
+                    dg3 = (semillas != null ? "SEMILLAS_OK" : "SEMILLAS_NO") + " "
+                            + (reparacion != null ? "REPARACION_OK" : "REPARACION_NO");
+                }
             }
         } catch (RuntimeException e) {
             resultado = "SIN_BORRADOR";
             primero = e.getClass().getSimpleName() + ": " + e.getMessage();
         }
-        return new Evaluacion(resultado, codigos, primero, smin, smax, piso, deficit, sesiones, met, planTxt);
+        return new Evaluacion(resultado, codigos, primero, smin, smax, piso, deficit, sesiones, met, planTxt, dg3);
     }
 }

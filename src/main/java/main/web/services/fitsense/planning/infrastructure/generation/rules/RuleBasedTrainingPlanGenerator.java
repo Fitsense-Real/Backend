@@ -731,7 +731,20 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
 
     /** Semilla estable: mismo usuario y misma semana, mismo plan. */
     long seedFor(PlanGenerationContext context) {
-        return context.userId() * 1_000_003L + context.weekStartDate().toEpochDay();
+        return context.userId() * 1_000_003L + context.weekStartDate().toEpochDay() + VARIANTE.get() * 7_919L;
+    }
+
+    /** D-G3: variante de semilla DERIVADA y determinista (0 = la de siempre). Solo la usa el pipeline. */
+    private static final ThreadLocal<Integer> VARIANTE = ThreadLocal.withInitial(() -> 0);
+
+    /** D-G3: genera con la variante k de la semilla (determinista: mismo usuario, semana y k, misma semana). */
+    public PlanDraft generarVariante(PlanGenerationContext context, List<String> previousProblems, int k) {
+        VARIANTE.set(k);
+        try {
+            return generate(context, previousProblems);
+        } finally {
+            VARIANTE.set(0);
+        }
     }
 
     private boolean excedeTecho(PlanGenerationContext context, PlanDraft.DraftWorkout w, int techo) {
