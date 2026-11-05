@@ -19,12 +19,16 @@ import java.util.Objects;
  *   <li>{@code REDUCCION}: la dosis que una correccion de la IA BAJO en una
  *       sesion senalada cuya intervencion permite cambiar la dosis, aprobada
  *       por V8C. Nunca una subida.</li>
+ *   <li>{@code MANTENIMIENTO} (P-A1, auditoria post R/R'): la misma bajada que una {@code REDUCCION}, pero en una
+ *       sesion senalada por FATIGA ({@code REVISAR_CARGA_Y_RECUPERACION}). Se distingue porque es la unica que
+ *       {@code GAIN_MUSCLE} puede aceptar, y solo con una politica que lo autorice ({@code PlanningPolicy#fatigaGM})
+ *       y en el rango de {@code ProgresionDosisPolicy#mantenimiento4D}.</li>
  * </ul>
  */
 public record DosisAutorizada(LocalDate fecha, Long exerciseId, Short series, Short reps, Integer segundos,
                               Short descanso, Origen origen) {
 
-    public enum Origen { HEREDADA, PASO, REDUCCION }
+    public enum Origen { HEREDADA, PASO, REDUCCION, MANTENIMIENTO }
 
     public static DosisAutorizada de(LocalDate fecha, PlanDraft.DraftExercise e, Origen origen) {
         return new DosisAutorizada(fecha, e.exerciseId(), e.plannedSets(), e.plannedReps(),

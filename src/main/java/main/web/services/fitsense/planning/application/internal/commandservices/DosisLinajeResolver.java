@@ -34,13 +34,23 @@ public class DosisLinajeResolver {
     private final PlannedWorkoutRepository plannedWorkoutRepository;
     private final PlanAdaptationAttemptRepository attemptRepository;
     private final JsonSupport jsonSupport;
+    /** H6: para seguir el intento de la version reparada (null: comportamiento de antes). */
+    private final main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes;
 
     public DosisLinajeResolver(PlannedWorkoutRepository plannedWorkoutRepository,
                                PlanAdaptationAttemptRepository attemptRepository,
                                JsonSupport jsonSupport) {
+        this(plannedWorkoutRepository, attemptRepository, jsonSupport, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public DosisLinajeResolver(PlannedWorkoutRepository plannedWorkoutRepository,
+                               PlanAdaptationAttemptRepository attemptRepository,
+                               JsonSupport jsonSupport, main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes) {
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.attemptRepository = attemptRepository;
         this.jsonSupport = jsonSupport;
+        this.planes = planes;
     }
 
     /** Por sesion, los ejercicios cuya dosis tiene origen autorizado. */
@@ -55,6 +65,33 @@ public class DosisLinajeResolver {
         return porSesion;
     }
 
+    /**
+     * P-A1 · RACHA DE FATIGA: por sesion, cuantas semanas inmediatamente anteriores de su linaje se adaptaron por
+     * fatiga ({@code REVISAR_CARGA_Y_RECUPERACION} en el intento que publico la semana siguiente). Se detiene en el
+     * primer tramo sin fatiga, sin intento o ambiguo. Solo cuenta; no autoriza nada.
+     */
+    public Map<Long, Integer> fatigaConsecutiva(Collection<PlannedWorkout> sesiones) {
+        var porSesion = new LinkedHashMap<Long, Integer>();
+        for (var sesion : sesiones) {
+            int n = 0;
+            var vistas = new HashSet<Long>();
+            var actual = sesion;
+            while (actual != null && vistas.add(actual.getId())) {
+                Long origen = actual.getSourcePlannedWorkoutId();
+                if (origen == null) break;
+                var intentos = IntentoDeLinaje.de(actual, attemptRepository, planes);
+                if (intentos.size() != 1) break;
+                if (EvidenciaV32.intervencion(intentos.get(0), origen)
+                        != main.web.services.fitsense.shared.domain.model.valueobjects.TipoIntervencion
+                        .REVISAR_CARGA_Y_RECUPERACION) break;
+                n++;
+                actual = plannedWorkoutRepository.findById(origen).orElse(null);
+            }
+            if (n > 0) porSesion.put(sesion.getId(), n);
+        }
+        return porSesion;
+    }
+
     private boolean autorizada(PlannedWorkout sesion, PlannedWorkoutExercise ejercicio) {
         var vistas = new HashSet<Long>();
         var actual = sesion;
@@ -62,7 +99,7 @@ public class DosisLinajeResolver {
             Long origen = actual.getSourcePlannedWorkoutId();
             if (origen == null) return false;   // generacion inicial: rige la dosis exacta
 
-            var intentos = attemptRepository.findByResultingPlanId(actual.getPlan().getId());
+            var intentos = IntentoDeLinaje.de(actual, attemptRepository, planes);
             if (intentos.size() != 1) return false;
             var intento = intentos.get(0);
             var clase = EvidenciaV32.clase(intento, origen);

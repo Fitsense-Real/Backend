@@ -192,7 +192,8 @@ public class PlanDraftValidator {
                 PlanDraft.DraftExercise base = null;
                 if (origen.isPresent() && MvpDosePolicy.aplicaA(objetivo)) {
                     var exigida = MvpDosePolicy.dosisPara(MandatorySlot.of(candidato), candidato.bodyPartCode());
-                    if (exigida.isPresent() && ProgresionDosisPolicy.admite4D(exigida.get(), e, origen.get()))
+                    if (exigida.isPresent() && ProgresionDosisPolicy.admite4D(exigida.get(), e, origen.get(),
+                            context.policy() != null && context.policy().fatigaGM()))
                         base = new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), exigida.get().series(),
                                 exigida.get().reps(), e.plannedDurationSeconds(), e.targetLoadKg(),
                                 exigida.get().descansoSegundos(), e.notes());
@@ -597,7 +598,8 @@ public class PlanDraftValidator {
                 // La generacion no trae autorizaciones. El presupuesto se cobra con la dosis REAL.
                 var origenAutorizado = conservation.autorizacionDe(workout.scheduledDate(), exercise);
                 boolean autorizada = origenAutorizado.isPresent()
-                        && ProgresionDosisPolicy.admite4D(exigida, exercise, origenAutorizado.get());
+                        && ProgresionDosisPolicy.admite4D(exigida, exercise, origenAutorizado.get(),
+                        context.policy() != null && context.policy().fatigaGM());
                 // 4D v3.2: la serie adicional del relleno de zona pequena; si hacia falta se comprueba abajo.
                 short seriesMax = MvpDosePolicy.seriesMaxEn(exigida, workout.focus(), candidate.bodyPartCode());
                 boolean ampliada = !autorizada && seriesMax > exigida.series() && series > exigida.series()

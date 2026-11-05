@@ -272,8 +272,19 @@ public class AdaptedWeekCommandService {
                                           Map<Long, CandidateExercise> elegibles,
                                           ExclusionesDeSeguridad exclusiones,
                                           AdaptationDecision decision, MeasuredWeekView medida) {
-        var candidatos = progresionHabilitada && progresiones != null && decision == AdaptationDecision.NO_CHANGE
+        // P-A1 (rediseno R/R', solo con PlanningPolicy#fatigaGM): sin la progresion encendida, la UNICA clase de paso
+        // que se propone es la RECUPERACION de una reduccion autorizada (fatiga o desmotivacion), con sus reglas de
+        // siempre: cumplimiento sostenido en dos semanas (80 %), sin fatiga ni dolor, <= recovery_step_pct por paso y
+        // un paso por ciclo. Sin esto, la dosis de mantenimiento por fatiga quedaba para siempre (la orden pide
+        // recuperar gradualmente, sin restauracion automatica). Ni progresion ordinaria, ni reincorporacion, ni vuelta
+        // atras se activan por esta via.
+        boolean soloRecuperacion = !progresionHabilitada && context.policy() != null && context.policy().fatigaGM();
+        var candidatos = (progresionHabilitada || soloRecuperacion) && progresiones != null
+                && decision == AdaptationDecision.NO_CHANGE
                 ? progresiones.candidatos(context, derivation, medida.observedAdherencePct(), elegibles, exclusiones)
+                .stream().filter(p -> !soloRecuperacion
+                        || p.tipo() == main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgresion
+                        .Tipo.RECUPERACION).toList()
                 : List.<main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgresion>of();
         if (candidatos.isEmpty())
             return producir(context, derivation, List.of(), elegibles, exclusiones);

@@ -8,6 +8,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgres
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
@@ -242,10 +243,29 @@ public class ConservationValidator {
                                        List<SustitucionSeguridad> autorizadas,
                                        boolean autorizarDosis,
                                        int divisorVolumen) {
+        return validate(derivation, previous, adjustment, eligible, causas, autorizadas, autorizarDosis,
+                divisorVolumen, null);
+    }
+
+    /**
+     * Igual, con la VERSION DE POLITICA del contexto (rediseno R/R'). Con {@code null} o la historica, exactamente lo
+     * de siempre. Con {@link PlanningPolicy#sustitucionDesmotivacion()} (P-A2) una sesion senalada por desmotivacion
+     * admite UNA sustitucion lateral estricta; con {@link PlanningPolicy#impacto()} (P-C2) una variante "mas sencilla"
+     * no puede subir el impacto.
+     */
+    public ConservationReport validate(WeekDerivation derivation,
+                                       PreviousWeekSummary previous,
+                                       PlanAdjustment adjustment,
+                                       Map<Long, CandidateExercise> eligible,
+                                       ExclusionesDeSeguridad causas,
+                                       List<SustitucionSeguridad> autorizadas,
+                                       boolean autorizarDosis,
+                                       int divisorVolumen,
+                                       PlanningPolicy politica) {
         if (adjustment == null || !adjustment.adapta()) return ConservationReport.vacio();
 
         return revisar(derivation, previous, adjustment, eligible, causas, autorizadas, List.of(), null, autorizarDosis,
-                divisorVolumen);
+                divisorVolumen, politica);
     }
 
     /**
@@ -325,7 +345,8 @@ public class ConservationValidator {
             return new ConservationReport(List.of("V8C: una retirada por seguridad no se combina con un paso de "
                     + "progresion en la misma semana."), List.of(), List.of(), List.of(), Set.of());
         return revisar(derivation, previous, PlanAdjustment.none(), eligible, causas, autorizadas,
-                retiradas == null ? List.of() : retiradas, paso, autorizarDosis || paso != null, DIVISOR_POR_OMISION);
+                retiradas == null ? List.of() : retiradas, paso, autorizarDosis || paso != null, DIVISOR_POR_OMISION,
+                null);
     }
 
     private ConservationReport revisar(WeekDerivation derivation,
@@ -337,7 +358,8 @@ public class ConservationValidator {
                                        List<RetiradaSeguridad> retiradas,
                                        PasoProgresion paso,
                                        boolean autorizarDosis,
-                                       int divisorVolumen) {
+                                       int divisorVolumen,
+                                       PlanningPolicy politica) {
 
         // SI SE ORDENO ADAPTAR, LA FALTA DE DATOS ES UN ERROR, NO UN VISTO
         // BUENO. La version anterior devolvia el informe vacio cuando faltaban la
@@ -473,7 +495,10 @@ public class ConservationValidator {
                     }
                     // D-P7: un paso que no reduce mantiene la exencion de V20 de
                     // una sesion acortada con una reduccion autorizada.
-                    if (paso.noReduce() && previous.reduccionAutorizada().contains(origen) && fecha != null)
+                    // H7: la VUELTA ATRAS por fatiga (D-P6) vuelve a una dosis que ya estaba dentro de la reduccion
+                    // autorizada; conserva la exencion igual que un paso que no reduce.
+                    if ((paso.noReduce() || paso.tipo() == PasoProgresion.Tipo.VUELTA_ATRAS)
+                            && previous.reduccionAutorizada().contains(origen) && fecha != null)
                         fechasReducibles.add(fecha);
                 }
             } else if (intervencion == null) {
@@ -509,7 +534,7 @@ public class ConservationValidator {
                 revisarSenalada(origen, anterior, derivada, intervencion, diferencias,
                         dolieron, segura, catalogo, conocidos, cargasPorSesion.getOrDefault(origen, Map.of()),
                         dosisPorSesion.getOrDefault(origen, Map.of()), divisorVolumen,
-                        problems, aplicadas, sinEfecto);
+                        problems, aplicadas, sinEfecto, politica);
                 // TOPE DECLARADO (DISENO_ADAPTACION_CONTEXTUAL v0.3, §2): si la persona dijo que suele
                 // tener M minutos para este entrenamiento, una sesion corregida no puede durar mas. Si
                 // vuelve sin cambios se admite y queda sin efecto: no es factible acortarla sin tocar
@@ -572,8 +597,25 @@ public class ConservationValidator {
             problems.add("V8C: se declara un paso de progresion en la sesion %d, que no esta en la semana nueva."
                     .formatted(paso.origen()));
 
+        // P-A1 · FATIGA PERSISTENTE (ciencia_rediseno §4): 2 semanas seguidas -> revisar sueno, estres, alimentacion
+        // y enfermedad, y mantener la dosis reducida (no se reduce mas: la dosis de mantenimiento es un suelo);
+        // 3 o mas -> recomendar consultar a un profesional sanitario y no aumentar la dosis. Avisos, no rechazos.
+        var avisos = new ArrayList<String>();
+        for (var derivada : derivation.workouts()) {
+            Long o = derivada.sourcePlannedWorkoutId();
+            var i = adjustment.intervencionDe(o).orElse(null);
+            if (i != TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION) continue;
+            int racha = 1 + previous.fatigaConsecutiva().getOrDefault(o, 0);
+            if (racha >= 3)
+                avisos.add(("FATIGA_PERSISTENTE sesion %d: %d semanas seguidas con fatiga. Se recomienda consultar a un"
+                        + " profesional sanitario; la dosis no se aumenta y no se reduce mas.").formatted(o, racha));
+            else if (racha == 2)
+                avisos.add(("FATIGA_REPETIDA sesion %d: 2 semanas seguidas con fatiga. Conviene revisar sueno, estres,"
+                        + " alimentacion o enfermedad; se mantiene la dosis reducida, sin reducirla mas.")
+                        .formatted(o));
+        }
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
-                fechasReducibles, admitidas, progresadas, pasos, dosisAutorizadas, List.of());
+                fechasReducibles, admitidas, progresadas, pasos, dosisAutorizadas, List.of()).conAvisos(avisos);
     }
 
     /**
@@ -669,7 +711,11 @@ public class ConservationValidator {
             if (dosisAutorizadas != null && intervencion.permiteCambiarDosis()
                     && java.util.Objects.equals(antes.tipo(), despues.tipo())
                     && java.util.Objects.equals(antes.descanso(), despues.descanso()))
-                dosisAutorizadas.add(DosisAutorizada.de(fecha, e, DosisAutorizada.Origen.REDUCCION));
+                // P-A1: la bajada ante FATIGA se marca como MANTENIMIENTO (la unica que GAIN_MUSCLE puede aceptar,
+                // con su politica y en su rango); las demas, como REDUCCION. Fuera de GAIN_MUSCLE valen igual.
+                dosisAutorizadas.add(DosisAutorizada.de(fecha, e,
+                        intervencion == TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION
+                                ? DosisAutorizada.Origen.MANTENIMIENTO : DosisAutorizada.Origen.REDUCCION));
         }
     }
 
@@ -908,7 +954,7 @@ public class ConservationValidator {
                                  Map<Long, java.math.BigDecimal> cargasAnteriores,
                                  Map<Long, Dosis> dosisAnterior, int divisorVolumen,
                                  List<String> problems, List<Long> aplicadas,
-                                 List<Long> sinEfecto) {
+                                 List<Long> sinEfecto, PlanningPolicy politica) {
 
         // ANTE DOLOR, CONSERVAR NO ES NEUTRO. Volver a prescribir el ejercicio
         // que dolio, solo porque estaba en el plan anterior, es publicar algo
@@ -927,7 +973,7 @@ public class ConservationValidator {
 
         if (!d.anadidos().isEmpty() || !d.quitados().isEmpty())
             revisarSustitucion(origen, intervencion, d, dolieron, catalogo, conocidos, derivada, dosisAnterior,
-                    divisorVolumen, problems);
+                    divisorVolumen, problems, politica);
 
         if (!d.dosisCambiada().isEmpty() && !intervencion.permiteCambiarDosis())
             problems.add(("V8C: la sesion %d esta senalada como %s, que no autoriza cambiar la "
@@ -1092,7 +1138,14 @@ public class ConservationValidator {
     private void revisarSustitucion(Long origen, TipoIntervencion intervencion, Diferencias d,
                                     Set<Long> dolieron, Map<Long, CandidateExercise> catalogo,
                                     Map<Long, CandidateExercise> conocidos, DerivedWorkout derivada, Map<Long, Dosis> dosisAnterior,
-                                    int divisorVolumen, List<String> problems) {
+                                    int divisorVolumen, List<String> problems, PlanningPolicy politica) {
+
+        // P-A2 (rediseno R/R', solo con la politica que lo autoriza): ante desmotivacion, UNA sustitucion lateral.
+        if (intervencion == TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO && politica != null
+                && politica.sustitucionDesmotivacion()) {
+            revisarSustitucionPorDesmotivacion(origen, d, catalogo, conocidos, problems);
+            return;
+        }
 
         if (!intervencion.permiteSustituirEjercicio()) {
 
@@ -1255,6 +1308,81 @@ public class ConservationValidator {
             revisarMulticonjunto(origen, d, catalogo, patronesQuitados, problems);
         if (limitaDificultad && intervencion == TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)
             revisarDificultad(origen, intervencion, d.quitados(), d.anadidos(), conocidos, true, problems);
+        // P-C2 (rediseno R/R'): una variante "mas sencilla" no sube el impacto. Cada anadido tiene que poder
+        // emparejarse con un retirado DEL MISMO PATRON cuyo impacto no sea menor (ImpactoPolicy).
+        if (politica != null && politica.impacto() && intervencion == TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)
+            for (var anadido : d.anadidos()) {
+                var a = conocidos.get(anadido);
+                if (a == null) continue;
+                boolean cabe = d.quitados().stream().map(conocidos::get).filter(java.util.Objects::nonNull)
+                        .filter(q -> java.util.Objects.equals(q.movementPattern(), a.movementPattern()))
+                        .anyMatch(q -> !ImpactoPolicy.sube(q, a));
+                if (!cabe)
+                    problems.add(("V8C: la sesion %d sustituye por el ejercicio %d (impacto %s) y ninguno de los"
+                            + " retirados del mismo patron tiene un impacto igual o mayor. Una variante mas sencilla"
+                            + " no puede aumentar el impacto.").formatted(origen, anadido, ImpactoPolicy.nivel(a)));
+            }
+    }
+
+    /**
+     * P-A2 · SUSTITUCION ANTE DESMOTIVACION ({@code INVESTIGAR_CAMBIO_MINIMO} con
+     * {@link PlanningPolicy#sustitucionDesmotivacion()}). Variar un ejercicio tiene respaldo para la motivacion y la
+     * adherencia; quitar una repeticion no tiene ninguno (ciencia_rediseno §5). Se admite COMO MAXIMO UNA, y solo si:
+     * <ul>
+     *   <li>se retira exactamente uno y se anade exactamente uno;</li>
+     *   <li>ninguna otra colocacion de la sesion cambia de dosis (no se combinan sustitucion y dosis);</li>
+     *   <li>el sustituto esta en el conjunto elegible (equipo disponible, bloqueos y restricciones del perfil);</li>
+     *   <li>mismo patron de movimiento, misma clase de slot 4C, mismo grupo y musculo objetivo compatible;</li>
+     *   <li>dificultad registrada no superior e impacto no superior ({@link ImpactoPolicy#sube}).</li>
+     * </ul>
+     */
+    private static void revisarSustitucionPorDesmotivacion(Long origen, Diferencias d,
+                                                           Map<Long, CandidateExercise> catalogo,
+                                                           Map<Long, CandidateExercise> conocidos,
+                                                           List<String> problems) {
+        String regla = "Ante desmotivacion se admite UNA sustitucion por otro ejercicio equivalente (mismo patron y"
+                + " grupo, dificultad e impacto no superiores) y nada mas.";
+        if (d.anadidos().size() != 1 || d.quitados().size() != 1) {
+            problems.add(("V8C: la sesion %d esta senalada por desmotivacion y anade %s y retira %s. %s")
+                    .formatted(origen, d.anadidos(), d.quitados(), regla));
+            return;
+        }
+        if (!d.dosisCambiada().isEmpty()) {
+            problems.add(("V8C: la sesion %d esta senalada por desmotivacion, sustituye un ejercicio Y ADEMAS cambia"
+                    + " la dosis de %s. Una cosa o la otra. %s").formatted(origen, d.dosisCambiada(), regla));
+            return;
+        }
+        Long quitado = d.quitados().get(0), anadido = d.anadidos().get(0);
+        var q = conocidos.get(quitado);
+        var a = catalogo.get(anadido);
+        if (a == null) {
+            problems.add(("V8C: la sesion %d sustituye por el ejercicio %d, que no esta en el conjunto elegible del"
+                    + " perfil.").formatted(origen, anadido));
+            return;
+        }
+        if (q == null) {
+            problems.add(("V8C: la sesion %d retira el ejercicio %d y no consta su ficha: no se puede comprobar que"
+                    + " el sustituto sea equivalente.").formatted(origen, quitado));
+            return;
+        }
+        var motivos = new ArrayList<String>();
+        if (q.movementPattern() == null || !q.movementPattern().equals(a.movementPattern()))
+            motivos.add("otro patron (%s -> %s)".formatted(q.movementPattern(), a.movementPattern()));
+        if (!MandatorySlot.of(q).equals(MandatorySlot.of(a)))
+            motivos.add("otra clase de slot 4C (%s -> %s)".formatted(MandatorySlot.of(q).orElse(null),
+                    MandatorySlot.of(a).orElse(null)));
+        if (!java.util.Objects.equals(q.bodyPartCode(), a.bodyPartCode()))
+            motivos.add("otro grupo (%s -> %s)".formatted(q.bodyPartCode(), a.bodyPartCode()));
+        else if (q.targetMuscle() != null && a.targetMuscle() != null
+                && !q.targetMuscle().equalsIgnoreCase(a.targetMuscle()))
+            motivos.add("otro musculo objetivo (%s -> %s)".formatted(q.targetMuscle(), a.targetMuscle()));
+        if (a.difficulty() > q.difficulty())
+            motivos.add("mas dificil (%d -> %d)".formatted(q.difficulty(), a.difficulty()));
+        if (ImpactoPolicy.sube(q, a))
+            motivos.add("mas impacto (%s -> %s)".formatted(ImpactoPolicy.nivel(q), ImpactoPolicy.nivel(a)));
+        if (!motivos.isEmpty())
+            problems.add(("V8C: la sesion %d esta senalada por desmotivacion y sustituye %d por %d: %s. %s")
+                    .formatted(origen, quitado, anadido, String.join(", ", motivos), regla));
     }
 
     /**

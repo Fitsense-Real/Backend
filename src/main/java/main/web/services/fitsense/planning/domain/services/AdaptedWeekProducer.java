@@ -195,7 +195,13 @@ public class AdaptedWeekProducer {
         this.applier = applier;
         this.conservation = conservation;
         this.estricta = estricta;
-        this.autorizarDosis = progresion || estricta.validaCapacidades();
+        // P-P1 (auditoria post R/R', 05/11/2026): las dosis YA autorizadas y publicadas con linaje (progresadas,
+        // reducidas) se HEREDAN siempre, con o sin interruptores. Antes solo con la progresion o la V24 por
+        // capacidades encendidas: al apagar la progresion, la copia de una dosis de GAIN_MUSCLE ya progresada la
+        // rechazaba V24 (4D siempre en ENFORCE) y la semana salia NO_FACTIBLE, contra la POLITICA §5 ("revertir es
+        // seguro"). Heredar no es progresar: ningun paso nuevo depende de esto, y V24 vuelve a comprobar el rango de
+        // cada autorizacion. Defecto de implementacion: aplica a todas las versiones de politica.
+        this.autorizarDosis = true;
         // DECISION DEL RESPONSABLE (cierre del PR #39): la retirada localizada NO es independiente del limite de
         // dificultad. Solo actua si el limite esta encendido (on o preferencia); con el limite apagado queda inactiva
         // aunque se pida, y el respaldo es el de siempre.
@@ -301,7 +307,7 @@ public class AdaptedWeekProducer {
         var informe = conservation.validate(
                 new WeekDerivation(reparada.semana(), adaptada.sourcesWithoutDerived()),
                 context.previousWeek(), adjustment, eligible, exclusiones, reparada.sustituciones(), autorizarDosis,
-                estricta.divisorDeVolumen());
+                estricta.divisorDeVolumen(), context.policy());
         if (!normalizadas.isEmpty()) informe = informe.conCorreccionesDelBackend(normalizadas);
 
         // El origen lo decide si la IA cambio algo DE VERDAD, no si contesto.

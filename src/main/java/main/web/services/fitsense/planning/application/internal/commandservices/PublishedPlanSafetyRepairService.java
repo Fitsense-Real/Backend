@@ -186,8 +186,10 @@ public class PublishedPlanSafetyRepairService {
         if (!quedan.isEmpty())
             problemas.add("SEGURIDAD: siguen en la semana %s, que hoy no son seguros %s."
                     .formatted(quedan, leido.causaPorEjercicio()));
+        // P-P2 (auditoria post R/R'): la reparacion emite las dosis HEREDADAS con linaje (y nada mas: sin paso).
+        // Antes no las emitia y una semana con una dosis progresada o reducida no se podia reparar (NO_VALIDA).
         var informe = v8c.validateContinuidad(new WeekDerivation(reparada.semana(), List.of()),
-                contexto.previousWeek(), elegibles, exclusiones, reparada.sustituciones());
+                contexto.previousWeek(), elegibles, exclusiones, reparada.sustituciones(), null, true);
         problemas.addAll(informe.problems());
         problemas.addAll(estricta.revisar(new PlanDraft(leido.origen(), null, null, null, informe.describe(),
                 reparada.semana().stream().map(DerivedWorkout::workout).toList()), contexto, informe));

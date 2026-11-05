@@ -89,6 +89,14 @@ public class ProgresionResolver {
     private final ExternalConfigurationService configuracion;
     private final SessionDurationEstimator estimador;
     private final JsonSupport jsonSupport;
+    /** H6: para seguir el intento de la version reparada (null: comportamiento de antes). */
+    private main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes;
+
+    /** H6: inyeccion opcional del repositorio de planes (las pruebas que construyen el resolver no lo necesitan). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setPlanes(main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes) {
+        this.planes = planes;
+    }
 
     public ProgresionResolver(PlannedWorkoutRepository plannedWorkoutRepository,
                               PlanAdaptationAttemptRepository attemptRepository,
@@ -276,7 +284,7 @@ public class ProgresionResolver {
         while (vistas.add(actual.getId())) {
             Long origenId = actual.getSourcePlannedWorkoutId();
             if (origenId == null) return tramos;
-            var intentos = attemptRepository.findByResultingPlanId(actual.getPlan().getId());
+            var intentos = IntentoDeLinaje.de(actual, attemptRepository, planes);
             if (intentos.size() != 1) return null;
             var intento = intentos.get(0);
             var clase = EvidenciaV32.clase(intento, origenId);
