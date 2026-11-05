@@ -272,6 +272,10 @@ class EvaluacionK20IT {
             assertTrue(s.findAny().isEmpty(), "la carpeta " + SALIDA + " ya tiene evidencia: no se sobrescribe");
         }
         Files.createDirectories(SALIDA);
+        // Auditoria del catalogo v46 (solo pruebas): variante CONTRAFACTUAL del catalogo en la base efimera, antes de crear
+        // usuarios. Vacio por defecto: ninguna corrida anterior cambia. Queda registrada en 00_configuracion.txt.
+        String sqlPrevio = System.getProperty("fitsense.evaluacion.k20.sql-previo", "");
+        if (!sqlPrevio.isBlank()) jdbc.execute(Files.readString(Path.of(sqlPrevio)));
         http = MockMvcBuilders.webAppContextSetup(contexto).apply(springSecurity()).build();
         espiar();
 
@@ -292,6 +296,7 @@ class EvaluacionK20IT {
         cfg.put("hash_catalogo", jdbc.queryForObject("SELECT md5(string_agg(exercise_id || ':' || is_active || ':'"
                 + " || coalesce(difficulty_level::text,'-') || ':' || coalesce(movement_pattern,'-'), ','"
                 + " ORDER BY exercise_id)) FROM exercises", String.class));
+        if (!sqlPrevio.isBlank()) cfg.put("sql_previo_contrafactual", sqlPrevio);
         cfg.put("ia_habilitada", generador.isEnabled());
         cfg.put("modelo", generador.modelName());
         cfg.put("prompt_adaptacion", promptBuilder.version());
