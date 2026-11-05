@@ -154,7 +154,9 @@ public final class FactibilidadAdaptacion {
         var sustitutos = new ArrayList<Sustituto>();
         boolean unica = main.web.services.fitsense.planning.domain.services.PermisosIntervencion.sustitucionUnica(intervencion, context.policy());
         if (main.web.services.fitsense.planning.domain.services.PermisosIntervencion.permiteSustituir(intervencion, context.policy()))
-            sustitutosAdmitidos(context, derivation, senalada.plannedWorkoutId(), propia, unica).forEach((reemplazado, ids) -> {
+            sustitutosAdmitidos(context, derivation, senalada.plannedWorkoutId(), propia,
+                    (actual, c) -> main.web.services.fitsense.planning.domain.services.PermisosIntervencion
+                            .admiteComoSustituto(intervencion, context.policy(), actual, c)).forEach((reemplazado, ids) -> {
                 var actual = propia.exercises().stream().filter(x -> reemplazado.equals(x.exerciseId())).findFirst()
                         .orElse(null);
                 for (var id : ids)
@@ -184,12 +186,13 @@ public final class FactibilidadAdaptacion {
      */
     static Map<Long, List<Long>> sustitutosAdmitidos(PlanGenerationContext context, WeekDerivation derivation,
                                                      Long id, PlanDraft.DraftWorkout propia) {
-        return sustitutosAdmitidos(context, derivation, id, propia, false);
+        return sustitutosAdmitidos(context, derivation, id, propia, (a, c) -> true);
     }
 
-    /** Igual; con {@code estricta} (P-A2) solo los equivalentes estrictos ({@code PermisosIntervencion}). */
+    /** Igual, con el criterio de la intervencion y la politica ({@code PermisosIntervencion#admiteComoSustituto}). */
     static Map<Long, List<Long>> sustitutosAdmitidos(PlanGenerationContext context, WeekDerivation derivation,
-                                                     Long id, PlanDraft.DraftWorkout propia, boolean estricta) {
+                                                     Long id, PlanDraft.DraftWorkout propia,
+                                                     java.util.function.BiPredicate<CandidateExercise, CandidateExercise> admite) {
         var resultado = new LinkedHashMap<Long, List<Long>>();
         if (context.availableExercises() == null) return resultado;
         var enSesion = propia.exercises().stream().map(PlanDraft.DraftExercise::exerciseId).collect(Collectors.toSet());
@@ -212,7 +215,7 @@ public final class FactibilidadAdaptacion {
                     .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
                             && !dolieron.contains(c.exerciseId()))
                     .filter(c -> c.difficulty() <= actual.difficulty())
-                    .filter(c -> !estricta || main.web.services.fitsense.planning.domain.services.PermisosIntervencion.equivalenteEstricto(actual, c))
+                    .filter(c -> admite.test(actual, c))
                     .map(CandidateExercise::exerciseId)
                     .sorted().limit(6).toList());
         }

@@ -491,8 +491,10 @@ public class SessionFixPromptBuilder {
                         .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
                                 && !dolieron.contains(c.exerciseId()))
                         .filter(c -> c.difficulty() <= actual.difficulty())
-                        // P-A2: ante desmotivacion, solo equivalentes estrictos (grupo, musculo, impacto).
-                        .filter(c -> !unica || main.web.services.fitsense.planning.domain.services.PermisosIntervencion.equivalenteEstricto(actual, c))
+                        // P-A2 (desmotivacion: equivalentes estrictos) y P-C2 (VARIANTE: sin subir impacto): el mismo
+                        // criterio que V8C (PermisosIntervencion.admiteComoSustituto). Historica: sin cambio.
+                        .filter(c -> main.web.services.fitsense.planning.domain.services.PermisosIntervencion
+                                .admiteComoSustituto(intervencion, context.policy(), actual, c))
                         .map(main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId)
                         .sorted().limit(6).toList();
                 lineas.append("    ").append(e.exerciseId()).append(" (").append(actual.movementPattern()).append("): ")

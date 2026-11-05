@@ -125,6 +125,14 @@ class EvaluacionK20IT {
     static final String MODO = System.getProperty("fitsense.evaluacion.k20.modo", "DETERMINISTA");
     static final boolean REPLICATE = "REPLICATE".equals(MODO);
     static final boolean SIMULADA = "SIMULADA".equals(MODO);
+    /**
+     * Cierre REV2, fase 6: perfiles (ids de la cohorte, p. ej. "U03,J01") en los que la IA SIMULADA falla como un
+     * proveedor caido (AiProviderUnavailableException) en todos los intentos. Mide el respaldo y la continuidad. Vacio
+     * por defecto: no cambia ninguna corrida anterior.
+     */
+    static final java.util.Set<String> FALLOS_SIMULADOS = java.util.Arrays.stream(
+                    System.getProperty("fitsense.evaluacion.k20.simulada.fallos", "").split(","))
+            .map(String::trim).filter(x -> !x.isEmpty()).collect(java.util.stream.Collectors.toSet());
     static final boolean IA_ACTIVA = REPLICATE || SIMULADA;
     static final boolean GEMELOS = Boolean.parseBoolean(System.getProperty("fitsense.evaluacion.k20.gemelos", "false"));
     static final boolean CREDENCIAL_PROXY = "proxy".equals(System.getProperty("fitsense.evaluacion.k20.credencial", ""));
@@ -271,6 +279,7 @@ class EvaluacionK20IT {
         var cfg = new LinkedHashMap<String, Object>();
         cfg.put("evaluacion", "K20 final IEEE");
         cfg.put("modo", MODO);
+        if (!FALLOS_SIMULADOS.isEmpty()) cfg.put("fallos_simulados_del_proveedor", new java.util.TreeSet<>(FALLOS_SIMULADOS));
         cfg.put("commit", System.getProperty("fitsense.evaluacion.k20.commit", "no indicado"));
         cfg.put("fecha_ejecucion_utc", java.time.Instant.now().toString());
         cfg.put("base", "PostgreSQL efimero " + jdbc.queryForObject("SHOW server_version", String.class));
@@ -863,6 +872,12 @@ class EvaluacionK20IT {
         traza.put("tipo", "ADAPTACION_SIMULADA");
         traza.put("intento", String.valueOf(intento));
         guardarPrompt(inv, traza);
+        if (FALLOS_SIMULADOS.contains(etiquetaActual.split("/")[0])) {
+            traza.put("resultado", "FALLO_SIMULADO_DEL_PROVEEDOR");
+            trazasIa.add(json(traza));
+            throw new main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException(
+                    "fallo simulado del proveedor (laboratorio, sin red)");
+        }
         var prompt = promptBuilder.build(ctx, der, inv.getArgument(2), inv.getArgument(3));
         if (intento == 1) sondear(ctx, der);
         var validas = validasPorEtiqueta.getOrDefault(etiquetaActual, Map.of());

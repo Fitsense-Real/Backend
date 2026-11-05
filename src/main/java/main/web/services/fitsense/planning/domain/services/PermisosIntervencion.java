@@ -52,6 +52,19 @@ public final class PermisosIntervencion {
         return !ImpactoPolicy.sube(original, sustituto);
     }
 
+    /**
+     * El MISMO criterio de sustituto que aplica V8C, para que el prompt y la factibilidad previa no ofrezcan nada que V8C
+     * rechace (cierre REV2, fase 6): P-A2 (desmotivacion) solo equivalentes estrictos; P-C2 (politica con
+     * {@code impacto}) una VARIANTE_MAS_SENCILLA_O_CARGA no sube el impacto. Con la historica, todo como antes.
+     */
+    public static boolean admiteComoSustituto(TipoIntervencion t, PlanningPolicy politica, CandidateExercise actual,
+                                              CandidateExercise sustituto) {
+        if (sustitucionUnica(t, politica)) return equivalenteEstricto(actual, sustituto);
+        if (politica != null && politica.impacto() && t == TipoIntervencion.VARIANTE_MAS_SENCILLA_O_CARGA)
+            return !ImpactoPolicy.sube(actual, sustituto);
+        return true;
+    }
+
     /** La instruccion del prompt: la de siempre salvo donde la politica cambia el permiso. */
     public static String instruccion(TipoIntervencion t, PlanningPolicy politica) {
         if (sustitucionUnica(t, politica))
