@@ -116,4 +116,10 @@ Los 4 fallos se analizaron uno a uno. **No son defectos de REV2.** Con la polít
 
 ## 6. Regresión completa
 
-Pendiente de anotar al terminar (ver §6 en la versión final del documento).
+`sh ./mvnw -o -B -ntp verify -Pintegration` sobre `3701b8c` (código idéntico a `30f1647`), con la política por defecto `PLAN-HIST-1`:
+
+| Fase | Resultado |
+|---|---|
+| Unitarias (surefire) | **1.263 ejecutadas, 0 fallos, 0 errores**, 1 omitida |
+| Integración (failsafe, Testcontainers) | **528 ejecutadas, 0 fallos, 0 errores**, 43 omitidas (laboratorios opcionales: barridos, K20 y campañas que exigen su propiedad) |
+| Construcción | **BUILD SUCCESS** |
