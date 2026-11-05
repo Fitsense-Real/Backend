@@ -17,7 +17,7 @@
 |---|---|---|---|
 | 1 | `CatalogoV46IT` (nombres; la migración solo cambia `name_es`; sin reglas por nombre) | V46 | **3/3** |
 | 2 | Unitarias completas | V46 (`ad6c900`) | **1.301 / 0 fallos** (1 omitida), BUILD SUCCESS |
-| 3 | Integración completa (`verify -Pintegration`, política por defecto HIST) | V46 | INTEGRACION_RESULTADO |
+| 3 | Integración completa (`verify -Pintegration`, política por defecto HIST) | V46 | **593 / 0 fallos / 0 errores** (44 omitidas: laboratorios opcionales, incluida la exportación), BUILD SUCCESS. Son las 588 del cierre + `p17CandidatasDesactivadas` + 3 de `CatalogoV46IT` + 1 omitida (`ExportarCatalogoIT`) |
 | 4 | Barrido HIST (3.780 perfiles) | V46 | **Idéntico byte a byte** a `HIST_cierre` (planes y resultados) |
 | 5 | Barrido REV2 | V46 | **Idéntico byte a byte** a `REV2_cierre` |
 | 6 | K20 REV2 D sobre U / N | V46 | `a662cb4d` / `11f51d44`: **iguales** al original |

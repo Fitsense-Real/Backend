@@ -105,7 +105,7 @@
 |---|---|---|
 | **Alta** | Curl nórdico (6), 775, 973 | Sí: dificultad y equipamiento de 650/1.040 planes; dosis de espalda u hombro de 615/917 planes REV2 |
 | Media-alta | 13 aislados como patrón de rodilla (P15) | Sí: 324 planes REV2 con la rodilla cubierta solo por aislados |
-| Media | 1261, 1308, 1259, 1146 (dosis de espalda por tronco); 1320 (instrucciones); 1262 y 1115 (dificultad); 853 (nombre e instrucciones) | 853 y 1320, solo lo que se muestra; el resto, la dosis |
+| Media | 1261, 1308, 1259, 1146 (dosis de espalda por tronco); 1320 (instrucciones); 1262, 1115 y **1205 sissy squat** (dificultad 1; hallado al medir P15, `C` §3); 853 (nombre e instrucciones) | 853 y 1320, solo lo que se muestra; el resto, la dosis |
 | Baja | 580, 1093 (nombres e instrucciones); 1263 y 973 (traducciones; **corregidas**) | No |
 | Sistémica | Asiento no modelado (S1) | Posible inviabilidad en casa, no medida |
 
