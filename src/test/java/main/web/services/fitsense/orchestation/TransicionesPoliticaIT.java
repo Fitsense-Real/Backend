@@ -129,6 +129,30 @@ class TransicionesPoliticaIT extends RedisenoFatigaGmIT {
     }
 
     @Test
+    @DisplayName("P17: allow-candidates=false impide asignar REV2 a usuarios NUEVOS; los usuarios REV2 en curso siguen con su linaje")
+    void p17CandidatasDesactivadas() throws Exception {
+        // Usuario en curso con REV2 (configuracion candidata autorizada).
+        long u = participanteCon(GoalType.INCREASE_STRENGTH, FitnessLevel.BEGINNER, TrainingLocation.HOME,
+                List.of((short) 1, (short) 2, (short) 4, (short) 5), 64, List.of("body weight"));
+        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        assertEquals("PLAN-REV-2.0", politica(w1));
+        // La configuracion vuelve a la historica SIN candidatas (lo que haria un reinicio con allow-candidates=false).
+        Object objetivo = AopTestUtils.getTargetObject(planService);
+        ReflectionTestUtils.setField(objetivo, "policySelector", new PlanningPolicySelector("PLAN-HIST-1", false));
+        var politicas = ciclos(u, w1, 0, 3);
+        System.out.println("TRANSICION P17 " + politicas);
+        assertEquals(List.of("PLAN-REV-2.0", "PLAN-REV-2.0", "PLAN-REV-2.0"), politicas,
+                "sin migrar ni bloquear: el usuario REV2 sigue con su linaje y no se queda sin plan");
+        long nuevo = participanteCon(GoalType.INCREASE_STRENGTH, FitnessLevel.BEGINNER, TrainingLocation.HOME,
+                List.of((short) 1, (short) 2, (short) 4, (short) 5), 64, List.of("body weight"));
+        assertEquals("PLAN-HIST-1", politica(planning.generateWeeklyPlan(nuevo, S1, PlanAdjustment.none(), null, null)
+                .orElseThrow()), "ninguna asignacion nueva de la candidata");
+        assertThrows(IllegalStateException.class, () -> new PlanningPolicySelector("PLAN-REV-2.0", false),
+                "configurar REV2 sin allow-candidates no arranca");
+        assertSinViolaciones();
+    }
+
+    @Test
     @DisplayName("REV2 -> HIST: sesiones cortas (sin piso del 70 %) siguen con REV2; la semana sale")
     void rev2AHistorica() throws Exception {
         // INCREASE_STRENGTH principiante, casa, 4 dias de 64 min: con REV2 sesiones de ~19 min (< 70 % de M).
