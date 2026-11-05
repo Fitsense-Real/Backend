@@ -53,6 +53,21 @@ El código ya corrigió esta misma contradicción para el **mínimo** de grupos 
 
 **Corrección propuesta (requiere aprobación):** P-G2 del documento 06. Aplicar la regla de la mitad solo cuando el enfoque tenga **2 o más grupos prescribibles**. Su impacto se mide con un prototipo de laboratorio apagado (documento 07).
 
+### Contrafactual con el prototipo P-G2 (laboratorio, `-Dfitsense.lab.v15-mitad-prescribibles=true`)
+
+| Prototipo encendido en | Resultado para J03 |
+|---|---|
+| Solo el validador | Las 15 adiciones de pierna dejan la sesión **sin ningún problema**, y el diagnóstico encuentra una semana completa válida. El motor **no** la genera: `ExerciseSelector` aplica su propio tope de la mitad por grupo. |
+| Validador, constructor y selector | **El motor genera un plan válido** para J03: 4 sesiones de 8 ejercicios, cada una de 2.940 s, justo en el piso. |
+
+**Calidad del plan resultante (no validada por un profesional):** la sesión LOWER de esta principiante de LOSE_WEIGHT tiene:
+- **6 ejercicios de fuerza de pierna**, en total 15 series de sentadilla y puente (3×8 o 2×8 con 120 s);
+- 2 cardios, uno de ellos la «Media sentadilla».
+
+Es técnicamente válida, pero el volumen de pierna existe **solo para llegar al 70 % de los 70 minutos**. Para una persona que empieza y cuyo objetivo es perder peso, es una sesión discutible: carga local alta y poca variedad.
+
+**Conclusión:** P-G2 resuelve la contradicción formal de V15, pero **no** hace que el plan de J03 sea bueno. La causa de fondo es V20 (P-G1). Con `sessionMinutes` como máximo, J03 tendría una sesión LOWER más corta y equilibrada sin tocar V15. **Se recomienda P-G1 (o P-G1 + P-G2) antes que P-G2 solo.**
+
 ## 3. Barrido sistemático: 3.780 perfiles admitidos
 
 **Rejilla:** 4 objetivos × 3 niveles × 3 equipamientos (gimnasio; casa con mancuernas y bandas; casa con peso corporal) × 1–7 días × {30, 35, 40, 45, 50, 53, 55, 59, 60, 61, 65, 68, 69, 70, 75} min.

@@ -1,0 +1,24 @@
+evaluacion: K20 final IEEE
+modo: SIMULADA
+commit: 7f2da39365e2b453d414e23ce9141da1b19113af
+fecha_ejecucion_utc: 2026-11-05T05:39:38.247453631Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+checksum_migraciones: 9981294ded945dc1882bd26f2468c30f
+ejercicios_activos: 1219
+hash_catalogo: 425fc958d26b405a00a233fe9d8a3c3b
+ia_habilitada: true
+modelo: gpt-5-mini
+prompt_adaptacion: FIX-PR-1.3
+v8c_regla_patron: MULTICONJUNTO
+limite_dificultad: LIMITE_Y_PREFERENCIA (limita=true)
+retirada_localizada: solicitada=true activa=true
+progresion: false
+politica_por_defecto: PLAN-HIST-1
+perfiles: docs/FitSense/auditoria_post_rrp/cohorte_K/K_PERFILES_INDEPENDIENTES.csv sha256=ec0c18db68be52ee75533db30c0bfddee51a580b2fd1dbbcb248ee2e69cd440a
+semanas: S1 2026-11-02 (medida, patron del perfil) -> S2 2026-11-09 (continuidad: todo hecho) -> S3 2026-11-16
+gemelos_generacion_ia: false
+credencial: ninguna (IA simulada, sin red)
+comprobacion_cuenta_http: -1
+limite_ia: no aplica
