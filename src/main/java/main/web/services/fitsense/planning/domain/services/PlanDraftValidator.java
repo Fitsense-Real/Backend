@@ -1581,6 +1581,27 @@ public class PlanDraftValidator {
         String nivel = context.profile().fitnessLevel();
         int techoSemana = DosisSemanalPolicy.techoSeriesSemana(nivel);
         int techoSesion = DosisSemanalPolicy.techoSeriesSesion(nivel);
+        // Semana derivada de una publicada (adaptacion o copia): V26 no obliga a recortar el volumen que ya traia la
+        // semana anterior (p. ej. un plan generado con la politica historica); solo impide SUBIR por encima del techo.
+        // En la generacion inicial no hay semana previa y rige el techo tal cual.
+        var previoSemana = new TreeMap<String, Integer>();
+        var previoSesion = new TreeMap<String, Integer>();
+        var previa = context.previousWeek();
+        if (previa != null && previa.prescriptions() != null) {
+            var porSesion = new HashMap<Long, Map<String, Integer>>();
+            for (var pr : previa.prescriptions()) {
+                var c = pr.exerciseId() == null ? null : eligible.get(pr.exerciseId());
+                if (c == null || complementos.contains(c.exerciseId()) || c.bodyPartCode() == null || pr.sets() == null)
+                    continue;
+                var clase = CapabilityPrescriptionPolicy.claseDe(c);
+                if (clase != CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                        && clase != CapabilityPrescriptionPolicy.Clase.RESISTIDO) continue;
+                previoSemana.merge(c.bodyPartCode(), (int) pr.sets(), Integer::sum);
+                porSesion.computeIfAbsent(pr.plannedWorkoutId() == null ? -1L : pr.plannedWorkoutId(),
+                        k -> new HashMap<>()).merge(c.bodyPartCode(), (int) pr.sets(), Integer::sum);
+            }
+            porSesion.values().forEach(m -> m.forEach((g, n) -> previoSesion.merge(g, n, Math::max)));
+        }
         var semana = new TreeMap<String, Integer>();
         for (var workout : draft.workouts()) {
             var sesion = new TreeMap<String, Integer>();
@@ -1594,7 +1615,7 @@ public class PlanDraftValidator {
                 sesion.merge(c.bodyPartCode(), (int) e.plannedSets(), Integer::sum);
             }
             sesion.forEach((g, n) -> {
-                if (n > techoSesion)
+                if (n > Math.max(techoSesion, previoSesion.getOrDefault(g, 0)))
                     problems.add(("V26: el entrenamiento del %s suma %d series directas de %s y el techo por sesion es"
                             + " %d (politica %s). Quita una colocacion de ese grupo.")
                             .formatted(workout.scheduledDate(), n, g, techoSesion, context.policy().id()));
@@ -1602,7 +1623,7 @@ public class PlanDraftValidator {
             });
         }
         semana.forEach((g, n) -> {
-            if (n > techoSemana)
+            if (n > Math.max(techoSemana, previoSemana.getOrDefault(g, 0)))
                 problems.add(("V26: la semana suma %d series directas de %s y el techo semanal es %d (nivel %s,"
                         + " politica %s). Reparte o quita trabajo de ese grupo.")
                         .formatted(n, g, techoSemana, nivel, context.policy().id()));

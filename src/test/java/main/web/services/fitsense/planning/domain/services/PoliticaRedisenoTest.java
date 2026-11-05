@@ -121,6 +121,49 @@ class PoliticaRedisenoTest {
         assertTrue(v26.stream().anyMatch(p -> p.contains("techo semanal")), "24 > 20 en la semana: " + v26);
     }
 
+    /** Una semana previa publicada con {@code series[i]} series del ejercicio i+1 (todas en la misma sesion). */
+    static PreviousWeekSummary previa(int... series) {
+        var pr = new ArrayList<PreviousWeekSummary.PrescriptionOutcome>();
+        for (int i = 0; i < series.length; i++)
+            pr.add(new PreviousWeekSummary.PrescriptionOutcome(77L, LUNES.minusDays(7), i + 1L, "press", "SETS_REPS",
+                    (short) series[i], (short) 10, null, null, null, null, null, null, null, null, null, "COMPLETED",
+                    (short) 90));
+        return new PreviousWeekSummary(new BigDecimal("100"), null, 0, java.util.Map.of(), List.of(), pr, List.of());
+    }
+
+    @Test
+    @DisplayName("V26 en una semana derivada: no obliga a recortar el volumen heredado, pero sigue impidiendo subirlo")
+    void v26SemanaDerivada() {
+        var elegibles = new ArrayList<CandidateExercise>();
+        for (long i = 1; i <= 9; i++)
+            elegibles.add(new CandidateExercise(i, "press " + i, "chest", "body weight", 1, PrescriptionType.SETS_REPS,
+                    "pectorals", "HORIZONTAL_PUSH", false));
+        java.util.function.IntFunction<PlanDraft> conSeries = n -> {
+            var ej = new ArrayList<PlanDraft.DraftExercise>();
+            for (long i = 1; i <= 8; i++)
+                ej.add(new PlanDraft.DraftExercise(i, PrescriptionType.SETS_REPS, (short) (i == 1 ? n : 3), (short) 10,
+                        null, null, (short) 90, null));
+            return sesion(ej);
+        };
+        java.util.function.Function<PreviousWeekSummary, PlanGenerationContext> ctx = pw -> {
+            var c = ctx("INCREASE_STRENGTH", "INTERMEDIATE", 75, PlanningPolicy.REV2, elegibles);
+            return new PlanGenerationContext(c.userId(), (short) 2, c.weekStartDate(), c.weekEndDate(), c.profile(),
+                    c.adjustment(), pw, c.availableExercises(), c.safety(), c.prescription(), c.policy());
+        };
+        // Heredada de una semana con 24 series (p. ej. un plan generado con la historica): la copia exacta pasa.
+        var heredada = previa(3, 3, 3, 3, 3, 3, 3, 3);
+        assertTrue(problemas(conSeries.apply(3), ctx.apply(heredada), "V26:").isEmpty());
+        // Subir una serie por encima de lo heredado (y del techo) se rechaza.
+        var sube = problemas(conSeries.apply(4), ctx.apply(heredada), "V26:");
+        assertTrue(sube.stream().anyMatch(p -> p.contains("techo por sesion")), sube.toString());
+        assertTrue(sube.stream().anyMatch(p -> p.contains("techo semanal")), sube.toString());
+        // Semana previa por debajo del techo: el techo rige tal cual (no se gana margen por heredar).
+        var baja = problemas(conSeries.apply(3), ctx.apply(previa(3, 3, 3)), "V26:");
+        assertFalse(baja.isEmpty(), "24 series > 10 por sesion y > 20 por semana aunque la previa tuviera 9");
+        // Sin semana previa (generacion inicial): el techo de siempre.
+        assertFalse(problemas(conSeries.apply(3), ctx.apply(null), "V26:").isEmpty());
+    }
+
     @Test
     @DisplayName("P-G3: sin traccion elegible, 5 y 6 dias alternan superior/inferior; con traccion o con la historica, la division de siempre")
     void division() {
