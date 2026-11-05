@@ -141,3 +141,27 @@ python3 -I $N/herramientas/oraculo_k20.py <carpeta_J> $J
 - se bloquea si una predicción supera la reserva o no tiene métricas (`A2` §2).
 
 La cifra oficial es la del panel de Replicate.
+
+## 8. Resultados de D y D′ (versión congelada `89a1e4f`, sin IA)
+
+| Corrida | Cohorte | Oráculo v2 | Huella normalizada | Incidencias |
+|---|---|---|---|---|
+| **D** | U01–U20 | **20/20 PASS** | `f9f67973…` = **D de la evaluación congelada** | 0 |
+| **D′** | U01–U20 | **20/20 PASS** | `f9f67973…` (= D) | 0 |
+| **D** | J01–J16 | **15/16 PASS, 1 FAIL (J03)** | `276d535d…` | 1 |
+| **D′** | J01–J16 | **15/16 PASS, 1 FAIL (J03)** | `276d535d…` (= D) | 1 |
+
+**D = D′ en las dos cohortes.** Los cuatro `00_configuracion.txt` registran el commit `89a1e4f`, el catálogo `425fc958…`, las 46 migraciones y el sha256 de los perfiles (U `584e2204…`, J `2f793c9f…`).
+
+### J03: fallo de generación inicial (primer resultado sobre J; se informa y no se corrige)
+
+- **Perfil:** LOSE_WEIGHT, principiante, casa con peso corporal, 4 días, 70 min (`J-F`, fatiga).
+- **Resultado:** `PlanGenerationFailedException`. V20 rechaza las sesiones: duran unos 2.706 s y el mínimo es 2.940 s (70 % de 70 min); faltan 234 s.
+- **Familia:** es la limitación ya registrada antes de ejecutar J, la de los principiantes de 75 min de LOSE_WEIGHT (R0436 y R0724 en `evidencia/v34/PERFILES_SIN_PLAN_VALIDO.csv`; `13` §4). No es un defecto nuevo de 4D ni de la IA: es el catálogo de bajo impacto para principiantes en casa frente al piso de V20 con sesiones largas.
+- **Consecuencias, según el protocolo:**
+  - **J03 es FAIL en A-1** en D y D′, y lo será en R y R′, porque la generación inicial es determinista y no depende de la IA.
+  - El **objetivo de 16/16 en J no se puede alcanzar** con la versión congelada: el máximo es **15/16**. Se informará así.
+  - J03 no tiene sesiones señaladas publicadas, así que no aporta sesiones factibles al denominador de B-2.
+  - **No se modifica J ni el sistema** para ocultarlo.
+
+**Evidencia:** `evidencia/final/D_U`, `D_J`, `Dp_U`, `Dp_J`, cada una con su `oraculo/` y su `ejecucion_maven_resumen.txt`.
