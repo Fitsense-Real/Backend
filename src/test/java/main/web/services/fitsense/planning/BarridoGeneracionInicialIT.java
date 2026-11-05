@@ -1,0 +1,140 @@
+package main.web.services.fitsense.planning;
+
+import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
+import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyPlanCommand;
+import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
+import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
+import main.web.services.fitsense.planning.domain.services.TrainingPlanGenerator;
+import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService;
+import main.web.services.fitsense.profiling.domain.model.commands.CreateUserProfileCommand;
+import main.web.services.fitsense.profiling.domain.model.valueobjects.BiologicalSex;
+import main.web.services.fitsense.profiling.domain.model.valueobjects.FitnessLevel;
+import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
+import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
+import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+
+import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.*;
+
+/**
+ * AUDITORIA POST R/R' · BARRIDO DE LA GENERACION INICIAL (solo mide). Para cada perfil admitido por P-01 en la rejilla
+ * objetivo (4) x nivel (3) x equipamiento (3) x dias (1-7) x minutos (30-75 cada 5, mas 53, 59, 61, 68 y 69) ejecuta el
+ * MOTOR DE REGLAS con el contexto real y valida con el validador de produccion. Registra resultado, reglas que fallan y,
+ * por sesion, los segundos estimados frente al piso de V20. Opt-in: {@code -Dfitsense.barrido.generacion=true};
+ * salida {@code -Dfitsense.barrido.salida}.
+ */
+@Testcontainers
+@EnabledIfSystemProperty(named = "fitsense.barrido.generacion", matches = "true")
+@SpringBootTest(properties = {
+        "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
+        "fitsense.ai.enabled=false",
+        "fitsense.ai.api-token="
+})
+class BarridoGeneracionInicialIT {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
+
+    @Autowired WeeklyTrainingPlanCommandService planComandos;
+    @Autowired UserProfileCommandService perfiles;
+    @Autowired PlanDraftValidator validador;
+    @Autowired @Qualifier("ruleBasedTrainingPlanGenerator") TrainingPlanGenerator reglas;
+    @Autowired JdbcTemplate jdbc;
+
+    static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
+    static final LocalDate SEMANA = LocalDate.of(2026, 11, 2);
+    static final Map<String, List<String>> EQUIPOS = new LinkedHashMap<>();
+    static {
+        EQUIPOS.put("GIMNASIO", List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine", "bench",
+                "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine"));
+        EQUIPOS.put("CASA_MANCUERNAS_BANDAS", List.of("body weight", "dumbbell", "band"));
+        EQUIPOS.put("CASA_PESO_CORPORAL", List.of("body weight"));
+    }
+    static final int[] MINUTOS = {30, 35, 40, 45, 50, 53, 55, 59, 60, 61, 65, 68, 69, 70, 75};
+    static final List<Short> SEMANA_DIAS = List.of((short) 1, (short) 2, (short) 3, (short) 4, (short) 5, (short) 6,
+            (short) 7);
+    static final Map<Integer, List<Short>> DIAS = Map.of(
+            1, List.of((short) 1), 2, List.of((short) 1, (short) 4), 3, List.of((short) 1, (short) 3, (short) 5),
+            4, List.of((short) 1, (short) 2, (short) 4, (short) 5),
+            5, List.of((short) 1, (short) 2, (short) 3, (short) 4, (short) 5),
+            6, SEMANA_DIAS.subList(0, 6), 7, SEMANA_DIAS);
+
+    int n;
+
+    @Test
+    void barrido() throws Exception {
+        var salida = Path.of(System.getProperty("fitsense.barrido.salida", "target/barrido-generacion"));
+        Files.createDirectories(salida);
+        var csv = new StringBuilder("objetivo,nivel,equipo,dias,minutos,sesiones,resultado,codigos,seg_min_sesion,"
+                + "seg_max_sesion,piso_v20,deficit_max_s,primer_problema\n");
+        for (var objetivo : GoalType.values())
+            for (var nivel : FitnessLevel.values())
+                for (var equipo : EQUIPOS.keySet())
+                    for (int dias = 1; dias <= 7; dias++)
+                        for (int m : MINUTOS) {
+                            n++;
+                            String email = "barrido" + n + "@pruebas.invalid";
+                            jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at,"
+                                    + " enrolled_at) VALUES (?, 'x', 'Barrido', now(), now())", email);
+                            long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
+                            perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1990, 6, 15),
+                                    BiologicalSex.FEMALE, new BigDecimal("168"), new BigDecimal("68"), null, nivel,
+                                    objetivo, "barrido", "GIMNASIO".equals(equipo) ? TrainingLocation.GYM
+                                    : TrainingLocation.HOME, (short) dias, DIAS.get(dias), (short) m,
+                                    EQUIPOS.get(equipo), List.of(), "Ninguna", true, true, true, true, true));
+                            String resultado, codigos = "", primero = "";
+                            long smin = -1, smax = -1, piso = -1, deficit = 0;
+                            int sesiones = 0;
+                            try {
+                                var prep = planComandos.prepare(new GenerateWeeklyPlanCommand(u, SEMANA, null, true,
+                                        null, null));
+                                var ctx = prep.context();
+                                piso = PlanDraftValidator.minimumSessionSeconds(ctx);
+                                var d = reglas.generate(ctx, List.of());
+                                sesiones = d.workouts().size();
+                                smin = Long.MAX_VALUE;
+                                for (var w : d.workouts()) {
+                                    long s = ESTIMADOR.estimateSeconds(w, ctx.prescription());
+                                    smin = Math.min(smin, s);
+                                    smax = Math.max(smax, s);
+                                    deficit = Math.max(deficit, piso - s);
+                                }
+                                try {
+                                    validador.validate(d, ctx, prep.divisor());
+                                    resultado = "VALIDO";
+                                } catch (InvalidPlanDraftException e) {
+                                    resultado = "INVALIDO";
+                                    var cs = new TreeSet<String>();
+                                    e.problems().forEach(x -> cs.add(x.contains(":") ? x.substring(0, x.indexOf(':'))
+                                            : "OTRO"));
+                                    codigos = String.join(" ", cs);
+                                    primero = e.problems().get(0);
+                                }
+                            } catch (RuntimeException e) {
+                                resultado = "SIN_BORRADOR";
+                                primero = e.getClass().getSimpleName() + ": " + e.getMessage();
+                            }
+                            primero = primero.replace("\"", "'").replace("\n", " ");
+                            if (primero.length() > 300) primero = primero.substring(0, 300);
+                            csv.append(String.join(",", objetivo.name(), nivel.name(), equipo, "" + dias, "" + m,
+                                    "" + sesiones, resultado, codigos, "" + smin, "" + smax, "" + piso,
+                                    "" + Math.max(0, deficit), "\"" + primero + "\"")).append('\n');
+                        }
+        Files.writeString(salida.resolve("barrido_generacion.csv"), csv);
+        System.out.println("BARRIDO_GENERACION perfiles=" + n);
+    }
+}
