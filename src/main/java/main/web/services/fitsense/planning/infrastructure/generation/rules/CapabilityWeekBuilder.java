@@ -269,11 +269,12 @@ class CapabilityWeekBuilder {
             var agotados = new HashSet<String>();
             if (piso > 0 || porDosis) {
                 while (dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA
-                        && (porDosis ? faltaDosis(enfoque, dia, agotados) : corto(fecha, enfoque, dia, piso))) {
+                        && (porDosis ? faltaDosis(enfoque, dia, agotados, slotsPorCubrir, resistidosDia, selector)
+                        : corto(fecha, enfoque, dia, piso))) {
                     diaPorGrupo = seriesPorGrupo(dia);
                     var extra = porDosis
                             ? siguientePorDosis(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
-                            gruposBloqueados, agotados)
+                            gruposBloqueados, agotados, slotsPorCubrir)
                             : siguienteRelleno(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
                             gruposBloqueados, slotsPorCubrir);
                     if (extra == null) break;
@@ -672,6 +673,17 @@ class CapabilityWeekBuilder {
         return s;
     }
 
+    /** ¿Queda un slot de fuerza pendiente con candidato en este enfoque? (objetivos con fuerza principal). */
+    private boolean slotDeFuerzaPendiente(ExerciseSelector selector, WorkoutFocus enfoque,
+                                          List<CandidateExercise> resistidosDia, Set<MandatorySlot> slotsPendientes) {
+        if (!principalFactible(Capability.STRENGTH) || "LOSE_WEIGHT".equals(objetivo)) return false;
+        var actuales = new ArrayList<>(resistidosDia);
+        for (var slot : slotsPendientes)
+            if (selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.deSlot(slot).and(cabeVolumen)).isPresent())
+                return true;
+        return false;
+    }
+
     /** Grupos del enfoque con trabajo resistido prescribible (el resto no puede tener objetivo de dosis). */
     private Set<String> gruposConMaterial(WorkoutFocus enfoque) {
         return resistidos.stream().filter(c -> ExerciseSelector.allowedIn(enfoque, c))
@@ -679,8 +691,13 @@ class CapabilityWeekBuilder {
     }
 
     /** Diseno A: ¿falta dosis en esta sesion (aerobico o series de algun grupo con material)? */
-    private boolean faltaDosis(WorkoutFocus enfoque, List<Colocacion> dia, Set<String> agotados) {
+    private boolean faltaDosis(WorkoutFocus enfoque, List<Colocacion> dia, Set<String> agotados,
+                               Set<MandatorySlot> slotsPendientes, List<CandidateExercise> resistidosDia,
+                               ExerciseSelector selector) {
         if (control == null) return false;
+        // Cobertura de patrones antes que dosis: un slot de fuerza que la semana aun no tiene y que cabe en el enfoque.
+        if (!agotados.contains("slots") && slotDeFuerzaPendiente(selector, enfoque, resistidosDia, slotsPendientes))
+            return true;
         if (principalFactible(Capability.CARDIO) && !agotados.contains("cardio")
                 && control.aerobicoPendiente(aerobicoSegundos(dia))) return true;
         var conMaterial = new HashSet<>(gruposConMaterial(enfoque));
@@ -696,8 +713,23 @@ class CapabilityWeekBuilder {
     private Colocacion siguientePorDosis(ExerciseSelector selector, WorkoutFocus enfoque,
                                          List<CandidateExercise> resistidosDia, List<CandidateExercise> cardio,
                                          List<Colocacion> dia, Set<Long> bloqueados, Set<String> gruposBloqueados,
-                                         Set<String> agotados) {
+                                         Set<String> agotados, Set<MandatorySlot> slotsPendientes) {
         while (true) {
+            // 0 · Cobertura de patrones: los slots de fuerza que la semana aun no tiene (objetivos con fuerza principal).
+            if (!agotados.contains("slots") && principalFactible(Capability.STRENGTH) && !"LOSE_WEIGHT".equals(objetivo)) {
+                var actuales = new ArrayList<>(resistidosDia);
+                for (var slot : slotsPendientes) {
+                    var extra = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot).and(cabeVolumen))
+                            .or(() -> selector.pickAdditional(enfoque, actuales, false,
+                                    ExerciseSelector.deSlot(slot).and(cabeVolumen)));
+                    if (extra.isPresent()) {
+                        var col = colocar(extra.get(), Capability.STRENGTH, true);
+                        if (col != null) return col;
+                    }
+                }
+                agotados.add("slots");
+                continue;
+            }
             // Orden: primero el trabajo resistido minimo de los grupos (la fuerza 2 dias por semana de la OMS no la
             // desplaza el cardio) y despues el aerobico.
             var pendientes = new HashSet<>(gruposConMaterial(enfoque));
