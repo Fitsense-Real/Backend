@@ -36,18 +36,31 @@ public record CandidateExercise(
          * «no cuenta para ningun slot» sino que se cuenta aparte, porque son dos
          * cosas distintas y confundirlas infla la cobertura.
          */
-        String movementPattern
+        String movementPattern,
+
+        /**
+         * P-C2: {@code exercises.high_impact} (V10). {@code null} cuando el origen no lo informa (pruebas, datos
+         * antiguos): se trata como desconocido, nunca como "bajo impacto".
+         */
+        Boolean highImpact
 ) {
+    public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
+                             int difficulty, PrescriptionType defaultPrescription, String targetMuscle,
+                             String movementPattern) {
+        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription, targetMuscle,
+                movementPattern, null);
+    }
+
     public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
                              int difficulty, PrescriptionType defaultPrescription) {
         this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription,
-                null, null);
+                null, null, null);
     }
 
     public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
                              int difficulty, PrescriptionType defaultPrescription,
                              String targetMuscle) {
         this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription,
-                targetMuscle, null);
+                targetMuscle, null, null);
     }
 }

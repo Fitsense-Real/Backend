@@ -566,8 +566,7 @@ public record PlanInputSnapshot(
                         : slotsExigibles(context),
                 !porCapacidades ? null : capacidades(context, limites, codigos, dosisDe),
                 context.policy().v4Segundos()
-                        ? main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy
-                                .limiteV4Segundos(context.profile().sessionMinutes())
+                        ? context.policy().limiteV4SegundosDe(context.profile().sessionMinutes())
                         : null);
 
         var adjustment = context.adjustment() == null ? null : new Adjustment(

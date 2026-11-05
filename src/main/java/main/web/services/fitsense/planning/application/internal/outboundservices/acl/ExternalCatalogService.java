@@ -160,7 +160,8 @@ public class ExternalCatalogService {
                         view.targetMuscle(),
                         // V26, para la cobertura de los cuatro slots de 4C. Se
                         // pasa tal cual: la traduccion a slots es de planning.
-                        view.movementPattern()))
+                        view.movementPattern(),
+                        view.highImpact()))
                 .toList();
 
         // Paso 2: filtro FUNCIONAL, despues de seguridad, dificultad,
@@ -220,7 +221,7 @@ public class ExternalCatalogService {
         catalogContextFacade.fetchDetails(exerciseIds).forEach((id, view) -> candidatos.put(id, new CandidateExercise(
                 view.exerciseId(), view.nameEs(), view.bodyPartCode(), view.equipmentCode(), view.difficultyLevel(),
                 view.isDurationBased() ? PrescriptionType.DURATION : PrescriptionType.SETS_REPS,
-                view.targetMuscle(), view.movementPattern())));
+                view.targetMuscle(), view.movementPattern(), view.highImpact())));
         return candidatos;
     }
 

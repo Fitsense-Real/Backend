@@ -132,6 +132,8 @@ public class CatalogContextFacade {
                 exercise.getImagePath(),
                 exercise.getMediaAttribution(),
                 // V26. Hasta ahora ninguna clase Java leia esta columna.
-                exercise.getMovementPattern());
+                exercise.getMovementPattern(),
+                // V10, para P-C2 (impacto).
+                exercise.isHighImpact());
     }
 }

@@ -47,15 +47,17 @@ public final class PlanningPolicyTrace {
         params.put("v4", politica.v4Segundos() ? "SEGUNDOS" : "HISTORICO");
         params.put("piso_v20_pct", ctx.prescription() == null ? null : ctx.prescription().floorPct());
         params.put("piso_v20_segundos", piso);
-        params.put("tolerancia_v4_pct", PlanningPolicy.TOLERANCIA_V4_PCT);
+        params.put("tolerancia_v4_pct", politica.toleranciaV4Pct());
+        params.put("duracion", politica.duracion().name());
+        params.put("objetivo_llenado_segundos", PlanDraftValidator.objetivoLlenadoSegundos(ctx));
         params.put("limite_v4", politica.v4Segundos()
-                ? Map.of("segundos", PlanningPolicy.limiteV4Segundos(m))
+                ? Map.of("segundos", politica.limiteV4SegundosDe(m))
                 : Map.of("minutos_declarados", (int) Math.round(m * 1.15)));
         params.put("limite_v4_minutos_base", m);
         var aplicado = new LinkedHashMap<String, Object>();
         aplicado.put("regla", v4cAplicada ? "V4C_SEGUNDOS" : "V4_MINUTOS");
         aplicado.put("minutos_base", perfil);
-        if (v4cAplicada) aplicado.put("segundos", PlanningPolicy.limiteV4Segundos(perfil));
+        if (v4cAplicada) aplicado.put("segundos", politica.limiteV4SegundosDe(perfil));
         else aplicado.put("minutos_declarados", techoMinutos);
         params.put("limite_v4_aplicado", aplicado);
         t.put("parametros", params);

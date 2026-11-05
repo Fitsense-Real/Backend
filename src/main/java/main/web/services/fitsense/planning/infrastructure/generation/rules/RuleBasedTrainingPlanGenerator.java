@@ -169,7 +169,9 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         // de minutos y la semana 2 no, el objetivo quedaria por encima del base
         // y el reductor destruiria la sesion. Por eso el minimo se calcula aqui
         // sin mirar el ajuste (V20 solo lo VALIDA cuando no hay orden de volumen).
-        int minimumMinutes = context.prescription() == null ? 0
+        // P-G1: el objetivo de llenado de la politica (historica y diseno B: el 70 % de siempre; diseno A: 0).
+        int minimumMinutes = context.prescription() == null
+                || PlanDraftValidator.objetivoLlenadoSegundos(context) == 0 ? 0
                 : sessionMinutes * context.prescription().floorPct() / 100;
         int techo = profile.maxSessionMinutes();
 
@@ -199,7 +201,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             if (minimumMinutes > 0 && context.prescription() != null) {
                 var date = dates.get(i);
                 java.util.function.BooleanSupplier falta = () -> segundosDe(date, focus, sessionMinutes,
-                        exercises, context) < PlanDraftValidator.minimumSessionSeconds(context);
+                        exercises, context) < PlanDraftValidator.objetivoLlenadoSegundos(context);
 
                 addUntilMinimum(selector, focus, picked, exercises, prescription, context, falta, true,
                         topeColocaciones, presupuestoDia, dosisFijada);
@@ -232,7 +234,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 // mientras falte.
                 var date = dates.get(i);
                 ampliarRelleno(focus, picked, exercises, () -> segundosDe(date, focus, sessionMinutes,
-                        exercises, context) < PlanDraftValidator.minimumSessionSeconds(context), presupuestoDia);
+                        exercises, context) < PlanDraftValidator.objetivoLlenadoSegundos(context), presupuestoDia);
             }
 
             // V4/V17: si el contenido supera el techo del perfil, se quitan
@@ -352,7 +354,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         int hechas = 0;
         boolean seguir = true;
         while (seguir && segundosDe(date, focus, sessionMinutes, exercises, context)
-                < PlanDraftValidator.minimumSessionSeconds(context)) {
+                < PlanDraftValidator.objetivoLlenadoSegundos(context)) {
             seguir = false;
 
             // picked y exercises van en paralelo (mismo indice): se recorre al

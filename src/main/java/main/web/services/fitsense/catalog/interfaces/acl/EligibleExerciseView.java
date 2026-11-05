@@ -29,8 +29,21 @@ public record EligibleExerciseView(
          * <p>
          * {@code null} solo en inactivos, que el conjunto elegible no trae.
          */
-        String movementPattern
+        String movementPattern,
+        /**
+         * {@code exercises.high_impact} (V10): saltos, pliometria, levantamientos olimpicos. Viaja para P-C2 (una
+         * sustitucion "mas sencilla" no puede subir el impacto). {@code null} si el origen no lo informa.
+         */
+        Boolean highImpact
 ) {
+    /** Compatibilidad: sin el dato de impacto. */
+    public EligibleExerciseView(Long exerciseId, String nameEs, String bodyPartCode, String equipmentCode,
+                                String targetMuscle, short difficultyLevel, String defaultPrescription,
+                                String gifPath, String imagePath, String mediaAttribution, String movementPattern) {
+        this(exerciseId, nameEs, bodyPartCode, equipmentCode, targetMuscle, difficultyLevel, defaultPrescription,
+                gifPath, imagePath, mediaAttribution, movementPattern, null);
+    }
+
     public boolean isDurationBased() {
         return "DURATION".equals(defaultPrescription);
     }

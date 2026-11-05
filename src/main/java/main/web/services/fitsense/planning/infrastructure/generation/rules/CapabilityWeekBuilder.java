@@ -137,7 +137,10 @@ class CapabilityWeekBuilder {
         var split = context.suggestedSplit();
         int minutosSesion = context.effectiveSessionMinutes();
         int techo = context.profile().maxSessionMinutes();
-        int piso = PlanDraftValidator.minimumSessionMinutes(context);
+        // P-G1: el generador llena hacia el OBJETIVO de la politica (historica y diseno B: el 70 %; diseno A: 0),
+        // no hacia el piso que valida V20 (que en las politicas nuevas no existe).
+        int piso = PlanDraftValidator.objetivoLlenadoSegundos(context) > 0
+                ? PlanDraftValidator.minimumSessionMinutesHistorico(context) : 0;
         int maxDificultad = context.effectiveMaxDifficulty();
 
         var verificados = context.availableExercises().stream()
@@ -1219,7 +1222,7 @@ class CapabilityWeekBuilder {
         if (context.prescription() == null) return false;
         return estimador.estimateSeconds(new PlanDraft.DraftWorkout(fecha, enfoque, nombre(enfoque), 0,
                 dia.stream().map(Colocacion::ejercicio).toList()), context.prescription())
-                < PlanDraftValidator.minimumSessionSeconds(context);
+                < PlanDraftValidator.objetivoLlenadoSegundos(context);
     }
 
     /**

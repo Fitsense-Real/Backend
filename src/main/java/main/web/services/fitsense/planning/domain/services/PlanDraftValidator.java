@@ -619,6 +619,16 @@ public class PlanDraftValidator {
             // 4D v3.2: la serie adicional solo se admite si, sin ella, la sesion no llega al minimo
             // de V20. Donde V20 no aplica (sesion autorizada a acortarse, o sin piso) no se exige.
             long piso = minimumSessionSeconds(context);
+            // P-G1: sin piso de duracion la serie adicional NUNCA es necesaria, asi que V24 la rechaza siempre
+            // (mas estricto que antes, nunca mas laxo: V24 de la generacion inicial no se relaja).
+            if (!ampliadas.isEmpty() && context.policy() != null && !context.policy().pisoV20())
+                for (int k : ampliadas) {
+                    var e = workout.exercises().get(k);
+                    incumplimientos.add(("V24: el ejercicio %d del %s lleva %dx%d y la serie adicional de 4D v3.2/v3.3"
+                            + " solo existia para llegar al minimo de V20, que esta politica (%s) no tiene. Usa %dx%d.")
+                            .formatted(e.exerciseId(), workout.scheduledDate(), e.plannedSets(), e.plannedReps(),
+                                    context.policy().id(), e.plannedSets() - 1, e.plannedReps()));
+                }
             if (!ampliadas.isEmpty() && piso > 0 && context.prescription() != null
                     && !conservation.fechasConDuracionReducible().contains(workout.scheduledDate()))
                 for (int k : ampliadas) {
@@ -1016,11 +1026,12 @@ public class PlanDraftValidator {
                 // V4-C (version candidata): los SEGUNDOS ESTIMADOS del contenido, no lo declarado. Una sesion que
                 // declara 35 minutos con 2.550 s de contenido en un perfil de 30 se rechaza.
                 long segundos = durationEstimator.estimateSeconds(workout, context.prescription());
-                long limite = PlanningPolicy.limiteV4Segundos(minutosPerfil);
+                long limite = politica.limiteV4SegundosDe(minutosPerfil);
                 if (politica.excedeTecho(segundos, workout.expectedDurationMinutes(), minutosPerfil))
                     problems.add(("V4: el entrenamiento del %s dura unos %d s segun su contenido y el techo es %d s"
-                            + " (%d minutos + 15 %%), declare lo que declare. Quita trabajo hasta caber.")
-                            .formatted(workout.scheduledDate(), segundos, limite, minutosPerfil));
+                            + " (%d minutos + %d %%), declare lo que declare. Quita trabajo hasta caber.")
+                            .formatted(workout.scheduledDate(), segundos, limite, minutosPerfil,
+                                    politica.toleranciaV4Pct()));
             } else if (workout.expectedDurationMinutes() > ceiling)
                 problems.add("V4: el entrenamiento del %s dura %d minutos y el techo es %d."
                         .formatted(workout.scheduledDate(), workout.expectedDurationMinutes(), ceiling));
@@ -1514,11 +1525,40 @@ public class PlanDraftValidator {
      */
     public static long minimumSessionSeconds(PlanGenerationContext context) {
         if (minimumSessionMinutes(context) == 0) return 0;
+        return pisoHistoricoSegundos(context);
+    }
+
+    /**
+     * 0 cuando no aplica: hay orden de volumen, no hay configuracion o la politica no tiene piso de duracion
+     * (P-G1: {@code sessionMinutes} es el maximo disponible y V20 ya no rechaza por el 70 %).
+     */
+    public static int minimumSessionMinutes(PlanGenerationContext context) {
+        if (context.policy() != null && !context.policy().pisoV20()) return 0;
+        return minutosPisoHistorico(context);
+    }
+
+    /**
+     * Lo que el GENERADOR intenta alcanzar con relleno, en segundos. Historica y diseno B (llenado acotado): el 70 %
+     * de siempre (en B es un objetivo blando: V20 no rechaza y el techo de volumen manda). Diseno A (dosis
+     * semanal): 0, porque el contenido lo decide la dosis y no el reloj.
+     */
+    public static long objetivoLlenadoSegundos(PlanGenerationContext context) {
+        if (context.policy() != null
+                && context.policy().duracion() == PlanningPolicy.Duracion.DOSIS_SEMANAL) return 0;
+        if (minutosPisoHistorico(context) == 0) return 0;
+        return pisoHistoricoSegundos(context);
+    }
+
+    private static long pisoHistoricoSegundos(PlanGenerationContext context) {
         return (context.effectiveSessionMinutes() * 60L * context.prescription().floorPct() + 99) / 100;
     }
 
-    /** 0 cuando no aplica: hay orden de volumen o no hay configuracion. */
-    public static int minimumSessionMinutes(PlanGenerationContext context) {
+    /** El piso historico en minutos (70 %), sin mirar la politica: lo que el generador usa como objetivo de llenado. */
+    public static int minimumSessionMinutesHistorico(PlanGenerationContext context) {
+        return minutosPisoHistorico(context);
+    }
+
+    private static int minutosPisoHistorico(PlanGenerationContext context) {
         if (context.prescription() == null) return 0;
         if (context.adjustment() != null && context.adjustment().isActive()) return 0;
         return context.effectiveSessionMinutes() * context.prescription().floorPct() / 100;
