@@ -28,7 +28,7 @@
 | `AdherenciaSesionesProgramadasTest` (2) | 4 programadas (de 5 disponibles) y las 4 hechas = **100 %**; 3 de 4 = **75 %** (no 60 %) | 2/2 |
 | `FrecuenciaPorNivelIT` (ciclo real: generación y persistencia) | 4 objetivos × 3 niveles × 1–7 días pedidos × 3 patrones de disponibilidad (exactos, toda la semana, no consecutivos): **216 planes**. Comprueba recuento, días disponibles, una sesión por día, días pegados nunca con el mismo enfoque ni con dos cuerpos completos, y aviso FREQUENCY | **HIST 216/216 y REV2 216/216.** Principiante 5, 6 o 7 → 4; intermedio y avanzado 7 → 6. 248 pares de días pegados, todos con enfoque alterno |
 
-**Observación sin cambio:** `chooseDates` no separa al máximo; con 4 de 7 da viernes y sábado seguidos. La recuperación sí la garantiza la alternancia de enfoques. Cambiar la elección de fechas alteraría todos los planes históricos, así que no se toca; queda propuesto (P11 de `13_LIMITACIONES`).
+**Observación sin cambio:** `chooseDates` no separa al máximo; con 4 de 7 da viernes y sábado seguidos. La recuperación sí la garantiza la alternancia de enfoques. Cambiar la elección de fechas alteraría todos los planes históricos, así que no se toca; queda propuesto (P11 de `18_INFORME_CIERRE.md`).
 
 ## 3. Oráculo: contrato de días versionado (`+DIAS-1`)
 
@@ -52,7 +52,7 @@
 - **L05 conserva su clasificación histórica (FAIL).**
 - Con el contrato corregido pasa: es una **reevaluación**, no un cambio del experimento.
 - No cambia ninguna otra clasificación en U, J, K ni L (13 corridas re-evaluadas).
-- **Advertencia de protocolo:** la secuencia de L05 (H/H/H/H/O) preveía una omisión «demasiado difícil» en la 5.ª sesión, que nunca existió. El escenario de adaptación de L05 **no se ejercitó**: completó 4/4, Aw 100 % y NO_CHANGE. La cohorte M (`19_COHORTE_M.md`) genera las secuencias sobre las sesiones programadas, no sobre los días pedidos.
+- **Advertencia de protocolo:** la secuencia de L05 (H/H/H/H/O) preveía una omisión «demasiado difícil» en la 5.ª sesión, que nunca existió. El escenario de adaptación de L05 **no se ejercitó**: completó 4/4, Aw 100 % y NO_CHANGE. La cohorte M (`cohorte_M/M_MANIFIESTO.md`) genera las secuencias sobre las sesiones programadas, no sobre los días pedidos.
 
 ## 4. Aplicación móvil (repositorio `mobileapp`, fuera de esta sesión: solo contrato)
 

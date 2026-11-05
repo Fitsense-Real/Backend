@@ -1,0 +1,21 @@
+HIST_D_J | hist {"FAIL": 1, "PASS": 15} 276d53 | rev2 {"FAIL": 6, "PASS": 10} 276d53 | rev2+dias {"FAIL": 6, "PASS": 10} 276d53 | hist+dias {"FAIL": 1, "PASS": 15} 276d53 | huella 276d535d6f96
+HIST_D_K | hist {"PASS": 16} 54a5bda007b29ca5f | rev2 {"FAIL": 2, "PASS": 14} 54a5bd | rev2+dias {"FAIL": 2, "PASS": 14} 54a5bd | hist+dias {"PASS": 16} 54a5bda007b29ca5f | huella 54a5bda007b2
+HIST_D_L | hist {"FAIL": 1, "PASS": 15} a13790 | rev2 {"FAIL": 8, "PASS": 8} a137904 | rev2+dias {"FAIL": 7, "PASS": 9} a137904 | hist+dias {"PASS": 16} a137904895eced5ba | huella a137904895ec
+HIST_D_M | hist {"FAIL": 8, "PASS": 22} 0e010d | rev2 {"FAIL": 18, "PASS": 12} 0e010 | rev2+dias {"FAIL": 15, "PASS": 15} 0e010 | hist+dias {"PASS": 30} 0e010d078d6a69b41 | huella 0e010d078d6a
+HIST_D_U | hist {"PASS": 20} f9f67973759d60cd9 | rev2 {"PASS": 20} f9f67973759d60cd9 | rev2+dias {"PASS": 20} f9f67973759d60cd9 | hist+dias {"PASS": 20} f9f67973759d60cd9 | huella f9f67973759d
+REV2_D_J | hist {"FAIL": 9, "PASS": 7} 97228f0 | rev2 {"PASS": 16} 97228f041355c23ee | rev2+dias {"PASS": 16} 97228f041355c23ee | hist+dias {"FAIL": 9, "PASS": 7} 97228f0 | huella 97228f041355
+REV2_D_K | hist {"FAIL": 6, "PASS": 10} 73f28d | rev2 {"PASS": 16} 73f28d978d322894c | rev2+dias {"PASS": 16} 73f28d978d322894c | hist+dias {"FAIL": 6, "PASS": 10} 73f28d | huella 73f28d978d32
+REV2_D_L | hist {"FAIL": 6, "PASS": 10} 83bd19 | rev2 {"FAIL": 1, "PASS": 15} 83bd19 | rev2+dias {"PASS": 16} 83bd199afbf7907a2 | hist+dias {"FAIL": 5, "PASS": 11} 83bd19 | huella 83bd199afbf7
+REV2_D_M | hist {"FAIL": 20, "PASS": 10} 662e1 | rev2 {"FAIL": 9, "PASS": 21} 662e19 | rev2+dias {"FAIL": 1, "PASS": 29} 662e19 | hist+dias {"FAIL": 15, "PASS": 15} 662e1 | huella 662e19cfd1eb
+REV2_D_U | hist {"FAIL": 10, "PASS": 10} a662c | rev2 {"PASS": 20} a662cb4d81f1ea139 | rev2+dias {"PASS": 20} a662cb4d81f1ea139 | hist+dias {"FAIL": 10, "PASS": 10} a662c | huella a662cb4d81f1
+REV2_Dp_J | hist {"FAIL": 9, "PASS": 7} 97228f0 | rev2 {"PASS": 16} 97228f041355c23ee | rev2+dias {"PASS": 16} 97228f041355c23ee | hist+dias {"FAIL": 9, "PASS": 7} 97228f0 | huella 97228f041355
+REV2_Dp_K | hist {"FAIL": 6, "PASS": 10} 73f28d | rev2 {"PASS": 16} 73f28d978d322894c | rev2+dias {"PASS": 16} 73f28d978d322894c | hist+dias {"FAIL": 6, "PASS": 10} 73f28d | huella 73f28d978d32
+REV2_Dp_L | hist {"FAIL": 6, "PASS": 10} 83bd19 | rev2 {"FAIL": 1, "PASS": 15} 83bd19 | rev2+dias {"PASS": 16} 83bd199afbf7907a2 | hist+dias {"FAIL": 5, "PASS": 11} 83bd19 | huella 83bd199afbf7
+REV2_Dp_M | hist {"FAIL": 20, "PASS": 10} 662e1 | rev2 {"FAIL": 9, "PASS": 21} 662e19 | rev2+dias {"FAIL": 1, "PASS": 29} 662e19 | hist+dias {"FAIL": 15, "PASS": 15} 662e1 | huella 662e19cfd1eb
+REV2_Dp_U | hist {"FAIL": 10, "PASS": 10} a662c | rev2 {"PASS": 20} a662cb4d81f1ea139 | rev2+dias {"PASS": 20} a662cb4d81f1ea139 | hist+dias {"FAIL": 10, "PASS": 10} a662c | huella a662cb4d81f1
+REV2_S_J | hist {"FAIL": 9, "PASS": 7} dafe603 | rev2 {"PASS": 16} dafe6034a2c214233 | rev2+dias {"PASS": 16} dafe6034a2c214233 | hist+dias {"FAIL": 9, "PASS": 7} dafe603 | huella dafe6034a2c2
+REV2_S_K | hist {"FAIL": 7, "PASS": 9} 8ad60c9 | rev2 {"PASS": 16} 8ad60c9bac83dedc4 | rev2+dias {"PASS": 16} 8ad60c9bac83dedc4 | hist+dias {"FAIL": 7, "PASS": 9} 8ad60c9 | huella 8ad60c9bac83
+REV2_S_L | hist {"FAIL": 7, "PASS": 9} dc0ed02 | rev2 {"FAIL": 1, "PASS": 15} dc0ed0 | rev2+dias {"PASS": 16} dc0ed02ddbb1cc1a6 | hist+dias {"FAIL": 6, "PASS": 10} dc0ed0 | huella dc0ed02ddbb1
+REV2_S_M | hist {"FAIL": 21, "PASS": 9} e0cc34 | rev2 {"FAIL": 9, "PASS": 21} e0cc34 | rev2+dias {"FAIL": 1, "PASS": 29} e0cc34 | hist+dias {"FAIL": 16, "PASS": 14} e0cc3 | huella e0cc3474475d
+REV2_S_U | hist {"FAIL": 10, "PASS": 10} 84dfb | rev2 {"PASS": 20} 84dfb6d2160755817 | rev2+dias {"PASS": 20} 84dfb6d2160755817 | hist+dias {"FAIL": 10, "PASS": 10} 84dfb | huella 84dfb6d21607
+REV2_S_U_FALLO | hist {"FAIL": 10, "PASS": 10} 472de | rev2 {"PASS": 20} 472de2bd12b055f29 | rev2+dias {"PASS": 20} 472de2bd12b055f29 | hist+dias {"FAIL": 10, "PASS": 10} 472de | huella 472de2bd12b0
