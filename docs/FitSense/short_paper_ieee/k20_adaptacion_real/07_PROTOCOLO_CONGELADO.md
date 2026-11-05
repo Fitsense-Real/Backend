@@ -22,9 +22,9 @@
 
 ### Objetivo A · Recorrido completo (oráculo v2)
 
-| Criterio | U01–U20 | J01–J16 (propuesta) |
+| Criterio | U01–U20 | J01–J16 (**aprobados**) |
 |---|---|---|
-| A-1. PASS en R y en R′ | **20/20** | **16/16**. Un fallo de generación se informa como FAIL y no se excluye. **J05 (GM, 59 min) cae en la franja de C-8**: si C-8 no se aprueba antes de congelar, es un FAIL previsible y así se declarará en este documento antes de ejecutar |
+| A-1. PASS en R y en R′ | **20/20** | **16/16**. Un fallo, de generación o de recorrido, se informa como FAIL y no se excluye. **No se modifican ni J ni el sistema para ocultarlo.** J05 (GM, 59 min) cae en la franja de C-8, que ya está integrada; J no se ha ejecutado |
 | A-2. Seguridad en R y R′ | 0 incumplimientos | 0 incumplimientos |
 
 ### Objetivo B · Adaptación efectiva por IA
@@ -45,7 +45,7 @@
 | Criterio | Umbral |
 |---|---|
 | **B-1 (U)** | R y R′ juntas: **≥ 18/20** (90 %), y **ninguna corrida por debajo de 9/10**. Objetivo de ingeniería: 10/10 en cada una |
-| **B-2 (J, evaluación independiente; propuesta)** | Sobre las sesiones factibles de J en cada corrida: R y R′ juntas **≥ 80 %**, con el límite inferior de Wilson al 95 % ≥ 63 %, y ninguna corrida por debajo del 75 % de sus factibles |
+| **B-2 (J, evaluación independiente; aprobado)** | Adaptaciones **efectivas y pertinentes** (ACC o ALT, que se informan por separado) sobre las sesiones factibles de J en cada corrida. R y R′ juntas **≥ 80 %**, con el límite inferior de Wilson al 95 % ≥ 63 %, y ninguna corrida por debajo del 75 % de sus factibles. Las sesiones no factibles (NF, CONS-J) se registran aparte |
 | **B-3 (pertinencia estricta)** | Se informa la proporción de **ACC** entre los éxitos, por causa, **sin umbral** |
 | **B-4 (cambio mínimo)** | 0 sesiones de desmotivación con más de 2 ejercicios cambiados (INC) |
 

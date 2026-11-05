@@ -170,7 +170,9 @@ class Plan60HipertrofiaIT {
     @DisplayName("el log de DOSIS_4D imprime el tope que exige V24, no el 6 congelado")
     void logConElTope() {
         assertTrue(MvpDosePolicy.describeTabla(60).contains("maximo 7 colocaciones/dia"));
-        assertTrue(MvpDosePolicy.describeTabla(59).contains("maximo 6 colocaciones/dia"));
+        // 4D v3.1 imprimia 6 a 59 minutos; con C-8 (aprobada, ADENDA_4D_v3_4.md) son 7 de 53 a 59. 45 y 60 no cambian.
+        assertTrue(MvpDosePolicy.describeTabla(59).contains("maximo 7 colocaciones/dia"));
+        assertTrue(MvpDosePolicy.describeTabla(52).contains("maximo 6 colocaciones/dia"));
         assertTrue(MvpDosePolicy.describeTabla(45).contains("maximo 6 colocaciones/dia"));
     }
 }

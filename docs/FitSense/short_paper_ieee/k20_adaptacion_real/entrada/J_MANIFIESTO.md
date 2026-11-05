@@ -72,3 +72,12 @@ Es determinista y distinta de la de H en el nivel, la ubicación, los días y lo
 - ampliada: H/O/O o H/O/O/O.
 
 **Datos personales:** los del perfil E1 del mismo objetivo, como en H. Semanas: 2026-11-02 y 2026-11-09.
+
+## Actualización (sin cambiar el CSV ni el SHA)
+
+- **C-8** (GAIN_MUSCLE de 53 a 59 min) está aprobada e integrada, así que J05 ya no es un fallo previsible por esa causa. **J sigue sin ejecutarse.**
+- **Criterios de J aprobados** (`07`):
+  - A-1: 16/16;
+  - B-2: al menos el 80 % de las sesiones factibles, con un límite de Wilson ≥ 63 % y ninguna corrida por debajo del 75 %;
+  - 0 incumplimientos de seguridad.
+- Cualquier fallo en la evaluación final se informa; no se modifican ni la cohorte ni el sistema para ocultarlo.

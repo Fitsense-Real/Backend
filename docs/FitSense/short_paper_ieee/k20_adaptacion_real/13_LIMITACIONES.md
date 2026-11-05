@@ -13,8 +13,8 @@
    - en H, 5 de 21 (GAIN_MUSCLE y márgenes V20 menores que el cambio mínimo).
 4. **Generación inicial de GAIN_MUSCLE por minutos:**
    - **61–75 min:** corregido por 4D v3.4 (C-7, aprobado). H05 y R0548 generan.
-   - **53–59 min: sigue sin generar** (C-8, pendiente de decisión). Fallan los 42 perfiles intermedios de la rejilla `Hipertrofia4Dv34IT`. Ni U, ni H, ni la matriz de 960 tienen esos minutos; **J05 (59 min) sí**.
-   - **Volumen semanal:** con 61–75 min y 3 días, algunos grupos (pecho, muslo) llegan a 36 series semanales, frente a 27 con 60 min. No incumple ninguna regla vigente (V15 se cumple) y queda para la revisión profesional (`ADENDA_4D_v3_4.md` §4.2).
+   - **53–59 min:** corregido por C-8 (aprobado). La rejilla `Hipertrofia4Dv34IT` pasa de 42 fallos (registro histórico) a 312/312.
+   - **Volumen semanal elevado (limitación):** con 61–75 min y 3 días, pecho y muslo llegan a 36 series semanales, frente a 27 con 60 min. No incumple ninguna regla vigente (V15 y V13 se cumplen). **Su adecuación profesional no está demostrada** y no se afirma; queda para la revisión profesional (`ADENDA_4D_v3_4.md` §4.2).
    - **Otros perfiles extremos de la matriz de 960 siguen sin plan válido** por otras causas: V15 con 1 día, principiantes de 75 min y peso corporal con 6–7 días. Están registrados sin alterar en `evidencia/v34/PERFILES_SIN_PLAN_VALIDO.csv`.
 5. **La sonda solo enumera modificaciones simples.** Una imposibilidad está demostrada para U03/U04 S3 (`01`). En el resto, «factible» quiere decir que hay al menos una modificación simple válida.
 6. **El oráculo** no re-verifica V16, V24/4D, V9 ni la cobertura 4C. La pertinencia es una regla operativa, no un juicio profesional.
