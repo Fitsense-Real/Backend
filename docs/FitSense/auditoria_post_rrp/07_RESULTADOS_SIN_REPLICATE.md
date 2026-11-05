@@ -21,7 +21,7 @@ Evidencia: `evidencia/k20/{D,Dp,S}_{U,J,K}/`, `evidencia/barrido*/` y los regist
 
 ### 1.1 Prototipo P-G2 completo (laboratorio; no forma parte de la versión candidata)
 
-Prototipo encendido en el validador (`PlanDraftValidator`), el constructor (`CapabilityWeekBuilder.respetaMitad`) y el selector (`ExerciseSelector.halfCap`), con `-Dfitsense.lab.v15-mitad-prescribibles=true`. Código: commit de laboratorio `a87bccb` (rama local `investigacion/k20-post-rrp-lab`).
+Prototipo encendido en el validador (`PlanDraftValidator`), el constructor (`CapabilityWeekBuilder.respetaMitad`) y el selector (`ExerciseSelector.halfCap`), con `-Dfitsense.lab.v15-mitad-prescribibles=true`. Código: commit `6f8b1b9` de la rama de auditoría (apagado por omisión).
 
 - **Rescata 30 perfiles:** LOSE_WEIGHT principiante, casa (con o sin material), 4, 5 o 7 días, 65–75 min. Entre ellos está la familia de J03; el diagnóstico de J03 da un plan VÁLIDO.
 - **No es neutral:** **al menos 168 perfiles que ya eran válidos cambian de plan** (detectados por un cambio en su duración mínima o máxima de sesión), todos de LOSE_WEIGHT (principiantes 114, intermedios y avanzados 54). Con la mitad relajada, el selector concentra más trabajo resistido en pierna en las sesiones LOWER.
