@@ -1,0 +1,19 @@
+REPLICATE_TIMING user=1 week=2 attempt=1 prediction_id=tv375vvtqsrmt0d1n77a43qatg post_ms=6025 polling_ms=0 polling_requests=0 total_ms=6025 resultado=SUCCEEDED
+REPLICATE_TIMING user=2 week=2 attempt=1 prediction_id=sfzbhf4w2nrmy0d1n779245qy4 post_ms=21237 polling_ms=0 polling_requests=0 total_ms=21237 resultado=SUCCEEDED
+REPLICATE_TIMING user=4 week=2 attempt=1 prediction_id=88ms0b7p11rmt0d1n77bvqbqqr post_ms=25624 polling_ms=3240 polling_requests=1 total_ms=28864 resultado=SUCCEEDED
+REPLICATE_TIMING user=5 week=2 attempt=1 prediction_id=1gg43xvd9drmw0d1n77s2rp2dm post_ms=20384 polling_ms=0 polling_requests=0 total_ms=20384 resultado=SUCCEEDED
+REPLICATE_TIMING user=6 week=2 attempt=1 prediction_id=xa38w6p38xrmw0d1n77rvrhrpm post_ms=25600 polling_ms=15749 polling_requests=5 total_ms=41349 resultado=SUCCEEDED
+REPLICATE_TIMING user=7 week=2 attempt=1 prediction_id=d8828mkcrxrmt0d1n78b7y52s8 post_ms=25626 polling_ms=19581 polling_requests=6 total_ms=45207 resultado=SUCCEEDED
+REPLICATE_TIMING user=8 week=2 attempt=1 prediction_id=d6wbta92wnrmt0d1n78szxhm50 post_ms=25183 polling_ms=9486 polling_requests=3 total_ms=34669 resultado=SUCCEEDED
+REPLICATE_TIMING user=9 week=2 attempt=1 prediction_id=s1decrxfqhrmr0d1n78vemcvv4 post_ms=14787 polling_ms=0 polling_requests=0 total_ms=14787 resultado=SUCCEEDED
+REPLICATE_TIMING user=10 week=2 attempt=1 prediction_id=k4b6gn7ef1rmy0d1n78twbedgr post_ms=16734 polling_ms=0 polling_requests=0 total_ms=16734 resultado=SUCCEEDED
+REPLICATE_TIMING user=11 week=2 attempt=1 prediction_id=hqxsze1m11rmr0d1n79ak0ne7r post_ms=25493 polling_ms=15738 polling_requests=5 total_ms=41231 resultado=SUCCEEDED
+REPLICATE_TIMING user=12 week=2 attempt=1 prediction_id=ka2nw2estsrmr0d1n799fajad8 post_ms=25639 polling_ms=12596 polling_requests=4 total_ms=38235 resultado=SUCCEEDED
+REPLICATE_TIMING user=13 week=2 attempt=1 prediction_id=gbfzpvvn6nrmy0d1n79tv9k9ww post_ms=25445 polling_ms=6350 polling_requests=2 total_ms=31795 resultado=SUCCEEDED
+REPLICATE_TIMING user=14 week=2 attempt=1 prediction_id=frhspjzwq1rmw0d1n79rbsjhzw post_ms=25470 polling_ms=28313 polling_requests=9 total_ms=53783 resultado=SUCCEEDED
+REPLICATE_TIMING user=15 week=2 attempt=1 prediction_id=kw5nahymjsrmy0d1n7a98qfc68 post_ms=25442 polling_ms=9522 polling_requests=3 total_ms=34964 resultado=SUCCEEDED
+REPLICATE_TIMING user=16 week=2 attempt=1 prediction_id=g98wex34ssrmr0d1n7arbaqmfr post_ms=25656 polling_ms=62771 polling_requests=20 total_ms=88427 resultado=SUCCEEDED
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/Rp_J_rep usuarios=16 llamadas=15 incidencias=1
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 558.4 s -- in Evaluacion final K20: 20 usuarios de extremo a extremo sobre la version candidata
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

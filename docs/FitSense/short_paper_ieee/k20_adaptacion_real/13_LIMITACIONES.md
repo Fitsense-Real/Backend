@@ -17,7 +17,11 @@
    - **Volumen semanal elevado (limitación):** con 61–75 min y 3 días, pecho y muslo llegan a 36 series semanales, frente a 27 con 60 min. No incumple ninguna regla vigente (V15 y V13 se cumplen). **Su adecuación profesional no está demostrada** y no se afirma; queda para la revisión profesional (`ADENDA_4D_v3_4.md` §4.2).
    - **J03 (cohorte independiente) no genera plan inicial** en D y D′ (LOSE_WEIGHT principiante, peso corporal, 4 días, 70 min: V20, faltan 234 s). Es la familia de los principiantes de 75 min, ya registrada antes de ejecutar J. Limita J a un máximo de 15/16 recorridos y se informa como resultado (`08` §8).
    - **Otros perfiles extremos de la matriz de 960 siguen sin plan válido** por otras causas: V15 con 1 día, principiantes de 75 min y peso corporal con 6–7 días. Están registrados sin alterar en `evidencia/v34/PERFILES_SIN_PLAN_VALIDO.csv`.
-5. **La sonda solo enumera modificaciones simples.** Una imposibilidad está demostrada para U03/U04 S3 (`01`). En el resto, «factible» quiere decir que hay al menos una modificación simple válida.
+5. **Dependencia del proveedor (R y R′):**
+   - 2 de 58 predicciones fallaron en Replicate (`failed` y `canceled`, sin tokens).
+   - El arnés de evaluación bloqueó entonces las llamadas siguientes, también el reintento del sistema. Las dos corridas se repitieron una vez según el protocolo y se informan (`09` §6).
+   - El sistema publicó respaldos seguros, con 0 incumplimientos.
+6. **La sonda solo enumera modificaciones simples.** Una imposibilidad está demostrada para U03/U04 S3 (`01`). En el resto, «factible» quiere decir que hay al menos una modificación simple válida.
 6. **El oráculo** no re-verifica V16, V24/4D, V9 ni la cobertura 4C. La pertinencia es una regla operativa, no un juicio profesional.
 7. **Variabilidad del modelo:** con 2 corridas por cohorte, la variabilidad solo queda descrita, no estimada con precisión.
 8. **La evidencia previa de V2 es de otro backend.** No se le atribuye a esta versión.

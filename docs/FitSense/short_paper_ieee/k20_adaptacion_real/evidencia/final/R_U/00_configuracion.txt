@@ -1,0 +1,24 @@
+evaluacion: K20 final IEEE
+modo: REPLICATE
+commit: 89a1e4fa7bf688e16530895d604ed0a1ce746dc0
+fecha_ejecucion_utc: 2026-11-05T03:14:21.418210768Z
+base: PostgreSQL efimero 16.15
+flyway_version: 44.2
+migraciones: 46
+checksum_migraciones: 9981294ded945dc1882bd26f2468c30f
+ejercicios_activos: 1219
+hash_catalogo: 425fc958d26b405a00a233fe9d8a3c3b
+ia_habilitada: true
+modelo: gpt-5-mini
+prompt_adaptacion: FIX-PR-2.1-EXP
+v8c_regla_patron: MULTICONJUNTO
+limite_dificultad: LIMITE_Y_PREFERENCIA (limita=true)
+retirada_localizada: solicitada=true activa=true
+progresion: false
+politica_por_defecto: PLAN-HIST-1
+perfiles: docs/FitSense/short_paper_ieee/evaluacion_final_k20/entrada/03_PERFILES_U01_U20.csv sha256=584e2204ec8eb41ef95bb61b7fe6a6f6c90164a36fe920d1097dcae250ae2307
+semanas: S1 2026-11-02 (medida, patron del perfil) -> S2 2026-11-09 (continuidad: todo hecho) -> S3 2026-11-16
+gemelos_generacion_ia: false
+credencial: secreto de red inyectado por el proxy (no visible)
+comprobacion_cuenta_http: 200
+limite_ia: 24 predicciones / USD 1.2 (reserva de peor caso 0.05 por prediccion; gasto real medido por tokens a 0.25 / 2.0 USD por millon)

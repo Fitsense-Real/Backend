@@ -1,0 +1,11 @@
+REPLICATE_TIMING user=1 week=2 attempt=1 prediction_id=7z4hkacedhrmr0d1n72rq5npcr post_ms=6072 polling_ms=0 polling_requests=0 total_ms=6072 resultado=SUCCEEDED
+REPLICATE_TIMING user=2 week=2 attempt=1 prediction_id=wkpx51xfndrmw0d1n72v1754f8 post_ms=21419 polling_ms=0 polling_requests=0 total_ms=21419 resultado=SUCCEEDED
+REPLICATE_TIMING user=4 week=2 attempt=1 prediction_id=qwdq06gaf9rmy0d1n738ttb0vg post_ms=25198 polling_ms=9489 polling_requests=3 total_ms=34687 resultado=SUCCEEDED
+REPLICATE_TIMING user=5 week=2 attempt=1 prediction_id=thshq2wrqnrmt0d1n738f30ts8 post_ms=25143 polling_ms=0 polling_requests=0 total_ms=25143 resultado=SUCCEEDED
+REPLICATE_TIMING user=6 week=2 attempt=1 prediction_id=bhxr5v028nrmy0d1n73sf48sfg post_ms=25674 polling_ms=28297 polling_requests=9 total_ms=53971 resultado=SUCCEEDED
+REPLICATE_TIMING user=7 week=2 attempt=1 prediction_id=4tjk14ywmsrmw0d1n73vrhzrs0 post_ms=25279 polling_ms=47158 polling_requests=15 total_ms=72437 resultado=SUCCEEDED
+REPLICATE_TIMING user=8 week=2 attempt=1 prediction_id=hzc2287xj5rmw0d1n74agyp30g post_ms=5418 polling_ms=0 polling_requests=0 total_ms=5418 resultado=NOT_SUCCEEDED
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/Rp_J usuarios=16 llamadas=7 incidencias=1
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 261.7 s -- in Evaluacion final K20: 20 usuarios de extremo a extremo sobre la version candidata
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
