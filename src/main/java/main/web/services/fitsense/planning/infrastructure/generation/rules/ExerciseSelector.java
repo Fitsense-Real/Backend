@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
+import main.web.services.fitsense.planning.domain.services.CoberturaDePatron;
+
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus;
@@ -87,11 +89,11 @@ class ExerciseSelector {
 
     /** Candidato de uno de los cuatro slots de 4C. */
     static final Predicate<CandidateExercise> ESTRUCTURAL =
-            candidate -> MandatorySlot.of(candidate).isPresent();
+            candidate -> CoberturaDePatron.slot(candidate).isPresent();
 
     /** Candidato de un slot concreto. */
     static Predicate<CandidateExercise> deSlot(MandatorySlot slot) {
-        return candidate -> MandatorySlot.of(candidate).filter(s -> s == slot).isPresent();
+        return candidate -> CoberturaDePatron.slot(candidate).filter(s -> s == slot).isPresent();
     }
 
     /** Modo estructural. Apagado salvo que el generador lo encienda (GAIN_MUSCLE). */

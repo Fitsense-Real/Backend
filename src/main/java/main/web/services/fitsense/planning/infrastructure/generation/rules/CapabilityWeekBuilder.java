@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
+import main.web.services.fitsense.planning.domain.services.CoberturaDePatron;
+
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy.Capability;
 import main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy;
@@ -224,7 +226,7 @@ class CapabilityWeekBuilder {
                     if (colocacion == null) continue;
                     dia.add(colocacion);
                     resistidosDia.add(c);
-                    if (cubreSlotPendiente(colocacion)) MandatorySlot.of(c).ifPresent(slotsPorCubrir::remove);
+                    if (cubreSlotPendiente(colocacion)) CoberturaDePatron.slot(c).ifPresent(slotsPorCubrir::remove);
                 }
             }
             if (principalFactible(Capability.CARDIO)) {
@@ -324,7 +326,7 @@ class CapabilityWeekBuilder {
                     if (!complementos.contains(extra.candidato().exerciseId())
                             && (clase == Clase.ESTRUCTURAL || clase == Clase.RESISTIDO)) {
                         resistidosDia.add(extra.candidato());
-                        if (cubreSlotPendiente(extra)) MandatorySlot.of(extra.candidato()).ifPresent(slotsPorCubrir::remove);
+                        if (cubreSlotPendiente(extra)) CoberturaDePatron.slot(extra.candidato()).ifPresent(slotsPorCubrir::remove);
                     }
                 }
             }
@@ -371,7 +373,7 @@ class CapabilityWeekBuilder {
             slotsPorCubrir.clear();
             slotsPorCubrir.addAll(pendientesAlEmpezar);
             dia.stream().filter(this::cubreSlotPendiente)
-                    .forEach(col -> MandatorySlot.of(col.candidato()).ifPresent(slotsPorCubrir::remove));
+                    .forEach(col -> CoberturaDePatron.slot(col.candidato()).ifPresent(slotsPorCubrir::remove));
 
             dia.forEach(col -> {
                 enSemana.merge(col.capacidad(), 1, Integer::sum);
@@ -562,9 +564,9 @@ class CapabilityWeekBuilder {
      * UPPER_PUSH aunque salga un press de hombro.
      */
     private boolean dejaSinSlot(Colocacion quitado, List<Colocacion> con, Set<MandatorySlot> pendientes) {
-        var slot = MandatorySlot.of(quitado.candidato());
+        var slot = CoberturaDePatron.slot(quitado.candidato());
         if (slot.isEmpty() || !pendientes.contains(slot.get()) || !cubreSlotPendiente(quitado)) return false;
-        return con.stream().noneMatch(x -> cubreSlotPendiente(x) && MandatorySlot.of(x.candidato()).equals(slot));
+        return con.stream().noneMatch(x -> cubreSlotPendiente(x) && CoberturaDePatron.slot(x.candidato()).equals(slot));
     }
 
     /**
@@ -632,7 +634,7 @@ class CapabilityWeekBuilder {
         boolean fuerza = principalFactible(Capability.STRENGTH);
         var aun = new HashSet<>(pendientes);
         for (var c : elegidos) {
-            var slot = MandatorySlot.of(c).orElse(null);
+            var slot = CoberturaDePatron.slot(c).orElse(null);
             boolean cubreSlot = fuerza && CapabilityPrescriptionPolicy.claseDe(c) == Clase.ESTRUCTURAL
                     && slot != null && aun.remove(slot);
             caps.add(cubreSlot ? Capability.STRENGTH : me ? Capability.MUSCULAR_ENDURANCE : Capability.STRENGTH);
@@ -790,7 +792,7 @@ class CapabilityWeekBuilder {
             // LOSE_WEIGHT (sin el paso 0 de cobertura) podia cubrir la pierna dos veces con rodilla y ninguna con
             // cadera (125-163 de 315 planes sin cadera, frente a 3-27 en HIST). Solo en el modo de dosis (REV2/DUR-A).
             java.util.function.Predicate<CandidateExercise> slotNuevo =
-                    c -> MandatorySlot.of(c).filter(slotsPendientes::contains).isPresent();
+                    c -> CoberturaDePatron.slot(c).filter(slotsPendientes::contains).isPresent();
             var extra = selector.pickAdditional(enfoque, actuales, true, preferido.and(slotNuevo).and(cabeVolumen))
                     .or(() -> selector.pickAdditional(enfoque, actuales, false, preferido.and(slotNuevo).and(cabeVolumen)))
                     .or(() -> selector.pickAdditional(enfoque, actuales, true, preferido.and(cabeVolumen)))
@@ -1211,10 +1213,10 @@ class CapabilityWeekBuilder {
     /** Si quitar {@code sale} del dia {@code yo} (que quedaria como {@code con}) deja la semana sin un slot de 4C. */
     private boolean pierdeSlotEnSemana(List<Armada> armadas, int yo, Colocacion sale, List<Colocacion> con,
                                        Set<MandatorySlot> slotsDeLaSemana) {
-        var slot = MandatorySlot.of(sale.candidato());
+        var slot = CoberturaDePatron.slot(sale.candidato());
         if (slot.isEmpty() || !slotsDeLaSemana.contains(slot.get()) || !cubreSlotPendiente(sale)) return false;
         java.util.function.Predicate<Colocacion> cubre =
-                x -> cubreSlotPendiente(x) && MandatorySlot.of(x.candidato()).equals(slot);
+                x -> cubreSlotPendiente(x) && CoberturaDePatron.slot(x.candidato()).equals(slot);
         boolean enOtroDia = java.util.stream.IntStream.range(0, armadas.size()).filter(j -> j != yo)
                 .anyMatch(j -> armadas.get(j).dia().stream().anyMatch(cubre));
         return !enOtroDia && con.stream().noneMatch(cubre);

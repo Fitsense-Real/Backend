@@ -42,8 +42,21 @@ public record CandidateExercise(
          * P-C2: {@code exercises.high_impact} (V10). {@code null} cuando el origen no lo informa (pruebas, datos
          * antiguos): se trata como desconocido, nunca como "bajo impacto".
          */
-        Boolean highImpact
+        Boolean highImpact,
+
+        /**
+         * Auditoria v46 (P15-C, experimental): {@code exercises.is_isolation}. Solo lo usa {@code CoberturaDePatron}
+         * cuando el experimento esta activado; {@code null} = desconocido (se trata como multiarticular).
+         */
+        Boolean isolation
 ) {
+    public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
+                             int difficulty, PrescriptionType defaultPrescription, String targetMuscle,
+                             String movementPattern, Boolean highImpact) {
+        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription, targetMuscle,
+                movementPattern, highImpact, null);
+    }
+
     public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
                              int difficulty, PrescriptionType defaultPrescription, String targetMuscle,
                              String movementPattern) {

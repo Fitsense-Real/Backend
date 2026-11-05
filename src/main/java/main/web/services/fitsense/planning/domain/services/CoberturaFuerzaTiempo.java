@@ -40,7 +40,7 @@ public final class CoberturaFuerzaTiempo {
         var masCorto = new EnumMap<MandatorySlot, Long>(MandatorySlot.class);
         for (var c : ctx.availableExercises()) {
             if (!CapabilityPrescriptionPolicy.admisibles(c, objetivo, nivel).contains(fuerza)) continue;
-            var slot = MandatorySlot.of(c);
+            var slot = CoberturaDePatron.slot(c);
             var d = CapabilityPrescriptionPolicy.dosis(fuerza, c, objetivo, nivel, limites);
             if (slot.isEmpty() || d.isEmpty()) continue;
             long s = segundosDe(c, d.get(), ctx, estimador);

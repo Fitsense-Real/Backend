@@ -634,7 +634,7 @@ public record PlanInputSnapshot(
             // deducirlo del patron.
             if (!dosisFijada && porCapacidades && GoalFeasibilityPolicy.exigeSlotsResistidos(profile.goalType()))
                 etiquetas = new EtiquetasDosis(main.web.services.fitsense.planning.domain.model.valueobjects
-                        .MandatorySlot.of(candidate).map(Enum::name).orElse(null), null);
+                        .MandatorySlot.of(candidate).filter(s -> main.web.services.fitsense.planning.domain.services.CoberturaDePatron.slot(candidate).isPresent()).map(Enum::name).orElse(null), null);
             porGrupo.computeIfAbsent(candidate.bodyPartCode(), key -> new java.util.ArrayList<>())
                     .add(new AvailableExercise(candidate.exerciseId(), candidate.name(),
                             candidate.bodyPartCode(), candidate.equipmentCode(), candidate.difficulty(),

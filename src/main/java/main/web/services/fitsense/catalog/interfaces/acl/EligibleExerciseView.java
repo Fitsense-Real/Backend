@@ -34,8 +34,19 @@ public record EligibleExerciseView(
          * {@code exercises.high_impact} (V10): saltos, pliometria, levantamientos olimpicos. Viaja para P-C2 (una
          * sustitucion "mas sencilla" no puede subir el impacto). {@code null} si el origen no lo informa.
          */
-        Boolean highImpact
+        Boolean highImpact,
+        /** V26 is_isolation (auditoria v46, P15-C experimental). {@code null} si el origen no lo informa. */
+        Boolean isolation
 ) {
+    /** Compatibilidad: sin el dato de aislamiento. */
+    public EligibleExerciseView(Long exerciseId, String nameEs, String bodyPartCode, String equipmentCode,
+                                String targetMuscle, short difficultyLevel, String defaultPrescription,
+                                String gifPath, String imagePath, String mediaAttribution, String movementPattern,
+                                Boolean highImpact) {
+        this(exerciseId, nameEs, bodyPartCode, equipmentCode, targetMuscle, difficultyLevel, defaultPrescription,
+                gifPath, imagePath, mediaAttribution, movementPattern, highImpact, null);
+    }
+
     /** Compatibilidad: sin el dato de impacto. */
     public EligibleExerciseView(Long exerciseId, String nameEs, String bodyPartCode, String equipmentCode,
                                 String targetMuscle, short difficultyLevel, String defaultPrescription,

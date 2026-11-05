@@ -241,7 +241,7 @@ public final class SafetySubstitutionPolicy {
     static Etapa descarte(CandidateExercise c, CandidateExercise original, WorkoutFocus enfoque, Set<Long> enSesion,
                           Set<Long> contiguos, String objetivo, boolean limitaDificultad) {
         if (c.exerciseId() == null || c.exerciseId().equals(original.exerciseId())) return Etapa.ES_EL_MISMO;
-        if (!MandatorySlot.of(c).equals(MandatorySlot.of(original))) return Etapa.MISMO_SLOT;
+        if (!CoberturaDePatron.slot(c).equals(CoberturaDePatron.slot(original))) return Etapa.MISMO_SLOT;
         if (c.defaultPrescription() != original.defaultPrescription()) return Etapa.MISMA_PRESCRIPCION;
         if (CatalogEligibilityPolicy.esComplemento(c, objetivo) != CatalogEligibilityPolicy.esComplemento(original, objetivo))
             return Etapa.MISMO_COMPLEMENTO;

@@ -134,6 +134,8 @@ public class CatalogContextFacade {
                 // V26. Hasta ahora ninguna clase Java leia esta columna.
                 exercise.getMovementPattern(),
                 // V10, para P-C2 (impacto).
-                exercise.isHighImpact());
+                exercise.isHighImpact(),
+                // V26 is_isolation (auditoria v46, P15-C experimental).
+                exercise.getIsolation());
     }
 }

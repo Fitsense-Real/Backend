@@ -47,7 +47,7 @@ public final class SlotCoveragePolicy {
                 sinPatron++;
                 continue;
             }
-            var slot = MandatorySlot.of(candidate);
+            var slot = CoberturaDePatron.slot(candidate);
             if (slot.isPresent()) {
                 // ID nulo no es un candidato seleccionable valido.
                 if (candidate.exerciseId() != null && vistosPorSlot
@@ -90,7 +90,7 @@ public final class SlotCoveragePolicy {
                         sinPatron++;
                         continue;
                     }
-                    var slot = MandatorySlot.of(candidate);
+                    var slot = CoberturaDePatron.slot(candidate);
                     if (slot.isPresent()) counts.merge(slot.get(), 1, Integer::sum);
                     else fuera++;
                 }
@@ -145,7 +145,7 @@ public final class SlotCoveragePolicy {
                     if (exercise == null) continue;
                     var candidate = eligible == null ? null
                             : eligible.get(exercise.exerciseId());
-                    var slot = MandatorySlot.of(candidate);
+                    var slot = CoberturaDePatron.slot(candidate);
                     if (slot.isEmpty()) continue;
                     var cuentas = porSlot.get(slot.get());
                     cuentas.set(indice, cuentas.get(indice) + 1);

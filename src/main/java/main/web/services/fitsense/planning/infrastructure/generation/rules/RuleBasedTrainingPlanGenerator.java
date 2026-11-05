@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
+import main.web.services.fitsense.planning.domain.services.CoberturaDePatron;
+
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
 import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 import main.web.services.fitsense.planning.domain.services.SessionDurationEstimator;
@@ -276,7 +278,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                         .collect(java.util.stream.Collectors.toSet());
                 picked.stream()
                         .filter(candidate -> idsDelDia.contains(candidate.exerciseId()))
-                        .forEach(candidate -> MandatorySlot.of(candidate)
+                        .forEach(candidate -> CoberturaDePatron.slot(candidate)
                                 .ifPresent(slotsPorCubrir::remove));
             }
 
@@ -472,7 +474,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // anadido, no el que entro por cobertura de grupo.
             for (int k = exercises.size() - 1; k >= 0; k--) {
                 var actual = picked.get(k);
-                if (MandatorySlot.of(actual).isPresent()) continue;   // ya es estructural
+                if (CoberturaDePatron.slot(actual).isPresent()) continue;   // ya es estructural (cubre un patron)
 
                 var reemplazo = selector.estructuralQueSustituyaA(focus, picked, actual);
                 if (reemplazo.isEmpty()) continue;
