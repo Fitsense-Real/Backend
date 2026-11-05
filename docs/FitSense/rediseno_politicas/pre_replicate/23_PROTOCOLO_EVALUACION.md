@@ -11,7 +11,7 @@
 |---|---|
 | Rama | `investigacion/rediseno-politicas` (sin merge) |
 | Código (`src/main`) | `cc76bd1`, sin cambios desde entonces. Los commits posteriores solo añaden pruebas, herramientas y documentos |
-| Commit de ejecución | El que publica la cohorte N (`cohorte_N/N_MANIFIESTO.md`). Cada corrida lo registra en `00_configuracion.txt` |
+| Commit de ejecución | `6263506` (congela N) o uno posterior que **solo** añada documentos. Cada corrida lo registra en `00_configuracion.txt` |
 | Política | `PLAN-REV-2.0` (candidata), con `allow-candidates=true` **solo en el arnés**. La política por defecto sigue siendo `PLAN-HIST-1` |
 | Base | PostgreSQL 16 efímero (Testcontainers). Ni Neon ni ninguna base real |
 | Prompt | V2.1 = `FIX-PR-2.1-EXP` (`-Dfitsense.evaluacion.k20.prompt=v2.1`), con los permisos de REV2 (`PermisosIntervencion`) |
