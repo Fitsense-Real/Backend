@@ -105,9 +105,11 @@ public final class FactibilidadAdaptacion {
         String objetivo = context.profile() == null ? null : context.profile().goalType();
         String nivel = context.profile() == null ? null : context.profile().fitnessLevel();
         boolean gm = MvpDosePolicy.aplicaA(objetivo);
-        boolean dosisReducible = intervencion.permiteCambiarDosis() && !gm;
+        // P-A1: con la politica que lo autoriza, GAIN_MUSCLE ante fatiga admite la dosis de mantenimiento.
+        boolean mantenimiento = gm && main.web.services.fitsense.planning.domain.services.PermisosIntervencion.mantenimientoGM(intervencion, context.policy());
+        boolean dosisReducible = intervencion.permiteCambiarDosis() && (!gm || mantenimiento);
         String porQue = !intervencion.permiteCambiarDosis() ? "la intervencion no permite cambiar la dosis"
-                : gm ? "en GAIN_MUSCLE la dosis 4D no admite reducciones" : null;
+                : gm && !mantenimiento ? "en GAIN_MUSCLE la dosis 4D no admite reducciones" : null;
 
         var porId = context.availableExercises() == null ? Map.<Long, CandidateExercise>of()
                 : context.availableExercises().stream().collect(Collectors.toMap(CandidateExercise::exerciseId,
@@ -122,7 +124,14 @@ public final class FactibilidadAdaptacion {
             dosisActual.put(e.exerciseId(), dosis(e));
             if (!dosisReducible) continue;
             var c = porId.get(e.exerciseId());
-            if (e.prescriptionType() == PrescriptionType.SETS_REPS && e.plannedSets() != null && e.plannedReps() != null) {
+            if (mantenimiento) {
+                // Solo la dosis de mantenimiento: una serie menos en una estructural de 3 o mas series.
+                if (e.prescriptionType() == PrescriptionType.SETS_REPS && e.plannedSets() != null
+                        && e.plannedReps() != null && c != null && MandatorySlot.of(c).isPresent()
+                        && e.plannedSets() >= 3)
+                    opciones.add(opcion(propia, i, conDosis(e, (short) (e.plannedSets() - 1), e.plannedReps(), null),
+                            duracion, margen, params));
+            } else if (e.prescriptionType() == PrescriptionType.SETS_REPS && e.plannedSets() != null && e.plannedReps() != null) {
                 int piso = PlanDraftValidator.MIN_REPS;
                 if (limites != null && c != null) piso = Math.max(piso, limites.minRepsFor(c.bodyPartCode(), nivel));
                 pisos.put(e.exerciseId(), piso);
@@ -143,8 +152,9 @@ public final class FactibilidadAdaptacion {
         }
 
         var sustitutos = new ArrayList<Sustituto>();
-        if (intervencion.permiteSustituirEjercicio())
-            sustitutosAdmitidos(context, derivation, senalada.plannedWorkoutId(), propia).forEach((reemplazado, ids) -> {
+        boolean unica = main.web.services.fitsense.planning.domain.services.PermisosIntervencion.sustitucionUnica(intervencion, context.policy());
+        if (main.web.services.fitsense.planning.domain.services.PermisosIntervencion.permiteSustituir(intervencion, context.policy()))
+            sustitutosAdmitidos(context, derivation, senalada.plannedWorkoutId(), propia, unica).forEach((reemplazado, ids) -> {
                 var actual = propia.exercises().stream().filter(x -> reemplazado.equals(x.exerciseId())).findFirst()
                         .orElse(null);
                 for (var id : ids)
@@ -174,6 +184,12 @@ public final class FactibilidadAdaptacion {
      */
     static Map<Long, List<Long>> sustitutosAdmitidos(PlanGenerationContext context, WeekDerivation derivation,
                                                      Long id, PlanDraft.DraftWorkout propia) {
+        return sustitutosAdmitidos(context, derivation, id, propia, false);
+    }
+
+    /** Igual; con {@code estricta} (P-A2) solo los equivalentes estrictos ({@code PermisosIntervencion}). */
+    static Map<Long, List<Long>> sustitutosAdmitidos(PlanGenerationContext context, WeekDerivation derivation,
+                                                     Long id, PlanDraft.DraftWorkout propia, boolean estricta) {
         var resultado = new LinkedHashMap<Long, List<Long>>();
         if (context.availableExercises() == null) return resultado;
         var enSesion = propia.exercises().stream().map(PlanDraft.DraftExercise::exerciseId).collect(Collectors.toSet());
@@ -196,6 +212,7 @@ public final class FactibilidadAdaptacion {
                     .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
                             && !dolieron.contains(c.exerciseId()))
                     .filter(c -> c.difficulty() <= actual.difficulty())
+                    .filter(c -> !estricta || main.web.services.fitsense.planning.domain.services.PermisosIntervencion.equivalenteEstricto(actual, c))
                     .map(CandidateExercise::exerciseId)
                     .sorted().limit(6).toList());
         }

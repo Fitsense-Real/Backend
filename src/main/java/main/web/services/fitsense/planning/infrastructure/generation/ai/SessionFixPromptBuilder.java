@@ -366,8 +366,9 @@ public class SessionFixPromptBuilder {
                 for (var p : prescritos) bloque.append("    ").append(describir(p)).append('\n');
             }
 
+            // Rediseno R/R' (P-A2): con la politica historica, la instruccion de siempre (texto identico).
             bloque.append("  QUE PUEDES CAMBIAR AQUI: ")
-                    .append(intervencion.instruccion()).append('\n');
+                    .append(main.web.services.fitsense.planning.domain.services.PermisosIntervencion.instruccion(intervencion, context.policy())).append('\n');
             bloque.append(contratoDeLaSesion(context, derivation, senalada, prescritos));
             if (v2 && factibilidad.containsKey(id)) bloque.append(v21
                     ? FactibilidadAdaptacion.textoV21(factibilidad.get(id), context.availableExercises())
@@ -421,7 +422,12 @@ public class SessionFixPromptBuilder {
                 .aplicaA(context.profile().goalType());
         var propia = derivation.from(id).map(d -> d.workout()).orElse(null);
 
-        if (intervencion.permiteCambiarDosis())
+        if (intervencion.permiteCambiarDosis() && gm && main.web.services.fitsense.planning.domain.services.PermisosIntervencion.mantenimientoGM(intervencion, context.policy()))
+            // P-A1 (solo con la politica que lo autoriza): la dosis de mantenimiento de 4D ante fatiga.
+            b.append("  DOSIS (fatiga, GAIN_MUSCLE): puedes bajar UNA serie a las colocaciones ESTRUCTURALES de 3"
+                    + " series (3x10 -> 2x10), con las mismas repeticiones y el mismo descanso. El relleno (2 series)"
+                    + " no baja, las repeticiones no bajan y nada sube. No sustituyas ni retires ejercicios.\n");
+        else if (intervencion.permiteCambiarDosis())
             b.append(gm
                     ? "  DOSIS: en GAIN_MUSCLE la dosis de 4D NO se reduce ni se sube: cada ejercicio que se queda"
                     + " conserva exactamente su series x repeticiones y su descanso. Para acortar solo puedes retirar"
@@ -462,7 +468,8 @@ public class SessionFixPromptBuilder {
                     .append(libres.isEmpty() ? " (ninguna: conserva la fecha)" : "").append(". Ninguna otra.\n");
         }
 
-        if (intervencion.permiteSustituirEjercicio() && propia != null) {
+        boolean unica = main.web.services.fitsense.planning.domain.services.PermisosIntervencion.sustitucionUnica(intervencion, context.policy());
+        if (main.web.services.fitsense.planning.domain.services.PermisosIntervencion.permiteSustituir(intervencion, context.policy()) && propia != null) {
             var enSesion = propia.exercises().stream().map(main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise::exerciseId)
                     .collect(java.util.stream.Collectors.toSet());
             var contiguos = otras.stream()
@@ -484,12 +491,18 @@ public class SessionFixPromptBuilder {
                         .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
                                 && !dolieron.contains(c.exerciseId()))
                         .filter(c -> c.difficulty() <= actual.difficulty())
+                        // P-A2: ante desmotivacion, solo equivalentes estrictos (grupo, musculo, impacto).
+                        .filter(c -> !unica || main.web.services.fitsense.planning.domain.services.PermisosIntervencion.equivalenteEstricto(actual, c))
                         .map(main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId)
                         .sorted().limit(6).toList();
                 lineas.append("    ").append(e.exerciseId()).append(" (").append(actual.movementPattern()).append("): ")
                         .append(opciones.isEmpty() ? "ninguno" : opciones).append('\n');
             }
-            if (!lineas.isEmpty())
+            if (!lineas.isEmpty() && unica)
+                b.append("  SUSTITUTOS ADMITIDOS ante desmotivacion (COMO MAXIMO UNO en esta sesion; mismo patron y"
+                        + " grupo, dificultad e impacto no superiores, elegibles, no repetidos en dias pegados; usa su"
+                        + " dosis de available_exercises y no cambies ninguna otra dosis):\n").append(lineas);
+            else if (!lineas.isEmpty())
                 b.append("  SUSTITUTOS ADMITIDOS (mismo patron, elegibles, no repetidos en dias pegados; usa su dosis"
                         + " de available_exercises):\n").append(lineas);
         }
