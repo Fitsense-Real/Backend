@@ -205,6 +205,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // Con sesiones cortas eso significa menos colocaciones; los slots que
             // no entran hoy siguen pendientes y los cubre otro dia de la semana.
             if (dosisFijada) recortarAlPresupuesto(picked, exercises, presupuestoDia, topeColocaciones);
+            // Rediseno: la seleccion inicial tambien respeta el techo de volumen (por sesion y semanal).
+            if (control != null) recortarPorVolumen(picked, exercises, control, porId, resistido);
 
             // V20: sin orden de volumen, la sesion llega al minimo de minutos
             // con trabajo, nunca alargando descansos. Orden (plan 29): ejercicios
@@ -330,6 +332,34 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             m.merge(c.bodyPartCode(), (int) e.plannedSets(), Integer::sum);
         }
         return m;
+    }
+
+    /**
+     * Quita, desde el final, colocaciones de un grupo que pase del techo de series por sesion o del semanal
+     * (DosisSemanalPolicy), dejando al menos dos ejercicios. No anade nada: solo evita generar volumen de mas.
+     */
+    private static void recortarPorVolumen(List<CandidateExercise> picked, List<PlanDraft.DraftExercise> exercises,
+                                           ControlVolumen control, Map<Long, CandidateExercise> porId,
+                                           java.util.function.Predicate<CandidateExercise> resistido) {
+        boolean cambio = true;
+        while (cambio && exercises.size() > 2) {
+            cambio = false;
+            for (int k = exercises.size() - 1; k >= 0; k--) {
+                var c = porId.get(exercises.get(k).exerciseId());
+                if (c == null || !resistido.test(c)) continue;
+                var sin = new ArrayList<>(exercises);
+                sin.remove(k);
+                var dia = seriesPorGrupo(sin, porId, resistido);
+                Short series = exercises.get(k).plannedSets();
+                if (series != null && !control.cabe(c, series, dia)) {
+                    exercises.remove(k);
+                    final long id = c.exerciseId();
+                    picked.removeIf(p -> p.exerciseId() == id);
+                    cambio = true;
+                    break;
+                }
+            }
+        }
     }
 
     /**

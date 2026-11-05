@@ -698,7 +698,12 @@ class CapabilityWeekBuilder {
                                          List<Colocacion> dia, Set<Long> bloqueados, Set<String> gruposBloqueados,
                                          Set<String> agotados) {
         while (true) {
-            if (principalFactible(Capability.CARDIO) && !agotados.contains("cardio")
+            // Orden: primero el trabajo resistido minimo de los grupos (la fuerza 2 dias por semana de la OMS no la
+            // desplaza el cardio) y despues el aerobico.
+            var pendientes = new HashSet<>(gruposConMaterial(enfoque));
+            pendientes.removeAll(agotados);
+            boolean faltaGrupo = control.grupoPendiente(enfoque, seriesPorGrupo(dia), pendientes).isPresent();
+            if (!faltaGrupo && principalFactible(Capability.CARDIO) && !agotados.contains("cardio")
                     && control.aerobicoPendiente(aerobicoSegundos(dia))) {
                 var pool = "LOSE_WEIGHT".equals(objetivo) && enfoqueSiguientePegado != null
                         ? cardio.stream().filter(c -> dejaCardioAlSiguiente(cardio, dia, c)).toList()
@@ -876,6 +881,12 @@ class CapabilityWeekBuilder {
                 .filter(c -> complementos.contains(c.exerciseId()) || respetaMitad(enfoque, conCandidato(dia, c)))
                 .toList();
         if (validos.isEmpty()) return Optional.empty();
+        // P-C2 (politica con impacto): entre los complementos validos, solo los del MENOR nivel de impacto disponible
+        // (BAJO antes que MODERADO antes que ALTO). No excluye nada si no hay alternativa: es una preferencia.
+        if (context.policy() != null && context.policy().impacto()) {
+            int minimo = validos.stream().mapToInt(c -> rangoImpacto(c)).min().orElse(0);
+            validos = validos.stream().filter(c -> rangoImpacto(c) == minimo).toList();
+        }
         for (var preferencia : List.<java.util.function.Predicate<CandidateExercise>>of(
                 c -> !usadosEnSemana.contains(c.exerciseId()) && !recientes.contains(c.exerciseId()),
                 c -> !usadosEnSemana.contains(c.exerciseId()),
@@ -892,6 +903,15 @@ class CapabilityWeekBuilder {
             if (!admitidas.isEmpty()) return Optional.of(admitidas.get(random.nextInt(admitidas.size())));
         }
         return Optional.empty();
+    }
+
+    private static int rangoImpacto(CandidateExercise c) {
+        return switch (main.web.services.fitsense.planning.domain.services.ImpactoPolicy.nivel(c)) {
+            case BAJO -> 0;
+            case MODERADO -> 1;
+            case ALTO -> 2;
+            case DESCONOCIDO -> 3;
+        };
     }
 
     private static long grupos(List<CandidateExercise> lista) {
