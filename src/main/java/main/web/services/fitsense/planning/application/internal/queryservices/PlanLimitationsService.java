@@ -98,6 +98,46 @@ public class PlanLimitationsService {
         }
     }
 
+    /**
+     * Auditoria del catalogo v46, decision E2-a (adoptada provisionalmente): ejercicios cuya contribucion a la dosis de
+     * espalda u hombro NO esta demostrada. 775 (extension de tronco en banco contada como espalda), 973 (gancho de boxeo
+     * contado como hombro) y 1261, 1308, 1259 y 1146 (trabajo de tronco contado como espalda). No se reclasifican ni se
+     * retiran (tampoco de HIST): solo se avisa cuando son la UNICA fuente de dosis de ese grupo en el plan publicado.
+     */
+    static final java.util.Set<Long> DOSIS_NO_DEMOSTRADA = java.util.Set.of(775L, 973L, 1261L, 1308L, 1259L, 1146L);
+    private static final java.util.Set<String> SIN_DOSIS_RESISTIDA = java.util.Set.of("LOCOMOTION_CARDIO", "MOBILITY",
+            "BALANCE_CONTROL", "OTHER");
+
+    /**
+     * Aviso E2-a: para espalda y hombros, si todos los ejercicios resistidos del plan que se cuentan para ese grupo son
+     * de {@link #DOSIS_NO_DEMOSTRADA}, se dice que esa dosis no esta demostrada. No cambia el plan, no anade volumen y
+     * no afirma que el grupo este trabajado. Un ejercicio del plan que ya no esta en el catalogo elegible no se cuenta.
+     */
+    static java.util.Optional<Limitation> dosisNoDemostrada(List<Long> ejerciciosDelPlan, List<CandidateExercise> catalogo) {
+        if (ejerciciosDelPlan == null || ejerciciosDelPlan.isEmpty() || catalogo == null) return java.util.Optional.empty();
+        var porId = new java.util.HashMap<Long, CandidateExercise>();
+        catalogo.forEach(c -> porId.putIfAbsent(c.exerciseId(), c));
+        var grupos = new ArrayList<String>();
+        var nombres = new java.util.TreeSet<String>();
+        for (var grupo : List.of("back", "shoulders")) {
+            var fuentes = ejerciciosDelPlan.stream().distinct().map(porId::get).filter(java.util.Objects::nonNull)
+                    .filter(c -> grupo.equals(c.bodyPartCode()))
+                    .filter(c -> c.movementPattern() == null || !SIN_DOSIS_RESISTIDA.contains(c.movementPattern()))
+                    .toList();
+            if (fuentes.isEmpty() || !fuentes.stream().allMatch(c -> DOSIS_NO_DEMOSTRADA.contains(c.exerciseId())))
+                continue;
+            grupos.add(GRUPOS.getOrDefault(grupo, grupo));
+            fuentes.forEach(c -> nombres.add(c.name()));
+        }
+        if (grupos.isEmpty()) return java.util.Optional.empty();
+        return java.util.Optional.of(new Limitation("DOSE", "DOSIS_NO_DEMOSTRADA", "Trabajo de " + String.join(" y ", grupos),
+                ("En tu plan, el trabajo de %s procede solo de ejercicios cuya clasificación está en revisión (%s). No "
+                        + "podemos afirmar que aporten la dosis orientativa a ese grupo, así que no lo contamos como trabajo "
+                        + "demostrado. Tu plan sigue siendo válido y seguro; la revisión profesional del catálogo está "
+                        + "pendiente.").formatted(String.join(" y ", grupos), String.join(", ", nombres)),
+                List.of()));
+    }
+
     public PlanLimitationsResource limitationsFor(Long userId) {
         LocalDate semana = commandService.firstPlanWeekStart(userId);
         List<MandatorySlot> vacios;
@@ -128,9 +168,12 @@ public class PlanLimitationsService {
 
         var limitaciones = new ArrayList<Limitation>();
         frecuencia(diasPedidos, nivel).ifPresent(limitaciones::add);
-        if (planes != null)
-            planes.findFirstByUserIdOrderByWeekNumberDescPlanVersionDesc(userId)
-                    .flatMap(p -> dosis(p.getPlanningPolicyTrace())).ifPresent(limitaciones::add);
+        if (planes != null) {
+            var ultimo = planes.findFirstByUserIdOrderByWeekNumberDescPlanVersionDesc(userId);
+            ultimo.flatMap(p -> dosis(p.getPlanningPolicyTrace())).ifPresent(limitaciones::add);
+            ultimo.flatMap(p -> dosisNoDemostrada(planes.exerciseIdsOfPlan(p.getId()), elegibles))
+                    .ifPresent(limitaciones::add);
+        }
         fuerzaTiempo.ifPresent(limitaciones::add);
         vacios.stream().map(this::deSlot).forEach(limitaciones::add);
         GoalFeasibilityPolicy.evaluarPool(objetivo, nivel, elegibles).ifPresent(pool -> pool.principales().stream()
