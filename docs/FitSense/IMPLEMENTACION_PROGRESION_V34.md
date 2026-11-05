@@ -181,3 +181,18 @@ Base efímera, progresión encendida (con ella la V24 por capacidades y V25 en l
 - `LOSE_WEIGHT` de 30 minutos no progresa en 10 semanas: el menor paso supera el 5 % de una sesión pequeña («no se fuerza»).
 
 **Hallazgo (desviación del diseño §3.2):** cuando la IA redujo una **serie** (por ejemplo 3×10 → 2×10 en un ejercicio que ya está en su mínimo de repeticiones), devolverla supera el 10 % del paso de recuperación. El resolutor no la recupera y **sigue con la progresión ordinaria de otros ejercicios** de esa sesión. El diseño dice que la progresión ordinaria solo ocurre «sin reducción pendiente». Pasa en `LOSE_WEIGHT` (0 recuperaciones) y en parte de `INCREASE_STRENGTH`. No viola V24 ni V25. **Resuelto (27/10): se mantiene ese comportamiento (opción 2)**, ya incorporado al diseño (§3.2) y cubierto por `PendientesProgresionIT`.
+
+---
+
+## Nota posterior (05/11/2026) · umbrales vigentes y rediseño R/R'
+
+*Nota añadida sin reescribir el texto anterior.*
+
+- **§5.2 (criterio de dos semanas con ≥ `good_threshold` = 80) ya no describe la progresión ordinaria** desde `63b5169` (28/10/2026). Hoy se exige **100 % real** en las dos semanas (`ProgresionResolver.UMBRAL_PROGRESION`, ver `POLITICA_ADAPTACION_Y_PROGRESION.md` §1). La **recuperación** y la **reincorporación** siguen con el 80 %. Las pruebas son `ProgresionCienPorCienIT`, `ProgresionIT` y `PendientesProgresionIT`.
+- **Cambios del rediseño R/R' que tocan esta implementación** (rama `rediseno-adaptacion`; detalle en el informe `adaptacion_progresion.md`):
+  - **P-P1** (todas las políticas): las dosis con linaje (`HEREDADA`) se heredan siempre, también con la progresión apagada. Antes, apagar el interruptor dejaba NO_FACTIBLE una semana ya progresada.
+  - **P-P2** (todas): la reparación de seguridad de un plan publicado emite las autorizaciones heredadas de V24.
+  - **H6** (todas): la versión `SAFETY_REPAIR` sin intento sigue el linaje del plan padre, solo si la sesión gemela es idéntica.
+  - **H7** (todas): una `VUELTA_ATRAS` conserva la exención de V20 de la reducción autorizada.
+  - **P-A1** (solo `PLAN-REV-2.0`): en `GAIN_MUSCLE`, `REVISAR_CARGA_Y_RECUPERACION` admite la dosis de mantenimiento (una serie menos en las estructurales de 3 series, mismas repeticiones y descanso; origen `MANTENIMIENTO`). Con REV2, el resolutor da **solo pasos de RECUPERACION** aunque la progresión esté apagada.
+- **Lo que no cambia:** la progresión sigue apagada por defecto. No hay restauración automática. El paso de recuperación sigue siendo de ≤ 10 % y uno por ciclo (`ck_paa_un_paso`), así que devolver 4 series quitadas lleva 4 ciclos. Eso es más lento que la vuelta en dos pasos (80–85 % → 100 %) que describe la evidencia revisada; queda pendiente de validación profesional.
