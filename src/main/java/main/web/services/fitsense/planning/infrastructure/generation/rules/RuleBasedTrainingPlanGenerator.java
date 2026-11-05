@@ -120,9 +120,12 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
         // de §5-, no el efecto indirecto de que una dosis mas pesada llegue
         // antes al piso de duracion.
         boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
-        // 4D v3.1: siete colocaciones con sesiones de 60 minutos o mas.
+        // 4D v3.1, v3.4 y C-8: en GAIN_MUSCLE el tope lo fija 4D (6 de 30 a 52 minutos; 7 de 53 a 60; 8 de 61 a 68 y 9 de
+        // 69 a 75, derivado del piso de V20). Es el mismo tope que exige V24 para ese objetivo. MAX_EXERCISES_PER_SESSION (8) sigue limitando a los
+        // demas objetivos, igual que CapabilityPrescriptionPolicy.MAX_COLOC_DIA en su V24. Hasta 68 minutos el tope de
+        // 4D no pasa de 8, asi que el resultado es el mismo que con el antiguo min(tope, 8).
         int topeColocaciones = dosisFijada
-                ? Math.min(MvpDosePolicy.maxColocaciones(sessionMinutes), MAX_EXERCISES_PER_SESSION)
+                ? MvpDosePolicy.maxColocaciones(sessionMinutes)
                 : MAX_EXERCISES_PER_SESSION;
         double presupuestoDia = dosisFijada
                 ? MvpDosePolicy.presupuestoDiarioSegundos(sessionMinutes)

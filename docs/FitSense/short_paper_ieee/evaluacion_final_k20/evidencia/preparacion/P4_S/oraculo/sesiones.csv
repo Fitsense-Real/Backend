@@ -1,0 +1,15 @@
+id,sesion,intervencion,estado_v32,origen,cambio,categoria,factible_sonda,sustituciones,reducciones,trabajo_antes_s,trabajo_despues_s
+U03,S3,REVISAR_CARGA_Y_RECUPERACION,SIN_EFECTO,SIN_EFECTO,no,CONS-J,no,[],[],630,630
+U04,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 380, ""a"": 72, ""dif_de"": 2, ""dif_a"": 1, ""dosis_no_mayor"": true}]",[],630,630
+U04,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,SIN_EFECTO,no,CONS-J,no,[],[],630,630
+U07,S3,CAUSA_NO_REGISTRADA,SIN_EFECTO,SIN_EFECTO_SIN_IA,no,CONS-J,,[],[],396,396
+U08,S3,REVISAR_CARGA_Y_RECUPERACION,APLICADA,IA,si,ACC,si,[],"[[323, ""reps"", ""10"", ""9""]]",396,387
+U09,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 540, ""a"": 72, ""dif_de"": 2, ""dif_a"": 1, ""dosis_no_mayor"": true}]",[],396,396
+U09,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[1284, ""reps"", ""10"", ""9""]]",396,387
+U12,S3,CAUSA_NO_REGISTRADA,SIN_EFECTO,SIN_EFECTO_SIN_IA,no,CONS-J,,[],[],732,732
+U13,S3,REVISAR_CARGA_Y_RECUPERACION,APLICADA,IA,si,ACC,si,[],"[[1117, ""sets"", ""3"", ""2""]]",732,642
+U14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,[],"[[853, ""dur"", ""90"", ""85""]]",732,717
+U14,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[1093, ""dur"", ""90"", ""85""]]",732,717
+U18,S3,REVISAR_CARGA_Y_RECUPERACION,APLICADA,IA,si,ACC,si,[],"[[1054, ""sets"", ""3"", ""2""]]",780,690
+U19,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,[],"[[135, ""reps"", ""10"", ""9""]]",780,774
+U19,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[725, ""reps"", ""10"", ""9""]]",780,774

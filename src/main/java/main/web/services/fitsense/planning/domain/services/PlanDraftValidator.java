@@ -28,9 +28,10 @@ public class PlanDraftValidator {
 
     /** Pisos de 18.4. No dependen de configuracion porque son limites de seguridad. */
     private static final int MIN_EXERCISES_PER_SESSION = 2;
-    private static final int MIN_SETS = 2;
-    private static final int MIN_REPS = 6;
-    private static final int MIN_DURATION_SECONDS = 20;
+    // Publicos solo para leerlos (prompt V2 experimental, FactibilidadAdaptacion): mismo valor, misma regla.
+    public static final int MIN_SETS = 2;
+    public static final int MIN_REPS = 6;
+    public static final int MIN_DURATION_SECONDS = 20;
 
     private final SessionDurationEstimator durationEstimator;
 
@@ -554,8 +555,9 @@ public class PlanDraftValidator {
             int tope = MvpDosePolicy.maxColocaciones(minutos);
             if (colocaciones > tope)
                 incumplimientos.add(("V24: el entrenamiento del %s tiene %d colocaciones y el maximo "
-                        + "de 4D v3.1 para sesiones de %d minutos es %d.")
-                        .formatted(workout.scheduledDate(), colocaciones, minutos, tope));
+                        + "de 4D %s para sesiones de %d minutos es %d.")
+                        .formatted(workout.scheduledDate(), colocaciones,
+                                MvpDosePolicy.versionDelTope(minutos), minutos, tope));
 
             double costeDia = 0;
             // 4D v3.2/v3.3: colocaciones de relleno con la serie adicional (zona pequena; biceps en PULL).

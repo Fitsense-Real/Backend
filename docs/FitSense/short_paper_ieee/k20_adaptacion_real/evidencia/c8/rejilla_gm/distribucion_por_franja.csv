@@ -1,0 +1,11 @@
+franja_min,dias,perfiles,validos,colocaciones_min,colocaciones_max,segundos_min,segundos_max,series_max_por_ejercicio,cuota_max_grupo_en_sesion,grupos_en_dias_consecutivos,series_semanales_max_por_grupo
+30-52,3,69,69,4,6,1428,2220,3,0.5,0,back=15 chest=27 shoulders=9 upper legs=18 waist=4
+30-52,4,69,69,4,6,1440,2301,3,0.5,0,back=12 chest=18 lower legs=6 shoulders=6 upper arms=12 upper legs=18 waist=12
+53-59,3,21,21,7,7,2310,2550,3,0.43,0,back=18 chest=27 shoulders=9 upper legs=27 waist=4
+53-59,4,21,21,7,7,2271,2550,3,0.43,0,back=12 chest=18 lower legs=10 shoulders=12 upper arms=18 upper legs=18 waist=12
+60,3,9,9,7,7,2550,2550,3,0.43,0,back=18 chest=27 shoulders=9 upper legs=27
+60,4,3,3,7,7,2529,2550,3,0.43,0,back=12 chest=18 lower legs=10 shoulders=12 upper arms=18 upper legs=18 waist=12
+61-68,3,36,36,8,8,2640,2880,3,0.5,0,back=18 chest=36 shoulders=18 upper legs=27 waist=4
+61-68,4,24,24,8,8,2601,2880,3,0.5,0,back=12 chest=24 lower legs=10 shoulders=12 upper arms=18 upper legs=24 waist=12
+69-75,3,39,39,9,9,2970,3210,3,0.44,0,back=18 chest=36 shoulders=18 upper legs=36 waist=4
+69-75,4,21,21,9,9,2958,3216,3,0.44,0,back=12 chest=24 lower legs=16 shoulders=12 upper arms=24 upper legs=24 waist=12

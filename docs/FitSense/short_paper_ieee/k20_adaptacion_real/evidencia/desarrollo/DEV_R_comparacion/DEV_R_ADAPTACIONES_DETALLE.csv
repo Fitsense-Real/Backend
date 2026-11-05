@@ -1,0 +1,29 @@
+version,id,sesion,intervencion,categoria,origen,cambio,detalle
+V2,U03,S3,REVISAR_CARGA_Y_RECUPERACION,CONS-J,SIN_EFECTO,no,sin cambios
+V2,U04,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ALT,IA,si,"sustituye Press inclinado a una mano en polea (380, dif 2, pectorals) por Fondos de pecho asistidos (de rodillas) (72, dif 1, pectorals) | sustituye Jalón con cable (389, dif 2, lats) por Dominada asistida (75, dif 1, lats) | sustituye Peso muerto con cable (360, dif 2, glutes) por Peso muerto con piernas rectas con banda (142, dif 1, hamstrings) | sustituye Press con palma hacia adentro de pie (779, dif 2, delts) por Press de hombros con banda (101, dif 1, delts) | sustituye Hack squat smith (1236, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes) | sustituye Curl inclinado con mancuerna (580, dif 1, pectorals) por Fondos de tríceps asistidos (de rodillas) (78, dif 1, triceps) | sustituye Jalón trasero con cable (392, dif 2, lats) por Jalón con agarre cerrado (114, dif 1, lats)"
+V2,U04,S3,INVESTIGAR_CAMBIO_MINIMO,CONS-J,SIN_EFECTO,no,sin cambios
+V2,U07,S3,CAUSA_NO_REGISTRADA,CONS-J,SIN_EFECTO_SIN_IA,no,sin cambios
+V2,U08,S3,REVISAR_CARGA_Y_RECUPERACION,ACC,IA,si,Press de banca con cable (323): reps 10 -> 9 | Jalón trasero ancho por detrás de la cabeza (487): reps 10 -> 9
+V2,U09,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ALT,IA,si,"sustituye Press de banca declinado con mancuerna (540, dif 2, pectorals) por Press de banca con banda (102, dif 1, pectorals) | sustituye Remo vertical con mancuerna (780, dif 2, delts) por Remo sentado a una mano con giro (119, dif 1, upper back) | Press inclinado a una mano en polea (380): reps 10 -> 9 | Remo T-bar con palanca (1039): reps 10 -> 9"
+V2,U09,S3,INVESTIGAR_CAMBIO_MINIMO,ALT,IA,si,Press de agarre invertido con Smith (1284): reps 10 -> 9 | Jalón a una mano de rodillas con banda (117): reps 10 -> 9
+V2,U12,S3,CAUSA_NO_REGISTRADA,CONS-J,SIN_EFECTO_SIN_IA,no,sin cambios
+V2,U13,S3,REVISAR_CARGA_Y_RECUPERACION,ACC,IA,si,Pies rápidos v. 2 (1117): dur 90 -> 80 | Media sentadilla (853): dur 90 -> 80
+V2,U14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ACC,IA,si,Media sentadilla (853): dur 90 -> 80 | Pies rápidos v. 2 (1117): dur 90 -> 80
+V2,U14,S3,INVESTIGAR_CAMBIO_MINIMO,ALT,IA,si,Empujar para correr (1093): dur 90 -> 80 | Escalador (1054): dur 90 -> 80
+V2,U18,S3,REVISAR_CARGA_Y_RECUPERACION,ACC,IA,si,Escalador (1054): sets 3 -> 2
+V2,U19,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ACC,IA,si,Media sentadilla (853): sets 3 -> 2
+V2,U19,S3,INVESTIGAR_CAMBIO_MINIMO,INC,IA,si,Curl de bíceps sentado con press de hombro (725): reps 10 -> 9 | Flexión con desplazamiento de araña (1262): reps 10 -> 9 | Jalón cercano con banda y agarre estrecho (115): reps 10 -> 9 | Empuje y tracción con peso corporal (1095): reps 15 -> 14 | Jalón con agarre supino (143): reps 15 -> 14 | Abductor de cadera externo con pierna recta (1311): reps 15 -> 14 | Escalador (1054): dur 90 -> 80 | Estiramiento de tríceps (1322): dur 30 -> 20
+V2.1,U03,S3,REVISAR_CARGA_Y_RECUPERACION,CONS-J,SIN_EFECTO,no,sin cambios
+V2.1,U04,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ACC,IA,si,"sustituye Press inclinado a una mano en polea (380, dif 2, pectorals) por Fondos de pecho asistidos (de rodillas) (72, dif 1, pectorals) | sustituye Hack squat smith (1236, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes)"
+V2.1,U04,S3,INVESTIGAR_CAMBIO_MINIMO,CONS-J,SIN_EFECTO,no,sin cambios
+V2.1,U07,S3,CAUSA_NO_REGISTRADA,CONS-J,SIN_EFECTO_SIN_IA,no,sin cambios
+V2.1,U08,S3,REVISAR_CARGA_Y_RECUPERACION,ACC,IA,si,Press de banca con cable (323): reps 10 -> 9 | Jalón trasero ancho por detrás de la cabeza (487): reps 10 -> 9
+V2.1,U09,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ACC,IA,si,"sustituye Press de banca declinado con mancuerna (540, dif 2, pectorals) por Fondos de pecho asistidos (de rodillas) (72, dif 1, pectorals) | sustituye Remo vertical con mancuerna (780, dif 2, delts) por Remo de deltoides traseros con banda, de pie (135, dif 1, delts) | Press inclinado a una mano en polea (380): reps 10 -> 9 | Remo T-bar con palanca (1039): reps 10 -> 9"
+V2.1,U09,S3,INVESTIGAR_CAMBIO_MINIMO,ACC,IA,si,Press de agarre invertido con Smith (1284): reps 10 -> 9
+V2.1,U12,S3,CAUSA_NO_REGISTRADA,CONS-J,SIN_EFECTO_SIN_IA,no,sin cambios
+V2.1,U13,S3,REVISAR_CARGA_Y_RECUPERACION,ACC,IA,si,Pies rápidos v. 2 (1117): sets 3 -> 2
+V2.1,U14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ACC,IA,si,Media sentadilla (853): dur 90 -> 80 | Pies rápidos v. 2 (1117): dur 90 -> 80
+V2.1,U14,S3,INVESTIGAR_CAMBIO_MINIMO,ACC,IA,si,Empujar para correr (1093): dur 90 -> 80
+V2.1,U18,S3,REVISAR_CARGA_Y_RECUPERACION,ACC,IA,si,Press de hombros con banda (101): reps 10 -> 9 | Escalador (1054): dur 90 -> 80 | Estiramiento lumbar sentado (1188): dur 30 -> 20
+V2.1,U19,S2,VARIANTE_MAS_SENCILLA_O_CARGA,ACC,IA,si,Media sentadilla (853): sets 3 -> 2
+V2.1,U19,S3,INVESTIGAR_CAMBIO_MINIMO,ACC,IA,si,Escalador (1054): dur 90 -> 80

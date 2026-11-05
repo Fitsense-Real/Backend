@@ -1,0 +1,28 @@
+HEAD 89a1e4fa7bf688e16530895d604ed0a1ce746dc0 src 08e69206d594fe9ae32a9db29fab618c67915371 2026-11-05T03:13:45Z
+R_U exit=0 2026-11-05T03:19:29Z
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/R_U usuarios=20 llamadas=5 incidencias=0
+usd_medido=0.1226 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=sin metricas de la prediccion 1enbdbrr65rmw0d1n6tv0p534w: no se hacen mas llamadas
+R_J exit=0 2026-11-05T03:28:55Z
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/R_J usuarios=16 llamadas=15 incidencias=1
+usd_medido=0.1899 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+Rp_U exit=0 2026-11-05T03:33:50Z
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/Rp_U usuarios=20 llamadas=8 incidencias=0
+usd_medido=0.1181 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+Rp_J exit=0 2026-11-05T03:38:25Z
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/Rp_J usuarios=16 llamadas=7 incidencias=1
+usd_medido=0.1251 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=sin metricas de la prediccion hzc2287xj5rmw0d1n74agyp30g: no se hacen mas llamadas
+FIN
+R_U_rep exit=0 2026-11-05T03:43:19Z
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/R_U_rep usuarios=20 llamadas=8 incidencias=0
+usd_medido=0.1140 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+FIN_REP
+Rp_J_rep exit=0 2026-11-05T03:53:07Z
+K20 REPLICATE -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/Rp_J_rep usuarios=16 llamadas=15 incidencias=1
+usd_medido=0.1933 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+FIN_REP2
