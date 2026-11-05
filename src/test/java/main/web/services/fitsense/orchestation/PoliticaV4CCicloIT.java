@@ -133,7 +133,8 @@ class PoliticaV4CCicloIT {
     }
 
     @Test
-    @DisplayName("planes historicos: un plan sin politica (anterior a V44) no se reinterpreta; el siguiente nace con V4-C")
+    @DisplayName("planes historicos: un plan sin politica (anterior a V44) no se reinterpreta; el siguiente sigue su linaje"
+            + " (historica) y solo un usuario nuevo nace con V4-C")
     void planesHistoricosIntactos() {
         var c = new Caso(GoalType.GAIN_MUSCLE, FitnessLevel.INTERMEDIATE, 3, 60);
         long u = crear(c);
@@ -146,7 +147,17 @@ class PoliticaV4CCicloIT {
                 + " plan_id = ?", plan);
         assertNull(antiguo.get("planning_policy"), "el plan publicado antes no se reescribe");
         assertNull(antiguo.get("planning_policy_trace"));
-        comprobar(siguiente, c.minutos(), null);
+        // EXPECTATIVA CAMBIADA (orden definitiva de cierre de PLAN-REV-2.0, fase 7, 05/11/2026): antes la semana
+        // siguiente "nacia" con la politica de la configuracion (V4-C). Eso es un cambio AUTOMATICO de politica para un
+        // usuario en curso, y TransicionesPoliticaIT demuestra que deja usuarios sin plan (HIST -> REV2 por V4; REV2 ->
+        // HIST por V20). Ahora la semana nueva sigue el linaje: un plan sin politica es la historica
+        // (PlanningPolicy.deRegistro(null)), asi que la siguiente se registra PLAN-HIST-1. La configuracion decide la
+        // politica de los usuarios NUEVOS, que se comprueba abajo con el mismo caso.
+        assertEquals("PLAN-HIST-1", jdbc.queryForObject("SELECT planning_policy FROM weekly_training_plans WHERE"
+                + " plan_id = ?", String.class, siguiente), "la semana siguiente sigue el linaje del usuario");
+        long nuevo = crear(c);
+        comprobar(planning.generateWeeklyPlan(nuevo, SEMANA, PlanAdjustment.none(), null, null).orElseThrow(),
+                c.minutos(), "GENERACION");
     }
 
     @Test

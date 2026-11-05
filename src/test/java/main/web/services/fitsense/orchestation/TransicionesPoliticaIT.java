@@ -45,7 +45,10 @@ import static org.junit.jupiter.api.Assertions.*;
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
         "fitsense.planning.policy=PLAN-REV-2.0",
-        "fitsense.planning.policy.allow-candidates=true"
+        "fitsense.planning.policy.allow-candidates=true",
+        // Contexto propio: con las mismas propiedades que RedisenoFatigaGmIT, Spring reutilizaria su contexto en cache,
+        // conectado a su contenedor ya detenido (el contenedor estatico se reinicia para esta clase).
+        "fitsense.prueba.contexto=transiciones"
 })
 @DisplayName("Fase 7 · transiciones entre politicas (HIST <-> REV2, mantenimiento, interruptor de progresion)")
 class TransicionesPoliticaIT extends RedisenoFatigaGmIT {
