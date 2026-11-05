@@ -114,6 +114,14 @@ class CapabilityWeekBuilder {
 
     private final List<CambioGrupo> cambiosGrupo = new ArrayList<>();
 
+    /** Rediseno P-G1: control de volumen y dosis de la semana (null con la politica historica). */
+    private ControlVolumen control;
+    /** Series por grupo de la sesion en curso, para el filtro de volumen de los rellenos. */
+    private Map<String, Integer> diaPorGrupo = new HashMap<>();
+    /** Filtro de volumen de los rellenos resistidos: el techo semanal y por sesion (siempre cierto sin control). */
+    private final java.util.function.Predicate<CandidateExercise> cabeVolumen =
+            c -> control == null || control.cabe(c, 3, diaPorGrupo);
+
     List<CambioGrupo> cambiosGrupo() {
         return List.copyOf(cambiosGrupo);
     }
@@ -135,6 +143,8 @@ class CapabilityWeekBuilder {
 
     PlanDraft construir(Cierre cierre) {
         var split = context.suggestedSplit();
+        control = ControlVolumen.de(context, split.stream().map(WeeklySplitPlanner.PlannedSession::focus).toList(),
+                this::esResistido);
         int minutosSesion = context.effectiveSessionMinutes();
         int techo = context.profile().maxSessionMinutes();
         // P-G1: el generador llena hacia el OBJETIVO de la politica (historica y diseno B: el 70 %; diseno A: 0),
@@ -252,10 +262,19 @@ class CapabilityWeekBuilder {
                     slotsPorCubrir.remove(slot);
                 }
 
-            // 2 · SECUNDARIAS, hasta el piso de V20 y sin pasar del techo.
-            if (piso > 0) {
-                while (dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA && corto(fecha, enfoque, dia, piso)) {
-                    var extra = siguienteRelleno(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
+            // 2 · SECUNDARIAS, hasta el piso de V20 y sin pasar del techo. Rediseno P-G1, diseno A: hasta la DOSIS
+            // pendiente (aerobico y series por grupo), no hasta el reloj; B: hasta el 70 % como objetivo blando, con
+            // el techo de volumen como filtro (cabeVolumen).
+            boolean porDosis = control != null && control.porDosis();
+            var agotados = new HashSet<String>();
+            if (piso > 0 || porDosis) {
+                while (dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA
+                        && (porDosis ? faltaDosis(enfoque, dia, agotados) : corto(fecha, enfoque, dia, piso))) {
+                    diaPorGrupo = seriesPorGrupo(dia);
+                    var extra = porDosis
+                            ? siguientePorDosis(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
+                            gruposBloqueados, agotados)
+                            : siguienteRelleno(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
                             gruposBloqueados, slotsPorCubrir);
                     if (extra == null) break;
                     var con = new ArrayList<>(dia);
@@ -354,6 +373,7 @@ class CapabilityWeekBuilder {
                 enSemana.merge(col.capacidad(), 1, Integer::sum);
                 usadosEnSemana.add(col.candidato().exerciseId());
             });
+            if (control != null) control.cerrarSesion(seriesPorGrupo(dia), aerobicoSegundos(dia));
             armadas.add(new Armada(fecha, enfoque, dia));
 
             idsDiaAnterior = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
@@ -625,6 +645,90 @@ class CapabilityWeekBuilder {
         return caps;
     }
 
+    /** Trabajo resistido de la semana (lo que cuenta para el volumen): estructural o resistido, no complemento. */
+    private boolean esResistido(CandidateExercise c) {
+        if (c == null || complementos.contains(c.exerciseId())) return false;
+        var clase = CapabilityPrescriptionPolicy.claseDe(c);
+        return clase == Clase.ESTRUCTURAL || clase == Clase.RESISTIDO;
+    }
+
+    /** Series directas por grupo de la sesion en curso. */
+    private Map<String, Integer> seriesPorGrupo(List<Colocacion> dia) {
+        var m = new HashMap<String, Integer>();
+        for (var col : dia)
+            if (esResistido(col.candidato()) && col.candidato().bodyPartCode() != null
+                    && col.ejercicio().plannedSets() != null)
+                m.merge(col.candidato().bodyPartCode(), (int) col.ejercicio().plannedSets(), Integer::sum);
+        return m;
+    }
+
+    /** Segundos de TRABAJO aerobico (series x segundos de las colocaciones de cardio) de la sesion. */
+    private long aerobicoSegundos(List<Colocacion> dia) {
+        long s = 0;
+        for (var col : dia)
+            if (col.capacidad() == Capability.CARDIO && col.ejercicio().plannedSets() != null
+                    && col.ejercicio().plannedDurationSeconds() != null)
+                s += (long) col.ejercicio().plannedSets() * col.ejercicio().plannedDurationSeconds();
+        return s;
+    }
+
+    /** Grupos del enfoque con trabajo resistido prescribible (el resto no puede tener objetivo de dosis). */
+    private Set<String> gruposConMaterial(WorkoutFocus enfoque) {
+        return resistidos.stream().filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                .map(CandidateExercise::bodyPartCode).filter(enfoque::accepts).collect(Collectors.toSet());
+    }
+
+    /** Diseno A: ¿falta dosis en esta sesion (aerobico o series de algun grupo con material)? */
+    private boolean faltaDosis(WorkoutFocus enfoque, List<Colocacion> dia, Set<String> agotados) {
+        if (control == null) return false;
+        if (principalFactible(Capability.CARDIO) && !agotados.contains("cardio")
+                && control.aerobicoPendiente(aerobicoSegundos(dia))) return true;
+        var conMaterial = new HashSet<>(gruposConMaterial(enfoque));
+        conMaterial.removeAll(agotados);
+        return control.grupoPendiente(enfoque, seriesPorGrupo(dia), conMaterial).isPresent();
+    }
+
+    /**
+     * Diseno A: lo siguiente que reduce la dosis pendiente. Primero el aerobico (si es principal y falta), despues el
+     * grupo mas lejos de su objetivo, con la capacidad de relleno del objetivo. Si un grupo o el cardio no tiene ya
+     * nada que entre, se marca agotado y no se vuelve a pedir en esta sesion.
+     */
+    private Colocacion siguientePorDosis(ExerciseSelector selector, WorkoutFocus enfoque,
+                                         List<CandidateExercise> resistidosDia, List<CandidateExercise> cardio,
+                                         List<Colocacion> dia, Set<Long> bloqueados, Set<String> gruposBloqueados,
+                                         Set<String> agotados) {
+        while (true) {
+            if (principalFactible(Capability.CARDIO) && !agotados.contains("cardio")
+                    && control.aerobicoPendiente(aerobicoSegundos(dia))) {
+                var pool = "LOSE_WEIGHT".equals(objetivo) && enfoqueSiguientePegado != null
+                        ? cardio.stream().filter(c -> dejaCardioAlSiguiente(cardio, dia, c)).toList()
+                        : cardio;
+                var c = elegirComplemento(pool, enfoque, dia, bloqueados, gruposBloqueados);
+                if (c.isPresent()) return colocar(c.get(), Capability.CARDIO, true);
+                agotados.add("cardio");
+                continue;
+            }
+            var conMaterial = new HashSet<>(gruposConMaterial(enfoque));
+            conMaterial.removeAll(agotados);
+            var grupo = control.grupoPendiente(enfoque, seriesPorGrupo(dia), conMaterial);
+            if (grupo.isEmpty()) return null;
+            String g = grupo.get();
+            java.util.function.Predicate<CandidateExercise> deGrupo = c -> g.equals(c.bodyPartCode());
+            var actuales = new ArrayList<>(resistidosDia);
+            var extra = selector.pickAdditional(enfoque, actuales, true, deGrupo.and(cabeVolumen))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, deGrupo.and(cabeVolumen)));
+            if (extra.isPresent()) {
+                Capability cap = "LOSE_WEIGHT".equals(objetivo) ? Capability.STRENGTH
+                        : asignable(Capability.HYPERTROPHY) ? Capability.HYPERTROPHY
+                        : principalFactible(Capability.MUSCULAR_ENDURANCE) ? Capability.MUSCULAR_ENDURANCE
+                        : Capability.STRENGTH;
+                var col = colocar(extra.get(), cap, false);
+                if (col != null) return col;
+            }
+            agotados.add(g);
+        }
+    }
+
     /** Lo siguiente para llegar al piso: secundarias; si no quedan, mas de la principal. */
     private Colocacion siguienteRelleno(ExerciseSelector selector, WorkoutFocus enfoque,
                                         List<CandidateExercise> resistidosDia, List<CandidateExercise> cardio,
@@ -636,8 +740,9 @@ class CapabilityWeekBuilder {
         if (principalFactible(Capability.STRENGTH) && !"LOSE_WEIGHT".equals(objetivo)) {
             var actuales = new ArrayList<>(resistidosDia);
             for (var slot : pendientes) {
-                var extra = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot))
-                        .or(() -> selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.deSlot(slot)));
+                var extra = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot).and(cabeVolumen))
+                        .or(() -> selector.pickAdditional(enfoque, actuales, false,
+                                ExerciseSelector.deSlot(slot).and(cabeVolumen)));
                 if (extra.isPresent()) {
                     var col = colocar(extra.get(), Capability.STRENGTH, true);
                     if (col != null) return col;
@@ -649,15 +754,17 @@ class CapabilityWeekBuilder {
             default -> Capability.HYPERTROPHY;
         };
         if (asignable(secundaria)) {
-            var filtro = secundaria == Capability.STRENGTH ? ExerciseSelector.ESTRUCTURAL : ExerciseSelector.CUALQUIERA;
+            var filtro = (secundaria == Capability.STRENGTH ? ExerciseSelector.ESTRUCTURAL : ExerciseSelector.CUALQUIERA)
+                    .and(cabeVolumen);
             var actuales = new ArrayList<>(resistidosDia);
             // Primero un slot que la semana aun no tiene: el trabajo estructural
             // rota por los cuatro patrones en vez de repetir dos.
             Optional<CandidateExercise> deSlot = Optional.empty();
             for (var slot : pendientes)
-                if (deSlot.isEmpty()) deSlot = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot));
+                if (deSlot.isEmpty()) deSlot = selector.pickAdditional(enfoque, actuales, true,
+                        ExerciseSelector.deSlot(slot).and(cabeVolumen));
             var extra = deSlot
-                    .or(() -> selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.ESTRUCTURAL))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.ESTRUCTURAL.and(cabeVolumen)))
                     .filter(filtro)
                     .or(() -> selector.pickAdditional(enfoque, actuales, true, filtro))
                     .or(() -> selector.pickAdditional(enfoque, actuales, false, filtro));
@@ -669,8 +776,8 @@ class CapabilityWeekBuilder {
         // Sin secundaria posible: mas de una principal resistida o de cardio.
         if (principalFactible(Capability.MUSCULAR_ENDURANCE)) {
             var actuales = new ArrayList<>(resistidosDia);
-            var extra = selector.pickAdditional(enfoque, actuales, true)
-                    .or(() -> selector.pickAdditional(enfoque, actuales, false));
+            var extra = selector.pickAdditional(enfoque, actuales, true, cabeVolumen)
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, cabeVolumen));
             if (extra.isPresent()) {
                 var col = colocar(extra.get(), Capability.MUSCULAR_ENDURANCE, true);
                 if (col != null) return col;
@@ -678,7 +785,7 @@ class CapabilityWeekBuilder {
         }
         if (principalFactible(Capability.STRENGTH) && "INCREASE_STRENGTH".equals(objetivo)) {
             var actuales = new ArrayList<>(resistidosDia);
-            var extra = selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.ESTRUCTURAL);
+            var extra = selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.ESTRUCTURAL.and(cabeVolumen));
             if (extra.isPresent()) {
                 var col = colocar(extra.get(), Capability.STRENGTH, true);
                 if (col != null) return col;
@@ -871,6 +978,8 @@ class CapabilityWeekBuilder {
                 var con = new ArrayList<>(dia);
                 con.set(k, nueva);
                 if (excede(fecha, enfoque, con)) continue;
+                // Rediseno (diseno B): subir una serie tampoco puede pasar del techo de volumen.
+                if (control != null && !control.cabe(col.candidato(), 1, seriesPorGrupo(dia))) continue;
                 dia.set(k, nueva);
                 cambio = true;
             }

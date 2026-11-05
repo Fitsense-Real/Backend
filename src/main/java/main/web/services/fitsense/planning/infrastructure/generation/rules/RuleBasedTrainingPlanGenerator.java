@@ -149,6 +149,15 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 .toList();
         var selector = new ExerciseSelector(seleccionables,
                 context.effectiveMaxDifficulty(), recentlyUsed, random);
+        // Rediseno P-G1: control de volumen (null con la politica historica: nada cambia).
+        var porId = new HashMap<Long, CandidateExercise>();
+        seleccionables.forEach(c -> porId.put(c.exerciseId(), c));
+        java.util.function.Predicate<CandidateExercise> resistido = c -> {
+            var clase = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.claseDe(c);
+            return clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                    || clase == main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy.Clase.RESISTIDO;
+        };
+        var control = ControlVolumen.de(context, focuses, resistido);
 
         // Seleccion estructural, solo con la dosis fijada. Con los demas
         // objetivos el modo queda apagado y el selector se comporta igual que
@@ -186,6 +195,9 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             var picked = new ArrayList<>(selector.pick(focus, exercisesPerSession));
 
             var exercises = new ArrayList<PlanDraft.DraftExercise>();
+            this.controlDia = control;
+            this.porIdDia = porId;
+            this.ejerciciosDia = exercises;
             for (var candidate : picked) {
                 exercises.add(toDraftExercise(candidate, prescription, context));
             }
@@ -226,6 +238,12 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // se borra relleno -eso baja la duracion y empeora V20- y nunca se
             // toca la dosis. Si no hay estructural disponible, el dia se queda
             // corto y V20 lo dira: es un dato, no algo que tapar.
+            // Rediseno P-G1, diseno A: relleno por DOSIS (series por grupo hacia su objetivo de la sesion), dentro
+            // del tope de V24, del presupuesto de 4D y del maximo de V4. Nunca para gastar minutos.
+            if (control != null && control.porDosis() && context.prescription() != null)
+                rellenarPorDosis(selector, focus, picked, exercises, prescription, context, control, porId,
+                        topeColocaciones, presupuestoDia, dates.get(i), sessionMinutes, techo);
+
             if (dosisFijada && minimumMinutes > 0 && context.prescription() != null) {
                 sustituirRellenoPorEstructural(selector, focus, picked, exercises, prescription,
                         context, dates.get(i), sessionMinutes, minimumMinutes, presupuestoDia);
@@ -233,6 +251,8 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 // serie adicional del relleno (zona pequena; biceps en PULL), de una en una y solo
                 // mientras falte.
                 var date = dates.get(i);
+                // Sin piso de V20 (politicas nuevas) la serie adicional nunca es necesaria: V24 la rechaza.
+                if (context.policy() == null || context.policy().pisoV20())
                 ampliarRelleno(focus, picked, exercises, () -> segundosDe(date, focus, sessionMinutes,
                         exercises, context) < PlanDraftValidator.objetivoLlenadoSegundos(context), presupuestoDia);
             }
@@ -258,6 +278,7 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                                 .ifPresent(slotsPorCubrir::remove));
             }
 
+            if (control != null) control.cerrarSesion(seriesPorGrupo(exercises, porId, resistido), 0);
             previousDayIds = exercises.stream().map(PlanDraft.DraftExercise::exerciseId)
                     .collect(java.util.stream.Collectors.toSet());
             // Provisional: la duracion definitiva se calcula despues de reducir
@@ -293,6 +314,63 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
                 conDuracion.volume(durationToRepsDivisor), justificacion, conDuracion.workouts());
     }
 
+    // ------------------------------------------------------------ rediseno P-G1 (volumen y dosis)
+
+    /** Control de volumen de la sesion en curso, para el filtro de addUntilMinimum (null en la historica). */
+    private ControlVolumen controlDia;
+    private Map<Long, CandidateExercise> porIdDia = Map.of();
+    private List<PlanDraft.DraftExercise> ejerciciosDia = List.of();
+
+    static Map<String, Integer> seriesPorGrupo(List<PlanDraft.DraftExercise> exercises, Map<Long, CandidateExercise> porId,
+                                               java.util.function.Predicate<CandidateExercise> resistido) {
+        var m = new HashMap<String, Integer>();
+        for (var e : exercises) {
+            var c = porId.get(e.exerciseId());
+            if (c == null || !resistido.test(c) || c.bodyPartCode() == null || e.plannedSets() == null) continue;
+            m.merge(c.bodyPartCode(), (int) e.plannedSets(), Integer::sum);
+        }
+        return m;
+    }
+
+    /**
+     * Diseno A (GAIN_MUSCLE): anade colocaciones al grupo del enfoque mas lejos de su objetivo de series de la sesion
+     * (DosisSemanalPolicy), estructural primero, mientras quepa en el tope de V24, en el presupuesto de 4D, en el
+     * techo de volumen y en el maximo de V4. Si un grupo no tiene nada que entre, se da por agotado.
+     */
+    private void rellenarPorDosis(ExerciseSelector selector, WorkoutFocus focus, List<CandidateExercise> picked,
+                                  List<PlanDraft.DraftExercise> exercises, TargetPrescription prescription,
+                                  PlanGenerationContext context, ControlVolumen control,
+                                  Map<Long, CandidateExercise> porId, int tope, double presupuestoSegundos,
+                                  java.time.LocalDate fecha, int sessionMinutes, int techo) {
+        var conMaterial = new HashSet<String>();
+        for (var c : porId.values()) if (ExerciseSelector.allowedIn(focus, c) && focus.accepts(c.bodyPartCode()))
+            conMaterial.add(c.bodyPartCode());
+        while (exercises.size() < tope) {
+            var dia = seriesPorGrupo(exercises, porId, x -> true);
+            var grupo = control.grupoPendiente(focus, dia, conMaterial);
+            if (grupo.isEmpty()) return;
+            String g = grupo.get();
+            java.util.function.Predicate<CandidateExercise> deGrupo = c -> g.equals(c.bodyPartCode())
+                    && control.cabe(c, 3, dia);
+            var extra = selector.pickAdditional(focus, picked, true, ExerciseSelector.ESTRUCTURAL.and(deGrupo))
+                    .or(() -> selector.pickAdditional(focus, picked, true, deGrupo))
+                    .or(() -> selector.pickAdditional(focus, picked, false, deGrupo));
+            if (extra.isEmpty()) {
+                conMaterial.remove(g);
+                continue;
+            }
+            var nueva = toDraftExercise(extra.get(), prescription, context);
+            if (presupuestoSegundos < Double.MAX_VALUE
+                    && costeSegundos4D(exercises) + costeSegundos4D(nueva) > presupuestoSegundos) return;
+            var con = new ArrayList<>(exercises);
+            con.add(nueva);
+            if (excedeTecho(context, new PlanDraft.DraftWorkout(fecha, focus, nameOf(focus), sessionMinutes, con),
+                    techo)) return;
+            picked.add(extra.get());
+            exercises.add(nueva);
+        }
+    }
+
     // ------------------------------------------------------------ duracion (V20)
 
     private void addUntilMinimum(ExerciseSelector selector, WorkoutFocus focus,
@@ -307,10 +385,12 @@ public class RuleBasedTrainingPlanGenerator implements TrainingPlanGenerator {
             // que de verdad acerca al piso dentro del tope de seis. El relleno
             // entra solo si no queda ninguna estructural que cumpla V15, V18 y
             // V22 -esa es la condicion 3-.
+            java.util.function.Predicate<CandidateExercise> cabe = c -> controlDia == null
+                    || controlDia.cabe(c, 3, seriesPorGrupo(ejerciciosDia, porIdDia, x -> true));
             var extra = estructuralPrimero
-                    ? selector.pickAdditional(focus, picked, respetarTopes, ExerciseSelector.ESTRUCTURAL)
-                    .or(() -> selector.pickAdditional(focus, picked, respetarTopes))
-                    : selector.pickAdditional(focus, picked, respetarTopes);
+                    ? selector.pickAdditional(focus, picked, respetarTopes, ExerciseSelector.ESTRUCTURAL.and(cabe))
+                    .or(() -> selector.pickAdditional(focus, picked, respetarTopes, cabe))
+                    : selector.pickAdditional(focus, picked, respetarTopes, cabe);
             if (extra.isEmpty()) return;
 
             var nueva = toDraftExercise(extra.get(), prescription, context);

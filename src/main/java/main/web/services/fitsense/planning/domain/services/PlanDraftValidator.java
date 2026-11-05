@@ -156,6 +156,7 @@ public class PlanDraftValidator {
         validateMinimumDurationAndRest(draft, context, conservation, problems);
         validateMvpDose(draft, context, eligible, conservation, problems);
         validateCapabilityDose(draft, context, eligible, conservation, problems);
+        validateWeeklyVolume(draft, context, eligible, problems);
         // Una colocacion con dosis autorizada sigue acreditando la capacidad de su
         // dosis base (diseno §4.4). En la generacion no hay autorizaciones: el
         // borrador se evalua tal cual.
@@ -1562,6 +1563,47 @@ public class PlanDraftValidator {
         if (context.prescription() == null) return 0;
         if (context.adjustment() != null && context.adjustment().isActive()) return 0;
         return context.effectiveSessionMinutes() * context.prescription().floorPct() / 100;
+    }
+
+    /**
+     * Validacion 26 (rediseno P-G1, solo politicas con {@code volumenSemanal}): techo de series DIRECTAS por grupo en
+     * la semana y en cada sesion ({@link DosisSemanalPolicy}). Cuenta solo trabajo resistido (estructural o
+     * resistido, sin complementos). Impide que un plan, de las reglas o de la IA, acumule volumen solo para gastar
+     * minutos. Con la politica historica no se aplica.
+     */
+    private void validateWeeklyVolume(PlanDraft draft, PlanGenerationContext context,
+                                      Map<Long, CandidateExercise> eligible, List<String> problems) {
+        if (context.policy() == null || !context.policy().volumenSemanal() || context.profile() == null) return;
+        var complementos = CatalogEligibilityPolicy.complementos(eligible.values(), context.profile().goalType());
+        String nivel = context.profile().fitnessLevel();
+        int techoSemana = DosisSemanalPolicy.techoSeriesSemana(nivel);
+        int techoSesion = DosisSemanalPolicy.techoSeriesSesion(nivel);
+        var semana = new TreeMap<String, Integer>();
+        for (var workout : draft.workouts()) {
+            var sesion = new TreeMap<String, Integer>();
+            for (var e : workout.exercises()) {
+                var c = eligible.get(e.exerciseId());
+                if (c == null || complementos.contains(c.exerciseId()) || c.bodyPartCode() == null
+                        || e.plannedSets() == null) continue;
+                var clase = CapabilityPrescriptionPolicy.claseDe(c);
+                if (clase != CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                        && clase != CapabilityPrescriptionPolicy.Clase.RESISTIDO) continue;
+                sesion.merge(c.bodyPartCode(), (int) e.plannedSets(), Integer::sum);
+            }
+            sesion.forEach((g, n) -> {
+                if (n > techoSesion)
+                    problems.add(("V26: el entrenamiento del %s suma %d series directas de %s y el techo por sesion es"
+                            + " %d (politica %s). Quita una colocacion de ese grupo.")
+                            .formatted(workout.scheduledDate(), n, g, techoSesion, context.policy().id()));
+                semana.merge(g, n, Integer::sum);
+            });
+        }
+        semana.forEach((g, n) -> {
+            if (n > techoSemana)
+                problems.add(("V26: la semana suma %d series directas de %s y el techo semanal es %d (nivel %s,"
+                        + " politica %s). Reparte o quita trabajo de ese grupo.")
+                        .formatted(n, g, techoSemana, nivel, context.policy().id()));
+        });
     }
 
     /**
