@@ -340,9 +340,16 @@ public final class FactibilidadAdaptacion {
         b.append("  FACTIBILIDAD (V2; la calcula el backend con el mismo calculo de duracion que V20; el validador")
                 .append(" final sigue decidiendo):\n");
         b.append("    A. OBJETIVO: ").append(objetivo(s.intervencion())).append(".\n");
+        // P-A2 (solo con la politica que lo autoriza): una intervencion que no sustituye por si misma, pero con
+        // sustitutos calculados, es INVESTIGAR con PLAN-REV-2.0 (con la historica la lista sale vacia y el texto es
+        // el de siempre).
+        boolean unaSustitucion = !s.intervencion().permiteSustituirEjercicio() && !s.sustitutos().isEmpty();
         b.append("    B. ALCANCE: solo esta sesion (").append(s.plannedWorkoutId()).append("), en su fecha. ")
                 .append(s.intervencion().permiteSustituirEjercicio()
                         ? "Puedes sustituir ejercicios, solo por los SUSTITUTOS ADMITIDOS."
+                        : unaSustitucion
+                        ? "Puedes sustituir COMO MAXIMO UN ejercicio, solo por los SUSTITUTOS ADMITIDOS; si sustituyes,"
+                        + " no cambies ninguna dosis. No retires ejercicios."
                         : "No sustituyas ni retires ejercicios.").append('\n');
         b.append("    C. LIMITES: dura ").append(s.duracion()).append(" s");
         if (s.margen() == null) b.append("; en esta sesion el minimo de duracion no obliga.\n");
@@ -396,7 +403,9 @@ public final class FactibilidadAdaptacion {
 
         b.append("    E. PROHIBIDO: subir series, repeticiones o segundos por encima de lo prescrito; cambiar")
                 .append(" descansos; anadir ejercicios");
-        if (!s.intervencion().permiteSustituirEjercicio()) b.append("; sustituir o retirar ejercicios");
+        if (unaSustitucion)
+            b.append("; retirar ejercicios; sustituir mas de uno; sustituir y cambiar una dosis en la misma sesion");
+        else if (!s.intervencion().permiteSustituirEjercicio()) b.append("; sustituir o retirar ejercicios");
         b.append(". Volver hacia la dosis prescrita, sin pasarla, NO es subir.\n");
 
         b.append("    F. SI NO HAY SOLUCION: ");

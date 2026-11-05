@@ -69,6 +69,13 @@ class PromptRev2Test {
                 .equivalenteEstricto(porId.get(x.reemplaza()), porId.get(x.exerciseId())), x.toString()));
         assertTrue(s.sustitutos().stream().anyMatch(x -> x.reemplaza() == 380L && x.exerciseId() == 72L),
                 s.sustitutos().toString());
+        // El bloque de factibilidad (V2/V2.1) dice lo mismo que la lista: UNA sustitucion, sin cambiar dosis.
+        var bloque = plano(FactibilidadAdaptacion.texto(s));
+        assertTrue(bloque.contains("Puedes sustituir COMO MAXIMO UN ejercicio"), bloque);
+        assertFalse(bloque.contains("No sustituyas ni retires ejercicios"), bloque);
+        assertTrue(bloque.contains("sustituir y cambiar una dosis en la misma sesion"), bloque);
+        var prompt = plano(texto(V21, rev2(conImpactoBajo(u04())), AiRetryFeedback.none()));
+        assertTrue(prompt.contains("SUSTITUTOS ADMITIDOS ante desmotivacion (COMO MAXIMO UNO"), prompt);
         var h = FactibilidadAdaptacion.calcular(u04().ctx(), u04().der()).stream()
                 .filter(x -> x.intervencion() == TipoIntervencion.INVESTIGAR_CAMBIO_MINIMO).findFirst().orElseThrow();
         assertTrue(h.sustitutos().isEmpty(), "con la historica INVESTIGAR no sustituye");
