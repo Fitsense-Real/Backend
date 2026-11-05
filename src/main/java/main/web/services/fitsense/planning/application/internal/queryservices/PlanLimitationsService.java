@@ -59,9 +59,43 @@ public class PlanLimitationsService {
             Capability.BALANCE, "equilibrio");
 
     private final WeeklyTrainingPlanCommandService commandService;
+    private final main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes;
+    private static final com.fasterxml.jackson.databind.ObjectMapper JSON = new com.fasterxml.jackson.databind.ObjectMapper();
 
-    public PlanLimitationsService(WeeklyTrainingPlanCommandService commandService) {
+    public PlanLimitationsService(WeeklyTrainingPlanCommandService commandService,
+                                  main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes) {
         this.commandService = commandService;
+        this.planes = planes;
+    }
+
+    static final Map<String, String> GRUPOS = Map.of("chest", "pecho", "back", "espalda", "shoulders", "hombros",
+            "upper legs", "piernas", "upper arms", "brazos");
+
+    /**
+     * Cierre REV2, fase 5: la DOSIS de la semana publicada (traza {@code dosis}, solo politicas nuevas) llega a la
+     * persona, no solo a la traza interna. Con DOSIS_LIMITADA se dice en que queda por debajo de la dosis orientativa,
+     * sin prometer resultados y sin anadir volumen. Planes sin esa traza (historica): nada.
+     */
+    static java.util.Optional<Limitation> dosis(String trazaJson) {
+        if (trazaJson == null || trazaJson.isBlank()) return java.util.Optional.empty();
+        try {
+            var d = JSON.readTree(trazaJson).path("dosis");
+            if (!"DOSIS_LIMITADA".equals(d.path("estado").asText())) return java.util.Optional.empty();
+            var partes = new ArrayList<String>();
+            d.path("grupos_bajo_objetivo").forEach(g -> partes.add(GRUPOS.getOrDefault(g.asText(), g.asText())));
+            long aer = d.path("aerobico_trabajo_minutos").asLong(0), obj = d.path("aerobico_objetivo_minutos").asLong(0);
+            if (obj > 0 && aer < obj)
+                partes.add("trabajo aeróbico (%d de %d minutos orientativos)".formatted(aer, obj));
+            if (partes.isEmpty()) return java.util.Optional.empty();
+            return java.util.Optional.of(new Limitation("DOSE", "DOSIS_LIMITADA", "Dosis semanal",
+                    ("Con tus días, tu tiempo y tu equipamiento, el plan de esta semana queda por debajo de la dosis"
+                            + " semanal orientativa en: %s. Es un plan válido y seguro; no añadimos volumen solo para"
+                            + " compensar. Las cifras orientativas están pendientes de validación profesional.")
+                            .formatted(String.join(", ", partes)),
+                    List.of()));
+        } catch (Exception e) {
+            return java.util.Optional.empty();
+        }
     }
 
     public PlanLimitationsResource limitationsFor(Long userId) {
@@ -94,6 +128,9 @@ public class PlanLimitationsService {
 
         var limitaciones = new ArrayList<Limitation>();
         frecuencia(diasPedidos, nivel).ifPresent(limitaciones::add);
+        if (planes != null)
+            planes.findFirstByUserIdOrderByWeekNumberDescPlanVersionDesc(userId)
+                    .flatMap(p -> dosis(p.getPlanningPolicyTrace())).ifPresent(limitaciones::add);
         fuerzaTiempo.ifPresent(limitaciones::add);
         vacios.stream().map(this::deSlot).forEach(limitaciones::add);
         GoalFeasibilityPolicy.evaluarPool(objetivo, nivel, elegibles).ifPresent(pool -> pool.principales().stream()

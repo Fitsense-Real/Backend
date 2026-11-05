@@ -786,8 +786,17 @@ class CapabilityWeekBuilder {
             java.util.function.Predicate<CandidateExercise> preferido = enfoque == WorkoutFocus.PULL
                     && context.policy().pullReal() && dia.stream().noneMatch(col -> esTraccion(col.candidato()))
                     ? deGrupo.and(CapabilityWeekBuilder::esTraccion) : deGrupo;
-            var extra = selector.pickAdditional(enfoque, actuales, true, preferido.and(cabeVolumen))
+            // Cierre REV2, fase 5: dentro del grupo, primero un patron (slot 4C) que la SEMANA aun no tiene. Sin esto,
+            // LOSE_WEIGHT (sin el paso 0 de cobertura) podia cubrir la pierna dos veces con rodilla y ninguna con
+            // cadera (125-163 de 315 planes sin cadera, frente a 3-27 en HIST). Solo en el modo de dosis (REV2/DUR-A).
+            java.util.function.Predicate<CandidateExercise> slotNuevo =
+                    c -> MandatorySlot.of(c).filter(slotsPendientes::contains).isPresent();
+            var extra = selector.pickAdditional(enfoque, actuales, true, preferido.and(slotNuevo).and(cabeVolumen))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, preferido.and(slotNuevo).and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, preferido.and(cabeVolumen)))
                     .or(() -> selector.pickAdditional(enfoque, actuales, false, preferido.and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, deGrupo.and(slotNuevo).and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, deGrupo.and(slotNuevo).and(cabeVolumen)))
                     .or(() -> selector.pickAdditional(enfoque, actuales, true, deGrupo.and(cabeVolumen)))
                     .or(() -> selector.pickAdditional(enfoque, actuales, false, deGrupo.and(cabeVolumen)));
             if (extra.isPresent()) {

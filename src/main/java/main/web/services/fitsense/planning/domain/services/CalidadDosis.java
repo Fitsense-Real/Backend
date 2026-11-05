@@ -69,14 +69,26 @@ public final class CalidadDosis {
         ctx.availableExercises().stream().filter(c -> !comp.contains(c.exerciseId()))
                 .map(CandidateExercise::bodyPartCode).filter(DosisSemanalPolicy.GRUPOS_GRANDES::contains)
                 .forEach(conMaterial::add);
+        // Cierre REV2, fase 5: un grupo que NINGUNA sesion de la semana admite (p. ej. upper arms en FULL_BODY, tabla
+        // 20.2) no es una falta de dosis sino una consecuencia de la division: se informa aparte y no marca la semana
+        // como DOSIS_LIMITADA (en el barrido era el unico motivo en 487 planes de 1-3 dias). No cambia ningun plan.
+        var admitidos = new TreeSet<String>();
+        sesiones.stream().filter(w -> w.focus() != null).forEach(w -> admitidos.addAll(w.focus().bodyPartCodes()));
         var bajo = new ArrayList<String>();
-        for (var g : conMaterial)
+        var noEvaluables = new ArrayList<String>();
+        for (var g : conMaterial) {
+            if (!admitidos.contains(g)) {
+                noEvaluables.add(g);
+                continue;
+            }
             if (semana.getOrDefault(g, 0) < DosisSemanalPolicy.objetivoSeriesSemana(obj, nivel, g)) bajo.add(g);
+        }
         long objetivoAerobico = DosisSemanalPolicy.objetivoAerobicoMinutosSemana(obj, nivel) * 60L;
         boolean aerobicoBajo = objetivoAerobico > 0 && aerobico < objetivoAerobico;
         var r = new LinkedHashMap<String, Object>();
         r.put("series_por_grupo", semana);
         r.put("grupos_bajo_objetivo", bajo);
+        r.put("grupos_no_evaluables_por_division", noEvaluables);
         r.put("aerobico_trabajo_minutos", aerobico / 60);
         r.put("aerobico_objetivo_minutos", objetivoAerobico / 60);
         r.put("sesiones", clases);

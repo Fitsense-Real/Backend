@@ -49,4 +49,13 @@ class ImpactoPolicyTest {
         assertFalse(ImpactoPolicy.sube(sinDato, c(11, "Marcha", false, 1)));
         assertTrue(ImpactoPolicy.sube(sinDato, c(12, "Trote", false, 1)));
     }
+
+    @Test
+    @org.junit.jupiter.api.DisplayName("cierre fase 5: polea con cuerda es BAJO; saltar la cuerda y la comba siguen MODERADO")
+    void cuerdaDePolea() {
+        assertEquals(BAJO, ImpactoPolicy.nivel(c(901, "Remo sentado en polea con cuerda", false, 1)));
+        assertEquals(BAJO, ImpactoPolicy.nivel(c(902, "Extension de triceps con cuerda", false, 1)));
+        assertEquals(MODERADO, ImpactoPolicy.nivel(c(903, "Saltar la cuerda", false, 1)));
+        assertEquals(MODERADO, ImpactoPolicy.nivel(c(904, "Comba basica", false, 1)));
+    }
 }

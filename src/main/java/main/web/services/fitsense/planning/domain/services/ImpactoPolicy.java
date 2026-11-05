@@ -26,9 +26,11 @@ public final class ImpactoPolicy {
 
     public enum Nivel { BAJO, MODERADO, ALTO, DESCONOCIDO }
 
+    // Cierre REV2, fase 5: "cuerda" sola coincidia con 23 ejercicios de polea con cuerda (remos, jalones, extensiones de
+    // triceps), clasificados como MODERADO por error. Solo la comba (saltar la cuerda) es impacto.
     private static final Pattern MODERADO = Pattern.compile(
             "\\b(trote|trotar|trotando|correr|carrera|corriendo|skipping|rodillas altas|jumping jacks?|"
-                    + "piernas separadas|comba|cuerda|saltar la cuerda|tijeras|escaladores? r[aá]pidos?)\\b");
+                    + "piernas separadas|comba|saltar la cuerda|salto de cuerda|saltos? a la cuerda|tijeras|escaladores? r[aá]pidos?)\\b");
     private static final Pattern ALTO_POR_NOMBRE = Pattern.compile(
             "\\b(salto|saltos|saltando|pliom[eé]trico|burpee|burpees|sprint|esprint|caja|rebote|zancada con salto|"
                     + "a una pierna con salto|patinador)\\b");
