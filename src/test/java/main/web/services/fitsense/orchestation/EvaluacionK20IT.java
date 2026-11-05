@@ -741,7 +741,8 @@ class EvaluacionK20IT {
         if (ts != null) salida = ts;
         if (metricas != null) predict = metricas.path("predict_time").asDouble(-1);
         var cont = ControlPresupuestoK20.contabilizar(SIN_METRICAS, fallida, estadoProv, te, ts,
-                COSTE_MAX_POR_LLAMADA_USD, TARIFA_ENTRADA_USD_MILLON, TARIFA_SALIDA_USD_MILLON, id);
+                COSTE_MAX_POR_LLAMADA_USD, TARIFA_ENTRADA_USD_MILLON, TARIFA_SALIDA_USD_MILLON, id,
+                Boolean.TRUE.equals(traza.get("cancelacion_solicitada")));
         usd = cont.usd();
         estado = cont.estado();
         if (cont.bloqueo() != null) bloqueoPresupuesto = cont.bloqueo();

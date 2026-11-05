@@ -35,8 +35,14 @@ class ControlPresupuestoK20Test {
     void timeout() {
         assertNotNull(contabilizar(RESERVA_SIN_BLOQUEO, true, EN_CURSO, null, null, R, TE, TS, "p3").bloqueo());
         assertNotNull(contabilizar(RESERVA_SIN_BLOQUEO, true, DESCONOCIDO, null, null, R, TE, TS, "p3").bloqueo());
-        // Caso U13: el backend agoto su espera; tras pedir la cancelacion el proveedor la da por cancelada -> sigue.
-        assertNull(contabilizar(RESERVA_SIN_BLOQUEO, true, CANCELED, null, null, R, TE, TS, "p3").bloqueo());
+        // Caso U13 (autorizacion REV2 del 05/11/2026): el backend agoto su espera y el arnes pidio la cancelacion. Aunque
+        // el proveedor la de por cancelada, un timeout NO es un fallo confirmado: bloquea y carga la reserva.
+        var u13 = contabilizar(RESERVA_SIN_BLOQUEO, true, CANCELED, null, null, R, TE, TS, "p3", true);
+        assertNotNull(u13.bloqueo());
+        assertEquals(R, u13.usd(), 1e-12);
+        assertNotNull(contabilizar(RESERVA_SIN_BLOQUEO, true, FAILED, null, null, R, TE, TS, "p3", true).bloqueo());
+        // Cancelada por el proveedor, sin que el arnes lo pidiera (fallo confirmado sin respuesta): sigue.
+        assertNull(contabilizar(RESERVA_SIN_BLOQUEO, true, CANCELED, null, null, R, TE, TS, "p3", false).bloqueo());
     }
 
     @Test

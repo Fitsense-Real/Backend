@@ -39,6 +39,21 @@ final class ControlPresupuestoK20 {
     static Contabilidad contabilizar(String politica, boolean fallidaBackend, EstadoProveedor estado,
                                      Long tokensEntrada, Long tokensSalida, double reserva,
                                      double tarifaEntradaMillon, double tarifaSalidaMillon, String id) {
+        return contabilizar(politica, fallidaBackend, estado, tokensEntrada, tokensSalida, reserva, tarifaEntradaMillon,
+                tarifaSalidaMillon, id, false);
+    }
+
+    /**
+     * Autorizacion de la evaluacion REV2 (05/11/2026): RESERVA_SIN_BLOQUEO SOLO para fallos CONFIRMADOS del proveedor sin
+     * respuesta. Un tiempo agotado del backend (la prediccion seguia en curso y el arnes pidio su cancelacion) no es un
+     * fallo confirmado aunque despues figure como CANCELED: bloquea. Se sigue cargando la reserva.
+     *
+     * @param canceladaPorTimeout el arnes pidio la cancelacion porque el backend agoto su espera
+     */
+    static Contabilidad contabilizar(String politica, boolean fallidaBackend, EstadoProveedor estado,
+                                     Long tokensEntrada, Long tokensSalida, double reserva,
+                                     double tarifaEntradaMillon, double tarifaSalidaMillon, String id,
+                                     boolean canceladaPorTimeout) {
         if (tokensEntrada != null && tokensSalida != null && tokensEntrada >= 0 && tokensSalida >= 0) {
             double usd = tokensEntrada / 1e6 * tarifaEntradaMillon + tokensSalida / 1e6 * tarifaSalidaMillon;
             if (usd > reserva)
@@ -47,8 +62,12 @@ final class ControlPresupuestoK20 {
             return new Contabilidad(usd, "MEDIDO", null);
         }
         // Sin metricas: se carga SIEMPRE la reserva (peor caso acotado).
-        boolean terminalSinRespuesta = fallidaBackend
+        boolean terminalSinRespuesta = fallidaBackend && !canceladaPorTimeout
                 && (estado == EstadoProveedor.FAILED || estado == EstadoProveedor.CANCELED);
+        if (canceladaPorTimeout)
+            return new Contabilidad(reserva, "TIMEOUT_SE_CARGA_LA_RESERVA",
+                    "tiempo agotado con la prediccion " + id + " en curso (cancelada, estado " + estado
+                            + "): no es un fallo confirmado; no se hacen mas llamadas");
         if (RESERVA_SIN_BLOQUEO.equals(politica) && terminalSinRespuesta)
             return new Contabilidad(reserva, "FALLIDA_SIN_METRICAS_SE_CARGA_LA_RESERVA_SIN_BLOQUEO", null);
         return new Contabilidad(reserva, "SIN_METRICAS_SE_CARGA_LA_RESERVA",
