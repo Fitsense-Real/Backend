@@ -5,7 +5,11 @@ incumplimientos_oraculo,0,0
 incumplimientos_detalle,,
 sesiones_senaladas,14,14
 sesiones_factibles,10,10
-sesiones_no_factibles,4,4
+sesiones_sin_adaptacion_posible_o_autorizada,4,4
+sesiones_tecnicamente_no_factibles,2,2
+sesiones_tecnicamente_no_factibles_ids,U03 S3 U04 S3,U03 S3 U04 S3
+sesiones_conservadas_causa_no_registrada_sin_IA,2,2
+sesiones_conservadas_causa_no_registrada_ids,U07 S3 U12 S3,U07 S3 U12 S3
 efectivas_pertinentes_IA,9,10
 efectivas_pertinentes_IA_en_factibles,9,10
 cat_ACC,5,10

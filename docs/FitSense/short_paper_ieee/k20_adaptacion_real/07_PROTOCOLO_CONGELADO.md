@@ -1,6 +1,6 @@
-# 07 · Protocolo (PROPUESTA; se congela tras DEV-R y tu aprobación)
+# 07 · Protocolo (CONGELADO el 05/11/2026: ver `08_CONGELACION.md`)
 
-**Estado: borrador para tu revisión.** Se congela en un commit **anterior a R**, con el SHA de la candidata, el prompt elegido y estos criterios. Después no cambian ni el código, ni los perfiles, ni el prompt, ni los criterios, ni el oráculo. Cualquier corrección obliga a una versión nueva y a repetirlo todo.
+**Estado: CONGELADO.** V2.1 elegida tras DEV-R (`A3`); criterios aprobados. La configuración, los hashes, los comandos y el presupuesto están en `08`. Texto original de la propuesta: Se congela en un commit **anterior a R**, con el SHA de la candidata, el prompt elegido y estos criterios. Después no cambian ni el código, ni los perfiles, ni el prompt, ni los criterios, ni el oráculo. Cualquier corrección obliga a una versión nueva y a repetirlo todo.
 
 ## 1. Cohortes
 

@@ -18,6 +18,8 @@
 
 Tabla completa: `evidencia/desarrollo/DEV_R_comparacion/COMPARACION_DEV_R.csv`, generada por `herramientas/comparar_dev_r.py`.
 
+> **Precisión documental (05/11/2026), antes de congelar:** se separan las sesiones sin adaptación en técnicamente no factibles (U03 S3, U04 S3) y conservadas por causa no registrada sin autorización de IA (U07 S3, U12 S3). **No cambia ningún resultado ni criterio.** V2 y sus resultados se conservan sin modificaciones.
+
 ## 1. Resultado
 
 | Dimensión | V2 | V2.1 |
@@ -26,7 +28,8 @@ Tabla completa: `evidencia/desarrollo/DEV_R_comparacion/COMPARACION_DEV_R.csv`, 
 | **Incumplimientos de seguridad** (planes inválidos publicados, sesiones no señaladas alteradas, aumentos de dosis o dificultad, incoherencias de texto) | **0** | **0** |
 | Sesiones señaladas | 14 | 14 |
 | … factibles según la sonda | 10 | 10 |
-| … no factibles (U03 S3 y U04 S3: CONS-J; U07 S3 y U12 S3: sin causa) | 4 | 4 |
+| … **técnicamente no factibles** (U03 S3 y U04 S3; CONS-J) | 2 | 2 |
+| … **conservadas por causa no registrada, sin autorización de IA** (U07 S3 y U12 S3; CONS-J) | 2 | 2 |
 | **Adaptaciones efectivas y pertinentes de la IA** (origen IA, cambio real, publicadas, ACC o ALT) | **9 / 10** | **10 / 10** |
 | … **ACC** | **5** | **10** |
 | … **ALT** | **4** | **0** |
@@ -65,9 +68,15 @@ Detalle con nombres en `evidencia/desarrollo/DEV_R_comparacion/DEV_R_ADAPTACIONE
 | **U19 S2** | demasiado difícil | **ACC**. Media sentadilla: 3 → 2 series | **ACC**. Igual |
 | **U19 S3** | desmotivación | **INC**. Reduce **8** ejercicios (una repetición o un segundo menos en cada uno): no es un cambio mínimo | **ACC**. Reduce **1**: escalador, 90 → 80 s |
 
-Sin IA, en las dos versiones:
-- **U03 S3 y U04 S3:** CONS-J. GAIN_MUSCLE con dosis fija, imposibilidad demostrada en `01`. **No cuentan como éxito.**
-- **U07 S3 y U12 S3:** sin causa registrada; se conservan sin llamar a la IA.
+Sesiones señaladas sin adaptación, en las dos versiones. Son **dos clases distintas**:
+- **Técnicamente no factibles: U03 S3 y U04 S3** (CONS-J).
+  - GAIN_MUSCLE con dosis fija; la imposibilidad está demostrada en `01`.
+  - La sonda no encuentra ninguna modificación simple válida.
+  - El ciclo llama a la IA, que no publica cambios, y la sesión se conserva.
+  - **No cuentan como éxito.**
+- **Conservadas por causa no registrada, sin autorización de IA: U07 S3 y U12 S3** (CONS-J).
+  - El usuario omitió la sesión sin indicar el motivo, así que la política no autoriza ninguna intervención y **no se llama a la IA**.
+  - No son una imposibilidad técnica, y tampoco cuentan como éxito ni como fallo de la IA.
 
 **Para la revisión profesional** (no afectan a la clasificación):
 - En **U18 S3** (fatiga), V2.1 acorta también un **estiramiento** de 30 a 20 s. La regla de fatiga lo admite, porque es menos trabajo, pero un profesional podría preferir conservar la movilidad.

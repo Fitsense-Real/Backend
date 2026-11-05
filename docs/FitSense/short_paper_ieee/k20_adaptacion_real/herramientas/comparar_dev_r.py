@@ -45,7 +45,14 @@ def analizar(carpeta):
     m["sesiones_senaladas"] = len(ses)
     fact = [r for r in ses if r["factible_sonda"] == "si"]
     m["sesiones_factibles"] = len(fact)
-    m["sesiones_no_factibles"] = len(ses) - len(fact)
+    # Precision descriptiva (05/11/2026): las senaladas sin adaptacion son de DOS clases distintas.
+    m["sesiones_sin_adaptacion_posible_o_autorizada"] = len(ses) - len(fact)
+    m["sesiones_tecnicamente_no_factibles"] = sum(r["factible_sonda"] == "no" for r in ses)
+    m["sesiones_tecnicamente_no_factibles_ids"] = " ".join(f'{r["id"]} {r["sesion"]}' for r in ses
+                                                           if r["factible_sonda"] == "no")
+    m["sesiones_conservadas_causa_no_registrada_sin_IA"] = sum(r["intervencion"] == "CAUSA_NO_REGISTRADA" for r in ses)
+    m["sesiones_conservadas_causa_no_registrada_ids"] = " ".join(f'{r["id"]} {r["sesion"]}' for r in ses
+                                                                 if r["intervencion"] == "CAUSA_NO_REGISTRADA")
     efectiva = lambda r: r["origen"] == "IA" and r["cambio"] == "si" and r["categoria"] in ("ACC", "ALT")
     m["efectivas_pertinentes_IA"] = sum(efectiva(r) for r in ses)
     m["efectivas_pertinentes_IA_en_factibles"] = sum(efectiva(r) for r in fact)
