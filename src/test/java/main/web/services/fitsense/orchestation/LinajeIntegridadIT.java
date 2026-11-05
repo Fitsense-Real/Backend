@@ -207,9 +207,15 @@ class LinajeIntegridadIT {
         assertTrue(sinEvidencia.stream().anyMatch(r -> "PLAN_DERIVADO_SIN_INTENTO_UNICO".equals(r.get("violacion"))
                 && ((Number) r.get("id")).longValue() == a3), sinEvidencia.toString());
 
-        // F: D8 sin evidencia. Sobre E, tras sus tres copias, falta el intento V32 que publico el
-        //    acortado (tres semanas atras): el linaje no se puede clasificar, no hay exencion y V20
-        //    rechaza la copia siguiente.
+        puntoF(e, previo, e2);
+    }
+
+    /**
+     * F: D8 sin evidencia. Sobre E, tras sus tres copias, falta el intento V32 que publico el acortado (tres semanas
+     * atras): el linaje no se puede clasificar, no hay exencion y V20 rechaza la copia siguiente. (Extraido sin cambiar
+     * ninguna asercion para que {@code LinajeIntegridadRev2IT} fije la expectativa de PLAN-REV-2.0, sin piso de V20.)
+     */
+    void puntoF(long e, long previo, long e2) throws Exception {
         configurarIa(true);
         assertEquals(1, jdbc.update("DELETE FROM plan_adaptation_attempts WHERE resulting_plan_id = ?", e2));
         ejecutar(e, previo, Dia.HECHO, Dia.HECHO, Dia.HECHO);
@@ -221,12 +227,12 @@ class LinajeIntegridadIT {
         assertTrue(motivoF.startsWith("V20"), motivoF);
     }
 
-    private int duracionViernes(long planId) {
+    int duracionViernes(long planId) {
         return jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts WHERE plan_id = ?"
                 + " AND extract(isodow FROM scheduled_date) = 5", Integer.class, planId);
     }
 
-    private void configurarIa(boolean habilitada) {
+    void configurarIa(boolean habilitada) {
         org.mockito.Mockito.reset(ia);
         when(ia.isEnabled()).thenReturn(habilitada);
         when(ia.modelName()).thenReturn("simulado");
@@ -239,7 +245,7 @@ class LinajeIntegridadIT {
      * La IA simulada, solo con lo que permite cada intervencion: REPROGRAMAR_DIAS mueve la sesion
      * al primer dia disponible libre de la semana; ACORTAR retira el ultimo relleno; el resto, igual.
      */
-    private List<CorrectedSession> corregir(PlanGenerationContext ctx) {
+    List<CorrectedSession> corregir(PlanGenerationContext ctx) {
         var salida = new ArrayList<CorrectedSession>();
         for (var senalada : ctx.adjustment().targetedSessions()) {
             long id = senalada.plannedWorkoutId();
@@ -285,11 +291,11 @@ class LinajeIntegridadIT {
         return salida;
     }
 
-    private long participante(GoalType objetivo) {
+    long participante(GoalType objetivo) {
         return participante(objetivo, List.of((short) 1, (short) 3, (short) 5));
     }
 
-    private long participante(GoalType objetivo, List<Short> dias) {
+    long participante(GoalType objetivo, List<Short> dias) {
         String email = "linaje" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
                 + " VALUES (?, 'x', 'Prueba', now(), now())", email);
@@ -302,7 +308,7 @@ class LinajeIntegridadIT {
         return userId;
     }
 
-    private void ejecutar(long u, long planId, Dia... dias) {
+    void ejecutar(long u, long planId, Dia... dias) {
         var principal = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
         var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, planId);
@@ -334,7 +340,7 @@ class LinajeIntegridadIT {
     }
 
     /** Las dos consultas del archivo: violaciones y clasificacion. */
-    private static String[] consultas() throws Exception {
+    static String[] consultas() throws Exception {
         var texto = Files.readString(CONSULTA).lines()
                 .filter(l -> !l.stripLeading().startsWith("--"))
                 .collect(Collectors.joining("\n"));
@@ -348,7 +354,7 @@ class LinajeIntegridadIT {
      * no se acorta (D1). Este escenario prueba lo que pasa tras un recorte, asi que la persona
      * declara que suele tener menos tiempo del que dura la sesion (un minuto menos).
      */
-    private org.springframework.http.ResponseEntity<Void> saltoPorFaltaDeTiempo(
+    org.springframework.http.ResponseEntity<Void> saltoPorFaltaDeTiempo(
             main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl principal, long w) {
         int minutos = jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts"
                 + " WHERE planned_workout_id = ?", Integer.class, w);

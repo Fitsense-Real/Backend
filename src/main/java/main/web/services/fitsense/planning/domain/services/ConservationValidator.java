@@ -785,6 +785,12 @@ public class ConservationValidator {
                         .formatted(s.puesto(), puesto.movementPattern(), s.quitado(), s.patronQuitado());
             else if (!idsNuevos.contains(s.puesto()) || idsNuevos.contains(s.quitado()))
                 motivo = "la sesion no refleja la sustitucion de %d por %d".formatted(s.quitado(), s.puesto());
+            // Fase 4 (cierre de PLAN-REV-2.0): un heredado desactivado en el catalogo solo admite un equivalente
+            // estricto; V8C lo vuelve a comprobar con el ejercicio descrito por el catalogo.
+            else if (SafetyConflictPolicy.esCatalogoInactivo(s.motivo())
+                    && !PermisosIntervencion.equivalenteEstricto(causas.originales().get(s.quitado()), puesto))
+                motivo = ("el sustituto %d de %d (desactivado en el catalogo) no es un equivalente estricto: mismo"
+                        + " patron, zona y musculo, dificultad e impacto no superiores").formatted(s.puesto(), s.quitado());
 
             if (motivo != null) {
                 problems.add("V8C: la sustitucion por seguridad de la sesion %d no se admite: %s."

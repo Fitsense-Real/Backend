@@ -108,7 +108,7 @@ class PendientesProgresionIT {
     /** Que hace la IA simulada en una sesion senalada por fatiga. */
     enum Modo { SERIE, SOLO_CARGA, CARGA_SUBE }
 
-    private Modo modo = Modo.SERIE;
+    Modo modo = Modo.SERIE;
 
     @Test
     @DisplayName("opcion 2: devolver una serie supera el 10 %; la dosis reducida se conserva y progresan otros ejercicios")
@@ -187,7 +187,7 @@ class PendientesProgresionIT {
         assertSinViolaciones();
     }
 
-    private String ultimoEstadoSesion(long plannedWorkoutId) {
+    String ultimoEstadoSesion(long plannedWorkoutId) {
         return String.valueOf(jdbc.queryForList("SELECT status, completion_percentage FROM workout_sessions"
                 + " WHERE planned_workout_id = ?", plannedWorkoutId));
     }
@@ -280,7 +280,7 @@ class PendientesProgresionIT {
     }
 
     /** El unico ejercicio que cambio entre dos versiones de una sesion. */
-    private static Ej distinto(List<Ej> a, List<Ej> b) {
+    static Ej distinto(List<Ej> a, List<Ej> b) {
         var d = new ArrayList<Ej>();
         for (int i = 0; i < Math.min(a.size(), b.size()); i++) if (!a.get(i).equals(b.get(i))) d.add(b.get(i));
         assertEquals(1, d.size(), "un solo ejercicio cambiado: " + d);
@@ -292,7 +292,7 @@ class PendientesProgresionIT {
     // =======================================================================
 
     /** Un ciclo de la semana k (S1 + k), comprobando el numero exacto de llamadas a la IA. */
-    private long ciclo(long u, int k, int llamadasEsperadas) {
+    long ciclo(long u, int k, int llamadasEsperadas) {
         clearInvocations(ia);
         var plan = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1));
         int llamadas = (int) Mockito.mockingDetails(ia).getInvocations().stream()
@@ -307,7 +307,7 @@ class PendientesProgresionIT {
     // IA simulada: solo lo que permite su intervencion
     // =======================================================================
 
-    private List<CorrectedSession> corregir(PlanGenerationContext ctx) {
+    List<CorrectedSession> corregir(PlanGenerationContext ctx) {
         var salida = new ArrayList<CorrectedSession>();
         for (var senalada : ctx.adjustment().targetedSessions()) {
             long id = senalada.plannedWorkoutId();
@@ -352,12 +352,12 @@ class PendientesProgresionIT {
         return salida;
     }
 
-    private java.math.BigDecimal cargaDe(long sesion, long exerciseId) {
+    java.math.BigDecimal cargaDe(long sesion, long exerciseId) {
         return jdbc.queryForList("SELECT target_load_kg FROM planned_workout_exercises WHERE planned_workout_id = ?"
                 + " AND exercise_id = ?", java.math.BigDecimal.class, sesion, exerciseId).stream().filter(Objects::nonNull).findFirst().orElse(null);
     }
 
-    private static int minimo(PlanGenerationContext ctx, long exerciseId) {
+    static int minimo(PlanGenerationContext ctx, long exerciseId) {
         var limites = ctx.prescription() == null ? null : ctx.prescription().repLimits();
         var c = ctx.availableExercises().stream().filter(x -> x.exerciseId() == exerciseId).findFirst();
         return limites == null || c.isEmpty() ? 0 : limites.minRepsFor(c.get().bodyPartCode(), ctx.profile().fitnessLevel());
@@ -367,11 +367,11 @@ class PendientesProgresionIT {
     // Material
     // =======================================================================
 
-    private long participante(GoalType objetivo, FitnessLevel nivel, int minutos) {
+    long participante(GoalType objetivo, FitnessLevel nivel, int minutos) {
         return participante(objetivo, nivel, minutos, "GYM");
     }
 
-    private long participante(GoalType objetivo, FitnessLevel nivel, int minutos, String lugar) {
+    long participante(GoalType objetivo, FitnessLevel nivel, int minutos, String lugar) {
         String email = "pendiente" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
                 + " VALUES (?, 'x', 'Prueba', now(), now())", email);
@@ -386,7 +386,7 @@ class PendientesProgresionIT {
     }
 
     /** (planned_workout_id, ejercicios con su dosis) por fecha. */
-    private List<Map.Entry<Long, List<Ej>>> semana(long planId) {
+    List<Map.Entry<Long, List<Ej>>> semana(long planId) {
         return jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ? ORDER BY scheduled_date",
                 Long.class, planId).stream().map(id -> Map.entry(id, jdbc.query("SELECT exercise_id, prescription_type,"
                         + " planned_sets, planned_reps, planned_duration_seconds, rest_seconds FROM planned_workout_exercises"
@@ -395,12 +395,12 @@ class PendientesProgresionIT {
                         rs.getObject(5, Integer.class), rs.getObject(6, Short.class)), id))).toList();
     }
 
-    private List<String> estructura(long planId, int dias) {
+    List<String> estructura(long planId, int dias) {
         return jdbc.queryForList("SELECT (scheduled_date + ?) || '|' || focus_code || '|' || expected_duration_minutes"
                 + " FROM planned_workouts WHERE plan_id = ? ORDER BY scheduled_date", String.class, dias, planId);
     }
 
-    private static int volumen(List<Ej> l) {
+    static int volumen(List<Ej> l) {
         return l.stream().mapToInt(e -> {
             int s = e.series() == null ? 1 : e.series();
             return "DURATION".equals(e.tipo()) ? Math.round((float) (s * (e.segundos() == null ? 0 : e.segundos())) / 30)
@@ -408,32 +408,32 @@ class PendientesProgresionIT {
         }).sum();
     }
 
-    private Long origen(long id) {
+    Long origen(long id) {
         return jdbc.queryForObject("SELECT source_planned_workout_id FROM planned_workouts WHERE planned_workout_id = ?",
                 Long.class, id);
     }
 
-    private List<Map<String, Object>> historial(long planId) {
+    List<Map<String, Object>> historial(long planId) {
         return jdbc.queryForList("SELECT ws.session_id, ws.status, ws.completion_percentage, ws.counts_toward_adherence,"
                 + " pw.status AS pw_status FROM planned_workouts pw LEFT JOIN workout_sessions ws"
                 + " ON ws.planned_workout_id = pw.planned_workout_id WHERE pw.plan_id = ? ORDER BY pw.scheduled_date", planId);
     }
 
-    private int intentos(long u) {
+    int intentos(long u) {
         return jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE user_id = ?", Integer.class, u);
     }
 
-    private Map<String, Object> ultimo(long u) {
+    Map<String, Object> ultimo(long u) {
         return jdbc.queryForMap("SELECT decision, status, generation_source, ai_calls, targeted_interventions::text,"
                 + " progressed_sessions::text, conservation_report::text FROM plan_adaptation_attempts WHERE user_id = ?"
                 + " ORDER BY attempt_id DESC LIMIT 1", u);
     }
 
-    private static String informe(Map<String, Object> ev) {
+    static String informe(Map<String, Object> ev) {
         return String.valueOf(ev.get("conservation_report")).replace(" ", "");
     }
 
-    private void ejecutar(long u, long planId, Dia... dias) {
+    void ejecutar(long u, long planId, Dia... dias) {
         var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ? ORDER BY scheduled_date",
                 Long.class, planId);
         for (int i = 0; i < ids.size(); i++) {
@@ -480,7 +480,7 @@ class PendientesProgresionIT {
         }
     }
 
-    private void assertSinViolaciones() throws Exception {
+    void assertSinViolaciones() throws Exception {
         var texto = Files.readString(Path.of("docs/FitSense/consultas/linaje_v31_v32.sql")).lines()
                 .filter(l -> !l.stripLeading().startsWith("--")).collect(Collectors.joining("\n"));
         assertEquals(List.of(), jdbc.queryForList(texto.split(";")[0].strip()));
@@ -494,7 +494,7 @@ class PendientesProgresionIT {
      * no se acorta (D1). Este escenario prueba lo que pasa tras un recorte, asi que la persona
      * declara que suele tener menos tiempo del que dura la sesion (un minuto menos).
      */
-    private org.springframework.http.ResponseEntity<Void> saltoPorFaltaDeTiempo(
+    org.springframework.http.ResponseEntity<Void> saltoPorFaltaDeTiempo(
             main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl principal, long w) {
         int minutos = jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts"
                 + " WHERE planned_workout_id = ?", Integer.class, w);

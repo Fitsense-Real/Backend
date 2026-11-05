@@ -22,7 +22,7 @@ import java.util.Map;
 public record PlanningPolicy(String id, boolean candidata, boolean v4Segundos, String descripcion,
                              Duracion duracion, boolean v4Maximo, boolean volumenSemanal, boolean pullReal,
                              boolean impacto, boolean alternativasDeterministas, boolean fatigaGM,
-                             boolean sustitucionDesmotivacion) {
+                             boolean sustitucionDesmotivacion, boolean reparaCatalogoInactivo) {
 
     /** Como se trata el tiempo de la sesion. */
     public enum Duracion {
@@ -45,27 +45,33 @@ public record PlanningPolicy(String id, boolean candidata, boolean v4Segundos, S
 
     public static final PlanningPolicy HISTORICA = new PlanningPolicy("PLAN-HIST-1", false, false,
             "V20 fijo al 70 %, V4 historico (minutos declarados frente a round(M x 1,15)), V24 y 4D vigentes",
-            Duracion.PISO_70, false, false, false, false, false, false, false);
+            Duracion.PISO_70, false, false, false, false, false, false, false, false);
     public static final PlanningPolicy V4C = new PlanningPolicy("PLAN-V4-0.1", true, true,
             "Historica + V4 en segundos estimados (115 %)",
-            Duracion.PISO_70, false, false, false, false, false, false, false);
+            Duracion.PISO_70, false, false, false, false, false, false, false, false);
     /** Diseno A de P-G1, para comparar: solo cambia la duracion (y V4 al 100 %, el maximo disponible). */
     public static final PlanningPolicy DUR_A = new PlanningPolicy("PLAN-DUR-A-0.1", true, true,
             "P-G1 diseno A: M = maximo; sin piso de V20; contenido por cobertura y dosis semanal con techo; V4 <= 100 %",
-            Duracion.DOSIS_SEMANAL, true, true, false, false, false, false, false);
+            Duracion.DOSIS_SEMANAL, true, true, false, false, false, false, false, false);
     /** Diseno B de P-G1, para comparar: llena hacia el 70 % como objetivo blando, con techo de volumen. */
     public static final PlanningPolicy DUR_B = new PlanningPolicy("PLAN-DUR-B-0.1", true, true,
             "P-G1 diseno B: M = maximo; V20 objetivo blando (no rechaza); techo semanal de volumen; V4 <= 100 %",
-            Duracion.LLENADO_ACOTADO, true, true, false, false, false, false, false);
+            Duracion.LLENADO_ACOTADO, true, true, false, false, false, false, false, false);
     /**
      * Version integrada del rediseno (se fija tras comparar A y B): duracion elegida + P-G3 (sin PULL falsas) +
      * P-C2 (impacto) + D-G3 (alternativas deterministas) + P-A1 (reduccion por fatiga en GM) + P-A2 (una
      * sustitucion ante desmotivacion). P-G2 (V15) POSPUESTA: no forma parte de ninguna version.
+     * <p>
+     * Cierre tecnico (orden definitiva, fase 4): {@code reparaCatalogoInactivo}. Un ejercicio HEREDADO que se
+     * desactivo en el catalogo mientras estaba en un plan publicado ya no deja la semana siguiente NO_FACTIBLE por V1:
+     * se sustituye SOLO esa colocacion por un equivalente estricto (mismo slot, patron, grupo y musculo; dificultad e
+     * impacto no superiores; elegible para el perfil) o, si no lo hay, la semana no sale y el motivo lo dice. Con la
+     * historica, lo de siempre (V1).
      */
     public static final PlanningPolicy REV2 = new PlanningPolicy("PLAN-REV-2.0", true, true,
             "Rediseno R/R': duracion por dosis (A), V4 <= 100 %, techo de volumen, PULL real, impacto, "
                     + "alternativas deterministas, reduccion por fatiga en GM y una sustitucion ante desmotivacion",
-            Duracion.DOSIS_SEMANAL, true, true, true, true, true, true, true);
+            Duracion.DOSIS_SEMANAL, true, true, true, true, true, true, true, true);
 
     public static final Map<String, PlanningPolicy> CATALOGO;
 

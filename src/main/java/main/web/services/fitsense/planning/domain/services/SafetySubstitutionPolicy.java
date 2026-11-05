@@ -46,6 +46,13 @@ import java.util.stream.Collectors;
 public final class SafetySubstitutionPolicy {
 
     public static final String REGLA = "SUST-SEG-1";
+    /**
+     * Fase 4 del cierre de PLAN-REV-2.0: sustituto de un heredado DESACTIVADO en el catalogo. Todas las restricciones
+     * de {@value #REGLA} y, ademas, el equivalente estricto de {@link PermisosIntervencion#equivalenteEstricto}: mismo
+     * patron, misma zona, musculo objetivo compatible, dificultad no mayor e impacto no mayor (con impacto desconocido,
+     * ninguno). La desaparicion del ejercicio no autoriza por si sola ningun cambio mas.
+     */
+    public static final String REGLA_INACTIVO = "SUST-CAT-1";
 
     private SafetySubstitutionPolicy() {}
 
@@ -121,7 +128,23 @@ public final class SafetySubstitutionPolicy {
                     continue;
                 }
                 var original = exclusiones.originales().get(e.exerciseId());
-                var sustituto = elegir(original, sesion.focus(), elegibles, enSesion, contiguos, context, estrategia);
+                boolean inactivo = SafetyConflictPolicy.esCatalogoInactivo(exclusiones.motivos().get(e.exerciseId()));
+                var sustituto = inactivo
+                        ? elegirEquivalenteEstricto(original, sesion.focus(), elegibles, enSesion, contiguos, context)
+                        : elegir(original, sesion.focus(), elegibles, enSesion, contiguos, context, estrategia);
+                if (sustituto.isEmpty() && inactivo) {
+                    problemas.add(("CATALOGO: el ejercicio %d de la sesion %d (%s) se desactivo en el catalogo y no hay"
+                            + " un sustituto equivalente estricto elegible (regla %s: mismo slot %s, patron %s, zona %s,"
+                            + " musculo compatible, dificultad e impacto no superiores, tipo %s, zona que admita el"
+                            + " enfoque %s). No se publica un ejercicio inactivo ni una sustitucion que no cumple la"
+                            + " regla; requiere intervencion.")
+                            .formatted(e.exerciseId(), derivada.sourcePlannedWorkoutId(), sesion.scheduledDate(),
+                                    REGLA_INACTIVO, MandatorySlot.of(original).map(Enum::name).orElse("relleno"),
+                                    original.movementPattern(), original.bodyPartCode(), original.defaultPrescription(),
+                                    sesion.focus()));
+                    ejercicios.add(e);
+                    continue;
+                }
                 if (sustituto.isEmpty()) {
                     problemas.add(("SEGURIDAD: el ejercicio %d de la sesion %d (%s) dejo de ser compatible "
                             + "por seguridad (%s) y no hay sustituto elegible con la regla %s: mismo slot (%s), "
@@ -141,7 +164,8 @@ public final class SafetySubstitutionPolicy {
                 cambio = true;
                 sustituciones.add(new SustitucionSeguridad(derivada.sourcePlannedWorkoutId(),
                         sesion.scheduledDate(), e.exerciseId(), original.movementPattern(), c.exerciseId(),
-                        exclusiones.motivos().get(e.exerciseId()), REGLA, describir(e), describir(dosis)));
+                        exclusiones.motivos().get(e.exerciseId()), inactivo ? REGLA_INACTIVO : REGLA, describir(e),
+                        describir(dosis)));
             }
             nuevaSemana.add(!cambio ? derivada : new DerivedWorkout(derivada.sourcePlannedWorkoutId(),
                     new PlanDraft.DraftWorkout(sesion.scheduledDate(), sesion.focus(), sesion.name(),
@@ -228,6 +252,23 @@ public final class SafetySubstitutionPolicy {
         if (enSesion.contains(c.exerciseId()) || contiguos.contains(c.exerciseId())) return Etapa.NO_EN_LA_SESION_NI_CONTIGUO;
         if (limitaDificultad && c.difficulty() > original.difficulty()) return Etapa.DIFICULTAD_NO_MAYOR;
         return null;
+    }
+
+    /** {@value #REGLA_INACTIVO}: las restricciones de siempre (con limite de dificultad) + el equivalente estricto. */
+    static Optional<CandidateExercise> elegirEquivalenteEstricto(CandidateExercise original, WorkoutFocus enfoque,
+                                                                 Map<Long, CandidateExercise> elegibles,
+                                                                 Set<Long> enSesion, Set<Long> contiguos,
+                                                                 PlanGenerationContext context) {
+        if (original == null || elegibles == null) return Optional.empty();
+        String objetivo = objetivo(context);
+        var orden = Comparator.comparing((CandidateExercise c) -> !Objects.equals(c.targetMuscle(), original.targetMuscle()))
+                .thenComparingInt(c -> original.difficulty() - c.difficulty())
+                .thenComparing(CandidateExercise::exerciseId);
+        return elegibles.values().stream()
+                .filter(c -> descarte(c, original, enfoque, enSesion, contiguos, objetivo, true) == null)
+                .filter(c -> PermisosIntervencion.equivalenteEstricto(original, c))
+                .sorted(orden)
+                .findFirst();
     }
 
     static String objetivo(PlanGenerationContext context) {
