@@ -23,6 +23,7 @@ Cada limitación se clasifica en una de cuatro categorías:
 | L11 | Con `capability-validation` apagada (por defecto), los objetivos por capacidades no validan la dosis (H14) | LW, GF, IS | Previa | Sin cambio |
 | L12 | V26 en una semana derivada admite el volumen **heredado** de un plan histórico por encima del techo (no obliga a recortarlo) y solo impide subirlo | Planes HIST adaptados con REV2 | Diseño (transición) | Decisión explícita para no dejar NO_FACTIBLE a quien ya tiene plan. Probado en `v26SemanaDerivada` |
 | L13 | Las IT de progresión escritas para HIST tienen 4 premisas que no se cumplen con REV2 (`06_VERIFICACION.md` §4) | Pruebas | Pruebas | Con REV2 se informan, no se ocultan. Habría que escribir variantes REV2 si se adopta |
+| L14 | Tope de 4 sesiones semanales para principiantes (`MAX_SESSIONS_BEGINNER`, regla previa): un principiante que pide 5 días recibe 4. El oráculo K20 no lo modela (L05 de la cohorte L) | Principiantes con 5 o más días | Previa (las dos políticas) | Decidir si el oráculo incorpora la regla o si el producto la comunica al usuario; no se cambió nada |
 
 ## 2. Propuestas pendientes de validación profesional o de decisión
 

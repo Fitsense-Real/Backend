@@ -18,7 +18,7 @@
 | 05 | `05_ADAPTACION_Y_PROGRESION.md` | P-A1, P-A2, P-P1, P-P2, H6, H7, H14 y reincorporación |
 | 06 | `06_VERIFICACION.md` | Pruebas, reproducibilidad, K20 U/J/K, los 9 escenarios, P-H1 y regresión |
 | 07 | `07_COHORTE_L.md` | Cohorte independiente L: resultados sin ajustar nada |
-| 08 | `08_LIMITACIONES_Y_PROPUESTAS.md` | 13 limitaciones clasificadas y 10 propuestas pendientes |
+| 08 | `08_LIMITACIONES_Y_PROPUESTAS.md` | 14 limitaciones clasificadas y 10 propuestas pendientes |
 
 ## 1. Matriz de decisiones
 
@@ -39,7 +39,7 @@
 | 100 % frente a 80 % | Documentar | Notas fechadas en los dos documentos de progresión | — | Hecho |
 | Progresión | Apagada por defecto | Sigue apagada. Probada encendida (ProgresionIT 24/24 con REV2) y apagada (RedisenoFatigaGmIT) | `06` §4 | Hecho |
 | Oráculo | No cambiar criterios para ocultar | Histórico intacto y versionado más estricto; se publican los dos | `03` | Hecho |
-| Independencia | K ya se usó; cohorte L nueva | L fijada y publicada antes; no se ajustó nada con L | `07` | Hecho |
+| Independencia | K ya se usó; cohorte L nueva | L fijada y publicada antes (`8ed112a`); no se ajustó nada con L. REV2 en L: 15/16, D = D′ | `07` | Hecho |
 
 ## 2. Antes y después (resumen)
 
@@ -59,7 +59,7 @@
 | Condición | Estado | Evidencia |
 |---|---|---|
 | Sin regresiones críticas | ✅ | Regresión completa: 1.263 unitarias y 528 IT, 0 fallos. HIST idéntica |
-| Ningún plan publicado inválido | ✅ | Oráculo versionado: U/J/K/L en D y en IA simulada; 79/79 intentos inválidos rechazados |
+| Ningún plan publicado inválido | ✅ | Oráculo versionado: U 20/20, J 16/16, K 16/16 en D, D′ e IA simulada; L 15/16 (el único FAIL, L05, viene de una regla previa común a las dos políticas: tope de 4 sesiones para principiantes, `07`); 92/92 intentos inválidos rechazados |
 | J03 y equivalentes resueltos cuando es razonable | ✅ | J03 válido; 139 rescatados; 4 sin plan justificados (L1, pendiente de decisión) |
 | Reducciones por fatiga funcionales y trazables | ✅ | `MANTENIMIENTO` en V8C/V24 y en el informe V32; avisos de persistencia |
 | Sustituciones por desmotivación funcionales y pertinentes | ✅ | 37/37 cumplen P-A2 (comprobación independiente) |
@@ -68,7 +68,7 @@
 | Seguridad y linaje preservados | ✅ | P-P2, H6, H7 corregidos; V1/V6/V10/V11 sin cambio; nada inactivo publicado |
 | Progresión probada encendida y apagada | ✅ | `06` §4 (4 premisas de HIST no aplican a REV2, documentadas) |
 | Reproducible | ✅ | Huellas D = D′; barridos idénticos |
-| Limitaciones restantes clasificadas | ✅ | `08` (L1–L13, P1–P10) |
+| Limitaciones restantes clasificadas | ✅ | `08` (L1–L14, P1–P10) |
 
 **Resultado de la compuerta:** **cumplida para pasar a la decisión sobre Replicate**, con las limitaciones de `08` declaradas.
 - **No se ha consumido Replicate.**
