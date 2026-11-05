@@ -16,11 +16,13 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateEx
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
+import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 import main.web.services.fitsense.planning.domain.services.AdaptedWeekProducer;
 import main.web.services.fitsense.planning.domain.services.ConservationValidator;
 import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
+import main.web.services.fitsense.planning.domain.services.PermisosIntervencion;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateSessionFixGenerator;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTrainingPlanGenerator;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilder;
@@ -926,7 +928,7 @@ class EvaluacionK20IT {
                     acciones.add(s.plannedWorkoutId() + ": SIN_CANDIDATA_VALIDA (no se propone nada)");
                     continue;
                 }
-                var c = mejor(lista, s.intervencion());
+                var c = mejor(lista, s.intervencion(), ctx.policy());
                 acciones.add(s.plannedWorkoutId() + ": " + c.clase() + " " + c.descripcion());
                 sesionesJson.add(sesionJson(c.sesion(), c.fecha(), c.ejercicios()));
                 if (intento == 3) break;
@@ -942,7 +944,13 @@ class EvaluacionK20IT {
     }
 
     /** Preferencia por causa: lo mas pertinente primero (independiente de lo que publique el backend). */
-    private static Candidata mejor(List<Candidata> lista, TipoIntervencion intervencion) {
+    private static Candidata mejor(List<Candidata> lista, TipoIntervencion intervencion, PlanningPolicy politica) {
+        // Con P-A1/P-A2 la IA simulada sigue lo que dice el prompt de esa politica (PermisosIntervencion.instruccion).
+        if (PermisosIntervencion.mantenimientoGM(intervencion, politica))
+            for (var c : lista) if (c.clase().equals("MANTENIMIENTO_GM")) return c;
+        if (PermisosIntervencion.sustitucionUnica(intervencion, politica))
+            for (var clase : List.of("SUSTITUTO_LATERAL", "SUSTITUTO_MAS_FACIL"))
+                for (var c : lista) if (c.clase().equals(clase)) return c;
         var orden = switch (intervencion) {
             case VARIANTE_MAS_SENCILLA_O_CARGA -> List.of("SUSTITUTO_MAS_FACIL", "MENOS_CARGA", "MENOS_REPS", "MENOS_SEGUNDOS",
                     "MENOS_SERIES", "SUSTITUTO_LATERAL");
@@ -1001,7 +1009,9 @@ class EvaluacionK20IT {
                 f.put("etiqueta", etiquetaActual);
                 f.put("sesion", s.plannedWorkoutId());
                 f.put("intervencion", s.intervencion());
-                f.put("permite_sustituir", s.intervencion().permiteSustituirEjercicio());
+                f.put("permite_sustituir", PermisosIntervencion.permiteSustituir(s.intervencion(), ctx.policy()));
+                f.put("mantenimiento_gm", PermisosIntervencion.mantenimientoGM(s.intervencion(), ctx.policy())
+                        && "GAIN_MUSCLE".equals(ctx.profile().goalType()));
                 f.put("permite_dosis", s.intervencion().permiteCambiarDosis());
                 f.put("ejercicios", w.exercises().size());
                 f.put("candidatas", candidatas.size());
@@ -1024,6 +1034,22 @@ class EvaluacionK20IT {
         var out = new ArrayList<Candidata>();
         var ej = w.exercises();
         Long id = s.plannedWorkoutId();
+        if (PermisosIntervencion.mantenimientoGM(s.intervencion(), ctx.policy())
+                && "GAIN_MUSCLE".equals(ctx.profile().goalType())) {
+            // P-A1: la dosis de mantenimiento de la sesion (una serie menos en cada ejercicio con 3 o mas, nunca por
+            // debajo de 2). V8C/V24 deciden si es la autorizada; aqui solo se propone.
+            var mant = new ArrayList<PlanDraft.DraftExercise>();
+            var cambios = new ArrayList<String>();
+            for (var e : ej) {
+                int series = e.plannedSets() == null ? 1 : e.plannedSets();
+                if (series >= 3) {
+                    mant.add(conSeries(e, series - 1));
+                    cambios.add(e.exerciseId() + " " + series + "->" + (series - 1));
+                } else mant.add(e);
+            }
+            if (!cambios.isEmpty())
+                out.add(new Candidata(id, "MANTENIMIENTO_GM", String.join(",", cambios), mant, w.scheduledDate()));
+        }
         for (int i = 0; i < ej.size(); i++) {
             var e = ej.get(i);
             if (s.intervencion().permiteCambiarDosis()) {
@@ -1045,7 +1071,7 @@ class EvaluacionK20IT {
                             e.exerciseId() + " kg " + e.targetLoadKg() + "->" + menos));
                 }
             }
-            if (s.intervencion().permiteSustituirEjercicio()) {
+            if (PermisosIntervencion.permiteSustituir(s.intervencion(), ctx.policy())) {
                 var orig = elegibles.get(e.exerciseId());
                 if (orig == null) continue;
                 for (var c : ctx.availableExercises()) {
