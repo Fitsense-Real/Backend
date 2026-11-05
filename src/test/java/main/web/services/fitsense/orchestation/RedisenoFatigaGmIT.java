@@ -198,7 +198,7 @@ class RedisenoFatigaGmIT {
     // La IA simulada: la dosis de mantenimiento en las estructurales (3 -> 2 series), nada mas
     // =======================================================================
 
-    private List<CorrectedSession> mantenimiento(PlanGenerationContext ctx) {
+    List<CorrectedSession> mantenimiento(PlanGenerationContext ctx) {
         var salida = new ArrayList<CorrectedSession>();
         for (var senalada : ctx.adjustment().targetedSessions()) {
             var s = sesion(senalada.plannedWorkoutId());
@@ -219,7 +219,7 @@ class RedisenoFatigaGmIT {
         return salida;
     }
 
-    private boolean estructural(long exerciseId) {
+    boolean estructural(long exerciseId) {
         String patron = jdbc.queryForObject("SELECT movement_pattern FROM exercises WHERE exercise_id = ?",
                 String.class, exerciseId);
         return MandatorySlot.ofMovementPattern(String.valueOf(patron)).isPresent();
@@ -229,7 +229,7 @@ class RedisenoFatigaGmIT {
     // Material
     // =======================================================================
 
-    private static Dia[] dias(int n, int marcada, Dia marca) {
+    static Dia[] dias(int n, int marcada, Dia marca) {
         var d = new Dia[n];
         Arrays.fill(d, Dia.HECHO);
         if (marcada >= 0) d[marcada] = marca;
@@ -237,7 +237,7 @@ class RedisenoFatigaGmIT {
     }
 
     /** Pares [antes, despues] de los ejercicios cuya dosis cambio. */
-    private static List<Ejercicio[]> reducidas(Sesion antes, Sesion despues) {
+    static List<Ejercicio[]> reducidas(Sesion antes, Sesion despues) {
         var pares = new ArrayList<Ejercicio[]>();
         for (var d : despues.ejercicios())
             antes.ejercicios().stream().filter(a -> a.id() == d.id() && !a.equals(d)).findFirst()
@@ -245,18 +245,18 @@ class RedisenoFatigaGmIT {
         return pares;
     }
 
-    private long ciclo(long u, int k) {
+    long ciclo(long u, int k) {
         var r = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1));
         assertTrue(r.isPresent(), "sin semana publicada en la " + (k + 2) + ": " + ultimoIntento(u));
         return r.get();
     }
 
-    private String politica(long plan) {
+    String politica(long plan) {
         return jdbc.queryForObject("SELECT planning_policy FROM weekly_training_plans WHERE plan_id = ?",
                 String.class, plan);
     }
 
-    private long participante() {
+    long participante() {
         String email = "rediseno-gm" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
                 + " VALUES (?, 'x', 'Prueba', now(), now())", email);
@@ -269,12 +269,12 @@ class RedisenoFatigaGmIT {
         return userId;
     }
 
-    private List<Sesion> semana(long planId) {
+    List<Sesion> semana(long planId) {
         return jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, planId).stream().map(this::sesion).toList();
     }
 
-    private Sesion sesion(long id) {
+    Sesion sesion(long id) {
         var f = jdbc.queryForMap("SELECT scheduled_date, focus_code, expected_duration_minutes FROM planned_workouts"
                 + " WHERE planned_workout_id = ?", id);
         var ejercicios = jdbc.query("SELECT exercise_id, prescription_type, planned_sets, planned_reps,"
@@ -286,7 +286,7 @@ class RedisenoFatigaGmIT {
                 ((Number) f.get("expected_duration_minutes")).intValue(), ejercicios);
     }
 
-    private void ejecutar(long u, long planId, Dia... dias) {
+    void ejecutar(long u, long planId, Dia... dias) {
         var principal = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
         var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, planId);
@@ -311,17 +311,17 @@ class RedisenoFatigaGmIT {
         }
     }
 
-    private Map<String, Object> ultimoIntento(long u) {
+    Map<String, Object> ultimoIntento(long u) {
         return jdbc.queryForMap("SELECT decision, status, ai_calls, resulting_plan_id, targeted_interventions::text,"
                 + " applied_sessions::text, progressed_sessions::text, conservation_report::text, rejection_reason"
                 + " FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", u);
     }
 
-    private static String informe(Map<String, Object> ev) {
+    static String informe(Map<String, Object> ev) {
         return String.valueOf(ev.get("conservation_report")).replace(" ", "");
     }
 
-    private void assertSinViolaciones() throws Exception {
+    void assertSinViolaciones() throws Exception {
         var texto = Files.readString(Path.of("docs/FitSense/consultas/linaje_v31_v32.sql")).lines()
                 .filter(l -> !l.stripLeading().startsWith("--")).collect(Collectors.joining("\n"));
         assertEquals(List.of(), jdbc.queryForList(texto.split(";")[0].strip()));

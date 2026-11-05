@@ -201,8 +201,14 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                 command.previousWeekAdherencePct(), command.previousWeekAverageRpe());
 
         // V44 · politica de planificacion. Una nueva version de la MISMA semana hereda la del plan que reemplaza
-        // (no se reinterpreta lo ya publicado); una semana nueva usa la politica activa.
+        // (no se reinterpreta lo ya publicado). Cierre de PLAN-REV-2.0, fase 7: una semana NUEVA de un usuario que ya
+        // tiene planes sigue la politica de SU LINAJE (la de su plan mas reciente anterior a esta semana). Antes usaba
+        // la activa de la configuracion, asi que un cambio de configuracion revalidaba la copia con otras reglas y
+        // dejaba al usuario sin plan en silencio (REV2 -> HIST: V20 al 70 %; HIST -> REV2: V4 al 100 % o V27;
+        // TransicionesPoliticaIT). La configuracion decide solo la de los usuarios sin planes (generacion inicial).
+        // Cambiar de politica a un usuario en curso no es automatico: requiere una migracion explicita.
         var politica = previousActive.map(WeeklyTrainingPlan::politica)
+                .or(() -> politicaDelLinaje(command.userId(), week.startDate()))
                 .orElseGet(() -> policySelector == null ? PlanningPolicy.HISTORICA : policySelector.activa());
 
         var context = new PlanGenerationContext(command.userId(), weekNumber,
@@ -581,6 +587,22 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
     private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR_TRAZA =
             new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
+
+    /**
+     * Fase 7: la politica del plan mas reciente del usuario ANTERIOR a esta semana (ultima version), si lo hay. Si
+     * difiere de la configuracion activa se registra: el usuario sigue con la de su linaje.
+     */
+    private java.util.Optional<PlanningPolicy> politicaDelLinaje(Long userId, LocalDate semana) {
+        var linaje = planRepository.findByUserIdOrderByWeekStartDateDescPlanVersionDesc(userId).stream()
+                .filter(p -> p.getWeekStartDate().isBefore(semana)).findFirst().map(WeeklyTrainingPlan::politica);
+        linaje.ifPresent(p -> {
+            var activa = policySelector == null ? PlanningPolicy.HISTORICA : policySelector.activa();
+            if (!p.id().equals(activa.id()))
+                log.info("POLITICA_LINAJE usuario {} semana {}: sigue con {} (la configuracion activa es {}); "
+                        + "cambiarla requiere una migracion explicita", userId, semana, p.id(), activa.id());
+        });
+        return linaje;
+    }
 
     private short resolveWeekNumber(Long userId, WeeklyTrainingPlan previousActive) {
         if (previousActive != null) return previousActive.getWeekNumber();

@@ -136,13 +136,13 @@ class ReparacionLinajeIT {
 
     // =======================================================================
 
-    private long ciclo(long u, int k) {
+    long ciclo(long u, int k) {
         var r = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1));
         assertTrue(r.isPresent(), "sin semana publicada en la " + (k + 2) + ": " + ultimoIntento(u));
         return r.get();
     }
 
-    private long participante() {
+    long participante() {
         String email = "reparacion-linaje" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
         jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
                 + " VALUES (?, 'x', 'Prueba', now(), now())", email);
@@ -155,19 +155,19 @@ class ReparacionLinajeIT {
         return userId;
     }
 
-    private List<Long> sesiones(long planId) {
+    List<Long> sesiones(long planId) {
         return jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, planId);
     }
 
     /** Por sesion, la dosis de cada ejercicio (id, tipo, series, reps, segundos, descanso). */
-    private List<List<Map<String, Object>>> dosis(long planId) {
+    List<List<Map<String, Object>>> dosis(long planId) {
         return sesiones(planId).stream().map(w -> jdbc.queryForList("SELECT exercise_id, prescription_type,"
                 + " planned_sets, planned_reps, planned_duration_seconds, rest_seconds FROM planned_workout_exercises"
                 + " WHERE planned_workout_id = ? ORDER BY exercise_order", w)).toList();
     }
 
-    private void ejecutar(long u, long planId) {
+    void ejecutar(long u, long planId) {
         for (long w : sesiones(planId)) {
             long sesion = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
             for (var f : jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets,"
@@ -184,7 +184,7 @@ class ReparacionLinajeIT {
         }
     }
 
-    private Map<String, Object> ultimoIntento(long u) {
+    Map<String, Object> ultimoIntento(long u) {
         return jdbc.queryForMap("SELECT decision, status, ai_calls, resulting_plan_id, progressed_sessions::text,"
                 + " rejection_reason FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", u);
     }
