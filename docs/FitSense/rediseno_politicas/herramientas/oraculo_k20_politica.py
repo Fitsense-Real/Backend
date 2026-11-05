@@ -41,6 +41,7 @@ TRACCION = {"HORIZONTAL_PULL", "VERTICAL_PULL"}
 
 
 def cargar_historico():
+    sys.dont_write_bytecode = True  # no tocar el __pycache__ versionado del oraculo historico (evidencia)
     spec = importlib.util.spec_from_file_location("oraculo_k20", HISTORICO)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
