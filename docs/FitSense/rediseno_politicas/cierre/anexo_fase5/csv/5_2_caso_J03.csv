@@ -1,0 +1,19 @@
+caso,fecha,enfoque,orden,exercise_id,source_code,name_en,name_es,grupo,target,patron,clase,aislamiento,dificultad,high_impact,tipo,series,reps,segundos,descanso,estado
+J03,2026-11-02,UPPER_BODY,1,1262,0778,spider crawl push up,Flexión con desplazamiento de araña,chest,pectorals,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+J03,2026-11-02,UPPER_BODY,2,775,1772,elbow lift - reverse push-up,Elevación de codo y push-up invertido,back,upper back,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+J03,2026-11-02,UPPER_BODY,3,1320,0815,triceps dips floor,Dip de tríceps en piso,upper arms,triceps,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+J03,2026-11-02,UPPER_BODY,4,853,3221,half knee bends (male),Media sentadilla,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-02,UPPER_BODY,5,253,3360,bear crawl,Gateo de oso,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-02,UPPER_BODY,6,1054,0630,mountain climber,Escalador,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-03,LOWER_BODY,1,1073,3013,low glute bridge on floor,Puente de glúteos bajo en el suelo,upper legs,glutes,HIP_EXTENSION,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+J03,2026-11-03,LOWER_BODY,2,1117,3552,quick feet v. 2,Pies rápidos v. 2,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-03,LOWER_BODY,3,1093,3638,push to run,Empujar para correr,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-05,UPPER_BODY,1,1115,0661,push-up inside leg kick,Flexión con patada interna,chest,pectorals,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+J03,2026-11-05,UPPER_BODY,2,775,1772,elbow lift - reverse push-up,Elevación de codo y push-up invertido,back,upper back,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+J03,2026-11-05,UPPER_BODY,3,509,2398,close-grip push-up (on knees),Flexión cerrada con rodillas,upper arms,triceps,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+J03,2026-11-05,UPPER_BODY,4,853,3221,half knee bends (male),Media sentadilla,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-05,UPPER_BODY,5,1054,0630,mountain climber,Escalador,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-05,UPPER_BODY,6,1117,3552,quick feet v. 2,Pies rápidos v. 2,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,COMPLETED
+J03,2026-11-06,LOWER_BODY,1,1263,2368,split squats,Sentadillas búlgaras,upper legs,quads,KNEE_DOMINANT,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,SKIPPED
+J03,2026-11-06,LOWER_BODY,2,253,3360,bear crawl,Gateo de oso,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,SKIPPED
+J03,2026-11-06,LOWER_BODY,3,1093,3638,push to run,Empujar para correr,cardio,cardiovascular system,LOCOMOTION_CARDIO,CARDIO,false,1,false,DURATION,3,,90,60,SKIPPED
