@@ -51,3 +51,39 @@ No se modificó ninguna prueba histórica ni ningún validador.
 - Las series semanales de pecho y muslo suben hasta 36 con 3 días a 61–75 min (27 a 60 min). No hay regla que lo limite; queda en `13` y en la adenda (§4.2).
 
 **Evidencia:** `evidencia/v34/` (`regresion_completa_totales.txt`, `960/`, `rejilla_gm/`, `D_U`, `D_H`, `S21_U`, `S21_H`, `PERFILES_SIN_PLAN_VALIDO.csv`).
+
+## C-8 integrada (GAIN_MUSCLE de 53 a 59 min, aprobada)
+
+**Código:** `eval/final-ieee-k20-v2` en `6b5ccb6`.
+- **Lógica:** `maxColocaciones = max(tope de 4D v3.1, mínimo de colocaciones 3×10/90 s que llega al piso de V20)`.
+- **Tope:** 6 de 30 a 52 min, 7 de 53 a 60, 8 de 61 a 68 y 9 de 69 a 75.
+- **Sin cambios:** V20, V24, las dosis, los descansos y el catálogo.
+
+| Bloque | Resultado |
+|---|---|
+| Unitarias | **1.218 ejecutadas, 0 fallidas, 1 omitida** (la lectura opcional de métricas de Replicate, que se ejecutó aparte y pasó) |
+| Integración (`verify -Pintegration`) | **523 ejecutadas: 482 aprobadas, 0 fallidas, 41 omitidas** (opt-in) |
+| Todos los minutos 30–75 (`MvpDosePolicyTopeTest`) | Con el estimador real, el tope llega al piso de V20 en los 46 minutos. Donde lo deriva V20, uno menos no llega. Dentro del 85 % y del techo de V4 donde manda el tope (53–75) |
+| Rejilla GM (`Hipertrofia4Dv34IT`, 312 perfiles) | **312/312 válidos, 0 violaciones** de tope, dosis 4D, V20, V4 o V13, en **1.074 sesiones**. Idéntica, fila a fila, al laboratorio `lab/k20-gm-tope-53-59`. La prueba pasa de afirmar el fallo a exigir 0 fallos; el registro de la primera ejecución está en `evidencia/v34/rejilla_gm` |
+| Matriz de 960 | `planes.csv` `9fbf3085…` y `colocaciones.csv` `2c96f885…`, **idénticos a 4D v3.4**: la matriz no tiene 53–59 min |
+| REPLAY de 100 semanas | **Idéntica**; solo cambian marcas de tiempo de `exclusiones_dolor.csv` |
+| R0548 | Plan válido |
+| U01–U20 | D: **20/20**, `f9f67973…`. IA simulada V2.1: **20/20**, `c0eab17e…`. **Idénticas a las congeladas** |
+| H01–H16 | D y S: **16/16**, huellas iguales a las de 4D v3.4 |
+| Seguridad (D y S) | 0 incumplimientos |
+
+**Pruebas históricas que cambian por decisión aprobada.** Exigían el 6 de 4D v3.1 a 59 minutos:
+- `CapacidadesPorObjetivoTest.tope`;
+- `Plan60HipertrofiaIT.logConElTope`.
+
+Se alinean con C-8 (59 → 7). Se mantienen 30/45 → 6 y 60 → 7, y se añaden 52 → 6 y 53 → 7. Cada cambio lleva un comentario con su procedencia.
+
+**Distribución** (`evidencia/c8/rejilla_gm/distribucion_por_franja.csv`):
+- Colocaciones por sesión: 4–6 (30–52 min), 7 (53–60), 8 (61–68) y 9 (69–75).
+- Ningún grupo pasa de la mitad de una sesión, y ninguno se trabaja en días consecutivos.
+- Con 53–59 min el volumen semanal máximo es el mismo que con 60 (27 series).
+- Con 61–75 min sube hasta 36: es la limitación de `13` y de la adenda §4.2. **No se afirma su adecuación profesional.**
+
+**Arnés DEV-R:** el control del gasto real por tokens (`A2` §2) se añadió en `fdb9360`, solo en código de prueba.
+
+**Evidencia:** `evidencia/c8/`.

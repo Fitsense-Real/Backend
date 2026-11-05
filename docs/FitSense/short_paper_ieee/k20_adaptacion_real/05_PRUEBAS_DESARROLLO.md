@@ -19,9 +19,14 @@
 | **V34_D_H** (4D v3.4) | H01–H16 | Determinista | — | **16/16 PASS**, **H05 PASS** | `1ac8992f…` = la del prototipo de laboratorio |
 | **V34_S21_U** (4D v3.4) | U01–U20 | IA simulada | V2.1 | **20/20 PASS** | `c0eab17e…` = **S congelada** (sin cambios) |
 | **V34_S21_H** (4D v3.4) | H01–H16 | IA simulada | V2.1 | **16/16 PASS**, H05 PASS | `a577eb1a…` (cambia frente a DEV5 porque H05 ya genera) |
+| **C8_D_U** (4D v3.4 + C-8, `47cb9f7`) | U01–U20 | Determinista | — | **20/20 PASS** | `f9f67973…` = **D congelada** |
+| **C8_S21_U** | U01–U20 | IA simulada | V2.1 | **20/20 PASS** | `c0eab17e…` = **S congelada** |
+| **C8_D_H** | H01–H16 | Determinista | — | **16/16 PASS** | `1ac8992f…` = V34_D_H |
+| **C8_S21_H** | H01–H16 | IA simulada | V2.1 | **16/16 PASS** | `a577eb1a…` = V34_S21_H |
 
 **Lectura:**
 - En U, las huellas son **idénticas** a las de la evaluación congelada: portar V2/V2.1 no cambia nada fuera del texto del prompt.
+- **Con C-8 (C8_*)** las cuatro huellas son idénticas a las de 4D v3.4: ni U ni H tienen GAIN_MUSCLE de 53 a 59 min.
 - **Con 4D v3.4 (V34_*)**, H05 genera y pasa. U no cambia, porque sus perfiles GM son de 60 min, donde el tope sigue en 7. El fallo anterior de H05 queda registrado en la fila DEV4 y en `A1`.
 - **Antes de 4D v3.4:** **H05** (GAIN_MUSCLE avanzado, casa con mancuernas y bandas, 4 días de 75 min) no obtiene un plan inicial válido: V20 falta por 492–600 s en todas las sesiones. Es la familia de R0548 y queda registrado (`04` C-7, `13`). **No se elimina el caso.**
 
