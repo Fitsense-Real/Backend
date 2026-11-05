@@ -195,6 +195,8 @@ class EvaluacionK20IT {
     @MockitoSpyBean ReplicateSessionFixGenerator correcciones;
     @MockitoSpyBean AdaptedWeekProducer productor;
 
+    @Autowired
+    main.web.services.fitsense.planning.application.internal.commandservices.PlanningPolicySelector selectorPolitica;
     @Autowired SessionFixPromptBuilder promptBuilder;
     @Autowired ConservationValidator conservacion;
     @Autowired SafetyExclusionResolver exclusionesResolver;
@@ -286,7 +288,8 @@ class EvaluacionK20IT {
         cfg.put("limite_dificultad", conservacion.estrategiaSustitucion() + " (limita=" + conservacion.limitaDificultad() + ")");
         cfg.put("retirada_localizada", "solicitada=" + productor.retiradaSolicitada() + " activa=" + productor.retiradaLocalizada());
         cfg.put("progresion", "false");
-        cfg.put("politica_por_defecto", "PLAN-HIST-1");
+        // Rediseno: la politica ACTIVA de verdad (antes un literal). Con -Dfitsense.planning.policy=... la candidata.
+        cfg.put("politica_por_defecto", selectorPolitica.activa().id());
         cfg.put("perfiles", PERFILES + " sha256=" + sha256(Files.readAllBytes(PERFILES)));
         cfg.put("semanas", "S1 " + S1 + " (medida, patron del perfil) -> S2 " + S2 + " (continuidad: todo hecho) -> S3 " + S3);
         cfg.put("gemelos_generacion_ia", REPLICATE && GEMELOS);
