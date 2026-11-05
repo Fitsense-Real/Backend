@@ -146,6 +146,18 @@ class EvaluacionK20IT {
     static final java.util.Queue<String> tiemposReplicate = new java.util.concurrent.ConcurrentLinkedQueue<>();
     static final List<String> metricasPredicciones = Collections.synchronizedList(new ArrayList<>());
     static final String PREFER_WAIT = System.getProperty("fitsense.evaluacion.k20.prefer-wait", "25");
+    /**
+     * P-H1 (auditoria post R/R', propuesta pendiente de aprobacion): que hacer con una prediccion SIN METRICAS.
+     * BLOQUEAR (por omision, protocolo congelado 08 §6): se carga la reserva y no se hace ninguna llamada mas.
+     * RESERVA_SIN_BLOQUEO: si la prediccion FALLO en el proveedor (ERROR_PROVEEDOR, sin respuesta) se carga la reserva
+     * y se sigue, porque la comprobacion previa a cada llamada (gasto medido + reserva <= tope) mantiene la cota; una
+     * prediccion que RESPONDIO sin metricas sigue bloqueando (su coste no esta acotado por la reserva).
+     */
+    static final String SIN_METRICAS = System.getProperty("fitsense.evaluacion.k20.sin-metricas", "BLOQUEAR");
+
+    static boolean bloqueaSinMetricas(String politica, boolean fallidaEnProveedor) {
+        return !("RESERVA_SIN_BLOQUEO".equals(politica) && fallidaEnProveedor);
+    }
     /** Candidata posterior (eval/final-ieee-k20-v2): v1 | v2 | v2.1. Vacio = la del backend (v1). */
     static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
 
@@ -281,6 +293,7 @@ class EvaluacionK20IT {
         cfg.put("credencial", SIMULADA ? "ninguna (IA simulada, sin red)" : !REPLICATE ? "ninguna"
                 : CREDENCIAL_PROXY ? "secreto de red inyectado por el proxy (no visible)" : "variable REPLICATE_API_TOKEN");
         cfg.put("comprobacion_cuenta_http", cuenta);
+        cfg.put("politica_sin_metricas", SIN_METRICAS);
         cfg.put("limite_ia", REPLICATE ? MAX_LLAMADAS + " predicciones / USD " + MAX_USD + " (reserva de peor caso "
                 + COSTE_MAX_POR_LLAMADA_USD + " por prediccion; gasto real medido por tokens a " + TARIFA_ENTRADA_USD_MILLON
                 + " / " + TARIFA_SALIDA_USD_MILLON + " USD por millon)" : "no aplica");
@@ -695,9 +708,13 @@ class EvaluacionK20IT {
         long entrada = -1, salida = -1;
         double predict = -1;
         var metricas = id == null ? null : metricasDe(id);
+        boolean fallida = "ERROR_PROVEEDOR".equals(traza.get("resultado"));
         if (metricas == null) {
             estado = "SIN_METRICAS_SE_CARGA_LA_RESERVA";
-            bloqueoPresupuesto = "sin metricas de la prediccion " + id + ": no se hacen mas llamadas";
+            if (bloqueaSinMetricas(SIN_METRICAS, fallida))
+                bloqueoPresupuesto = "sin metricas de la prediccion " + id + ": no se hacen mas llamadas";
+            else
+                estado = "FALLIDA_SIN_METRICAS_SE_CARGA_LA_RESERVA_SIN_BLOQUEO";
         } else {
             entrada = metricas.path("token_input_count").asLong(-1);
             salida = metricas.path("token_output_count").asLong(-1);

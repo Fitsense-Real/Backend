@@ -145,7 +145,7 @@ class ExerciseSelector {
         // V15 rechaza cuando un grupo supera la mitad de la sesion (division
         // entera), y solo si el enfoque abarca 3 o mas grupos y la sesion tiene
         // 4 o mas ejercicios. Fuera de ese caso no hay tope que respetar.
-        int tope = halfCap(grupos, count);
+        int tope = halfCap(focus, count);
         var porGrupo = new HashMap<String, Integer>();
 
         // 0. 4C/4D, solo en modo estructural: antes que nada, un candidato de
@@ -247,7 +247,7 @@ class ExerciseSelector {
         var picked = new LinkedHashSet<>(current);
         var porGrupo = new HashMap<String, Integer>();
         current.forEach(candidate -> porGrupo.merge(candidate.bodyPartCode(), 1, Integer::sum));
-        int tope = halfCap(focus.bodyPartCodes(), current.size() + 1);
+        int tope = halfCap(focus, current.size() + 1);
         return next(focus, picked, porGrupo, tope, respetarTopes, filtro);
     }
 
@@ -300,7 +300,13 @@ class ExerciseSelector {
         return isMajor(code) ? MAJOR_WEIGHT : MINOR_WEIGHT;
     }
 
-    private static int halfCap(List<String> grupos, int sessionSize) {
+    private int halfCap(WorkoutFocus focus, int sessionSize) {
+        var grupos = focus.bodyPartCodes();
+        // LAB P-G2 (apagado por omision; LaboratorioAuditoria): sin 2 grupos del enfoque con material prescribible en
+        // el selector, la mitad de V15 no se aplica (el mismo criterio que el prototipo del validador).
+        if (main.web.services.fitsense.planning.domain.services.LaboratorioAuditoria.v15MitadSobrePrescribibles()
+                && grupos.stream().filter(code -> !pool(code, focus).isEmpty()).count() < 2)
+            return sessionSize;
         return (grupos.size() >= 3 && sessionSize >= 4) ? sessionSize / 2 : sessionSize;
     }
 

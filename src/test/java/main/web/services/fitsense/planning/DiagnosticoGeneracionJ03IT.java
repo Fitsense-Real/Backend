@@ -189,7 +189,7 @@ class DiagnosticoGeneracionJ03IT {
             if (base.stream().anyMatch(x -> x.contains(f))) falladas.add(i);
         }
         var busq = new StringBuilder("sesion,fecha,accion,id,capacidad,series,segundos_sesion,problemas_de_la_sesion,"
-                + "problemas_totales,codigos\n");
+                + "problemas_totales,codigos,problemas_sesion_texto\n");
         var arreglos = new LinkedHashMap<Integer, List<PlanDraft>>();
         for (int i : falladas) {
             var w = borrador.workouts().get(i);
@@ -248,7 +248,7 @@ class DiagnosticoGeneracionJ03IT {
                 pr.forEach(x -> codigos.add(x.contains(":") ? x.substring(0, x.indexOf(':')) : "OTRO"));
                 var a = it.getKey().split("\\|");
                 busq.append(String.join(",", "" + i, f, a[0], a[1], a[2], a[3], "" + seg, "" + deSesion.size(),
-                        "" + pr.size(), csv(codigos))).append('\n');
+                        "" + pr.size(), csv(codigos), csv(String.join(" || ", deSesion)))).append('\n');
                 if (deSesion.isEmpty()) validos.add(it.getValue());
             }
             arreglos.put(i, validos);

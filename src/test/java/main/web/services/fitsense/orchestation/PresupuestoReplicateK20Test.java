@@ -34,6 +34,20 @@ class PresupuestoReplicateK20Test {
     }
 
     @Test
+    @DisplayName("P-H1: por omision (BLOQUEAR) una prediccion sin metricas bloquea; con RESERVA_SIN_BLOQUEO solo"
+            + " deja seguir si fallo en el proveedor")
+    void sinMetricas() {
+        assertTrue(EvaluacionK20IT.bloqueaSinMetricas("BLOQUEAR", true), "protocolo congelado: bloquea siempre");
+        assertTrue(EvaluacionK20IT.bloqueaSinMetricas("BLOQUEAR", false));
+        assertFalse(EvaluacionK20IT.bloqueaSinMetricas("RESERVA_SIN_BLOQUEO", true),
+                "fallida sin respuesta: se carga la reserva y la comprobacion previa mantiene la cota");
+        assertTrue(EvaluacionK20IT.bloqueaSinMetricas("RESERVA_SIN_BLOQUEO", false),
+                "respondio sin metricas: su coste no esta acotado por la reserva, bloquea");
+        assertTrue(EvaluacionK20IT.bloqueaSinMetricas("otra", true), "valor desconocido: el comportamiento seguro");
+        assertEquals("BLOQUEAR", EvaluacionK20IT.SIN_METRICAS, "por omision, el protocolo congelado");
+    }
+
+    @Test
     @EnabledIfSystemProperty(named = "fitsense.evaluacion.k20.metricas-de", matches = ".+")
     @DisplayName("opt-in: lee las metricas reales de una prediccion EXISTENTE (GET gratuito, ninguna prediccion nueva)")
     void metricasReales() {
