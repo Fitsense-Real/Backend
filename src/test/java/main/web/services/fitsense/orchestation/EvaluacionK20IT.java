@@ -657,13 +657,14 @@ class EvaluacionK20IT {
                         + " resulting_plan_id, targeted_interventions::text AS intervenciones,"
                         + " applied_sessions::text AS aplicadas, no_effect_sessions::text AS sin_efecto,"
                         + " conserved_sessions::text AS conservadas, progressed_sessions::text AS progresadas,"
-                        + " rejection_reason, conservation_report::text AS informe"
+                        + " rejection_reason, observed_adherence_pct, registration_coverage_pct,"
+                        + " conservation_report::text AS informe"
                         + " FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", u);
                 for (var e : v.entrySet())
                     if (!"informe".equals(e.getKey())) sem.put("v32_" + e.getKey(), e.getValue());
                 String informe = String.valueOf(v.get("informe"));
                 sem.put("informe_tipos", tiposDelInforme(informe));
-                if (informe.contains("\"tipo\":\"REINCORPORACION\"")) reincorporado = true;
+                if (tiposDelInforme(informe).contains("REINCORPORACION")) reincorporado = true;
             } catch (RuntimeException e) {
                 sem.put("v32_error", e.getClass().getSimpleName());
             }
@@ -694,9 +695,11 @@ class EvaluacionK20IT {
         r.put("plan_final", actual);
         limitaciones(id, "FINAL", token);
         if (token != null) try {
-            var resp = http.perform(get("/api/v1/users/me/plan/current").header("Authorization", "Bearer " + token))
+            var resp = http.perform(get("/api/v1/users/me/plan/" + actual).header("Authorization", "Bearer " + token))
                     .andReturn().getResponse();
-            r.put("api_current_http", resp.getStatus());
+            r.put("api_plan_final_http", resp.getStatus());
+            var nodo = JSON.readTree(resp.getContentAsString());
+            r.put("api_plan_final_sesiones", nodo.has("workouts") ? nodo.get("workouts").size() : -1);
             var adapt = http.perform(get("/api/v1/users/me/plan/adaptations").header("Authorization", "Bearer " + token))
                     .andReturn().getResponse();
             r.put("api_adaptaciones_http", adapt.getStatus());
@@ -705,7 +708,7 @@ class EvaluacionK20IT {
             for (var n : arr) lista.add(n.path("weekStartDate").asText() + ":" + n.path("resultado").asText());
             r.put("api_adaptaciones", String.join("|", lista));
         } catch (Exception e) {
-            r.put("api_current_http", "ERROR " + e.getClass().getSimpleName());
+            r.put("api_plan_final_http", "ERROR " + e.getClass().getSimpleName());
         }
         res.add(r);
     }
@@ -716,7 +719,7 @@ class EvaluacionK20IT {
 
     /** Los "tipo" del informe de conservacion (PROGRESION, RECUPERACION, REINCORPORACION...), sin repetir. */
     static String tiposDelInforme(String informe) {
-        var m = java.util.regex.Pattern.compile("\"tipo\":\"([A-Z_]+)\"").matcher(informe == null ? "" : informe);
+        var m = java.util.regex.Pattern.compile("\"tipo\"\\s*:\\s*\"([A-Z_]+)\"").matcher(informe == null ? "" : informe);
         var t = new TreeSet<String>();
         while (m.find()) t.add(m.group(1));
         return String.join("|", t);
