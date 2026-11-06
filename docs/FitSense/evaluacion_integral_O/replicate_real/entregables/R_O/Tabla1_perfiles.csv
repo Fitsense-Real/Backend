@@ -1,0 +1,21 @@
+ID,Objetivo,Nivel,Equipamiento,Días solicitados,Días programados,Duración (min),Edad,Restricciones,Bloque,Escenario
+O01,Ganar masa muscular,Principiante,gimnasio,3,3,45,28,ninguna,G,CUMPLIMIENTO_TOTAL
+O02,Perder peso,Principiante,casa sin material,2,2,30,35,ninguna,G,OMISION_POR_TIEMPO
+O03,Aumentar fuerza,Intermedio,gimnasio,4,4,60,41,sin alto impacto,G,FATIGA_OMISION
+O04,Condición general,Avanzado,casa con mancuernas y bandas,5,5,50,30,ninguna,G,DIFICULTAD
+O05,Ganar masa muscular,Intermedio,casa sin material,4,4,40,26,ninguna,G,DESMOTIVACION
+O06,Perder peso,Intermedio,gimnasio,3,3,35,52,ninguna,G,DOLOR_EN_EJERCICIO
+O07,Aumentar fuerza,Principiante,casa con mancuernas y bandas,5,4,50,33,ninguna,G,SMAX_CUMPLIMIENTO
+O08,Condición general,Principiante,casa sin material,7,4,30,45,sin alto impacto,G,SMAX_SIN_REGISTRO
+O09,Condición general,Avanzado,gimnasio,7,6,75,28,ninguna,G,OMISION_TOLERADA
+O10,Perder peso,Avanzado,casa sin material,1,1,30,38,ninguna,G,PARCIAL_SIN_CAUSA
+O11,Aumentar fuerza,Avanzado,casa con mancuernas y bandas,1,0,30,31,ninguna,G,ESPERADO_SIN_PLAN
+O12,Condición general,Intermedio,gimnasio,2,2,55,62,sin por encima cabeza; sin colgarse,G,DOLOR_OMISION_MAYOR
+O13,Ganar masa muscular,Principiante,casa sin material,3,3,60,67,sin rodillas; bloqueados 1205|1263,G,PARCIAL_TOLERADO
+O14,Perder peso,Principiante,gimnasio,4,4,40,23,ninguna,G,FATIGA_TARDIA
+O15,Ganar masa muscular,Intermedio,gimnasio,3,3,45,34,ninguna,P (progresión activada),PROGRESION_ORDINARIA
+O16,Aumentar fuerza,Avanzado,gimnasio,4,4,60,39,ninguna,P (progresión activada),PROGRESION_NO_FORZADA
+O17,Condición general,Principiante,casa con mancuernas y bandas,3,3,45,27,ninguna,P (progresión activada),FATIGA_Y_RECUPERACION
+O18,Ganar masa muscular,Avanzado,gimnasio,3,3,45,31,ninguna,P (progresión activada),REINCORPORACION
+O19,Perder peso,Intermedio,casa sin material,3,3,50,44,sin rodillas,P (progresión activada),REINCORPORACION
+O20,Aumentar fuerza,Intermedio,casa con mancuernas y bandas,3,3,45,35,ninguna,P (progresión activada),DOLOR_Y_PROGRESION

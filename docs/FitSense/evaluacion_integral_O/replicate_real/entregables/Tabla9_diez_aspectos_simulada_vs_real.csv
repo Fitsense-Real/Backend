@@ -1,0 +1,6 @@
+Evaluación,APROBADO,FALLO,NO APLICA,REQUIERE REVISIÓN,Aprobación técnica
+IA simulada · repetición S_O · oráculo v1.1 (9ae4c49),142,0,43,15,142/142 = 100.0 %
+Replicate real · R_O · oráculo v1.2 (congelado),140,0,45,15,140/140 = 100.0 %
+Replicate real · R_O · oráculo v1.3,140,0,45,15,140/140 = 100.0 %
+Replicate real · R′_O · oráculo v1.2 (congelado),140,1,45,14,140/141 = 99.3 %
+Replicate real · R′_O · oráculo v1.3,141,0,45,14,141/141 = 100.0 %
