@@ -179,6 +179,25 @@ class EvaluacionK20IT {
     /** SHA-256 del CSV historico (blob 95c2839 de lab/experimento-kora-20usuarios): los perfiles no cambian. */
     static final String SHA256_PERFILES = "584e2204ec8eb41ef95bb61b7fe6a6f6c90164a36fe920d1097dcae250ae2307";
     static final Path SALIDA = Path.of(System.getProperty("fitsense.evaluacion.k20.salida", "target/k20"));
+    /**
+     * EVALUACION INTEGRAL (cohorte O, orden del 06/11/2026). Opt-in; apagado por defecto: ninguna corrida anterior
+     * cambia. Con el modo integral cada perfil declara su guion de CUATRO semanas medidas ({@code semana1..semana4},
+     * pasos separados por "/") y, si su escenario lo necesita, un horizonte mayor ({@code horizonte_semanas}) en el que
+     * las semanas siguientes se cumplen al 100 % (solo para observar la reincorporacion; se detiene al producirse).
+     * Se registra /plan/limitations tras la generacion y al final. La progresion solo se enciende en la corrida del
+     * bloque que la necesita ({@code fitsense.evaluacion.k20.progresion=true}).
+     */
+    static final boolean INTEGRAL = Boolean.parseBoolean(System.getProperty("fitsense.evaluacion.k20.integral", "false"));
+    static final boolean PROGRESION_INTEGRAL = INTEGRAL
+            && Boolean.parseBoolean(System.getProperty("fitsense.evaluacion.k20.progresion", "false"));
+    /** Solo estos perfiles (bloque de la corrida); vacio = todos. */
+    static final Set<String> SOLO = Arrays.stream(System.getProperty("fitsense.evaluacion.k20.solo", "").split(","))
+            .map(String::trim).filter(x -> !x.isEmpty()).collect(Collectors.toCollection(TreeSet::new));
+    /** SHA-256 esperado del CSV de perfiles (congelacion de la cohorte); vacio = sin comprobacion adicional. */
+    static final String SHA256_PERFILES_ESPERADO = System.getProperty("fitsense.evaluacion.k20.perfiles-sha256", "");
+    static final List<Map<String, Object>> semanasIntegral = Collections.synchronizedList(new ArrayList<>());
+    static final List<Map<String, Object>> sesionesIntegral = Collections.synchronizedList(new ArrayList<>());
+    static final List<String> limitacionesIntegral = Collections.synchronizedList(new ArrayList<>());
     static final LocalDate S1 = LocalDate.of(2026, 11, 2);
     static final LocalDate S2 = S1.plusWeeks(1);
     static final LocalDate S3 = S2.plusWeeks(1);
@@ -193,6 +212,7 @@ class EvaluacionK20IT {
         if (!PROMPT.isBlank()) r.add("fitsense.ai.adaptation.prompt-version", () -> PROMPT);
         if (REPLICATE) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
         if (SIMULADA) r.add("fitsense.ai.base-url", () -> "http://127.0.0.1:9/ia-simulada-sin-red");
+        if (PROGRESION_INTEGRAL) r.add("fitsense.adaptation.progression.enabled", () -> "true");
         r.add("fitsense.ai.api-token", () -> SIMULADA ? "ia-simulada-sin-red" : !REPLICATE ? ""
                 : CREDENCIAL_PROXY ? "marcador-credencial-inyectada-por-el-proxy"
                 : Objects.requireNonNullElse(System.getenv("REPLICATE_API_TOKEN"), ""));
@@ -253,6 +273,9 @@ class EvaluacionK20IT {
                 "solo base efimera local: " + url);
         if (PERFILES_OTROS.isBlank())
             assertEquals(SHA256_PERFILES, sha256(Files.readAllBytes(PERFILES)), "los 20 perfiles son los historicos");
+        if (!SHA256_PERFILES_ESPERADO.isBlank())
+            assertEquals(SHA256_PERFILES_ESPERADO, sha256(Files.readAllBytes(PERFILES)), "la cohorte es la congelada");
+        assertFalse(INTEGRAL && REPLICATE, "la evaluacion integral no usa Replicate");
         assertTrue(conservacion.limitaDificultad(), "candidata: limite de dificultad encendido (preferencia)");
         assertTrue(productor.retiradaLocalizada(), "candidata: retirada localizada activa (con el limite)");
         int cuenta = -1;
@@ -303,7 +326,13 @@ class EvaluacionK20IT {
         cfg.put("v8c_regla_patron", conservacion.reglaPatron());
         cfg.put("limite_dificultad", conservacion.estrategiaSustitucion() + " (limita=" + conservacion.limitaDificultad() + ")");
         cfg.put("retirada_localizada", "solicitada=" + productor.retiradaSolicitada() + " activa=" + productor.retiradaLocalizada());
-        cfg.put("progresion", "false");
+        cfg.put("progresion", INTEGRAL ? String.valueOf(PROGRESION_INTEGRAL) : "false");
+        if (INTEGRAL) {
+            cfg.put("modo_integral", "true (cohorte O: 4 semanas medidas + horizonte de reincorporacion por perfil)");
+            cfg.put("bloque_solo", SOLO.isEmpty() ? "todos" : String.join(",", SOLO));
+            cfg.put("sha256_perfiles_esperado", SHA256_PERFILES_ESPERADO.isBlank() ? "no indicado" : SHA256_PERFILES_ESPERADO);
+            cfg.put("ia_simulada_acortar", "RETIRAR_RELLENO preferido para ACORTAR_O_REORGANIZAR (ultimo ejercicio sin slot)");
+        }
         // Rediseno: la politica ACTIVA de verdad (antes un literal). Con -Dfitsense.planning.policy=... la candidata.
         cfg.put("politica_por_defecto", selectorPolitica.activa().id());
         cfg.put("perfiles", PERFILES + " sha256=" + sha256(Files.readAllBytes(PERFILES)));
@@ -321,10 +350,19 @@ class EvaluacionK20IT {
         var res = new ArrayList<Map<String, Object>>();
         var incid = new ArrayList<String>();
         var usuariosIds = new LinkedHashMap<String, Long>();
-        for (var p : lista) ejecutarUsuario(p, res, incid, usuariosIds);
+        for (var p : lista) {
+            if (!SOLO.isEmpty() && !SOLO.contains(p.get("id"))) continue;
+            if (INTEGRAL) ejecutarIntegral(p, res, incid, usuariosIds);
+            else ejecutarUsuario(p, res, incid, usuariosIds);
+        }
         if (REPLICATE && GEMELOS) for (var p : lista) ejecutarGemelo(p, incid);
 
         csv("resultados_20.csv", res);
+        if (INTEGRAL) {
+            csv("semanas_integral.csv", semanasIntegral);
+            csv("sesiones_integral.csv", sesionesIntegral);
+            escribir("limitaciones.jsonl", limitacionesIntegral);
+        }
         csv("intentos_ia.csv", intentos);
         csv("factibilidad.csv", factibilidad);
         csv("coherencia_v2.csv", coherencia);
@@ -497,6 +535,215 @@ class EvaluacionK20IT {
         res.add(r);
     }
 
+    // ================================================================== evaluacion integral (cohorte O)
+
+    /** Semana k (1 = S1). */
+    static LocalDate semana(int k) {
+        return S1.plusWeeks(k - 1);
+    }
+
+    /**
+     * Cohorte O: generacion -> /plan/limitations -> 4 semanas medidas con su guion -> ciclo tras cada semana ->
+     * horizonte opcional de reincorporacion (semanas cumplidas al 100 %, se detiene al reincorporar) ->
+     * /plan/limitations final -> API. Todo lo observado se guarda TAL CUAL; las comprobaciones las hace el oraculo.
+     */
+    private void ejecutarIntegral(Perfil p, List<Map<String, Object>> res, List<String> incid,
+                                  Map<String, Long> usuariosIds) {
+        String id = p.get("id");
+        var r = new LinkedHashMap<String, Object>();
+        r.put("id", id);
+        r.put("objetivo", p.get("goal_type"));
+        r.put("escenario", p.c().getOrDefault("escenario", ""));
+        r.put("bloque", p.c().getOrDefault("bloque", ""));
+        r.put("progresion_activada", PROGRESION_INTEGRAL);
+        long u;
+        try {
+            u = alta(p, id.toLowerCase());
+        } catch (RuntimeException e) {
+            incid.add(id + " ALTA ERROR " + e);
+            r.put("alta", "ERROR: " + e.getMessage());
+            res.add(r);
+            return;
+        }
+        usuariosIds.put(id, u);
+        r.put("user_id", u);
+        r.put("semilla", u * 1_000_003L + S1.toEpochDay());
+        String token = null;
+        try {
+            token = token(id.toLowerCase());
+        } catch (Exception e) {
+            incid.add(id + " LOGIN ERROR " + e);
+        }
+
+        etiquetaActual = id + "/generacion";
+        validaciones.set(0);
+        rechazosValidacion.clear();
+        Optional<Long> plan;
+        String errorGen = null;
+        if (IA_ACTIVA) doReturn(false).when(generador).isEnabled();
+        try {
+            plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null);
+        } catch (RuntimeException e) {
+            plan = Optional.empty();
+            errorGen = e.getClass().getSimpleName() + ": " + e.getMessage();
+        } finally {
+            if (IA_ACTIVA) doCallRealMethod().when(generador).isEnabled();
+        }
+        r.put("generacion_validaciones", validaciones.get());
+        r.put("generacion_rechazos", rechazosValidacion.size());
+        limitaciones(id, "TRAS_GENERACION", token);
+        if (plan.isEmpty()) {
+            r.put("generacion", errorGen == null ? "SIN_PLAN" : "ERROR: " + errorGen);
+            incid.add(id + " GENERACION sin plan: " + errorGen);
+            res.add(r);
+            return;
+        }
+        r.put("generacion", "PUBLICADO");
+        r.put("plan_s1", plan.get());
+
+        int horizonte = Math.max(4, Integer.parseInt(Objects.requireNonNullElse(
+                blancoANull(p.c().get("horizonte_semanas")), "4")));
+        long actual = plan.get();
+        int semanasEjecutadas = 0;
+        boolean reincorporado = false;
+        for (int k = 1; k <= horizonte; k++) {
+            var ids = sesionesDe(actual);
+            String guion = k <= 4 ? Objects.requireNonNullElse(blancoANull(p.c().get("semana" + k)), "") : "";
+            var pasos = guion.isBlank() ? new ArrayList<String>() : new ArrayList<>(List.of(guion.split("/")));
+            if (k > 4) while (pasos.size() < ids.size()) pasos.add("H");   // horizonte: 100 %
+            if (pasos.size() != ids.size())
+                incid.add(id + " S" + k + " guion de " + pasos.size() + " pasos para " + ids.size() + " sesiones");
+            RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
+            for (int i = 0; i < ids.size(); i++) {
+                String paso = i < pasos.size() ? pasos.get(i) : "N";
+                var fila = new LinkedHashMap<String, Object>();
+                fila.put("id", id);
+                fila.put("semana", k);
+                fila.put("plan_id", actual);
+                fila.put("orden", i + 1);
+                fila.put("planned_workout_id", ids.get(i));
+                fila.put("paso", paso);
+                try {
+                    ejecutar(u, ids.get(i), paso, "");
+                    fila.put("ejecucion", "OK");
+                } catch (RuntimeException e) {
+                    fila.put("ejecucion", "ERROR " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                    incid.add(id + " EJECUCION S" + k + " sesion " + (i + 1) + " " + paso + " ERROR " + e);
+                }
+                sesionesIntegral.add(fila);
+            }
+            semanasEjecutadas = k;
+            etiquetaActual = id + "/ciclo" + k;
+            intentoActual.set(0);
+            int llamadasAntes = llamadas.get();
+            var sem = new LinkedHashMap<String, Object>();
+            sem.put("id", id);
+            sem.put("semana", k);
+            sem.put("semana_inicio", semana(k));
+            sem.put("plan_medido", actual);
+            sem.put("sesiones", ids.size());
+            sem.put("guion", String.join("/", pasos));
+            Optional<Long> siguiente = Optional.empty();
+            try {
+                siguiente = ciclo.runFor(u, semana(k), semana(k + 1));
+            } catch (RuntimeException e) {
+                sem.put("ciclo_error", e.getClass().getSimpleName() + ": " + e.getMessage());
+                incid.add(id + " CICLO" + k + " ERROR " + e);
+            }
+            sem.put("llamadas_ia", llamadas.get() - llamadasAntes);
+            sem.put("plan_siguiente", siguiente.orElse(null));
+            try {
+                var v = jdbc.queryForMap("SELECT attempt_id, decision, status, generation_source, ai_calls,"
+                        + " resulting_plan_id, targeted_interventions::text AS intervenciones,"
+                        + " applied_sessions::text AS aplicadas, no_effect_sessions::text AS sin_efecto,"
+                        + " conserved_sessions::text AS conservadas, progressed_sessions::text AS progresadas,"
+                        + " rejection_reason, conservation_report::text AS informe"
+                        + " FROM plan_adaptation_attempts WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", u);
+                for (var e : v.entrySet())
+                    if (!"informe".equals(e.getKey())) sem.put("v32_" + e.getKey(), e.getValue());
+                String informe = String.valueOf(v.get("informe"));
+                sem.put("informe_tipos", tiposDelInforme(informe));
+                if (informe.contains("\"tipo\":\"REINCORPORACION\"")) reincorporado = true;
+            } catch (RuntimeException e) {
+                sem.put("v32_error", e.getClass().getSimpleName());
+            }
+            if (k == 1) {
+                // Idempotencia (integridad): repetir el ciclo no publica otra version ni otra fila V32.
+                int v32Antes = jdbc.queryForObject("SELECT count(*) FROM plan_adaptation_attempts WHERE user_id = ?",
+                        Integer.class, u);
+                int planesAntes = jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
+                        Integer.class, u);
+                try {
+                    var repetido = ciclo.runFor(u, semana(k), semana(k + 1));
+                    sem.put("repeticion_plan", repetido.orElse(null));
+                } catch (RuntimeException e) {
+                    sem.put("repeticion_plan", "ERROR " + e.getClass().getSimpleName());
+                }
+                sem.put("repeticion_v32_nuevas", jdbc.queryForObject(
+                        "SELECT count(*) FROM plan_adaptation_attempts WHERE user_id = ?", Integer.class, u) - v32Antes);
+                sem.put("repeticion_planes_nuevos", jdbc.queryForObject(
+                        "SELECT count(*) FROM weekly_training_plans WHERE user_id = ?", Integer.class, u) - planesAntes);
+            }
+            semanasIntegral.add(sem);
+            if (siguiente.isEmpty()) break;
+            actual = siguiente.get();
+            if (k >= 4 && reincorporado) break;   // el horizonte solo sirve para observar la reincorporacion
+        }
+        r.put("semanas_medidas", semanasEjecutadas);
+        r.put("reincorporado", reincorporado);
+        r.put("plan_final", actual);
+        limitaciones(id, "FINAL", token);
+        if (token != null) try {
+            var resp = http.perform(get("/api/v1/users/me/plan/current").header("Authorization", "Bearer " + token))
+                    .andReturn().getResponse();
+            r.put("api_current_http", resp.getStatus());
+            var adapt = http.perform(get("/api/v1/users/me/plan/adaptations").header("Authorization", "Bearer " + token))
+                    .andReturn().getResponse();
+            r.put("api_adaptaciones_http", adapt.getStatus());
+            var arr = JSON.readTree(adapt.getContentAsString());
+            var lista = new ArrayList<String>();
+            for (var n : arr) lista.add(n.path("weekStartDate").asText() + ":" + n.path("resultado").asText());
+            r.put("api_adaptaciones", String.join("|", lista));
+        } catch (Exception e) {
+            r.put("api_current_http", "ERROR " + e.getClass().getSimpleName());
+        }
+        res.add(r);
+    }
+
+    private static String blancoANull(String v) {
+        return v == null || v.isBlank() ? null : v.trim();
+    }
+
+    /** Los "tipo" del informe de conservacion (PROGRESION, RECUPERACION, REINCORPORACION...), sin repetir. */
+    static String tiposDelInforme(String informe) {
+        var m = java.util.regex.Pattern.compile("\"tipo\":\"([A-Z_]+)\"").matcher(informe == null ? "" : informe);
+        var t = new TreeSet<String>();
+        while (m.find()) t.add(m.group(1));
+        return String.join("|", t);
+    }
+
+    /** GET /api/v1/users/me/plan/limitations (HTTP real con el token del participante); se guarda el JSON tal cual. */
+    private void limitaciones(String id, String momento, String token) {
+        var m = new LinkedHashMap<String, Object>();
+        m.put("id", id);
+        m.put("momento", momento);
+        if (token == null) {
+            m.put("http", "SIN_TOKEN");
+        } else try {
+            var resp = http.perform(get("/api/v1/users/me/plan/limitations").header("Authorization", "Bearer " + token))
+                    .andReturn().getResponse();
+            m.put("http", resp.getStatus());
+            m.put("cuerpo", JSON.readTree(resp.getContentAsString()));
+        } catch (Exception e) {
+            m.put("http", "ERROR " + e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+        try {
+            limitacionesIntegral.add(JSON.writeValueAsString(m));
+        } catch (Exception e) {
+            limitacionesIntegral.add("{\"id\":\"" + id + "\",\"error\":\"serializacion\"}");
+        }
+    }
+
     /** El resultado de la adaptacion del ciclo (V32 via el servicio de la API) cuya semana medida es la indicada. */
     private static int medidasCount(Perfil p) {
         return p.get("secuencia").split("/").length;
@@ -549,7 +796,16 @@ class EvaluacionK20IT {
             case "O" -> planes.skip(UserDetailsImpl.build(usuarios.findById(u).orElseThrow()), w,
                     new SkipWorkoutResource(SkipReason.valueOf(motivo)));
             case "N" -> { }
-            default -> throw new IllegalStateException("patron desconocido " + paso);
+            // Cohorte O (modo integral): pasos adicionales. Los historicos (H, P40, O, N) no cambian.
+            case "P60" -> hacer(u, w, 0.6, (short) 6, (short) 3);
+            case "HF" -> hacerConMarca(u, w, SkipReason.FATIGUE);
+            case "HD" -> hacerConMarca(u, w, SkipReason.PAIN_OR_DISCOMFORT);
+            case "PT" -> parcialPorFaltaDeTiempo(u, w);
+            default -> {
+                if (paso.startsWith("O:")) planes.skip(UserDetailsImpl.build(usuarios.findById(u).orElseThrow()), w,
+                        new SkipWorkoutResource(SkipReason.valueOf(paso.substring(2))));
+                else throw new IllegalStateException("patron desconocido " + paso);
+            }
         }
     }
 
@@ -564,9 +820,23 @@ class EvaluacionK20IT {
                 objetivoPeso == null || objetivoPeso.isBlank() ? null : new BigDecimal(objetivoPeso),
                 FitnessLevel.valueOf(p.get("nivel")), GoalType.valueOf(p.get("goal_type")), "Evaluacion K20 " + p.get("id"),
                 TrainingLocation.valueOf(p.get("ubicacion")), Short.valueOf(p.get("dias_por_semana")), dias,
-                Short.valueOf(p.get("minutos_sesion")), List.of(p.get("equipamiento").split("\\|")), List.of(),
-                p.get("notas_salud"), true, true, true, true, true));
+                Short.valueOf(p.get("minutos_sesion")), List.of(p.get("equipamiento").split("\\|")), bloqueados(p),
+                p.get("notas_salud"), permite(p, "permite_alto_impacto"), permite(p, "permite_suelo"),
+                permite(p, "permite_rodillas"), permite(p, "permite_colgarse"), permite(p, "permite_por_encima_cabeza")));
         return u;
+    }
+
+    /** Columna opcional (cohorte O): ausente o vacia = permitido, como en las cohortes anteriores. */
+    private static boolean permite(Perfil p, String columna) {
+        String v = p.c().get(columna);
+        return v == null || v.isBlank() || !"false".equalsIgnoreCase(v.trim());
+    }
+
+    /** Columna opcional {@code ejercicios_bloqueados} (ids separados por "|"); ausente = ninguno. */
+    private static List<Long> bloqueados(Perfil p) {
+        String v = p.c().get("ejercicios_bloqueados");
+        if (v == null || v.isBlank()) return List.of();
+        return Arrays.stream(v.split("\\|")).map(String::trim).filter(x -> !x.isEmpty()).map(Long::valueOf).toList();
     }
 
     /** Registra cada ejercicio con la fraccion indicada de su dosis total (redondeo half-up), regla historica. */
@@ -586,6 +856,52 @@ class EvaluacionK20IT {
         int minutos = jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts WHERE"
                 + " planned_workout_id = ?", Integer.class, w);
         sesiones.handle(new FinishWorkoutSessionCommand(u, s, rpe, satisfaccion, (short) Math.round(minutos * fraccion)));
+    }
+
+    /**
+     * HF / HD: sesion completa salvo el ULTIMO ejercicio, que se deja a la mitad marcando la causa (fatiga o dolor) en
+     * ese ejercicio (misma convencion que ProgresionIT). RPE 7, satisfaccion 3.
+     */
+    private void hacerConMarca(long u, long w, SkipReason causa) {
+        long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+        var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
+                + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
+                + " ORDER BY exercise_order", w);
+        for (int k = 0; k < filas.size(); k++) {
+            var f = filas.get(k);
+            boolean duracion = "DURATION".equals(f.get("prescription_type"));
+            int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
+            int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
+            boolean marcado = k == filas.size() - 1;
+            int hecho = marcado ? total / 2 : total;
+            sesiones.handle(new RecordSessionExerciseCommand(u, s, ((Number) f.get("planned_exercise_id")).longValue(),
+                    (short) series, duracion ? null : hecho, duracion ? hecho : null, null, marcado ? causa : null));
+        }
+        int minutos = jdbc.queryForObject("SELECT expected_duration_minutes FROM planned_workouts WHERE"
+                + " planned_workout_id = ?", Integer.class, w);
+        sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 7, (short) 3, (short) minutos));
+    }
+
+    /** PT: sesion empezada que se deja al 35 % por falta de tiempo, sin declarar minutos (misma regla que ProgresionIT). */
+    private void parcialPorFaltaDeTiempo(long u, long w) {
+        long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+        var filas = jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
+                + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
+                + " ORDER BY exercise_order", w);
+        double objetivo = 0.35 * filas.size();
+        for (int k = 0; k < filas.size(); k++) {
+            var f = filas.get(k);
+            long pe = ((Number) f.get("planned_exercise_id")).longValue();
+            boolean duracion = "DURATION".equals(f.get("prescription_type"));
+            int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
+            int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
+            double parte = Math.max(0, Math.min(1, objetivo - k));
+            int hecho = (int) Math.round(total * parte);
+            sesiones.handle(new RecordSessionExerciseCommand(u, s, pe, (short) (hecho == 0 ? 0 : series),
+                    duracion ? null : hecho, duracion ? hecho : null, null,
+                    parte >= 1 ? null : SkipReason.LACK_OF_TIME));
+        }
+        sesiones.handle(new FinishWorkoutSessionCommand(u, s, (short) 6, (short) 3, (short) 20));
     }
 
     private List<Long> sesionesDe(long planId) {
@@ -972,6 +1288,8 @@ class EvaluacionK20IT {
         if (PermisosIntervencion.sustitucionUnica(intervencion, politica))
             for (var clase : List.of("SUSTITUTO_LATERAL", "SUSTITUTO_MAS_FACIL"))
                 for (var c : lista) if (c.clase().equals(clase)) return c;
+        if (INTEGRAL && intervencion == TipoIntervencion.ACORTAR_O_REORGANIZAR)
+            for (var c : lista) if (c.clase().equals("RETIRAR_RELLENO")) return c;
         var orden = switch (intervencion) {
             case VARIANTE_MAS_SENCILLA_O_CARGA -> List.of("SUSTITUTO_MAS_FACIL", "MENOS_CARGA", "MENOS_REPS", "MENOS_SEGUNDOS",
                     "MENOS_SERIES", "SUSTITUTO_LATERAL");
@@ -1071,6 +1389,17 @@ class EvaluacionK20IT {
             if (!cambios.isEmpty())
                 out.add(new Candidata(id, "MANTENIMIENTO_GM", String.join(",", cambios), mant, w.scheduledDate()));
         }
+        if (INTEGRAL && s.intervencion() == TipoIntervencion.ACORTAR_O_REORGANIZAR && ej.size() > 2)
+            // Cohorte O: ACORTAR retira el ULTIMO ejercicio de relleno (sin slot 4C), como la IA simulada de ProgresionIT.
+            for (int i = ej.size() - 1; i >= 0; i--) {
+                var c = elegibles.get(ej.get(i).exerciseId());
+                if (c == null || main.web.services.fitsense.planning.domain.model.valueobjects.MandatorySlot
+                        .ofMovementPattern(String.valueOf(c.movementPattern())).isPresent()) continue;
+                var sin = new ArrayList<>(ej);
+                sin.remove(i);
+                out.add(new Candidata(id, "RETIRAR_RELLENO", "retira " + ej.get(i).exerciseId(), sin, w.scheduledDate()));
+                break;
+            }
         for (int i = 0; i < ej.size(); i++) {
             var e = ej.get(i);
             if (s.intervencion().permiteCambiarDosis()) {
