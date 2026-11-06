@@ -188,6 +188,9 @@ class EvaluacionK20IT {
      * bloque que la necesita ({@code fitsense.evaluacion.k20.progresion=true}).
      */
     static final boolean INTEGRAL = Boolean.parseBoolean(System.getProperty("fitsense.evaluacion.k20.integral", "false"));
+    /** Autorizacion expresa de la evaluacion integral con Replicate real (orden del 06/11/2026). */
+    static final boolean INTEGRAL_REPLICATE_AUTORIZADA = INTEGRAL
+            && "SI".equals(System.getProperty("fitsense.evaluacion.k20.integral-replicate", ""));
     static final boolean PROGRESION_INTEGRAL = INTEGRAL
             && Boolean.parseBoolean(System.getProperty("fitsense.evaluacion.k20.progresion", "false"));
     /** Solo estos perfiles (bloque de la corrida); vacio = todos. */
@@ -275,7 +278,10 @@ class EvaluacionK20IT {
             assertEquals(SHA256_PERFILES, sha256(Files.readAllBytes(PERFILES)), "los 20 perfiles son los historicos");
         if (!SHA256_PERFILES_ESPERADO.isBlank())
             assertEquals(SHA256_PERFILES_ESPERADO, sha256(Files.readAllBytes(PERFILES)), "la cohorte es la congelada");
-        assertFalse(INTEGRAL && REPLICATE, "la evaluacion integral no usa Replicate");
+        // Evaluacion integral con Replicate REAL (orden del 06/11/2026): solo con su autorizacion expresa propia, ademas de
+        // la autorizacion general de R/R'. Sin ella, como antes: la evaluacion integral no usa Replicate.
+        assertFalse(INTEGRAL && REPLICATE && !INTEGRAL_REPLICATE_AUTORIZADA,
+                "la evaluacion integral no usa Replicate sin -Dfitsense.evaluacion.k20.integral-replicate=SI");
         assertTrue(conservacion.limitaDificultad(), "candidata: limite de dificultad encendido (preferencia)");
         assertTrue(productor.retiradaLocalizada(), "candidata: retirada localizada activa (con el limite)");
         int cuenta = -1;
@@ -331,7 +337,9 @@ class EvaluacionK20IT {
             cfg.put("modo_integral", "true (cohorte O: 4 semanas medidas + horizonte de reincorporacion por perfil)");
             cfg.put("bloque_solo", SOLO.isEmpty() ? "todos" : String.join(",", SOLO));
             cfg.put("sha256_perfiles_esperado", SHA256_PERFILES_ESPERADO.isBlank() ? "no indicado" : SHA256_PERFILES_ESPERADO);
-            cfg.put("ia_simulada_acortar", "RETIRAR_RELLENO preferido para ACORTAR_O_REORGANIZAR (ultimo ejercicio sin slot)");
+            if (REPLICATE) cfg.put("ia_real", "Replicate real: todas las respuestas de adaptacion vienen del proveedor; "
+                    + "ninguna respuesta simulada ni precargada (la sonda de factibilidad solo mide y no publica)");
+            else cfg.put("ia_simulada_acortar", "RETIRAR_RELLENO preferido para ACORTAR_O_REORGANIZAR (ultimo ejercicio sin slot)");
         }
         // Rediseno: la politica ACTIVA de verdad (antes un literal). Con -Dfitsense.planning.policy=... la candidata.
         cfg.put("politica_por_defecto", selectorPolitica.activa().id());
