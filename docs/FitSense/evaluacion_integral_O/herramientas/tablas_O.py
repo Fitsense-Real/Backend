@@ -61,7 +61,11 @@ def md(filas, campos):
 
 def main():
     perfiles_csv, oraculo, salida = sys.argv[1], sys.argv[2], sys.argv[3]
-    corridas = sys.argv[4:]
+    corridas = sys.argv[4:6]   # solo G y P (los argumentos 6 y 7 son la etiqueta y el preambulo opcionales)
+    for c in corridas:         # presentacion: con Replicate real, el aspecto 5 no es "IA simulada"
+        ruta = os.path.join(c, "00_configuracion.txt")
+        if os.path.exists(ruta) and "modo: REPLICATE" in open(ruta, encoding="utf-8").read():
+            NOMBRE_ASP["A5_adaptacion_ia"] = "5. Adaptación con IA (Replicate real)"
     os.makedirs(salida, exist_ok=True)
     perfiles = {r["id"]: r for r in leer(perfiles_csv)}
     det = {d["id"]: d for d in json.load(open(os.path.join(oraculo, "detalle.json"), encoding="utf-8"))}
