@@ -27,10 +27,10 @@
 
 **Exposición estimada** (planes con aviso), medida en los barridos de V46 con la misma regla:
 
-| Política | Espalda solo de no demostrados | Hombro solo de no demostrados |
-|---|---|---|
-| REV2 | ver `RESULTADOS_VARIANTES.md` §5 | ídem |
-| HIST | ídem | ídem |
+| Política | Planes con aviso | Espalda solo de no demostrados | Hombro solo de no demostrados |
+|---|---|---|---|
+| REV2 | 1.308 de 3.776 (34,6 %) | 1.015 | 917 |
+| HIST | 1.081 de 3.641 (29,7 %) | 868 | 537 |
 
 **Pendiente:**
 - La aplicación (`mobileapp`) no se ha tocado: muestra cualquier `Limitation` que reciba, pero eso no se ha verificado en esta orden.
