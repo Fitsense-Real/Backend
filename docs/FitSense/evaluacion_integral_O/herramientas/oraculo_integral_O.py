@@ -236,7 +236,11 @@ def evaluar(C, pid, prof, u, res_row):
     est = {}
     perfil = D.perfil.get(u)
     esperado_sin_plan = prof["escenario"] == "ESPERADO_SIN_PLAN"
-    bloque_p = prof["bloque"] == "P"
+    # La progresion la decide la CONFIGURACION REAL de la corrida, no la etiqueta del perfil (se comprueban las dos).
+    bloque_p = C.cfg.get("progresion", "false").strip() == "true"
+    if (prof["bloque"] == "P") != bloque_p:
+        det["checks"]["A10_seguridad_integridad"].append(
+            f"el perfil declara el bloque {prof['bloque']} y la corrida tiene progresion={C.cfg.get('progresion')}")
     semanas = sorted([r for r in C.semanas if r["id"] == pid], key=lambda r: int(r["semana"]))
     guiones = [r for r in C.sesiones_guion if r["id"] == pid]
     planes = C.planes_usuario(u)
@@ -530,7 +534,7 @@ def evaluar(C, pid, prof, u, res_row):
                         retirados[x] = (k, linaje.get(wid), ini)
                 cons_j = d["igual"] and (r["status"] in ("SIN_EFECTO", "NO_FACTIBLE") or
                                          wid in set(lista(r["no_effect_sessions"])))
-                pert = H.pertinencia(interv_por_sesion[wid], d, cons_j)
+                pert = pertinencia(interv_por_sesion[wid], d, cons_j)
                 filas_adapt.append({"id": pid, "ciclo": k, "sesion": wid, "intervencion": interv_por_sesion[wid],
                                     "estado_v32": r["status"], "fuente": r["generation_source"],
                                     "llamadas_ia": r["ai_calls"], "igual": d["igual"],
@@ -550,7 +554,7 @@ def evaluar(C, pid, prof, u, res_row):
                                     "llamadas_ia": r["ai_calls"], "igual": d["igual"], "sustituciones": "-",
                                     "reducciones": "-", "retirados": "-", "trabajo_antes_s": d["trabajo_antes"],
                                     "trabajo_despues_s": d["trabajo_despues"],
-                                    "pertinencia": H.pertinencia(interv_por_sesion[wid], d, True), "problemas": "-"})
+                                    "pertinencia": pertinencia(interv_por_sesion[wid], d, True), "problemas": "-"})
             else:
                 hubo_mantenimiento = True
                 if paso is None:
@@ -691,6 +695,21 @@ def evaluar(C, pid, prof, u, res_row):
     det["revision_catalogo"] = {"A1": sorted(flags_a1), "A5": sorted(flags_a5), "A7": sorted(flags_a7)}
     det["estados"] = est
     return det
+
+
+def pertinencia(intervencion, d, conservada_justificada):
+    """Tabla de pertinencia del protocolo (oraculo historico) + ACORTAR_O_REORGANIZAR, que la tabla historica no
+    contemplaba: acortar es pertinente si quita trabajo (retira o reduce) sin endurecer nada."""
+    if intervencion != "ACORTAR_O_REORGANIZAR":
+        return H.pertinencia(intervencion, d, conservada_justificada)
+    if d["igual"]:
+        return "CONS-J" if conservada_justificada else "INC"
+    mas_trabajo = d["trabajo_despues"] > d["trabajo_antes"] or bool(d["aumentos"]) or bool(d["anadidos"])
+    mas_dificil = any(s["dif_a"] is not None and s["dif_de"] is not None and s["dif_a"] > s["dif_de"]
+                      for s in d["sustituciones"])
+    if mas_trabajo or mas_dificil:
+        return "INC"
+    return "ACC" if (d["retirados"] or d["reducciones"]) and d["trabajo_despues"] < d["trabajo_antes"] else "ALT"
 
 
 def comprobar_paso(C, g, w, k):
