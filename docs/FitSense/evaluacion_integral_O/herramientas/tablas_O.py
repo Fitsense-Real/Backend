@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Tablas academicas y libro Excel de la evaluacion integral O (a partir de la salida del oraculo; SOLO LECTURA).
 
-Uso: python3 -I tablas_O.py <O_PERFILES.csv> <salida_oraculo> <salida_tablas> <corrida_G> <corrida_P>
+Uso: python3 -I tablas_O.py <O_PERFILES.csv> <salida_oraculo> <salida_tablas> <corrida_G> <corrida_P> [<etiqueta> <preambulo.md>]
+  <etiqueta> y <preambulo.md> (opcionales) solo cambian el titulo y el texto inicial de TABLAS_SHORT_PAPER.md.
 Los valores salen de la ejecucion (tablas exportadas + oraculo); este script no recalcula reglas, solo las presenta.
 """
 import csv
@@ -209,7 +210,10 @@ def main():
     escribir(os.path.join(salida, "calidad_catalogo.csv"), cat)
     # Markdown para el articulo
     with open(os.path.join(salida, "TABLAS_SHORT_PAPER.md"), "w", encoding="utf-8") as f:
-        f.write("# Tablas para el short paper (valores de la corrida S_O)\n\n")
+        etiqueta = sys.argv[6] if len(sys.argv) > 6 else "S_O"
+        f.write(f"# Tablas para el short paper (valores de la corrida {etiqueta})\n\n")
+        if len(sys.argv) > 7:
+            f.write(open(sys.argv[7], encoding="utf-8").read().rstrip("\n") + "\n\n")
         for titulo, filas, campos in (
                 ("Tabla 1. Características de los 20 perfiles sintéticos", t1,
                  ["ID", "Objetivo", "Nivel", "Equipamiento", "Días solicitados", "Días programados", "Duración (min)",
