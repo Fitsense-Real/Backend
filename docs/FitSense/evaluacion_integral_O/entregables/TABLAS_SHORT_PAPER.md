@@ -1,4 +1,13 @@
-# Tablas para el short paper (valores de la corrida S_O)
+# Tablas para el short paper (valores de la corrida S_O · repetición con oráculo v1.1 (definitiva))
+
+**Estado: DEFINITIVO.**
+- Valores de la repetición S_O evaluada con el oráculo v1.1 congelado (SHA-256 `49d160d6…`).
+- Misma cohorte O01–O20, mismos guiones, versión A (`f1c6c02`), catálogo V46, P15-C apagado e IA simulada sin Replicate.
+- Repetición y S_O′: huella normalizada `7eb13353…`, idéntica a la de la corrida original.
+
+**Antecedente:** con el oráculo v1.0, la misma ejecución dio 139/142 (97,9 %). Las 3 diferencias (O03·A7, O14·A7 y O19·A8) se deben a dos defectos del instrumento de evaluación (D-OR-1 y D-OR-2), corregidos en v1.1. Ver `antecedente_v1_0/` y `repeticion_v1_1/`. **No es una cohorte nueva.**
+
+**Cumplimiento simulado por guion.** No describe el comportamiento de participantes humanos.
 
 ## Tabla 1. Características de los 20 perfiles sintéticos
 
@@ -104,7 +113,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | O01 | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | NO APLICA | NO APLICA | APROBADO | APROBADO |
 | O02 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | NO APLICA | NO APLICA | APROBADO | APROBADO |
-| O03 | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | FALLO | NO APLICA | APROBADO | APROBADO |
+| O03 | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO |
 | O04 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | NO APLICA | APROBADO | APROBADO |
 | O05 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | NO APLICA | APROBADO | APROBADO |
 | O06 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO | APROBADO |
@@ -115,12 +124,12 @@
 | O11 | APROBADO | APROBADO | NO APLICA | NO APLICA | NO APLICA | NO APLICA | NO APLICA | NO APLICA | NO APLICA | NO APLICA |
 | O12 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | REQUIERE REVISION | APROBADO | NO APLICA | NO APLICA | APROBADO | APROBADO |
 | O13 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | NO APLICA | NO APLICA | APROBADO | APROBADO |
-| O14 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | FALLO | NO APLICA | APROBADO | APROBADO |
+| O14 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO |
 | O15 | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO |
 | O16 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO |
 | O17 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | NO APLICA | APROBADO | APROBADO |
 | O18 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO |
-| O19 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | FALLO | APROBADO | APROBADO |
+| O19 | REQUIERE REVISION | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO |
 | O20 | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO | APROBADO |
 
 ## Tabla 5b. Totales por aspecto
@@ -133,9 +142,9 @@
 | 4. Cálculo de adherencia | 19 | 0 | 1 | 0 | 19 | 100.0 % |
 | 5. Adaptación con IA simulada | 9 | 0 | 10 | 1 | 9 | 100.0 % |
 | 6. Mantenimiento sin adaptar | 19 | 0 | 1 | 0 | 19 | 100.0 % |
-| 7. Progresión gradual | 6 | 2 | 12 | 0 | 8 | 75.0 % |
-| 8. Reincorporación condicionada | 3 | 1 | 16 | 0 | 4 | 75.0 % |
+| 7. Progresión gradual | 8 | 0 | 12 | 0 | 8 | 100.0 % |
+| 8. Reincorporación condicionada | 4 | 0 | 16 | 0 | 4 | 100.0 % |
 | 9. Continuidad multisemana | 19 | 0 | 1 | 0 | 19 | 100.0 % |
 | 10. Seguridad e integridad | 19 | 0 | 1 | 0 | 19 | 100.0 % |
-| TOTAL (20 × 10 = 200) | 139 | 3 | 43 | 15 | 142 | 97.9 % |
+| TOTAL (20 × 10 = 200) | 142 | 0 | 43 | 15 | 142 | 100.0 % |
 

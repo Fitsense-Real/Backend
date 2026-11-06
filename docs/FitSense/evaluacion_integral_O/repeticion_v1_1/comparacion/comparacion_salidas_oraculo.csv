@@ -1,0 +1,9 @@
+de,a,fichero,identico
+original/oraculo_S_O_v1_1,repeticion/oraculo_S_O_v1_1,semanas.csv,True
+repeticion/oraculo_S_O_v1_1,repeticion/oraculo_Sp_O_v1_1,semanas.csv,True
+original/oraculo_S_O_v1_1,repeticion/oraculo_S_O_v1_1,adaptaciones.csv,True
+repeticion/oraculo_S_O_v1_1,repeticion/oraculo_Sp_O_v1_1,adaptaciones.csv,True
+original/oraculo_S_O_v1_1,repeticion/oraculo_S_O_v1_1,pasos_progresion.csv,True
+repeticion/oraculo_S_O_v1_1,repeticion/oraculo_Sp_O_v1_1,pasos_progresion.csv,True
+original/oraculo_S_O_v1_1,repeticion/oraculo_S_O_v1_1,huella_normalizada.txt,True
+repeticion/oraculo_S_O_v1_1,repeticion/oraculo_Sp_O_v1_1,huella_normalizada.txt,True

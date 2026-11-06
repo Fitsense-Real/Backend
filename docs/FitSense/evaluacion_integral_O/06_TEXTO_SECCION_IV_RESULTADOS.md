@@ -1,67 +1,96 @@
-# Texto propuesto: sección IV. RESULTADOS
+# Texto definitivo propuesto: sección IV. RESULTS
 
 **Notas de uso:**
-- Basado exclusivamente en la corrida S_O de la cohorte O y en su oráculo oficial v1.0.
-- **No modifica el short paper original.** Es una propuesta para que la revises.
-- Si apruebas la corrección del oráculo (v1.1) y se repite la evaluación, habrá que actualizar las cifras marcadas con [*].
+- Basado exclusivamente en resultados obtenidos:
+  - la repetición S_O de la cohorte O con el oráculo v1.1 (definitiva), con la v1.0 como antecedente;
+  - el informe `rediseno_politicas/pre_replicate/25_RESULTADOS_EVALUACION_REAL.md` (U/N con IA real).
+- **No modifica el short paper original;** es el texto listo para incorporarlo.
+- Las subsecciones A, B y C separan las tres cosas que pide la orden: la evaluación integral simulada, la evaluación previa con IA real y las limitaciones del catálogo.
+- Las tablas citadas son `entregables/TABLAS_SHORT_PAPER.md`. Para el artículo, la Tabla 5b basta como tabla resumen y la Tabla 1 como descripción de la cohorte.
 
 ---
 
 **IV. RESULTS**
 
-**A. Integral synthetic evaluation (cohort O)**
+**A. Integral evaluation of 20 synthetic profiles with simulated AI (cohort O)**
 
-We evaluated the deterministic core and the adaptation pipeline of FitSense on a new cohort of 20 synthetic profiles (O01–O20). The cohort was frozen before execution together with its expected criteria and an independent oracle.
-
-**Cohort.** The cohort covers:
+*Cohort and protocol.* We evaluated FitSense on 20 synthetic profiles (O01–O20). The cohort covers:
 - the four goals (5 profiles each);
-- three fitness levels (7 beginner, 7 intermediate, 6 advanced);
+- three levels (7 beginner, 7 intermediate, 6 advanced);
 - three equipment conditions (9 gym, 6 home without equipment, 5 home with dumbbells and bands);
 - 1–7 requested days and 30–75 min sessions;
-- declared restrictions (impact, shoulder, knee) and age-based filters (62 and 67 years).
+- declared restrictions and age-based filters (62 and 67 years).
 
-**Protocol.** Each profile followed a scripted four-week adherence sequence (complete, partial, skipped, fatigue, difficulty, demotivation and pain), followed by the weekly adaptation cycle. Two exceptions:
-- Progression was enabled only for the six profiles whose scenario required it.
-- Two reincorporation scenarios were extended until the condition was met.
+Each profile followed a frozen four-week script with complete, partial and skipped sessions and with fatigue, difficulty, demotivation and pain reports. The weekly adaptation cycle ran after each week. Progression was enabled only for the six profiles whose scenario required it. Two reincorporation scenarios were extended until their condition was met.
 
-The AI adaptation step was simulated: the full backend path was executed without calling the external model, and no cost was incurred. Adherence is simulated and does not represent real behaviour change.
+The AI adaptation step was simulated: the full backend path ran without calling the language model, at no cost. **Adherence is scripted and does not describe the behaviour of human participants.**
 
-**Generation.** 19 of 20 profiles received a valid plan. The remaining profile was the predicted infeasible case: advanced strength, one 30-min session per week. It was reported as such through the limitations endpoint ("about 32 minutes per session are needed").
+The profiles, scripts, expected criteria and an independent rule-based oracle were frozen before execution.
+
+*Generation and personalization.* 19 profiles received a valid plan. The remaining one (advanced strength, one 30-min session per week) was the predicted infeasible case; the limitations endpoint explained it ("about 32 minutes per session are needed").
 
 In all 19 plans:
-- the number of sessions matched min(requested days, level cap, available days), with the cap applied in 3 profiles;
+- the number of sessions equalled min(requested days, level cap, available days), with the cap applied in 3 profiles;
 - no session exceeded the profile's minutes;
-- no exercise violated the declared or age-based restrictions in any week.
+- no exercise violated a declared or age-based restriction in any week.
 
-**Adherence and decisions.** Across weeks 1–4 the profiles had 256 scheduled sessions: 239 complete, 6 partial, 10 skipped and 1 unrecorded. Weekly observed adherence, registration coverage and weighted adherence recomputed by the oracle matched the stored metrics in every week.
+*Execution and adherence.* Weeks 1–4 contained 256 scheduled sessions: 239 complete, 6 partial, 10 skipped and 1 unrecorded. The weekly observed adherence, registration coverage and weighted adherence recomputed by the oracle matched the stored values in every week. The oracle's independently recomputed adaptation decision matched the backend in 103/103 weekly cycles. In weeks 1–4 the decisions were 63 no-change, 11 localized and 2 expanded adaptations.
 
-The adaptation decision recomputed independently matched the backend in 103/103 weekly cycles. In weeks 1–4 the decisions were 63 no-change, 11 localized and 2 expanded adaptations.
+*Adaptation and maintenance.* 15 sessions received an adaptation order. Eleven were modified pertinently:
+- load reduction for fatigue;
+- an easier variant for difficulty;
+- a substitute for pain;
+- removal of a filler exercise for lack of time.
 
-**Adaptation.** Of the 15 sessions that received an adaptation order:
-- 11 were modified pertinently: load reduction for fatigue, an easier variant for difficulty, a substitute for pain, removal of a filler exercise for lack of time;
-- 4 were deliberately conserved because the cause did not authorize a change;
-- no adaptation increased the workload or introduced a harder substitute;
-- the deliberately invalid first proposal of the simulated AI was rejected in every cycle in which the AI was invoked.
+Four were conserved because the cause did not authorize a change. No adaptation increased the workload or introduced a harder substitute. Sessions without an adaptation order or a registered progression step were copied unchanged. The deliberately invalid first proposal of the simulated AI was rejected in every cycle in which the AI was invoked.
 
-**Progression and reincorporation.** The system produced:
-- 35 progression steps, 3 recoveries and 2 reincorporations, all within the 1.10 volume ceiling and never more than one per cycle;
-- no progression before two consecutive weeks of full compliance.
+*Progression, recovery and reincorporation.* The system produced 35 progression steps, 3 recoveries to the reference dose after a fatigue reduction, and 2 reincorporations. All stayed within the 1.10 volume ceiling and never exceeded one step per cycle. No progression occurred without two consecutive weeks of full compliance.
 
-A previously withdrawn exercise returned only after a later progression step, at the end of its session and with its initial dose (weeks 10 and 23). An exercise excluded for pain never returned.
+A previously withdrawn exercise returned only after a later progression in its session lineage, at the end of the session and with its initial dose (weeks 10 and 23). An exercise excluded for pain never returned.
 
-**Ten-aspect matrix.** Of the 200 profile–aspect cells:
-- 139 were approved and 3 failed [*];
+*Ten-aspect matrix.* Of the 200 profile–aspect cells:
+- 142 were approved and none failed;
 - 43 were not applicable;
 - 15 required review because the content includes exercises whose sports validation is pending. They are reported separately and not counted as approvals.
 
-The technical approval rate over applicable cells was 97.9 % [*]. The three failures were traced to the evaluation oracle, not to the system:
-- it did not admit the recovery step allowed by the policy when progression is disabled;
-- it located a withdrawn exercise at week level instead of within its session lineage.
+The technical approval rate over applicable cells was **100 % (142/142)**. A repeated execution produced an identical normalized fingerprint and an identical matrix.
 
-With the corrected oracle the same outputs give 142/142. This figure is reported as diagnostic only, pending a new full run.
+*Correction of the evaluation instrument.* The first scoring of the same execution, with oracle v1.0, gave 139/142 (97.9 %). The three failures were traced to the oracle, not to the system:
+- it rejected the recovery step that the adaptation policy allows when progression is disabled;
+- it searched for a withdrawn exercise across the whole week instead of within its session lineage.
 
-**Reproducibility and regression.**
-- A second execution produced an identical normalized fingerprint.
-- The extended test harness reproduced the reference fingerprints of the earlier cohorts and of the historical policy.
+The corrected oracle (v1.1) was frozen before the repeated execution. It changes exactly those three cells. Mutation tests showed that it still rejects:
+- recoveries above the reference dose;
+- unauthorized progressions;
+- reincorporations without a prior progression;
+- improper reappearances.
 
-These results characterize technical compliance on synthetic data. They are reported separately from the earlier evaluation with the real language model (cohorts U and N) and do not establish the sports quality of the catalogue, which remains under professional review.
+This is a re-evaluation of the same cohort, not an independent sample.
+
+**B. Earlier evaluation with a real language model (cohorts U and N)**
+
+An earlier code version was evaluated with the real model (Replicate, two independent runs R and R′) on cohort U and on the unseen cohort N (20 profiles each). The run used 44 predictions at a measured cost of USD 0.56, with no provider failures or timeouts. All pre-registered criteria were met:
+- Feasibility: 20/20 profiles in U and 19/20 in N, the remaining N profile being the predicted infeasible case. There were no safety violations.
+- Acceptance of the AI proposals by the validators: 16/16 in U and 27/28 in N (Wilson lower bound 82.3 %). The non-accepted cycle was a "no change" answer, not a rejection.
+- Pertinence over feasible evaluable adaptations, with no non-pertinent change: 17/17 in U and 14/15 in N (Wilson lower bound 70.2 %).
+
+Between R and R′, the decision and its category were reproduced in 30/31 sessions. The exact change matched in only 13/31: the model reached different valid solutions.
+
+These figures belong to a different version and protocol from Section IV-A and are not pooled with it.
+
+**C. Catalogue limitations requiring professional validation**
+
+Technical approval does not establish sports quality.
+
+In cohort O, 14 of the 19 initial plans and one substitute contain exercises with pending catalogue findings:
+- exercises whose name or instructions need correction;
+- a Nordic curl whose difficulty is under review;
+- back or shoulder doses supported only by exercises not yet demonstrated.
+
+These are the 15 cells marked "requires review".
+
+In the real-AI evaluation:
+- 38.5 % (20/52) of feasible AI adaptations touched such exercises and were not counted as pertinent. In the worst case, pertinence would fall to 70.8 % (U) and 50.0 % (N).
+- 67–84 % of published plans contained at least one flagged exercise.
+
+The pending catalogue decisions were not incorporated into either evaluation and remain subject to professional review.

@@ -5,8 +5,8 @@ Aspecto,APROBADO,FALLO,NO APLICA,REQUIERE REVISIÓN,Aplicables (AP+FA),Aprobaci�
 4. Cálculo de adherencia,19,0,1,0,19,100.0 %
 5. Adaptación con IA simulada,9,0,10,1,9,100.0 %
 6. Mantenimiento sin adaptar,19,0,1,0,19,100.0 %
-7. Progresión gradual,6,2,12,0,8,75.0 %
-8. Reincorporación condicionada,3,1,16,0,4,75.0 %
+7. Progresión gradual,8,0,12,0,8,100.0 %
+8. Reincorporación condicionada,4,0,16,0,4,100.0 %
 9. Continuidad multisemana,19,0,1,0,19,100.0 %
 10. Seguridad e integridad,19,0,1,0,19,100.0 %
-TOTAL (20 × 10 = 200),139,3,43,15,142,97.9 %
+TOTAL (20 × 10 = 200),142,0,43,15,142,100.0 %
