@@ -52,6 +52,7 @@ def corrida(etiq, dirs):
     preds, ciclos, trazas = [], [], []
     cfgs = {}
     adapt = {}
+    oraculos_leidos = set()
     for d, o in ((g, ora), (p, ora), (f35, ora_f)):
         if not d or not os.path.isdir(d):
             continue
@@ -76,7 +77,8 @@ def corrida(etiq, dirs):
         pm = defaultdict(list)
         for r in leer(os.path.join(d, "predicciones_metricas.csv")):
             pm[r["etiqueta"]].append(r)
-        if o:
+        if o and o not in oraculos_leidos:   # G y P comparten oraculo: se lee una sola vez
+            oraculos_leidos.add(o)
             for r in leer(os.path.join(o, "adaptaciones.csv")):
                 adapt.setdefault((etiq, r["id"], int(r["ciclo"])), []).append(r)
         for r in leer(os.path.join(d, "tablas", "plan_adaptation_attempts.csv")):
