@@ -1,6 +1,6 @@
 id,bloque,escenario,generacion_esperada,sesiones_esperadas,aviso_smax_esperado,progresion_activada,horizonte_semanas,intencion
 O01,G,CUMPLIMIENTO_TOTAL,PLAN_VALIDO,3,NO,NO,4,NO_CHANGE en los 4 ciclos; la semana siguiente copia la publicada
-O02,G,OMISION_POR_TIEMPO,PLAN_VALIDO,2,NO,NO,4,C1: adherencia observada 50 % -> ADAPT_LOCALIZED (ACORTAR_O_REORGANIZAR) en la sesion omitida; C2-C4 NO_CHANGE
+O02,G,OMISION_POR_TIEMPO,PLAN_VALIDO,2,NO,NO,4,C1: adherencia observada 50 % -> ADAPT_LOCALIZED; la sesion omitida por falta de tiempo SIN minutos declarados se CONSERVA (FaltaDeTiempoPolicy); C2-C4 NO_CHANGE
 O03,G,FATIGA_OMISION,PLAN_VALIDO,4,NO,NO,4,"C1: 75 % -> ADAPT_LOCALIZED (REVISAR_CARGA_Y_RECUPERACION) en la sesion 3, sin subir dosis; sin alto impacto"
 O04,G,DIFICULTAD,PLAN_VALIDO,5,NO,NO,4,"C1: 72 % -> ADAPT_LOCALIZED (VARIANTE_MAS_SENCILLA_O_CARGA) en la sesion 2 (peor: 0 %), sustituto no mas dificil"
 O05,G,DESMOTIVACION,PLAN_VALIDO,4,NO,NO,4,C1: 35 % -> ADAPT_EXPANDED; sesiones 1-2 INVESTIGAR_CAMBIO_MINIMO; la parcial sin causa (P40) no autoriza cambios
@@ -14,7 +14,7 @@ O12,G,DOLOR_OMISION_MAYOR,PLAN_VALIDO,2,NO,NO,4,62 anos (sin alto impacto) y hom
 O13,G,PARCIAL_TOLERADO,PLAN_VALIDO,3,NO,NO,4,"67 anos (sin impacto, carga axial ni inversion) y rodilla (sin arrodillarse; 1205 y 1263 bloqueados); C1: 86,7 % -> NO_CHANGE"
 O14,G,FATIGA_TARDIA,PLAN_VALIDO,4,NO,NO,4,C1: fatiga en un ejercicio con la sesion >= 80 % -> NO_CHANGE; C2: 75 % -> ADAPT_LOCALIZED (REVISAR_CARGA)
 O15,P,PROGRESION_ORDINARIA,PLAN_VALIDO,3,NO,SI,4,"Progresion encendida: C1 NO_CHANGE sin paso (una semana no basta); desde C2, como mucho UN paso por ciclo, techo 1,10"
-O16,P,PROGRESION_NO_FORZADA,PLAN_VALIDO,4,NO,SI,4,C1 sin paso (una semana); C2 75 % -> ADAPT_LOCALIZED (ACORTAR); C3 sin paso (la semana previa no fue 100 %)
+O16,P,PROGRESION_NO_FORZADA,PLAN_VALIDO,4,NO,SI,4,C1 sin paso (una semana); C2 75 % -> ADAPT_LOCALIZED con CONSERVAR (omision por tiempo sin minutos); C3 sin paso (la semana previa no fue 100 %)
 O17,P,FATIGA_Y_RECUPERACION,PLAN_VALIDO,3,NO,SI,4,"C1: 66,7 % -> ADAPT_LOCALIZED (REVISAR_CARGA, dosis reducida); despues la recuperacion nunca supera la referencia"
 O18,P,REINCORPORACION,PLAN_VALIDO,3,NO,SI,26,C1: parcial por falta de tiempo -> ACORTAR (retira el ultimo relleno); reincorporacion solo tras una progresion posterior
 O19,P,REINCORPORACION,PLAN_VALIDO,3,NO,SI,26,Rodilla (sin arrodillarse); C1: ACORTAR en la sesion 2; reincorporacion solo tras una progresion posterior

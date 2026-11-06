@@ -449,6 +449,7 @@ def evaluar(C, pid, prof, u, res_row):
             if (b is None) != (val is None) or (b is not None and abs(b - val) > Decimal("0.01")):
                 a4.append(f"C{k}: V32 {col} {b} != oraculo {val}")
         dec_o, obj_o = C.decidir(sesiones, aobs, cob)
+        obj_o = afinar_por_causa(obj_o, sess_k)
         dec_b = r["decision"]
         obj_b = set(lista(r["targeted_sessions"]))
         int_b = set(lista(r["targeted_interventions"]))
@@ -695,6 +696,23 @@ def evaluar(C, pid, prof, u, res_row):
     det["revision_catalogo"] = {"A1": sorted(flags_a1), "A5": sorted(flags_a5), "A7": sorted(flags_a7)}
     det["estados"] = est
     return det
+
+
+def afinar_por_causa(objetivo, sesiones_plan):
+    """FaltaDeTiempoPolicy (documentada): una OMISION por falta de tiempo sin la respuesta MENOS_TIEMPO_HABITUAL con
+    minutos, o con minutos suficientes, se CONSERVA (sin IA); una parcial por falta de tiempo se sigue acortando."""
+    por_id = {int(w["planned_workout_id"]): w for w in sesiones_plan}
+    out = []
+    for wid, interv in objetivo:
+        w = por_id.get(wid)
+        if interv == "ACORTAR_O_REORGANIZAR" and w is not None and w["status"] == "SKIPPED" \
+                and w["skip_reason"] == "LACK_OF_TIME":
+            m = H.entero(w.get("declared_available_minutes"))
+            if w.get("lack_of_time_context") != "MENOS_TIEMPO_HABITUAL" or m is None \
+                    or m >= H.entero(w.get("expected_duration_minutes"), 0):
+                interv = "CONSERVAR"
+        out.append((wid, interv))
+    return out
 
 
 def pertinencia(intervencion, d, conservada_justificada):
