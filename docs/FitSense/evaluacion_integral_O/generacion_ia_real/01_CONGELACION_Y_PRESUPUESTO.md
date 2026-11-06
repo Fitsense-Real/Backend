@@ -32,7 +32,7 @@
 | Unitarias | 1306, 0 fallos (BUILD SUCCESS) |
 | S_O con IA simulada | Huella `7eb13353…`, igual: **el modo experimental apagado reproduce la generación original** |
 | D_O | Huella `d46b3f50…`, igual |
-| Regresión U/N y HIST | Ver `SHA256SUMS` y `evidencia/gratuitas/runner.log`. Se completa antes de pagar |
+| Regresión U/N y HIST | REV2 D U `a662cb4d` · REV2 D N `11f51d44` · HIST D U `f9f67973` · REV2 IA simulada U `84dfb6d2` · REV2 IA simulada N `da34db35`: **las 5 iguales** a la referencia |
 
 ## Presupuesto
 
