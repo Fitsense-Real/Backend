@@ -191,6 +191,17 @@ class EvaluacionK20IT {
     /** Autorizacion expresa de la evaluacion integral con Replicate real (orden del 06/11/2026). */
     static final boolean INTEGRAL_REPLICATE_AUTORIZADA = INTEGRAL
             && "SI".equals(System.getProperty("fitsense.evaluacion.k20.integral-replicate", ""));
+    /**
+     * GENERACION INICIAL CON REPLICATE REAL (orden GRA, 06/11/2026). Opt-in y apagado por defecto: en el modo integral la
+     * generacion inicial se forzaba al motor de reglas ({@code isEnabled=false}); con este interruptor la generacion pasa
+     * por el pipeline REAL del backend (PlanGenerationPipeline: hasta 3 propuestas de la IA validadas con el mismo
+     * PlanDraftValidator, y el respaldo por reglas si ninguna es valida). Exige REPLICATE y su autorizacion propia.
+     */
+    static final boolean GENERACION_IA = INTEGRAL && REPLICATE
+            && "SI".equals(System.getProperty("fitsense.evaluacion.k20.generacion-ia", ""));
+    /** Intentos de generacion con IA rechazados por el pipeline (mensaje WARN del backend), por etiqueta. */
+    static final List<String[]> rechazosGeneracion = Collections.synchronizedList(new ArrayList<>());
+    static final List<Map<String, Object>> generacionIa = Collections.synchronizedList(new ArrayList<>());
     static final boolean PROGRESION_INTEGRAL = INTEGRAL
             && Boolean.parseBoolean(System.getProperty("fitsense.evaluacion.k20.progresion", "false"));
     /** Solo estos perfiles (bloque de la corrida); vacio = todos. */
@@ -280,6 +291,8 @@ class EvaluacionK20IT {
             assertEquals(SHA256_PERFILES_ESPERADO, sha256(Files.readAllBytes(PERFILES)), "la cohorte es la congelada");
         // Evaluacion integral con Replicate REAL (orden del 06/11/2026): solo con su autorizacion expresa propia, ademas de
         // la autorizacion general de R/R'. Sin ella, como antes: la evaluacion integral no usa Replicate.
+        assertFalse("SI".equals(System.getProperty("fitsense.evaluacion.k20.generacion-ia", "")) && !GENERACION_IA,
+                "la generacion inicial con IA exige el modo integral con REPLICATE");
         assertFalse(INTEGRAL && REPLICATE && !INTEGRAL_REPLICATE_AUTORIZADA,
                 "la evaluacion integral no usa Replicate sin -Dfitsense.evaluacion.k20.integral-replicate=SI");
         assertTrue(conservacion.limitaDificultad(), "candidata: limite de dificultad encendido (preferencia)");
@@ -337,6 +350,8 @@ class EvaluacionK20IT {
             cfg.put("modo_integral", "true (cohorte O: 4 semanas medidas + horizonte de reincorporacion por perfil)");
             cfg.put("bloque_solo", SOLO.isEmpty() ? "todos" : String.join(",", SOLO));
             cfg.put("sha256_perfiles_esperado", SHA256_PERFILES_ESPERADO.isBlank() ? "no indicado" : SHA256_PERFILES_ESPERADO);
+            cfg.put("generacion_ia", GENERACION_IA ? "true (generacion inicial por el pipeline real con Replicate; respaldo por "
+                    + "reglas solo si ninguna propuesta es valida, identificado en generation_source)" : "false (motor de reglas)");
             if (REPLICATE) cfg.put("ia_real", "Replicate real: todas las respuestas de adaptacion vienen del proveedor; "
                     + "ninguna respuesta simulada ni precargada (la sonda de factibilidad solo mide y no publica)");
             else cfg.put("ia_simulada_acortar", "RETIRAR_RELLENO preferido para ACORTAR_O_REORGANIZAR (ultimo ejercicio sin slot)");
@@ -354,6 +369,7 @@ class EvaluacionK20IT {
                 + COSTE_MAX_POR_LLAMADA_USD + " por prediccion; gasto real medido por tokens a " + TARIFA_ENTRADA_USD_MILLON
                 + " / " + TARIFA_SALIDA_USD_MILLON + " USD por millon)" : "no aplica");
         escribir("00_configuracion.txt", cfg.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).toList());
+        if (GENERACION_IA) Files.writeString(SALIDA.resolve("generacion_ia.csv"), "");
 
         var res = new ArrayList<Map<String, Object>>();
         var incid = new ArrayList<String>();
@@ -366,6 +382,7 @@ class EvaluacionK20IT {
         if (REPLICATE && GEMELOS) for (var p : lista) ejecutarGemelo(p, incid);
 
         csv("resultados_20.csv", res);
+        if (GENERACION_IA && !generacionIa.isEmpty()) csv("generacion_ia.csv", new ArrayList<>(generacionIa));
         if (INTEGRAL) {
             csv("semanas_integral.csv", semanasIntegral);
             csv("sesiones_integral.csv", sesionesIntegral);
@@ -588,15 +605,17 @@ class EvaluacionK20IT {
         rechazosValidacion.clear();
         Optional<Long> plan;
         String errorGen = null;
-        if (IA_ACTIVA) doReturn(false).when(generador).isEnabled();
+        if (IA_ACTIVA && !GENERACION_IA) doReturn(false).when(generador).isEnabled();
+        int trazasAntes = trazasIa.size();
         try {
             plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null);
         } catch (RuntimeException e) {
             plan = Optional.empty();
             errorGen = e.getClass().getSimpleName() + ": " + e.getMessage();
         } finally {
-            if (IA_ACTIVA) doCallRealMethod().when(generador).isEnabled();
+            if (IA_ACTIVA && !GENERACION_IA) doCallRealMethod().when(generador).isEnabled();
         }
+        if (GENERACION_IA) registrarGeneracionIa(id, u, plan, trazasAntes, errorGen);
         r.put("generacion_validaciones", validaciones.get());
         r.put("generacion_rechazos", rechazosValidacion.size());
         limitaciones(id, "TRAS_GENERACION", token);
@@ -980,6 +999,21 @@ class EvaluacionK20IT {
         ((ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ReplicateTrainingPlanGenerator.class))
                 .addAppender(appender);
         doAnswer(inv -> proveedor(inv, "GENERACION")).when(generador).requestOutput(any(), any());
+        // El pipeline llama a la variante de 3 argumentos (con el numero de intento): sin este espia sus llamadas
+        // escaparian al control del presupuesto y a la traza (la de 2 argumentos solo la usan los gemelos).
+        doAnswer(inv -> proveedor(inv, "GENERACION")).when(generador).requestOutput(any(), any(), anyInt());
+        var rechazos = new ch.qos.logback.core.AppenderBase<ch.qos.logback.classic.spi.ILoggingEvent>() {
+            @Override
+            protected void append(ch.qos.logback.classic.spi.ILoggingEvent e) {
+                String t = e.getFormattedMessage();
+                if (t != null && t.startsWith("Intento ") && t.contains(" de IA rechazado"))
+                    rechazosGeneracion.add(new String[]{etiquetaActual, t.replaceAll("\\s+", " ")});
+            }
+        };
+        rechazos.start();
+        ((ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(
+                main.web.services.fitsense.planning.application.internal.commandservices.PlanGenerationPipeline.class))
+                .addAppender(rechazos);
         doAnswer(inv -> {
             int intento = inv.getArgument(4);
             if (intento == 1) sondear(inv.getArgument(0), inv.getArgument(1));
@@ -1010,6 +1044,8 @@ class EvaluacionK20IT {
         if ("ADAPTACION".equals(tipo)) {
             intentoActual.set(Integer.parseInt(intento));
             guardarPrompt(inv, traza);
+        } else if (GENERACION_IA && inv.getArguments().length == 3) {
+            guardarPromptGeneracion(inv, traza);
         }
         int n = llamadas.incrementAndGet();
         boolean puede;
@@ -1171,6 +1207,83 @@ class EvaluacionK20IT {
             }
         }
         return null;
+    }
+
+    @Autowired main.web.services.fitsense.planning.infrastructure.generation.ai.PlanPromptBuilder promptGeneracion;
+    @Autowired main.web.services.fitsense.shared.infrastructure.json.JsonSupport jsonSupport;
+
+    /** El prompt de generacion tal cual lo arma ReplicateTrainingPlanGenerator.requestOutput (snapshot + reglas). */
+    private void guardarPromptGeneracion(org.mockito.invocation.InvocationOnMock inv, Map<String, Object> traza) {
+        try {
+            PlanGenerationContext ctx = inv.getArgument(0);
+            var snapshot = jsonSupport.write(
+                    main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot.of(ctx));
+            String prompt = promptGeneracion.build(ctx, snapshot, inv.getArgument(1));
+            traza.put("prompt_chars", prompt.length());
+            traza.put("prompt_sha256_16", sha256(prompt.getBytes(StandardCharsets.UTF_8)).substring(0, 16));
+            var dir = SALIDA.resolve("prompts");
+            Files.createDirectories(dir);
+            Files.writeString(dir.resolve(etiquetaActual.replace('/', '_') + "_i" + traza.get("intento") + ".txt"), prompt);
+        } catch (Exception e) {
+            traza.put("prompt_guardado", "no: " + e.getClass().getSimpleName());
+        }
+    }
+
+    /**
+     * Una fila por llamada de generacion de este perfil (resultado del proveedor, prediccion, si el pipeline la rechazo
+     * y por que) y el origen REAL del plan publicado (generation_source / generation_attempts de la tabla).
+     */
+    private void registrarGeneracionIa(String id, long u, Optional<Long> plan, int trazasAntes, String errorGen) {
+        String etiqueta = id + "/generacion";
+        var llamadas = new ArrayList<Map<String, Object>>();
+        for (String t : new ArrayList<>(trazasIa).subList(trazasAntes, trazasIa.size())) {
+            com.fasterxml.jackson.databind.JsonNode n;
+            try {
+                n = JSON.readTree(t);
+            } catch (Exception e) {
+                continue;
+            }
+            if ("GENERACION".equals(n.path("tipo").asText()) && etiqueta.equals(n.path("etiqueta").asText()))
+                llamadas.add(JSON.convertValue(n, Map.class));
+        }
+        var rech = new ArrayList<String[]>();
+        synchronized (rechazosGeneracion) {
+            for (var x : rechazosGeneracion) if (etiqueta.equals(x[0])) rech.add(x);
+        }
+        String fuente = "", intentosPlan = "", modelo = "";
+        if (plan.isPresent()) {
+            var f = jdbc.queryForMap("SELECT generation_source, generation_attempts, model_name FROM weekly_training_plans"
+                    + " WHERE plan_id = ?", plan.get());
+            fuente = String.valueOf(f.get("generation_source"));
+            intentosPlan = String.valueOf(f.get("generation_attempts"));
+            modelo = String.valueOf(f.get("model_name"));
+        }
+        if (llamadas.isEmpty()) {
+            var m = new LinkedHashMap<String, Object>();
+            m.put("id", id); m.put("intento", 0); m.put("resultado_proveedor", "SIN_LLAMADA");
+            m.put("prediction_id", ""); m.put("rechazada_por_el_backend", ""); m.put("motivos", "");
+            m.put("plan_publicado", plan.map(String::valueOf).orElse("")); m.put("generation_source", fuente);
+            m.put("generation_attempts", intentosPlan); m.put("model_name", modelo);
+            m.put("error_generacion", errorGen == null ? "" : errorGen);
+            generacionIa.add(m);
+        }
+        for (var l : llamadas) {
+            String intento = String.valueOf(l.get("intento"));
+            var r = rech.stream().filter(x -> x[1].startsWith("Intento " + intento + " ")).findFirst().orElse(null);
+            var m = new LinkedHashMap<String, Object>();
+            m.put("id", id);
+            m.put("intento", intento);
+            m.put("resultado_proveedor", l.get("resultado"));
+            m.put("prediction_id", Objects.requireNonNullElse(l.get("prediction_id"), ""));
+            m.put("rechazada_por_el_backend", "RESPUESTA".equals(l.get("resultado")) ? (r != null ? "SI" : "NO") : "");
+            m.put("motivos", r == null ? Objects.requireNonNullElse(l.get("error"), "") : r[1]);
+            m.put("plan_publicado", plan.map(String::valueOf).orElse(""));
+            m.put("generation_source", fuente);
+            m.put("generation_attempts", intentosPlan);
+            m.put("model_name", modelo);
+            m.put("error_generacion", errorGen == null ? "" : errorGen);
+            generacionIa.add(m);
+        }
     }
 
     private void guardarPrompt(org.mockito.invocation.InvocationOnMock inv, Map<String, Object> traza) {
