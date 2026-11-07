@@ -63,6 +63,21 @@ def extraer_gra(gra_pago, destino):
     print(f"{n} propuestas de generacion de GRA extraidas")
 
 
+def salida_backend(texto):
+    """Lo mismo que ReplicateResponse.joinedOutput() del backend: si la salida guardada es un objeto con json_output
+    (forma de gpt-5-structured), el plan es ese objeto; con text, ese texto; si no, el texto tal cual. No cambia nada
+    del contenido del plan."""
+    try:
+        o = json.loads(texto)
+    except (TypeError, ValueError):
+        return texto or ""
+    if isinstance(o, dict) and "json_output" in o:
+        return json.dumps(o["json_output"], ensure_ascii=False)
+    if isinstance(o, dict) and "text" in o and isinstance(o["text"], str):
+        return o["text"]
+    return texto
+
+
 def extraer_base(bdir, corrida, destino):
     os.makedirs(destino, exist_ok=True)
     n = 0
@@ -71,7 +86,7 @@ def extraer_base(bdir, corrida, destino):
         if r.get("experimento") != "A_GENERACION":
             continue
         with open(os.path.join(destino, f"{corrida}__{r['id']}.json"), "w", encoding="utf-8") as f:
-            f.write(r.get("salida") or "")
+            f.write(salida_backend(r.get("salida") or ""))
         n += 1
     print(f"{n} propuestas de generacion de {corrida} extraidas")
 
@@ -379,7 +394,7 @@ def adaptacion(bdir, gra_g, gra_p, tablas, disponibles_csv, perfiles_csv, corrid
                 r = json.load(open(ruta_r, encoding="utf-8"))
                 pred = r.get("prediction_id")
                 try:
-                    prop = json.loads(r.get("salida") or "")
+                    prop = json.loads(salida_backend(r.get("salida") or ""))
                     workouts = prop["workouts"]
                     despues = {}
                     dup = []

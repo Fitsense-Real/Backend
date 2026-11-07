@@ -177,3 +177,9 @@ El primer arranque de BASE-R1 se detuvo en la consulta gratuita de versión: HTT
 - **Predicciones creadas:** ninguna. El registro siguió en 96 / USD 1,8401.
 - **Corrección:** cabecera `User-Agent: fitsense-baseline/1.0` en el cliente.
 - **Lo que no cambia:** prompts, esquema, parámetros y criterios.
+
+## 8. Versión fijada y forma de la salida (observado en la primera predicción)
+
+- **Versión:** `POST /v1/predictions` con la versión de GRA (`9f4cd9ec…`) fue **aceptada** y la predicción se creó. Replicate devuelve `"version": "hidden"`, así que el proveedor no permite confirmar qué versión ejecutó. Se registra como «versión fijada solicitada, no verificable».
+- **Forma de la salida:** en este modo llega como objeto `{"json_output": {…}}`. Es una de las formas que el backend ya maneja en `ReplicateResponse.joinedOutput()`, donde el plan es el contenido de `json_output`.
+- **Cómo se trata:** el contador (`salida_backend`) aplica la misma regla antes de evaluar. La respuesta original se guarda íntegra en `respuestas/` y no se modifica.
