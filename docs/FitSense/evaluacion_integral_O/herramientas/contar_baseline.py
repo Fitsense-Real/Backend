@@ -216,7 +216,14 @@ def generacion(validacion_csv, tablas, disponibles_csv, perfiles_csv, salida):
         pid = v["id"]
         etapa = v.get("etapa", "CRUDO")
         claves = {}
+        avisos = 0
         for i, msg in enumerate(partir_problemas(v["problemas"]) if v["resultado"] == "INVALIDO" else []):
+            # Correccion del instrumento (I-1, documentada): el validador anade a los problemas una SUGERENCIA sin codigo
+            # ("DIVISION: usa estas fechas...") cuando hay V13 o V18 (appendSplitSuggestion). No es un incumplimiento:
+            # se registra como aviso y no se cuenta.
+            if msg.startswith("DIVISION:"):
+                avisos += 1
+                continue
             m = re.match(r"(V\d+)\s*:", msg)
             codigo = m.group(1) if m else "SIN_CODIGO"
             cat, fam = clasificar(codigo, msg)
@@ -246,6 +253,7 @@ def generacion(validacion_csv, tablas, disponibles_csv, perfiles_csv, salida):
                        "n_infracciones_unicas": len(claves),
                        "con_violaciones": "SI" if claves else ("NO" if v["resultado"] == "VALIDO" else "NO_EVALUABLE"),
                        "categorias": "; ".join(f"{k}={n}" for k, n in sorted(por_cat.items())),
+                       "avisos_no_contados": avisos,
                        "correcciones_normalizador": v.get("correcciones_normalizador", ""),
                        "error": v["problemas"] if v["resultado"] == "NO_EVALUABLE" else ""})
     escribir(os.path.join(salida, "hallazgos_generacion.csv"), hallazgos,

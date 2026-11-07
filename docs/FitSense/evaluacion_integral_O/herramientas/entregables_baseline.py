@@ -17,6 +17,7 @@ from math import comb
 
 csv.field_size_limit(sys.maxsize)
 B, C, G, OUT = sys.argv[1:5]
+RUNS = [int(x) for x in (sys.argv[5] if len(sys.argv) > 5 else "1,2").split(",")]
 os.makedirs(OUT, exist_ok=True)
 ORIG = [f"O{i:02d}" for i in range(1, 21)]
 FACT = [p for p in ORIG if p != "O11"]          # O11: inviabilidad esperada, aparte
@@ -42,7 +43,7 @@ def pct(n, d):
 # ------------------------------------------------------------------ respuestas y predicciones de la linea base
 resp = {}
 pred_filas = []
-for r in (1, 2):
+for r in RUNS:
     d = os.path.join(B, f"B-R{r}")
     for f in sorted(os.listdir(os.path.join(d, "respuestas"))):
         x = json.load(open(os.path.join(d, "respuestas", f), encoding="utf-8"))
@@ -102,7 +103,7 @@ def valor_limite(m):
 
 
 gen_filas, viol_filas = [], []
-for r in (1, 2):
+for r in RUNS:
     cb, cg = corr_base(r), f"GRA_R{r}_i1"
     for pid in ORIG:
         x = resp.get((f"BASE-R{r}", f"{pid}/generacion"), {})
@@ -160,14 +161,14 @@ def met_gen(corridas, perfiles, etapa):
 
 
 M = {"generacion": {}, "adaptacion": {}}
-for r in (1, 2):
+for r in RUNS:
     gra_all = sorted({p["corrida"] for p in planes if p["corrida"].startswith(f"GRA_R{r}_i")})
     for etapa in ("CRUDO", "NORMALIZADO"):
         M["generacion"][f"BASE-R{r}|{etapa}|19"] = met_gen([corr_base(r)], FACT, etapa)
         M["generacion"][f"BASE-R{r}|{etapa}|O11"] = met_gen([corr_base(r)], ["O11"], etapa)
         M["generacion"][f"GRA-R{r}|{etapa}|19|1a"] = met_gen([f"GRA_R{r}_i1"], FACT, etapa)
         M["generacion"][f"GRA-R{r}|{etapa}|19|todas"] = met_gen(gra_all, FACT, etapa)
-for etapa in ("CRUDO", "NORMALIZADO"):
+for etapa in ("CRUDO", "NORMALIZADO") if len(RUNS) == 2 else ():
     M["generacion"][f"BASE-R1+R2|{etapa}|19"] = met_gen([corr_base(1), corr_base(2)], FACT, etapa)
     M["generacion"][f"GRA-R1+R2|{etapa}|19|1a"] = met_gen(["GRA_R1_i1", "GRA_R2_i1"], FACT, etapa)
 
@@ -182,7 +183,7 @@ def mcnemar(b, c):
 
 
 par = []
-for r in (1, 2):
+for r in RUNS:
     b = c = both = none = 0
     for pid in FACT:
         x = P.get((corr_base(r), pid, "NORMALIZADO"), {}).get("con_violaciones") == "SI"
@@ -193,7 +194,7 @@ M["pareado_generacion_normalizado"] = par
 
 # ------------------------------------------------------------------ adaptacion
 ada, cam = [], []
-for r in (1, 2):
+for r in RUNS:
     ada += leer(os.path.join(C, f"adaptacion_BASE_R{r}.csv"))
     cam += leer(os.path.join(C, f"cambios_BASE_R{r}.csv"))
 for a in ada:
@@ -215,11 +216,12 @@ def met_ada(corridas, origen):
             "sin_efecto": sum(a.get("sin_efecto") == "SI" for a in ok)}
 
 
-for r in (1, 2):
+for r in RUNS:
     M["adaptacion"][f"BASE-R{r}"] = met_ada([f"BASE-R{r}"], "BASE")
     M["adaptacion"][f"GRA-R{r}"] = met_ada([f"GRA-R{r}"], "GRA")
-M["adaptacion"]["BASE-R1+R2"] = met_ada(["BASE-R1", "BASE-R2"], "BASE")
-M["adaptacion"]["GRA-R1+R2"] = met_ada(["GRA-R1", "GRA-R2"], "GRA")
+if len(RUNS) == 2:
+    M["adaptacion"]["BASE-R1+R2"] = met_ada(["BASE-R1", "BASE-R2"], "BASE")
+    M["adaptacion"]["GRA-R1+R2"] = met_ada(["GRA-R1", "GRA-R2"], "GRA")
 M["predicciones"] = {"n": len(pred_filas), "usd": round(sum(float(p["usd"] or 0) for p in pred_filas), 4),
                      "estados": dict(Counter(p["estado"] for p in pred_filas)),
                      "versiones": dict(Counter(p["version"] for p in pred_filas)),
