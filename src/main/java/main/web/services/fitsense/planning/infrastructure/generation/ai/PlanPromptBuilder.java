@@ -432,8 +432,7 @@ public class PlanPromptBuilder {
                 .append(" s de transicion.");
         // V44 · V4-C: solo con esa politica (la historica recibe exactamente el texto de siempre).
         if (context.policy().v4Segundos() && context.profile() != null)
-            b.append(" Ninguna sesion puede pasar de ").append(main.web.services.fitsense.planning.domain.model
-                            .valueobjects.PlanningPolicy.limiteV4Segundos(context.profile().sessionMinutes()))
+            b.append(" Ninguna sesion puede pasar de ").append(context.policy().limiteV4SegundosDe(context.profile().sessionMinutes()))
                     .append(" s (constraints.max_session_seconds): el backend los calcula a partir de los ejercicios"
                             + " y rechaza la sesion aunque declares menos minutos.");
         if (context.profile() != null && main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy

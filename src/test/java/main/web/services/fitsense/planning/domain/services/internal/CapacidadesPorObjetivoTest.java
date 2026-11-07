@@ -298,10 +298,14 @@ class CapacidadesPorObjetivoTest {
     class Hipertrofia31 {
 
         @Test
-        @DisplayName("tope de colocaciones: 6 hasta 59 minutos, 7 desde 60; 4D v3 se conserva como referencia")
+        @DisplayName("tope de colocaciones: 6 hasta 52 minutos, 7 de 53 a 60 (C-8; antes 6 hasta 59); 4D v3 se conserva como referencia")
         void tope() {
+            // 4D v3.1 exigia 6 hasta 59 minutos. C-8 (aprobada, docs/FitSense/ADENDA_4D_v3_4.md) lo sube a 7 de 53 a 59:
+            // con 6 colocaciones el contenido (2.220 s) no llegaba al piso de V20 (2.226-2.478 s). 30, 45 y 60 no cambian.
             assertEquals(6, MvpDosePolicy.maxColocaciones(30));
-            assertEquals(6, MvpDosePolicy.maxColocaciones(59));
+            assertEquals(6, MvpDosePolicy.maxColocaciones(52));
+            assertEquals(7, MvpDosePolicy.maxColocaciones(53));
+            assertEquals(7, MvpDosePolicy.maxColocaciones(59));
             assertEquals(7, MvpDosePolicy.maxColocaciones(60));
             assertEquals(6, MvpDosePolicy.MAX_COLOC_DIA);
         }

@@ -71,6 +71,19 @@ public class SafetyExclusionResolver {
                     motivos.merge(id, main.web.services.fitsense.planning.domain.services.SafetyConflictPolicy
                             .DOLOR_REGISTRADO, (a, b) -> a + "+" + b);
         }
+        // Fase 4 (cierre de PLAN-REV-2.0, solo con reparaCatalogoInactivo): un heredado sin causa de seguridad que
+        // esta DESACTIVADO en el catalogo tiene una causa comprobable (is_active = false). Entra en la sustitucion
+        // obligatoria, pero con la regla estricta (SafetySubstitutionPolicy); sin ella, V1 como siempre.
+        if (context.policy() != null && context.policy().reparaCatalogoInactivo()) {
+            var sinCausa = heredadosFuera.stream().filter(id -> !motivos.containsKey(id))
+                    .collect(Collectors.toCollection(TreeSet::new));
+            if (!sinCausa.isEmpty())
+                catalog.fetchSafetyFacts(sinCausa).forEach((id, f) -> {
+                    if (f != null && !f.active())
+                        motivos.put(id, main.web.services.fitsense.planning.domain.services.SafetyConflictPolicy
+                                .CATALOGO_INACTIVO);
+                });
+        }
         if (motivos.isEmpty()) return ExclusionesDeSeguridad.ninguna();
 
         var descritos = catalog.fetchAsCandidates(motivos.keySet());

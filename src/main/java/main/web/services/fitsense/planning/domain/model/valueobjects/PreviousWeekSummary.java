@@ -42,12 +42,29 @@ public record PreviousWeekSummary(
          * con la progresion y la V24 por capacidades apagadas. No viaja al prompt.
          */
         @com.fasterxml.jackson.annotation.JsonIgnore
-        Map<Long, Set<Long>> dosisConLinaje
+        Map<Long, Set<Long>> dosisConLinaje,
+        /**
+         * P-A1 (fatiga persistente). Por sesion de esta semana, cuantas semanas INMEDIATAMENTE ANTERIORES de su linaje
+         * (V31 + V32) se adaptaron por fatiga (REVISAR_CARGA_Y_RECUPERACION). Si esta semana tambien consta fatiga,
+         * la racha es 1 + este valor. Solo para los avisos de V8C; no viaja al prompt.
+         */
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        Map<Long, Integer> fatigaConsecutiva
 ) {
 
     public PreviousWeekSummary {
         reduccionAutorizada = reduccionAutorizada == null ? Set.of() : Set.copyOf(reduccionAutorizada);
         dosisConLinaje = dosisConLinaje == null ? Map.of() : Map.copyOf(dosisConLinaje);
+        fatigaConsecutiva = fatigaConsecutiva == null ? Map.of() : Map.copyOf(fatigaConsecutiva);
+    }
+
+    /** Sin racha de fatiga: la forma de V34. */
+    public PreviousWeekSummary(BigDecimal weightedAdherencePct, BigDecimal averageSessionRpe, Integer totalVolume,
+                               Map<String, Integer> bodyPartDistribution, List<WorkoutOutcome> workouts,
+                               List<PrescriptionOutcome> prescriptions, List<Long> exerciseIdsUsedLast7Days,
+                               Set<Long> reduccionAutorizada, Map<Long, Set<Long>> dosisConLinaje) {
+        this(weightedAdherencePct, averageSessionRpe, totalVolume, bodyPartDistribution, workouts, prescriptions,
+                exerciseIdsUsedLast7Days, reduccionAutorizada, dosisConLinaje, Map.of());
     }
 
     /** Sin dosis heredadas: la forma de D8. */

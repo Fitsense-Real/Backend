@@ -28,9 +28,10 @@ public class PlanDraftValidator {
 
     /** Pisos de 18.4. No dependen de configuracion porque son limites de seguridad. */
     private static final int MIN_EXERCISES_PER_SESSION = 2;
-    private static final int MIN_SETS = 2;
-    private static final int MIN_REPS = 6;
-    private static final int MIN_DURATION_SECONDS = 20;
+    // Publicos solo para leerlos (prompt V2 experimental, FactibilidadAdaptacion): mismo valor, misma regla.
+    public static final int MIN_SETS = 2;
+    public static final int MIN_REPS = 6;
+    public static final int MIN_DURATION_SECONDS = 20;
 
     private final SessionDurationEstimator durationEstimator;
 
@@ -155,6 +156,8 @@ public class PlanDraftValidator {
         validateMinimumDurationAndRest(draft, context, conservation, problems);
         validateMvpDose(draft, context, eligible, conservation, problems);
         validateCapabilityDose(draft, context, eligible, conservation, problems);
+        validateWeeklyVolume(draft, context, eligible, problems);
+        validateRealPull(draft, context, eligible, problems);
         // Una colocacion con dosis autorizada sigue acreditando la capacidad de su
         // dosis base (diseno §4.4). En la generacion no hay autorizaciones: el
         // borrador se evalua tal cual.
@@ -189,7 +192,8 @@ public class PlanDraftValidator {
                 PlanDraft.DraftExercise base = null;
                 if (origen.isPresent() && MvpDosePolicy.aplicaA(objetivo)) {
                     var exigida = MvpDosePolicy.dosisPara(MandatorySlot.of(candidato), candidato.bodyPartCode());
-                    if (exigida.isPresent() && ProgresionDosisPolicy.admite4D(exigida.get(), e, origen.get()))
+                    if (exigida.isPresent() && ProgresionDosisPolicy.admite4D(exigida.get(), e, origen.get(),
+                            context.policy() != null && context.policy().fatigaGM()))
                         base = new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(), exigida.get().series(),
                                 exigida.get().reps(), e.plannedDurationSeconds(), e.targetLoadKg(),
                                 exigida.get().descansoSegundos(), e.notes());
@@ -554,8 +558,9 @@ public class PlanDraftValidator {
             int tope = MvpDosePolicy.maxColocaciones(minutos);
             if (colocaciones > tope)
                 incumplimientos.add(("V24: el entrenamiento del %s tiene %d colocaciones y el maximo "
-                        + "de 4D v3.1 para sesiones de %d minutos es %d.")
-                        .formatted(workout.scheduledDate(), colocaciones, minutos, tope));
+                        + "de 4D %s para sesiones de %d minutos es %d.")
+                        .formatted(workout.scheduledDate(), colocaciones,
+                                MvpDosePolicy.versionDelTope(minutos), minutos, tope));
 
             double costeDia = 0;
             // 4D v3.2/v3.3: colocaciones de relleno con la serie adicional (zona pequena; biceps en PULL).
@@ -593,7 +598,8 @@ public class PlanDraftValidator {
                 // La generacion no trae autorizaciones. El presupuesto se cobra con la dosis REAL.
                 var origenAutorizado = conservation.autorizacionDe(workout.scheduledDate(), exercise);
                 boolean autorizada = origenAutorizado.isPresent()
-                        && ProgresionDosisPolicy.admite4D(exigida, exercise, origenAutorizado.get());
+                        && ProgresionDosisPolicy.admite4D(exigida, exercise, origenAutorizado.get(),
+                        context.policy() != null && context.policy().fatigaGM());
                 // 4D v3.2: la serie adicional del relleno de zona pequena; si hacia falta se comprueba abajo.
                 short seriesMax = MvpDosePolicy.seriesMaxEn(exigida, workout.focus(), candidate.bodyPartCode());
                 boolean ampliada = !autorizada && seriesMax > exigida.series() && series > exigida.series()
@@ -617,6 +623,16 @@ public class PlanDraftValidator {
             // 4D v3.2: la serie adicional solo se admite si, sin ella, la sesion no llega al minimo
             // de V20. Donde V20 no aplica (sesion autorizada a acortarse, o sin piso) no se exige.
             long piso = minimumSessionSeconds(context);
+            // P-G1: sin piso de duracion la serie adicional NUNCA es necesaria, asi que V24 la rechaza siempre
+            // (mas estricto que antes, nunca mas laxo: V24 de la generacion inicial no se relaja).
+            if (!ampliadas.isEmpty() && context.policy() != null && !context.policy().pisoV20())
+                for (int k : ampliadas) {
+                    var e = workout.exercises().get(k);
+                    incumplimientos.add(("V24: el ejercicio %d del %s lleva %dx%d y la serie adicional de 4D v3.2/v3.3"
+                            + " solo existia para llegar al minimo de V20, que esta politica (%s) no tiene. Usa %dx%d.")
+                            .formatted(e.exerciseId(), workout.scheduledDate(), e.plannedSets(), e.plannedReps(),
+                                    context.policy().id(), e.plannedSets() - 1, e.plannedReps()));
+                }
             if (!ampliadas.isEmpty() && piso > 0 && context.prescription() != null
                     && !conservation.fechasConDuracionReducible().contains(workout.scheduledDate()))
                 for (int k : ampliadas) {
@@ -834,7 +850,10 @@ public class PlanDraftValidator {
 
             // Ademas, ningun grupo puede acaparar mas de la mitad de la sesion
             // cuando el enfoque abarca varios.
-            if (esperados.size() >= 3 && deTrabajo.size() >= 4) {
+            // LAB P-G2 (apagado por omision; LaboratorioAuditoria): con el prototipo encendido la mitad solo se exige
+            // si el enfoque tiene al menos 2 grupos con material PRESCRIBIBLE, igual que el minimo de arriba.
+            boolean mitadAplicable = !LaboratorioAuditoria.v15MitadSobrePrescribibles() || disponibles >= 2;
+            if (esperados.size() >= 3 && deTrabajo.size() >= 4 && mitadAplicable) {
                 var porGrupo = deTrabajo.stream()
                         .map(exercise -> eligible.get(exercise.exerciseId()))
                         .filter(java.util.Objects::nonNull)
@@ -1011,11 +1030,12 @@ public class PlanDraftValidator {
                 // V4-C (version candidata): los SEGUNDOS ESTIMADOS del contenido, no lo declarado. Una sesion que
                 // declara 35 minutos con 2.550 s de contenido en un perfil de 30 se rechaza.
                 long segundos = durationEstimator.estimateSeconds(workout, context.prescription());
-                long limite = PlanningPolicy.limiteV4Segundos(minutosPerfil);
+                long limite = politica.limiteV4SegundosDe(minutosPerfil);
                 if (politica.excedeTecho(segundos, workout.expectedDurationMinutes(), minutosPerfil))
                     problems.add(("V4: el entrenamiento del %s dura unos %d s segun su contenido y el techo es %d s"
-                            + " (%d minutos + 15 %%), declare lo que declare. Quita trabajo hasta caber.")
-                            .formatted(workout.scheduledDate(), segundos, limite, minutosPerfil));
+                            + " (%d minutos + %d %%), declare lo que declare. Quita trabajo hasta caber.")
+                            .formatted(workout.scheduledDate(), segundos, limite, minutosPerfil,
+                                    politica.toleranciaV4Pct()));
             } else if (workout.expectedDurationMinutes() > ceiling)
                 problems.add("V4: el entrenamiento del %s dura %d minutos y el techo es %d."
                         .formatted(workout.scheduledDate(), workout.expectedDurationMinutes(), ceiling));
@@ -1509,14 +1529,128 @@ public class PlanDraftValidator {
      */
     public static long minimumSessionSeconds(PlanGenerationContext context) {
         if (minimumSessionMinutes(context) == 0) return 0;
+        return pisoHistoricoSegundos(context);
+    }
+
+    /**
+     * 0 cuando no aplica: hay orden de volumen, no hay configuracion o la politica no tiene piso de duracion
+     * (P-G1: {@code sessionMinutes} es el maximo disponible y V20 ya no rechaza por el 70 %).
+     */
+    public static int minimumSessionMinutes(PlanGenerationContext context) {
+        if (context.policy() != null && !context.policy().pisoV20()) return 0;
+        return minutosPisoHistorico(context);
+    }
+
+    /**
+     * Lo que el GENERADOR intenta alcanzar con relleno, en segundos. Historica y diseno B (llenado acotado): el 70 %
+     * de siempre (en B es un objetivo blando: V20 no rechaza y el techo de volumen manda). Diseno A (dosis
+     * semanal): 0, porque el contenido lo decide la dosis y no el reloj.
+     */
+    public static long objetivoLlenadoSegundos(PlanGenerationContext context) {
+        if (context.policy() != null
+                && context.policy().duracion() == PlanningPolicy.Duracion.DOSIS_SEMANAL) return 0;
+        if (minutosPisoHistorico(context) == 0) return 0;
+        return pisoHistoricoSegundos(context);
+    }
+
+    private static long pisoHistoricoSegundos(PlanGenerationContext context) {
         return (context.effectiveSessionMinutes() * 60L * context.prescription().floorPct() + 99) / 100;
     }
 
-    /** 0 cuando no aplica: hay orden de volumen o no hay configuracion. */
-    public static int minimumSessionMinutes(PlanGenerationContext context) {
+    /** El piso historico en minutos (70 %), sin mirar la politica: lo que el generador usa como objetivo de llenado. */
+    public static int minimumSessionMinutesHistorico(PlanGenerationContext context) {
+        return minutosPisoHistorico(context);
+    }
+
+    private static int minutosPisoHistorico(PlanGenerationContext context) {
         if (context.prescription() == null) return 0;
         if (context.adjustment() != null && context.adjustment().isActive()) return 0;
         return context.effectiveSessionMinutes() * context.prescription().floorPct() / 100;
+    }
+
+    /**
+     * Validacion 26 (rediseno P-G1, solo politicas con {@code volumenSemanal}): techo de series DIRECTAS por grupo en
+     * la semana y en cada sesion ({@link DosisSemanalPolicy}). Cuenta solo trabajo resistido (estructural o
+     * resistido, sin complementos). Impide que un plan, de las reglas o de la IA, acumule volumen solo para gastar
+     * minutos. Con la politica historica no se aplica.
+     */
+    private void validateWeeklyVolume(PlanDraft draft, PlanGenerationContext context,
+                                      Map<Long, CandidateExercise> eligible, List<String> problems) {
+        if (context.policy() == null || !context.policy().volumenSemanal() || context.profile() == null) return;
+        var complementos = CatalogEligibilityPolicy.complementos(eligible.values(), context.profile().goalType());
+        String nivel = context.profile().fitnessLevel();
+        int techoSemana = DosisSemanalPolicy.techoSeriesSemana(nivel);
+        int techoSesion = DosisSemanalPolicy.techoSeriesSesion(nivel);
+        // Semana derivada de una publicada (adaptacion o copia): V26 no obliga a recortar el volumen que ya traia la
+        // semana anterior (p. ej. un plan generado con la politica historica); solo impide SUBIR por encima del techo.
+        // En la generacion inicial no hay semana previa y rige el techo tal cual.
+        var previoSemana = new TreeMap<String, Integer>();
+        var previoSesion = new TreeMap<String, Integer>();
+        var previa = context.previousWeek();
+        if (previa != null && previa.prescriptions() != null) {
+            var porSesion = new HashMap<Long, Map<String, Integer>>();
+            for (var pr : previa.prescriptions()) {
+                var c = pr.exerciseId() == null ? null : eligible.get(pr.exerciseId());
+                if (c == null || complementos.contains(c.exerciseId()) || c.bodyPartCode() == null || pr.sets() == null)
+                    continue;
+                var clase = CapabilityPrescriptionPolicy.claseDe(c);
+                if (clase != CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                        && clase != CapabilityPrescriptionPolicy.Clase.RESISTIDO) continue;
+                previoSemana.merge(c.bodyPartCode(), (int) pr.sets(), Integer::sum);
+                porSesion.computeIfAbsent(pr.plannedWorkoutId() == null ? -1L : pr.plannedWorkoutId(),
+                        k -> new HashMap<>()).merge(c.bodyPartCode(), (int) pr.sets(), Integer::sum);
+            }
+            porSesion.values().forEach(m -> m.forEach((g, n) -> previoSesion.merge(g, n, Math::max)));
+        }
+        var semana = new TreeMap<String, Integer>();
+        for (var workout : draft.workouts()) {
+            var sesion = new TreeMap<String, Integer>();
+            for (var e : workout.exercises()) {
+                var c = eligible.get(e.exerciseId());
+                if (c == null || complementos.contains(c.exerciseId()) || c.bodyPartCode() == null
+                        || e.plannedSets() == null) continue;
+                var clase = CapabilityPrescriptionPolicy.claseDe(c);
+                if (clase != CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL
+                        && clase != CapabilityPrescriptionPolicy.Clase.RESISTIDO) continue;
+                sesion.merge(c.bodyPartCode(), (int) e.plannedSets(), Integer::sum);
+            }
+            sesion.forEach((g, n) -> {
+                if (n > Math.max(techoSesion, previoSesion.getOrDefault(g, 0)))
+                    problems.add(("V26: el entrenamiento del %s suma %d series directas de %s y el techo por sesion es"
+                            + " %d (politica %s). Quita una colocacion de ese grupo.")
+                            .formatted(workout.scheduledDate(), n, g, techoSesion, context.policy().id()));
+                semana.merge(g, n, Integer::sum);
+            });
+        }
+        semana.forEach((g, n) -> {
+            if (n > Math.max(techoSemana, previoSemana.getOrDefault(g, 0)))
+                problems.add(("V26: la semana suma %d series directas de %s y el techo semanal es %d (nivel %s,"
+                        + " politica %s). Reparte o quita trabajo de ese grupo.")
+                        .formatted(n, g, techoSemana, nivel, context.policy().id()));
+        });
+    }
+
+    /**
+     * Validacion 27 (P-G3, solo politicas con {@code pullReal}): una sesion PULL tiene al menos un ejercicio de
+     * traccion (HORIZONTAL_PULL o VERTICAL_PULL) cuando el conjunto elegible tiene alguno. Sin ninguno, la division
+     * ya no asigna PULL ({@code PlanGenerationContext#sinTraccionReal}). Con la politica historica no se aplica.
+     */
+    private void validateRealPull(PlanDraft draft, PlanGenerationContext context, Map<Long, CandidateExercise> eligible,
+                                  List<String> problems) {
+        if (context.policy() == null || !context.policy().pullReal()) return;
+        java.util.function.Predicate<CandidateExercise> traccion = c -> c != null
+                && ("HORIZONTAL_PULL".equals(c.movementPattern()) || "VERTICAL_PULL".equals(c.movementPattern()));
+        boolean hay = eligible.values().stream().anyMatch(traccion);
+        for (var w : draft.workouts()) {
+            if (w.focus() != WorkoutFocus.PULL) continue;
+            boolean tiene = w.exercises().stream().anyMatch(e -> traccion.test(eligible.get(e.exerciseId())));
+            if (!tiene)
+                problems.add((hay
+                        ? "V27: el entrenamiento PULL del %s no tiene ningun ejercicio de traccion (remo o jalon/dominada)"
+                        + " y hay ejercicios de traccion elegibles. Incluye al menos uno."
+                        : "V27: el entrenamiento del %s es PULL pero no hay ningun ejercicio de traccion elegible: no"
+                        + " debe haber sesiones PULL (usa superior/inferior).").formatted(w.scheduledDate()));
+        }
     }
 
     /**

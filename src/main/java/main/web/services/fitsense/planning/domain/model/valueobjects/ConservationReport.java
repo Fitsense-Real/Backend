@@ -90,7 +90,21 @@ public record ConservationReport(List<String> problems,
                                   * conserva la duracion validada (correccion 4). Ninguno es una
                                   * adaptacion: no cuenta como aplicada.
                                   */
-                                 List<String> correccionesDelBackend) {
+                                 List<String> correccionesDelBackend,
+                                 /**
+                                  * Avisos que no rechazan nada pero deben constar (P-A1: fatiga persistente). Se
+                                  * persisten con el informe; no cambian la clasificacion de ninguna sesion.
+                                  */
+                                 List<String> avisos) {
+
+    public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
+                              List<Long> conservadas, Set<LocalDate> fechasConDuracionReducible,
+                              List<SustitucionSeguridad> sustituciones, List<Long> progresadas,
+                              List<PasoProgresion> pasos, Set<DosisAutorizada> dosisAutorizadas,
+                              List<String> pasosBloqueados, List<String> correccionesDelBackend) {
+        this(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible, sustituciones,
+                progresadas, pasos, dosisAutorizadas, pasosBloqueados, correccionesDelBackend, List.of());
+    }
 
     /** Sin correcciones del backend. */
     public ConservationReport(List<String> problems, List<Long> aplicadas, List<Long> sinEfecto,
@@ -129,12 +143,21 @@ public record ConservationReport(List<String> problems,
         dosisAutorizadas = dosisAutorizadas == null ? Set.of() : Set.copyOf(dosisAutorizadas);
         pasosBloqueados = pasosBloqueados == null ? List.of() : List.copyOf(pasosBloqueados);
         correccionesDelBackend = correccionesDelBackend == null ? List.of() : List.copyOf(correccionesDelBackend);
+        avisos = avisos == null ? List.of() : List.copyOf(avisos);
+    }
+
+    public ConservationReport conAvisos(List<String> nuevos) {
+        if (nuevos == null || nuevos.isEmpty()) return this;
+        var todos = new java.util.ArrayList<>(avisos);
+        todos.addAll(nuevos);
+        return new ConservationReport(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible,
+                sustituciones, progresadas, pasos, dosisAutorizadas, pasosBloqueados, correccionesDelBackend, todos);
     }
 
     /** El mismo informe, con lo que corrigio el backend (no la IA). */
     public ConservationReport conCorreccionesDelBackend(List<String> correcciones) {
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas, fechasConDuracionReducible,
-                sustituciones, progresadas, pasos, dosisAutorizadas, pasosBloqueados, correcciones);
+                sustituciones, progresadas, pasos, dosisAutorizadas, pasosBloqueados, correcciones, avisos);
     }
 
     /** El mismo informe, con el motivo de un paso que no se pudo dar. */
@@ -143,7 +166,7 @@ public record ConservationReport(List<String> problems,
         motivos.add(motivo);
         return new ConservationReport(problems, aplicadas, sinEfecto, conservadas,
                 fechasConDuracionReducible, sustituciones, progresadas, pasos, dosisAutorizadas, motivos,
-                correccionesDelBackend);
+                correccionesDelBackend, avisos);
     }
 
     /** Si V24 puede aceptar esa dosis en esa colocacion, y de que origen viene. */

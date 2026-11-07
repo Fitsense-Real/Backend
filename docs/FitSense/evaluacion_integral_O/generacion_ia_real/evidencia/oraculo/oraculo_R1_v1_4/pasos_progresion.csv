@@ -1,0 +1,31 @@
+id,ciclo,tipo,sesion_origen,exercise_id,antes,despues,volumen_antes,volumen_despues,volumen_base_oraculo,techo_oraculo,techo_backend,volumen_base_backend,estado_reserva,condiciones,problemas
+O03,3,RECUPERACION,36,632,"{""descanso"": 150, ""reps"": 6, ""segundos"": null, ""series"": 2}","{""descanso"": 150, ""reps"": 6, ""segundos"": null, ""series"": 3}",104,110,122,134,134,122,,,-
+O14,4,RECUPERACION,218,253,"{""descanso"": 60, ""reps"": null, ""segundos"": 90, ""series"": 2}","{""descanso"": 60, ""reps"": null, ""segundos"": 90, ""series"": 3}",60,63,66,72,72,66,,,-
+O15,2,PROGRESION,4,815,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",146,148,146,160,160,146,,S=100.00 O=100.00,-
+O15,3,PROGRESION,8,424,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",136,138,136,149,149,136,,S=100.00 O=100.00,-
+O15,4,PROGRESION,12,976,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",146,148,146,160,160,146,,S=100.00 O=100.00,-
+O16,4,PROGRESION,28,541,"{""descanso"": 90, ""reps"": 10, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 2}",122,124,122,134,134,122,,S=100.00 O=100.00,-
+O17,3,RECUPERACION,44,299,"{""descanso"": 45, ""reps"": 14, ""segundos"": null, ""series"": 2}","{""descanso"": 45, ""reps"": 15, ""segundos"": null, ""series"": 2}",75,77,83,91,91,83,,,-
+O17,4,PROGRESION,45,1073,"{""descanso"": 45, ""reps"": 15, ""segundos"": null, ""series"": 2}","{""descanso"": 45, ""reps"": 16, ""segundos"": null, ""series"": 2}",83,85,83,91,91,83,,S=100.00 O=100.00,-
+O18,3,PROGRESION,57,500,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",116,118,116,127,127,116,,S=100.00 O=100.00,-
+O18,4,PROGRESION,61,975,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",116,118,116,127,127,116,,S=100.00 O=100.00,-
+O18,5,PROGRESION,65,157,"{""descanso"": 90, ""reps"": 10, ""segundos"": null, ""series"": 3}","{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 3}",90,93,116,127,127,116,PENDIENTE,S=100.00 O=100.00,-
+O18,6,PROGRESION,66,500,"{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 15, ""segundos"": null, ""series"": 2}",118,120,116,127,127,116,,S=100.00 O=100.00,-
+O18,7,PROGRESION,70,975,"{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 15, ""segundos"": null, ""series"": 2}",118,120,116,127,127,116,,S=100.00 O=100.00,-
+O18,8,PROGRESION,74,157,"{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 3}","{""descanso"": 90, ""reps"": 12, ""segundos"": null, ""series"": 3}",93,96,116,127,127,116,PENDIENTE,S=100.00 O=100.00,-
+O18,9,PROGRESION,75,965,"{""descanso"": 90, ""reps"": 10, ""segundos"": null, ""series"": 3}","{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 3}",120,123,116,127,127,116,,S=100.00 O=100.00,-
+O18,10,PROGRESION,79,715,"{""descanso"": 90, ""reps"": 10, ""segundos"": null, ""series"": 3}","{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 3}",120,123,116,127,127,116,,S=100.00 O=100.00,-
+O18,11,PROGRESION,83,151,"{""descanso"": 90, ""reps"": 10, ""segundos"": null, ""series"": 3}","{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 3}",96,99,116,127,127,116,PENDIENTE,S=100.00 O=100.00,-
+O18,12,PROGRESION,84,965,"{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 3}","{""descanso"": 90, ""reps"": 12, ""segundos"": null, ""series"": 3}",123,126,116,127,127,116,,S=100.00 O=100.00,-
+O18,13,PROGRESION,88,715,"{""descanso"": 90, ""reps"": 11, ""segundos"": null, ""series"": 3}","{""descanso"": 90, ""reps"": 12, ""segundos"": null, ""series"": 3}",123,126,116,127,127,116,,S=100.00 O=100.00,-
+O18,14,REINCORPORACION,92,502,null,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}",99,125,116,127,127,116,PENDIENTE,,-
+O19,3,PROGRESION,102,1096,"{""descanso"": 150, ""reps"": 6, ""segundos"": null, ""series"": 3}","{""descanso"": 150, ""reps"": 7, ""segundos"": null, ""series"": 3}",78,81,78,85,85,78,,S=100.00 O=100.00,-
+O19,4,PROGRESION,107,1265,"{""descanso"": 150, ""reps"": 6, ""segundos"": null, ""series"": 3}","{""descanso"": 150, ""reps"": 7, ""segundos"": null, ""series"": 3}",78,81,78,85,85,78,,S=100.00 O=100.00,-
+O19,5,PROGRESION,108,1096,"{""descanso"": 150, ""reps"": 7, ""segundos"": null, ""series"": 3}","{""descanso"": 150, ""reps"": 8, ""segundos"": null, ""series"": 3}",81,84,78,85,85,78,,S=100.00 O=100.00,-
+O19,6,PROGRESION,113,1265,"{""descanso"": 150, ""reps"": 7, ""segundos"": null, ""series"": 3}","{""descanso"": 150, ""reps"": 8, ""segundos"": null, ""series"": 3}",81,84,78,85,85,78,,S=100.00 O=100.00,-
+O20,3,PROGRESION,183,1101,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",128,130,128,140,140,128,,S=100.00 O=100.00,-
+O20,4,PROGRESION,187,500,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",128,130,128,140,140,128,,S=100.00 O=100.00,-
+O20,5,PROGRESION,191,503,"{""descanso"": 90, ""reps"": 13, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}",98,100,118,129,129,118,,S=100.00 O=100.00,-
+O20,6,PROGRESION,192,1101,"{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 15, ""segundos"": null, ""series"": 2}",130,132,128,140,140,128,,S=100.00 O=100.00,-
+O20,7,PROGRESION,196,500,"{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 15, ""segundos"": null, ""series"": 2}",130,132,128,140,140,128,,S=100.00 O=100.00,-
+O20,8,PROGRESION,200,503,"{""descanso"": 90, ""reps"": 14, ""segundos"": null, ""series"": 2}","{""descanso"": 90, ""reps"": 15, ""segundos"": null, ""series"": 2}",100,102,118,129,129,118,,S=100.00 O=100.00,-

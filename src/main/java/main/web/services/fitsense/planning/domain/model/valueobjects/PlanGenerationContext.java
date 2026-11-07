@@ -139,8 +139,10 @@ public record PlanGenerationContext(
     }
 
     /** Tope de sesiones de fuerza por semana segun nivel (division semanal, P3). */
-    public static final int MAX_SESSIONS_BEGINNER = 4;
-    public static final int MAX_SESSIONS_OTHERS = 6;
+    public static final int MAX_SESSIONS_BEGINNER =
+            main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal.TOPE_PRINCIPIANTE;
+    public static final int MAX_SESSIONS_OTHERS =
+            main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal.TOPE_RESTO;
 
     /**
      * Sesiones de la semana: las del perfil (o las forzadas por REDUCE_DAYS),
@@ -152,8 +154,8 @@ public record PlanGenerationContext(
     public int effectiveDaysPerWeek() {
         int requested = adjustment != null && adjustment.forcedDaysPerWeek() != null
                 ? adjustment.forcedDaysPerWeek() : profile.daysPerWeek();
-        int cap = "BEGINNER".equals(profile.fitnessLevel()) ? MAX_SESSIONS_BEGINNER : MAX_SESSIONS_OTHERS;
-        return Math.min(requested, cap);
+        return main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal
+                .conTope(requested, profile.fitnessLevel());
     }
 
     /** Division sugerida para la semana, igual para IA, motor de reglas y validador. */
@@ -161,7 +163,18 @@ public record PlanGenerationContext(
     suggestedSplit() {
         int sessions = Math.min(effectiveDaysPerWeek(), profile.availableDays().size());
         return main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.plan(
-                weekStartDate, profile.availableDays(), sessions, weekNumber);
+                weekStartDate, profile.availableDays(), sessions, weekNumber, sinTraccionReal());
+    }
+
+    /**
+     * P-G3 (rediseno R/R'): con la politica que lo activa, ¿falta el patron de traccion (HORIZONTAL_PULL o
+     * VERTICAL_PULL) en el conjunto elegible? Entonces la division no crea sesiones PULL sin traccion. Con la
+     * politica historica, siempre false: la division no cambia.
+     */
+    public boolean sinTraccionReal() {
+        if (policy == null || !policy.pullReal() || availableExercises == null) return false;
+        return availableExercises.stream().noneMatch(c -> MandatorySlot.of(c).filter(s -> s == MandatorySlot.UPPER_PULL)
+                .isPresent());
     }
 
     public int effectiveSessionMinutes() {

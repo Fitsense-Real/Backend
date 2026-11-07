@@ -49,13 +49,23 @@ public class ReduccionAutorizadaResolver {
     private final PlannedWorkoutRepository plannedWorkoutRepository;
     private final PlanAdaptationAttemptRepository attemptRepository;
     private final JsonSupport jsonSupport;
+    /** H6: para seguir el intento de la version reparada (null en pruebas unitarias: comportamiento de antes). */
+    private final main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes;
 
     public ReduccionAutorizadaResolver(PlannedWorkoutRepository plannedWorkoutRepository,
                                        PlanAdaptationAttemptRepository attemptRepository,
                                        JsonSupport jsonSupport) {
+        this(plannedWorkoutRepository, attemptRepository, jsonSupport, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public ReduccionAutorizadaResolver(PlannedWorkoutRepository plannedWorkoutRepository,
+                                       PlanAdaptationAttemptRepository attemptRepository,
+                                       JsonSupport jsonSupport, main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository planes) {
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.attemptRepository = attemptRepository;
         this.jsonSupport = jsonSupport;
+        this.planes = planes;
     }
 
     /** Los identificadores de las sesiones con una reduccion autorizada heredada. */
@@ -73,7 +83,7 @@ public class ReduccionAutorizadaResolver {
             Long origen = actual.getSourcePlannedWorkoutId();
             if (origen == null) return false;   // generacion inicial: nada que heredar
 
-            var intentos = attemptRepository.findByResultingPlanId(actual.getPlan().getId());
+            var intentos = IntentoDeLinaje.de(actual, attemptRepository, planes);
             if (intentos.size() != 1) return false;   // sin evidencia o ambigua
             var intento = intentos.get(0);
 
@@ -102,8 +112,16 @@ public class ReduccionAutorizadaResolver {
                 }
                 case PROGRESADA -> {
                     // D-P7: un paso que NO reduce la duracion no interrumpe la
-                    // herencia; una vuelta atras, o un paso sin detalle, si.
+                    // herencia; un paso sin detalle, si.
                     var paso = EvidenciaV32.paso(informe.get(), origen);
+                    // H7 (auditoria post R/R'): una VUELTA ATRAS por fatiga devuelve la sesion a la dosis anterior al
+                    // paso, que ya estaba dentro de la reduccion autorizada: no la interrumpe (se sigue subiendo por
+                    // el linaje hasta el ACORTAR que la concedio). Antes la cortaba y V20 rechazaba justo la vuelta
+                    // atras que D-P6 ordena ante fatiga. Defecto de implementacion: todas las politicas.
+                    if (paso.isPresent() && "VUELTA_ATRAS".equals(paso.get().tipo())) {
+                        actual = anterior;
+                        continue;
+                    }
                     if (paso.isEmpty() || !Set.of("PROGRESION", "RECUPERACION").contains(paso.get().tipo())
                             || paso.get().volumenAntes() == null || paso.get().volumenDespues() == null
                             || paso.get().volumenDespues() < paso.get().volumenAntes()

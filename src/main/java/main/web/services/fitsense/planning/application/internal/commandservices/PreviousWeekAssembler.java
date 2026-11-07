@@ -65,7 +65,9 @@ public class PreviousWeekAssembler {
                                          "${fitsense.adaptation.capability-validation.enabled:false}")
                                  boolean capacidades) {
         this.dosisLinajeResolver = dosisLinajeResolver;
-        this.dosisHeredadas = dosisLinajeResolver != null && (progresion || capacidades);
+        // P-P1: el linaje de dosis se reconstruye siempre (ver AdaptedWeekProducer): sin el, apagar la progresion
+        // dejaba sin autorizacion las dosis ya publicadas.
+        this.dosisHeredadas = dosisLinajeResolver != null;
         this.planRepository = planRepository;
         this.plannedWorkoutRepository = plannedWorkoutRepository;
         this.externalCatalogService = externalCatalogService;
@@ -147,7 +149,8 @@ public class PreviousWeekAssembler {
         return new PreviousWeekSummary(adherencePct, averageRpe, totalVolume,
                 bodyPartDistribution, List.copyOf(workouts), List.copyOf(prescriptions),
                 List.copyOf(usedLast7Days), reduccionAutorizadaResolver.resolver(activeWorkouts),
-                dosisHeredadas ? dosisLinajeResolver.resolver(activeWorkouts) : Map.of());
+                dosisHeredadas ? dosisLinajeResolver.resolver(activeWorkouts) : Map.of(),
+                dosisLinajeResolver == null ? Map.of() : dosisLinajeResolver.fatigaConsecutiva(activeWorkouts));
     }
 
     private static PreviousWeekSummary.WorkoutOutcome toWorkoutOutcome(PlannedWorkout workout,

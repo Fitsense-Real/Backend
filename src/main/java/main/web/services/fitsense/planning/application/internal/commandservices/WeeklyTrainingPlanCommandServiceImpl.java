@@ -102,9 +102,8 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                                    String nivel) {
         var lunes = main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek.containing(hoy).startDate();
         if (diasDisponibles == null || diasDisponibles.isEmpty()) return lunes;
-        int tope = "BEGINNER".equals(nivel) ? PlanGenerationContext.MAX_SESSIONS_BEGINNER
-                : PlanGenerationContext.MAX_SESSIONS_OTHERS;
-        int sesiones = Math.min(Math.min(diasPorSemana, tope), diasDisponibles.size());
+        int sesiones = main.web.services.fitsense.shared.domain.model.valueobjects.FrecuenciaSemanal
+                .planificadas(diasPorSemana, nivel, diasDisponibles.size());
         var division = main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner
                 .plan(lunes, diasDisponibles, sesiones, 1);
         boolean algunaPasada = division.stream().anyMatch(s -> s.date().isBefore(hoy));
@@ -202,8 +201,14 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                 command.previousWeekAdherencePct(), command.previousWeekAverageRpe());
 
         // V44 · politica de planificacion. Una nueva version de la MISMA semana hereda la del plan que reemplaza
-        // (no se reinterpreta lo ya publicado); una semana nueva usa la politica activa.
+        // (no se reinterpreta lo ya publicado). Cierre de PLAN-REV-2.0, fase 7: una semana NUEVA de un usuario que ya
+        // tiene planes sigue la politica de SU LINAJE (la de su plan mas reciente anterior a esta semana). Antes usaba
+        // la activa de la configuracion, asi que un cambio de configuracion revalidaba la copia con otras reglas y
+        // dejaba al usuario sin plan en silencio (REV2 -> HIST: V20 al 70 %; HIST -> REV2: V4 al 100 % o V27;
+        // TransicionesPoliticaIT). La configuracion decide solo la de los usuarios sin planes (generacion inicial).
+        // Cambiar de politica a un usuario en curso no es automatico: requiere una migracion explicita.
         var politica = previousActive.map(WeeklyTrainingPlan::politica)
+                .or(() -> politicaDelLinaje(command.userId(), week.startDate()))
                 .orElseGet(() -> policySelector == null ? PlanningPolicy.HISTORICA : policySelector.activa());
 
         var context = new PlanGenerationContext(command.userId(), weekNumber,
@@ -231,6 +236,21 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      */
     @Override
     public GeneratedPlan generate(PreparedPlanGeneration prepared) {
+        // Cierre REV2, fase 2 (alternativa C): en el PRIMER plan, si los slots de fuerza que V25 exige no caben con la
+        // dosis de fuerza en el limite de V4 de la politica activa, se informa con alternativas en lugar de fallar con
+        // un mensaje tecnico. No cambia V25, la dosis ni V4 (con la historica, 30 min admiten los 4: no salta).
+        // PRIMER plan del usuario por cualquier via (la API usa adjustment null; la fachada de planning, PlanAdjustment.none):
+        // semana 1 y sin reemplazo. Antes solo se miraba adjustment == null y por la fachada salia el fallo tecnico de V25
+        // (lo detecto la cohorte M, M29).
+        if (prepared.command() != null && !prepared.command().replaceExisting() && prepared.context() != null
+                && prepared.context().weekNumber() == 1) {
+            var ctx = prepared.context();
+            main.web.services.fitsense.planning.domain.services.CoberturaFuerzaTiempo.evaluar(ctx, ESTIMADOR_TRAZA)
+                    .ifPresent(d -> {
+                        throw new main.web.services.fitsense.planning.domain.exceptions.FuerzaSinTiempoException(
+                                ctx.userId(), d, ctx.effectiveSessionMinutes());
+                    });
+        }
         if (feasibilityObserver != null) feasibilityObserver.antesDeGenerar(prepared.context());
         var result = pipeline.run(prepared.context(), prepared.divisor());
         if (feasibilityObserver != null)
@@ -571,6 +591,22 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
     private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR_TRAZA =
             new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
+
+    /**
+     * Fase 7: la politica del plan mas reciente del usuario ANTERIOR a esta semana (ultima version), si lo hay. Si
+     * difiere de la configuracion activa se registra: el usuario sigue con la de su linaje.
+     */
+    private java.util.Optional<PlanningPolicy> politicaDelLinaje(Long userId, LocalDate semana) {
+        var linaje = planRepository.findByUserIdOrderByWeekStartDateDescPlanVersionDesc(userId).stream()
+                .filter(p -> p.getWeekStartDate().isBefore(semana)).findFirst().map(WeeklyTrainingPlan::politica);
+        linaje.ifPresent(p -> {
+            var activa = policySelector == null ? PlanningPolicy.HISTORICA : policySelector.activa();
+            if (!p.id().equals(activa.id()))
+                log.info("POLITICA_LINAJE usuario {} semana {}: sigue con {} (la configuracion activa es {}); "
+                        + "cambiarla requiere una migracion explicita", userId, semana, p.id(), activa.id());
+        });
+        return linaje;
+    }
 
     private short resolveWeekNumber(Long userId, WeeklyTrainingPlan previousActive) {
         if (previousActive != null) return previousActive.getWeekNumber();

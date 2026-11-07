@@ -1,0 +1,46 @@
+etiqueta,intento,publicable,motivo,source,efecto,aplicadas,problemas
+J01/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 4 sube la dosis del ejercicio 1114 (3x10r/90 -> 4x10r/90). La IA no puede subir dosis: solo el backend progresa. || V24: el ejercicio 1114 del 2026-11-13 lleva 4x10 con 90 s de descanso y 4D v2 exige 3x10, descanso 90 s (HYPERTROPHY). Ajusta la dosis exactamente a la de su capacidad; si no cabe en el dia, quita una colocacion en vez de recortar la dosis. || V24: el ejercicio 1057 del 2026-11-13 lleva 3x13 y la serie adicional de 4D v3.2/v3.3 solo se admite si sin ella la sesion no llega al minimo de V20: con 2x13 dura unos 2034 s y el minimo es 1974 s. Usa 2x13."
+J01/ciclo1,2,true,SIN_EFECTO,CONSERVED,false,[],
+J01/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J02/ciclo1,1,false,CONTRATO,,false,,El plan propuesto no cumple las restricciones: La sesion 13 no estaba senalada. Las senaladas son [15]: corrige solo esas.
+J02/ciclo1,2,true,CORRECCION_IA,AI,true,[15],
+J02/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J04/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 24 esta senalada como REVISAR_CARGA_Y_RECUPERACION, que no autoriza sustituir ejercicios (anade [56], quita [933]). Revisar carga y recuperacion. Puedes ajustar la dosis. No sustituir ni retirar ejercicios, y no cambiar el dia."
+J04/ciclo1,2,true,CORRECCION_IA,AI,true,[24],
+J04/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J05/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 33 sube la dosis del ejercicio 1111 (3x10r/90 -> 4x10r/90). La IA no puede subir dosis: solo el backend progresa. || V24: el ejercicio 1111 del 2026-11-13 lleva 4x10 con 90 s de descanso y 4D v2 exige 3x10, descanso 90 s (HYPERTROPHY). Ajusta la dosis exactamente a la de su capacidad; si no cabe en el dia, quita una colocacion en vez de recortar la dosis."
+J05/ciclo1,2,true,CORRECCION_IA,AI,true,[33],
+J05/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J06/ciclo1,1,false,CONTRATO,,false,,El plan propuesto no cumple las restricciones: La sesion 40 no estaba senalada. Las senaladas son [43]: corrige solo esas.
+J06/ciclo1,2,true,CORRECCION_IA,AI,true,[43],
+J06/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J07/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 54 esta senalada como VARIANTE_MAS_SENCILLA_O_CARGA y sustituye por el ejercicio 56, de dificultad registrada 2, cuando el retirado que le corresponde (992) tiene 1. Con el limite de dificultad activo, un sustituto no puede ser de dificultad registrada mayor que la del ejercicio que reemplaza."
+J07/ciclo1,2,true,CORRECCION_IA,AI,true,[54],
+J07/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J08/ciclo1,1,false,SIN_EFECTO,,false,[],V8C: la sesion 64 sube la dosis del ejercicio 1114 (3x10r/90 -> 4x10r/90). La IA no puede subir dosis: solo el backend progresa.
+J08/ciclo1,2,true,CORRECCION_IA,AI,true,[64],
+J08/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J09/ciclo1,1,false,CONTRATO,,false,,El plan propuesto no cumple las restricciones: La sesion 73 no estaba senalada. Las senaladas son [76]: corrige solo esas.
+J09/ciclo1,2,true,SIN_EFECTO,CONSERVED,false,[],
+J09/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J10/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 87 esta senalada como INVESTIGAR_CAMBIO_MINIMO, que no autoriza sustituir ejercicios (anade [56], quita [1113]). Investigar que dificulta mantener la rutina y proponer cambios pequenos en la dosis. No sustituir ni retirar ejercicios, y no cambiar el dia."
+J10/ciclo1,2,true,CORRECCION_IA,AI,true,[87],
+J10/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J11/ciclo1,1,false,SIN_EFECTO,,false,[],V8C: la sesion 97 sube la dosis del ejercicio 675 (3x6r/150 -> 4x6r/150). La IA no puede subir dosis: solo el backend progresa.
+J11/ciclo1,2,true,CORRECCION_IA,AI,true,[97],
+J11/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J12/ciclo1,1,false,CONTRATO,,false,,El plan propuesto no cumple las restricciones: La sesion 106 no estaba senalada. Las senaladas son [108]: corrige solo esas.
+J12/ciclo1,2,true,CORRECCION_IA,AI,true,[108],
+J12/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J13/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 116 esta senalada como VARIANTE_MAS_SENCILLA_O_CARGA y sustituye por el ejercicio 56, de dificultad registrada 2, cuando el retirado que le corresponde (1111) tiene 1. Con el limite de dificultad activo, un sustituto no puede ser de dificultad registrada mayor que la del ejercicio que reemplaza."
+J13/ciclo1,2,true,CORRECCION_IA,AI,true,[116],
+J13/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J14/ciclo1,1,false,SIN_EFECTO,,false,[],V8C: la sesion 125 sube la dosis del ejercicio 161 (3x6r/150 -> 4x6r/150). La IA no puede subir dosis: solo el backend progresa.
+J14/ciclo1,2,true,CORRECCION_IA,AI,true,"[125, 126, 127]",
+J14/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J15/ciclo1,1,false,CONTRATO,,false,,"El plan propuesto no cumple las restricciones: La sesion 136 no estaba senalada. Las senaladas son [137, 138]: corrige solo esas."
+J15/ciclo1,2,true,CORRECCION_IA,AI,true,"[137, 138]",
+J15/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+J16/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 146 esta senalada como VARIANTE_MAS_SENCILLA_O_CARGA y sustituye por el ejercicio 533, de dificultad registrada 2, cuando el retirado que le corresponde (853) tiene 1. Con el limite de dificultad activo, un sustituto no puede ser de dificultad registrada mayor que la del ejercicio que reemplaza."
+J16/ciclo1,2,true,CORRECCION_IA,AI,true,"[146, 147, 148]",
+J16/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],

@@ -470,3 +470,15 @@ La simulación filtra esas reglas; la prueba real tiene que ejecutarlas. Son las
 **Qué no se puede sostener:**
 - Que el cumplimiento demuestre adaptación fisiológica.
 - Que las referencias del ACSM para la **carga** validen la progresión de **volumen**: FitSense no prescribe kilos (V15).
+
+---
+
+## Nota posterior (05/11/2026) · umbral de la progresión ordinaria: 100 %, no 80 %
+
+*Nota añadida sin reescribir el texto anterior, que se conserva como registro de lo aprobado el 27/10.*
+
+- Lo de §0, §3.1 (filas 2-3), §12.1 y §12.7 (D-P1 «Aprobada: 80 %») **ya no describe el código** desde `63b5169` (28/10/2026). La decisión posterior está en `POLITICA_ADAPTACION_Y_PROGRESION.md` §1.
+- **Progresión ordinaria:** exige **100 % real** en las dos semanas (`ProgresionResolver.UMBRAL_PROGRESION = 100.0`, en el código y no en la configuración). Eso significa adherencia y cobertura de registro al 100 %, todas las sesiones registradas y completadas al 100 %, y todos los ejercicios completados, sin omitidos ni parciales.
+- **Recuperación y reincorporación:** siguen con el **80 %** (`good_threshold_pct`), como aquí. Por debajo del 80 % se adapta.
+- La auditoría post R/R' registró la discrepancia como H1/P1 (`auditoria_post_rrp/05_AUDITORIA_PROGRESION.md`). Las pruebas que fijan el comportamiento vigente son `ProgresionCienPorCienIT` y `ProgresionIT`.
+- En el rediseño R/R' (`PLAN-REV-2.0`) la progresión sigue **apagada por defecto** y **no hay restauración automática**. La única novedad es para `GAIN_MUSCLE` con REV2: ante fatiga se admite la dosis de mantenimiento (−1 serie en las estructurales). Después solo se recupera de forma gradual, con pasos de RECUPERACION, aunque la progresión esté apagada. Los pasos son de ≤ 10 %, uno por ciclo, con el 80 % (ver `IMPLEMENTACION_PROGRESION_V34.md`, nota del 05/11/2026).

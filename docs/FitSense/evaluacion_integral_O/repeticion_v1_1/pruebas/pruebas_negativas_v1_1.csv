@@ -1,0 +1,20 @@
+prueba,correccion,descripcion,perfil,aspecto,esperado,v1_1,motivo_v1_1,v1_0,resultado
+C-O03-A7_progresion,control,Salida real sin mutar,O03,A7_progresion,APROBADO,APROBADO,-,-,PASA
+C-O14-A7_progresion,control,Salida real sin mutar,O14,A7_progresion,APROBADO,APROBADO,-,-,PASA
+C-O01-A7_progresion,control,Salida real sin mutar,O01,A7_progresion,NO APLICA,NO APLICA,-,-,PASA
+C-O15-A7_progresion,control,Salida real sin mutar,O15,A7_progresion,APROBADO,APROBADO,-,-,PASA
+C-O19-A8_reincorporacion,control,Salida real sin mutar,O19,A8_reincorporacion,APROBADO,APROBADO,-,-,PASA
+C-O18-A6_mantenimiento,control,Salida real sin mutar,O18,A6_mantenimiento,APROBADO,APROBADO,-,-,PASA
+C-O18-A8_reincorporacion,control,Salida real sin mutar,O18,A8_reincorporacion,APROBADO,APROBADO,-,-,PASA
+N1,D-OR-1,RECUPERACION por encima de la dosis de referencia (O03),O03,A7_progresion,FALLO,FALLO,"C3: RECUPERACION por encima de la referencia (899, 'SETS_REPS', 3, 6, None, 'None', 150) -> (899, 'SETS_REPS', 4, 6, None, 'None', 150)",FALLO,PASA
+N2,D-OR-1,RECUPERACION por encima de la dosis de referencia (O14),O14,A7_progresion,FALLO,FALLO,"C4: RECUPERACION por encima de la referencia (253, 'DURATION', 3, None, 90, 'None', 60) -> (253, 'DURATION', 4, None, 90, 'None', 60)",FALLO,PASA
+N3,D-OR-1,"Paso PROGRESION con la progresion apagada (O03, bloque G)",O03,A7_progresion,FALLO,FALLO,C3: paso de progresion con la progresion apagada,FALLO,PASA
+N4,D-OR-1,"PROGRESION inyectada en un perfil sin pasos (O01, bloque G)",O01,A7_progresion,FALLO,FALLO,C2: paso de progresion con la progresion apagada,FALLO,PASA
+N5,D-OR-1,RECUPERACION con politica distinta de PLAN-REV-2.0 (O03),O03,A7_progresion,FALLO,FALLO,C3: paso de progresion con la progresion apagada,FALLO,PASA
+N6,control,"PROGRESION sin dos semanas medidas (O15, bloque P)",O15,A7_progresion,FALLO,FALLO,C1: PROGRESION sin dos semanas medidas,FALLO,PASA
+N7,control,"PROGRESION de +2 repeticiones (O15, bloque P)",O15,A7_progresion,FALLO,FALLO,"C2: PROGRESION no es +1 repeticion o +1 serie sobre 342: (342, 'SETS_REPS', 2, 10, None, 'None', 90) -> (342, 'SETS_REPS', 2, 12, None, 'None', 90)",FALLO,PASA
+N8,D-OR-2,REINCORPORACION sin PROGRESION previa en el linaje (O19),O19,A8_reincorporacion,FALLO,FALLO,C9: reincorporacion de 853 sin un paso de PROGRESION posterior a la retirada (C1),FALLO,PASA
+N9,D-OR-2,"Reaparicion del retirado en su linaje sin REINCORPORACION (O19, S3)",O19,A8_reincorporacion,FALLO,FALLO,C2: el retirado 853 vuelve sin paso de REINCORPORACION (restauracion automatica),FALLO,PASA
+N10,D-OR-2,Reincorporado con dosis distinta de la inicial (O19),O19,A8_reincorporacion,FALLO,FALLO,"C9: el reincorporado 853 vuelve con (853, 'DURATION', 4, None, 120, 'None', 60) y no con su dosis inicial (853, 'DURATION', 3, None, 120, 'None', 60)",FALLO,PASA
+N11,D-OR-2,Reincorporado fuera del final de la sesion (O19),O19,A8_reincorporacion,FALLO,FALLO,C9: el reincorporado 853 no va al final de la sesion,FALLO,PASA
+N12,D-OR-2,"Retirado que aparece en una sesion de otro linaje (O18, S3)",O18,A6_mantenimiento,FALLO,FALLO,C2 sesion 54: cambio sin orden ni paso registrado [] [] [] [] [1302],FALLO,PASA

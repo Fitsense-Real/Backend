@@ -39,6 +39,14 @@ public final class SafetyConflictPolicy {
      */
     public static final String DOLOR_REGISTRADO = "dolor_registrado";
 
+    /**
+     * Fase 4 del cierre de PLAN-REV-2.0: el ejercicio HEREDADO esta desactivado en el catalogo (is_active = false).
+     * NO es una causa de seguridad (un inactivo no se bloquea en la lectura ni en la ejecucion de la semana en curso);
+     * es un dato comprobable que, solo con la politica que lo activa ({@code reparaCatalogoInactivo}), autoriza en la
+     * semana DERIVADA la sustitucion de esa colocacion por un equivalente estricto. Por eso no esta en {@link #CAUSAS}.
+     */
+    public static final String CATALOGO_INACTIVO = "catalogo_inactivo";
+
     /** Todas las causas admitidas. Un motivo fuera de esta lista no autoriza nada. */
     public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, ALTO_IMPACTO,
             SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
@@ -70,6 +78,26 @@ public final class SafetyConflictPolicy {
     /** El motivo registrado: las causas unidas por «+». */
     public static String motivo(List<String> causas) {
         return String.join("+", causas);
+    }
+
+    /** Lo que autoriza una sustitucion obligatoria en una semana derivada: las causas de seguridad y el inactivo. */
+    public static final Set<String> CAUSAS_DE_SUSTITUCION;
+
+    static {
+        var todas = new java.util.HashSet<>(CAUSAS);
+        todas.add(CATALOGO_INACTIVO);
+        CAUSAS_DE_SUSTITUCION = Set.copyOf(todas);
+    }
+
+    /** Si un motivo autoriza una sustitucion obligatoria: hecho SOLO de causas de seguridad o del inactivo. */
+    public static boolean esMotivoDeSustitucion(String motivo) {
+        if (motivo == null || motivo.isBlank()) return false;
+        return Arrays.stream(motivo.split("\\+")).allMatch(CAUSAS_DE_SUSTITUCION::contains);
+    }
+
+    /** Si el motivo es (solo) la desactivacion en el catalogo: exige el equivalente estricto. */
+    public static boolean esCatalogoInactivo(String motivo) {
+        return CATALOGO_INACTIVO.equals(motivo);
     }
 
     /** Si un motivo esta hecho SOLO de causas admitidas, y de al menos una. */

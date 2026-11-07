@@ -1,0 +1,13 @@
+perfil: LOSE_WEIGHT BEGINNER CASA_PESO_CORPORAL 4 dias 70 min
+elegibles: 127 · piso V20: 2940 s · techo V4: 4830 s
+borrador del motor de reglas: 2 problemas
+  - V20: el entrenamiento del 2026-11-03 dura unos 2706 s y el minimo es 2940 s (70 % de 70 minutos): le faltan 234 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.
+  - V20: el entrenamiento del 2026-11-06 dura unos 2706 s y el minimo es 2940 s (70 % de 70 minutos): le faltan 234 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.
+sesion 0 2026-11-02 UPPER_BODY: 8 ejercicios, 2940 s
+sesion 1 2026-11-03 LOWER_BODY: 6 ejercicios, 2706 s
+sesion 2 2026-11-05 UPPER_BODY: 8 ejercicios, 2940 s
+sesion 3 2026-11-06 LOWER_BODY: 6 ejercicios, 2706 s
+sesion 1 (2026-11-03): 594 modificaciones de un paso, 15 dejan la sesion sin problemas
+sesion 3 (2026-11-06): 594 modificaciones de un paso, 15 dejan la sesion sin problemas
+combinando el primer arreglo de cada sesion: PLAN VALIDO (existe solucion que el motor no encontro)
+redistribucion entre dias consecutivos: 0 de 2 sesiones arregladas; plan completo: [V20: el entrenamiento del 2026-11-03 dura unos 2706 s y el minimo es 2940 s (70 % de 70 minutos): le faltan 234 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso., V20: el entrenamiento del 2026-11-06 dura unos 2706 s y el minimo es 2940 s (70 % de 70 minutos): le faltan 234 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]

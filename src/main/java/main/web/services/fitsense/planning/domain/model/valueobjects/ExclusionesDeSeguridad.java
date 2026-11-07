@@ -8,6 +8,10 @@ import java.util.Map;
  * bandera del catalogo contra una restriccion actual del perfil, la retencion
  * INC-4C-03 o la contencion INC-CAT-1374.
  * <p>
+ * Con {@code PlanningPolicy#reparaCatalogoInactivo} tambien un heredado DESACTIVADO en el catalogo
+ * ({@code SafetyConflictPolicy#CATALOGO_INACTIVO}): no es seguridad, pero es un dato comprobable y su sustituto tiene
+ * que ser un equivalente estricto.
+ * <p>
  * Lo que queda fuera por otra causa -un bloqueo del participante, equipamiento
  * que ya no declara, el filtro funcional- NO esta aqui y no se sustituye. Un
  * motivo que no este hecho solo de causas admitidas se rechaza al construir.
@@ -24,7 +28,7 @@ public record ExclusionesDeSeguridad(Map<Long, CandidateExercise> originales, Ma
         if (!motivos.keySet().equals(originales.keySet()))
             throw new IllegalArgumentException("Cada exclusion de seguridad declara su motivo.");
         motivos.forEach((id, motivo) -> {
-            if (!main.web.services.fitsense.planning.domain.services.SafetyConflictPolicy.esMotivoDeSeguridad(motivo))
+            if (!main.web.services.fitsense.planning.domain.services.SafetyConflictPolicy.esMotivoDeSustitucion(motivo))
                 throw new IllegalArgumentException(
                         "La exclusion de %d no tiene una causa de seguridad admitida: %s".formatted(id, motivo));
         });

@@ -1,0 +1,4 @@
+K20 DETERMINISTA -> /tmp/claude-0/-home-user/d726e240-bf6c-5000-9fec-bb22a3143d76/scratchpad/V34_D_H usuarios=16 llamadas=0 incidencias=0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 35.52 s -- in Evaluacion final K20: 20 usuarios de extremo a extremo sobre la version candidata
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

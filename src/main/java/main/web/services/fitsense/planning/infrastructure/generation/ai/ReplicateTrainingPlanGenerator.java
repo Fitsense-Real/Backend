@@ -134,8 +134,13 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
         /** Adaptacion localizada: correcciones de sesiones concretas. */
         static Peticion deCorrecciones(int sessionCount) {
+            return deCorrecciones(sessionCount, SessionFixPromptBuilder.VERSION);
+        }
+
+        /** Con la version de prompt que de verdad se envia (V1 o V2 experimental). */
+        static Peticion deCorrecciones(int sessionCount, String fixPromptVersion) {
             return new Peticion(SessionFixJsonSchema.format(sessionCount),
-                    SessionFixPromptBuilder.VERSION + " " + SessionFixJsonSchema.VERSION);
+                    fixPromptVersion + " " + SessionFixJsonSchema.VERSION);
         }
     }
 

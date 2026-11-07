@@ -1,0 +1,356 @@
+[
+ {
+  "politica": "HIST",
+  "perfiles": 3780,
+  "validos": 3641,
+  "sin_plan": 139,
+  "familias_sin_plan": {
+   "GAIN_MUSCLE INTERMEDIATE CASA_PESO_CORPORAL V20": 36,
+   "GAIN_MUSCLE ADVANCED CASA_PESO_CORPORAL V20": 36,
+   "LOSE_WEIGHT BEGINNER CASA_MANCUERNAS_BANDAS V20": 15,
+   "LOSE_WEIGHT BEGINNER CASA_PESO_CORPORAL V20": 15,
+   "INCREASE_STRENGTH INTERMEDIATE CASA_PESO_CORPORAL V20": 15,
+   "INCREASE_STRENGTH ADVANCED CASA_PESO_CORPORAL V20": 15,
+   "GENERAL_FITNESS BEGINNER CASA_PESO_CORPORAL V20": 3,
+   "GENERAL_FITNESS BEGINNER GIMNASIO V20": 2,
+   "GENERAL_FITNESS BEGINNER CASA_MANCUERNAS_BANDAS V20": 2
+  },
+  "validos_en_ambos": 3641,
+  "planes_identicos_a_ref": 3641,
+  "rescatados_vs_ref": 0,
+  "perdidos_vs_ref": 0,
+  "calidad": {
+   "GAIN_MUSCLE ADVANCED": {
+    "n": 279,
+    "pct_tiempo_mediana": 73.0,
+    "seg_medio_mediana": 2550.0,
+    "ej_min_mediana": 7.0,
+    "series_grupo_max_mediana": 18.0,
+    "series_grupo_max_maximo": 48.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 2.0,
+    "alto_impacto_total": 378,
+    "pull_sin_traccion_total": 15
+   },
+   "GAIN_MUSCLE BEGINNER": {
+    "n": 315,
+    "pct_tiempo_mediana": 72.3,
+    "seg_medio_mediana": 2539.0,
+    "ej_min_mediana": 7.0,
+    "series_grupo_max_mediana": 18.0,
+    "series_grupo_max_maximo": 36.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "GAIN_MUSCLE INTERMEDIATE": {
+    "n": 279,
+    "pct_tiempo_mediana": 73.2,
+    "seg_medio_mediana": 2550.0,
+    "ej_min_mediana": 7.0,
+    "series_grupo_max_mediana": 18.0,
+    "series_grupo_max_maximo": 48.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 2.0,
+    "alto_impacto_total": 177,
+    "pull_sin_traccion_total": 15
+   },
+   "GENERAL_FITNESS ADVANCED": {
+    "n": 315,
+    "pct_tiempo_mediana": 76.6,
+    "seg_medio_mediana": 2680.0,
+    "ej_min_mediana": 7.0,
+    "series_grupo_max_mediana": 15.0,
+    "series_grupo_max_maximo": 30.0,
+    "aerobico_min_mediana": 30.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 829,
+    "pull_sin_traccion_total": 75
+   },
+   "GENERAL_FITNESS BEGINNER": {
+    "n": 308,
+    "pct_tiempo_mediana": 72.1,
+    "seg_medio_mediana": 2533.0,
+    "ej_min_mediana": 8.0,
+    "series_grupo_max_mediana": 14.0,
+    "series_grupo_max_maximo": 22.0,
+    "aerobico_min_mediana": 18.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "GENERAL_FITNESS INTERMEDIATE": {
+    "n": 315,
+    "pct_tiempo_mediana": 76.6,
+    "seg_medio_mediana": 2687.0,
+    "ej_min_mediana": 7.0,
+    "series_grupo_max_mediana": 15.0,
+    "series_grupo_max_maximo": 30.0,
+    "aerobico_min_mediana": 30.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 738,
+    "pull_sin_traccion_total": 75
+   },
+   "INCREASE_STRENGTH ADVANCED": {
+    "n": 300,
+    "pct_tiempo_mediana": 74.2,
+    "seg_medio_mediana": 2556.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 18.0,
+    "series_grupo_max_maximo": 42.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 355,
+    "pull_sin_traccion_total": 50
+   },
+   "INCREASE_STRENGTH BEGINNER": {
+    "n": 315,
+    "pct_tiempo_mediana": 72.0,
+    "seg_medio_mediana": 2550.0,
+    "ej_min_mediana": 8.0,
+    "series_grupo_max_mediana": 18.0,
+    "series_grupo_max_maximo": 36.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "INCREASE_STRENGTH INTERMEDIATE": {
+    "n": 300,
+    "pct_tiempo_mediana": 74.2,
+    "seg_medio_mediana": 2556.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 18.0,
+    "series_grupo_max_maximo": 42.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 208,
+    "pull_sin_traccion_total": 50
+   },
+   "LOSE_WEIGHT ADVANCED": {
+    "n": 315,
+    "pct_tiempo_mediana": 73.3,
+    "seg_medio_mediana": 2562.0,
+    "ej_min_mediana": 5.0,
+    "series_grupo_max_mediana": 12.0,
+    "series_grupo_max_maximo": 30.0,
+    "aerobico_min_mediana": 48.0,
+    "grupos_bajo_objetivo_mediana": 2.0,
+    "alto_impacto_total": 1276,
+    "pull_sin_traccion_total": 85
+   },
+   "LOSE_WEIGHT BEGINNER": {
+    "n": 285,
+    "pct_tiempo_mediana": 73.9,
+    "seg_medio_mediana": 2508.0,
+    "ej_min_mediana": 7.0,
+    "series_grupo_max_mediana": 12.0,
+    "series_grupo_max_maximo": 24.0,
+    "aerobico_min_mediana": 36.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "LOSE_WEIGHT INTERMEDIATE": {
+    "n": 315,
+    "pct_tiempo_mediana": 73.3,
+    "seg_medio_mediana": 2562.0,
+    "ej_min_mediana": 5.0,
+    "series_grupo_max_mediana": 12.0,
+    "series_grupo_max_maximo": 30.0,
+    "aerobico_min_mediana": 48.0,
+    "grupos_bajo_objetivo_mediana": 2.0,
+    "alto_impacto_total": 1203,
+    "pull_sin_traccion_total": 86
+   }
+  },
+  "series_grupo_max_sobre_20": 953,
+  "series_grupo_max_sobre_24": 446,
+  "pull_sin_traccion_planes": 271,
+  "sesiones_con_pocos_ejercicios_(ej_min<3)": 42,
+  "planes_con_sesion_insuficiente": 0,
+  "planes_con_sesion_corta_razonable": 0,
+  "estado_dosis": {
+   "": 3641
+  },
+  "dg3_en_invalidos": {
+   "": 139
+  }
+ },
+ {
+  "politica": "REV2",
+  "perfiles": 3780,
+  "validos": 3776,
+  "sin_plan": 4,
+  "familias_sin_plan": {
+   "INCREASE_STRENGTH INTERMEDIATE GIMNASIO V25": 1,
+   "INCREASE_STRENGTH INTERMEDIATE CASA_MANCUERNAS_BANDAS V25": 1,
+   "INCREASE_STRENGTH ADVANCED GIMNASIO V25": 1,
+   "INCREASE_STRENGTH ADVANCED CASA_MANCUERNAS_BANDAS V25": 1
+  },
+  "validos_en_ambos": 3637,
+  "planes_identicos_a_ref": 117,
+  "rescatados_vs_ref": 139,
+  "perdidos_vs_ref": 4,
+  "calidad": {
+   "GAIN_MUSCLE ADVANCED": {
+    "n": 315,
+    "pct_tiempo_mediana": 66.3,
+    "seg_medio_mediana": 1999.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 15.0,
+    "series_grupo_max_maximo": 21.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 2.0,
+    "alto_impacto_total": 267,
+    "pull_sin_traccion_total": 0
+   },
+   "GAIN_MUSCLE BEGINNER": {
+    "n": 315,
+    "pct_tiempo_mediana": 57.5,
+    "seg_medio_mediana": 1808.0,
+    "ej_min_mediana": 5.0,
+    "series_grupo_max_mediana": 12.0,
+    "series_grupo_max_maximo": 12.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "GAIN_MUSCLE INTERMEDIATE": {
+    "n": 315,
+    "pct_tiempo_mediana": 65.6,
+    "seg_medio_mediana": 1981.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 15.0,
+    "series_grupo_max_maximo": 20.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 124,
+    "pull_sin_traccion_total": 0
+   },
+   "GENERAL_FITNESS ADVANCED": {
+    "n": 315,
+    "pct_tiempo_mediana": 84.2,
+    "seg_medio_mediana": 2587.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 9.0,
+    "series_grupo_max_maximo": 15.0,
+    "aerobico_min_mediana": 48.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 232,
+    "pull_sin_traccion_total": 0
+   },
+   "GENERAL_FITNESS BEGINNER": {
+    "n": 315,
+    "pct_tiempo_mediana": 62.5,
+    "seg_medio_mediana": 2008.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 6.0,
+    "series_grupo_max_maximo": 9.0,
+    "aerobico_min_mediana": 36.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "GENERAL_FITNESS INTERMEDIATE": {
+    "n": 315,
+    "pct_tiempo_mediana": 84.7,
+    "seg_medio_mediana": 2573.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 9.0,
+    "series_grupo_max_maximo": 15.0,
+    "aerobico_min_mediana": 48.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 158,
+    "pull_sin_traccion_total": 0
+   },
+   "INCREASE_STRENGTH ADVANCED": {
+    "n": 313,
+    "pct_tiempo_mediana": 55.5,
+    "seg_medio_mediana": 1792.0,
+    "ej_min_mediana": 4.0,
+    "series_grupo_max_mediana": 12.0,
+    "series_grupo_max_maximo": 18.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 236,
+    "pull_sin_traccion_total": 0
+   },
+   "INCREASE_STRENGTH BEGINNER": {
+    "n": 315,
+    "pct_tiempo_mediana": 36.5,
+    "seg_medio_mediana": 1204.0,
+    "ej_min_mediana": 4.0,
+    "series_grupo_max_mediana": 8.0,
+    "series_grupo_max_maximo": 8.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "INCREASE_STRENGTH INTERMEDIATE": {
+    "n": 313,
+    "pct_tiempo_mediana": 55.5,
+    "seg_medio_mediana": 1792.0,
+    "ej_min_mediana": 4.0,
+    "series_grupo_max_mediana": 12.0,
+    "series_grupo_max_maximo": 18.0,
+    "aerobico_min_mediana": 0.0,
+    "grupos_bajo_objetivo_mediana": 0.0,
+    "alto_impacto_total": 156,
+    "pull_sin_traccion_total": 0
+   },
+   "LOSE_WEIGHT ADVANCED": {
+    "n": 315,
+    "pct_tiempo_mediana": 91.6,
+    "seg_medio_mediana": 3228.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 6.0,
+    "series_grupo_max_maximo": 12.0,
+    "aerobico_min_mediana": 72.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 144,
+    "pull_sin_traccion_total": 0
+   },
+   "LOSE_WEIGHT BEGINNER": {
+    "n": 315,
+    "pct_tiempo_mediana": 70.0,
+    "seg_medio_mediana": 2160.0,
+    "ej_min_mediana": 4.0,
+    "series_grupo_max_mediana": 4.0,
+    "series_grupo_max_maximo": 6.0,
+    "aerobico_min_mediana": 45.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 0,
+    "pull_sin_traccion_total": 0
+   },
+   "LOSE_WEIGHT INTERMEDIATE": {
+    "n": 315,
+    "pct_tiempo_mediana": 91.6,
+    "seg_medio_mediana": 3228.0,
+    "ej_min_mediana": 6.0,
+    "series_grupo_max_mediana": 6.0,
+    "series_grupo_max_maximo": 12.0,
+    "aerobico_min_mediana": 72.0,
+    "grupos_bajo_objetivo_mediana": 1.0,
+    "alto_impacto_total": 101,
+    "pull_sin_traccion_total": 0
+   }
+  },
+  "series_grupo_max_sobre_20": 4,
+  "series_grupo_max_sobre_24": 0,
+  "pull_sin_traccion_planes": 0,
+  "sesiones_con_pocos_ejercicios_(ej_min<3)": 0,
+  "planes_con_sesion_insuficiente": 0,
+  "planes_con_sesion_corta_razonable": 1063,
+  "estado_dosis": {
+   "DOSIS_LIMITADA": 2385,
+   "DOSIS_OBJETIVO": 1391
+  },
+  "dg3_en_invalidos": {
+   "SEMILLAS_NO REPARACION_NO": 4
+  }
+ }
+]

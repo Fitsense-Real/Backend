@@ -1,5 +1,7 @@
 package main.web.services.fitsense.planning.infrastructure.generation.rules;
 
+import main.web.services.fitsense.planning.domain.services.CoberturaDePatron;
+
 import main.web.services.fitsense.planning.domain.model.valueobjects.*;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy.Capability;
 import main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy;
@@ -106,12 +108,21 @@ class CapabilityWeekBuilder {
 
     /**
      * Un cambio de {@link #asegurarGrupos}: GRUPOS si la sesion tenia un solo grupo del enfoque
-     * (incluido FULL_BODY, E1), MITAD si un grupo pasaba de la mitad (E2). Para las pruebas.
+     * (incluido FULL_BODY, E1), MITAD si un grupo pasaba de la mitad (E2), ANADIDO si no habia cambio
+     * posible y se anadio un ejercicio de otro grupo (AUD-G1). Para las pruebas.
      */
     record CambioGrupo(LocalDate fecha, WorkoutFocus enfoque, String motivo, long quitado, String grupoQuitado,
                        Capability capacidadQuitada, long elegido, String grupoElegido, Capability capacidadElegida) {}
 
     private final List<CambioGrupo> cambiosGrupo = new ArrayList<>();
+
+    /** Rediseno P-G1: control de volumen y dosis de la semana (null con la politica historica). */
+    private ControlVolumen control;
+    /** Series por grupo de la sesion en curso, para el filtro de volumen de los rellenos. */
+    private Map<String, Integer> diaPorGrupo = new HashMap<>();
+    /** Filtro de volumen de los rellenos resistidos: el techo semanal y por sesion (siempre cierto sin control). */
+    private final java.util.function.Predicate<CandidateExercise> cabeVolumen =
+            c -> control == null || control.cabe(c, 3, diaPorGrupo);
 
     List<CambioGrupo> cambiosGrupo() {
         return List.copyOf(cambiosGrupo);
@@ -134,9 +145,14 @@ class CapabilityWeekBuilder {
 
     PlanDraft construir(Cierre cierre) {
         var split = context.suggestedSplit();
+        control = ControlVolumen.de(context, split.stream().map(WeeklySplitPlanner.PlannedSession::focus).toList(),
+                this::esResistido);
         int minutosSesion = context.effectiveSessionMinutes();
         int techo = context.profile().maxSessionMinutes();
-        int piso = PlanDraftValidator.minimumSessionMinutes(context);
+        // P-G1: el generador llena hacia el OBJETIVO de la politica (historica y diseno B: el 70 %; diseno A: 0),
+        // no hacia el piso que valida V20 (que en las politicas nuevas no existe).
+        int piso = PlanDraftValidator.objetivoLlenadoSegundos(context) > 0
+                ? PlanDraftValidator.minimumSessionMinutesHistorico(context) : 0;
         int maxDificultad = context.effectiveMaxDifficulty();
 
         var verificados = context.availableExercises().stream()
@@ -210,7 +226,7 @@ class CapabilityWeekBuilder {
                     if (colocacion == null) continue;
                     dia.add(colocacion);
                     resistidosDia.add(c);
-                    if (cubreSlotPendiente(colocacion)) MandatorySlot.of(c).ifPresent(slotsPorCubrir::remove);
+                    if (cubreSlotPendiente(colocacion)) CoberturaDePatron.slot(c).ifPresent(slotsPorCubrir::remove);
                 }
             }
             if (principalFactible(Capability.CARDIO)) {
@@ -248,10 +264,20 @@ class CapabilityWeekBuilder {
                     slotsPorCubrir.remove(slot);
                 }
 
-            // 2 · SECUNDARIAS, hasta el piso de V20 y sin pasar del techo.
-            if (piso > 0) {
-                while (dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA && corto(fecha, enfoque, dia, piso)) {
-                    var extra = siguienteRelleno(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
+            // 2 · SECUNDARIAS, hasta el piso de V20 y sin pasar del techo. Rediseno P-G1, diseno A: hasta la DOSIS
+            // pendiente (aerobico y series por grupo), no hasta el reloj; B: hasta el 70 % como objetivo blando, con
+            // el techo de volumen como filtro (cabeVolumen).
+            boolean porDosis = control != null && control.porDosis();
+            var agotados = new HashSet<String>();
+            if (piso > 0 || porDosis) {
+                while (dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA
+                        && (porDosis ? faltaDosis(enfoque, dia, agotados, slotsPorCubrir, resistidosDia, selector)
+                        : corto(fecha, enfoque, dia, piso))) {
+                    diaPorGrupo = seriesPorGrupo(dia);
+                    var extra = porDosis
+                            ? siguientePorDosis(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
+                            gruposBloqueados, agotados, slotsPorCubrir)
+                            : siguienteRelleno(selector, enfoque, resistidosDia, cardio, dia, bloqueados,
                             gruposBloqueados, slotsPorCubrir);
                     if (extra == null) break;
                     var con = new ArrayList<>(dia);
@@ -300,7 +326,7 @@ class CapabilityWeekBuilder {
                     if (!complementos.contains(extra.candidato().exerciseId())
                             && (clase == Clase.ESTRUCTURAL || clase == Clase.RESISTIDO)) {
                         resistidosDia.add(extra.candidato());
-                        if (cubreSlotPendiente(extra)) MandatorySlot.of(extra.candidato()).ifPresent(slotsPorCubrir::remove);
+                        if (cubreSlotPendiente(extra)) CoberturaDePatron.slot(extra.candidato()).ifPresent(slotsPorCubrir::remove);
                     }
                 }
             }
@@ -336,6 +362,9 @@ class CapabilityWeekBuilder {
             // unico grupo de trabajo pudiendo tener dos, o con un grupo por encima
             // de la mitad: se cambia una colocacion por otra de otro grupo.
             asegurarGrupos(fecha, enfoque, dia, bloqueados, ultimaSesion ? pendientesAlEmpezar : Set.of(), piso, techo);
+            // P-G3: una sesion PULL sin traccion cambia UNA colocacion de su enfoque por una de traccion (misma capacidad).
+            if (enfoque == WorkoutFocus.PULL && context.policy() != null && context.policy().pullReal())
+                asegurarTraccion(fecha, enfoque, dia, bloqueados);
 
             // Un slot se da por cubierto al COLOCAR, pero el recorte puede quitar
             // esa colocacion. Se recalcula con lo que queda: si no, el slot
@@ -344,12 +373,13 @@ class CapabilityWeekBuilder {
             slotsPorCubrir.clear();
             slotsPorCubrir.addAll(pendientesAlEmpezar);
             dia.stream().filter(this::cubreSlotPendiente)
-                    .forEach(col -> MandatorySlot.of(col.candidato()).ifPresent(slotsPorCubrir::remove));
+                    .forEach(col -> CoberturaDePatron.slot(col.candidato()).ifPresent(slotsPorCubrir::remove));
 
             dia.forEach(col -> {
                 enSemana.merge(col.capacidad(), 1, Integer::sum);
                 usadosEnSemana.add(col.candidato().exerciseId());
             });
+            if (control != null) control.cerrarSesion(seriesPorGrupo(dia), aerobicoSegundos(dia));
             armadas.add(new Armada(fecha, enfoque, dia));
 
             idsDiaAnterior = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
@@ -469,7 +499,61 @@ class CapabilityWeekBuilder {
                 }
             }
         }
-        // Sin sustitucion factible: la sesion queda como estaba y el validador dira por que.
+        // AUD-G1 (auditoria post R/R', 05/11/2026): si ningun CAMBIO cumple y la sesion se quedo con UN solo grupo de
+        // trabajo, se ANADE un ejercicio de otro grupo del enfoque con la MISMA capacidad que el trabajo que ya tiene,
+        // siempre que quepa bajo el tope de colocaciones y el techo y respete la mitad de V15. Caso que lo motiva: una
+        // sesion FULL_BODY de LOSE_WEIGHT con dos fuerzas de pierna que cubren cada una un slot de 4C distinto (ninguna
+        // se puede quitar) y margen de sobra hasta el techo. No cambia ninguna regla, dosis ni validador: solo completa
+        // lo que V15 ya exigia, y una sesion que ya cumplia V15 no llega aqui.
+        if (dominante == null && cubiertos.size() < 2 && dia.size() < CapabilityPrescriptionPolicy.MAX_COLOC_DIA)
+            anadirGrupo(fecha, enfoque, dia, trabajo, cubiertos, bloqueados, enDia);
+        // Sin sustitucion ni adicion factible: la sesion queda como estaba y el validador dira por que.
+    }
+
+    /** AUD-G1: anade (no cambia) un ejercicio de un grupo del enfoque que la sesion no trabaja. Ver asegurarGrupos. */
+    private void anadirGrupo(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, List<Colocacion> trabajo,
+                             Set<String> cubiertos, Set<Long> bloqueados, Set<Long> enDia) {
+        // La capacidad del trabajo resistido que ya tiene la sesion (la mas frecuente; a igualdad, la primera).
+        var capacidad = trabajo.stream()
+                .filter(col -> {
+                    var clase = CapabilityPrescriptionPolicy.claseDe(col.candidato());
+                    return clase == Clase.ESTRUCTURAL || clase == Clase.RESISTIDO;
+                })
+                .collect(Collectors.groupingBy(Colocacion::capacidad, LinkedHashMap::new, Collectors.counting()))
+                .entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(null);
+        if (capacidad == null) return;
+        boolean principal = trabajo.stream().filter(col -> col.capacidad() == capacidad)
+                .anyMatch(Colocacion::principal);
+        for (var grupo : enfoque.bodyPartCodes()) {
+            if (cubiertos.contains(grupo)) continue;
+            var candidatos = resistidos.stream()
+                    .filter(c -> grupo.equals(c.bodyPartCode()))
+                    .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                    .filter(c -> !bloqueados.contains(c.exerciseId()) && !enDia.contains(c.exerciseId()))
+                    .sorted(Comparator.comparing(CandidateExercise::exerciseId))
+                    .toList();
+            var ordenados = new ArrayList<CandidateExercise>();
+            for (var preferencia : List.<java.util.function.Predicate<CandidateExercise>>of(
+                    c -> !usadosEnSemana.contains(c.exerciseId()) && !recientes.contains(c.exerciseId()),
+                    c -> !usadosEnSemana.contains(c.exerciseId()),
+                    c -> true)) {
+                var opciones = new ArrayList<>(candidatos.stream().filter(preferencia)
+                        .filter(c -> !ordenados.contains(c)).toList());
+                Collections.shuffle(opciones, random);
+                ordenados.addAll(opciones);
+            }
+            for (var c : ordenados) {
+                var col = colocar(c, capacidad, principal);
+                if (col == null || col.capacidad() != capacidad) continue;
+                var con = new ArrayList<>(dia);
+                con.add(col);
+                if (excede(fecha, enfoque, con) || !respetaMitad(enfoque, con)) continue;
+                cambiosGrupo.add(new CambioGrupo(fecha, enfoque, "ANADIDO", 0L, null, null,
+                        col.candidato().exerciseId(), col.candidato().bodyPartCode(), col.capacidad()));
+                dia.add(col);
+                return;
+            }
+        }
     }
 
     /**
@@ -480,9 +564,9 @@ class CapabilityWeekBuilder {
      * UPPER_PUSH aunque salga un press de hombro.
      */
     private boolean dejaSinSlot(Colocacion quitado, List<Colocacion> con, Set<MandatorySlot> pendientes) {
-        var slot = MandatorySlot.of(quitado.candidato());
+        var slot = CoberturaDePatron.slot(quitado.candidato());
         if (slot.isEmpty() || !pendientes.contains(slot.get()) || !cubreSlotPendiente(quitado)) return false;
-        return con.stream().noneMatch(x -> cubreSlotPendiente(x) && MandatorySlot.of(x.candidato()).equals(slot));
+        return con.stream().noneMatch(x -> cubreSlotPendiente(x) && CoberturaDePatron.slot(x.candidato()).equals(slot));
     }
 
     /**
@@ -550,7 +634,7 @@ class CapabilityWeekBuilder {
         boolean fuerza = principalFactible(Capability.STRENGTH);
         var aun = new HashSet<>(pendientes);
         for (var c : elegidos) {
-            var slot = MandatorySlot.of(c).orElse(null);
+            var slot = CoberturaDePatron.slot(c).orElse(null);
             boolean cubreSlot = fuerza && CapabilityPrescriptionPolicy.claseDe(c) == Clase.ESTRUCTURAL
                     && slot != null && aun.remove(slot);
             caps.add(cubreSlot ? Capability.STRENGTH : me ? Capability.MUSCULAR_ENDURANCE : Capability.STRENGTH);
@@ -567,6 +651,168 @@ class CapabilityWeekBuilder {
         return caps;
     }
 
+    /** P-G3: si la sesion PULL no tiene traccion y hay candidatos, cambia una colocacion resistida por una de traccion. */
+    private void asegurarTraccion(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia, Set<Long> bloqueados) {
+        if (dia.stream().anyMatch(col -> esTraccion(col.candidato()))) return;
+        var enDia = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
+        var candidatos = resistidos.stream().filter(CapabilityWeekBuilder::esTraccion)
+                .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                .filter(c -> !bloqueados.contains(c.exerciseId()) && !enDia.contains(c.exerciseId()))
+                .sorted(Comparator.comparing(CandidateExercise::exerciseId)).toList();
+        for (int k = 0; k < dia.size(); k++) {
+            var sale = dia.get(k);
+            if (!esResistido(sale.candidato())) continue;
+            for (var c : candidatos) {
+                var col = colocar(c, sale.capacidad(), sale.principal());
+                if (col == null || col.capacidad() != sale.capacidad()) continue;
+                var con = new ArrayList<>(dia);
+                con.set(k, col);
+                if (excede(fecha, enfoque, con) || !respetaMitad(enfoque, con)) continue;
+                dia.set(k, col);
+                return;
+            }
+        }
+    }
+
+    static boolean esTraccion(CandidateExercise c) {
+        return c != null && ("HORIZONTAL_PULL".equals(c.movementPattern()) || "VERTICAL_PULL".equals(c.movementPattern()));
+    }
+
+    /** Trabajo resistido de la semana (lo que cuenta para el volumen): estructural o resistido, no complemento. */
+    private boolean esResistido(CandidateExercise c) {
+        if (c == null || complementos.contains(c.exerciseId())) return false;
+        var clase = CapabilityPrescriptionPolicy.claseDe(c);
+        return clase == Clase.ESTRUCTURAL || clase == Clase.RESISTIDO;
+    }
+
+    /** Series directas por grupo de la sesion en curso. */
+    private Map<String, Integer> seriesPorGrupo(List<Colocacion> dia) {
+        var m = new HashMap<String, Integer>();
+        for (var col : dia)
+            if (esResistido(col.candidato()) && col.candidato().bodyPartCode() != null
+                    && col.ejercicio().plannedSets() != null)
+                m.merge(col.candidato().bodyPartCode(), (int) col.ejercicio().plannedSets(), Integer::sum);
+        return m;
+    }
+
+    /** Segundos de TRABAJO aerobico (series x segundos de las colocaciones de cardio) de la sesion. */
+    private long aerobicoSegundos(List<Colocacion> dia) {
+        long s = 0;
+        for (var col : dia)
+            if (col.capacidad() == Capability.CARDIO && col.ejercicio().plannedSets() != null
+                    && col.ejercicio().plannedDurationSeconds() != null)
+                s += (long) col.ejercicio().plannedSets() * col.ejercicio().plannedDurationSeconds();
+        return s;
+    }
+
+    /** ¿Queda un slot de fuerza pendiente con candidato en este enfoque? (objetivos con fuerza principal). */
+    private boolean slotDeFuerzaPendiente(ExerciseSelector selector, WorkoutFocus enfoque,
+                                          List<CandidateExercise> resistidosDia, Set<MandatorySlot> slotsPendientes) {
+        if (!principalFactible(Capability.STRENGTH) || "LOSE_WEIGHT".equals(objetivo)) return false;
+        var actuales = new ArrayList<>(resistidosDia);
+        for (var slot : slotsPendientes)
+            if (selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.deSlot(slot).and(cabeVolumen)).isPresent())
+                return true;
+        return false;
+    }
+
+    /** Grupos del enfoque con trabajo resistido prescribible (el resto no puede tener objetivo de dosis). */
+    private Set<String> gruposConMaterial(WorkoutFocus enfoque) {
+        return resistidos.stream().filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+                .map(CandidateExercise::bodyPartCode).filter(enfoque::accepts).collect(Collectors.toSet());
+    }
+
+    /** Diseno A: ¿falta dosis en esta sesion (aerobico o series de algun grupo con material)? */
+    private boolean faltaDosis(WorkoutFocus enfoque, List<Colocacion> dia, Set<String> agotados,
+                               Set<MandatorySlot> slotsPendientes, List<CandidateExercise> resistidosDia,
+                               ExerciseSelector selector) {
+        if (control == null) return false;
+        // Cobertura de patrones antes que dosis: un slot de fuerza que la semana aun no tiene y que cabe en el enfoque.
+        if (!agotados.contains("slots") && slotDeFuerzaPendiente(selector, enfoque, resistidosDia, slotsPendientes))
+            return true;
+        if (principalFactible(Capability.CARDIO) && !agotados.contains("cardio")
+                && control.aerobicoPendiente(aerobicoSegundos(dia))) return true;
+        var conMaterial = new HashSet<>(gruposConMaterial(enfoque));
+        conMaterial.removeAll(agotados);
+        return control.grupoPendiente(enfoque, seriesPorGrupo(dia), conMaterial).isPresent();
+    }
+
+    /**
+     * Diseno A: lo siguiente que reduce la dosis pendiente. Primero el aerobico (si es principal y falta), despues el
+     * grupo mas lejos de su objetivo, con la capacidad de relleno del objetivo. Si un grupo o el cardio no tiene ya
+     * nada que entre, se marca agotado y no se vuelve a pedir en esta sesion.
+     */
+    private Colocacion siguientePorDosis(ExerciseSelector selector, WorkoutFocus enfoque,
+                                         List<CandidateExercise> resistidosDia, List<CandidateExercise> cardio,
+                                         List<Colocacion> dia, Set<Long> bloqueados, Set<String> gruposBloqueados,
+                                         Set<String> agotados, Set<MandatorySlot> slotsPendientes) {
+        while (true) {
+            // 0 · Cobertura de patrones: los slots de fuerza que la semana aun no tiene (objetivos con fuerza principal).
+            if (!agotados.contains("slots") && principalFactible(Capability.STRENGTH) && !"LOSE_WEIGHT".equals(objetivo)) {
+                var actuales = new ArrayList<>(resistidosDia);
+                for (var slot : slotsPendientes) {
+                    var extra = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot).and(cabeVolumen))
+                            .or(() -> selector.pickAdditional(enfoque, actuales, false,
+                                    ExerciseSelector.deSlot(slot).and(cabeVolumen)));
+                    if (extra.isPresent()) {
+                        var col = colocar(extra.get(), Capability.STRENGTH, true);
+                        if (col != null) return col;
+                    }
+                }
+                agotados.add("slots");
+                continue;
+            }
+            // Orden: primero el trabajo resistido minimo de los grupos (la fuerza 2 dias por semana de la OMS no la
+            // desplaza el cardio) y despues el aerobico.
+            var pendientes = new HashSet<>(gruposConMaterial(enfoque));
+            pendientes.removeAll(agotados);
+            boolean faltaGrupo = control.grupoPendiente(enfoque, seriesPorGrupo(dia), pendientes).isPresent();
+            if (!faltaGrupo && principalFactible(Capability.CARDIO) && !agotados.contains("cardio")
+                    && control.aerobicoPendiente(aerobicoSegundos(dia))) {
+                var pool = "LOSE_WEIGHT".equals(objetivo) && enfoqueSiguientePegado != null
+                        ? cardio.stream().filter(c -> dejaCardioAlSiguiente(cardio, dia, c)).toList()
+                        : cardio;
+                var c = elegirComplemento(pool, enfoque, dia, bloqueados, gruposBloqueados);
+                if (c.isPresent()) return colocar(c.get(), Capability.CARDIO, true);
+                agotados.add("cardio");
+                continue;
+            }
+            var conMaterial = new HashSet<>(gruposConMaterial(enfoque));
+            conMaterial.removeAll(agotados);
+            var grupo = control.grupoPendiente(enfoque, seriesPorGrupo(dia), conMaterial);
+            if (grupo.isEmpty()) return null;
+            String g = grupo.get();
+            java.util.function.Predicate<CandidateExercise> deGrupo = c -> g.equals(c.bodyPartCode());
+            var actuales = new ArrayList<>(resistidosDia);
+            // P-G3: en una sesion PULL, mientras no tenga traccion, lo primero es un ejercicio de traccion.
+            java.util.function.Predicate<CandidateExercise> preferido = enfoque == WorkoutFocus.PULL
+                    && context.policy().pullReal() && dia.stream().noneMatch(col -> esTraccion(col.candidato()))
+                    ? deGrupo.and(CapabilityWeekBuilder::esTraccion) : deGrupo;
+            // Cierre REV2, fase 5: dentro del grupo, primero un patron (slot 4C) que la SEMANA aun no tiene. Sin esto,
+            // LOSE_WEIGHT (sin el paso 0 de cobertura) podia cubrir la pierna dos veces con rodilla y ninguna con
+            // cadera (125-163 de 315 planes sin cadera, frente a 3-27 en HIST). Solo en el modo de dosis (REV2/DUR-A).
+            java.util.function.Predicate<CandidateExercise> slotNuevo =
+                    c -> CoberturaDePatron.slot(c).filter(slotsPendientes::contains).isPresent();
+            var extra = selector.pickAdditional(enfoque, actuales, true, preferido.and(slotNuevo).and(cabeVolumen))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, preferido.and(slotNuevo).and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, preferido.and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, preferido.and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, deGrupo.and(slotNuevo).and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, deGrupo.and(slotNuevo).and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, deGrupo.and(cabeVolumen)))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, deGrupo.and(cabeVolumen)));
+            if (extra.isPresent()) {
+                Capability cap = "LOSE_WEIGHT".equals(objetivo) ? Capability.STRENGTH
+                        : asignable(Capability.HYPERTROPHY) ? Capability.HYPERTROPHY
+                        : principalFactible(Capability.MUSCULAR_ENDURANCE) ? Capability.MUSCULAR_ENDURANCE
+                        : Capability.STRENGTH;
+                var col = colocar(extra.get(), cap, false);
+                if (col != null) return col;
+            }
+            agotados.add(g);
+        }
+    }
+
     /** Lo siguiente para llegar al piso: secundarias; si no quedan, mas de la principal. */
     private Colocacion siguienteRelleno(ExerciseSelector selector, WorkoutFocus enfoque,
                                         List<CandidateExercise> resistidosDia, List<CandidateExercise> cardio,
@@ -578,8 +824,9 @@ class CapabilityWeekBuilder {
         if (principalFactible(Capability.STRENGTH) && !"LOSE_WEIGHT".equals(objetivo)) {
             var actuales = new ArrayList<>(resistidosDia);
             for (var slot : pendientes) {
-                var extra = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot))
-                        .or(() -> selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.deSlot(slot)));
+                var extra = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot).and(cabeVolumen))
+                        .or(() -> selector.pickAdditional(enfoque, actuales, false,
+                                ExerciseSelector.deSlot(slot).and(cabeVolumen)));
                 if (extra.isPresent()) {
                     var col = colocar(extra.get(), Capability.STRENGTH, true);
                     if (col != null) return col;
@@ -591,15 +838,17 @@ class CapabilityWeekBuilder {
             default -> Capability.HYPERTROPHY;
         };
         if (asignable(secundaria)) {
-            var filtro = secundaria == Capability.STRENGTH ? ExerciseSelector.ESTRUCTURAL : ExerciseSelector.CUALQUIERA;
+            var filtro = (secundaria == Capability.STRENGTH ? ExerciseSelector.ESTRUCTURAL : ExerciseSelector.CUALQUIERA)
+                    .and(cabeVolumen);
             var actuales = new ArrayList<>(resistidosDia);
             // Primero un slot que la semana aun no tiene: el trabajo estructural
             // rota por los cuatro patrones en vez de repetir dos.
             Optional<CandidateExercise> deSlot = Optional.empty();
             for (var slot : pendientes)
-                if (deSlot.isEmpty()) deSlot = selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.deSlot(slot));
+                if (deSlot.isEmpty()) deSlot = selector.pickAdditional(enfoque, actuales, true,
+                        ExerciseSelector.deSlot(slot).and(cabeVolumen));
             var extra = deSlot
-                    .or(() -> selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.ESTRUCTURAL))
+                    .or(() -> selector.pickAdditional(enfoque, actuales, true, ExerciseSelector.ESTRUCTURAL.and(cabeVolumen)))
                     .filter(filtro)
                     .or(() -> selector.pickAdditional(enfoque, actuales, true, filtro))
                     .or(() -> selector.pickAdditional(enfoque, actuales, false, filtro));
@@ -611,8 +860,8 @@ class CapabilityWeekBuilder {
         // Sin secundaria posible: mas de una principal resistida o de cardio.
         if (principalFactible(Capability.MUSCULAR_ENDURANCE)) {
             var actuales = new ArrayList<>(resistidosDia);
-            var extra = selector.pickAdditional(enfoque, actuales, true)
-                    .or(() -> selector.pickAdditional(enfoque, actuales, false));
+            var extra = selector.pickAdditional(enfoque, actuales, true, cabeVolumen)
+                    .or(() -> selector.pickAdditional(enfoque, actuales, false, cabeVolumen));
             if (extra.isPresent()) {
                 var col = colocar(extra.get(), Capability.MUSCULAR_ENDURANCE, true);
                 if (col != null) return col;
@@ -620,7 +869,7 @@ class CapabilityWeekBuilder {
         }
         if (principalFactible(Capability.STRENGTH) && "INCREASE_STRENGTH".equals(objetivo)) {
             var actuales = new ArrayList<>(resistidosDia);
-            var extra = selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.ESTRUCTURAL);
+            var extra = selector.pickAdditional(enfoque, actuales, false, ExerciseSelector.ESTRUCTURAL.and(cabeVolumen));
             if (extra.isPresent()) {
                 var col = colocar(extra.get(), Capability.STRENGTH, true);
                 if (col != null) return col;
@@ -711,6 +960,12 @@ class CapabilityWeekBuilder {
                 .filter(c -> complementos.contains(c.exerciseId()) || respetaMitad(enfoque, conCandidato(dia, c)))
                 .toList();
         if (validos.isEmpty()) return Optional.empty();
+        // P-C2 (politica con impacto): entre los complementos validos, solo los del MENOR nivel de impacto disponible
+        // (BAJO antes que MODERADO antes que ALTO). No excluye nada si no hay alternativa: es una preferencia.
+        if (context.policy() != null && context.policy().impacto()) {
+            int minimo = validos.stream().mapToInt(c -> rangoImpacto(c)).min().orElse(0);
+            validos = validos.stream().filter(c -> rangoImpacto(c) == minimo).toList();
+        }
         for (var preferencia : List.<java.util.function.Predicate<CandidateExercise>>of(
                 c -> !usadosEnSemana.contains(c.exerciseId()) && !recientes.contains(c.exerciseId()),
                 c -> !usadosEnSemana.contains(c.exerciseId()),
@@ -729,6 +984,15 @@ class CapabilityWeekBuilder {
         return Optional.empty();
     }
 
+    private static int rangoImpacto(CandidateExercise c) {
+        return switch (main.web.services.fitsense.planning.domain.services.ImpactoPolicy.nivel(c)) {
+            case BAJO -> 0;
+            case MODERADO -> 1;
+            case ALTO -> 2;
+            case DESCONOCIDO -> 3;
+        };
+    }
+
     private static long grupos(List<CandidateExercise> lista) {
         return lista.stream().map(CandidateExercise::bodyPartCode).distinct().count();
     }
@@ -744,6 +1008,12 @@ class CapabilityWeekBuilder {
         var trabajo = dia.stream().map(Colocacion::candidato)
                 .filter(c -> !complementos.contains(c.exerciseId())).toList();
         if (enfoque.bodyPartCodes().size() < 3 || trabajo.size() < 4) return true;
+        // LAB P-G2 (apagado por omision): el mismo criterio que el prototipo del validador.
+        if (main.web.services.fitsense.planning.domain.services.LaboratorioAuditoria.v15MitadSobrePrescribibles()
+                && enfoque.bodyPartCodes().stream().filter(g -> resistidos.stream()
+                        .anyMatch(c -> g.equals(c.bodyPartCode()) && ExerciseSelector.allowedIn(enfoque, c)))
+                        .count() < 2)
+            return true;
         var porGrupo = trabajo.stream().collect(Collectors.groupingBy(CandidateExercise::bodyPartCode,
                 Collectors.counting()));
         return porGrupo.values().stream().allMatch(n -> n <= trabajo.size() / 2);
@@ -807,6 +1077,8 @@ class CapabilityWeekBuilder {
                 var con = new ArrayList<>(dia);
                 con.set(k, nueva);
                 if (excede(fecha, enfoque, con)) continue;
+                // Rediseno (diseno B): subir una serie tampoco puede pasar del techo de volumen.
+                if (control != null && !control.cabe(col.candidato(), 1, seriesPorGrupo(dia))) continue;
                 dia.set(k, nueva);
                 cambio = true;
             }
@@ -941,10 +1213,10 @@ class CapabilityWeekBuilder {
     /** Si quitar {@code sale} del dia {@code yo} (que quedaria como {@code con}) deja la semana sin un slot de 4C. */
     private boolean pierdeSlotEnSemana(List<Armada> armadas, int yo, Colocacion sale, List<Colocacion> con,
                                        Set<MandatorySlot> slotsDeLaSemana) {
-        var slot = MandatorySlot.of(sale.candidato());
+        var slot = CoberturaDePatron.slot(sale.candidato());
         if (slot.isEmpty() || !slotsDeLaSemana.contains(slot.get()) || !cubreSlotPendiente(sale)) return false;
         java.util.function.Predicate<Colocacion> cubre =
-                x -> cubreSlotPendiente(x) && MandatorySlot.of(x.candidato()).equals(slot);
+                x -> cubreSlotPendiente(x) && CoberturaDePatron.slot(x.candidato()).equals(slot);
         boolean enOtroDia = java.util.stream.IntStream.range(0, armadas.size()).filter(j -> j != yo)
                 .anyMatch(j -> armadas.get(j).dia().stream().anyMatch(cubre));
         return !enOtroDia && con.stream().noneMatch(cubre);
@@ -1158,7 +1430,7 @@ class CapabilityWeekBuilder {
         if (context.prescription() == null) return false;
         return estimador.estimateSeconds(new PlanDraft.DraftWorkout(fecha, enfoque, nombre(enfoque), 0,
                 dia.stream().map(Colocacion::ejercicio).toList()), context.prescription())
-                < PlanDraftValidator.minimumSessionSeconds(context);
+                < PlanDraftValidator.objetivoLlenadoSegundos(context);
     }
 
     /**

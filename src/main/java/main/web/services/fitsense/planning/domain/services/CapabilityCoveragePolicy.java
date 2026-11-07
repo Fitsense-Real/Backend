@@ -126,7 +126,7 @@ public final class CapabilityCoveragePolicy {
                     var cap = CapabilityPrescriptionPolicy.acreditada(e, c, goalType, fitnessLevel, limites);
                     if (cap.isEmpty()) continue;
                     colocaciones.merge(cap.get(), 1, Integer::sum);
-                    if (cap.get() == estructuralPrincipal) MandatorySlot.of(c).ifPresent(slotsAcreditados::add);
+                    if (cap.get() == estructuralPrincipal) CoberturaDePatron.slot(c).ifPresent(slotsAcreditados::add);
                 }
             }
 
@@ -152,7 +152,7 @@ public final class CapabilityCoveragePolicy {
         var slotsSinCubrir = EnumSet.noneOf(MandatorySlot.class);
         if (estructuralPrincipal != null)
             for (var slot : MandatorySlot.ALL) {
-                boolean hay = porId.values().stream().anyMatch(c -> MandatorySlot.of(c).filter(s -> s == slot).isPresent()
+                boolean hay = porId.values().stream().anyMatch(c -> CoberturaDePatron.slot(c).filter(s -> s == slot).isPresent()
                         && CapabilityPrescriptionPolicy.claseDe(c) == CapabilityPrescriptionPolicy.Clase.ESTRUCTURAL);
                 if (hay && !slotsAcreditados.contains(slot)) slotsSinCubrir.add(slot);
             }

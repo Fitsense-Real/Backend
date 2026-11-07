@@ -91,12 +91,25 @@ class ProgresionV24V8CTest {
     }
 
     @Test
-    @DisplayName("con la progresion apagada no hay herencia: la misma copia la rechaza V24")
-    void apagadoNoHereda() {
+    @DisplayName("P-P1: con la progresion apagada la copia HEREDA la dosis ya publicada con linaje (antes la rechazaba V24)")
+    void apagadoHereda() {
+        // Antes (ProgresionV24V8CTest.apagadoNoHereda, hasta be825f9): assertFalse(publicable) y sin autorizaciones.
+        // Era el defecto H4 de la auditoria post R/R': revertir la progresion dejaba NO_FACTIBLE las semanas de
+        // GAIN_MUSCLE ya progresadas, contra la POLITICA §5. Corregido para todas las politicas (P-P1).
         var r = sinProgresion.produce(contexto(PlanAdjustment.none(), medida(Map.of(EJ, (short) 11), 6, Set.of(),
                 Map.of(S0, Set.of(EJ)))), copia(Map.of(EJ, (short) 11), 6), List.of(), elegibles());
+        assertTrue(r.publicable(), r.problemas().toString());
+        assertEquals(Optional.of(DosisAutorizada.Origen.HEREDADA),
+                r.conservacion().autorizacionDe(LUNES.plusWeeks(1), ej(EJ, 3, 11)));
+    }
+
+    @Test
+    @DisplayName("P-P1 (negativa): con la progresion apagada, una copia SIN linaje sigue rechazada por V24")
+    void apagadoSinLinajeRechazada() {
+        var r = sinProgresion.produce(contexto(PlanAdjustment.none(), medida(Map.of(EJ, (short) 11), 6, Set.of(),
+                Map.of())), copia(Map.of(EJ, (short) 11), 6), List.of(), elegibles());
         assertFalse(r.publicable());
-        assertTrue(r.conservacion().dosisAutorizadas().isEmpty());
+        assertTrue(r.problemas().stream().anyMatch(p -> p.startsWith("V24: el ejercicio " + EJ + " ")), r.problemas().toString());
     }
 
     // =======================================================================
@@ -228,11 +241,26 @@ class ProgresionV24V8CTest {
     }
 
     @Test
-    @DisplayName("D-P7: una vuelta atras no hereda la exencion")
-    void dp7VueltaAtrasNoHereda() {
+    @DisplayName("H7: una vuelta atras por fatiga CONSERVA la exencion de una sesion acortada (antes la perdia)")
+    void dp7VueltaAtrasConservaExencion() {
+        // Antes (dp7VueltaAtrasNoHereda, hasta be825f9): assertFalse(...contains). Era el defecto H7 de la auditoria
+        // post R/R': V20 rechazaba justo la vuelta atras que D-P6 ordena ante fatiga, y la dosis progresada se
+        // quedaba. La vuelta atras devuelve una dosis que ya estaba dentro de la reduccion autorizada.
         var ctx = contexto(PlanAdjustment.none(), medida(Map.of(EJ, (short) 11), 5, Set.of(S0), Map.of(S0, Set.of(EJ))));
         var semana = semanaNueva(Map.of(), 5);
         var contenido = semana.get(0);
+        var paso = new PasoProgresion(S0, PasoProgresion.Tipo.VUELTA_ATRAS, EJ, 0, null, null, 31, 30, 0, 0, null,
+                contenido);
+        var r = conProgresion.produce(ctx, conPaso(paso, 5), List.of(), elegibles(), ExclusionesDeSeguridad.ninguna(), paso);
+        assertTrue(r.conservacion().fechasConDuracionReducible().contains(LUNES.plusWeeks(1)));
+        assertTrue(r.publicable(), r.problemas().toString());
+    }
+
+    @Test
+    @DisplayName("H7 (negativa): una vuelta atras SIN reduccion autorizada previa no gana ninguna exencion")
+    void vueltaAtrasSinReduccionNoGanaExencion() {
+        var ctx = contexto(PlanAdjustment.none(), medida(Map.of(EJ, (short) 11), 5, Set.of(), Map.of(S0, Set.of(EJ))));
+        var contenido = semanaNueva(Map.of(), 5).get(0);
         var paso = new PasoProgresion(S0, PasoProgresion.Tipo.VUELTA_ATRAS, EJ, 0, null, null, 31, 30, 0, 0, null,
                 contenido);
         var r = conProgresion.produce(ctx, conPaso(paso, 5), List.of(), elegibles(), ExclusionesDeSeguridad.ninguna(), paso);

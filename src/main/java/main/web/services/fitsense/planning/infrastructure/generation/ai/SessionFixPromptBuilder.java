@@ -56,10 +56,53 @@ public class SessionFixPromptBuilder {
      */
     public static final String VERSION = "FIX-PR-1.3";
 
+    /**
+     * PROMPT DE ADAPTACION V2, EXPERIMENTAL (experimento C1 frente a C2). Solo con
+     * {@code fitsense.ai.adaptation.prompt-version=v2}; por defecto {@code v1} y el texto es
+     * exactamente el de {@link #VERSION}. V2 anade, sin quitar nada de V1: un bloque de
+     * factibilidad por sesion senalada ({@link FactibilidadAdaptacion}) y, en el reintento, como
+     * leer un rechazo V20 en una sesion que solo puede bajar. No cambia ninguna regla ni validador.
+     */
+    public static final String VERSION_V2 = "FIX-PR-2.0-EXP";
+
+    /** Valor de {@code fitsense.ai.adaptation.prompt-version} que activa V2. */
+    public static final String PROPIEDAD_V2 = "v2";
+
+    /**
+     * V2.1 (candidata posterior K20, experimental): V2 mas tres indicaciones de PERTINENCIA en el texto, sin ninguna
+     * regla ni validador nuevo: (1) cambio minimo = UNA opcion sobre UN ejercicio; (2) ante «demasiado dificil»,
+     * sustitutos con su dificultad registrada y su musculo objetivo, primero los de menor dificultad del mismo musculo,
+     * y si no hay ninguno, bajar la dosis; (3) fatiga: bajar trabajo sin sustituir.
+     */
+    public static final String VERSION_V21 = "FIX-PR-2.1-EXP";
+
+    /** Valor de {@code fitsense.ai.adaptation.prompt-version} que activa V2.1. */
+    public static final String PROPIEDAD_V21 = "v2.1";
+
     private final JsonSupport json;
+    private final boolean v2;
+    private final boolean v21;
 
     public SessionFixPromptBuilder(JsonSupport json) {
+        this(json, "v1");
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public SessionFixPromptBuilder(JsonSupport json,
+                                   @org.springframework.beans.factory.annotation.Value(
+                                           "${fitsense.ai.adaptation.prompt-version:v1}") String promptVersion) {
         this.json = json;
+        String v = promptVersion == null ? "v1" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
+        if (!v.equals("v1") && !v.equals(PROPIEDAD_V2) && !v.equals(PROPIEDAD_V21))
+            throw new IllegalArgumentException(
+                    "fitsense.ai.adaptation.prompt-version admite v1, v2 o v2.1, no '" + promptVersion + "'.");
+        this.v21 = v.equals(PROPIEDAD_V21);
+        this.v2 = v.equals(PROPIEDAD_V2) || v21;
+    }
+
+    /** La version de prompt que este constructor envia: {@link #VERSION} o {@link #VERSION_V2}. */
+    public String version() {
+        return v21 ? VERSION_V21 : v2 ? VERSION_V2 : VERSION;
     }
 
     /**
@@ -230,14 +273,30 @@ public class SessionFixPromptBuilder {
         // V44 · V4-C: solo con esa politica; la historica recibe exactamente el texto de siempre.
         if (context.policy().v4Segundos() && context.profile() != null)
             prompt.append("\nTECHO DE DURACION (backend): ninguna sesion puede pasar de ")
-                    .append(main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy
-                            .limiteV4Segundos(context.profile().sessionMinutes()))
+                    .append(context.policy().limiteV4SegundosDe(context.profile().sessionMinutes()))
                     .append(" s (constraints.max_session_seconds), calculados a partir de los ejercicios aunque"
                             + " declares menos minutos.\n");
 
+        if (v2) prompt.append("""
+
+                COMO USAR FACTIBILIDAD (prompt V2): cada sesion senalada trae un bloque FACTIBILIDAD
+                con seis partes: A objetivo, B alcance, C limites, D opciones, E prohibido y F que hacer
+                si no hay solucion. Los numeros los calcula el backend con las mismas reglas que despues
+                validan tu propuesta. Elige en D cambios que quepan en C. Un cambio permitido que cabe es
+                mejor que omitir la sesion; omitirla es lo correcto cuando F lo dice o cuando ninguna
+                opcion de D sirve al objetivo.
+                """);
+        if (v21) prompt.append("""
+                PERTINENCIA (prompt V2.1): ademas de caber, el cambio tiene que responder al motivo registrado.
+                Cansancio: baja trabajo (series, repeticiones o segundos) sin sustituir. Demasiado dificil: un
+                sustituto de MENOR dificultad registrada y del MISMO musculo objetivo, o menos dosis; uno de la misma
+                dificultad no lo hace mas facil. Falta de motivacion: cambio MINIMO, una sola opcion sobre un solo
+                ejercicio. Cambia lo justo: no reescribas la sesion entera.
+                """);
+
         prompt.append(sesionesSenaladas(context, derivation, adjustment));
 
-        var snapshotJson = json.write(SessionFixInputSnapshot.of(full));
+        var snapshotJson = json.write(SessionFixInputSnapshot.of(full, version()));
         prompt.append("\nDatos de entrada:\n").append(snapshotJson).append('\n');
 
         // El reintento va al final: es lo ultimo que lee y lo unico que
@@ -264,6 +323,10 @@ public class SessionFixPromptBuilder {
         var previous = context.previousWeek();
         var porSesion = prescripcionesPorSesion(previous);
         var resultados = resultadosPorSesion(previous);
+
+        var factibilidad = new LinkedHashMap<Long, FactibilidadAdaptacion.Sesion>();
+        if (v2) FactibilidadAdaptacion.calcular(context, derivation)
+                .forEach(f -> factibilidad.put(f.plannedWorkoutId(), f));
 
         var bloque = new StringBuilder("\nSESIONES SENALADAS (");
         // Solo las que permiten cambiar algo: CONSERVAR y CAUSA_NO_REGISTRADA no se envian (D1, D6).
@@ -303,9 +366,13 @@ public class SessionFixPromptBuilder {
                 for (var p : prescritos) bloque.append("    ").append(describir(p)).append('\n');
             }
 
+            // Rediseno R/R' (P-A2): con la politica historica, la instruccion de siempre (texto identico).
             bloque.append("  QUE PUEDES CAMBIAR AQUI: ")
-                    .append(intervencion.instruccion()).append('\n');
+                    .append(main.web.services.fitsense.planning.domain.services.PermisosIntervencion.instruccion(intervencion, context.policy())).append('\n');
             bloque.append(contratoDeLaSesion(context, derivation, senalada, prescritos));
+            if (v2 && factibilidad.containsKey(id)) bloque.append(v21
+                    ? FactibilidadAdaptacion.textoV21(factibilidad.get(id), context.availableExercises())
+                    : FactibilidadAdaptacion.texto(factibilidad.get(id)));
             if (senalada.minutosDisponibles() != null)
                 bloque.append("  LIMITE DE TIEMPO: la persona declaro que suele tener ")
                         .append(senalada.minutosDisponibles())
@@ -355,7 +422,12 @@ public class SessionFixPromptBuilder {
                 .aplicaA(context.profile().goalType());
         var propia = derivation.from(id).map(d -> d.workout()).orElse(null);
 
-        if (intervencion.permiteCambiarDosis())
+        if (intervencion.permiteCambiarDosis() && gm && main.web.services.fitsense.planning.domain.services.PermisosIntervencion.mantenimientoGM(intervencion, context.policy()))
+            // P-A1 (solo con la politica que lo autoriza): la dosis de mantenimiento de 4D ante fatiga.
+            b.append("  DOSIS (fatiga, GAIN_MUSCLE): puedes bajar UNA serie a las colocaciones ESTRUCTURALES de 3"
+                    + " series (3x10 -> 2x10), con las mismas repeticiones y el mismo descanso. El relleno (2 series)"
+                    + " no baja, las repeticiones no bajan y nada sube. No sustituyas ni retires ejercicios.\n");
+        else if (intervencion.permiteCambiarDosis())
             b.append(gm
                     ? "  DOSIS: en GAIN_MUSCLE la dosis de 4D NO se reduce ni se sube: cada ejercicio que se queda"
                     + " conserva exactamente su series x repeticiones y su descanso. Para acortar solo puedes retirar"
@@ -396,7 +468,8 @@ public class SessionFixPromptBuilder {
                     .append(libres.isEmpty() ? " (ninguna: conserva la fecha)" : "").append(". Ninguna otra.\n");
         }
 
-        if (intervencion.permiteSustituirEjercicio() && propia != null) {
+        boolean unica = main.web.services.fitsense.planning.domain.services.PermisosIntervencion.sustitucionUnica(intervencion, context.policy());
+        if (main.web.services.fitsense.planning.domain.services.PermisosIntervencion.permiteSustituir(intervencion, context.policy()) && propia != null) {
             var enSesion = propia.exercises().stream().map(main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise::exerciseId)
                     .collect(java.util.stream.Collectors.toSet());
             var contiguos = otras.stream()
@@ -418,12 +491,20 @@ public class SessionFixPromptBuilder {
                         .filter(c -> !enSesion.contains(c.exerciseId()) && !contiguos.contains(c.exerciseId())
                                 && !dolieron.contains(c.exerciseId()))
                         .filter(c -> c.difficulty() <= actual.difficulty())
+                        // P-A2 (desmotivacion: equivalentes estrictos) y P-C2 (VARIANTE: sin subir impacto): el mismo
+                        // criterio que V8C (PermisosIntervencion.admiteComoSustituto). Historica: sin cambio.
+                        .filter(c -> main.web.services.fitsense.planning.domain.services.PermisosIntervencion
+                                .admiteComoSustituto(intervencion, context.policy(), actual, c))
                         .map(main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId)
                         .sorted().limit(6).toList();
                 lineas.append("    ").append(e.exerciseId()).append(" (").append(actual.movementPattern()).append("): ")
                         .append(opciones.isEmpty() ? "ninguno" : opciones).append('\n');
             }
-            if (!lineas.isEmpty())
+            if (!lineas.isEmpty() && unica)
+                b.append("  SUSTITUTOS ADMITIDOS ante desmotivacion (COMO MAXIMO UNO en esta sesion; mismo patron y"
+                        + " grupo, dificultad e impacto no superiores, elegibles, no repetidos en dias pegados; usa su"
+                        + " dosis de available_exercises y no cambies ninguna otra dosis):\n").append(lineas);
+            else if (!lineas.isEmpty())
                 b.append("  SUSTITUTOS ADMITIDOS (mismo patron, elegibles, no repetidos en dias pegados; usa su dosis"
                         + " de available_exercises):\n").append(lineas);
         }
@@ -494,6 +575,17 @@ public class SessionFixPromptBuilder {
         return porId;
     }
 
+    /**
+     * V2: como leer V20 en una CORRECCION. El texto de V20 («Agrega un ejercicio del enfoque o una
+     * serie») esta escrito para la generacion; en una sesion que solo puede bajar, el modelo lo leia
+     * como una orden imposible y omitia (U08, U18, U19 de la etapa C). V20 no cambia: cambia la pista.
+     */
+    static final String PISTA_V20_V2 = "V20 en una sesion senalada: quitaste mas de lo que cabe. No anadas"
+            + " ejercicios ni pases de lo prescrito. Devuelve trabajo que TU quitaste: deshaz el cambio que mas"
+            + " retira o recupera series o repeticiones (sin pasar de lo prescrito) hasta que la suma retirada"
+            + " quepa en el MAXIMO de FACTIBILIDAD (C), usando los segundos de D. Si sustituiste, usa un sustituto"
+            + " que admita la misma dosis. Omite la sesion solo si FACTIBILIDAD (F) dice que no hay solucion.";
+
     private void appendRetry(StringBuilder prompt, AiRetryFeedback feedback) {
         boolean conPropuesta = feedback.rejectedOutput() != null
                 && !feedback.rejectedOutput().isBlank();
@@ -519,6 +611,9 @@ public class SessionFixPromptBuilder {
                     .forEach(problem -> prompt.append("- ").append(problem).append('\n'));
         }
         var pistas = PistasDeReintento.para(feedback.rejectionProblems(), true);
+        if (v2 && pistas.stream().anyMatch(p -> p.startsWith("V20")))
+            pistas = java.util.stream.Stream.concat(pistas.stream().filter(p -> !p.startsWith("V20")),
+                    java.util.stream.Stream.of(PISTA_V20_V2)).toList();
         if (!pistas.isEmpty()) {
             prompt.append("\nDonde esta la solucion de cada motivo:\n");
             pistas.forEach(pista -> prompt.append("- ").append(pista).append('\n'));

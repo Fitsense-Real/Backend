@@ -159,6 +159,15 @@ public class PlanGenerationPipeline {
             registrarCobertura(draft, context);
             return new Result(draft, attempts);
         } catch (InvalidPlanDraftException e) {
+            // D-G3 (rediseno, solo con alternativasDeterministas): antes de dejar la semana sin plan, alternativas
+            // DETERMINISTAS y acotadas. Mismo usuario y semana => misma semana publicada.
+            if (context.policy() != null && context.policy().alternativasDeterministas()) {
+                var alternativa = alternativaDeterminista(context, problems, durationToRepsDivisor);
+                if (alternativa != null) {
+                    registrarCobertura(alternativa, context);
+                    return new Result(alternativa, attempts);
+                }
+            }
             // El motor de reglas fallando indica que el conjunto elegible o el
             // perfil hacen imposible cualquier plan valido. Es un dato, no un
             // error tecnico: la semana queda sin plan y su adherencia sera NULL.
@@ -186,6 +195,100 @@ public class PlanGenerationPipeline {
             throw new PlanGenerationFailedException(context.userId(),
                     "Regeneracion determinista: " + String.join(" | ", e.problems()));
         }
+    }
+
+    /** D-G3: numero de semillas derivadas que se prueban (k = 1..N). */
+    static final int VARIANTES_D_G3 = 4;
+
+    /**
+     * D-G3 · alternativa determinista acotada al borrador invalido del motor de reglas. Modo por omision SEMILLAS:
+     * k = 1..{@link #VARIANTES_D_G3} semillas derivadas ({@code seedFor + k x 7919}); la primera valida. Modo
+     * REPARACION (laboratorio, {@code -Dfitsense.lab.dg3-modo=REPARACION}): sustitucion de UNA colocacion de una
+     * sesion que falla por un candidato elegible del mismo grupo y tipo de prescripcion, con la misma dosis, en orden
+     * de id, con un maximo de validaciones. Nunca se publica algo que no pase la validacion completa.
+     */
+    private main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft alternativaDeterminista(
+            PlanGenerationContext context, List<String> problems, int divisor) {
+        return alternativaDeterminista(context, problems, divisor, System.getProperty("fitsense.lab.dg3-modo", "SEMILLAS"));
+    }
+
+    /** D-G3 con el modo explicito (SEMILLAS o REPARACION); publico solo para medirlo en el laboratorio. */
+    public main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft alternativaDeterminista(
+            PlanGenerationContext context, List<String> problems, int divisor, String modo) {
+        if ("REPARACION".equals(modo))
+            return reparacionLocal(context, problems, divisor);
+        if (!(ruleGenerator instanceof main.web.services.fitsense.planning.infrastructure.generation.rules
+                .RuleBasedTrainingPlanGenerator reglas)) return null;
+        for (int k = 1; k <= VARIANTES_D_G3; k++) {
+            try {
+                var d = reglas.generarVariante(context, problems, k);
+                validator.validate(d, context, divisor);
+                log.info("D-G3 user={} semana={} variante_semilla={} VALIDA", context.userId(),
+                        context.weekStartDate(), k);
+                return d;
+            } catch (InvalidPlanDraftException ignorado) {
+                // siguiente variante
+            }
+        }
+        return null;
+    }
+
+    static final int MAX_VALIDACIONES_REPARACION = 300;
+
+    private main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft reparacionLocal(
+            PlanGenerationContext context, List<String> problems, int divisor) {
+        main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft base;
+        List<String> fallos;
+        try {
+            base = ruleGenerator.generate(context, problems);
+            validator.validate(base, context, divisor);
+            return base;
+        } catch (InvalidPlanDraftException e) {
+            fallos = e.problems();
+            base = ruleGenerator.generate(context, problems);
+        }
+        var porId = new java.util.HashMap<Long, main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise>();
+        context.availableExercises().forEach(c -> porId.put(c.exerciseId(), c));
+        var candidatos = context.availableExercises().stream()
+                .sorted(java.util.Comparator.comparing(
+                        main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::exerciseId))
+                .toList();
+        int validaciones = 0;
+        for (int i = 0; i < base.workouts().size(); i++) {
+            var w = base.workouts().get(i);
+            String fecha = w.scheduledDate().toString();
+            if (fallos.stream().noneMatch(p -> p.contains(fecha))) continue;
+            var usados = new java.util.HashSet<Long>();
+            w.exercises().forEach(e -> usados.add(e.exerciseId()));
+            for (int k = 0; k < w.exercises().size(); k++) {
+                var sale = w.exercises().get(k);
+                var cs = porId.get(sale.exerciseId());
+                if (cs == null) continue;
+                for (var c : candidatos) {
+                    if (usados.contains(c.exerciseId()) || !java.util.Objects.equals(c.bodyPartCode(), cs.bodyPartCode())
+                            || c.defaultPrescription() != cs.defaultPrescription()) continue;
+                    if (++validaciones > MAX_VALIDACIONES_REPARACION) return null;
+                    var ej = new java.util.ArrayList<>(w.exercises());
+                    ej.set(k, new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise(
+                            c.exerciseId(), sale.prescriptionType(), sale.plannedSets(), sale.plannedReps(),
+                            sale.plannedDurationSeconds(), null, sale.restSeconds(), sale.notes()));
+                    var ws = new java.util.ArrayList<>(base.workouts());
+                    ws.set(i, new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftWorkout(
+                            w.scheduledDate(), w.focus(), w.name(), w.expectedDurationMinutes(), ej));
+                    var d = new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft(base.source(),
+                            base.modelName(), base.planName(), base.declaredTotalVolume(), base.rationale(), ws);
+                    try {
+                        validator.validate(d, context, divisor);
+                        log.info("D-G3 user={} semana={} reparacion_local VALIDA tras {} validaciones",
+                                context.userId(), context.weekStartDate(), validaciones);
+                        return d;
+                    } catch (InvalidPlanDraftException ignorado) {
+                        // siguiente
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /** Solo para el log: que capacidades del objetivo lleva la semana. No decide nada. */

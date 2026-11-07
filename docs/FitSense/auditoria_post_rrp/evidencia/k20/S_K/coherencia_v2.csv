@@ -1,0 +1,462 @@
+etiqueta,sesion,elemento,v2,sonda,coincide
+K01/ciclo1,4,SESION,margen=78 hayCambioFactible=false,validas=0,true
+K02/ciclo1,15,SESION,margen=72 hayCambioFactible=true,validas=6,true
+K02/ciclo1,15,OPCION 176 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K02/ciclo1,15,OPCION 1001 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K02/ciclo1,15,OPCION 278 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K02/ciclo1,15,OPCION 954 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K02/ciclo1,15,OPCION 956 3x10->3x9 retira 9,cabe,VALIDA,true
+K02/ciclo1,15,OPCION 956 3x10->2x10 retira 120,NO cabe,RECHAZADA,true
+K02/ciclo1,15,OPCION 157 3x10->3x9 retira 9,cabe,VALIDA,true
+K02/ciclo1,15,OPCION 157 3x10->2x10 retira 120,NO cabe,RECHAZADA,true
+K02/ciclo1,15,OPCION 527 3x10->3x9 retira 9,cabe,VALIDA,true
+K02/ciclo1,15,OPCION 527 3x10->2x10 retira 120,NO cabe,RECHAZADA,true
+K03/ciclo1,25,SESION,margen=210 hayCambioFactible=true,validas=9,true
+K03/ciclo1,25,OPCION 1195 3x6->2x6 retira 168,cabe,VALIDA,true
+K03/ciclo1,25,OPCION 755 3x6->2x6 retira 168,cabe,VALIDA,true
+K03/ciclo1,25,OPCION 121 3x6->2x6 retira 168,cabe,VALIDA,true
+K03/ciclo1,25,OPCION 893 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K03/ciclo1,25,OPCION 893 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K03/ciclo1,25,OPCION 894 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K03/ciclo1,25,OPCION 894 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K04/ciclo1,36,SESION,margen=192 hayCambioFactible=true,validas=17,true
+K04/ciclo1,36,OPCION 1113 2x10->2x9 retira 6,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 775 2x10->2x9 retira 6,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 1103 2x10->2x9 retira 6,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 1262 2x15->2x14 retira 6,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 1066 2x15->2x14 retira 6,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 877 2x15->2x14 retira 6,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 1054 3 series de 90 s->3 series de 80 s retira 30,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 1054 3 series de 90 s->2 series de 90 s retira 150,cabe,VALIDA,true
+K04/ciclo1,36,OPCION 1309 2 series de 30 s->2 series de 20 s retira 20,cabe,VALIDA,true
+K05/ciclo1,46,SESION,margen=66 hayCambioFactible=true,validas=91,true
+K05/ciclo1,46,SUSTITUTO 878->121,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 878->122,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 878->1073,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 878->1112,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 878->1118,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 878->1157,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1057->134,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1057->294,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1057->695,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1057->734,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1057->735,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1057->736,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1187->57,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1187->60,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1187->63,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1187->68,otra dosis,no probada (otra zona o tipo),
+K05/ciclo1,46,SUSTITUTO 1187->106,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 1187->108,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 790->125,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 790->142,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 790->147,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 790->148,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 790->553,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 790->715,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 104->57,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 104->60,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 104->63,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 104->68,otra dosis,no probada (otra zona o tipo),
+K05/ciclo1,46,SUSTITUTO 104->106,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 104->108,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 788->125,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 788->142,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 788->147,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 788->148,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 788->553,misma dosis,VALIDA,true
+K05/ciclo1,46,SUSTITUTO 788->715,misma dosis,VALIDA,true
+K06/ciclo1,57,SESION,margen=168 hayCambioFactible=true,validas=52,true
+K06/ciclo1,57,OPCION 973 2x10->2x9 retira 6,cabe,VALIDA,true
+K06/ciclo1,57,OPCION 1179 2x10->2x9 retira 6,cabe,VALIDA,true
+K06/ciclo1,57,OPCION 1059 2x10->2x9 retira 6,cabe,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1097->318,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 1097->460,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1097->494,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1097->496,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1097->508,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 1097->509,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 775->318,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 775->460,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 775->494,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 775->496,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 775->508,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 775->509,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 1118->878,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1118->1073,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1118->1112,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 973->59,otra dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 973->310,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 973->498,otra dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 973->774,otra dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 973->859,otra dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 973->901,otra dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 1179->318,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 1179->460,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1179->494,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1179->496,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1179->508,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 1179->509,misma dosis,no probada (otra zona o tipo),
+K06/ciclo1,57,SUSTITUTO 1059->507,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1059->877,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1059->939,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1059->1076,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1059->1103,misma dosis,VALIDA,true
+K06/ciclo1,57,SUSTITUTO 1059->1114,misma dosis,VALIDA,true
+K07/ciclo1,67,SESION,margen=288 hayCambioFactible=true,validas=139,true
+K07/ciclo1,67,OPCION 879 3x6->2x6 retira 168,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 1110 3x6->2x6 retira 168,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 144 3x6->2x6 retira 168,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 1177 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 1177 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 53 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 53 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 1176 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K07/ciclo1,67,OPCION 1176 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 879->121,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 879->122,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 879->309,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 879->878,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 879->1005,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 879->1042,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1110->124,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1110->127,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1110->145,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1110->311,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1110->327,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1110->439,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 144->145,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 144->327,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 144->507,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 144->791,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 144->877,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 144->915,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1177->253,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1177->293,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1177->298,otra dosis,no probada (otra zona o tipo),
+K07/ciclo1,67,SUSTITUTO 1177->853,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1177->854,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1177->893,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 53->253,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 53->293,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 53->298,otra dosis,no probada (otra zona o tipo),
+K07/ciclo1,67,SUSTITUTO 53->853,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 53->854,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 53->893,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1176->253,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1176->293,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1176->298,otra dosis,no probada (otra zona o tipo),
+K07/ciclo1,67,SUSTITUTO 1176->853,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1176->854,misma dosis,VALIDA,true
+K07/ciclo1,67,SUSTITUTO 1176->893,misma dosis,VALIDA,true
+K08/ciclo1,78,SESION,margen=159 hayCambioFactible=true,validas=129,true
+K08/ciclo1,78,OPCION 778 3x10->3x9 retira 9,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 778 3x10->2x10 retira 120,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 1100 3x10->3x9 retira 9,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 1100 3x10->2x10 retira 120,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 56 3x18->3x17 retira 9,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 56 3x18->2x18 retira 99,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 114 3x18->3x17 retira 9,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 114 3x18->2x18 retira 99,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 1315 3x18->3x17 retira 9,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 1315 3x18->2x18 retira 99,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 293 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K08/ciclo1,78,OPCION 293 3 series de 120 s->2 series de 120 s retira 180,NO cabe,RECHAZADA,true
+K08/ciclo1,78,OPCION 881 2 series de 30 s->2 series de 20 s retira 20,cabe,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 778->101,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 778->136,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 778->511,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 778->512,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 778->513,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 778->535,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1100->103,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1100->129,misma dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 1100->318,misma dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 1100->460,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1100->494,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1100->496,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 56->103,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 56->129,misma dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 56->318,misma dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 56->460,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 56->494,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 56->496,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 114->115,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 114->116,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 114->117,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 114->143,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1315->144,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1315->145,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1315->507,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1315->877,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1315->939,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 1315->1059,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 293->53,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 293->253,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 293->298,otra dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 293->853,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 293->854,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 293->893,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 881->55,otra dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 881->67,misma dosis,VALIDA,true
+K08/ciclo1,78,SUSTITUTO 881->312,otra dosis,VALIDA,
+K08/ciclo1,78,SUSTITUTO 881->453,misma dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 881->454,misma dosis,no probada (otra zona o tipo),
+K08/ciclo1,78,SUSTITUTO 881->455,misma dosis,no probada (otra zona o tipo),
+K09/ciclo1,88,SESION,margen=48 hayCambioFactible=false,validas=0,true
+K10/ciclo1,99,SESION,margen=48 hayCambioFactible=false,validas=0,true
+K10/ciclo1,99,OPCION 1155 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K10/ciclo1,99,OPCION 115 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K10/ciclo1,99,OPCION 609 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K10/ciclo1,99,OPCION 739 3x6->2x6 retira 168,NO cabe,RECHAZADA,true
+K11/ciclo1,109,SESION,margen=210 hayCambioFactible=true,validas=6,true
+K11/ciclo1,109,OPCION 853 3 series de 90 s->3 series de 80 s retira 30,cabe,VALIDA,true
+K11/ciclo1,109,OPCION 853 3 series de 90 s->2 series de 90 s retira 150,cabe,VALIDA,true
+K11/ciclo1,109,OPCION 1117 3 series de 90 s->3 series de 80 s retira 30,cabe,VALIDA,true
+K11/ciclo1,109,OPCION 1117 3 series de 90 s->2 series de 90 s retira 150,cabe,VALIDA,true
+K12/ciclo1,120,SESION,margen=27 hayCambioFactible=true,validas=15,true
+K12/ciclo1,120,OPCION 946 3x10->3x9 retira 9,cabe,VALIDA,true
+K12/ciclo1,120,OPCION 946 3x10->2x10 retira 120,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 1224 3x10->3x9 retira 9,cabe,VALIDA,true
+K12/ciclo1,120,OPCION 1224 3x10->2x10 retira 120,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 468 3x10->3x9 retira 9,cabe,VALIDA,true
+K12/ciclo1,120,OPCION 468 3x10->2x10 retira 120,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 339 3x18->3x17 retira 9,cabe,VALIDA,true
+K12/ciclo1,120,OPCION 339 3x18->2x18 retira 99,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 438 3x18->3x17 retira 9,cabe,VALIDA,true
+K12/ciclo1,120,OPCION 438 3x18->2x18 retira 99,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 875 3x18->3x17 retira 9,cabe,VALIDA,true
+K12/ciclo1,120,OPCION 875 3x18->2x18 retira 99,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 893 3 series de 120 s->3 series de 110 s retira 30,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 893 3 series de 120 s->2 series de 120 s retira 180,NO cabe,RECHAZADA,true
+K12/ciclo1,120,OPCION 1260 2 series de 30 s->2 series de 20 s retira 20,cabe,VALIDA,true
+K13/ciclo1,128,SESION,margen=45 hayCambioFactible=true,validas=86,true
+K13/ciclo1,128,SUSTITUTO 1103->507,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1103->877,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1103->939,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1103->1059,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1103->1076,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1103->1196,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1112->878,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1112->1073,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1112->1118,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 497->57,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 497->60,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 497->63,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 497->68,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,128,SUSTITUTO 497->254,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,128,SUSTITUTO 497->297,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 1187->57,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 1187->60,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 1187->63,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 1187->68,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,128,SUSTITUTO 1187->254,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,128,SUSTITUTO 1187->297,otra dosis,VALIDA,
+K13/ciclo1,128,SUSTITUTO 1114->507,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1114->877,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1114->939,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1114->1059,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1114->1076,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1114->1196,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1195->507,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1195->877,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1195->939,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1195->1059,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1195->1076,misma dosis,VALIDA,true
+K13/ciclo1,128,SUSTITUTO 1195->1196,misma dosis,VALIDA,true
+K13/ciclo1,129,SESION,margen=66 hayCambioFactible=false,validas=0,true
+K13/ciclo1,130,SESION,margen=45 hayCambioFactible=true,validas=62,true
+K13/ciclo1,130,SUSTITUTO 1103->877,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1103->939,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1103->1059,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1103->1076,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1103->1114,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1103->1195,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1107->57,otra dosis,VALIDA,
+K13/ciclo1,130,SUSTITUTO 1107->60,otra dosis,VALIDA,
+K13/ciclo1,130,SUSTITUTO 1107->63,otra dosis,VALIDA,
+K13/ciclo1,130,SUSTITUTO 1107->68,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,130,SUSTITUTO 1107->254,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,130,SUSTITUTO 1107->297,otra dosis,VALIDA,
+K13/ciclo1,130,SUSTITUTO 507->877,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 507->939,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 507->1059,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 507->1076,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 507->1114,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 507->1195,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1185->59,otra dosis,VALIDA,
+K13/ciclo1,130,SUSTITUTO 1185->310,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,130,SUSTITUTO 1185->498,otra dosis,VALIDA,
+K13/ciclo1,130,SUSTITUTO 1185->774,otra dosis,VALIDA,
+K13/ciclo1,130,SUSTITUTO 1185->859,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,130,SUSTITUTO 1185->901,otra dosis,no probada (otra zona o tipo),
+K13/ciclo1,130,SUSTITUTO 878->1073,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 878->1118,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1112->1073,misma dosis,VALIDA,true
+K13/ciclo1,130,SUSTITUTO 1112->1118,misma dosis,VALIDA,true
+K14/ciclo1,140,SESION,margen=204 hayCambioFactible=true,validas=228,true
+K14/ciclo1,140,OPCION 1113 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,140,OPCION 997 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,140,OPCION 164 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,140,OPCION 954 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,140,OPCION 1095 3x10->3x9 retira 9,cabe,VALIDA,true
+K14/ciclo1,140,OPCION 1095 3x10->2x10 retira 120,cabe,VALIDA,true
+K14/ciclo1,140,OPCION 389 3x10->3x9 retira 9,cabe,VALIDA,true
+K14/ciclo1,140,OPCION 389 3x10->2x10 retira 120,cabe,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1113->72,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1113->73,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1113->78,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 1113->102,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1113->129,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 1113->313,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 997->119,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 997->135,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 997->300,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 997->336,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 997->349,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 997->350,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 164->125,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 164->142,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 164->147,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 164->148,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 164->175,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 164->188,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 954->101,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 954->136,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 954->162,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 954->219,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 954->220,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 954->221,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1095->72,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1095->73,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1095->78,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 1095->102,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 1095->129,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 1095->313,misma dosis,no probada (otra zona o tipo),
+K14/ciclo1,140,SUSTITUTO 389->71,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 389->74,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 389->75,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 389->76,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 389->77,misma dosis,VALIDA,true
+K14/ciclo1,140,SUSTITUTO 389->114,misma dosis,VALIDA,true
+K14/ciclo1,141,SESION,margen=204 hayCambioFactible=true,validas=10,true
+K14/ciclo1,141,OPCION 1092 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,141,OPCION 76 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,141,OPCION 1118 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,141,OPCION 739 3x6->2x6 retira 168,cabe,VALIDA,true
+K14/ciclo1,141,OPCION 667 3x10->3x9 retira 9,cabe,VALIDA,true
+K14/ciclo1,141,OPCION 667 3x10->2x10 retira 120,cabe,VALIDA,true
+K14/ciclo1,141,OPCION 437 3x10->3x9 retira 9,cabe,VALIDA,true
+K14/ciclo1,141,OPCION 437 3x10->2x10 retira 120,cabe,VALIDA,true
+K15/ciclo1,149,SESION,margen=300 hayCambioFactible=true,validas=69,true
+K15/ciclo1,149,OPCION 552 3x6->2x6 retira 168,cabe,VALIDA,true
+K15/ciclo1,149,OPCION 553 3x6->2x6 retira 168,cabe,VALIDA,true
+K15/ciclo1,149,OPCION 1093 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K15/ciclo1,149,OPCION 1093 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K15/ciclo1,149,OPCION 893 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K15/ciclo1,149,OPCION 893 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 552->144,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 552->145,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 552->311,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 552->507,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 552->527,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 552->554,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 553->125,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 553->142,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 553->147,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 553->148,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 553->715,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 553->788,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 1093->53,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 1093->293,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 1093->298,otra dosis,no probada (otra zona o tipo),
+K15/ciclo1,149,SUSTITUTO 1093->853,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 1093->854,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 1093->902,otra dosis,no probada (otra zona o tipo),
+K15/ciclo1,149,SUSTITUTO 893->53,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 893->293,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 893->298,otra dosis,no probada (otra zona o tipo),
+K15/ciclo1,149,SUSTITUTO 893->853,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 893->854,misma dosis,VALIDA,true
+K15/ciclo1,149,SUSTITUTO 893->902,otra dosis,no probada (otra zona o tipo),
+K15/ciclo1,150,SESION,margen=300 hayCambioFactible=true,validas=8,true
+K15/ciclo1,150,OPCION 1152 3x6->2x6 retira 168,cabe,VALIDA,true
+K15/ciclo1,150,OPCION 1138 3x6->2x6 retira 168,cabe,VALIDA,true
+K15/ciclo1,150,OPCION 533 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K15/ciclo1,150,OPCION 533 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K15/ciclo1,150,OPCION 1175 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K15/ciclo1,150,OPCION 1175 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K15/ciclo1,151,SESION,margen=300 hayCambioFactible=true,validas=91,true
+K15/ciclo1,151,OPCION 609 3x6->2x6 retira 168,cabe,VALIDA,true
+K15/ciclo1,151,OPCION 918 3x6->2x6 retira 168,cabe,VALIDA,true
+K15/ciclo1,151,OPCION 894 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K15/ciclo1,151,OPCION 894 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K15/ciclo1,151,OPCION 293 3 series de 120 s->3 series de 110 s retira 30,cabe,VALIDA,true
+K15/ciclo1,151,OPCION 293 3 series de 120 s->2 series de 120 s retira 180,cabe,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 609->144,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 609->145,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 609->311,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 609->507,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 609->527,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 609->552,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 918->144,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 918->145,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 918->311,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 918->507,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 918->527,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 918->552,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 894->53,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 894->93,otra dosis,no probada (otra zona o tipo),
+K15/ciclo1,151,SUSTITUTO 894->253,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 894->298,otra dosis,no probada (otra zona o tipo),
+K15/ciclo1,151,SUSTITUTO 894->853,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 894->854,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 293->53,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 293->253,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 293->298,otra dosis,no probada (otra zona o tipo),
+K15/ciclo1,151,SUSTITUTO 293->853,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 293->854,misma dosis,VALIDA,true
+K15/ciclo1,151,SUSTITUTO 293->893,misma dosis,VALIDA,true
+K16/ciclo1,161,SESION,margen=57 hayCambioFactible=true,validas=42,true
+K16/ciclo1,161,OPCION 1096 2x15->2x14 retira 6,cabe,VALIDA,true
+K16/ciclo1,161,OPCION 775 2x15->2x14 retira 6,cabe,VALIDA,true
+K16/ciclo1,161,OPCION 1117 3 series de 90 s->3 series de 80 s retira 30,cabe,VALIDA,true
+K16/ciclo1,161,OPCION 1117 3 series de 90 s->2 series de 90 s retira 150,NO cabe,RECHAZADA,true
+K16/ciclo1,161,OPCION 1137 2 series de 30 s->2 series de 20 s retira 20,cabe,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1095->318,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1095->460,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1095->494,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1095->496,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1095->508,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1095->509,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1096->318,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1096->460,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1096->494,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1096->496,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1096->508,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1096->509,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 775->318,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 775->460,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 775->494,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 775->496,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 775->508,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 775->509,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1117->253,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1117->298,otra dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1117->853,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1117->902,otra dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1117->903,otra dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1117->1054,misma dosis,VALIDA,true
+K16/ciclo1,161,SUSTITUTO 1137->55,otra dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1137->67,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1137->312,otra dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1137->453,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1137->454,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,161,SUSTITUTO 1137->455,misma dosis,no probada (otra zona o tipo),
+K16/ciclo1,162,SESION,margen=24 hayCambioFactible=true,validas=9,true
+K16/ciclo1,162,OPCION 1099 2x15->2x14 retira 6,cabe,VALIDA,true
+K16/ciclo1,162,OPCION 1066 2x15->2x14 retira 6,cabe,VALIDA,true
+K16/ciclo1,162,OPCION 883 2x15->2x14 retira 6,cabe,VALIDA,true
+K16/ciclo1,162,OPCION 253 3 series de 90 s->3 series de 80 s retira 30,NO cabe,RECHAZADA,true
+K16/ciclo1,162,OPCION 253 3 series de 90 s->2 series de 90 s retira 150,NO cabe,RECHAZADA,true
+K16/ciclo1,162,OPCION 917 2 series de 30 s->2 series de 20 s retira 20,cabe,VALIDA,true
