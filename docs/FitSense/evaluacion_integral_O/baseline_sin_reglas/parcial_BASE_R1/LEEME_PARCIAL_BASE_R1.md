@@ -73,3 +73,6 @@
 - `COMPARACION_FITSENSE_VS_BASELINE.xlsx`;
 - `PREDICCIONES_REPLICATE_BASELINE.csv`;
 - `metricas.json`.
+
+---
+**Sustituido por los entregables finales** de la carpeta superior (BASE-R1 + BASE-R2). Las cifras de BASE-R1 de los finales son idénticas a las de esta carpeta: 637 infracciones y 19/19 planes en generación; 59 cambios y 10/10 ciclos en adaptación.
