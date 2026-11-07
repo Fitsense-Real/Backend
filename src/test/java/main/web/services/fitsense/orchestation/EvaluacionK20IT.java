@@ -202,6 +202,16 @@ class EvaluacionK20IT {
     /** Intentos de generacion con IA rechazados por el pipeline (mensaje WARN del backend), por etiqueta. */
     static final List<String[]> rechazosGeneracion = Collections.synchronizedList(new ArrayList<>());
     static final List<Map<String, Object>> generacionIa = Collections.synchronizedList(new ArrayList<>());
+    /**
+     * LINEA BASE SIN REGLAS (orden del 07/11/2026): evaluacion de SOLO LECTURA. Directorio con las propuestas de la linea
+     * base ya convertidas al formato de salida del backend (<corrida>__<perfil>.json, nombres normalizados a ids de forma
+     * trazable; los no identificables con ids inexistentes). Para cada perfil se arma el MISMO contexto que la generacion
+     * real (prepare, fase 1, solo lectura) y se pasa la propuesta por el normalizador y el PlanDraftValidator (V1-V27).
+     * NADA se persiste ni se publica, y no se ejecuta ningun ciclo. Vacio = apagado.
+     */
+    static final String BASELINE_EVALUAR = System.getProperty("fitsense.evaluacion.k20.baseline-evaluar", "");
+    static final List<Map<String, Object>> baselineValidacion = Collections.synchronizedList(new ArrayList<>());
+    static final List<Map<String, Object>> baselineDisponibles = Collections.synchronizedList(new ArrayList<>());
     static final boolean PROGRESION_INTEGRAL = INTEGRAL
             && Boolean.parseBoolean(System.getProperty("fitsense.evaluacion.k20.progresion", "false"));
     /** Solo estos perfiles (bloque de la corrida); vacio = todos. */
@@ -382,6 +392,10 @@ class EvaluacionK20IT {
         if (REPLICATE && GEMELOS) for (var p : lista) ejecutarGemelo(p, incid);
 
         csv("resultados_20.csv", res);
+        if (!BASELINE_EVALUAR.isBlank()) {
+            csv("baseline_validacion.csv", new ArrayList<>(baselineValidacion));
+            csv("baseline_disponibles.csv", new ArrayList<>(baselineDisponibles));
+        }
         if (GENERACION_IA && !generacionIa.isEmpty()) csv("generacion_ia.csv", new ArrayList<>(generacionIa));
         if (INTEGRAL) {
             csv("semanas_integral.csv", semanasIntegral);
@@ -600,6 +614,12 @@ class EvaluacionK20IT {
             incid.add(id + " LOGIN ERROR " + e);
         }
 
+        if (!BASELINE_EVALUAR.isBlank()) {
+            evaluarBaseline(id, u);
+            r.put("generacion", "BASELINE_EVALUADA_SOLO_LECTURA");
+            res.add(r);
+            return;
+        }
         etiquetaActual = id + "/generacion";
         validaciones.set(0);
         rechazosValidacion.clear();
@@ -1207,6 +1227,78 @@ class EvaluacionK20IT {
             }
         }
         return null;
+    }
+
+    @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planCommands;
+    @Autowired main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer normalizador;
+
+    /** Linea base: contexto real de la generacion (solo lectura) + validadores reales; nada se persiste. */
+    private void evaluarBaseline(String id, long u) {
+        main.web.services.fitsense.planning.domain.model.valueobjects.PreparedPlanGeneration prep;
+        try {
+            prep = planCommands.prepare(
+                    main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyPlanCommand.firstPlan(u, S1));
+        } catch (RuntimeException e) {
+            var m = new LinkedHashMap<String, Object>();
+            m.put("id", id); m.put("archivo", "-"); m.put("resultado", "SIN_CONTEXTO"); m.put("n_problemas", 0);
+            m.put("problemas", e.getClass().getSimpleName() + ": " + e.getMessage());
+            baselineValidacion.add(m);
+            return;
+        }
+        var ctx = prep.context();
+        for (var c : ctx.availableExercises()) {
+            var m = new LinkedHashMap<String, Object>();
+            m.put("id", id);
+            m.put("exercise_id", c.exerciseId());
+            m.put("name", c.name());
+            m.put("body_part", c.bodyPartCode());
+            m.put("equipment", c.equipmentCode());
+            m.put("difficulty", c.difficulty());
+            m.put("prescription_type", c.defaultPrescription());
+            m.put("target_muscle", c.targetMuscle());
+            m.put("movement_pattern", c.movementPattern());
+            baselineDisponibles.add(m);
+        }
+        java.io.File[] archivos = Path.of(BASELINE_EVALUAR).toFile().listFiles((d, n) -> n.endsWith("__" + id + ".json"));
+        if (archivos == null) return;
+        java.util.Arrays.sort(archivos);
+        for (java.io.File f : archivos) {
+            // CRUDO: la propuesta tal cual (medida principal). NORMALIZADO: tras el normalizador mecanico del backend
+            // (tipo de prescripcion y duracion calculada), la etapa en la que GRA validaba sus propuestas. Ninguna de
+            // las dos modifica el archivo guardado; el borrador normalizado solo existe en memoria para medir.
+            for (String etapa : List.of("CRUDO", "NORMALIZADO")) {
+                var m = new LinkedHashMap<String, Object>();
+                m.put("id", id);
+                m.put("archivo", f.getName());
+                m.put("etapa", etapa);
+                m.put("correcciones_normalizador", "");
+                sondeando = true;   // no contar estas validaciones en los espias de la generacion
+                try {
+                    String json = Files.readString(f.toPath());
+                    var draft = generador.toDraft(json);
+                    if (etapa.equals("NORMALIZADO")) {
+                        var nr = normalizador.normalize(draft, ctx);
+                        draft = nr.draft();
+                        m.put("correcciones_normalizador", String.join(" || ", nr.corrections()).replaceAll("\\s+", " "));
+                    }
+                    validador.validate(draft, ctx, prep.divisor());
+                    m.put("resultado", "VALIDO");
+                    m.put("n_problemas", 0);
+                    m.put("problemas", "");
+                } catch (main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException e) {
+                    m.put("resultado", "INVALIDO");
+                    m.put("n_problemas", e.problems().size());
+                    m.put("problemas", String.join(" || ", e.problems()).replaceAll("\\s+", " "));
+                } catch (Exception e) {
+                    m.put("resultado", "NO_EVALUABLE");
+                    m.put("n_problemas", 0);
+                    m.put("problemas", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()).replaceAll("\\s+", " "));
+                } finally {
+                    sondeando = false;
+                }
+                baselineValidacion.add(m);
+            }
+        }
     }
 
     @Autowired main.web.services.fitsense.planning.infrastructure.generation.ai.PlanPromptBuilder promptGeneracion;
