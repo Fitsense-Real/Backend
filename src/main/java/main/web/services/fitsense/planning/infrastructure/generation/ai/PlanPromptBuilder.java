@@ -112,10 +112,39 @@ public class PlanPromptBuilder {
               aportan nada al objetivo ya no estan en la lista.
             """;
 
+    /**
+     * PR-1.8, EXPERIMENTAL (experimento de mejora MEJ, 07/11/2026). Solo con
+     * {@code fitsense.ai.generation.prompt-version=pr-1.8}; por defecto {@code pr-1.7} y el prompt es EXACTAMENTE el de
+     * {@link #VERSION}. PR-1.8 no anade ninguna regla ni validador: anade un bloque de COHERENCIA que le dice al modelo
+     * los numeros con los que el backend YA revisa la propuesta y que PR-1.7 no le daba: la mitad de V15 cuando
+     * max_per_body_part viaja en null (siempre con PLAN-REV-2.0), los techos de V26 y la dosis orientativa de
+     * CalidadDosis (la que decide el aviso DOSIS_LIMITADA). Diagnostico en docs/FitSense/mejora_ia/.
+     */
+    public static final String VERSION_V18 = "PR-1.8-EXP";
+    public static final String PROPIEDAD_V18 = "pr-1.8";
+
     private final JsonSupport jsonSupport;
+    private final boolean v18;
 
     public PlanPromptBuilder(JsonSupport jsonSupport) {
+        this(jsonSupport, "pr-1.7");
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public PlanPromptBuilder(JsonSupport jsonSupport,
+                             @org.springframework.beans.factory.annotation.Value(
+                                     "${fitsense.ai.generation.prompt-version:pr-1.7}") String promptVersion) {
         this.jsonSupport = jsonSupport;
+        String v = promptVersion == null ? "pr-1.7" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
+        if (!v.equals("pr-1.7") && !v.equals(PROPIEDAD_V18))
+            throw new IllegalArgumentException(
+                    "fitsense.ai.generation.prompt-version admite pr-1.7 o pr-1.8, no '" + promptVersion + "'.");
+        this.v18 = v.equals(PROPIEDAD_V18);
+    }
+
+    /** La version de prompt que se envia: {@link #VERSION} o {@link #VERSION_V18}. */
+    public String version() {
+        return v18 ? VERSION_V18 : VERSION;
     }
 
     public String build(PlanGenerationContext context, String inputSnapshotJson,
@@ -264,6 +293,7 @@ public class PlanPromptBuilder {
             prompt.append(BLOQUE_CAPACIDADES);
 
         prompt.append(duracionCalculada(context));
+        if (v18) prompt.append(coherenciaConValidadores(context));
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
 
         // La comprobacion va DESPUES de los datos: es lo ultimo que lee el
@@ -413,6 +443,64 @@ public class PlanPromptBuilder {
     /** Sin estado: el mismo calculo de V17 y V20. */
     private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR =
             new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
+
+    /**
+     * PR-1.8: los numeros con los que el backend ya revisa la propuesta (V15, V26) y la dosis orientativa de
+     * CalidadDosis. Mismas fuentes que el validador: PlanDraftValidator (mitad de V15), DosisSemanalPolicy (techos de
+     * V26 y objetivos), CatalogEligibilityPolicy (complementos fuera del recuento). No cambia ninguna regla.
+     */
+    static String coherenciaConValidadores(PlanGenerationContext context) {
+        var profile = context.profile();
+        if (profile == null) return "";
+        var b = new StringBuilder("\nCOHERENCIA CON LOS VALIDADORES (PR-1.8). Son los mismos numeros con los que el")
+                .append(" backend revisa tu propuesta; PR-1.7 no te los daba todos:\n");
+        b.append("- REPARTO (V15): en una sesion cuyo enfoque admite 3 o mas grupos y que lleva 4 o mas ejercicios,")
+                .append(" ningun body_part puede tener MAS de la mitad de los ejercicios de esa sesion (con 6")
+                .append(" ejercicios, como maximo 3 del mismo grupo; con 5 o 4, como maximo 2). Vale aunque")
+                .append(" max_per_body_part venga en null.\n");
+        var policy = context.policy();
+        String nivel = profile.fitnessLevel();
+        if (policy != null && policy.volumenSemanal()) {
+            b.append("- VOLUMEN POR GRUPO (V26): sumando las series de los ejercicios de fuerza (no cuentan los de")
+                    .append(" cardio, movilidad ni estiramiento), un mismo body_part no puede pasar de ")
+                    .append(main.web.services.fitsense.planning.domain.services.DosisSemanalPolicy.techoSeriesSesion(nivel))
+                    .append(" series en una sesion ni de ")
+                    .append(main.web.services.fitsense.planning.domain.services.DosisSemanalPolicy.techoSeriesSemana(nivel))
+                    .append(" en la semana. Si un grupo llega a su techo, reparte el resto en otros grupos del enfoque.\n");
+        }
+        // Dosis orientativa: la de CalidadDosis, solo para los grupos grandes con material y admitidos por la division.
+        var elegibles = context.availableExercises() == null ? List.<main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise>of()
+                : context.availableExercises();
+        var comp = main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy
+                .complementos(elegibles, profile.goalType());
+        var admitidos = new java.util.TreeSet<String>();
+        context.suggestedSplit().forEach(sesion -> admitidos.addAll(sesion.focus().bodyPartCodes()));
+        var conMaterial = new java.util.TreeSet<String>();
+        elegibles.stream().filter(c -> !comp.contains(c.exerciseId()))
+                .map(main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise::bodyPartCode)
+                .filter(main.web.services.fitsense.planning.domain.services.DosisSemanalPolicy.GRUPOS_GRANDES::contains)
+                .filter(admitidos::contains).forEach(conMaterial::add);
+        var objetivos = new java.util.ArrayList<String>();
+        for (var g : conMaterial) {
+            int n = main.web.services.fitsense.planning.domain.services.DosisSemanalPolicy
+                    .objetivoSeriesSemana(profile.goalType(), nivel, g);
+            if (n > 0) objetivos.add(g + " " + n);
+        }
+        int aerobico = main.web.services.fitsense.planning.domain.services.DosisSemanalPolicy
+                .objetivoAerobicoMinutosSemana(profile.goalType(), nivel);
+        if (!objetivos.isEmpty() || aerobico > 0) {
+            b.append("- DOSIS ORIENTATIVA DE LA SEMANA (no invalida la propuesta; si no se alcanza, el backend avisa a")
+                    .append(" la persona de que su plan queda por debajo):");
+            if (!objetivos.isEmpty())
+                b.append(" series semanales de fuerza por grupo: ").append(String.join(", ", objetivos)).append(';');
+            if (aerobico > 0)
+                b.append(" ").append(aerobico).append(" minutos de trabajo aerobico en la semana (series x segundos")
+                        .append(" de los ejercicios de cardio);");
+            b.append(" acercate a ella con los ejercicios y series que caben en la duracion, en las colocaciones")
+                    .append(" maximas y en los techos de arriba. Nunca la persigas rompiendo una regla.\n");
+        }
+        return b.toString();
+    }
 
     /**
      * Orden de optimizacion (31/10/2026), B2: el minimo de V20 en segundos y lo que cuesta cada dosis

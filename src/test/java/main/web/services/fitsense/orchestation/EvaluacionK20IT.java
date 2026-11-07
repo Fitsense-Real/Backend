@@ -170,6 +170,8 @@ class EvaluacionK20IT {
     }
     /** Candidata posterior (eval/final-ieee-k20-v2): v1 | v2 | v2.1. Vacio = la del backend (v1). */
     static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
+    /** Experimento de mejora (MEJ): prompt de GENERACION pr-1.7 | pr-1.8. Vacio = el del backend (pr-1.7). */
+    static final String PROMPT_GENERACION = System.getProperty("fitsense.evaluacion.k20.prompt-generacion", "");
 
     static final Path K20 = Path.of("docs/FitSense/short_paper_ieee/evaluacion_final_k20");
     /** Por defecto los 20 historicos; con -Dfitsense.evaluacion.k20.perfiles, otra cohorte (casos reservados). */
@@ -234,6 +236,7 @@ class EvaluacionK20IT {
     static void ia(DynamicPropertyRegistry r) {
         r.add("fitsense.ai.enabled", () -> String.valueOf(IA_ACTIVA));
         if (!PROMPT.isBlank()) r.add("fitsense.ai.adaptation.prompt-version", () -> PROMPT);
+        if (!PROMPT_GENERACION.isBlank()) r.add("fitsense.ai.generation.prompt-version", () -> PROMPT_GENERACION);
         if (REPLICATE) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
         if (SIMULADA) r.add("fitsense.ai.base-url", () -> "http://127.0.0.1:9/ia-simulada-sin-red");
         if (PROGRESION_INTEGRAL) r.add("fitsense.adaptation.progression.enabled", () -> "true");

@@ -22,7 +22,7 @@ class SessionFixPromptV21Test {
         assertEquals(SessionFixPromptBuilder.VERSION_V21, V21.version());
         assertEquals(SessionFixPromptBuilder.VERSION, V1.version());
         assertEquals(SessionFixPromptBuilder.VERSION_V2, V2.version());
-        assertThrows(IllegalArgumentException.class, () -> new SessionFixPromptBuilder(JSON, "v2.2"));
+        assertThrows(IllegalArgumentException.class, () -> new SessionFixPromptBuilder(JSON, "v9"));
         assertFalse(texto(V2, u09(), AiRetryFeedback.none()).contains("V2.1"), "V2 no recibe nada de V2.1");
         assertFalse(texto(V1, u09(), AiRetryFeedback.none()).contains("FACTIBILIDAD"), "V1 intacto");
     }

@@ -80,8 +80,20 @@ public class SessionFixPromptBuilder {
     public static final String PROPIEDAD_V21 = "v2.1";
 
     private final JsonSupport json;
+    /**
+     * V2.2 (experimento de mejora MEJ, 07/11/2026, experimental): V2.1 con dos correcciones de COHERENCIA, sin ninguna
+     * regla ni validador nuevo: (1) la factibilidad de ACORTAR_O_REORGANIZAR ofrece retirar UNA colocacion de relleno,
+     * que TipoIntervencion permite y V8C acepta (V2/V2.1 decian "ninguna opcion, omitela", O18 en GRA-R2); (2) una
+     * indicacion de pertinencia ante dolor: lo que dolio sale y, si se sustituye, primero el mismo patron y grupo.
+     */
+    public static final String VERSION_V22 = "FIX-PR-2.2-EXP";
+
+    /** Valor de {@code fitsense.ai.adaptation.prompt-version} que activa V2.2. */
+    public static final String PROPIEDAD_V22 = "v2.2";
+
     private final boolean v2;
     private final boolean v21;
+    private final boolean v22;
 
     public SessionFixPromptBuilder(JsonSupport json) {
         this(json, "v1");
@@ -93,16 +105,17 @@ public class SessionFixPromptBuilder {
                                            "${fitsense.ai.adaptation.prompt-version:v1}") String promptVersion) {
         this.json = json;
         String v = promptVersion == null ? "v1" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
-        if (!v.equals("v1") && !v.equals(PROPIEDAD_V2) && !v.equals(PROPIEDAD_V21))
+        if (!v.equals("v1") && !v.equals(PROPIEDAD_V2) && !v.equals(PROPIEDAD_V21) && !v.equals(PROPIEDAD_V22))
             throw new IllegalArgumentException(
-                    "fitsense.ai.adaptation.prompt-version admite v1, v2 o v2.1, no '" + promptVersion + "'.");
-        this.v21 = v.equals(PROPIEDAD_V21);
+                    "fitsense.ai.adaptation.prompt-version admite v1, v2, v2.1 o v2.2, no '" + promptVersion + "'.");
+        this.v22 = v.equals(PROPIEDAD_V22);
+        this.v21 = v.equals(PROPIEDAD_V21) || v22;
         this.v2 = v.equals(PROPIEDAD_V2) || v21;
     }
 
     /** La version de prompt que este constructor envia: {@link #VERSION} o {@link #VERSION_V2}. */
     public String version() {
-        return v21 ? VERSION_V21 : v2 ? VERSION_V2 : VERSION;
+        return v22 ? VERSION_V22 : v21 ? VERSION_V21 : v2 ? VERSION_V2 : VERSION;
     }
 
     /**
@@ -293,6 +306,13 @@ public class SessionFixPromptBuilder {
                 dificultad no lo hace mas facil. Falta de motivacion: cambio MINIMO, una sola opcion sobre un solo
                 ejercicio. Cambia lo justo: no reescribas la sesion entera.
                 """);
+        if (v22) prompt.append("""
+                DOLOR (prompt V2.2): lo que dolio sale de la sesion. Si lo sustituyes, elige primero de la lista un
+                ejercicio del MISMO patron de movimiento y grupo que el retirado; un patron nuevo solo si la lista no
+                ofrece ninguno. No anadas mas ejercicios de los que retiras.
+                ACORTAR (prompt V2.2): si D lista colocaciones de relleno que se pueden retirar, retirar UNA es un
+                cambio valido aunque la dosis no se pueda bajar.
+                """);
 
         prompt.append(sesionesSenaladas(context, derivation, adjustment));
 
@@ -325,7 +345,7 @@ public class SessionFixPromptBuilder {
         var resultados = resultadosPorSesion(previous);
 
         var factibilidad = new LinkedHashMap<Long, FactibilidadAdaptacion.Sesion>();
-        if (v2) FactibilidadAdaptacion.calcular(context, derivation)
+        if (v2) FactibilidadAdaptacion.calcular(context, derivation, v22)
                 .forEach(f -> factibilidad.put(f.plannedWorkoutId(), f));
 
         var bloque = new StringBuilder("\nSESIONES SENALADAS (");

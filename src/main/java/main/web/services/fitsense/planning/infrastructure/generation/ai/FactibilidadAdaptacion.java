@@ -51,6 +51,9 @@ public final class FactibilidadAdaptacion {
 
     private static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
 
+    /** V5: una sesion conserva al menos 2 ejercicios; retirar solo se ofrece si quedan. */
+    private static final int MIN_EJERCICIOS = 2;
+
     /** Un cambio de dosis sobre UN ejercicio de la sesion, con lo que retira (calculado sobre una copia). */
     public record Opcion(Long exerciseId, String antes, String despues, long segundosRetirados, boolean cabe) {}
 
@@ -66,12 +69,26 @@ public final class FactibilidadAdaptacion {
     public record Sesion(Long plannedWorkoutId, TipoIntervencion intervencion, long duracion, long minimo,
                          Long margen, boolean dosisReducible, String porQueNoSeReduce,
                          Map<Long, String> dosisActual, Map<Long, Integer> pisoDeRepeticiones,
-                         List<Opcion> opciones, List<Sustituto> sustitutos, List<Long> cargasReducibles) {
+                         List<Opcion> opciones, List<Sustituto> sustitutos, List<Long> cargasReducibles,
+                         List<Opcion> retiradas) {
+
+        /**
+         * V2.2: {@code retiradas} son las colocaciones de RELLENO que ACORTAR_O_REORGANIZAR permite retirar (una sola,
+         * {@link TipoIntervencion#permiteQuitarEjercicio()}, lo mismo que acepta V8C). Vacia salvo con V2.2.
+         */
+        public Sesion(Long plannedWorkoutId, TipoIntervencion intervencion, long duracion, long minimo,
+                      Long margen, boolean dosisReducible, String porQueNoSeReduce,
+                      Map<Long, String> dosisActual, Map<Long, Integer> pisoDeRepeticiones,
+                      List<Opcion> opciones, List<Sustituto> sustitutos, List<Long> cargasReducibles) {
+            this(plannedWorkoutId, intervencion, duracion, minimo, margen, dosisReducible, porQueNoSeReduce, dosisActual,
+                    pisoDeRepeticiones, opciones, sustitutos, cargasReducibles, List.of());
+        }
 
         public boolean hayCambioFactible() {
             return opciones.stream().anyMatch(Opcion::cabe)
                     || sustitutos.stream().anyMatch(Sustituto::mismaDosis)
-                    || !cargasReducibles.isEmpty();
+                    || !cargasReducibles.isEmpty()
+                    || retiradas.stream().anyMatch(Opcion::cabe);
         }
     }
 
@@ -80,11 +97,16 @@ public final class FactibilidadAdaptacion {
 
     /** La factibilidad de cada sesion senalada que va a la IA, en el orden de la orden. */
     public static List<Sesion> calcular(PlanGenerationContext context, WeekDerivation derivation) {
+        return calcular(context, derivation, false);
+    }
+
+    /** @param conRetirada V2.2: incluye la retirada de UNA colocacion de relleno donde la intervencion la permite. */
+    public static List<Sesion> calcular(PlanGenerationContext context, WeekDerivation derivation, boolean conRetirada) {
         var adjustment = context.adjustment();
         if (adjustment == null) return List.of();
         var lista = new ArrayList<Sesion>();
         for (var s : adjustment.sesionesParaIA()) {
-            var sesion = calcular(context, derivation, s);
+            var sesion = calcular(context, derivation, s, conRetirada);
             if (sesion != null) lista.add(sesion);
         }
         return lista;
@@ -92,6 +114,11 @@ public final class FactibilidadAdaptacion {
 
     static Sesion calcular(PlanGenerationContext context, WeekDerivation derivation,
                            PlanAdjustment.TargetedSession senalada) {
+        return calcular(context, derivation, senalada, false);
+    }
+
+    static Sesion calcular(PlanGenerationContext context, WeekDerivation derivation,
+                           PlanAdjustment.TargetedSession senalada, boolean conRetirada) {
         var params = context.prescription();
         var propia = derivation.from(senalada.plannedWorkoutId()).map(d -> d.workout()).orElse(null);
         if (params == null || propia == null || propia.exercises() == null || propia.exercises().isEmpty())
@@ -174,8 +201,25 @@ public final class FactibilidadAdaptacion {
                     .filter(id -> propia.exercises().stream().anyMatch(x -> id.equals(x.exerciseId())))
                     .forEach(cargas::add);
 
+        // V2.2: ACORTAR permite retirar UNA colocacion de RELLENO (sin slot 4C) y V8C lo acepta; V2/V2.1 no lo
+        // ofrecian y en GAIN_MUSCLE (dosis 4D no reducible) el bloque decia "ninguna opcion, omitela" (O18, GRA-R2).
+        var retiradas = new ArrayList<Opcion>();
+        if (conRetirada && intervencion.permiteQuitarEjercicio() && propia.exercises().size() > MIN_EJERCICIOS) {
+            for (int i = 0; i < propia.exercises().size(); i++) {
+                var e = propia.exercises().get(i);
+                var c = porId.get(e.exerciseId());
+                if (c == null || MandatorySlot.of(c).isPresent()) continue;   // sin ficha o estructural: no se ofrece
+                var copia = new ArrayList<>(propia.exercises());
+                copia.remove(i);
+                var temporal = new PlanDraft.DraftWorkout(propia.scheduledDate(), propia.focus(), propia.name(),
+                        propia.expectedDurationMinutes(), copia);
+                long retira = duracion - ESTIMADOR.estimateSeconds(temporal, params);
+                retiradas.add(new Opcion(e.exerciseId(), dosis(e), "retirar", retira, margen == null || retira <= margen));
+            }
+        }
+
         return new Sesion(senalada.plannedWorkoutId(), intervencion, duracion, minimo, margen, dosisReducible, porQue,
-                dosisActual, pisos, opciones, sustitutos, cargas);
+                dosisActual, pisos, opciones, sustitutos, cargas, retiradas);
     }
 
     /**
@@ -353,6 +397,9 @@ public final class FactibilidadAdaptacion {
                         : unaSustitucion
                         ? "Puedes sustituir COMO MAXIMO UN ejercicio, solo por los SUSTITUTOS ADMITIDOS; si sustituyes,"
                         + " no cambies ninguna dosis. No retires ejercicios."
+                        : !s.retiradas().isEmpty()
+                        ? "No sustituyas ni anadas ejercicios. Puedes retirar UNA colocacion de relleno de las de D; si"
+                        + " la retiras, no cambies la dosis de las que se quedan."
                         : "No sustituyas ni retires ejercicios.").append('\n');
         b.append("    C. LIMITES: dura ").append(s.duracion()).append(" s");
         if (s.margen() == null) b.append("; en esta sesion el minimo de duracion no obliga.\n");
@@ -360,7 +407,7 @@ public final class FactibilidadAdaptacion {
                 .append(" s en total (quedarse justo en el minimo vale).\n");
 
         b.append("    D. OPCIONES");
-        if (!s.dosisReducible() && s.sustitutos().isEmpty() && s.cargasReducibles().isEmpty()) {
+        if (!s.dosisReducible() && s.sustitutos().isEmpty() && s.cargasReducibles().isEmpty() && s.retiradas().isEmpty()) {
             b.append(": ninguna. ").append(s.porQueNoSeReduce() == null ? "" : "No se puede bajar la dosis: "
                     + s.porQueNoSeReduce() + ". ").append("No hay carga prescrita que bajar.\n");
         } else {
@@ -402,12 +449,20 @@ public final class FactibilidadAdaptacion {
             if (!s.cargasReducibles().isEmpty())
                 b.append("      - carga: puedes bajar target_load_kg (no cambia la duracion) en ")
                         .append(s.cargasReducibles()).append(".\n");
+            if (!s.retiradas().isEmpty())
+                b.append("      - retirar UNA colocacion de relleno (solo una; la dosis de las demas no se toca): ")
+                        .append(s.retiradas().stream().map(o -> o.exerciseId() + " (" + o.antes() + ") retira "
+                                + o.segundosRetirados() + " s " + (o.cabe() ? "[cabe]" : "[NO cabe]"))
+                                .collect(Collectors.joining("; "))).append(".\n");
         }
 
         b.append("    E. PROHIBIDO: subir series, repeticiones o segundos por encima de lo prescrito; cambiar")
                 .append(" descansos; anadir ejercicios");
         if (unaSustitucion)
             b.append("; retirar ejercicios; sustituir mas de uno; sustituir y cambiar una dosis en la misma sesion");
+        else if (!s.intervencion().permiteSustituirEjercicio() && !s.retiradas().isEmpty())
+            b.append("; sustituir ejercicios; retirar mas de una colocacion o una que no este en D; retirar una y ademas")
+                    .append(" cambiar la dosis de las que se quedan");
         else if (!s.intervencion().permiteSustituirEjercicio()) b.append("; sustituir o retirar ejercicios");
         b.append(". Volver hacia la dosis prescrita, sin pasarla, NO es subir.\n");
 
