@@ -277,21 +277,46 @@ class VersionRechazada(Exception):
     pass
 
 
+def buscar_creada(prompt, desde_iso):
+    """Tras un corte de conexion en el POST: busca una prediccion ya creada con el MISMO prompt (para no pagarla dos
+    veces). Devuelve su JSON o None."""
+    try:
+        d = http("GET", "https://api.replicate.com/v1/predictions")
+        for x in d.get("results", [])[:10]:
+            if x.get("created_at", "") >= desde_iso:
+                q = http("GET", x["urls"]["get"])
+                if (q.get("input") or {}).get("prompt") == prompt:
+                    return q
+    except Exception:
+        return None
+    return None
+
+
 def una_prediccion(prompt, fijar):
     """fijar=True: POST /v1/predictions con la version de GRA. Si el proveedor la rechaza con un 4xx (sin crear
     prediccion), se lanza VersionRechazada y no se cuenta como prediccion. fijar=False: endpoint del modelo."""
     t0 = time.monotonic()
+    desde = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(time.time() - 5))
     entrada = {"model": MODELO, "prompt": prompt, "reasoning_effort": RAZONAMIENTO, "json_schema": ESQUEMA}
-    if fijar:
-        try:
-            p = http("POST", "https://api.replicate.com/v1/predictions", {"version": VERSION_GRA, "input": entrada},
-                     {"Prefer": "wait=25"})
-        except urllib.error.HTTPError as e:
-            if 400 <= e.code < 500 and e.code != 429:
-                raise VersionRechazada(f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}")
+    try:
+        if fijar:
+            try:
+                p = http("POST", "https://api.replicate.com/v1/predictions", {"version": VERSION_GRA, "input": entrada},
+                         {"Prefer": "wait=25"})
+            except urllib.error.HTTPError as e:
+                if 400 <= e.code < 500 and e.code != 429:
+                    raise VersionRechazada(f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}")
+                raise
+        else:
+            p = http("POST", API, {"input": entrada}, {"Prefer": "wait=25"})
+    except (ConnectionError, OSError) as e:
+        if isinstance(e, urllib.error.HTTPError):
             raise
-    else:
-        p = http("POST", API, {"input": entrada}, {"Prefer": "wait=25"})
+        time.sleep(5)
+        p = buscar_creada(prompt, desde)   # el POST pudo crear la prediccion aunque se cortara la respuesta
+        if p is None:
+            raise
+        p["_recuperada"] = f"{type(e).__name__} en el POST; prediccion ya creada recuperada por su id"
     while p.get("status") in ("starting", "processing") and time.monotonic() - t0 < 150:
         time.sleep(3)
         p = http("GET", p["urls"]["get"])
@@ -341,15 +366,18 @@ def ejecutar(salida, registro, max_pred, max_usd):
                 resultado = {"estado": p.get("status"), "prediction_id": p.get("id"), "tokens_entrada": te,
                              "tokens_salida": ts, "predict_time_s": m.get("predict_time"), "ms": ms, "usd": round(usd, 6),
                              "error": p.get("error"), "salida": out, "version": p.get("version"), "intento": intento,
-                             "modo_version": "FIJADA_GRA" if fijar else "VIGENTE_ENDPOINT_MODELO"}
+                             "modo_version": "FIJADA_GRA" if fijar else "VIGENTE_ENDPOINT_MODELO",
+                             "recuperada": p.get("_recuperada", "")}
                 reg["detalle"].append({"etiqueta": l["etiqueta"], "prediction_id": p.get("id"), "usd": round(usd, 6)})
                 if p.get("status") == "succeeded" and out:
                     break
-            except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, KeyError, ValueError) as e:
+            except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, KeyError, ValueError, OSError) as e:
                 reg["usd"] += RESERVA
                 resultado = {"estado": "ERROR_PROVEEDOR", "error": f"{type(e).__name__}: {e}", "intento": intento}
             with open(registro, "w") as f:
                 json.dump(reg, f, indent=1)
+        with open(registro, "w") as f:   # tambien tras un exito (el break saltaba la escritura)
+            json.dump(reg, f, indent=1)
         resultado = resultado or {"estado": "SIN_RESULTADO"}
         resultado.update({"etiqueta": l["etiqueta"], "experimento": l["experimento"], "id": l["id"]})
         with open(destino, "w", encoding="utf-8") as f:

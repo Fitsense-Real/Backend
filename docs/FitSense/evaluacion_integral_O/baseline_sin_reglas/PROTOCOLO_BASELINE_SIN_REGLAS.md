@@ -183,3 +183,24 @@ El primer arranque de BASE-R1 se detuvo en la consulta gratuita de versión: HTT
 - **Versión:** `POST /v1/predictions` con la versión de GRA (`9f4cd9ec…`) fue **aceptada** y la predicción se creó. Replicate devuelve `"version": "hidden"`, así que el proveedor no permite confirmar qué versión ejecutó. Se registra como «versión fijada solicitada, no verificable».
 - **Forma de la salida:** en este modo llega como objeto `{"json_output": {…}}`. Es una de las formas que el backend ya maneja en `ReplicateResponse.joinedOutput()`, donde el plan es el contenido de `json_output`.
 - **Cómo se trata:** el contador (`salida_backend`) aplica la misma regla antes de evaluar. La respuesta original se guarda íntegra en `respuestas/` y no se modifica.
+
+## 9. Incidencia de ejecución en BASE-R2 (corte de red)
+
+**Qué pasó:** tras 15 predicciones correctas, el POST de **O16/generación** recibió `ConnectionResetError` al leer la respuesta. El cliente no capturaba esa excepción y se detuvo.
+
+**Investigación:**
+- La predicción sí se había creado y había terminado en Replicate (`2nwmx17ta5rmy0d1q00rxhyrgg`, `succeeded`).
+- Se recuperó por su id con GET, sin coste y **sin repetir la llamada**. Su prompt y su `json_schema` son idénticos byte a byte a los congelados de O16.
+- Queda marcada como `recuperada` en `respuestas/O16_generacion.json`.
+
+**Defecto de contabilidad encontrado:**
+- El `break` tras una predicción correcta saltaba la escritura del registro de presupuesto, que solo se guardaba al final.
+- El control antes de cada predicción usaba el contador en memoria y era correcto; lo único que no se escribía era el archivo.
+- BASE-R1 terminó y quedó registrada. El registro de BASE-R2 se **reconstruyó** con las 16 respuestas guardadas: 126 → 142 predicciones, USD 2,3164 → 2,5838.
+
+**Corrección del cliente (sin tocar prompts, esquema, parámetros ni criterios):**
+- el registro se escribe tras cada elemento;
+- un corte de conexión es un fallo del proveedor;
+- antes del único reintento permitido, el cliente busca si la predicción ya se creó con el mismo prompt y la recupera, para no pagarla dos veces.
+
+**Continuación:** BASE-R2 se reanuda en O17. Los elementos con respuesta guardada no se vuelven a pedir.
