@@ -1628,7 +1628,9 @@ class EvaluacionK20IT {
                 var sin = new ArrayList<>(ej);
                 sin.remove(i);
                 out.add(new Candidata(id, "RETIRAR_RELLENO", "retira " + ej.get(i).exerciseId(), sin, w.scheduledDate()));
-                break;
+                // MEJ: se prueban TODOS los rellenos (antes solo el ultimo) para contrastar cada retirada que ofrece la
+                // factibilidad V2.2 con los validadores reales. El orden no cambia: la IA simulada sigue tomando el
+                // primero de la lista, que es el ultimo relleno, como antes.
             }
         for (int i = 0; i < ej.size(); i++) {
             var e = ej.get(i);
