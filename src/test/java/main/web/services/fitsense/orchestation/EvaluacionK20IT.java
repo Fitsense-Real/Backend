@@ -1262,6 +1262,17 @@ class EvaluacionK20IT {
             m.put("movement_pattern", c.movementPattern());
             baselineDisponibles.add(m);
         }
+        // MEJ: el prompt de generacion que el backend enviaria a este perfil (version segun
+        // fitsense.ai.generation.prompt-version), sin llamar a ningun modelo. Solo lectura.
+        try {
+            var snapshot = new main.web.services.fitsense.shared.infrastructure.json.JsonSupport().write(
+                    main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot.of(ctx));
+            Files.createDirectories(SALIDA.resolve("prompts_generacion"));
+            Files.writeString(SALIDA.resolve("prompts_generacion").resolve(id + ".txt"),
+                    promptGeneracion.build(ctx, snapshot, null));
+        } catch (Exception e) {
+            System.out.println("VOLCADO_PROMPT_FALLO " + id + " " + e);
+        }
         java.io.File[] archivos = Path.of(BASELINE_EVALUAR).toFile().listFiles((d, n) -> n.endsWith("__" + id + ".json"));
         if (archivos == null) return;
         java.util.Arrays.sort(archivos);
