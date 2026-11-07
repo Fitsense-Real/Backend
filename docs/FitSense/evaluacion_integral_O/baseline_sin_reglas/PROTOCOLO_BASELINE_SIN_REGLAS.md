@@ -169,3 +169,11 @@ No se modifican:
 - Neon ni mobileapp.
 
 No hay merge ni despliegues. No se publican los planes ni las adaptaciones de la línea base. No hay reintentos guiados, respaldo, simulación de semanas, progresión ni reincorporación. No se supera el presupuesto ni se inventan resultados.
+
+## 7. Incidencia de ejecución (antes de la primera predicción)
+
+El primer arranque de BASE-R1 se detuvo en la consulta gratuita de versión: HTTP 403 con «error code: 1010». Cloudflare bloquea el User-Agent por defecto de Python-urllib.
+
+- **Predicciones creadas:** ninguna. El registro siguió en 96 / USD 1,8401.
+- **Corrección:** cabecera `User-Agent: fitsense-baseline/1.0` en el cliente.
+- **Lo que no cambia:** prompts, esquema, parámetros y criterios.

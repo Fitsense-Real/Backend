@@ -259,6 +259,9 @@ CTX = ssl.create_default_context(cafile="/root/.ccr/ca-bundle.crt") if os.path.e
 def http(metodo, url, cuerpo=None, cabeceras=None):
     req = urllib.request.Request(url, data=None if cuerpo is None else json.dumps(cuerpo).encode("utf-8"), method=metodo)
     req.add_header("Content-Type", "application/json")
+    # El User-Agent por defecto de urllib (Python-urllib) lo bloquea Cloudflare (error 1010, HTTP 403) antes de llegar
+    # a Replicate; curl y el backend (Java) no lo sufren. Nombre de cliente generico; no cambia la peticion.
+    req.add_header("User-Agent", "fitsense-baseline/1.0")
     for k, v in (cabeceras or {}).items():
         req.add_header(k, v)
     with urllib.request.urlopen(req, context=CTX, timeout=90) as r:
