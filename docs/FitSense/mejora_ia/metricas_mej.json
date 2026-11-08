@@ -1,0 +1,776 @@
+{
+ "MEJ-G1 (PR-1.8+V2.2, 045f)": {
+  "generacion": {
+   "perfiles": 19,
+   "primera_valida": 15,
+   "propuestas": 22,
+   "rechazadas": 3,
+   "codigos_rechazo": {
+    "V23": 1,
+    "V15": 2,
+    "V26": 3,
+    "V24": 13
+   },
+   "publicados_ia": 18,
+   "respaldo": 1,
+   "planes_dosis_limitada": 15,
+   "grupos_bajo_objetivo": {
+    "espalda": 10,
+    "hombros": 14,
+    "trabajo aeróbico": 10,
+    "pecho": 7,
+    "piernas": 4,
+    "brazos": 2
+   },
+   "detalle": {
+    "O01": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI"
+    },
+    "O02": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O03": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI"
+    },
+    "O04": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O05": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O06": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O07": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI"
+    },
+    "O08": {
+     "primera_valida": false,
+     "intentos": 1,
+     "fuente": "RULE_ENGINE",
+     "dosis_limitada": true
+    },
+    "O09": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O10": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O12": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O13": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O14": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O15": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O16": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI"
+    },
+    "O17": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O18": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O19": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O20": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    }
+   }
+  },
+  "adaptacion": {
+   "sesiones_con_ia": 12,
+   "estado": {
+    "APLICADA": 11,
+    "RESPALDO": 1
+   },
+   "pertinencia": {
+    "ACC": 9,
+    "CONS-J": 2,
+    "ALT": 1
+   },
+   "sin_efecto_evitable": [],
+   "por_ciclo": {
+    "O17 c1 s38": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O18 c1 s53": "ACORTAR_O_REORGANIZAR|RESPALDO|CONS-J",
+    "O19 c1 s133": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O20 c1 s215": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O04 c1 s2": "VARIANTE_MAS_SENCILLA_O_CARGA|APLICADA|ALT",
+    "O05 c1 s26": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s27": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s29": "CAUSA_NO_REGISTRADA|APLICADA|CONS-J",
+    "O06 c1 s46": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O12 c1 s137": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O14 c2 s165": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O03 c1 s3": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC"
+   }
+  },
+  "coste": {
+   "llamadas": 33,
+   "usd": 0.7495
+  }
+ },
+ "MEJ-C (PR-1.7+V2.1, 045f)": {
+  "generacion": {
+   "perfiles": 19,
+   "primera_valida": 12,
+   "propuestas": 29,
+   "rechazadas": 10,
+   "codigos_rechazo": {
+    "V15": 12,
+    "V26": 8,
+    "V23": 3
+   },
+   "publicados_ia": 19,
+   "respaldo": 0,
+   "planes_dosis_limitada": 17,
+   "grupos_bajo_objetivo": {
+    "espalda": 11,
+    "hombros": 13,
+    "trabajo aeróbico": 10,
+    "pecho": 7,
+    "piernas": 3,
+    "brazos": 1
+   },
+   "detalle": {
+    "O01": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI"
+    },
+    "O02": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O03": {
+     "primera_valida": false,
+     "intentos": 3,
+     "fuente": "AI"
+    },
+    "O04": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O05": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O06": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O07": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O08": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O09": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O10": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O12": {
+     "primera_valida": false,
+     "intentos": 3,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O13": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O14": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O15": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O16": {
+     "primera_valida": false,
+     "intentos": 3,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O17": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O18": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O19": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O20": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    }
+   }
+  },
+  "adaptacion": {
+   "sesiones_con_ia": 12,
+   "estado": {
+    "APLICADA": 11,
+    "RESPALDO": 1
+   },
+   "pertinencia": {
+    "ACC": 9,
+    "CONS-J": 2,
+    "ALT": 1
+   },
+   "sin_efecto_evitable": [],
+   "por_ciclo": {
+    "O03 c1 s28": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O04 c1 s47": "VARIANTE_MAS_SENCILLA_O_CARGA|APLICADA|ACC",
+    "O05 c1 s71": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s72": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s74": "CAUSA_NO_REGISTRADA|APLICADA|CONS-J",
+    "O06 c1 s91": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O12 c1 s182": "SEGURIDAD_ANTE_DOLOR|APLICADA|ALT",
+    "O14 c2 s210": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O17 c1 s38": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O18 c1 s53": "ACORTAR_O_REORGANIZAR|RESPALDO|CONS-J",
+    "O19 c1 s2": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O20 c1 s84": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC"
+   }
+  },
+  "coste": {
+   "llamadas": 39,
+   "usd": 0.8393
+  }
+ },
+ "GRA-R1 (PR-1.7+V2.1, 9f4c)": {
+  "generacion": {
+   "perfiles": 19,
+   "primera_valida": 12,
+   "propuestas": 29,
+   "rechazadas": 10,
+   "codigos_rechazo": {
+    "V15": 11,
+    "V26": 12,
+    "V24": 1,
+    "V4": 3,
+    "V23": 2
+   },
+   "publicados_ia": 19,
+   "respaldo": 0,
+   "planes_dosis_limitada": 16,
+   "grupos_bajo_objetivo": {
+    "espalda": 10,
+    "hombros": 14,
+    "trabajo aeróbico": 10,
+    "pecho": 8,
+    "piernas": 3,
+    "brazos": 1
+   },
+   "detalle": {
+    "O01": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI"
+    },
+    "O02": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O03": {
+     "primera_valida": false,
+     "intentos": 3,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O04": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O05": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O06": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O07": {
+     "primera_valida": false,
+     "intentos": 3,
+     "fuente": "AI"
+    },
+    "O08": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O09": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O10": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O12": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O13": {
+     "primera_valida": false,
+     "intentos": 3,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O14": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O15": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O16": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI"
+    },
+    "O17": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O18": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O19": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O20": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    }
+   }
+  },
+  "adaptacion": {
+   "sesiones_con_ia": 12,
+   "estado": {
+    "APLICADA": 12
+   },
+   "pertinencia": {
+    "ACC": 11,
+    "CONS-J": 1
+   },
+   "sin_efecto_evitable": [],
+   "por_ciclo": {
+    "O03 c1 s28": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O04 c1 s47": "VARIANTE_MAS_SENCILLA_O_CARGA|APLICADA|ACC",
+    "O05 c1 s71": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s72": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s74": "CAUSA_NO_REGISTRADA|APLICADA|CONS-J",
+    "O06 c1 s91": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O12 c1 s182": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O14 c2 s210": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O17 c1 s38": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O18 c1 s53": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O19 c1 s97": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O20 c1 s179": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC"
+   }
+  },
+  "coste": {
+   "llamadas": 39,
+   "usd": 0.8218
+  }
+ },
+ "GRA-R2 (PR-1.7+V2.1, 9f4c)": {
+  "generacion": {
+   "perfiles": 19,
+   "primera_valida": 13,
+   "propuestas": 25,
+   "rechazadas": 6,
+   "codigos_rechazo": {
+    "V15": 7,
+    "V26": 11,
+    "V18": 2
+   },
+   "publicados_ia": 19,
+   "respaldo": 0,
+   "planes_dosis_limitada": 16,
+   "grupos_bajo_objetivo": {
+    "espalda": 12,
+    "hombros": 14,
+    "trabajo aeróbico": 10,
+    "brazos": 3,
+    "pecho": 6,
+    "piernas": 3
+   },
+   "detalle": {
+    "O01": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI"
+    },
+    "O02": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O03": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI"
+    },
+    "O04": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O05": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O06": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O07": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O08": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O09": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O10": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O12": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O13": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O14": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O15": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O16": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI"
+    },
+    "O17": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O18": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O19": {
+     "primera_valida": true,
+     "intentos": 1,
+     "fuente": "AI",
+     "dosis_limitada": true
+    },
+    "O20": {
+     "primera_valida": false,
+     "intentos": 2,
+     "fuente": "AI",
+     "dosis_limitada": true
+    }
+   }
+  },
+  "adaptacion": {
+   "sesiones_con_ia": 12,
+   "estado": {
+    "APLICADA": 11,
+    "SIN_EFECTO": 1
+   },
+   "pertinencia": {
+    "ACC": 9,
+    "CONS-J": 2,
+    "ALT": 1
+   },
+   "sin_efecto_evitable": [
+    "O18 c1"
+   ],
+   "por_ciclo": {
+    "O03 c1 s28": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O04 c1 s47": "VARIANTE_MAS_SENCILLA_O_CARGA|APLICADA|ACC",
+    "O05 c1 s71": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s72": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s74": "CAUSA_NO_REGISTRADA|APLICADA|CONS-J",
+    "O06 c1 s91": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O12 c1 s182": "SEGURIDAD_ANTE_DOLOR|APLICADA|ALT",
+    "O14 c2 s210": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O17 c1 s38": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O18 c1 s53": "ACORTAR_O_REORGANIZAR|SIN_EFECTO|CONS-J",
+    "O19 c1 s133": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O20 c1 s215": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC"
+   }
+  },
+  "coste": {
+   "llamadas": 35,
+   "usd": 0.681
+  }
+ },
+ "MEJ-A0 (det+V2.1, 045f)": {
+  "generacion": null,
+  "adaptacion": {
+   "sesiones_con_ia": 12,
+   "estado": {
+    "APLICADA": 12
+   },
+   "pertinencia": {
+    "ACC": 10,
+    "CONS-J": 1,
+    "ALT": 1
+   },
+   "sin_efecto_evitable": [],
+   "por_ciclo": {
+    "O03 c1 s28": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O04 c1 s47": "VARIANTE_MAS_SENCILLA_O_CARGA|APLICADA|ACC",
+    "O05 c1 s71": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s72": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s74": "CAUSA_NO_REGISTRADA|APLICADA|CONS-J",
+    "O06 c1 s91": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O12 c1 s182": "SEGURIDAD_ANTE_DOLOR|APLICADA|ALT",
+    "O14 c2 s210": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O17 c1 s38": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O18 c1 s53": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O19 c1 s121": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O20 c1 s203": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC"
+   }
+  },
+  "coste": {
+   "llamadas": 10,
+   "usd": 0.1359
+  }
+ },
+ "MEJ-A1 (det+V2.2, 045f)": {
+  "generacion": null,
+  "adaptacion": {
+   "sesiones_con_ia": 12,
+   "estado": {
+    "APLICADA": 12
+   },
+   "pertinencia": {
+    "ACC": 10,
+    "CONS-J": 1,
+    "ALT": 1
+   },
+   "sin_efecto_evitable": [],
+   "por_ciclo": {
+    "O03 c1 s28": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O04 c1 s47": "VARIANTE_MAS_SENCILLA_O_CARGA|APLICADA|ACC",
+    "O05 c1 s71": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s72": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s74": "CAUSA_NO_REGISTRADA|APLICADA|CONS-J",
+    "O06 c1 s91": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O12 c1 s182": "SEGURIDAD_ANTE_DOLOR|APLICADA|ALT",
+    "O14 c2 s210": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O17 c1 s38": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O18 c1 s53": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O19 c1 s121": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O20 c1 s203": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC"
+   }
+  },
+  "coste": {
+   "llamadas": 10,
+   "usd": 0.1372
+  }
+ },
+ "MEJ-A2 (det+V2.2, 045f)": {
+  "generacion": null,
+  "adaptacion": {
+   "sesiones_con_ia": 12,
+   "estado": {
+    "APLICADA": 12
+   },
+   "pertinencia": {
+    "ACC": 10,
+    "CONS-J": 1,
+    "ALT": 1
+   },
+   "sin_efecto_evitable": [],
+   "por_ciclo": {
+    "O03 c1 s28": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O04 c1 s47": "VARIANTE_MAS_SENCILLA_O_CARGA|APLICADA|ACC",
+    "O05 c1 s71": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s72": "INVESTIGAR_CAMBIO_MINIMO|APLICADA|ACC",
+    "O05 c1 s74": "CAUSA_NO_REGISTRADA|APLICADA|CONS-J",
+    "O06 c1 s91": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC",
+    "O12 c1 s182": "SEGURIDAD_ANTE_DOLOR|APLICADA|ALT",
+    "O14 c2 s210": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O17 c1 s38": "REVISAR_CARGA_Y_RECUPERACION|APLICADA|ACC",
+    "O18 c1 s53": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O19 c1 s121": "ACORTAR_O_REORGANIZAR|APLICADA|ACC",
+    "O20 c1 s152": "SEGURIDAD_ANTE_DOLOR|APLICADA|ACC"
+   }
+  },
+  "coste": {
+   "llamadas": 10,
+   "usd": 0.138
+  }
+ }
+}
