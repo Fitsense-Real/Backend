@@ -29,7 +29,7 @@ pagado() { nombre=$1; shift
   echo "PRESUPUESTO antes de $nombre: usadas=$usadas usd=$usd -> disponible $remn / USD $remu"
   if [ $remn -le 0 ] || python3 -c "import sys;sys.exit(0 if $remu<0.05 else 1)"; then echo "DETENIDO: presupuesto agotado antes de $nombre"; return 1; fi
   echo "VERSION antes de $nombre: $(version) $(date -u +%FT%TZ)" | tee -a $R/versiones.txt
-  run $nombre "$@" -Dfitsense.evaluacion.k20.modo=REPLICATE -Dfitsense.evaluacion.k20.prompt=v2.2 \
+  run $nombre "$@" -Dfitsense.evaluacion.k20.modo=REPLICATE -Dfitsense.evaluacion.k20.prompt=${PADA:-v2.2} \
     -Dfitsense.evaluacion.k20.autorizacion-replicate=SI -Dfitsense.evaluacion.k20.integral-replicate=SI \
     -Dfitsense.evaluacion.k20.credencial=proxy -Dfitsense.evaluacion.k20.sin-metricas=RESERVA_SIN_BLOQUEO \
     -Dfitsense.evaluacion.k20.max-llamadas=$remn -Dfitsense.evaluacion.k20.max-usd=$remu -Dfitsense.evaluacion.k20.coste-por-llamada=0.05
@@ -53,6 +53,13 @@ for x in "$@"; do case $x in
  G2)
   pagado MEJ_G2_G $bo $gen -Dfitsense.evaluacion.k20.solo=$G || break
   pagado MEJ_G2_P $bo $gen -Dfitsense.evaluacion.k20.solo=$P -Dfitsense.evaluacion.k20.progresion=true || break ;;
+ A0)
+  PADA=v2.1 pagado MEJ_A0_G $bo -Dfitsense.evaluacion.k20.solo=$G || break
+  PADA=v2.1 pagado MEJ_A0_P $bo -Dfitsense.evaluacion.k20.solo=$P -Dfitsense.evaluacion.k20.progresion=true || break ;;
+ C)
+  ctl="-Dfitsense.evaluacion.k20.generacion-ia=SI -Dfitsense.evaluacion.k20.prompt-generacion=pr-1.7"
+  PADA=v2.1 pagado MEJ_C_G $bo $ctl -Dfitsense.evaluacion.k20.solo=$G || break
+  PADA=v2.1 pagado MEJ_C_P $bo $ctl -Dfitsense.evaluacion.k20.solo=$P -Dfitsense.evaluacion.k20.progresion=true || break ;;
  SIM) run SIM_G $bo -Dfitsense.evaluacion.k20.modo=SIMULADA -Dfitsense.evaluacion.k20.prompt=v2.2 -Dfitsense.evaluacion.k20.prompt-generacion=pr-1.8 -Dfitsense.evaluacion.k20.generacion-ia=SI -Dfitsense.evaluacion.k20.solo=$G ;;
 esac; done
 [ -f $R/versiones.txt ] && echo "VERSION despues: $(version) $(date -u +%FT%TZ)" | tee -a $R/versiones.txt

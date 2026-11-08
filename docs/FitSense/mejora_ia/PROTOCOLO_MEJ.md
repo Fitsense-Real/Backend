@@ -121,3 +121,25 @@ Mismo modelo y parámetros que GRA: `gpt-5-mini`, `medium`, `json_schema` y pol�
   - los cambios no autorizados siguen en 0.
 - **Lo que no adoptaría:** con n = 19 y n = 10, una diferencia pequeña o mixta no basta para adoptar nada. Se informa como no concluyente y no se cambia el valor por defecto.
 - **Alcance de la PR:** ningún interruptor se activa por defecto en esta rama. La adopción se propone en una PR aparte, con la decisión del responsable.
+
+## 7. Enmienda E-1 (antes de las corridas de control; motivo: versión del modelo, no los resultados)
+
+**El hecho.** Las corridas MEJ pasan por el cliente Java del backend, que llama al endpoint del modelo sin poder fijar versión. El registro `versiones.txt` muestra:
+
+| Corridas | Versión |
+|---|---|
+| R_O, R′_O, GRA-R1, GRA-R2 | `9f4cd9ec…` |
+| MEJ | `045f8102…` (vigente desde el 06/11 a las 18:46 UTC) |
+
+Comparar MEJ con GRA o con R_O mezclaría el efecto del prompt con el cambio de versión del proveedor.
+
+**La corrección.** Se sustituye la réplica **MEJ-G2** por dos **controles con la versión vigente** y los prompts anteriores, con la misma configuración:
+
+| Control | Configuración | Compara con | Llamadas |
+|---|---|---|---:|
+| **MEJ-A0** | Generación determinista + **V2.1** | MEJ-A1 y MEJ-A2: pareada, misma versión | ≈ 10 |
+| **MEJ-C** | Generación con IA **PR-1.7** + adaptación **V2.1** | MEJ-G1: misma versión, mismos perfiles | ≈ 35–40 |
+
+**Lo que no cambia:** el presupuesto (120 / USD 3,00), las métricas y las reglas de decisión. Las comparaciones con GRA y R_O se siguen informando, señaladas como «distinta versión del modelo».
+
+**Lo que ya se había visto al decidir E-1:** el resultado agregado de MEJ-A1/A2 (12 de 12 adaptaciones aplicadas en ambas) y que MEJ-G1 estaba en curso. La enmienda no excluye ni repite ninguna corrida.
