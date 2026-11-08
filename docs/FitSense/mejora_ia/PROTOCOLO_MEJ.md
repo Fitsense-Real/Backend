@@ -158,3 +158,8 @@ Comparar MEJ con GRA o con R_O mezclaría el efecto del prompt con el cambio de 
 - **Lo que no cambia:** el límite de 150 s (el de producción). Ningún perfil con respuesta se repite.
 - **Cómputo de G1:** O01, O02 y O15–O20 de MEJ-G1, más G1C y G1R.
 - **Corridas de control:** se aplica lo mismo si sufren la misma incidencia.
+
+**I-MEJ-1 en el control MEJ-C (bloque P), misma regla:**
+- **Qué pasó:** O18/ciclo 1 tuvo un error del proveedor (estado DESCONOCIDO) y el arnés detuvo las llamadas. O19 y O20 no llamaron al modelo.
+- **Lo que se ejecuta:** O19 y O20 en **MEJ-CC** (bloque P limitado a ellos).
+- **O18:** no se repite, porque su generación ya tenía respuesta válida. Su ciclo 1 cuenta como fallo del proveedor, igual que en MEJ-G1 (O18/ciclo 1 también falló allí).
