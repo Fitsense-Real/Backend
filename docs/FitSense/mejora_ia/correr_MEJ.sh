@@ -60,6 +60,10 @@ for x in "$@"; do case $x in
   ctl="-Dfitsense.evaluacion.k20.generacion-ia=SI -Dfitsense.evaluacion.k20.prompt-generacion=pr-1.7"
   PADA=v2.1 pagado MEJ_C_G $bo $ctl -Dfitsense.evaluacion.k20.solo=$G || break
   PADA=v2.1 pagado MEJ_C_P $bo $ctl -Dfitsense.evaluacion.k20.solo=$P -Dfitsense.evaluacion.k20.progresion=true || break ;;
+ G1C)
+  pagado MEJ_G1C_G $bo $gen -Dfitsense.evaluacion.k20.solo=${SOLO_LISTA:-O04,O05,O06,O07,O08,O09,O10,O12,O13,O14} || break ;;
+ G1R)
+  pagado MEJ_G1R_G $bo $gen -Dfitsense.evaluacion.k20.solo=O03 || break ;;
  SIM) run SIM_G $bo -Dfitsense.evaluacion.k20.modo=SIMULADA -Dfitsense.evaluacion.k20.prompt=v2.2 -Dfitsense.evaluacion.k20.prompt-generacion=pr-1.8 -Dfitsense.evaluacion.k20.generacion-ia=SI -Dfitsense.evaluacion.k20.solo=$G ;;
 esac; done
 [ -f $R/versiones.txt ] && echo "VERSION despues: $(version) $(date -u +%FT%TZ)" | tee -a $R/versiones.txt

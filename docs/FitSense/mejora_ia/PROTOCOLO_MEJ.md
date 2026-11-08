@@ -143,3 +143,18 @@ Comparar MEJ con GRA o con R_O mezclaría el efecto del prompt con el cambio de 
 **Lo que no cambia:** el presupuesto (120 / USD 3,00), las métricas y las reglas de decisión. Las comparaciones con GRA y R_O se siguen informando, señaladas como «distinta versión del modelo».
 
 **Lo que ya se había visto al decidir E-1:** el resultado agregado de MEJ-A1/A2 (12 de 12 adaptaciones aplicadas en ambas) y que MEJ-G1 estaba en curso. La enmienda no excluye ni repite ninguna corrida.
+
+## 8. Incidencia I-MEJ-1 (proveedor) en MEJ-G1, bloque G
+
+**Qué pasó:**
+- O01 y O02 respondieron (79 s y 51 s).
+- La generación de **O03** superó el límite de sondeo de 150 s (176 s en total; prompt de 193 801 caracteres). La predicción se canceló (`CANCELED`).
+- La regla de control del arnés («tiempo agotado con una predicción en curso: no se hacen más llamadas») bloqueó el resto del bloque. De O04 a O14, los perfiles no llamaron al modelo y recibieron el plan de respaldo (`PRESUPUESTO_AGOTADO_SIN_LLAMADA`), que **no cuenta como resultado de la IA**.
+- El bloque P se completó (11 llamadas). O16 respondió en 167 s y O18/ciclo 1 tuvo un error del proveedor.
+
+**Decisión:**
+- **Perfiles nunca ejecutados (no es una repetición):** se ejecutan, en una corrida del bloque G limitada a ellos (**MEJ-G1C**: O04–O10 y O12–O14).
+- **O03:** recibe **un** reintento por fallo del proveedor, la misma regla de la línea base, en una corrida aparte y al final (**MEJ-G1R**), para que un nuevo timeout no bloquee a otros perfiles.
+- **Lo que no cambia:** el límite de 150 s (el de producción). Ningún perfil con respuesta se repite.
+- **Cómputo de G1:** O01, O02 y O15–O20 de MEJ-G1, más G1C y G1R.
+- **Corridas de control:** se aplica lo mismo si sufren la misma incidencia.
