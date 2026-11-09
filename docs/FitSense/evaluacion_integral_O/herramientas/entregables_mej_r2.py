@@ -163,12 +163,16 @@ def main(metricas, espec, corridas, salida):
                        pr["mcnemar_p"], pr["rechazadas_dif"]["n"], pr["rechazadas_dif"]["W+"],
                        pr["rechazadas_dif"]["p"], pr["pct_de_m_dif"]["n"], pr["pct_de_m_dif"]["W+"],
                        pr["pct_de_m_dif"]["p"]])
-            a = agregado.setdefault(cond, [0, 0, 0])
-            a[0] += pr["perfiles"]
-            a[1] += pr["solo_variante"]
-            a[2] += pr["solo_control"]
-    for cond, (n, b, c) in agregado.items():
-        wp.append([cond, "PR-1.7", "AGREGADO (pares perfil x ronda)", n, b, c, round(A.mcnemar(b, c), 4)])
+            claves_ag = [(cond, "AGREGADO (pares perfil x ronda, todas)")]
+            if ronda != "R1":  # R1 sirvio para elegir las variantes: la confirmatoria se agrega aparte
+                claves_ag.append((cond, "AGREGADO CONFIRMATORIO (R2+R3)"))
+            for k in claves_ag:
+                a = agregado.setdefault(k, [0, 0, 0])
+                a[0] += pr["perfiles"]
+                a[1] += pr["solo_variante"]
+                a[2] += pr["solo_control"]
+    for (cond, etq), (n, b, c) in agregado.items():
+        wp.append([cond, "PR-1.7", etq, n, b, c, round(A.mcnemar(b, c), 4)])
     # por perfil
     wf = wb.create_sheet("Generacion_por_perfil")
     conds = list(dict.fromkeys(f"{v['condicion']} {v['ronda']}" for v in e["gen"].values()))
