@@ -45,6 +45,7 @@ ada() { echo "-Dfitsense.evaluacion.k20.prompt=$1"; }
 RONDA=${RONDA:-1}
 for x in "$@"; do case $x in
  PROMPTS) for v in pr-1.7 pr-1.8 pr-1.8a pr-1.8b pr-1.8c; do run PROMPTS_${v} $bo -Dfitsense.evaluacion.k20.modo=DETERMINISTA -Dfitsense.evaluacion.k20.prompt-generacion=$v -Dfitsense.evaluacion.k20.baseline-evaluar=$S/evo/baseline/vacio; done ;;
+ DET) run DET_GEN $bo -Dfitsense.evaluacion.k20.modo=DETERMINISTA -Dfitsense.evaluacion.k20.solo-generacion=true -Dfitsense.evaluacion.k20.solo=$TODOS ;;
  SIMA) for v in v2.1 v2.2a v2.4; do run SIM_ADA_${v}_G $bo -Dfitsense.evaluacion.k20.modo=SIMULADA $(ada $v) -Dfitsense.evaluacion.k20.solo=$G; run SIM_ADA_${v}_P $bo -Dfitsense.evaluacion.k20.modo=SIMULADA $(ada $v) -Dfitsense.evaluacion.k20.solo=$P -Dfitsense.evaluacion.k20.progresion=true; done ;;
  G17|G18A|G18B|G18C)
   v=$(case $x in G17) echo pr-1.7;; G18A) echo pr-1.8a;; G18B) echo pr-1.8b;; G18C) echo pr-1.8c;; esac)

@@ -1,0 +1,7 @@
+# MEJ ronda 2 · Incidencias
+
+| Id | Fase | Qué pasó | Tratamiento | Efecto en los resultados |
+|---|---|---|---|---|
+| I-R2-0 | Regresión | El primer intento de regresión de integración falló al arrancar el contexto: Docker estaba apagado y la protección «BASE DE PRODUCCION BLOQUEADA EN PRUEBAS» impidió usar la base de `application.properties` (Neon), como debe | Se arrancó Docker y se repitió la regresión completa. Nunca se conectó a Neon | Ninguno. El log del intento fallido se conserva en la evidencia |
+| I-R2-1 | Regresión | 3 pruebas de integración fallan el 09/11/2026 tanto en `42d9dc1` (sin las variantes) como en `dce7158` (con ellas): `CatalogoV36IT.semanaSiguiente` y `ProgresionIT`/`ProgresionRev2IT.p02ProgresionSinElExcluido`. Fijan su semana con `LocalDate.now()` | Con `faketime` a 05/11/2026, el mismo commit pasa 31/31; a 09/11/2026 vuelven los mismos fallos. No se cambian las pruebas (fuera del encargo). Recomendación aparte: fijar su fecha con el reloj de pruebas | Ninguno: no tienen relación con las reglas ni con las variantes |
+| I-R2-2 | Auditoría | Las dos auditorías en paralelo vieron cambios sin commit de las variantes, que se estaban escribiendo a la vez | Ambas auditaron el commit `42d9dc1` (copia de `PlanPromptBuilder` en HEAD). Las variantes se auditaron después contra sus hallazgos: pr-1.8c corregido (H-G7) y v2.2a/v2.4 corregidas (H-A3) en `dce7158` | Ninguno |
