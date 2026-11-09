@@ -177,10 +177,17 @@ def resumen_gen(res_todos, det):
 
 # ----------------------------------------------------------------------------------------------- adaptacion
 
+IDENTIDAD = {}   # (id, ciclo, sesion) -> detalle por identidad (lo rellena vigilancia)
+
+
 def vigilancia(d, filas_oraculo):
-    """H-A1/H-A2 por identidad desde las tablas: sesion de origen (semana medida) frente a su derivada."""
+    """H-A1/H-A2 por identidad desde las tablas: sesion de origen (semana medida) frente a su derivada. Deja ademas en
+    IDENTIDAD el detalle por sesion (quitados, anadidos, dosis cambiadas, dificultad maxima antes/despues), que corrige
+    el emparejamiento posicional del oraculo (artefacto de O04)."""
     pw = leer(os.path.join(d, "tablas", "planned_workouts.csv"))
     ejs = ejercicios_por_sesion(d)
+    dif = {e["exercise_id"]: int(e["difficulty_level"] or 0)
+           for e in leer(os.path.join(d, "tablas", "exercises.csv"))}
     hallazgos = []
     for r in filas_oraculo:
         if r.get("estado_v32") != "APLICADA":
@@ -196,6 +203,17 @@ def vigilancia(d, filas_oraculo):
         quitados = list((ca - cd).elements())
         anadidos = list((cd - ca).elements())
         iv = r["intervencion"]
+        dosis_a = {e["exercise_id"]: (e["planned_sets"], e["planned_reps"], e["planned_duration_seconds"]) for e in antes}
+        cambiadas = [e["exercise_id"] for e in despues
+                     if e["exercise_id"] in dosis_a and dosis_a[e["exercise_id"]] != (e["planned_sets"], e["planned_reps"],
+                                                                                    e["planned_duration_seconds"])]
+        max_q = max((dif.get(x, 0) for x in quitados), default=None)
+        max_a = max((dif.get(x, 0) for x in anadidos), default=None)
+        IDENTIDAD[(r["id"], r["ciclo"], origen)] = {
+            "quitados": quitados, "anadidos": anadidos, "dosis_cambiadas": cambiadas,
+            "se_quedan": sorted(set(ca) & set(cd)),
+            "dif_max_retirados": max_q, "dif_max_anadidos": max_a,
+            "mas_dificil_identidad": max_a is not None and max_q is not None and max_a > max_q}
         if iv in UNA_RETIRADA:
             if len(quitados) > 1 or anadidos:
                 hallazgos.append((r["id"], r["ciclo"], origen, iv, "RETIRADA_NO_AUTORIZADA",
@@ -212,6 +230,7 @@ def vigilancia(d, filas_oraculo):
 
 
 def ada_corrida(dirs, oraculos):
+    IDENTIDAD.clear()   # por condicion: las claves (id, ciclo, sesion) se repiten entre condiciones
     filas, fact = [], {}
     for x in oraculos:
         o, ids = separa(x)
@@ -234,7 +253,8 @@ def ada_corrida(dirs, oraculos):
                 "intervencion": r["intervencion"], "estado": r["estado_v32"], "pertinencia": r["pertinencia"],
                 "fuente": r["fuente"], "sustituciones": r["sustituciones"], "reducciones": r["reducciones"],
                 "retirados": r["retirados"], "trabajo": f"{r['trabajo_antes_s']}->{r['trabajo_despues_s']}",
-                "problemas": r["problemas"]} for r in filas}}
+                "problemas": r["problemas"], "identidad": IDENTIDAD.get((r["id"], r["ciclo"], r["sesion"]))}
+                for r in filas}}
 
 
 # ----------------------------------------------------------------------------------------------- estadistica
