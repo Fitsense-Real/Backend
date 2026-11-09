@@ -110,3 +110,30 @@ Tarifa del registro: 0,25 USD por millón de tokens de entrada y 2,00 por milló
 - **Instrumento:** `analisis_mej_r2.py`, SHA-256 `8e80067baaea32bc5f069f285809f7a6c80b1af822e461a07fb9066005e5f50d`, y oráculo v1.4 sin cambios.
 - **Prompts volcados gratis:** `PROMPTS_*`, de las 5 variantes de generación con los 20 perfiles. Adaptación simulada (`SIM_ADA_*`) de v2.1, v2.2a y v2.4, sin llamadas. Revisados: O10 recibe `CARDIO_1=480 s`, `STRENGTH_1=354 s` y 1500 s de tiempo útil; en GM, pr-1.8b no ofrece la serie extra (REV2 sin piso).
 - **Gasto antes de empezar:** 0 predicciones, USD 0.
+
+## 8. Decisión exploratoria y enmienda E-R2-1 (09/11/2026, antes de la fase confirmatoria)
+
+**Gasto exploratorio:** 135 predicciones y USD 3,06 medidos (tope USD 4). La versión del modelo fue la misma en todos los bloques: `045f8102…`.
+
+**Resultado exploratorio** (19 perfiles; el control combina sus corridas de compleción, según I-R2-3 a I-R2-6):
+
+| | PR-1.7 | pr-1.8a | pr-1.8b | pr-1.8c |
+|---|---|---|---|---|
+| Válidos al primer intento | 10/19 | 14/19 | 14/19 | 15/19 |
+| V15 / V26 / V24 | 13 / 8 / 0 | 2 / 0 / 0 | 4 / 3 / **3** | 5 / 2 / 0 |
+
+**Variantes que pasan a la fase confirmatoria (reglas del §5):**
+- **pr-1.8b queda excluida:** tiene más hallazgos V24 que su control, una regresión clara.
+- **Generación:** pasan pr-1.8a y pr-1.8c, con el control PR-1.7.
+- **Adaptación:** V2.1, v2.2a y v2.4 dieron lo mismo (12/12 aplicadas, 0 SIN_EFECTO evitables, 0 cambios no autorizados por identidad). Pasan las tres. El INC de v2.4 en O12 es un artefacto del emparejamiento posicional del oráculo: por identidad no hay más añadidos que retirados, la dificultad máxima es igual (2 frente a 2) y el trabajo baja (1686 → 564 s).
+
+**Confirmatoria:**
+- R2, en orden inverso: A24, A22A, A21, G18C, G18A, G17.
+- R3, en orden directo, si queda presupuesto: G17, G18A, G18C, A21, A22A, A24.
+- Tope acumulado: USD 9. Los timeouts y los 502 se tratan con la regla de compleción, y las respuestas recuperables se recuperan sin repetir la llamada.
+
+**Enmienda E-R2-1 (instrumento, solo informes):** `analisis_mej_r2.py` (SHA-256 `2d7045008fb8a7720d99dcc79dafccedcf7966fb4fb116d22b96cc77159c7ab2`) añade:
+- el detalle por identidad de cada adaptación (quitados, añadidos, dosis cambiadas, dificultad máxima antes y después);
+- el tratamiento de los perfiles `no_ejecutados` y de las respuestas recuperadas (`--rec`).
+
+No cambia ninguna métrica congelada ni el oráculo.

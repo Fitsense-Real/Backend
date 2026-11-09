@@ -164,6 +164,7 @@ def resumen_gen(res_todos, det):
         "V15": cod.get("V15", 0), "V26": cod.get("V26", 0), "V24": cod.get("V24", 0),
         "publicados_ia": sum(r["fuente"] == "AI" for r in res.values()),
         "respaldo": sum(r["fuente"] == "RULE_ENGINE" for r in res.values()),
+        "con_plan_medible": sum(bool(r["estado_dosis"]) for r in res.values()),
         "dosis_limitada": sum(r["estado_dosis"] == "DOSIS_LIMITADA" for r in res.values()),
         "dosis_objetivo": sum(r["estado_dosis"] == "DOSIS_OBJETIVO" for r in res.values()),
         "grupos_bajo_mejorables": lim.get("MEJORABLE", 0), "grupos_bajo_inevitables": lim.get("INEVITABLE", 0),
@@ -315,6 +316,18 @@ if __name__ == "__main__":
     if args and args[0] == "--det":
         det = gen_corrida(args[1])
         args = args[2:]
+    # --rec ETIQUETA=baseline_validacion.csv: respuestas del proveedor RECUPERADAS (prediccion terminada que el backend
+    # no pudo leer por un 502, I-R2-6) y validadas en solo lectura con el validador real (etapa NORMALIZADO). Cuentan
+    # como primera propuesta; el plan publicado fue el respaldo por un fallo del proveedor, asi que sus metricas de
+    # dosis/tiempo no se usan (no son de la IA).
+    recuperadas = {}
+    while args and args[0] == "--rec":
+        et, ruta = args[1].split("=", 1)
+        recuperadas.setdefault(et, {})
+        for r in leer(ruta):
+            if r["etapa"] == "NORMALIZADO":
+                recuperadas[et][r["id"]] = r
+        args = args[2:]
     res = {"_determinista": {"perfiles": {k: v for k, v in det.items()}}}
     for a in args:
         tipo, _, resto = a.partition(":")
@@ -326,7 +339,16 @@ if __name__ == "__main__":
             for x in dirs:
                 d, ids = separa(x)
                 perf.update(gen_corrida(d, ids))
-            res[et] = {"tipo": "GEN", "resumen": resumen_gen(perf, det), "perfiles": perf}
+            for pid, r in recuperadas.get(et, {}).items():
+                valida = r["resultado"] == "VALIDO"
+                perf[pid] = {"ejecutado": True, "primera_valida": valida, "propuestas": 1,
+                             "rechazadas": 0 if valida else 1,
+                             "codigos": dict(Counter(re.findall(r"\b(V\d+[A-Z]?):", r["problemas"]))),
+                             "fuente": "RECUPERADA_502", "latencia_ms": [], "usd": 0.0, "estado_dosis": "",
+                             "series_por_grupo": {}, "grupos_bajo_objetivo": [], "aerobico": (None, None),
+                             "clases_sesion": [], "pct_de_m": [], "sesiones": 0, "colocaciones": [],
+                             "nota": f"respuesta recuperada ({r['archivo']}); plan publicado = respaldo por 502"}
+            res[et] ={"tipo": "GEN", "resumen": resumen_gen(perf, det), "perfiles": perf}
         else:
             res[et] = {"tipo": "ADA", "resumen": ada_corrida(dirs, [o for o in orc.split(",") if o])}
     json.dump(res, open(os.path.join(salida, "metricas_mej_r2.json"), "w"), ensure_ascii=False, indent=1)
