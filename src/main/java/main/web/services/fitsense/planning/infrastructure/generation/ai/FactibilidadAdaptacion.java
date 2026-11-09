@@ -102,11 +102,20 @@ public final class FactibilidadAdaptacion {
 
     /** @param conRetirada V2.2: incluye la retirada de UNA colocacion de relleno donde la intervencion la permite. */
     public static List<Sesion> calcular(PlanGenerationContext context, WeekDerivation derivation, boolean conRetirada) {
+        return calcular(context, derivation, conRetirada, false);
+    }
+
+    /**
+     * @param conTope ronda 2 (v2.2a, v2.4): la retirada solo se marca [cabe] si la sesion queda dentro del tope de
+     *                minutos declarado, como exige V8C (H3 de la auditoria). V2.2 conserva su texto historico.
+     */
+    public static List<Sesion> calcular(PlanGenerationContext context, WeekDerivation derivation, boolean conRetirada,
+                                        boolean conTope) {
         var adjustment = context.adjustment();
         if (adjustment == null) return List.of();
         var lista = new ArrayList<Sesion>();
         for (var s : adjustment.sesionesParaIA()) {
-            var sesion = calcular(context, derivation, s, conRetirada);
+            var sesion = calcular(context, derivation, s, conRetirada, conTope);
             if (sesion != null) lista.add(sesion);
         }
         return lista;
@@ -119,6 +128,11 @@ public final class FactibilidadAdaptacion {
 
     static Sesion calcular(PlanGenerationContext context, WeekDerivation derivation,
                            PlanAdjustment.TargetedSession senalada, boolean conRetirada) {
+        return calcular(context, derivation, senalada, conRetirada, false);
+    }
+
+    static Sesion calcular(PlanGenerationContext context, WeekDerivation derivation,
+                           PlanAdjustment.TargetedSession senalada, boolean conRetirada, boolean conTope) {
         var params = context.prescription();
         var propia = derivation.from(senalada.plannedWorkoutId()).map(d -> d.workout()).orElse(null);
         if (params == null || propia == null || propia.exercises() == null || propia.exercises().isEmpty())
@@ -214,7 +228,12 @@ public final class FactibilidadAdaptacion {
                 var temporal = new PlanDraft.DraftWorkout(propia.scheduledDate(), propia.focus(), propia.name(),
                         propia.expectedDurationMinutes(), copia);
                 long retira = duracion - ESTIMADOR.estimateSeconds(temporal, params);
-                retiradas.add(new Opcion(e.exerciseId(), dosis(e), "retirar", retira, margen == null || retira <= margen));
+                // Ronda 2 (H3 de la auditoria): con tope declarado M, V8C rechaza la sesion aplicada que siga
+                // durando mas de M minutos (calculados por contenido, como AdaptedWeekProducer); [cabe] lo refleja.
+                boolean bajoElTope = !conTope || senalada.minutosDisponibles() == null
+                        || ESTIMADOR.estimateMinutes(temporal, params) <= senalada.minutosDisponibles();
+                retiradas.add(new Opcion(e.exerciseId(), dosis(e), "retirar", retira,
+                        (margen == null || retira <= margen) && bajoElTope));
             }
         }
 

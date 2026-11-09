@@ -379,7 +379,7 @@ public class SessionFixPromptBuilder {
         var resultados = resultadosPorSesion(previous);
 
         var factibilidad = new LinkedHashMap<Long, FactibilidadAdaptacion.Sesion>();
-        if (v2) FactibilidadAdaptacion.calcular(context, derivation, retirada)
+        if (v2) FactibilidadAdaptacion.calcular(context, derivation, retirada, retirada && !v22)
                 .forEach(f -> factibilidad.put(f.plannedWorkoutId(), f));
 
         var bloque = new StringBuilder("\nSESIONES SENALADAS (");

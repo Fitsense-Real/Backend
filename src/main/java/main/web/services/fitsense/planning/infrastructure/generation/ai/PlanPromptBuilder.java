@@ -532,8 +532,11 @@ public class PlanPromptBuilder {
                 .append("; resumen de lo que ya esta en constraints, con su coste de tiempo):\n");
         var cap = c.capacidades();
         if (cap != null) {
+            boolean lw = "LOSE_WEIGHT".equals(context.profile().goalType());
             b.append("- Principales factibles: ").append(cap.principalesFactibles())
-                    .append(" (al menos una colocacion en cada sesion). Secundarias: ").append(cap.secundarias())
+                    .append(lw ? " (el backend exige CARDIO en cada sesion en la que sea factible)"
+                            : " (el backend exige cada una al menos una vez en la semana)")
+                    .append(". Secundarias: ").append(cap.secundarias())
                     .append(" (completan el tiempo despues de las principales).\n");
             b.append("- Coste de cada dosis (trabajo + descansos; cada ejercicio despues del primero suma ademas ")
                     .append(transicion).append(" s de transicion):");

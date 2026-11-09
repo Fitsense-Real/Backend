@@ -183,4 +183,31 @@ class MejoraIaPromptsTest {
         assertTrue(t.contains(fact), "el bloque de factibilidad es el mismo de v2.2a");
         assertThrows(IllegalArgumentException.class, () -> new SessionFixPromptBuilder(JSON, "v2.5"));
     }
+
+    /** O18 con tope declarado de M minutos (falta de tiempo con MENOS_TIEMPO_HABITUAL). */
+    static Escenario o18ConTope(int m) {
+        var e = o18();
+        var c = e.ctx();
+        var orden = new main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment(
+                List.of(main.web.services.fitsense.planning.domain.model.valueobjects.AdjustmentType.NONE), null, null,
+                null, 0.0, 0.0, null, null, null, "baja adherencia", null, null,
+                List.of(new main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment.TargetedSession(
+                        53L, TipoIntervencion.ACORTAR_O_REORGANIZAR, m)));
+        var ctx = new PlanGenerationContext(c.userId(), c.weekNumber(), c.weekStartDate(), c.weekEndDate(), c.profile(),
+                orden, c.previousWeek(), c.availableExercises(), c.safety(), c.prescription(), c.policy());
+        return new Escenario(ctx, e.der());
+    }
+
+    @Test
+    @DisplayName("v2.2a/v2.4: con tope M la retirada solo [cabe] si deja la sesion en M (V8C); V2.2 conserva su texto")
+    void r2RetiradaRespetaElTope() {
+        var corto = o18ConTope(10);   // ni retirando el relleno baja de 10 min
+        var a = plano(texto(new SessionFixPromptBuilder(JSON, "v2.2a"), corto, null));
+        assertTrue(a.contains("1141 (2x13) retira") && a.contains("[NO cabe]"), a);
+        var v22 = plano(texto(V22, corto, null));
+        assertFalse(v22.contains("1141 (2x13) retira 0 s [NO cabe]"), v22);
+        assertTrue(v22.matches("(?s).*1141 \\(2x13\\) retira \\d+ s \\[cabe\\].*"), "V2.2 historico: " + v22);
+        var amplio = plano(texto(new SessionFixPromptBuilder(JSON, "v2.2a"), o18ConTope(75), null));
+        assertTrue(amplio.matches("(?s).*1141 \\(2x13\\) retira \\d+ s \\[cabe\\].*"), amplio);
+    }
 }
