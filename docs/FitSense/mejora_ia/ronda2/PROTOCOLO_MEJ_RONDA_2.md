@@ -101,3 +101,12 @@ Tarifa del registro: 0,25 USD por millón de tokens de entrada y 2,00 por milló
   - los resultados de GRA, BASE y MEJ no se tocan.
 - **Defectos:** un defecto de una regla que aparezca durante la ronda se documenta aparte (`INCIDENCIAS_MEJ_R2.md`) y nunca se oculta con un ajuste de prompt.
 - **Credencial:** se inyecta por el proxy. Antes de archivar, la evidencia se revisa en busca de `r8_` y `Bearer`.
+
+## 7. Congelación (09/11/2026, antes de la primera llamada pagada)
+
+- **Código ejecutado:** commit `1aac853`. Las variantes pr-1.8a/b/c, v2.2a y v2.4 están apagadas por defecto.
+- **Regresión sobre `1aac853`:** 1316 unitarias sin fallos y 593 de integración con 3 fallos, los mismos dependientes de la fecha que en `42d9dc1` (I-R2-1).
+- **Ejecutor:** `correr_MEJ_R2.sh`, SHA-256 `71d46f869b4a00c6490cf9a0336600d2bfa122daad13e8ab98bd670fdb75988c`.
+- **Instrumento:** `analisis_mej_r2.py`, SHA-256 `8e80067baaea32bc5f069f285809f7a6c80b1af822e461a07fb9066005e5f50d`, y oráculo v1.4 sin cambios.
+- **Prompts volcados gratis:** `PROMPTS_*`, de las 5 variantes de generación con los 20 perfiles. Adaptación simulada (`SIM_ADA_*`) de v2.1, v2.2a y v2.4, sin llamadas. Revisados: O10 recibe `CARDIO_1=480 s`, `STRENGTH_1=354 s` y 1500 s de tiempo útil; en GM, pr-1.8b no ofrece la serie extra (REV2 sin piso).
+- **Gasto antes de empezar:** 0 predicciones, USD 0.
