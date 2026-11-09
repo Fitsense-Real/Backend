@@ -240,6 +240,8 @@ def ada_corrida(dirs, oraculos):
     vig = []
     for x in dirs:
         d, ids = separa(x)
+        if ids is None:  # cada carpeta solo con SUS perfiles: los ids de sesion se repiten entre bases (G y P)
+            ids = {r["id"] for r in leer(os.path.join(d, "usuarios.csv"))}
         for r in leer(os.path.join(d, "factibilidad.csv")):
             if ids is None or r["etiqueta"].split("/")[0] in ids:
                 fact[(r["etiqueta"].split("/")[0], r["sesion"])] = int(r["validas"] or 0)
