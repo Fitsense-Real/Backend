@@ -91,9 +91,26 @@ public class SessionFixPromptBuilder {
     /** Valor de {@code fitsense.ai.adaptation.prompt-version} que activa V2.2. */
     public static final String PROPIEDAD_V22 = "v2.2";
 
+    /**
+     * Ronda 2 de MEJ (09/11/2026), EXPERIMENTALES y apagadas por defecto, sin reglas ni autorizaciones nuevas.
+     * <ul>
+     *   <li>v2.2a (A1): V2.1 + SOLO la correccion de coherencia de ACORTAR (la factibilidad ofrece retirar un relleno,
+     *       lo que TipoIntervencion ya permite); sin la linea de dolor de V2.2.</li>
+     *   <li>v2.4 (A2): v2.2a + un RESUMEN DEL CASO por sesion que ordena lo que el prompt ya contiene: (1) el problema
+     *       registrado, (2) la sesion afectada, (3) las opciones existentes, (4) lo modificable y (5) el resultado
+     *       buscado. No anade ni amplia permisos: repite la instruccion de PermisosIntervencion y el objetivo A.</li>
+     * </ul>
+     */
+    public static final String PROPIEDAD_V22A = "v2.2a";
+    public static final String PROPIEDAD_V24 = "v2.4";
+
     private final boolean v2;
     private final boolean v21;
     private final boolean v22;
+    /** La factibilidad de ACORTAR ofrece la retirada de un relleno (v2.2, v2.2a, v2.4). */
+    private final boolean retirada;
+    private final boolean v24;
+    private final String variante;
 
     public SessionFixPromptBuilder(JsonSupport json) {
         this(json, "v1");
@@ -105,16 +122,22 @@ public class SessionFixPromptBuilder {
                                            "${fitsense.ai.adaptation.prompt-version:v1}") String promptVersion) {
         this.json = json;
         String v = promptVersion == null ? "v1" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
-        if (!v.equals("v1") && !v.equals(PROPIEDAD_V2) && !v.equals(PROPIEDAD_V21) && !v.equals(PROPIEDAD_V22))
-            throw new IllegalArgumentException(
-                    "fitsense.ai.adaptation.prompt-version admite v1, v2, v2.1 o v2.2, no '" + promptVersion + "'.");
+        if (!java.util.Set.of("v1", PROPIEDAD_V2, PROPIEDAD_V21, PROPIEDAD_V22, PROPIEDAD_V22A, PROPIEDAD_V24)
+                .contains(v))
+            throw new IllegalArgumentException("fitsense.ai.adaptation.prompt-version admite v1, v2, v2.1, v2.2, v2.2a"
+                    + " o v2.4, no '" + promptVersion + "'.");
+        this.variante = v;
         this.v22 = v.equals(PROPIEDAD_V22);
-        this.v21 = v.equals(PROPIEDAD_V21) || v22;
+        this.v24 = v.equals(PROPIEDAD_V24);
+        this.retirada = v22 || v24 || v.equals(PROPIEDAD_V22A);
+        this.v21 = v.equals(PROPIEDAD_V21) || retirada;
         this.v2 = v.equals(PROPIEDAD_V2) || v21;
     }
 
     /** La version de prompt que este constructor envia: {@link #VERSION} o {@link #VERSION_V2}. */
     public String version() {
+        if (variante.equals(PROPIEDAD_V22A)) return "FIX-PR-2.2a-EXP";
+        if (v24) return "FIX-PR-2.4-EXP";
         return v22 ? VERSION_V22 : v21 ? VERSION_V21 : v2 ? VERSION_V2 : VERSION;
     }
 
@@ -313,6 +336,17 @@ public class SessionFixPromptBuilder {
                 ACORTAR (prompt V2.2): si D lista colocaciones de relleno que se pueden retirar, retirar UNA es un
                 cambio valido aunque la dosis no se pueda bajar.
                 """);
+        else if (retirada) prompt.append("""
+                ACORTAR (prompt %s): si D lista colocaciones de relleno que se pueden retirar, retirar UNA es un
+                cambio valido aunque la dosis no se pueda bajar.
+                """.formatted(version()));
+        if (v24) prompt.append("""
+                RESUMEN DEL CASO (prompt V2.4): cada sesion senalada empieza con cinco puntos que ordenan lo que ya
+                esta en su bloque: 1 el problema registrado, 2 la sesion afectada, 3 las opciones que existen, 4 lo
+                que se puede modificar y 5 el resultado buscado. Lee primero el resumen y despues el detalle; si algo
+                del resumen y del detalle no coincide, manda el detalle (FACTIBILIDAD y QUE PUEDES CAMBIAR AQUI).
+                Compara las opciones por lo bien que responden al problema, no solo por si caben.
+                """);
 
         prompt.append(sesionesSenaladas(context, derivation, adjustment));
 
@@ -345,7 +379,7 @@ public class SessionFixPromptBuilder {
         var resultados = resultadosPorSesion(previous);
 
         var factibilidad = new LinkedHashMap<Long, FactibilidadAdaptacion.Sesion>();
-        if (v2) FactibilidadAdaptacion.calcular(context, derivation, v22)
+        if (v2) FactibilidadAdaptacion.calcular(context, derivation, retirada)
                 .forEach(f -> factibilidad.put(f.plannedWorkoutId(), f));
 
         var bloque = new StringBuilder("\nSESIONES SENALADAS (");
@@ -358,6 +392,8 @@ public class SessionFixPromptBuilder {
             var resultado = resultados.get(id);
 
             bloque.append("\n- source_planned_workout_id: ").append(id).append('\n');
+            if (v24) bloque.append(resumenDelCaso(context, senalada, resultado, porSesion.getOrDefault(id, List.of()),
+                    factibilidad.get(id)));
 
             if (resultado != null) {
                 bloque.append("  era el ").append(resultado.scheduledDate())
@@ -412,6 +448,54 @@ public class SessionFixPromptBuilder {
         }
 
         return bloque.toString();
+    }
+
+    /**
+     * V2.4 (A2): los cinco puntos del caso, con datos que el bloque de la sesion ya contiene. No calcula permisos: el
+     * punto 4 es la instruccion de PermisosIntervencion y el punto 5 el objetivo A de la factibilidad.
+     */
+    private static String resumenDelCaso(PlanGenerationContext context,
+                                         PlanAdjustment.TargetedSession senalada,
+                                         PreviousWeekSummary.WorkoutOutcome resultado,
+                                         List<PreviousWeekSummary.PrescriptionOutcome> prescritos,
+                                         FactibilidadAdaptacion.Sesion f) {
+        var t = senalada.intervencion();
+        var b = new StringBuilder("  RESUMEN DEL CASO (V2.4):\n");
+        b.append("    1 PROBLEMA: ");
+        if (resultado == null || !resultado.recorded()) b.append("sin registro de la sesion");
+        else {
+            b.append(resultado.skipReason() == null ? "sin motivo registrado" : "motivo " + resultado.skipReason());
+            if (resultado.completionPct() != null) b.append(", ").append(resultado.completionPct()).append(" % completada");
+            if (resultado.sessionRpe() != null) b.append(", esfuerzo ").append(resultado.sessionRpe()).append("/10");
+        }
+        var dolieron = prescritos.stream().filter(p -> "PAIN_OR_DISCOMFORT".equals(p.skipReason()))
+                .map(PreviousWeekSummary.PrescriptionOutcome::exerciseId).toList();
+        if (!dolieron.isEmpty()) b.append("; dolio ").append(dolieron);
+        b.append(". Intervencion decidida: ").append(t).append(".\n");
+        b.append("    2 SESION: ").append(senalada.plannedWorkoutId());
+        if (resultado != null) b.append(" (").append(resultado.focusCode()).append(')');
+        b.append(", ").append(prescritos.size()).append(" ejercicios prescritos").append(f == null ? ""
+                : ", dura " + f.duracion() + " s").append(".\n");
+        b.append("    3 OPCIONES QUE EXISTEN: ");
+        if (f == null) b.append("las de QUE PUEDES CAMBIAR AQUI");
+        else {
+            var partes = new ArrayList<String>();
+            long caben = f.opciones().stream().filter(FactibilidadAdaptacion.Opcion::cabe).count();
+            if (f.dosisReducible() && !f.opciones().isEmpty())
+                partes.add(caben + " bajadas de dosis que caben");
+            if (!f.sustitutos().isEmpty()) partes.add(f.sustitutos().size() + " sustitutos admitidos");
+            if (!f.cargasReducibles().isEmpty()) partes.add("bajar carga en " + f.cargasReducibles().size() + " ejercicios");
+            if (!f.retiradas().isEmpty()) partes.add(f.retiradas().size() + " rellenos que se pueden retirar (uno)");
+            b.append(partes.isEmpty() ? "ninguna (ver D y F)" : String.join("; ", partes)).append(" (detalle en D)");
+        }
+        b.append(".\n");
+        b.append("    4 LO MODIFICABLE: ")
+                .append(main.web.services.fitsense.planning.domain.services.PermisosIntervencion.instruccion(t, context.policy()))
+                .append('\n');
+        b.append("    5 RESULTADO BUSCADO: ").append(FactibilidadAdaptacion.objetivo(t))
+                .append(", cambiando lo justo y dentro de los limites de C").append(senalada.minutosDisponibles() == null
+                        ? "" : " y del LIMITE DE TIEMPO").append(".\n");
+        return b.toString();
     }
 
     /** Sin estado: el mismo calculo de V17 y V20. */

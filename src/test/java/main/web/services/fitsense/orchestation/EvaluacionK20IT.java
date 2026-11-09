@@ -172,6 +172,12 @@ class EvaluacionK20IT {
     static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
     /** Experimento de mejora (MEJ): prompt de GENERACION pr-1.7 | pr-1.8. Vacio = el del backend (pr-1.7). */
     static final String PROMPT_GENERACION = System.getProperty("fitsense.evaluacion.k20.prompt-generacion", "");
+    /**
+     * MEJ ronda 2 (G1-G3): corta cada perfil tras publicar el plan inicial (sin ejecutar semanas ni ciclos) para no
+     * pagar adaptaciones en los bloques que solo miden la generacion. Solo prueba; no toca el backend.
+     */
+    static final boolean SOLO_GENERACION = Boolean.parseBoolean(
+            System.getProperty("fitsense.evaluacion.k20.solo-generacion", "false"));
 
     static final Path K20 = Path.of("docs/FitSense/short_paper_ieee/evaluacion_final_k20");
     /** Por defecto los 20 historicos; con -Dfitsense.evaluacion.k20.perfiles, otra cohorte (casos reservados). */
@@ -650,6 +656,11 @@ class EvaluacionK20IT {
         }
         r.put("generacion", "PUBLICADO");
         r.put("plan_s1", plan.get());
+        if (SOLO_GENERACION) {
+            r.put("semanas_medidas", 0);
+            res.add(r);
+            return;
+        }
 
         int horizonte = Math.max(4, Integer.parseInt(Objects.requireNonNullElse(
                 blancoANull(p.c().get("horizonte_semanas")), "4")));

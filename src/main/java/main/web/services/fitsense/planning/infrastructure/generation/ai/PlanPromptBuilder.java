@@ -123,8 +123,25 @@ public class PlanPromptBuilder {
     public static final String VERSION_V18 = "PR-1.8-EXP";
     public static final String PROPIEDAD_V18 = "pr-1.8";
 
+    /**
+     * Ronda 2 del experimento MEJ (09/11/2026), EXPERIMENTALES y apagadas por defecto. Ninguna anade reglas: todas
+     * reordenan o explicitan informacion que el backend ya usa.
+     * <ul>
+     *   <li>pr-1.8a (G1): solo las lineas de V15 y V26 del bloque PR-1.8 (sin la dosis orientativa, que en MEJ provoco
+     *       un rechazo V24 en GAIN_MUSCLE).</li>
+     *   <li>pr-1.8b (G2): pr-1.8a + la dosis orientativa explicando que la dosis de cada ejercicio NO se toca para
+     *       alcanzarla (clases fijas de GAIN_MUSCLE y dosis por capacidad): se alcanza con la seleccion y el reparto.</li>
+     *   <li>pr-1.8c (G3): pr-1.8a + un resumen de la ESTRUCTURA del objetivo ya presente en constraints (principales,
+     *       secundarias, slots, clases) con el coste en segundos de cada dosis y el tiempo util de la sesion.</li>
+     * </ul>
+     */
+    public static final String PROPIEDAD_V18A = "pr-1.8a";
+    public static final String PROPIEDAD_V18B = "pr-1.8b";
+    public static final String PROPIEDAD_V18C = "pr-1.8c";
+
     private final JsonSupport jsonSupport;
     private final boolean v18;
+    private final String variante;
 
     public PlanPromptBuilder(JsonSupport jsonSupport) {
         this(jsonSupport, "pr-1.7");
@@ -136,15 +153,22 @@ public class PlanPromptBuilder {
                                      "${fitsense.ai.generation.prompt-version:pr-1.7}") String promptVersion) {
         this.jsonSupport = jsonSupport;
         String v = promptVersion == null ? "pr-1.7" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
-        if (!v.equals("pr-1.7") && !v.equals(PROPIEDAD_V18))
-            throw new IllegalArgumentException(
-                    "fitsense.ai.generation.prompt-version admite pr-1.7 o pr-1.8, no '" + promptVersion + "'.");
+        if (!java.util.Set.of("pr-1.7", PROPIEDAD_V18, PROPIEDAD_V18A, PROPIEDAD_V18B, PROPIEDAD_V18C).contains(v))
+            throw new IllegalArgumentException("fitsense.ai.generation.prompt-version admite pr-1.7, pr-1.8, pr-1.8a,"
+                    + " pr-1.8b o pr-1.8c, no '" + promptVersion + "'.");
         this.v18 = v.equals(PROPIEDAD_V18);
+        this.variante = v;
     }
 
-    /** La version de prompt que se envia: {@link #VERSION} o {@link #VERSION_V18}. */
+    /** La version de prompt que se envia: {@link #VERSION}, {@link #VERSION_V18} o la de la ronda 2. */
     public String version() {
-        return v18 ? VERSION_V18 : VERSION;
+        return switch (variante) {
+            case PROPIEDAD_V18 -> VERSION_V18;
+            case PROPIEDAD_V18A -> "PR-1.8a-EXP";
+            case PROPIEDAD_V18B -> "PR-1.8b-EXP";
+            case PROPIEDAD_V18C -> "PR-1.8c-EXP";
+            default -> VERSION;
+        };
     }
 
     public String build(PlanGenerationContext context, String inputSnapshotJson,
@@ -294,6 +318,11 @@ public class PlanPromptBuilder {
 
         prompt.append(duracionCalculada(context));
         if (v18) prompt.append(coherenciaConValidadores(context));
+        else if (!variante.equals("pr-1.7")) {
+            prompt.append(lineasV15V26(context, version()));
+            if (variante.equals(PROPIEDAD_V18B)) prompt.append(dosisSinTocarLaDosis(context));
+            if (variante.equals(PROPIEDAD_V18C)) prompt.append(estructuraDelObjetivo(context));
+        }
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
 
         // La comprobacion va DESPUES de los datos: es lo ultimo que lee el
@@ -444,6 +473,90 @@ public class PlanPromptBuilder {
     private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR =
             new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
 
+    /** Ronda 2 (pr-1.8a/b/c): las dos lineas de V15 y V26, identicas a las de PR-1.8. */
+    static String lineasV15V26(PlanGenerationContext context, String version) {
+        var completo = coherenciaConValidadores(context);
+        var b = new StringBuilder("\nCOHERENCIA CON LOS VALIDADORES (").append(version).append("). Son los mismos")
+                .append(" numeros con los que el backend revisa tu propuesta:\n");
+        for (var linea : completo.split("\n"))
+            if (linea.startsWith("- REPARTO (V15)") || linea.startsWith("- VOLUMEN POR GRUPO (V26)"))
+                b.append(linea).append('\n');
+        return b.toString();
+    }
+
+    /**
+     * pr-1.8b (G2): la dosis orientativa de CalidadDosis con lo que el backend ya obliga sobre la dosis de cada
+     * ejercicio. No anade reglas: la dosis fija (dosis_por_clase en GAIN_MUSCLE, dosis por capacidad en el resto) ya la
+     * exige V24; aqui solo se dice que el objetivo semanal se persigue con la seleccion y el reparto, no con la dosis.
+     */
+    static String dosisSinTocarLaDosis(PlanGenerationContext context) {
+        var completo = coherenciaConValidadores(context);
+        String objetivo = null;
+        for (var linea : completo.split("\n"))
+            if (linea.startsWith("- DOSIS ORIENTATIVA DE LA SEMANA")) objetivo = linea;
+        if (objetivo == null) return "";
+        int corte = objetivo.indexOf(" acercate a ella");
+        if (corte > 0) objetivo = objetivo.substring(0, corte);
+        var b = new StringBuilder(objetivo).append('\n');
+        boolean fija = context.profile() != null && main.web.services.fitsense.planning.domain.model.valueobjects
+                .MvpDosePolicy.aplicaA(context.profile().goalType());
+        b.append("  COMO ACERCARTE SIN ROMPER NINGUNA REGLA: la dosis de cada ejercicio NO se cambia para alcanzarla.");
+        if (fija)
+            b.append(" En tu objetivo la dosis viene fijada por la clase (constraints.dosis_por_clase): copiala tal cual;")
+                    .append(" subir series o repeticiones de una clase se rechaza (V24), salvo la unica excepcion de")
+                    .append(" series_max del punto 10.");
+        else
+            b.append(" Cada ejercicio lleva exactamente una de sus dosis (constraints.capacidades.dosis), con las")
+                    .append(" series entre series y series_max: no la estires para sumar.");
+        b.append(" Lo que si puedes hacer: elegir ejercicios que cuenten para el grupo que falta, repartirlos entre las")
+                .append(" sesiones cuyo enfoque admite ese grupo y usar las colocaciones libres hasta")
+                .append(" constraints.max_colocaciones_dia, sin pasar de la duracion maxima ni de los techos de arriba.")
+                .append(" Si con eso no se alcanza, deja la dosis por debajo: es una respuesta correcta.\n");
+        return b.toString();
+    }
+
+    /**
+     * pr-1.8c (G3): la ESTRUCTURA del objetivo que ya viaja en constraints, reunida en un solo bloque y con el coste de
+     * tiempo de cada dosis (mismo estimador que V4/V17). No anade requisitos: principales, secundarias, slots y clases
+     * son los del snapshot; el orden (principales primero, secundarias para completar el tiempo) es el de la regla
+     * prioritaria y el bloque de capacidades que ya estan en el prompt.
+     */
+    static String estructuraDelObjetivo(PlanGenerationContext context) {
+        var p = context.prescription();
+        if (p == null || context.profile() == null) return "";
+        var c = PlanInputSnapshot.of(context).constraints();
+        long calentamiento = (long) p.warmupMinutesOrDefault() * 60;
+        long transicion = p.transitionSecondsOrDefault();
+        Long maximo = c.maxSessionSeconds() == null ? null : c.maxSessionSeconds().longValue();
+        var b = new StringBuilder("ESTRUCTURA DE TU OBJETIVO (").append(context.profile().goalType())
+                .append("; resumen de lo que ya esta en constraints, con su coste de tiempo):\n");
+        var cap = c.capacidades();
+        if (cap != null) {
+            b.append("- Principales factibles: ").append(cap.principalesFactibles())
+                    .append(" (al menos una colocacion en cada sesion). Secundarias: ").append(cap.secundarias())
+                    .append(" (completan el tiempo despues de las principales).\n");
+            b.append("- Coste de cada dosis (trabajo + descansos; cada ejercicio despues del primero suma ademas ")
+                    .append(transicion).append(" s de transicion):");
+            for (var d : cap.dosis()) {
+                b.append(' ').append(d.codigo()).append('=').append(costeDosis(d, p)).append(" s;");
+            }
+            b.append('\n');
+        }
+        if (c.dosisPorClase() != null)
+            b.append("- Clases de dosis fijas (constraints.dosis_por_clase): las estructurales cubren los slots; el")
+                    .append(" relleno completa la sesion. Sus costes estan en DURACION CALCULADA.\n");
+        if (c.slotsExigibles() != null && !c.slotsExigibles().isEmpty())
+            b.append("- La semana debe tocar cada slot de constraints.slots_exigibles: ").append(c.slotsExigibles())
+                    .append(".\n");
+        if (maximo != null)
+            b.append("- Tiempo util por sesion: ").append(maximo - calentamiento).append(" s (")
+                    .append(maximo).append(" s maximos menos ").append(calentamiento).append(" s de calentamiento).")
+                    .append(" Suma el coste de cada colocacion: si despues de las principales queda tiempo util para")
+                    .append(" otra colocacion de una secundaria y no llegas a constraints.max_colocaciones_dia, anadela;")
+                    .append(" no dejes la sesion corta solo por haber cubierto la principal.\n");
+        return b.toString();
+    }
+
     /**
      * PR-1.8: los numeros con los que el backend ya revisa la propuesta (V15, V26) y la dosis orientativa de
      * CalidadDosis. Mismas fuentes que el validador: PlanDraftValidator (mitad de V15), DosisSemanalPolicy (techos de
@@ -536,6 +649,22 @@ public class PlanPromptBuilder {
             }
         }
         return b.append('\n').toString();
+    }
+
+    /** Trabajo + descansos de una dosis codificada con su numero minimo de series, con el estimador de V4/V17. */
+    static long costeDosis(PlanInputSnapshot.DosisCodificada d,
+                           main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams p) {
+        boolean duracion = d.segundos() != null;
+        var e = new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftExercise(1L,
+                duracion ? main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.DURATION
+                        : main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType.SETS_REPS,
+                (short) (int) d.series(), duracion || d.reps() == null ? null : (short) (int) d.reps(),
+                duracion ? d.segundos() : null, null,
+                (short) d.descansoSegundos(), null);
+        var w = new main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.DraftWorkout(
+                java.time.LocalDate.of(2026, 1, 5), main.web.services.fitsense.planning.domain.model.valueobjects.WorkoutFocus.FULL_BODY,
+                "x", 60, java.util.List.of(e));
+        return ESTIMADOR.estimateSeconds(w, p) - (long) p.warmupMinutesOrDefault() * 60;
     }
 
     private static long segundos(int series, int reps, int descanso,
