@@ -127,6 +127,7 @@ class MejoraIaPromptsTest {
         assertTrue(gm.contains("la dosis de cada ejercicio NO se cambia para alcanzarla"), gm);
         assertTrue(gm.contains("constraints.dosis_por_clase): copiala tal cual"), gm);
         assertFalse(gm.contains("acercate a ella"), "la frase de PR-1.8 que empujaba a subir series no viaja");
+        assertTrue(gm.contains("series_max del punto 10 tampoco se admite"), "REV2 sin piso: sin excepcion");
         var lw = new PlanPromptBuilder(JSON, "pr-1.8b").build(conPrescripcion("LOSE_WEIGHT"), "{}", null);
         if (lw.contains("DOSIS ORIENTATIVA")) assertTrue(lw.contains("constraints.capacidades.dosis"), lw);
         assertFalse(lw.contains("dosis_por_clase): copiala"), lw);

@@ -503,8 +503,11 @@ public class PlanPromptBuilder {
         b.append("  COMO ACERCARTE SIN ROMPER NINGUNA REGLA: la dosis de cada ejercicio NO se cambia para alcanzarla.");
         if (fija)
             b.append(" En tu objetivo la dosis viene fijada por la clase (constraints.dosis_por_clase): copiala tal cual;")
-                    .append(" subir series o repeticiones de una clase se rechaza (V24), salvo la unica excepcion de")
-                    .append(" series_max del punto 10.");
+                    .append(" subir series o repeticiones de una clase se rechaza (V24)")
+                    .append(context.policy() != null && !context.policy().pisoV20()
+                            ? ". Esta semana no hay duracion minima, asi que la serie de series_max del punto 10 tampoco"
+                            + " se admite."
+                            : ", salvo la unica excepcion de series_max del punto 10.");
         else
             b.append(" Cada ejercicio lleva exactamente una de sus dosis (constraints.capacidades.dosis), con las")
                     .append(" series entre series y series_max: no la estires para sumar.");
