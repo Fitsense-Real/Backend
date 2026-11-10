@@ -555,13 +555,18 @@ class AdaptedWeekProducerTest {
     }
 
     @Test
-    @DisplayName("C4 · menos descanso en una intervencion que permite cambiar la dosis -> adaptacion real")
-    void menosDescansoEsAplicada() {
+    @DisplayName("C4 · menos descanso, aun con permiso de dosis, se rechaza (H-A2: el descanso no se cambia)")
+    void menosDescansoRechazado() {
+        // Hasta el 10/11/2026 se aceptaba como adaptacion real (hallazgo H-A2 de la auditoria MEJ ronda 2). La
+        // politica de correccion dice que el descanso de un ejercicio que se queda no se cambia nunca; bajar la
+        // dosis es quitar series, repeticiones o segundos (menosSeriesEsAplicada, menosRepeticionesEsAplicada).
         var r = producer.produce(contexto(senalando(Map.of(102L, TipoIntervencion.REVISAR_CARGA_Y_RECUPERACION))),
                 derivacion(), List.of(correccion(102L, L2.plusDays(2), 40, new PlanDraft.DraftExercise(304L,
                         PrescriptionType.SETS_REPS, (short) 3, (short) 10, null, null, (short) 60, null))), catalogo());
-        assertTrue(r.publicable(), () -> r.problemas().toString());
-        assertEquals(List.of(102L), r.conservacion().aplicadas());
+        assertFalse(r.publicable());
+        assertTrue(r.conservacion().aplicadas().isEmpty());
+        assertTrue(r.problemas().stream().anyMatch(p -> p.contains("cambia el descanso del ejercicio 304")),
+                () -> r.problemas().toString());
     }
 
     @Test
