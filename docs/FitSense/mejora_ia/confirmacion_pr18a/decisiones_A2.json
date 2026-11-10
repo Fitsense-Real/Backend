@@ -1,0 +1,101 @@
+{
+ "pr-1.8a": {
+  "rondas": [
+   "A2"
+  ],
+  "filas_ronda": [
+   [
+    "pr-1.8a",
+    "PR-1.7",
+    "A2",
+    19,
+    2,
+    2,
+    1.0
+   ]
+  ],
+  "dif_valida": [
+   0,
+   0,
+   1,
+   -1,
+   0,
+   -1,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "wilcoxon_validez": {
+   "n": 4,
+   "W+": 5.0,
+   "p": 1.0
+  },
+  "perfiles_mejor_peor_igual": [
+   2,
+   2,
+   15
+  ],
+  "wilcoxon_rechazadas": {
+   "n": 6,
+   "W+": 9.0,
+   "p": 0.8339
+  },
+  "wilcoxon_pct_de_m": {
+   "n": 17,
+   "W+": 55.0,
+   "p": 0.3202
+  },
+  "wilcoxon_mejorables": {
+   "n": 10,
+   "W+": 30.0,
+   "p": 0.8385
+  },
+  "totales": {
+   "PR-1.7": {
+    "n": 19,
+    "valida": 13,
+    "rechazadas": 7,
+    "propuestas": 25,
+    "estructurales": 2,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 0,
+    "V15": 11,
+    "V26": 8,
+    "V23": 2
+   },
+   "pr-1.8a": {
+    "n": 19,
+    "valida": 13,
+    "rechazadas": 6,
+    "propuestas": 24,
+    "estructurales": 3,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 0,
+    "V24": 1,
+    "V4": 3,
+    "V23": 3,
+    "V15": 2,
+    "V26": 3
+   }
+  },
+  "criterios": {
+   "1_validez_p<0.05_a_favor": false,
+   "2_V24_variante<=control": false,
+   "3a_estructurales<=control": false,
+   "3b_respaldos_por_rechazos<=control": true,
+   "4_ningun_plan_publicado_con_violaciones": true,
+   "5_dosis_tiempo_no_empeoran": true
+  },
+  "veredicto": "NO_CUMPLE"
+ }
+}
