@@ -15,3 +15,16 @@
 | I-C-10 | pr-1.8a | pr-1.8c no cumple el §6.1, así que pr-1.8a se ejecuta con el remanente de generación (USD 1,07 de 5,50), que alcanza para **una ronda (A1)**, no tres. Para no esperar a que termine D1 de adaptación, A1 corre en otra copia del código (`/home/user/wt_det`, el mismo commit `ab04e67`) con `correr_CONF_IA_genA.sh`. Es idéntico al ejecutor congelado salvo en dos líneas: el directorio de trabajo y que el gasto se suma solo de las carpetas de generación (`CONF_G1*_R*`). Así A1 no supera el tope de generación ni toma dinero de adaptación | — | pr-1.8a se compara con PR-1.7 C1 en un solo par por perfil. La potencia es menor que con tres rondas, y se informa |
 | I-C-11 | pr-1.8a A1 | O20 no recibió llamada en `CONF_G18A_RA1` (`PRESUPUESTO_AGOTADO_SIN_LLAMADA`): el arnés reserva USD 0,05 por cada llamada posible y el remanente quedó justo | Se completa en `CONF_G18A_RA1B` (válido al primer intento). El remanente de generación (USD 0,57) no alcanza para una ronda A2 completa. **No se corren rondas parciales**: un subconjunto ordenado (O01, O02…) sesgaría la comparación | pr-1.8a: una ronda (A1) de las tres previstas |
 | I-C-12 | Flujo conjunto | Según el §3.3, la candidata es pr-1.8c, o pr-1.8a si cumple el §6.1, o PR-1.7 si ninguna lo cumple. pr-1.8c: NO_CUMPLE. pr-1.8a: FAVORABLE_NO_CONCLUYENTE, que no es «cumple» | I1 se ejecuta con **PR-1.7 + v2.2a**, en `/home/user/wt_det` con `correr_CONF_IA_int.sh` (el ejecutor congelado con otro directorio de trabajo; contabilidad acumulada sin cambios) | El flujo conjunto mide la generación con IA → adaptación v2.2a → V8C corregido con el prompt de generación vigente |
+| I-C-13 | Vigilancia | `descargar_huerfanas.sh` también se detuvo al llegar al límite de 2 h. No se relanzó | Al terminar cada corrida se revisó a mano la lista de la cuenta. Al cierre solo aparecen como no registradas las tres ya recuperadas (I-C-1, I-C-5, I-C-6). No se perdió ninguna predicción | Ninguno |
+| I-C-14 | Adaptación D1, v2.2a | El oráculo marca O12 c1 como INC («sustituto más difícil 395→715»), porque empareja los ejercicios por posición | Revisión por identidad, la medida del §6.2: retira dos ejercicios de nivel 2 (1233 y 532) y añade uno (715, peso muerto como 1233); el trabajo baja de 1686 a 740. `pertinencia_identidad` = NO_INC | No es un cambio no autorizado ni un error ante dolor. Se informa en la recomendación |
+
+## Resumen de gasto (USD 10 autorizados, separados de MEJ ronda 2)
+
+| Fase | Predicciones | USD | Asignado |
+|---|---|---|---|
+| Generación (C1–C3 + A1) | 197 | 4,9323 | 5,50 |
+| Adaptación (D1–D5) | 101 | 1,3835 | 2,00 |
+| Flujo conjunto (I1) | 38 | 0,7792 | 1,50 |
+| **Total** | **336** | **7,0950** | 10,00 |
+
+Cada timeout o predicción sin métricas se cargó a la reserva de USD 0,05, aunque su coste real fuera 0. No se tocó la reserva de incidencias.

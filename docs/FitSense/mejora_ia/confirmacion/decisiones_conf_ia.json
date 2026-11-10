@@ -1,0 +1,356 @@
+{
+ "pr-1.8c": {
+  "rondas": [
+   "C1",
+   "C2",
+   "C3"
+  ],
+  "filas_ronda": [
+   [
+    "pr-1.8c",
+    "PR-1.7",
+    "C1",
+    19,
+    6,
+    3,
+    0.5078
+   ],
+   [
+    "pr-1.8c",
+    "PR-1.7",
+    "C2",
+    19,
+    6,
+    3,
+    0.5078
+   ],
+   [
+    "pr-1.8c",
+    "PR-1.7",
+    "C3",
+    19,
+    5,
+    4,
+    1.0
+   ]
+  ],
+  "dif_valida": [
+   0,
+   -2,
+   2,
+   1,
+   1,
+   -2,
+   3,
+   0,
+   0,
+   0,
+   1,
+   1,
+   0,
+   0,
+   2,
+   2,
+   -1,
+   0,
+   -1
+  ],
+  "wilcoxon_validez": {
+   "n": 12,
+   "W+": 53.0,
+   "p": 0.2896
+  },
+  "perfiles_mejor_peor_igual": [
+   8,
+   4,
+   7
+  ],
+  "wilcoxon_rechazadas": {
+   "n": 14,
+   "W+": 29.0,
+   "p": 0.1488
+  },
+  "wilcoxon_pct_de_m": {
+   "n": 17,
+   "W+": 75.5,
+   "p": 0.9811
+  },
+  "wilcoxon_mejorables": {
+   "n": 14,
+   "W+": 37.0,
+   "p": 0.3464
+  },
+  "totales": {
+   "PR-1.7": {
+    "n": 57,
+    "valida": 34,
+    "rechazadas": 35,
+    "propuestas": 92,
+    "estructurales": 7,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 1,
+    "V15": 50,
+    "V26": 32,
+    "V23": 7
+   },
+   "pr-1.8c": {
+    "n": 57,
+    "valida": 41,
+    "rechazadas": 20,
+    "propuestas": 77,
+    "estructurales": 6,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 1,
+    "V4": 14,
+    "V22": 3,
+    "V23": 2,
+    "V15": 15,
+    "V18": 4,
+    "V26": 9,
+    "V24": 2
+   }
+  },
+  "criterios": {
+   "1_validez_p<0.05_a_favor": false,
+   "2_V24_variante<=control": false,
+   "3a_estructurales<=control": true,
+   "3b_respaldos_por_rechazos<=control": true,
+   "4_ningun_plan_publicado_con_violaciones": true,
+   "5_dosis_tiempo_no_empeoran": true
+  },
+  "veredicto": "NO_CUMPLE"
+ },
+ "pr-1.8a": {
+  "rondas": [
+   "C1"
+  ],
+  "filas_ronda": [
+   [
+    "pr-1.8a",
+    "PR-1.7",
+    "C1",
+    19,
+    7,
+    3,
+    0.3438
+   ]
+  ],
+  "dif_valida": [
+   0,
+   0,
+   1,
+   1,
+   0,
+   -1,
+   1,
+   -1,
+   -1,
+   0,
+   1,
+   1,
+   1,
+   0,
+   1,
+   0,
+   0,
+   0,
+   0
+  ],
+  "wilcoxon_validez": {
+   "n": 10,
+   "W+": 38.5,
+   "p": 0.2845
+  },
+  "perfiles_mejor_peor_igual": [
+   7,
+   3,
+   9
+  ],
+  "wilcoxon_rechazadas": {
+   "n": 10,
+   "W+": 10.5,
+   "p": 0.0926
+  },
+  "wilcoxon_pct_de_m": {
+   "n": 12,
+   "W+": 27.0,
+   "p": 0.367
+  },
+  "wilcoxon_mejorables": {
+   "n": 6,
+   "W+": 6.0,
+   "p": 0.4017
+  },
+  "totales": {
+   "PR-1.7": {
+    "n": 19,
+    "valida": 12,
+    "rechazadas": 11,
+    "propuestas": 30,
+    "estructurales": 1,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 1,
+    "V15": 19,
+    "V26": 13,
+    "V23": 1
+   },
+   "pr-1.8a": {
+    "n": 19,
+    "valida": 16,
+    "rechazadas": 3,
+    "propuestas": 22,
+    "estructurales": 0,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 0,
+    "V4": 3,
+    "V15": 1,
+    "V22": 2
+   }
+  },
+  "criterios": {
+   "1_validez_p<0.05_a_favor": false,
+   "2_V24_variante<=control": true,
+   "3a_estructurales<=control": true,
+   "3b_respaldos_por_rechazos<=control": true,
+   "4_ningun_plan_publicado_con_violaciones": true,
+   "5_dosis_tiempo_no_empeoran": true
+  },
+  "veredicto": "FAVORABLE_NO_CONCLUYENTE"
+ },
+ "ADA:v2.2a": {
+  "rondas": [
+   "D1",
+   "D2",
+   "D3",
+   "D4",
+   "D5"
+  ],
+  "pares": 50,
+  "b": 2,
+  "c": 0,
+  "mcnemar": 0.5,
+  "wilcoxon": {
+   "n": 1,
+   "W+": 1.0,
+   "p": 1.0
+  },
+  "totales": {
+   "v2.2a": {
+    "aplicada": 50,
+    "evitable": 0,
+    "inc": 0,
+    "noaut": 0,
+    "v8c": 0
+   },
+   "V2.1": {
+    "aplicada": 48,
+    "evitable": 2,
+    "inc": 0,
+    "noaut": 0,
+    "v8c": 0
+   }
+  },
+  "veredicto": "NO_PEOR_SIN_VENTAJA_DEMOSTRADA"
+ },
+ "SECUNDARIO:pr-1.8a": {
+  "rondas": [
+   "C1",
+   "R2",
+   "R3"
+  ],
+  "wilcoxon": {
+   "n": 10,
+   "W+": 44.0,
+   "p": 0.1029
+  },
+  "mejor_peor_igual": [
+   8,
+   2,
+   9
+  ],
+  "totales": {
+   "PR-1.7": {
+    "n": 57,
+    "valida": 33,
+    "rechazadas": 34,
+    "propuestas": 91,
+    "estructurales": 7,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 1,
+    "V15": 39,
+    "V26": 27,
+    "V23": 7,
+    "V4": 5,
+    "V24": 2,
+    "V16": 1
+   },
+   "pr-1.8a": {
+    "n": 57,
+    "valida": 43,
+    "rechazadas": 18,
+    "propuestas": 73,
+    "estructurales": 6,
+    "respaldo_rechazos": 1,
+    "respaldo_total": 1,
+    "V4": 11,
+    "V15": 8,
+    "V22": 2,
+    "V23": 6,
+    "V26": 7,
+    "V24": 1
+   }
+  }
+ },
+ "SECUNDARIO:pr-1.8c": {
+  "rondas": [
+   "C1",
+   "C2",
+   "C3",
+   "R2",
+   "R3"
+  ],
+  "wilcoxon": {
+   "n": 12,
+   "W+": 62.0,
+   "p": 0.0776
+  },
+  "mejor_peor_igual": [
+   8,
+   4,
+   7
+  ],
+  "totales": {
+   "PR-1.7": {
+    "n": 95,
+    "valida": 55,
+    "rechazadas": 58,
+    "propuestas": 153,
+    "estructurales": 13,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 1,
+    "V15": 70,
+    "V26": 46,
+    "V23": 13,
+    "V4": 5,
+    "V24": 2,
+    "V16": 1
+   },
+   "pr-1.8c": {
+    "n": 95,
+    "valida": 69,
+    "rechazadas": 32,
+    "propuestas": 127,
+    "estructurales": 7,
+    "respaldo_rechazos": 0,
+    "respaldo_total": 1,
+    "V4": 17,
+    "V22": 3,
+    "V23": 3,
+    "V15": 24,
+    "V18": 4,
+    "V26": 14,
+    "V24": 5
+   }
+  }
+ }
+}

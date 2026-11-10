@@ -33,3 +33,16 @@ V24 de la generación inicial no cambia: la generación no pasa por V8C. Las ref
 | `ProgresionRev2IT.p02ProgresionSinElExcluido` | ERROR | Hereda de `ProgresionIT` | — | Pasa |
 
 No cambian la lógica productiva, las políticas, las fechas de negocio ni ningún resultado experimental anterior.
+
+## 3. V8C corregido en las corridas reales (Replicate)
+
+| Corridas | Adaptaciones con IA | Rechazos de V8C | Cambios no autorizados que pasaron |
+|---|---|---|---|
+| D1–D5, V2.1 (10 corridas) | 60 sesiones (50 predicciones) | 0 | 0 |
+| D1–D5, v2.2a (10 corridas) | 60 sesiones | 1: D3, O19, intento 1 (ACORTAR que retira un ejercicio **y además** baja la dosis de otro). La regla de acortar ya lo prohibía antes de esta corrección. El reintento se aplicó | 0 |
+| Flujo conjunto I1 | 12 sesiones | 0 | 0 |
+
+- Ninguna propuesta real retiró ejercicios sin autorización (H-A1) ni cambió descansos (H-A2), ni antes ni después de V8C.
+- El oráculo independiente lo confirma: sin cambios no autorizados por identidad en las 132 sesiones adaptadas.
+- Las pruebas del §1 demuestran que, si una propuesta lo intenta, ahora se rechaza.
+- Después de la congelación (`957a08d`) no se tocó código productivo. Las corridas usan `ab04e67`.
