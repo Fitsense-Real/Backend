@@ -166,18 +166,24 @@ class V8CConservacionPatronH1Test {
 
     @ParameterizedTest
     @EnumSource(ReglaPatron.class)
-    @DisplayName("7. VARIANTE que retira sin anadir sigue aceptada (la regla no prohibe retiradas)")
+    @DisplayName("7. VARIANTE que retira sin anadir se rechaza con las dos reglas (H-A1, correccion del 10/11/2026)")
     void retirarSinAnadir(ReglaPatron regla) {
+        // Hasta el 10/11/2026 se aceptaba: la regla de patron no miraba las retiradas y V8C volvia sin comprobar
+        // nada (hallazgo H-A1 de la auditoria MEJ ronda 2). La politica de VARIANTE_MAS_SENCILLA_O_CARGA autoriza
+        // sustituir del mismo patron o ajustar la carga, no retirar.
         var r = variante(regla, List.of(580L, 389L, 9001L), List.of(580L, 9001L));
-        assertTrue(r.aceptable(), r.problems()::toString);
+        assertFalse(r.aceptable());
+        assertTrue(r.problems().stream().anyMatch(p -> p.contains("no retirar ejercicios")), r.problems()::toString);
     }
 
     @ParameterizedTest
     @EnumSource(ReglaPatron.class)
-    @DisplayName("8. VARIANTE que retira 2 de un patron y anade 1 de ese patron se acepta")
+    @DisplayName("8. VARIANTE que retira 2 de un patron y anade 1 de ese patron se rechaza (H-A1: una retirada sin reemplazo)")
     void dosPorUno(ReglaPatron regla) {
+        // Hasta el 10/11/2026 se aceptaba (H-A1): una de las dos retiradas no tiene reemplazo.
         var r = variante(regla, List.of(380L, 580L, 9001L), List.of(56L, 9001L));
-        assertTrue(r.aceptable(), r.problems()::toString);
+        assertFalse(r.aceptable());
+        assertTrue(r.problems().stream().anyMatch(p -> p.contains("retira 2 ejercicio(s)")), r.problems()::toString);
     }
 
     @ParameterizedTest
