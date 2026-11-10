@@ -170,6 +170,14 @@ class EvaluacionK20IT {
     }
     /** Candidata posterior (eval/final-ieee-k20-v2): v1 | v2 | v2.1. Vacio = la del backend (v1). */
     static final String PROMPT = System.getProperty("fitsense.evaluacion.k20.prompt", "");
+    /** Experimento de mejora (MEJ): prompt de GENERACION pr-1.7 | pr-1.8. Vacio = el del backend (pr-1.7). */
+    static final String PROMPT_GENERACION = System.getProperty("fitsense.evaluacion.k20.prompt-generacion", "");
+    /**
+     * MEJ ronda 2 (G1-G3): corta cada perfil tras publicar el plan inicial (sin ejecutar semanas ni ciclos) para no
+     * pagar adaptaciones en los bloques que solo miden la generacion. Solo prueba; no toca el backend.
+     */
+    static final boolean SOLO_GENERACION = Boolean.parseBoolean(
+            System.getProperty("fitsense.evaluacion.k20.solo-generacion", "false"));
 
     static final Path K20 = Path.of("docs/FitSense/short_paper_ieee/evaluacion_final_k20");
     /** Por defecto los 20 historicos; con -Dfitsense.evaluacion.k20.perfiles, otra cohorte (casos reservados). */
@@ -234,6 +242,7 @@ class EvaluacionK20IT {
     static void ia(DynamicPropertyRegistry r) {
         r.add("fitsense.ai.enabled", () -> String.valueOf(IA_ACTIVA));
         if (!PROMPT.isBlank()) r.add("fitsense.ai.adaptation.prompt-version", () -> PROMPT);
+        if (!PROMPT_GENERACION.isBlank()) r.add("fitsense.ai.generation.prompt-version", () -> PROMPT_GENERACION);
         if (REPLICATE) r.add("fitsense.ai.prefer-wait-seconds", () -> PREFER_WAIT);
         if (SIMULADA) r.add("fitsense.ai.base-url", () -> "http://127.0.0.1:9/ia-simulada-sin-red");
         if (PROGRESION_INTEGRAL) r.add("fitsense.adaptation.progression.enabled", () -> "true");
@@ -647,6 +656,11 @@ class EvaluacionK20IT {
         }
         r.put("generacion", "PUBLICADO");
         r.put("plan_s1", plan.get());
+        if (SOLO_GENERACION) {
+            r.put("semanas_medidas", 0);
+            res.add(r);
+            return;
+        }
 
         int horizonte = Math.max(4, Integer.parseInt(Objects.requireNonNullElse(
                 blancoANull(p.c().get("horizonte_semanas")), "4")));
@@ -1258,6 +1272,17 @@ class EvaluacionK20IT {
             m.put("target_muscle", c.targetMuscle());
             m.put("movement_pattern", c.movementPattern());
             baselineDisponibles.add(m);
+        }
+        // MEJ: el prompt de generacion que el backend enviaria a este perfil (version segun
+        // fitsense.ai.generation.prompt-version), sin llamar a ningun modelo. Solo lectura.
+        try {
+            var snapshot = new main.web.services.fitsense.shared.infrastructure.json.JsonSupport().write(
+                    main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot.of(ctx));
+            Files.createDirectories(SALIDA.resolve("prompts_generacion"));
+            Files.writeString(SALIDA.resolve("prompts_generacion").resolve(id + ".txt"),
+                    promptGeneracion.build(ctx, snapshot, null));
+        } catch (Exception e) {
+            System.out.println("VOLCADO_PROMPT_FALLO " + id + " " + e);
         }
         java.io.File[] archivos = Path.of(BASELINE_EVALUAR).toFile().listFiles((d, n) -> n.endsWith("__" + id + ".json"));
         if (archivos == null) return;

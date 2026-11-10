@@ -112,10 +112,38 @@ public class PlanPromptBuilder {
               aportan nada al objetivo ya no estan en la lista.
             """;
 
+    /**
+     * pr-1.8a, EXPERIMENTAL y APAGADA por defecto (confirmacion final, 10/11/2026). Solo con
+     * {@code fitsense.ai.generation.prompt-version=pr-1.8a}; por defecto {@code pr-1.7} y el prompt es EXACTAMENTE el de
+     * {@link #VERSION}. No anade reglas ni validadores: antes de los datos de entrada anade las dos lineas con los
+     * numeros con los que el backend YA revisa la propuesta (la mitad de V15, que viaja con max_per_body_part en null
+     * en PLAN-REV-2.0, y los techos de V26). Es el mismo texto evaluado en experimento/mejora-ia (ab04e67).
+     */
+    public static final String PROPIEDAD_V18A = "pr-1.8a";
+    public static final String VERSION_V18A = "PR-1.8a-EXP";
+
     private final JsonSupport jsonSupport;
+    private final boolean v18a;
 
     public PlanPromptBuilder(JsonSupport jsonSupport) {
+        this(jsonSupport, "pr-1.7");
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public PlanPromptBuilder(JsonSupport jsonSupport,
+                             @org.springframework.beans.factory.annotation.Value(
+                                     "${fitsense.ai.generation.prompt-version:pr-1.7}") String promptVersion) {
         this.jsonSupport = jsonSupport;
+        String v = promptVersion == null ? "pr-1.7" : promptVersion.strip().toLowerCase(java.util.Locale.ROOT);
+        if (!java.util.Set.of("pr-1.7", PROPIEDAD_V18A).contains(v))
+            throw new IllegalArgumentException("fitsense.ai.generation.prompt-version admite pr-1.7 o pr-1.8a, no '"
+                    + promptVersion + "'.");
+        this.v18a = v.equals(PROPIEDAD_V18A);
+    }
+
+    /** La version de prompt que se envia: {@link #VERSION} por defecto, {@link #VERSION_V18A} si esta encendida. */
+    public String version() {
+        return v18a ? VERSION_V18A : VERSION;
     }
 
     public String build(PlanGenerationContext context, String inputSnapshotJson,
@@ -264,6 +292,7 @@ public class PlanPromptBuilder {
             prompt.append(BLOQUE_CAPACIDADES);
 
         prompt.append(duracionCalculada(context));
+        if (v18a) prompt.append(lineasV15V26(context, version()));
         prompt.append("\nDatos de entrada:\n").append(inputSnapshotJson).append('\n');
 
         // La comprobacion va DESPUES de los datos: es lo ultimo que lee el
@@ -411,6 +440,32 @@ public class PlanPromptBuilder {
     }
 
     /** Sin estado: el mismo calculo de V17 y V20. */
+    /**
+     * pr-1.8a: las dos lineas con los numeros de V15 y V26, el mismo texto que en experimento/mejora-ia. Mismas fuentes
+     * que el validador: PlanDraftValidator (mitad de V15) y DosisSemanalPolicy (techos de V26). No cambia ninguna regla.
+     */
+    static String lineasV15V26(PlanGenerationContext context, String version) {
+        var profile = context.profile();
+        var b = new StringBuilder("\nCOHERENCIA CON LOS VALIDADORES (").append(version).append("). Son los mismos")
+                .append(" numeros con los que el backend revisa tu propuesta:\n");
+        if (profile == null) return b.toString();
+        b.append("- REPARTO (V15): en una sesion cuyo enfoque admite 3 o mas grupos y que lleva 4 o mas ejercicios,")
+                .append(" ningun body_part puede tener MAS de la mitad de los ejercicios de esa sesion (con 6")
+                .append(" ejercicios, como maximo 3 del mismo grupo; con 5 o 4, como maximo 2). Vale aunque")
+                .append(" max_per_body_part venga en null.\n");
+        var policy = context.policy();
+        String nivel = profile.fitnessLevel();
+        if (policy != null && policy.volumenSemanal()) {
+            b.append("- VOLUMEN POR GRUPO (V26): sumando las series de los ejercicios de fuerza (no cuentan los de")
+                    .append(" cardio, movilidad ni estiramiento), un mismo body_part no puede pasar de ")
+                    .append(main.web.services.fitsense.planning.domain.services.DosisSemanalPolicy.techoSeriesSesion(nivel))
+                    .append(" series en una sesion ni de ")
+                    .append(main.web.services.fitsense.planning.domain.services.DosisSemanalPolicy.techoSeriesSemana(nivel))
+                    .append(" en la semana. Si un grupo llega a su techo, reparte el resto en otros grupos del enfoque.\n");
+        }
+        return b.toString();
+    }
+
     private static final main.web.services.fitsense.planning.domain.services.SessionDurationEstimator ESTIMADOR =
             new main.web.services.fitsense.planning.domain.services.SessionDurationEstimator();
 
