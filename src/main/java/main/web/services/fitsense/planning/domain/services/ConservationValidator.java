@@ -708,6 +708,19 @@ public class ConservationValidator {
                         resumen(antes), resumen(despues)));
                 continue;
             }
+            // H-A2 (auditoria MEJ ronda 2): EL DESCANSO DE UN EJERCICIO QUE SE QUEDA NO SE CAMBIA NUNCA, ni para
+            // acortar ni para alargar (instruccion de correccion, SessionFixPromptBuilder; V24: bajar la dosis son
+            // series, repeticiones o segundos, nunca el descanso). Antes solo se miraba aqui al emitir la reduccion
+            // para V24, asi que un cambio solo del descanso -o una bajada valida con el descanso cambiado- se
+            // publicaba en cualquier intervencion con permiso de dosis. Un sustituto (antes == null) no se compara:
+            // lleva la prescripcion propia de su clase y la juzgan V16, V17 y V24.
+            if (antes.descanso() != null && !java.util.Objects.equals(antes.descanso(), despues.descanso())) {
+                problems.add(("V8C: la sesion %d cambia el descanso del ejercicio %d (%s s -> %s s). El descanso de"
+                        + " un ejercicio que se queda no se cambia: para bajar la dosis se quitan series,"
+                        + " repeticiones o segundos.").formatted(origen, e.exerciseId(), antes.descanso(),
+                        despues.descanso()));
+                continue;
+            }
             if (dosisAutorizadas != null && intervencion.permiteCambiarDosis()
                     && java.util.Objects.equals(antes.tipo(), despues.tipo())
                     && java.util.Objects.equals(antes.descanso(), despues.descanso()))
@@ -1244,7 +1257,26 @@ public class ConservationValidator {
             return;
         }
 
-        if (d.anadidos().isEmpty()) return;   // solo se retiraron: nada que emparejar
+        // H-A1 (auditoria MEJ ronda 2): RETIRAR NO ES SUSTITUIR. Antes, si solo habia retiradas, se volvia aqui
+        // sin mirar nada mas, asi que VARIANTE_MAS_SENCILLA_O_CARGA aceptaba propuestas que solo retiraban, una o
+        // varias y estructurales incluidas. Su politica autoriza una variante mas sencilla del mismo patron o ajustar
+        // la carga: cada retirado tiene que tener su reemplazo. Retirar sin reemplazo lo autoriza SOLO
+        // SEGURIDAD_ANTE_DOLOR (su instruccion: "retirarlo sin reemplazo tambien vale"); ACORTAR_O_REORGANIZAR va por
+        // la rama de arriba (una de relleno). El ejercicio que dolio nunca obliga a quedarse: no cuenta como
+        // retirada sin reemplazo (la regla de que no reaparece la aplica revisarDolor).
+        if (!intervencion.exigeRevisionDeSeguridad()) {
+            var sinReemplazo = d.quitados().stream().filter(q -> !dolieron.contains(q)).toList();
+            if (sinReemplazo.size() > d.anadidos().size()) {
+                problems.add(("V8C: la sesion %d esta senalada como %s y retira %d ejercicio(s) %s anadiendo %d %s."
+                        + " Esta intervencion autoriza sustituir por una variante del mismo patron o bajar la dosis,"
+                        + " no retirar ejercicios: cada retirado necesita su reemplazo. %s")
+                        .formatted(origen, intervencion, d.quitados().size(), d.quitados(), d.anadidos().size(),
+                                d.anadidos(), intervencion.instruccion()));
+                return;
+            }
+        }
+
+        if (d.anadidos().isEmpty()) return;   // solo se retiraron (ante dolor): nada que emparejar
 
         // EL MISMO PATRON DE MOVIMIENTO. Se exige para la sustitucion por
         // dificultad, que es de donde sale la regla: una variante mas sencilla
