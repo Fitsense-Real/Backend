@@ -94,7 +94,9 @@ class CatalogoV36IT {
     @Autowired ApprovedDifficultyGate filtroAprobaciones;
 
     static final String NUEVE_SQL = "527, 609, 725, 760, 872, 1059, 1267, 1296, 1333";
-    static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    // Semana fija (RelojPruebas): con LocalDate.now() la semilla del motor de reglas cambiaba cada lunes y la prueba
+    // fallaba segun el dia en que se ejecutara (I-R2-1, 09/11/2026). Es la semana con la que pasaba el 05/11/2026.
+    static final LocalDate S1 = main.web.services.fitsense.RelojPruebas.SEMANA_REFERENCIA.plusWeeks(1);
     static final List<String> GIMNASIO = GeneracionReferenciaIT.GIMNASIO;
     static final List<String> CASA = GeneracionReferenciaIT.CASA;
     static final AtomicInteger SECUENCIA = new AtomicInteger();
@@ -446,6 +448,7 @@ class CatalogoV36IT {
 
     /** Cumple todas las sesiones del plan con lo prescrito. */
     private void cumplirTodo(long u, long plan) {
+        main.web.services.fitsense.RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         for (long w : jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, plan)) {
             long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
