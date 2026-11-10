@@ -36,8 +36,8 @@ pagado() { nombre=$1; shift
   remn=$((MAXN-usadas)); remu=$(python3 -I -c "print(round($MAXUSD-$usd,4))")
   echo "PRESUPUESTO antes de $nombre (tope total USD $MAXUSD): usadas=$usadas usd=$usd -> saldo $remn / USD $remu" | tee -a $R/presupuesto_pr18a.txt
   if [ $remn -le 0 ] || python3 -I -c "import sys;sys.exit(0 if $remu<0.30 else 1)"; then echo "DETENIDO: saldo insuficiente antes de $nombre" | tee -a $R/presupuesto_pr18a.txt; return 1; fi
-  v=$(version); echo "VERSION antes de $nombre: $v $(date -u +%FT%TZ)" | tee -a $R/versiones_pr18a.txt
-  if [ "$v" != "$VERSION_CONGELADA" ]; then echo "DETENIDO: la version del modelo cambio ($v); $nombre no se ejecuta" | tee -a $R/presupuesto_pr18a.txt; return 1; fi
+  local ver; ver=$(version); echo "VERSION antes de $nombre: $ver $(date -u +%FT%TZ)" | tee -a $R/versiones_pr18a.txt
+  if [ "$ver" != "$VERSION_CONGELADA" ]; then echo "DETENIDO: la version del modelo cambio ($ver); $nombre no se ejecuta" | tee -a $R/presupuesto_pr18a.txt; return 1; fi
   run $nombre "$@" -Dfitsense.evaluacion.k20.modo=REPLICATE \
     -Dfitsense.evaluacion.k20.autorizacion-replicate=SI -Dfitsense.evaluacion.k20.integral-replicate=SI \
     -Dfitsense.evaluacion.k20.credencial=proxy -Dfitsense.evaluacion.k20.sin-metricas=RESERVA_SIN_BLOQUEO \
