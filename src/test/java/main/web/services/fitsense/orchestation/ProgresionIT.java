@@ -93,7 +93,9 @@ class ProgresionIT {
     @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
-    static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    // Semana fija (RelojPruebas): con LocalDate.now() la semilla del motor de reglas cambiaba cada lunes y la prueba
+    // fallaba segun el dia en que se ejecutara (I-R2-1, 09/11/2026). Es la semana con la que pasaba el 05/11/2026.
+    static final LocalDate S1 = main.web.services.fitsense.RelojPruebas.SEMANA_REFERENCIA.plusWeeks(1);
     static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
 
     enum Dia { HECHO, HECHO_CON_FATIGA, HECHO_CON_DOLOR, FATIGA, TIEMPO, PARCIAL_TIEMPO, NADA }
@@ -879,6 +881,7 @@ class ProgresionIT {
     }
 
     void ejecutar(long u, long planId, Dia... dias) {
+        main.web.services.fitsense.RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         var principal = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
         var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, planId);
