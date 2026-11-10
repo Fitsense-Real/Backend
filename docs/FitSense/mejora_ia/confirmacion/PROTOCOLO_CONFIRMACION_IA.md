@@ -1,7 +1,7 @@
 # Protocolo de confirmación de las mejoras de IA (CONF-IA)
 
 **Orden:** «ORDEN DEFINITIVA — FITSENSE: CORRECCIÓN DE V8C Y CONFIRMACIÓN DE MEJORAS DE IA» (10/11/2026).
-**Estado:** se congela **antes de la primera llamada pagada**. Nada de lo que sigue cambia después de ver resultados. Si algo tuviera que cambiar, sería una enmienda fechada y razonada, aplicada antes del bloque al que afecta.
+**Estado: CONGELADO el 10/11/2026, antes de la primera llamada pagada** (regresion sobre `ab04e67`: 1341 unitarias y 593 de integracion, 0 fallos; huellas en `SHA256SUMS_CONGELACION.txt`). Nada de lo que sigue cambia después de ver resultados. Si algo tuviera que cambiar, sería una enmienda fechada y razonada, aplicada antes del bloque al que afecta.
 **Experimentos anteriores** (MEJ, MEJ ronda 2): no se modifican ni se reutilizan como corridas nuevas.
 
 ## 1. Preguntas
