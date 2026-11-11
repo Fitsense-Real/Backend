@@ -28,7 +28,9 @@
 `O12DolorProgresionApagadaIT.subeSeries`, sobre `471296d` sin la corrección:
 - **FALLA:** el estado es APLICADA y la semana publicada lleva el sustituto 72 a 4×18, frente al 3×18 medido del ejercicio 991.
 - **Con la corrección:** RESPALDO, con el problema «V8C: la sesión … sube la dosis a través del sustituto 72 de 991 (4x18; desde la semana medida corresponde 3x18)».
-- Las otras 5 pruebas O12 pasan antes y después: la corrección no cambia los caminos que reducen o no hacen nada.
+- `O12DolorProgresionEncendidaIT.subeSeries` también falla sin la corrección, pero **solo por el motivo**: la propuesta ya se rechazaba, por V24 («el ejercicio 72 … no lleva la dosis de ninguna capacidad»), y no se publicaba. La prueba exige el motivo V8C («sube la dosis»), que no depende de la progresión. Con la corrección pasa.
+- Las otras 4 pruebas O12 (reduce y vacía, con la progresión apagada y encendida) pasan antes y después: la corrección no cambia los caminos que reducen o no hacen nada.
+- Registro: `aud_o12c.log` (antes de la corrección, 7 ejecutadas, 2 fallos) y `aud_fix1.log` (después, 0 fallos), en el directorio de trabajo de la sesión.
 
 ## 4. Ejecuciones dirigidas tras la corrección
 
