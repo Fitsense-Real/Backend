@@ -44,6 +44,11 @@ public record ReplicateProperties(
         this(enabled, apiToken, baseUrl, model, reasoningEffort, timeoutSeconds, preferWaitSeconds, 0, 0, 0);
     }
 
+    /**
+     * Con dos constructores, Spring Boot necesita saber con cual enlazar las propiedades: el canonico (R-3; sin esta
+     * marca el contexto no arranca, "No default constructor found").
+     */
+    @org.springframework.boot.context.properties.bind.ConstructorBinding
     public ReplicateProperties {
         if (baseUrl == null || baseUrl.isBlank())
             baseUrl = "https://api.replicate.com/v1/models/openai/gpt-5-structured/predictions";
