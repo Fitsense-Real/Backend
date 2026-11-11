@@ -10,17 +10,18 @@
 
 Referencias de código: `generation` `543932a`.
 
-## 1. Configuración por defecto y configuración evaluada
+## 1. Configuración
 
-| Elemento | Por defecto en `generation` | En las campañas con IA real |
-|---|---|---|
-| Prompt de adaptación | **v1 = `FIX-PR-1.3`** (`fitsense.ai.adaptation.prompt-version=v1`). V2.1 se activa con `prompt-version=v2.1` | **V2.1** (control). Las variantes solo existen en `experimento/mejora-ia` |
-| IA | Apagada (`fitsense.ai.enabled=false`) | Encendida desde el arnés |
-| V8C | Regla de patrón `multiconjunto`; con H-A1/H-A2 corregidos desde `543932a` | GRA, MEJ y MEJ R2: V8C anterior a la corrección. CONF-IA: corregido |
+| Elemento | Histórica (hasta `543932a`) | Campañas con IA real | Incorporada a `generation` (PR #45) |
+|---|---|---|---|
+| Prompt de adaptación | v1 = `FIX-PR-1.3` | **V2.1** (control); las variantes solo en `experimento/mejora-ia` | **V2.1 = `FIX-PR-2.1-EXP`** (`FITSENSE_AI_ADAPTATION_PROMPT_VERSION`) |
+| IA | Apagada | Encendida desde el arnés | Encendida por defecto (`FITSENSE_AI_ENABLED`) |
+| Límite de dificultad | `off` | `preferencia` | `preferencia` (`FITSENSE_DIFFICULTY_GUARD`) |
+| Retirada localizada ante dolor | `off` | `on` | `on` (`FITSENSE_PAIN_LOCALIZED_REMOVAL`) |
+| V24 por capacidades en la adaptación | Apagada | Solo en el bloque P (va con la progresión) | **Encendida** (va con la progresión, ver `07`) |
+| V8C | `multiconjunto` | GRA, MEJ y MEJ R2: anterior a la corrección; CONF-IA: corregido | `multiconjunto`, con H-A1/H-A2 corregidos |
 
-«Mantener V2.1» significa:
-- V2.1 sigue siendo la versión de adaptación evaluada y de referencia;
-- **no se cambió ningún valor por defecto**, y esta documentación tampoco lo hace.
+La configuración desplegada no se ha verificado (ver `00` §5).
 
 ## 2. Flujo
 

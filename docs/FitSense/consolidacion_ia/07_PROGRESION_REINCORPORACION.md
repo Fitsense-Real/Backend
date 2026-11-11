@@ -13,11 +13,20 @@ Referencias:
 
 ## 1. Activación
 
-- **Por defecto, la progresión está apagada:** `fitsense.adaptation.progression.enabled=${FITSENSE_PROGRESSION_ENABLED:false}`. `POLITICA_ADAPTACION_Y_PROGRESION.md` §5 dice «apagada en todos los entornos».
-- **Excepción:** con PLAN-REV-2.0, en GAIN_MUSCLE con fatiga (P-A1) se permiten pasos de RECUPERACION aunque la progresión esté apagada.
-- **En las evaluaciones:**
-  - se activó solo en el bloque P de la cohorte O (O15–O20), según `evaluacion_integral_O/03_VERSION_CONGELADA.md`;
-  - las pruebas de integración (`ProgresionIT`, `ProgresionRev2IT`, `ProgresionCienPorCienIT`, `PendientesProgresionIT`, `ReincorporacionIaRealIT`) la activan en sus propiedades.
+- **Desde la PR #45 (11/11/2026), la progresión está encendida por defecto:** `fitsense.adaptation.progression.enabled=${FITSENSE_PROGRESSION_ENABLED:true}`. Se desactiva con `FITSENSE_PROGRESSION_ENABLED=false`. Antes estaba apagada en todos los entornos.
+- **Las reglas no cambian:** las de §2 son las mismas que se evaluaron.
+- **Efecto acoplado (ya existente):** encendida, también activa la V24 por capacidades en la validación de **todas** las adaptaciones (`StrictValidationAdapter`; `POLITICA_ADAPTACION_Y_PROGRESION.md` §5). Es más restrictivo: puede rechazar más propuestas, nunca añade trabajo.
+- **Excepción ya existente:** con PLAN-REV-2.0, en GAIN_MUSCLE con fatiga (P-A1) hay pasos de RECUPERACION aunque la progresión esté apagada.
+- **En las evaluaciones con IA real** se activó solo en el bloque P de la cohorte O (O15–O20). Las pruebas de integración (`ProgresionIT`, `ProgresionRev2IT`, `ProgresionCienPorCienIT`, `PendientesProgresionIT`, `ReincorporacionIaRealIT`) la activan en sus propiedades.
+
+### Comprobación del alcance general (11/11/2026, IA simulada sin red, USD 0)
+
+El bloque G (O01–O14) se ejecutó con el arnés de la cohorte O dos veces, con la progresión apagada y encendida, sobre la rama de la PR #45:
+- **Diferencias:** 22 de 52 semanas.
+- **Pasos de progresión:** 21 de las diferencias son pasos de PROGRESION en ciclos NO_CHANGE (uno por ciclo), en O01, O02, O03, O04, O05, O07, O08, O09, O12 y O13.
+- **Una adaptación cambia:** O12 semana 1 (dolor) pasa de APLICADA (la IA simulada bajaba series) a SIN_EFECTO: con la V24 por capacidades, la IA simulada no encuentra una propuesta válida. No se añade trabajo.
+- **Sin llamadas al proveedor:** 0 en las dos ejecuciones.
+- **Lectura:** el comportamiento con la progresión encendida coincide con las reglas, pero algunas adaptaciones de dolor, fatiga o dificultad pueden quedar SIN_EFECTO más a menudo que en las campañas del bloque G. Es un riesgo conocido de calidad, no de seguridad; hay que vigilarlo en el uso real.
 
 ## 2. Reglas vigentes
 

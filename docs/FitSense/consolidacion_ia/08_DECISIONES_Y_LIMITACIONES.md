@@ -14,6 +14,7 @@ Estas decisiones ya estaban tomadas y aquí solo se registran. Esta documentaci�
 | Pruebas dependientes de la fecha | **Corregidas y fusionadas** (PR #43, `d8c925f`) | Solo código de prueba; CI verde | `06` §5 |
 | V24 | **Sin cambios** | Rechazó todas las dosis incorrectas; ningún plan se publicó con V24 | `02`, `05` |
 | Progresión y reincorporación | **Políticas existentes, sin cambios** | GRA: 26/30 progresiones, 3/3 recuperaciones y 1/0 reincorporaciones, sin violar el techo ni el paso por ciclo | `07` |
+| Configuración por defecto de `generation` | **Configuración evaluada activada** (PR #45, 11/11/2026): IA, PR-1.7, V2.1, PLAN-REV-2.0, progresión, límite de dificultad `preferencia` y retirada localizada `on` | Coincide con la de las campañas con IA real, salvo la progresión, que pasa del bloque P a todos los perfiles (§3) | `00` §5, `07` §1 |
 
 ### Lo que sigue abierto y no se activa
 - **pr-1.8a** existe solo en `experimento/confirmacion-pr18a-final`, apagada por defecto.
@@ -49,17 +50,21 @@ Estas decisiones ya estaban tomadas y aquí solo se registran. Esta documentaci�
 - **Incidencias de infraestructura:** timeouts, 502, `failed` y errores de E/S en el POST. Se gestionaron sin repetir respuestas válidas (regla I-MEJ-1).
 
 ### De configuración
-- **Los valores por defecto de `generation` no son la configuración evaluada:**
-
-  | | Por defecto | Evaluado |
-  |---|---|---|
-  | IA | Apagada | Encendida |
-  | Política | PLAN-HIST-1 | PLAN-REV-2.0 |
-  | Prompt de adaptación | v1 (FIX-PR-1.3) | V2.1 |
-  | Progresión | Apagada | Encendida en el bloque P |
-
-  Esta documentación **no cambia** ningún valor por defecto. Activar la configuración evaluada en un entorno es una decisión aparte, fuera de este encargo.
-- **Comentarios desfasados** en `application.properties`, observados pero no modificados porque no se toca código: «NO activar ENFORCE» junto a un valor ENFORCE, y «se entrega en OBSERVE» junto a `ENFORCE_AI_ONLY`.
+- **Desde la PR #45 (11/11/2026), los valores por defecto de `generation` son la configuración evaluada** (tabla en `00` §5). Cada valor conserva su variable de entorno para revertirlo.
+- **Diferencias que quedan respecto a lo evaluado con IA real:**
+  - **progresión:** se evaluó solo en el bloque P (O15–O20); ahora está encendida para todos. Arrastra la V24 por capacidades a todas las adaptaciones (acoplamiento ya existente). Con IA simulada, en el bloque G, una adaptación de dolor (O12) pasa de APLICADA a SIN_EFECTO (`07` §1). Es más restrictivo y nunca añade trabajo, pero no se ha medido con IA real;
+  - **espera del POST:** el arnés usaba `Prefer: wait=25`; la aplicación mantiene 60 s (`FITSENSE_AI_PREFER_WAIT_SECONDS`). Es un parámetro de transporte; el límite de 150 s es el mismo.
+- **Requisitos para que la IA funcione en un entorno:**
+  - `REPLICATE_API_TOKEN` definido en ese entorno; sin él, la IA no es utilizable y genera el motor de reglas;
+  - la migración V44_3 aplicada, porque la restricción de `weekly_training_plans` admite PLAN-REV-2.0 desde V44_3. Flyway la aplica al arrancar.
+- **Configuración desplegada no verificada:** según la documentación del repositorio, Railway no despliega desde `generation`, y las variables de los entornos desplegados no se han comprobado. **No se afirma que la IA funcione en ningún entorno.**
+- **Pruebas que conservan la configuración histórica:** 37 pruebas de integración escritas sobre los valores por defecto anteriores los fijan ahora de forma explícita, sin cambiar sus aserciones. Siguen siendo necesarias: los planes con linaje PLAN-HIST-1 conservan esa política.
+- **Comentarios desfasados** en `application.properties`, observados y no modificados: «NO activar ENFORCE» junto a un valor ENFORCE, y «se entrega en OBSERVE» junto a `ENFORCE_AI_ONLY`.
+- **Política ante perfiles sin plan factible** (PLAN-REV-2.0):
+  - INCREASE_STRENGTH sin tiempo para los 4 patrones: FUERZA_SIN_TIEMPO antes de llamar a la IA, sin plan y con mensaje al usuario (O11);
+  - si ninguna propuesta de la IA es válida, el motor de reglas; con REV2, además, alternativas deterministas acotadas (D-G3);
+  - si todo falla, la semana queda sin plan (`PlanGenerationFailedException`, adherencia NULL);
+  - H-G9 (GENERAL_FITNESS intermedio o avanzado con 1 × 30–35 min): la IA nunca da un plan válido, se gastan hasta 3 llamadas y publica el motor de reglas. No es un riesgo de seguridad.
 
 ### De evidencia
 - **MEJ ronda 2 no tiene manifiesto `SHA256SUMS.txt`.** Solo se verificaron a mano los ejecutores y el análisis.

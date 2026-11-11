@@ -6,20 +6,26 @@ Referencias de código: `generation` `543932a`. Abreviaturas:
 - `P` = `src/main/java/main/web/services/fitsense/planning`;
 - `props` = `src/main/resources/application.properties`.
 
-## 1. Configuración por defecto y configuración evaluada
+## 1. Configuración
 
-Es importante no confundirlas.
+| Elemento | Histórica (hasta `543932a`) | Campañas evaluadas (GRA, MEJ, CONF-IA, pr-1.8a) | Incorporada a `generation` (PR #45) | Desplegada |
+|---|---|---|---|---|
+| IA | Apagada | Encendida (arnés, con token) | **Encendida por defecto** (`FITSENSE_AI_ENABLED`); sin `REPLICATE_API_TOKEN` genera el motor de reglas | No verificada |
+| Generación | PR-1.7 | PR-1.7 (control) | **PR-1.7** | No verificada |
+| Adaptación | v1 = FIX-PR-1.3 | V2.1 (control) | **V2.1 = FIX-PR-2.1-EXP** | No verificada |
+| Política | PLAN-HIST-1 | PLAN-REV-2.0 | **PLAN-REV-2.0** (con `allow-candidates=true`) | No verificada |
+| Progresión | Apagada | Solo en el bloque P (O15–O20) | **Encendida** (`FITSENSE_PROGRESSION_ENABLED`) | No verificada |
+| Límite de dificultad | `off` | `preferencia` | **`preferencia`** | No verificada |
+| Retirada localizada ante dolor | `off` | `on` | **`on`** | No verificada |
+| V8C | `multiconjunto` (H-A1/H-A2 desde `543932a`) | GRA/MEJ/R2: anterior a la corrección; CONF-IA: corregido | `multiconjunto`, corregido | No verificada |
 
-| Elemento | Por defecto en `generation` | En las campañas con IA real (GRA, MEJ, CONF-IA, pr-1.8a) |
-|---|---|---|
-| IA | **Apagada**: `fitsense.ai.enabled=${FITSENSE_AI_ENABLED:false}`. Sin IA, el plan sale del motor de reglas | Encendida, con token, desde el arnés de pruebas |
-| Política de planificación | **PLAN-HIST-1** (`PlanningPolicySelector`, `fitsense.planning.policy:PLAN-HIST-1`). PLAN-REV-2.0 es candidata y exige `allow-candidates=true` | **PLAN-REV-2.0** (`evaluacion_integral_O/03_VERSION_CONGELADA.md`; `generacion_ia_real/01_CONGELACION_Y_PRESUPUESTO.md`) |
-| Prompt de generación | PR-1.7 | PR-1.7 (control) y variantes experimentales solo en sus ramas |
-| Modelo | `openai/gpt-5-structured`, campo `model` = `gpt-5-mini`, límite de 150 s | Igual; razonamiento `medium` |
-
-**Consecuencia:**
-- los resultados describen el flujo **con la IA encendida y PLAN-REV-2.0**, que es la configuración evaluada;
-- no se ha cambiado ningún valor por defecto, y esta documentación tampoco lo hace.
+- **Modelo:** `openai/gpt-5-structured`, campo `model` = `gpt-5-mini`, razonamiento `medium`, límite de 150 s (sin cambios).
+- **Antes del 11/11/2026**, los resultados de las campañas describían una configuración distinta de la que el código cargaba por defecto. Con la PR #45 coinciden.
+- **Planes ya guardados:** conservan su política por linaje (PLAN-HIST-1 o la que tuvieran). REV2 solo se aplica a planes nuevos.
+- **Desplegada:**
+  - según la documentación del repositorio, Railway no despliega desde `generation` (`docs/FitSense/CATALOGO_V37.md`);
+  - las variables de entorno de cualquier entorno desplegado **no se han verificado**;
+  - incorporar la configuración a `generation` **no** significa que la IA funcione ya en ningún entorno.
 
 ## 2. Flujo
 
@@ -74,7 +80,7 @@ Perfil
 | Objetivo | Capacidades principales | Exigencias específicas |
 |---|---|---|
 | GAIN_MUSCLE | HYPERTROPHY | Dosis fija por clase (`MvpDosePolicy`): estructural 3 × 10 con 90 s, relleno con 2 series; 6–7 colocaciones por día. V23 (4 slots) |
-| INCREASE_STRENGTH | STRENGTH | Los 4 slots con dosis de fuerza (V25); 3 × 5 / 150 s (principiante 2 × 8 / 120 s). Bloqueo FUERZA_SIN_TIEMPO si no cabe |
+| INCREASE_STRENGTH | STRENGTH | Los 4 slots con dosis de fuerza (V25); **3 × 6 / 150 s efectivas** (principiante 2 × 8 / 120 s). En el código (`CapabilityPrescriptionPolicy`) la base es 3 × 5, pero las repeticiones nunca bajan del mínimo de V16 de la zona y el nivel; con el mínimo general de 6, la dosis real es 3 × 6, y 3 × 10 en cintura. Bloqueo FUERZA_SIN_TIEMPO si no cabe |
 | LOSE_WEIGHT | CARDIO | CARDIO en cada sesión factible (V25); cardio 3 × 120 s (principiante 3 × 90 s). V23 no se aplica |
 | GENERAL_FITNESS | STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY | Ninguna principal factible puede faltar (V25); V23 (4 slots) |
 
@@ -137,6 +143,9 @@ Fuente: `docs/FitSense/evaluacion_integral_O/generacion_ia_real/entregables/INFO
 ### 4.3 Comparación con la línea base sin reglas
 - **Mismo modelo, sin las reglas de FitSense (BASE):** 19/19 propuestas con infracciones en cada corrida.
 - **Con reglas (GRA):** 7/19 y 6/19, con 0 planes publicados con infracciones.
+- **Dos diferencias que hay que tener presentes:**
+  - BASE recibió el catálogo elegible completo, sin el recorte V24/B1 del prompt de GRA (83 de sus 783 infracciones V24 son de ejercicios que GRA no habría ofrecido);
+  - la versión del modelo de BASE no es verificable: se pidió `9f4cd9ec…` y el proveedor la devuelve como `hidden`.
 - Ver `04_LINEA_BASE_SIN_REGLAS.md`.
 
 ## 5. Qué no demuestran estos resultados

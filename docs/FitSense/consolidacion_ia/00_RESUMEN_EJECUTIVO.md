@@ -28,6 +28,10 @@ Detalle en `01_INVENTARIO_EVIDENCIAS.md`.
 1. **Las reglas de FitSense son las que hacen seguro el uso de la IA.**
    - Sin reglas (BASE), el mismo modelo propone **19/19** planes con infracciones (637 y 659 infracciones normalizadas) y cambia lo no autorizado en **10/10** ciclos de adaptación.
    - Con reglas (GRA), **12/19 y 13/19** planes son válidos a la primera, el resto se corrige en el reintento, y **ningún plan ni adaptación publicados tiene infracciones**.
+   - **Límites de la comparación BASE–GRA:**
+     - **El catálogo no es idéntico.** BASE recibió el catálogo elegible completo, sin el recorte V24/B1 que aplica el prompt de GRA; 83 de sus 783 infracciones V24 son de ejercicios que GRA no habría ofrecido.
+     - **La versión del modelo de BASE no es verificable.** Se pidió la misma que en GRA (`9f4cd9ec…`), pero el proveedor la devuelve como `hidden`.
+     - Ver `04_LINEA_BASE_SIN_REGLAS.md`.
 2. **La IA propone y el backend decide.**
    - En GRA se rechazaron 10 y 6 propuestas de generación (sobre todo V15 y V26), todas corregidas en el reintento.
    - 20/20 planes se publicaron desde la IA, con 0 respaldos.
@@ -62,15 +66,24 @@ Detalle en `01_INVENTARIO_EVIDENCIAS.md`.
 - **No demuestran que FitSense mejore la adherencia de usuarios reales.** Los 20 perfiles y su adherencia son sintéticos.
 - **No son comparables entre versiones del modelo.** El proveedor cambió de versión dos veces (`9f4cd9ec…`, `045f8102…`, `81cb6179…`), así que cada comparación se hizo dentro de una misma versión.
 
-## 5. Aviso de configuración
+## 5. Configuración
 
-Los valores por defecto de `generation` **no** son la configuración evaluada:
+Desde el 11/11/2026 (PR #45), `generation` usa por defecto la configuración evaluada. Cada valor conserva su variable de entorno para revertirlo.
 
-| | Por defecto | Evaluado |
-|---|---|---|
-| IA | Apagada | Encendida |
-| Política | PLAN-HIST-1 | PLAN-REV-2.0 |
-| Prompt de adaptación | v1 | V2.1 |
-| Progresión | Apagada | Encendida en el bloque P |
+| Elemento | Histórica (hasta `543932a`) | Campañas evaluadas (GRA, MEJ, CONF-IA, pr-1.8a) | Incorporada a `generation` (PR #45) | Desplegada |
+|---|---|---|---|---|
+| IA | Apagada | Encendida (arnés, con token) | **Encendida por defecto** (`FITSENSE_AI_ENABLED`); sin `REPLICATE_API_TOKEN` genera el motor de reglas | No verificada |
+| Generación | PR-1.7 | PR-1.7 (control) | **PR-1.7** | No verificada |
+| Adaptación | v1 = FIX-PR-1.3 | V2.1 (control) | **V2.1 = FIX-PR-2.1-EXP** | No verificada |
+| Política | PLAN-HIST-1 | PLAN-REV-2.0 | **PLAN-REV-2.0** (con `allow-candidates=true`) | No verificada |
+| Progresión | Apagada | Solo en el bloque P (O15–O20) | **Encendida** (`FITSENSE_PROGRESSION_ENABLED`) | No verificada |
+| Límite de dificultad | `off` | `preferencia` | **`preferencia`** | No verificada |
+| Retirada localizada ante dolor | `off` | `on` | **`on`** | No verificada |
+| V8C | `multiconjunto` (H-A1/H-A2 desde `543932a`) | GRA/MEJ/R2: anterior a la corrección; CONF-IA: corregido | `multiconjunto`, corregido | No verificada |
 
-Esta documentación no cambia nada; ver `08_DECISIONES_Y_LIMITACIONES.md` §3.
+- **Desplegada:**
+  - según la documentación del repositorio, Railway no despliega desde `generation` (`docs/FitSense/CATALOGO_V37.md`);
+  - las variables de entorno de cualquier entorno desplegado **no se han verificado**;
+  - incorporar la configuración a `generation` **no** significa que la IA funcione ya en ningún entorno.
+
+Detalle y riesgos: `08_DECISIONES_Y_LIMITACIONES.md` §3.

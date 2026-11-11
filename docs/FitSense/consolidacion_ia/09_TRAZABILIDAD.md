@@ -70,9 +70,9 @@ Cada cifra principal de esta documentación remite a su fuente original.
 | V8C: pruebas | 25 nuevas, 9 fallos sin la corrección | `MIA/confirmacion/CORRECCION_V8C_HA1_HA2.md`; `PRUEBAS_Y_REGRESIONES.md` | M |
 | Regresión final | 1331/0/1 unitarias; 593/0/44 integración; CI verde (run 218) | Ejecución local sobre `4ca5cd2`; CI de `generation` en `543932a` | G |
 | Prompt de generación vigente | `PlanPromptBuilder.VERSION = "PR-1.7"` | `src/main/java/main/web/services/fitsense/planning/infrastructure/generation/ai/PlanPromptBuilder.java` l. 93 | G |
-| Prompt de adaptación por defecto | `fitsense.ai.adaptation.prompt-version=v1` (`FIX-PR-1.3`); V2.1 = `FIX-PR-2.1-EXP` | `application.properties`; `SessionFixPromptBuilder.java` l. 57 y 77 | G |
-| Política por defecto | `PLAN-HIST-1` | `PlanningPolicySelector.java` l. 28 | G |
-| Progresión | Apagada por defecto; techo 1,10; umbral 100 %; 5 % | `application.properties`; `ProgresionResolver.java` l. 74 y 122; `V7__config_data.sql` l. 25 | G |
+| Prompt de adaptación por defecto | Hasta `543932a`: `v1` (`FIX-PR-1.3`). Desde la PR #45: `v2.1` = `FIX-PR-2.1-EXP` | `application.properties`; `SessionFixPromptBuilder.java` l. 57 y 77 | G |
+| Política por defecto | Hasta `543932a`: `PLAN-HIST-1` (`@Value` de `PlanningPolicySelector.java` l. 28). Desde la PR #45: `PLAN-REV-2.0` en `application.properties`, con `allow-candidates=true` | `application.properties`; `PlanningPolicySelector.java` | G |
+| Progresión | Encendida por defecto desde la PR #45 (antes, apagada); techo 1,10; umbral 100 %; 5 % | `application.properties`; `ProgresionResolver.java` l. 74 y 122; `V7__config_data.sql` l. 25 | G |
 
 ## 3. Comprobaciones hechas para esta documentación (11/11/2026, sin llamadas a Replicate)
 
@@ -85,10 +85,11 @@ Cada cifra principal de esta documentación remite a su fuente original.
 | MEJ ronda 2 | Sin manifiesto; huellas del ejecutor y del análisis coinciden; ZIP sin errores (2978 archivos) |
 | CONF-IA congelación | 8 archivos OK + 3 blobs `ab04e67:` OK + 1 registro informativo; ZIP sin errores |
 | pr-1.8a congelación | 10/11 archivos OK; `correr_PR18A.sh` difiere (I-P-2, documentado); ZIP sin errores |
-| Valores por defecto en `generation` | Verificados en `application.properties`, `PlanningPolicySelector`, `PlanPromptBuilder`, `SessionFixPromptBuilder` y `ProgresionResolver` |
+| Valores por defecto en `generation` | Verificados en `application.properties`, `PlanningPolicySelector`, `PlanPromptBuilder`, `SessionFixPromptBuilder` y `ProgresionResolver`. Desde la PR #45 los comprueban `ConfiguracionEvaluadaTest` (valores efectivos e interruptores) y `ConfiguracionEvaluadaIT` (cableado de Spring y los cuatro objetivos con PLAN-REV-2.0) |
 | Puntas remotas de las ramas | G `543932a`, M `1d5c28f`, P `ffca1f4` |
 
 ## 4. PR relacionadas
 
 - https://github.com/Fitsense-Real/Backend/pull/43: pruebas dependientes de la fecha, fusionada.
 - https://github.com/Fitsense-Real/Backend/pull/44: V8C H-A1/H-A2, fusionada.
+- https://github.com/Fitsense-Real/Backend/pull/45: activación de la configuración evaluada en `generation`.
