@@ -2,6 +2,8 @@
 
 **Base:** `generation` `471296d`, con la configuración evaluada activa (PR-1.7, V2.1, PLAN-REV-2.0, IA, progresión, límite de dificultad `preferencia`, retirada localizada `on`, V8C con H-A1/H-A2).
 
+**Estado de la corrección:** fusionada en `generation` con la PR #47 (merge `5cbea9e`, 11/11/2026).
+
 **Reproducción:** `O12DolorProgresionApagadaIT` y `O12DolorProgresionEncendidaIT` (base común `O12DolorBase`). Sin red; la IA está simulada.
 
 ## 1. Escenario
@@ -78,6 +80,7 @@ Con la progresión encendida la frenaba V24 solo de forma indirecta: una subida 
 **Pruebas:**
 - **Antes del cambio:** `subeSeries` falla en las dos clases. Con la progresión apagada, «una subida de dosis de la IA no se publica nunca» (estado APLICADA); con la progresión encendida falta el rechazo V8C, solo hay V24.
 - **Después del cambio:** pasan las 6. Las variantes `MENOS_SERIES` y `VACIA` demuestran que lo autorizado sigue igual.
+- **Prueba unitaria añadida en la PR #47** (`SubidaPorSustitucionTest`, 7 pruebas): el sustituto tampoco puede subir **repeticiones** (3x18 → 3x20) ni **segundos** (3x60 s → 3x90 s); la misma dosis y las bajadas siguen siendo válidas. Con la comprobación anulada fallan exactamente las 3 pruebas de subida.
 
 ## 5. ¿Qué pasa con el ejercicio que dolió?
 

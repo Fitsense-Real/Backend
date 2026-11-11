@@ -5,6 +5,7 @@
 - No se ejecutaron migraciones contra ninguna base de datos remota, ni se imprimieron o guardaron credenciales.
 - Todo lo que sigue sale del código de la rama `generation` (con la PR #45) y de pruebas locales.
 - **No se han verificado las variables reales de ningún entorno desplegado.**
+- **La configuración no se ha desplegado ni validado contra una base de datos remota de pruebas.** Todo se ha comprobado solo con PostgreSQL en Testcontainers.
 
 ## 1. Precedencia de configuración en Spring Boot
 
@@ -83,14 +84,14 @@ Esta configuración la comprueban `ConfiguracionEvaluadaTest` y `ConfiguracionEv
 ## 6. Rama de despliegue
 
 - Según `docs/FitSense/CATALOGO_V37.md`, Railway no despliega desde `generation`.
-- Para un entorno de prueba hay que crear un servicio que apunte a `generation`, o a una rama de entrega que la contenga, **después de fusionar la PR de la corrección O12**.
+- Para un entorno de prueba hay que crear un servicio que apunte a `generation`, o a una rama de entrega que la contenga, que ya incluye la corrección O12 (PR #47, merge `5cbea9e`).
 - No se ha verificado la configuración de ningún servicio existente.
 
 ## 7. Lista de comprobación antes de desplegar (no ejecutada)
 
 | # | Condición | Estado |
 |---|---|---|
-| 1 | Fusionar la PR de la corrección O12 (la IA no sube dosis a través de un sustituto) | Pendiente de revisión |
+| 1 | Fusionar la PR de la corrección O12 (la IA no sube dosis a través de un sustituto) | **Hecho:** PR #47, merge `5cbea9e` |
 | 2 | Base de prueba separada: `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `DB_PASSWORD` | Pendiente de configuración |
 | 3 | `JWT_SECRET` propio | Pendiente de configuración |
 | 4 | `REPLICATE_API_TOKEN` exclusivo, con límite de gasto y alertas en Replicate | Pendiente de configuración |

@@ -20,6 +20,7 @@
 |---|---|---|---|
 | `O12DolorProgresionApagadaIT` (3) | Integración | técnica (O12) | O12 con la progresión apagada y tres respuestas fijas de la IA: reduce, vacía, sube. Ningún ejercicio excluido por dolor reaparece en las semanas 2–5. Con «sube», la propuesta no se publica (V8C «sube la dosis») |
 | `O12DolorProgresionEncendidaIT` (3) | Integración | técnica (O12) | Lo mismo con la progresión encendida |
+| `SubidaPorSustitucionTest` (7) | Unitaria | técnica (O12) | El sustituto no puede subir series, repeticiones ni segundos respecto a la semana medida; controles con la misma dosis, bajadas, sin dosis medida y sin sustituciones. Añadida en la PR #47 después de la regresión del §5; con la comprobación anulada fallan las 3 de subida |
 | `HG9GeneralFitnessIT` (1) | Integración | documental | Cota inferior de duración de GENERAL_FITNESS por nivel y minutos; si no cabe, el validador da V4; plan real de respaldo |
 | `SinTokenReplicateTest` (3) | Unitaria | documental | Sin token (nulo, vacío o en blanco) la IA no es utilizable; con la IA apagada tampoco; tiempos por defecto |
 
@@ -47,6 +48,8 @@
 |---|---|---|
 | Unitarias | **1338 / 0 / 1** | +3 (`SinTokenReplicateTest`) |
 | Integración | **603 / 0 / 44** | +7 (6 O12 + 1 H-G9) |
+
+Esta regresión es anterior a `SubidaPorSustitucionTest`. La PR #47 se fusionó con ella (merge `5cbea9e`) y el CI de la PR pasó en verde. La regresión final sobre `generation`, después de fusionar las PR #47 y #48, se registra en el informe de cierre.
 
 **Ninguna prueba existente cambió de resultado.** En particular, siguen en verde todas las de V8C, sustitución de seguridad, dolor, progresión, reincorporación, ConfiguracionEvaluada y la cohorte.
 
