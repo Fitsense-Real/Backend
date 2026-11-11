@@ -44,6 +44,8 @@ class ReplicateTimingInstrumentationTest {
 
     private static final String URL = "https://api.replicate.test/predictions";
     private static final String POLL = "https://api.replicate.test/predictions/mc7xdrmr";
+    /** R-2: la URL publica de cancelacion, derivada del identificador (las predicciones de prueba no traen urls.cancel). */
+    private static final String CANCEL = "https://api.replicate.test/v1/predictions/mc7xdrmr/cancel";
 
     private ReplicateTrainingPlanGenerator generator;
     private MockRestServiceServer server;
@@ -163,6 +165,9 @@ class ReplicateTimingInstrumentationTest {
                 .andRespond(withSuccess(prediccion("starting", true), MediaType.APPLICATION_JSON));
         server.expect(ExpectedCount.manyTimes(), requestTo(POLL))
                 .andRespond(withSuccess(prediccion("processing", true), MediaType.APPLICATION_JSON));
+        // R-2: la prediccion seguia viva al dejar de esperar, asi que se pide su cancelacion (una vez).
+        server.expect(ExpectedCount.once(), requestTo(CANCEL))
+                .andRespond(withSuccess(prediccion("canceled", false), MediaType.APPLICATION_JSON));
 
         // Es el caso de los planes 6 y 7 del 13/10/2026: la prediccion seguia
         // viva y el pipeline la dio por perdida.
@@ -224,6 +229,9 @@ class ReplicateTimingInstrumentationTest {
         server.expect(requestTo(URL))
                 .andRespond(withSuccess(prediccion("starting", true), MediaType.APPLICATION_JSON));
         server.expect(requestTo(POLL)).andRespond(withServerError());
+        // R-2: la prediccion seguia viva al dejar de esperar, asi que se pide su cancelacion (una vez).
+        server.expect(ExpectedCount.once(), requestTo(CANCEL))
+                .andRespond(withSuccess(prediccion("canceled", false), MediaType.APPLICATION_JSON));
 
         assertThrows(AiProviderUnavailableException.class,
                 () -> generator.call("prompt", 3, 7L, (short) 5, 1));
@@ -242,6 +250,9 @@ class ReplicateTimingInstrumentationTest {
         montar(150);
         server.expect(requestTo(URL))
                 .andRespond(withSuccess(prediccion("starting", false), MediaType.APPLICATION_JSON));
+        // R-2: la prediccion seguia viva al dejar de esperar, asi que se pide su cancelacion (una vez).
+        server.expect(ExpectedCount.once(), requestTo(CANCEL))
+                .andRespond(withSuccess(prediccion("canceled", false), MediaType.APPLICATION_JSON));
 
         assertThrows(AiProviderUnavailableException.class,
                 () -> generator.call("prompt", 3, 7L, (short) 5, 1));
