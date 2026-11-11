@@ -2,6 +2,7 @@ package main.web.services.fitsense.planning.application.internal.commandservices
 
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams;
+import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException;
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyPlanCommand;
@@ -359,6 +360,38 @@ class AdaptedWeekCommandServiceTest {
         assertTrue(publicado.isEmpty());
         verify(planCommandService, never()).publishAdapted(any(), any());
         verify(failureRecorder).registrar(intento);
+    }
+
+    @Test
+    @DisplayName("R-1 · FALLABA ANTES: un error inesperado en la llamada a la IA no deja sin semana; decide el respaldo")
+    void errorInesperadoDeLaIaVaAlRespaldo() {
+        when(fixGenerator.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                .thenThrow(new IllegalStateException("No se pudo leer el JSON hacia ReplicateResponse"));
+        devuelveProductor(conservada());
+        when(planCommandService.publishAdapted(any(), any()))
+                .thenReturn(Optional.of(mock(WeeklyTrainingPlan.class)));
+
+        var publicado = servicio.adaptar(preparado(ordenLocalizada()), medida("ADAPT_LOCALIZED"));
+
+        assertTrue(publicado.isPresent(), "la semana se publica con el respaldo");
+        verify(fixGenerator, times(1)).pedirRespuesta(any(), any(), any(), any(), anyInt());
+        verify(producer).produce(any(), any(), eq(null), any());
+    }
+
+    @Test
+    @DisplayName("R-1 · respuesta ilegible del proveedor (fallo del proveedor): 1 llamada y respaldo, como un 5xx")
+    void respuestaIlegibleVaAlRespaldo() {
+        when(fixGenerator.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                .thenThrow(new AiProviderUnavailableException("la respuesta de Replicate no se pudo interpretar"));
+        devuelveProductor(conservada());
+        when(planCommandService.publishAdapted(any(), any()))
+                .thenReturn(Optional.of(mock(WeeklyTrainingPlan.class)));
+
+        var publicado = servicio.adaptar(preparado(ordenLocalizada()), medida("ADAPT_LOCALIZED"));
+
+        assertTrue(publicado.isPresent());
+        verify(fixGenerator, times(1)).pedirRespuesta(any(), any(), any(), any(), anyInt());
+        verify(producer).produce(any(), any(), eq(null), any());
     }
 
     @Test

@@ -20,8 +20,29 @@ public record ReplicateProperties(
         String model,
         String reasoningEffort,
         int timeoutSeconds,
-        int preferWaitSeconds
+        int preferWaitSeconds,
+        /*
+         * R-3 (resiliencia de Replicate, 11/11/2026): limites HTTP explicitos. Antes no habia ninguno: RestClient usaba
+         * el cliente del JDK sin limite de conexion ni de lectura, y una conexion colgada en el POST o en un GET de
+         * sondeo no tenia fin dentro de la aplicacion.
+         */
+        int connectTimeoutSeconds,
+        int readTimeoutSeconds,
+        int pollReadTimeoutSeconds
 ) {
+
+    /** Por omision, 10 s para conectar. */
+    public static final int CONNECT_POR_OMISION = 10;
+    /** Lectura del POST: lo que Replicate retiene la peticion (Prefer: wait) mas este margen. */
+    public static final int MARGEN_LECTURA_POST = 30;
+    /** Lectura de cada GET de sondeo (y de la cancelacion). */
+    public static final int LECTURA_SONDEO_POR_OMISION = 30;
+
+    /** La forma anterior, sin los limites HTTP: quedan los de omision. */
+    public ReplicateProperties(boolean enabled, String apiToken, String baseUrl, String model,
+                               String reasoningEffort, int timeoutSeconds, int preferWaitSeconds) {
+        this(enabled, apiToken, baseUrl, model, reasoningEffort, timeoutSeconds, preferWaitSeconds, 0, 0, 0);
+    }
 
     public ReplicateProperties {
         if (baseUrl == null || baseUrl.isBlank())
@@ -40,6 +61,29 @@ public record ReplicateProperties(
         // POST se corta, la prediccion sigue corriendo (y cobrandose) y nadie la
         // lee. Detectado el 27/10/2026 con un proxy que cortaba a los 30 s.
         if (preferWaitSeconds <= 0 || preferWaitSeconds > 60) preferWaitSeconds = 60;
+
+        // R-3. Se ACOTAN, no se rechazan, igual que los dos limites de arriba: un valor fuera de rango no puede
+        // dejar la IA sin arrancar, pero tampoco puede dejar una espera sin fin.
+        // Conectar: 1-60 s.
+        if (connectTimeoutSeconds <= 0) connectTimeoutSeconds = CONNECT_POR_OMISION;
+        connectTimeoutSeconds = Math.min(connectTimeoutSeconds, 60);
+        // Leer la respuesta del POST: nunca por debajo de lo que Replicate la retiene a proposito (Prefer: wait), o
+        // cortariamos una prediccion que iba bien; hasta 5 minutos.
+        if (readTimeoutSeconds <= 0) readTimeoutSeconds = preferWaitSeconds + MARGEN_LECTURA_POST;
+        readTimeoutSeconds = Math.max(readTimeoutSeconds, preferWaitSeconds + 2);
+        readTimeoutSeconds = Math.min(readTimeoutSeconds, 300);
+        // Leer cada GET de sondeo: 2-120 s. El sondeo entero lo limita timeoutSeconds.
+        if (pollReadTimeoutSeconds <= 0) pollReadTimeoutSeconds = LECTURA_SONDEO_POR_OMISION;
+        pollReadTimeoutSeconds = Math.max(2, Math.min(pollReadTimeoutSeconds, 120));
+    }
+
+    /**
+     * Cota de la espera total de UNA llamada, para documentarla y probarla: conectar y leer el POST, el sondeo
+     * entero y, como mucho, un GET mas que empiece justo antes del limite (con su conexion y la pausa de 3 s).
+     */
+    public long esperaMaximaSegundos() {
+        return (long) connectTimeoutSeconds + readTimeoutSeconds
+                + timeoutSeconds + 3 + connectTimeoutSeconds + pollReadTimeoutSeconds;
     }
 
     /**

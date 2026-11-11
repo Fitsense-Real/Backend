@@ -449,6 +449,14 @@ public class AdaptedWeekCommandService {
                 log.warn("Intento {} para el usuario {}: la respuesta no cumple el contrato · {}",
                         intento, context.userId(), e.problems());
                 continue;
+
+            } catch (RuntimeException e) {
+                // R-1: un error inesperado en el camino de la IA no deja sin semana: se registra y decide el
+                // respaldo determinista (que comprueba si conservar es seguro), sin gastar mas intentos.
+                log.error("IA_ERROR_INESPERADO adaptacion usuario {} intento {}: {}; se usa el respaldo",
+                        context.userId(), intento, e.toString(), e);
+                acumulados.add("Error inesperado en la adaptacion con IA (" + e.getClass().getSimpleName() + ")");
+                break;
             }
 
             var resultado = producir(context, derivation, correcciones, elegibles, exclusiones);
