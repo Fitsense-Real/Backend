@@ -56,6 +56,9 @@ public class TrainingPlanController {
     /** Zona del usuario y reloj: «hoy» es el dia LOCAL del usuario, no el del servidor (cierre definitivo, 2.4). */
     private final main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalIamService iam;
     private final java.time.Clock reloj;
+    /** R-5: el primer plan, con exclusion entre peticiones y limite de frecuencia. */
+    private final main.web.services.fitsense.planning.application.internal.commandservices
+            .GeneracionInicialService generacionInicial;
 
     public TrainingPlanController(WeeklyTrainingPlanQueryService queryService,
                                   WeeklyTrainingPlanCommandService commandService,
@@ -67,7 +70,10 @@ public class TrainingPlanController {
                                           .AdaptationOutcomeQueryService adaptaciones,
                                   main.web.services.fitsense.planning.application.internal.outboundservices.acl
                                           .ExternalIamService iam,
-                                  org.springframework.beans.factory.ObjectProvider<java.time.Clock> reloj) {
+                                  org.springframework.beans.factory.ObjectProvider<java.time.Clock> reloj,
+                                  main.web.services.fitsense.planning.application.internal.commandservices
+                                          .GeneracionInicialService generacionInicial) {
+        this.generacionInicial = generacionInicial;
         this.iam = iam;
         this.reloj = reloj.getIfAvailable(java.time.Clock::systemUTC);
         this.queryService = queryService;
@@ -118,10 +124,9 @@ public class TrainingPlanController {
         var monday = commandService.firstPlanWeekStart(principal.getUserId());
         var command = GenerateWeeklyPlanCommand.firstPlan(principal.getUserId(), monday);
 
-        var prepared = commandService.prepare(command);
-        var generated = commandService.generate(prepared);
-
-        return commandService.persist(prepared, generated)
+        // R-5: prepare, generate y persist con exclusion (409 si ya hay una en curso, tambien del ciclo semanal) y
+        // limite de frecuencia (429). Lo que se genera y como no cambia.
+        return generacionInicial.generar(command)
                 .map(this::toResource)
                 .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
