@@ -37,6 +37,7 @@ Cada cifra principal de esta documentación remite a su fuente original.
 | 10/11/2026 | `f95b218` | P | Código ejecutado de pr-1.8a (traslado exacto, apagado por defecto) |
 | 10/11/2026 | `5f48dd5` | P | Protocolo pr-1.8a congelado |
 | 10/11/2026 23:35 | `ffca1f4` | P | Entregables de pr-1.8a (punta actual de P) |
+| 11/11/2026 | `8b4bb4d` → **`13b75f2`** | G | PR #45: configuración evaluada por defecto en `generation`, fusionada |
 
 ## 2. Matriz de afirmaciones
 

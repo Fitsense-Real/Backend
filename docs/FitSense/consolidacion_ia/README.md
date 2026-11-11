@@ -4,7 +4,7 @@ Documentación técnica interna de los experimentos de **generación inicial** y
 
 | Elemento | Valor |
 |---|---|
-| Código de referencia | `generation` `543932a` (PR #43 y #44 fusionadas) para los experimentos. La configuración evaluada se activó por defecto con la PR #45 (11/11/2026; ver `00` §5) |
+| Código de referencia | `generation` `543932a` (PR #43 y #44 fusionadas) para los experimentos. La configuración evaluada se activó por defecto con la PR #45 (merge `13b75f2`, 11/11/2026; ver `00` §5) |
 | Rama de esta documentación | `docs/consolidacion-ia`, creada desde `generation`. Solo documentación |
 | Uso | Interno. No es material para el short paper, el full paper ni la tesis |
 | Qué no se hizo | Llamadas a Replicate; gasto; experimentos nuevos; cambios de validadores, prompts, reglas, catálogo, políticas o resultados históricos; cambios en Neon o en mobileapp; despliegue. El único cambio de código asociado es la configuración por defecto (PR #45) |

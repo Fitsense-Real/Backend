@@ -68,7 +68,7 @@ Detalle en `01_INVENTARIO_EVIDENCIAS.md`.
 
 ## 5. Configuración
 
-Desde el 11/11/2026 (PR #45), `generation` usa por defecto la configuración evaluada. Cada valor conserva su variable de entorno para revertirlo.
+Desde el 11/11/2026 (PR #45, merge `13b75f2`), `generation` usa por defecto la configuración evaluada. Cada valor conserva su variable de entorno para revertirlo.
 
 | Elemento | Histórica (hasta `543932a`) | Campañas evaluadas (GRA, MEJ, CONF-IA, pr-1.8a) | Incorporada a `generation` (PR #45) | Desplegada |
 |---|---|---|---|---|
