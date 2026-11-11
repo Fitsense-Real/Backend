@@ -14,6 +14,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PasoProgres
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PreviousWeekSummary;
 import main.web.services.fitsense.planning.domain.model.valueobjects.RetiradaSeguridad;
+import main.web.services.fitsense.planning.domain.model.valueobjects.SustitucionSeguridad;
 import main.web.services.fitsense.planning.domain.model.valueobjects.WeekDerivation;
 
 import java.util.ArrayList;
@@ -318,8 +319,64 @@ public class AdaptedWeekProducer {
         var motivo = huboEfecto
                 ? AdaptedWeekResult.Motivo.CORRECCION_IA : AdaptedWeekResult.Motivo.SIN_EFECTO;
 
-        return revisarYCerrar(context, reparada.semana(), informe, source, motivo, eligible,
-                reparada.problemas());
+        // LA IA NUNCA SUBE DOSIS, tampoco a traves de un sustituto (auditoria de activacion, 11/11/2026). Si la IA
+        // cambia la dosis de un ejercicio que luego SUST-SEG-1 sustituye por seguridad, el sustituto hereda la dosis
+        // de la IA y V8C ya no la compara (es un ejercicio nuevo). La dosis del sustituto no puede superar la que le
+        // daria SUST-SEG-1 partiendo de la semana MEDIDA: una bajada sigue valiendo; una subida se rechaza.
+        return revisarYCerrar(context, reparada.semana(), informe, source, motivo, eligible, reparada.problemas(),
+                subidasPorSustitucion(reparada.semana(), reparada.sustituciones(), context, eligible));
+    }
+
+    /**
+     * Sustituciones SUST-SEG-1 cuya dosis publicada es mayor (series, repeticiones o segundos) que la que SUST-SEG-1
+     * calcularia para el sustituto a partir de la dosis MEDIDA del ejercicio quitado. Solo hay diferencia cuando la
+     * IA cambio la dosis del ejercicio antes de que se sustituyera: en continuidad y respaldo se parte siempre de la
+     * semana medida.
+     */
+    static List<String> subidasPorSustitucion(List<DerivedWorkout> semana,
+                                              List<SustitucionSeguridad> sustituciones,
+                                              PlanGenerationContext context,
+                                              Map<Long, CandidateExercise> eligible) {
+        var problemas = new ArrayList<String>();
+        var previa = context.previousWeek();
+        if (sustituciones == null || previa == null || previa.prescriptions() == null) return problemas;
+        for (var sust : sustituciones) {
+            var medida = previa.prescriptions().stream()
+                    .filter(p -> sust.sesionOrigen().equals(p.plannedWorkoutId())
+                            && sust.quitado().equals(p.exerciseId()))
+                    .findFirst().orElse(null);
+            var candidato = eligible == null ? null : eligible.get(sust.puesto());
+            if (medida == null || candidato == null || medida.prescriptionType() == null) continue;
+            var publicada = semana.stream()
+                    .filter(d -> sust.sesionOrigen().equals(d.sourcePlannedWorkoutId()))
+                    .flatMap(d -> d.workout().exercises().stream())
+                    .filter(e -> sust.puesto().equals(e.exerciseId()))
+                    .findFirst().orElse(null);
+            if (publicada == null) continue;
+            var original = new PlanDraft.DraftExercise(sust.quitado(),
+                    main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType
+                            .valueOf(medida.prescriptionType()),
+                    medida.sets(), medida.reps(), medida.durationSeconds(), null, medida.restSeconds(), null);
+            var esperada = SafetySubstitutionPolicy.dosis(candidato, original, context);
+            if (mayor(esperada.plannedSets(), publicada.plannedSets())
+                    || mayor(esperada.plannedReps(), publicada.plannedReps())
+                    || mayor(esperada.plannedDurationSeconds(), publicada.plannedDurationSeconds()))
+                problemas.add(("V8C: la sesion %d sube la dosis a traves del sustituto %d de %d (%s; desde la semana"
+                        + " medida corresponde %s). La IA no puede subir dosis: solo el backend progresa.")
+                        .formatted(sust.sesionOrigen(), sust.puesto(), sust.quitado(), describir(publicada),
+                                describir(esperada)));
+        }
+        return problemas;
+    }
+
+    private static boolean mayor(Number referencia, Number valor) {
+        return referencia != null && valor != null && valor.longValue() > referencia.longValue();
+    }
+
+    private static String describir(PlanDraft.DraftExercise e) {
+        return e.plannedDurationSeconds() != null
+                ? "%sx%ss".formatted(e.plannedSets(), e.plannedDurationSeconds())
+                : "%sx%s".formatted(e.plannedSets(), e.plannedReps());
     }
 
     /**
@@ -641,11 +698,24 @@ public class AdaptedWeekProducer {
                                              AdaptedWeekResult.Motivo motivo,
                                              Map<Long, CandidateExercise> eligible,
                                              List<String> sinSustituto) {
+        return revisarYCerrar(context, semana, informe, source, motivo, eligible, sinSustituto, List.of());
+    }
+
+    /** Igual, con problemas de conservacion detectados fuera de V8C (subidas a traves de un sustituto). */
+    private AdaptedWeekResult revisarYCerrar(PlanGenerationContext context,
+                                             List<DerivedWorkout> semana,
+                                             ConservationReport informe,
+                                             GenerationSource source,
+                                             AdaptedWeekResult.Motivo motivo,
+                                             Map<Long, CandidateExercise> eligible,
+                                             List<String> sinSustituto,
+                                             List<String> subidas) {
 
         // Primero lo que no tuvo sustituto seguro: es el motivo de fondo, y los
         // V1 que provoca el ejercicio que se quedo son su consecuencia.
         var problemas = new ArrayList<>(sinSustituto);
         var deValidacion = new ArrayList<>(informe.problems());
+        deValidacion.addAll(subidas);
         deValidacion.addAll(estricta.revisar(borradorPara(semana, source, informe), context, informe));
         problemas.addAll(deValidacion);
 
