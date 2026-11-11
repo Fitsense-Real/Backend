@@ -11,16 +11,20 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Sin fijar la propiedad: la retirada localizada esta APAGADA por defecto. */
+/**
+ * Sin fijar la propiedad: la retirada localizada esta ENCENDIDA por defecto desde la activacion de la configuracion
+ * evaluada (11/11/2026; antes, APAGADA). Actua porque el limite de dificultad tambien esta encendido por defecto
+ * (preferencia). Interruptor: FITSENSE_PAIN_LOCALIZED_REMOVAL=off.
+ */
 @Testcontainers
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token="
 })
-@DisplayName("Retirada localizada: APAGADA por defecto")
+@DisplayName("Retirada localizada: ENCENDIDA por defecto (configuracion evaluada)")
 class RetiradaLocalizadaPorDefectoIT {
 
     @Container
@@ -30,8 +34,9 @@ class RetiradaLocalizadaPorDefectoIT {
     @Autowired AdaptedWeekProducer producer;
 
     @Test
-    @DisplayName("fitsense.adaptation.pain-localized-removal=off por defecto")
-    void apagadaPorDefecto() {
-        assertFalse(producer.retiradaLocalizada(), "la retirada localizada esta APAGADA por defecto");
+    @DisplayName("fitsense.adaptation.pain-localized-removal=on por defecto")
+    void encendidaPorDefecto() {
+        assertTrue(producer.retiradaSolicitada(), "la retirada localizada se pide por defecto");
+        assertTrue(producer.retiradaLocalizada(), "y actua: el limite de dificultad esta encendido por defecto");
     }
 }

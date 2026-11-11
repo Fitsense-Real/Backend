@@ -60,6 +60,13 @@ import static org.mockito.Mockito.when;
 @Testcontainers
 @SpringBootTest(properties = {
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
+        // Valores historicos fijados explicitamente al activar la configuracion evaluada (11/11/2026): esta
+        // prueba se escribio sobre los valores por defecto anteriores y comprueba ese comportamiento.
+        "fitsense.planning.policy=PLAN-HIST-1",
+        "fitsense.ai.adaptation.prompt-version=v1",
+        "fitsense.adaptation.progression.enabled=false",
+        "fitsense.adaptation.difficulty-guard=off",
+        "fitsense.adaptation.pain-localized-removal=off",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token="
 })
