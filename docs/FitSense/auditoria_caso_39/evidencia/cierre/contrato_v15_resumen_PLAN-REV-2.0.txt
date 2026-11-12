@@ -1,0 +1,5 @@
+C3_regla_sin_tope=1184
+perfiles=384
+perfiles_no_generables_P01=0
+sesiones=1312
+sesiones_con_regla_mitad=1184

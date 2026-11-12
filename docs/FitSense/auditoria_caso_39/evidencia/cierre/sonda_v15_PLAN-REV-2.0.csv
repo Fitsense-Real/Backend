@@ -1,0 +1,81 @@
+politica;fecha;enfoque;n_trabajo;complementos;mismo_grupo;grupo;v15_mitad_rechaza;tope_funcion
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;2;2;1;chest;false;null
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;2;2;2;chest;false;null
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;3;2;1;chest;false;null
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;3;2;2;chest;false;null
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;3;2;3;chest;false;null
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;4;2;1;chest;false;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;4;2;2;chest;false;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;4;2;3;chest;true;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;4;2;4;chest;true;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;5;2;1;chest;false;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;5;2;2;chest;false;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;5;2;3;chest;true;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;5;2;4;chest;true;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;5;2;5;chest;true;2
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;6;2;1;chest;false;3
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;6;2;2;chest;false;3
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;6;2;3;chest;false;3
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;6;2;4;chest;true;3
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;6;2;5;chest;true;3
+PLAN-REV-2.0;2026-11-16;UPPER_BODY;6;2;6;chest;true;3
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;2;2;1;upper legs;false;null
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;2;2;2;upper legs;false;null
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;3;2;1;upper legs;false;null
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;3;2;2;upper legs;false;null
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;3;2;3;upper legs;false;null
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;4;2;1;upper legs;false;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;4;2;2;upper legs;false;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;4;2;3;upper legs;true;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;4;2;4;upper legs;true;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;5;2;1;upper legs;false;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;5;2;2;upper legs;false;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;5;2;3;upper legs;true;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;5;2;4;upper legs;true;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;5;2;5;upper legs;true;2
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;6;2;1;upper legs;false;3
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;6;2;2;upper legs;false;3
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;6;2;3;upper legs;false;3
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;6;2;4;upper legs;true;3
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;6;2;5;upper legs;true;3
+PLAN-REV-2.0;2026-11-19;LOWER_BODY;6;2;6;upper legs;true;3
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;2;2;1;chest;false;null
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;2;2;2;chest;false;null
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;3;2;1;chest;false;null
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;3;2;2;chest;false;null
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;3;2;3;chest;false;null
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;4;2;1;chest;false;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;4;2;2;chest;false;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;4;2;3;chest;true;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;4;2;4;chest;true;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;5;2;1;chest;false;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;5;2;2;chest;false;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;5;2;3;chest;true;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;5;2;4;chest;true;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;5;2;5;chest;true;2
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;6;2;1;chest;false;3
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;6;2;2;chest;false;3
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;6;2;3;chest;false;3
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;6;2;4;chest;true;3
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;6;2;5;chest;true;3
+PLAN-REV-2.0;2026-11-20;UPPER_BODY;6;2;6;chest;true;3
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;2;2;1;upper legs;false;null
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;2;2;2;upper legs;false;null
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;3;2;1;upper legs;false;null
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;3;2;2;upper legs;false;null
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;3;2;3;upper legs;false;null
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;4;2;1;upper legs;false;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;4;2;2;upper legs;false;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;4;2;3;upper legs;true;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;4;2;4;upper legs;true;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;5;2;1;upper legs;false;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;5;2;2;upper legs;false;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;5;2;3;upper legs;true;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;5;2;4;upper legs;true;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;5;2;5;upper legs;true;2
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;6;2;1;upper legs;false;3
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;6;2;2;upper legs;false;3
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;6;2;3;upper legs;false;3
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;6;2;4;upper legs;true;3
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;6;2;5;upper legs;true;3
+PLAN-REV-2.0;2026-11-22;LOWER_BODY;6;2;6;upper legs;true;3

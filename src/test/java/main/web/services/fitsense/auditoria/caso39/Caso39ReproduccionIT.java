@@ -109,8 +109,15 @@ class Caso39ReproduccionIT {
         // Equipo: todo el catalogo menos lo indicado en -Dfitsense.auditoria.caso39.equipo-excluido (separado por comas)
         var excluido = Arrays.stream(System.getProperty("fitsense.auditoria.caso39.equipo-excluido", "").split(","))
                 .map(String::trim).filter(x -> !x.isEmpty()).collect(Collectors.toSet());
-        List<String> equipo = jdbc.queryForList("SELECT code FROM equipment_types ORDER BY display_order", String.class)
-                .stream().filter(x -> !excluido.contains(x)).toList();
+        // -Dfitsense.auditoria.caso39.equipo: lista EXACTA del perfil real (tiene prioridad sobre la exclusion)
+        var exacto = System.getProperty("fitsense.auditoria.caso39.equipo", "").trim();
+        List<String> equipo = !exacto.isEmpty()
+                ? Arrays.stream(exacto.split(",")).map(String::trim).filter(x -> !x.isEmpty()).toList()
+                : jdbc.queryForList("SELECT code FROM equipment_types ORDER BY display_order", String.class)
+                        .stream().filter(x -> !excluido.contains(x)).toList();
+        var desconocidos = equipo.stream().filter(x -> jdbc.queryForObject(
+                "SELECT count(*) FROM equipment_types WHERE code = ?", Integer.class, x) == 0).toList();
+        assertTrue(desconocidos.isEmpty(), "codigos de equipo que el catalogo no conoce: " + desconocidos);
         crearUsuario39(equipo);
 
         // ---- contexto: el mismo que recibe el pipeline ------------------------------------------------------------
@@ -142,6 +149,15 @@ class Caso39ReproduccionIT {
                     .append(requisitos.getOrDefault(c.exerciseId(), "")).append('\n');
         }
         Files.writeString(SALIDA.resolve("elegibles_todo_el_equipo.csv"), volcado.toString(), StandardCharsets.UTF_8);
+
+        var compl = main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy
+                .complementos(elegibles.values(), ctx.profile().goalType());
+        resumen.append("complementos_4A=").append(new TreeSet<>(compl)).append('\n');
+        var snapshotIds = PlanInputSnapshot.of(ctx).availableExercises().stream()
+                .map(PlanInputSnapshot.AvailableExercise::exerciseId).collect(Collectors.toSet());
+        resumen.append("ejercicios_en_prompt=").append(snapshotIds.size()).append('\n');
+        var elegiblesNoEnviados = elegibles.keySet().stream().filter(id -> !snapshotIds.contains(id)).sorted().toList();
+        resumen.append("elegibles_no_enviados_al_prompt=").append(elegiblesNoEnviados).append('\n');
 
         // Huella del log real (SlotCoverageGate)
         var previa = lineas(logs, "Cobertura 4C previa del usuario 39");
