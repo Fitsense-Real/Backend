@@ -42,7 +42,8 @@
 | Árbol | Unitarias | Integración | Resultado |
 |---|---|---|---|
 | `generation` `3a1d92f` (R-1 a R-5 fusionadas) | 1396 / 0 / 1 omitida | 606 / 0 / 44 omitidas | BUILD SUCCESS |
-| **Esta rama** | **1414 / 0 / 1** (+18 nuevas) | **609 / 0 / 45** (+2 nuevas; el laboratorio opt-in `TiemposGeneracionIT` cuenta como omitido) | **BUILD SUCCESS** |
+| Esta rama, antes de la auditoría | 1414 / 0 / 1 (+18 nuevas) | 609 / 0 / 45 (+2 nuevas; el laboratorio opt-in `TiemposGeneracionIT` cuenta como omitido) | BUILD SUCCESS |
+| **Esta rama, tras la auditoría** (`04`) | **1417 / 0 / 1** (+3: casos límite, umbral y presupuesto desactivado) | **617 / 0 / 46** (+7 de `ReintentosYFactibilidadIT`; `AuditoriaFactibilidadIT` es opt-in y cuenta como omitida) | **BUILD SUCCESS** |
 
 **Incluidas sin cambios de resultado:**
 - Los cuatro objetivos (`GeneracionPorObjetivoIT`, `FactibilidadPorObjetivoIT`, cobertura completa por objetivo).
@@ -53,5 +54,5 @@
 
 **Cohorte integral con IA simulada** (`EvaluacionK20IT`, PLAN-REV-2.0, progresión activada):
 - Escenarios O06, O12 y O20, 8 semanas cada uno.
-- **0 diferencias** de estado, decisión, tipos del informe y llamadas, frente a `generation` anterior y frente a `generation` final.
+- **0 diferencias** de estado, decisión, tipos del informe y llamadas, frente a `generation` anterior y frente a `generation` final. Se repitió tras la auditoría: 0 diferencias.
 - 0 llamadas evitadas por la comprobación previa: ninguno de esos perfiles es de una sesión inviable.
