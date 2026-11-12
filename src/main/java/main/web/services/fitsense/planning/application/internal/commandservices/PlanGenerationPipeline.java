@@ -145,6 +145,15 @@ public class PlanGenerationPipeline {
                     acumulados.addAll(e.problems());
                     log.warn("Intento {} de IA rechazado para el usuario {}: {}",
                             attempt, context.userId(), e.problems());
+
+                } catch (RuntimeException e) {
+                    // R-1: cualquier otro error en el camino de la IA (un defecto propio, un dato inesperado) NO deja
+                    // la semana sin plan: se registra en ERROR, no se gastan mas intentos ni cuenta para el corte, y
+                    // decide el motor de reglas, validado como siempre. Nunca se publica lo que lanzo.
+                    log.error("IA_ERROR_INESPERADO usuario {} intento {}: {}; la semana la hace el motor de reglas",
+                            context.userId(), attempt, e.toString(), e);
+                    acumulados.add("Error inesperado en la generacion con IA (" + e.getClass().getSimpleName() + ")");
+                    break;
                 }
             }
         }

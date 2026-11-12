@@ -85,13 +85,16 @@ class ReplicateTimingTest {
     }
 
     @Test
-    @DisplayName("los seis resultados posibles estan y se nombran igual en el log")
-    void losSeisResultados() {
+    @DisplayName("los siete resultados posibles estan y se nombran igual en el log")
+    void losSieteResultados() {
         for (var r : Resultado.values())
             assertTrue(timing("abc", 1, 1, 1, r).describe().endsWith("resultado=" + r.name()));
 
-        assertEquals(6, Resultado.values().length,
-                "SUCCEEDED, TIMEOUT, NOT_SUCCEEDED, POST_ERROR, POLL_ERROR e "
+        // INVALID_RESPONSE (R-1, 11/11/2026): el POST respondio 2xx con un cuerpo que no es una respuesta de
+        // Replicate. DECISION para el cortacircuitos: es un fallo del PROVEEDOR (AiProviderUnavailableException),
+        // como POST_ERROR, y cuenta para el corte; el modelo no llego a proponer nada.
+        assertEquals(7, Resultado.values().length,
+                "SUCCEEDED, TIMEOUT, NOT_SUCCEEDED, POST_ERROR, INVALID_RESPONSE, POLL_ERROR e "
                         + "INTERRUPTED: si se anade uno, hay que decidir que significa "
                         + "para el cortacircuitos");
     }

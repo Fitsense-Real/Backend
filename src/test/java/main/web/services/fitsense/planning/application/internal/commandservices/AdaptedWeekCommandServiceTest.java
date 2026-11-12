@@ -1,7 +1,10 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException;
+import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcome;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.configuration.domain.model.valueobjects.PrescriptionParams;
+import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException;
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyPlanCommand;
@@ -362,6 +365,22 @@ class AdaptedWeekCommandServiceTest {
     }
 
     @Test
+    @DisplayName("R-1 · respuesta ilegible del proveedor (fallo del proveedor): 1 llamada y respaldo, como un 5xx")
+    void respuestaIlegibleVaAlRespaldo() {
+        when(fixGenerator.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                .thenThrow(new AiProviderUnavailableException("la respuesta de Replicate no se pudo interpretar"));
+        devuelveProductor(conservada());
+        when(planCommandService.publishAdapted(any(), any()))
+                .thenReturn(Optional.of(mock(WeeklyTrainingPlan.class)));
+
+        var publicado = servicio.adaptar(preparado(ordenLocalizada()), medida("ADAPT_LOCALIZED"));
+
+        assertTrue(publicado.isPresent());
+        verify(fixGenerator, times(1)).pedirRespuesta(any(), any(), any(), any(), anyInt());
+        verify(producer).produce(any(), any(), eq(null), any());
+    }
+
+    @Test
     @DisplayName("Y el fallo registra las llamadas que SI se gastaron")
     void elFalloRegistraSusLlamadas() {
         // ai_calls es evidencia de la tesis: tres intentos gastados que acaban
@@ -385,6 +404,92 @@ class AdaptedWeekCommandServiceTest {
         assertEquals((short) 3, hechos.getValue().aiCalls(),
                 "se gastaron tres intentos y la evidencia tiene que decirlo");
         assertNull(hechos.getValue().resultingPlanId(), "no se publico ningun plan");
+    }
+
+    // =======================================================================
+    // R-4 · sin propuesta del proveedor frente a propuesta rechazada
+    // =======================================================================
+
+    private static boolean notaSinIa(AdaptedWeekResult r) {
+        return r.conservacion().correccionesDelBackend().stream()
+                .anyMatch(c -> c.startsWith(AdaptationOutcome.NOTA_IA_NO_DISPONIBLE));
+    }
+
+    @Test
+    @DisplayName("R-4 · FALLABA ANTES: el proveedor no respondio en el intento 1: la evidencia dice IA_NO_DISPONIBLE")
+    void proveedorCaidoDejaNota() {
+        when(fixGenerator.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                .thenThrow(new AiProviderUnavailableException("503 Service Unavailable"));
+        devuelveProductor(conservada());
+        when(planCommandService.publishAdapted(any(), any()))
+                .thenReturn(Optional.of(mock(WeeklyTrainingPlan.class)));
+
+        servicio.adaptar(preparado(ordenLocalizada()), medida("ADAPT_LOCALIZED"));
+
+        var publicacion = ArgumentCaptor.forClass(AdaptedPublication.class);
+        verify(planCommandService).publishAdapted(any(), publicacion.capture());
+        assertTrue(notaSinIa(publicacion.getValue().resultado()),
+                publicacion.getValue().resultado().conservacion().correccionesDelBackend().toString());
+        assertTrue(publicacion.getValue().resultado().conservacion().correccionesDelBackend().stream()
+                .anyMatch(c -> c.contains("503")), "la causa tecnica se registra");
+        assertEquals((short) 1, publicacion.getValue().aiCalls(), "la llamada se hizo y cuenta");
+    }
+
+    @Test
+    @DisplayName("R-4 · tres propuestas que no cumplen el contrato: NO hay nota (la IA si respondio)")
+    void propuestasInvalidasNoDejanNota() {
+        when(fixGenerator.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                .thenReturn(new ReplicateSessionFixGenerator.RawFix("{}", "{}"));
+        when(fixGenerator.interpretar(any(), any()))
+                .thenThrow(new InvalidPlanDraftException(List.of("FIX: respuesta vacia")));
+        devuelveProductor(conservada());
+        when(planCommandService.publishAdapted(any(), any()))
+                .thenReturn(Optional.of(mock(WeeklyTrainingPlan.class)));
+
+        servicio.adaptar(preparado(ordenLocalizada()), medida("ADAPT_LOCALIZED"));
+
+        var publicacion = ArgumentCaptor.forClass(AdaptedPublication.class);
+        verify(planCommandService).publishAdapted(any(), publicacion.capture());
+        assertFalse(notaSinIa(publicacion.getValue().resultado()));
+        assertEquals((short) 3, publicacion.getValue().aiCalls());
+    }
+
+    @Test
+    @DisplayName("R-4 · respondio una vez (invalida) y luego el proveedor cayo: NO hay nota, si hubo propuesta")
+    void unaRespuestaYLuegoCaida() {
+        when(fixGenerator.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                .thenReturn(new ReplicateSessionFixGenerator.RawFix("{}", "{}"))
+                .thenThrow(new AiProviderUnavailableException("timeout"));
+        when(fixGenerator.interpretar(any(), any()))
+                .thenThrow(new InvalidPlanDraftException(List.of("FIX: no vale")));
+        devuelveProductor(conservada());
+        when(planCommandService.publishAdapted(any(), any()))
+                .thenReturn(Optional.of(mock(WeeklyTrainingPlan.class)));
+
+        servicio.adaptar(preparado(ordenLocalizada()), medida("ADAPT_LOCALIZED"));
+
+        var publicacion = ArgumentCaptor.forClass(AdaptedPublication.class);
+        verify(planCommandService).publishAdapted(any(), publicacion.capture());
+        assertFalse(notaSinIa(publicacion.getValue().resultado()));
+        assertEquals((short) 2, publicacion.getValue().aiCalls());
+    }
+
+    @Test
+    @DisplayName("R-4 · el proveedor cayo y conservar no era seguro: el NO_FACTIBLE registrado tambien lleva la nota")
+    void noFactibleTrasCaidaDejaNota() {
+        when(fixGenerator.pedirRespuesta(any(), any(), any(), any(), anyInt()))
+                .thenThrow(new AiProviderUnavailableException("connection reset"));
+        devuelveProductor(AdaptedWeekResult.noFactible(
+                AdaptedWeekResult.Motivo.RESPALDO_IA, ConservationReport.vacio(),
+                List.of("Conservar no es seguro: la sesion 101 causo dolor")));
+        when(evidenceMapper.map(any(), any(), any(), any())).thenReturn(mock(AdaptationAttempt.class));
+
+        servicio.adaptar(preparado(ordenLocalizada()), medida("ADAPT_LOCALIZED"));
+
+        var resultado = ArgumentCaptor.forClass(AdaptedWeekResult.class);
+        verify(evidenceMapper).map(resultado.capture(), any(), any(), any());
+        assertTrue(notaSinIa(resultado.getValue()));
+        verify(planCommandService, never()).publishAdapted(any(), any());
     }
 
     // =======================================================================

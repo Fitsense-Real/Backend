@@ -25,6 +25,28 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), List.of());
     }
 
+    /** R-5: ya hay una generacion en curso para esta persona; no se ejecuto otra. */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.GeneracionEnCursoException.class)
+    public ResponseEntity<ApiErrorResource> handleGeneracionEnCurso(RuntimeException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), List.of());
+    }
+
+    /** R-5: sin el bloqueo de exclusion no se genera; transitorio. */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.GeneracionSinExclusionException.class)
+    public ResponseEntity<ApiErrorResource> handleGeneracionSinExclusion(RuntimeException ex) {
+        return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), List.of());
+    }
+
+    /** R-5: limite de generaciones por hora alcanzado. */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.DemasiadasGeneracionesException.class)
+    public ResponseEntity<ApiErrorResource> handleDemasiadasGeneraciones(
+            main.web.services.fitsense.planning.domain.exceptions.DemasiadasGeneracionesException ex) {
+        var status = HttpStatus.TOO_MANY_REQUESTS;
+        return ResponseEntity.status(status)
+                .header(org.springframework.http.HttpHeaders.RETRY_AFTER, String.valueOf(ex.reintentarEnSegundos()))
+                .body(ApiErrorResource.of(status.value(), status.getReasonPhrase(), ex.getMessage(), List.of()));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());
