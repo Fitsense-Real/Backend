@@ -32,6 +32,8 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     private final PlanDraftFromJsonAssembler assembler;
     private final JsonSupport jsonSupport;
     private final RestClient restClient;
+    /** R-3: el sondeo usa su propio cliente, con un limite de lectura corto. */
+    private final RestClient pollClient;
 
     /**
      * ESTE {@code @Autowired} NO ES DECORATIVO. Al haber dos constructores,
@@ -43,7 +45,13 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                                           PlanPromptBuilder promptBuilder,
                                           PlanDraftFromJsonAssembler assembler,
                                           JsonSupport jsonSupport) {
-        this(properties, promptBuilder, assembler, jsonSupport, RestClient.builder());
+        // R-3: limites HTTP explicitos (antes, el cliente del JDK sin limite de conexion ni de lectura).
+        this(properties, promptBuilder, assembler, jsonSupport,
+                ReplicateHttp.post(properties), ReplicateHttp.sondeo(properties));
+        log.info("Replicate HTTP: conectar {} s, leer POST {} s (Prefer: wait {} s), leer sondeo {} s, sondeo {} s;"
+                        + " espera maxima por llamada ~{} s",
+                properties.connectTimeoutSeconds(), properties.readTimeoutSeconds(), properties.preferWaitSeconds(),
+                properties.pollReadTimeoutSeconds(), properties.timeoutSeconds(), properties.esperaMaximaSegundos());
     }
 
     /**
@@ -59,11 +67,22 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                                    PlanDraftFromJsonAssembler assembler,
                                    JsonSupport jsonSupport,
                                    RestClient.Builder restClientBuilder) {
+        this(properties, promptBuilder, assembler, jsonSupport, restClientBuilder, restClientBuilder);
+    }
+
+    /** Con un cliente para el POST y otro para el sondeo (R-3). */
+    ReplicateTrainingPlanGenerator(ReplicateProperties properties,
+                                   PlanPromptBuilder promptBuilder,
+                                   PlanDraftFromJsonAssembler assembler,
+                                   JsonSupport jsonSupport,
+                                   RestClient.Builder postBuilder,
+                                   RestClient.Builder pollBuilder) {
         this.properties = properties;
         this.promptBuilder = promptBuilder;
         this.assembler = assembler;
         this.jsonSupport = jsonSupport;
-        this.restClient = restClientBuilder.build();
+        this.restClient = postBuilder.build();
+        this.pollClient = pollBuilder == postBuilder ? this.restClient : pollBuilder.build();
     }
 
     @Override
@@ -201,7 +220,20 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // se registra en INFO mas abajo, cuando la prediccion termina.
         log.debug("Replicate respondio (crudo): {}", rawBody);
 
-        var response = jsonSupport.read(rawBody, ReplicateResponse.class);
+        // R-1 (resiliencia de Replicate, 11/11/2026): el SOBRE de Replicate se leia fuera de todo manejo de errores.
+        // Un 2xx que no era su JSON (pagina de un proxy, cuerpo vacio, JSON cortado) lanzaba IllegalStateException,
+        // que nadie capturaba, y la semana se quedaba sin plan aunque el motor de reglas pudiera hacerla. Es un fallo
+        // del PROVEEDOR -el modelo no llego a proponer nada-, no del modelo: va por el mismo camino que un 5xx. El
+        // cuerpo crudo no se copia al mensaje ni al log (repite el prompt entero).
+        ReplicateResponse response;
+        try {
+            response = jsonSupport.read(rawBody, ReplicateResponse.class);
+        } catch (RuntimeException e) {
+            medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
+            log.warn("Replicate devolvio un cuerpo que no es una respuesta valida ({} caracteres)",
+                    rawBody == null ? 0 : rawBody.length());
+            throw new AiProviderUnavailableException("la respuesta de Replicate no se pudo interpretar");
+        }
         medicion.predictionId(response == null ? null : response.id());
 
         // Prefer: wait tiene un techo duro de 60 s del lado de Replicate. Con el
@@ -375,7 +407,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             }
 
             try {
-                var raw = restClient.get()
+                var raw = pollClient.get()
                         .uri(pollUrl)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
                         .retrieve()
