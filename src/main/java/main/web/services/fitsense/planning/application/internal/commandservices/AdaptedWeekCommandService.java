@@ -4,6 +4,7 @@ import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailab
 import main.web.services.fitsense.planning.domain.exceptions.InvalidPlanDraftException;
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationDecision;
+import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcome;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedPublication;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdaptedWeekResult;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
@@ -407,6 +408,9 @@ public class AdaptedWeekCommandService {
         String ultimaPropuesta = null;
         List<String> ultimosMotivos = List.of();
         short llamadas = 0;
+        // R-4: cuantas respuestas DEVOLVIO el proveedor. ai_calls cuenta las llamadas HECHAS (coste); si ninguna
+        // devolvio respuesta, la IA no propuso nada y la evidencia no puede decir «propuesta invalida».
+        int respuestas = 0;
 
         for (int intento = 1; intento <= AI_ATTEMPTS; intento++) {
             llamadas++;
@@ -427,6 +431,7 @@ public class AdaptedWeekCommandService {
                         : new AiRetryFeedback(ultimaPropuesta, ultimosMotivos, anteriores);
 
                 var cruda = fixGenerator.pedirRespuesta(context, derivation, full, feedback, intento);
+                respuestas++;
                 output = cruda.output();
                 snapshotJson = cruda.snapshotJson();
                 correcciones = fixGenerator.interpretar(output, context);
@@ -469,7 +474,27 @@ public class AdaptedWeekCommandService {
 
         log.warn("Sin correccion usable tras {} intento(s) para el usuario {}: {}",
                 llamadas, context.userId(), acumulados);
-        return sinPropuestaUsable(context, derivation, elegibles, exclusiones, llamadas);
+        var respaldo = sinPropuestaUsable(context, derivation, elegibles, exclusiones, llamadas);
+        if (respuestas > 0 || llamadas == 0) return respaldo;
+        // R-4: se llamo y el proveedor no devolvio NADA (caido, timeout, respuesta ilegible). La causa tecnica queda
+        // en la evidencia V32 con su prefijo, y la API dira RESPALDO_SIN_IA, no RESPALDO_PROPUESTA_IA_INVALIDA.
+        var causa = acumulados.isEmpty() ? "sin detalle" : new ArrayList<>(acumulados).get(acumulados.size() - 1);
+        return conNota(respaldo, AdaptationOutcome.NOTA_IA_NO_DISPONIBLE + recortar(causa));
+    }
+
+    /** El mismo intento con una nota mas en {@code correcciones_del_backend} (la evidencia V32). */
+    private static Intento conNota(Intento intento, String nota) {
+        var r = intento.resultado();
+        var notas = new ArrayList<>(r.conservacion().correccionesDelBackend());
+        notas.add(nota);
+        return new Intento(new AdaptedWeekResult(r.estado(), r.motivo(), r.semana(), r.source(),
+                r.conservacion().conCorreccionesDelBackend(notas), r.problemas(), r.codigos()),
+                intento.snapshotJson(), intento.llamadas());
+    }
+
+    /** La causa tecnica, sin crecer sin limite: es un texto de diagnostico, no un volcado. */
+    private static String recortar(String causa) {
+        return causa.length() <= 200 ? causa : causa.substring(0, 200) + "…";
     }
 
     /**

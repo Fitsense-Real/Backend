@@ -22,7 +22,8 @@ import java.util.Set;
  *       backend demostro antes de llamar que ninguna propuesta valida cabia (factibilidad previa); misma
  *       semana. {@link #motivos} da la cota (por ejemplo, «no baja de 28 min y la persona declaro 22»).</li>
  *   <li>{@code RESPALDO_PROPUESTA_IA_INVALIDA}: la IA propuso y todas sus propuestas se rechazaron.</li>
- *   <li>{@code RESPALDO_SIN_IA}: no se pudo consultar a la IA (apagada o cortacircuitos).</li>
+ *   <li>{@code RESPALDO_SIN_IA}: la IA no devolvio ninguna propuesta: no se pudo consultar (apagada o
+ *       cortacircuitos) o se consulto y el proveedor no respondio (caido, timeout, respuesta ilegible; R-4).</li>
  *   <li>{@code NO_FACTIBLE_POR_SEGURIDAD} / {@code NO_FACTIBLE}: no se publico ninguna semana (conservar
  *       habria vuelto a publicar lo que dolio, o la semana no pasaba la validacion).</li>
  *   <li>{@code PROGRESION_DEL_BACKEND} / {@code SIN_ADAPTACION}: no habia orden de adaptar.</li>
@@ -113,6 +114,11 @@ public record AdaptationOutcome(Long attemptId, LocalDate weekStartDate, Long re
     }
 
     public static final String NOTA_FACTIBILIDAD = "FACTIBILIDAD_PREVIA: ";
+    /**
+     * R-4 (resiliencia de Replicate, 11/11/2026): se llamo al proveedor y no devolvio ninguna respuesta. Lo deja
+     * {@code AdaptedWeekCommandService} en {@code correcciones_del_backend}, con la causa tecnica detras.
+     */
+    public static final String NOTA_IA_NO_DISPONIBLE = "IA_NO_DISPONIBLE: ";
     /** P-03, nivel 1: igual que {@code AdaptedWeekProducer.NOTA_REGENERACION_SEGURA}. */
     public static final String NOTA_REGENERACION_SEGURA = "REGENERACION_SEGURA: ";
 
@@ -156,9 +162,12 @@ public record AdaptationOutcome(Long attemptId, LocalDate weekStartDate, Long re
         var tipos = intervenciones == null ? List.<String>of() : Arrays.asList(intervenciones);
         boolean regeneracionSegura = correcciones != null && correcciones.stream()
                 .anyMatch(c -> c != null && c.startsWith(NOTA_REGENERACION_SEGURA));
+        boolean iaNoDisponible = correcciones != null && correcciones.stream()
+                .anyMatch(c -> c != null && c.startsWith(NOTA_IA_NO_DISPONIBLE));
         String resultado = switch (estado == null ? "" : estado) {
             case "APLICADA" -> "ADAPTACION_APLICADA";
-            case "RESPALDO" -> regeneracionSegura ? "REGENERACION_SEGURA_SUSTITUCION" : respaldo(imposibles, tipos, llamadasIa);
+            case "RESPALDO" -> regeneracionSegura ? "REGENERACION_SEGURA_SUSTITUCION"
+                    : respaldo(imposibles, tipos, iaNoDisponible ? 0 : llamadasIa);
             case "SIN_EFECTO" -> !tipos.isEmpty() && SIN_NADA_QUE_PEDIR.containsAll(tipos)
                     ? "CONSERVACION_DELIBERADA" : "SIN_CAMBIOS_VALIDOS";
             case "NO_FACTIBLE" -> tipos.contains("SEGURIDAD_ANTE_DOLOR")
