@@ -1,0 +1,16 @@
+{
+  "modo" : "IA real",
+  "duracion_min" : 0,
+  "llamadas" : 0,
+  "llamadas_con_error" : 0,
+  "predicciones_con_metricas" : 0,
+  "tokens_entrada" : 0,
+  "tokens_salida" : 0,
+  "coste_estimado_usd" : 0.0,
+  "latencia_media_ms" : 0,
+  "latencia_max_ms" : 0,
+  "motivo_parada" : null,
+  "violaciones_linaje" : 0,
+  "violaciones_comprobaciones" : [ "U01 s6: ai_calls V32 = 3, llamadas contadas = 0", "U02 s2: ai_calls V32 = 3, llamadas contadas = 0", "U02 s3: ai_calls V32 = 3, llamadas contadas = 0", "U02 s5: ai_calls V32 = 3, llamadas contadas = 0", "U04 s7: ai_calls V32 = 3, llamadas contadas = 0" ],
+  "cortes" : [ "U01: sin semana publicada tras la 6" ]
+}

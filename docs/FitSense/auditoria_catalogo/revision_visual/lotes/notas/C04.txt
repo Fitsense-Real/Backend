@@ -1,0 +1,25 @@
+687|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + banco Scott (no modelado)|Banco de predicador
+679|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+835|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+837|CONFIRMADO|MEDIA|equipment|ez barbell|ez barbell + banco Scott (no modelado)|Banco de predicador
+845|CONFIRMADO|MEDIA|equipment|ez barbell|ez barbell + banco Scott (no modelado)|Banco de predicador
+849|CONFIRMADO|MEDIA|equipment|ez barbell|ez barbell + banco Scott (no modelado)|Banco de predicador
+848|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+202|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+205|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+560|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+561|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+196|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o apoyado en un banco que no se exige
+846|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+239|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+1078|CONFIRMADO|MEDIA|equipment|body weight|bench|Manos en un banco
+1317|CONFIRMADO|MEDIA|equipment|body weight|parallel bars|Fondos en paralelas
+124|CONFIRMADO|MEDIA|equipment|band|band + bench o cajon|Pie trasero sobre un cajon
+237|CONFIRMADO|MEDIA|equipment|barbell|barbell + step platform|Sobre un step
+753|CONFIRMADO|MEDIA|equipment|dumbbell|dumbbell + bench|Pie trasero en un banco
+1288|CONFIRMADO|MEDIA|equipment|smith machine|smith machine + bench|Pie trasero en un banco
+229|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo con la barra arriba
+229|CONFIRMADO|ALTA|requires_overhead|false|true|Barra sostenida por encima de la cabeza
+274|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo con la barra arriba
+274|CONFIRMADO|ALTA|requires_overhead|false|true|Barra sostenida por encima de la cabeza
+227|PENDIENTE_CRITERIO|BAJA|equipment|barbell|barbell + bench (convencion de los sentados)|Sentado en un banco

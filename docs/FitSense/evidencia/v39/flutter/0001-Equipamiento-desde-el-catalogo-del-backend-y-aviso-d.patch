@@ -1,0 +1,521 @@
+From 3bdac7be8fe264dc974426687ae1ad430eb9dafd Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Fri, 30 Oct 2026 16:58:04 +0000
+Subject: [PATCH] Equipamiento desde el catalogo del backend y aviso de
+ limitaciones del plan
+
+- Lista GET /catalog/equipment-types (sin codigos escritos en la app):
+  espaldera, punto de anclaje, banco GHD, step y el resto.
+- Guarda equipmentCodes con PUT /users/me/profile partiendo del perfil actual
+  y comprueba que el backend devolvio los mismos codigos.
+- Muestra GET /users/me/plan/limitations sin obligar a comprar equipamiento.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01PvX24QjXVpGUTroQHgsTDQ
+---
+ lib/app/router/app_router.dart                |   7 ++
+ lib/app/router/app_routes.dart                |   4 +-
+ lib/app/router/route_names.dart               |   4 +-
+ lib/core/api/api_constants.dart               |   7 +-
+ .../equipment/data/equipment_models.dart      |  73 +++++++++++++
+ .../data/equipment_remote_datasource.dart     |  41 +++++++
+ .../presentation/equipment_providers.dart     |  23 ++++
+ .../equipment_selection_page.dart             | 103 ++++++++++++++++++
+ .../presentation/plan_limitations_card.dart   |  51 +++++++++
+ test/features/equipment/equipment_test.dart   |  90 +++++++++++++++
+ 10 files changed, 400 insertions(+), 3 deletions(-)
+ create mode 100644 lib/features/equipment/data/equipment_models.dart
+ create mode 100644 lib/features/equipment/data/equipment_remote_datasource.dart
+ create mode 100644 lib/features/equipment/presentation/equipment_providers.dart
+ create mode 100644 lib/features/equipment/presentation/equipment_selection_page.dart
+ create mode 100644 lib/features/equipment/presentation/plan_limitations_card.dart
+ create mode 100644 test/features/equipment/equipment_test.dart
+
+diff --git a/lib/app/router/app_router.dart b/lib/app/router/app_router.dart
+index b0657e5..41569b7 100644
+--- a/lib/app/router/app_router.dart
++++ b/lib/app/router/app_router.dart
+@@ -6,6 +6,7 @@ import '../../features/authentication/presentation/pages/register_page.dart';
+ import '../../features/authentication/presentation/pages/reset_password_page.dart';
+ import '../../features/authentication/presentation/pages/splash_page.dart';
+ import '../../features/dashboard/presentation/pages/dashboard_page.dart';
++import '../../features/equipment/presentation/equipment_selection_page.dart';
+ import 'app_routes.dart';
+ import 'route_names.dart';
+ 
+@@ -52,6 +53,12 @@ class AppRouter {
+         name: RouteNames.dashboard,
+         builder: (_, __) => const DashboardPage(),
+       ),
++
++      GoRoute(
++        path: AppRoutes.equipment,
++        name: RouteNames.equipment,
++        builder: (_, __) => const EquipmentSelectionPage(),
++      ),
+     ],
+   );
+ }
+\ No newline at end of file
+diff --git a/lib/app/router/app_routes.dart b/lib/app/router/app_routes.dart
+index effeb8e..20938f0 100644
+--- a/lib/app/router/app_routes.dart
++++ b/lib/app/router/app_routes.dart
+@@ -22,4 +22,6 @@ class AppRoutes {
+   static const progress = "/progress";
+ 
+   static const settings = "/settings";
+-}
+\ No newline at end of file
++
++  static const equipment = "/profile/equipment";
++}
+diff --git a/lib/app/router/route_names.dart b/lib/app/router/route_names.dart
+index d97faee..dd57e2d 100644
+--- a/lib/app/router/route_names.dart
++++ b/lib/app/router/route_names.dart
+@@ -22,4 +22,6 @@ class RouteNames {
+   static const progress = "progress";
+ 
+   static const settings = "settings";
+-}
+\ No newline at end of file
++
++  static const equipment = "equipment";
++}
+diff --git a/lib/core/api/api_constants.dart b/lib/core/api/api_constants.dart
+index 45162ac..b4df351 100644
+--- a/lib/core/api/api_constants.dart
++++ b/lib/core/api/api_constants.dart
+@@ -10,4 +10,9 @@ class ApiConstants {
+   static const String me = "/auth/me";
+   static const forgotPassword = "/auth/forgot-password";
+   static const resetPassword = "/auth/reset-password";
+-}
+\ No newline at end of file
++
++  // Perfil y catalogo (la app nunca codifica codigos de equipamiento a mano)
++  static const String profile = "/users/me/profile";
++  static const String equipmentTypes = "/catalog/equipment-types";
++  static const String planLimitations = "/users/me/plan/limitations";
++}
+diff --git a/lib/features/equipment/data/equipment_models.dart b/lib/features/equipment/data/equipment_models.dart
+new file mode 100644
+index 0000000..98d2252
+--- /dev/null
++++ b/lib/features/equipment/data/equipment_models.dart
+@@ -0,0 +1,73 @@
++/// Un tipo de equipamiento tal como lo publica GET /catalog/equipment-types.
++/// El codigo es el que se guarda en el perfil y usa la generacion del plan.
++class EquipmentType {
++  final String code;
++  final String nameEs;
++  final bool requiresGym;
++  final int displayOrder;
++
++  const EquipmentType({
++    required this.code,
++    required this.nameEs,
++    required this.requiresGym,
++    required this.displayOrder,
++  });
++
++  factory EquipmentType.fromJson(Map<String, dynamic> json) => EquipmentType(
++        code: json['code'] as String,
++        nameEs: (json['nameEs'] as String?) ?? json['code'] as String,
++        requiresGym: (json['requiresGym'] as bool?) ?? false,
++        displayOrder: (json['displayOrder'] as num?)?.toInt() ?? 0,
++      );
++}
++
++/// Algo que el plan no puede cubrir con lo declarado (GET /users/me/plan/limitations).
++class PlanLimitation {
++  final String type;
++  final String code;
++  final String title;
++  final String message;
++
++  /// Codigos que lo resolverian SI el usuario ya los tiene. Nunca una compra obligatoria.
++  final List<String> optionalEquipmentCodes;
++
++  const PlanLimitation({
++    required this.type,
++    required this.code,
++    required this.title,
++    required this.message,
++    required this.optionalEquipmentCodes,
++  });
++
++  factory PlanLimitation.fromJson(Map<String, dynamic> json) => PlanLimitation(
++        type: json['type'] as String,
++        code: json['code'] as String,
++        title: json['title'] as String,
++        message: json['message'] as String,
++        optionalEquipmentCodes:
++            ((json['optionalEquipmentCodes'] as List?) ?? const []).cast<String>(),
++      );
++}
++
++/// El PUT del perfil exige el perfil completo: se parte del GET y solo cambia
++/// equipmentCodes. Los campos de solo lectura del GET no se reenvian.
++Map<String, dynamic> profileUpdateWithEquipment(
++  Map<String, dynamic> profile,
++  List<String> equipmentCodes,
++) {
++  const soloLectura = {'userId', 'birthDate', 'age'};
++  final body = Map<String, dynamic>.from(profile)
++    ..removeWhere((k, _) => soloLectura.contains(k));
++  body['equipmentCodes'] = List<String>.from(equipmentCodes);
++  return body;
++}
++
++/// Orden de presentacion: primero lo que sirve en casa, despues lo de gimnasio.
++List<EquipmentType> sortedForDisplay(List<EquipmentType> types) {
++  final copy = List<EquipmentType>.from(types);
++  copy.sort((a, b) {
++    if (a.requiresGym != b.requiresGym) return a.requiresGym ? 1 : -1;
++    return a.displayOrder.compareTo(b.displayOrder);
++  });
++  return copy;
++}
+diff --git a/lib/features/equipment/data/equipment_remote_datasource.dart b/lib/features/equipment/data/equipment_remote_datasource.dart
+new file mode 100644
+index 0000000..2dbde1a
+--- /dev/null
++++ b/lib/features/equipment/data/equipment_remote_datasource.dart
+@@ -0,0 +1,41 @@
++import 'package:dio/dio.dart';
++
++import '../../../core/api/api_constants.dart';
++import 'equipment_models.dart';
++
++class EquipmentRemoteDataSource {
++  final Dio _dio;
++
++  const EquipmentRemoteDataSource(this._dio);
++
++  Future<List<EquipmentType>> equipmentTypes() async {
++    final response = await _dio.get(ApiConstants.equipmentTypes);
++    return (response.data as List)
++        .map((e) => EquipmentType.fromJson(e as Map<String, dynamic>))
++        .toList();
++  }
++
++  Future<Map<String, dynamic>> profile() async {
++    final response = await _dio.get(ApiConstants.profile);
++    return Map<String, dynamic>.from(response.data as Map);
++  }
++
++  /// Guarda los codigos y devuelve los que el backend tiene ahora, para
++  /// comprobar que llegaron tal cual.
++  Future<List<String>> saveEquipment(List<String> codes) async {
++    final actual = await profile();
++    final response = await _dio.put(
++      ApiConstants.profile,
++      data: profileUpdateWithEquipment(actual, codes),
++    );
++    return ((response.data as Map)['equipmentCodes'] as List? ?? const [])
++        .cast<String>();
++  }
++
++  Future<List<PlanLimitation>> planLimitations() async {
++    final response = await _dio.get(ApiConstants.planLimitations);
++    return ((response.data as Map)['limitations'] as List? ?? const [])
++        .map((e) => PlanLimitation.fromJson(e as Map<String, dynamic>))
++        .toList();
++  }
++}
+diff --git a/lib/features/equipment/presentation/equipment_providers.dart b/lib/features/equipment/presentation/equipment_providers.dart
+new file mode 100644
+index 0000000..944aa6c
+--- /dev/null
++++ b/lib/features/equipment/presentation/equipment_providers.dart
+@@ -0,0 +1,23 @@
++import 'package:flutter_riverpod/flutter_riverpod.dart';
++
++import '../../../core/providers/dio_provider.dart';
++import '../data/equipment_models.dart';
++import '../data/equipment_remote_datasource.dart';
++
++final equipmentDataSourceProvider = Provider<EquipmentRemoteDataSource>(
++  (ref) => EquipmentRemoteDataSource(ref.read(dioProvider)),
++);
++
++final equipmentTypesProvider = FutureProvider<List<EquipmentType>>(
++  (ref) async =>
++      sortedForDisplay(await ref.read(equipmentDataSourceProvider).equipmentTypes()),
++);
++
++final profileEquipmentProvider = FutureProvider<List<String>>((ref) async {
++  final profile = await ref.read(equipmentDataSourceProvider).profile();
++  return ((profile['equipmentCodes'] as List?) ?? const []).cast<String>();
++});
++
++final planLimitationsProvider = FutureProvider<List<PlanLimitation>>(
++  (ref) => ref.read(equipmentDataSourceProvider).planLimitations(),
++);
+diff --git a/lib/features/equipment/presentation/equipment_selection_page.dart b/lib/features/equipment/presentation/equipment_selection_page.dart
+new file mode 100644
+index 0000000..8a84444
+--- /dev/null
++++ b/lib/features/equipment/presentation/equipment_selection_page.dart
+@@ -0,0 +1,103 @@
++import 'package:flutter/material.dart';
++import 'package:flutter_riverpod/flutter_riverpod.dart';
++
++import '../data/equipment_models.dart';
++import 'equipment_providers.dart';
++import 'plan_limitations_card.dart';
++
++/// Seleccion del equipamiento real. La lista sale del catalogo del backend
++/// (incluye espaldera, punto de anclaje, banco GHD, step...): ningun codigo
++/// esta escrito en la app.
++class EquipmentSelectionPage extends ConsumerStatefulWidget {
++  const EquipmentSelectionPage({super.key});
++
++  @override
++  ConsumerState<EquipmentSelectionPage> createState() =>
++      _EquipmentSelectionPageState();
++}
++
++class _EquipmentSelectionPageState extends ConsumerState<EquipmentSelectionPage> {
++  Set<String>? _seleccion;
++  bool _guardando = false;
++  String? _error;
++
++  @override
++  Widget build(BuildContext context) {
++    final tipos = ref.watch(equipmentTypesProvider);
++    final actuales = ref.watch(profileEquipmentProvider);
++    final limitaciones = ref.watch(planLimitationsProvider);
++
++    return Scaffold(
++      appBar: AppBar(title: const Text('Tu equipamiento')),
++      body: tipos.when(
++        loading: () => const Center(child: CircularProgressIndicator()),
++        error: (e, _) => Center(child: Text('No se pudo cargar el equipamiento.')),
++        data: (lista) {
++          _seleccion ??= actuales.value?.toSet();
++          if (_seleccion == null) {
++            return const Center(child: CircularProgressIndicator());
++          }
++          final nombres = {for (final t in lista) t.code: t.nameEs};
++          return ListView(
++            padding: const EdgeInsets.all(16),
++            children: [
++              const Text('Marca solo lo que ya tienes. El plan se adapta a ello.'),
++              const SizedBox(height: 12),
++              limitaciones.maybeWhen(
++                data: (l) => PlanLimitationsCard(limitations: l, equipmentNames: nombres),
++                orElse: () => const SizedBox.shrink(),
++              ),
++              for (final t in lista) _fila(t),
++              if (_error != null)
++                Padding(
++                  padding: const EdgeInsets.only(top: 8),
++                  child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
++                ),
++              const SizedBox(height: 16),
++              FilledButton(
++                onPressed: _guardando ? null : _guardar,
++                child: Text(_guardando ? 'Guardando...' : 'Guardar'),
++              ),
++            ],
++          );
++        },
++      ),
++    );
++  }
++
++  Widget _fila(EquipmentType t) => CheckboxListTile(
++        key: ValueKey('equipo-${t.code}'),
++        value: _seleccion!.contains(t.code),
++        title: Text(t.nameEs),
++        subtitle: t.requiresGym ? const Text('Gimnasio') : null,
++        onChanged: (v) => setState(() {
++          if (v == true) {
++            _seleccion!.add(t.code);
++          } else {
++            _seleccion!.remove(t.code);
++          }
++        }),
++      );
++
++  Future<void> _guardar() async {
++    setState(() {
++      _guardando = true;
++      _error = null;
++    });
++    try {
++      final enviados = _seleccion!.toList()..sort();
++      final guardados = await ref.read(equipmentDataSourceProvider).saveEquipment(enviados);
++      // El backend normaliza (minusculas, sin duplicados): se comprueba que no se perdio nada.
++      final perdidos = enviados.where((c) => !guardados.contains(c)).toList();
++      if (perdidos.isNotEmpty) {
++        setState(() => _error = 'No se guardaron: ${perdidos.join(', ')}');
++      }
++      ref.invalidate(profileEquipmentProvider);
++      ref.invalidate(planLimitationsProvider);
++    } catch (_) {
++      setState(() => _error = 'No se pudo guardar. Intentalo de nuevo.');
++    } finally {
++      if (mounted) setState(() => _guardando = false);
++    }
++  }
++}
+diff --git a/lib/features/equipment/presentation/plan_limitations_card.dart b/lib/features/equipment/presentation/plan_limitations_card.dart
+new file mode 100644
+index 0000000..3e46a09
+--- /dev/null
++++ b/lib/features/equipment/presentation/plan_limitations_card.dart
+@@ -0,0 +1,51 @@
++import 'package:flutter/material.dart';
++
++import '../data/equipment_models.dart';
++
++/// Explica lo que el plan no puede cubrir. El texto viene del backend; la
++/// tarjeta no sugiere comprar nada, solo recuerda que se puede declarar lo
++/// que ya se tiene.
++class PlanLimitationsCard extends StatelessWidget {
++  final List<PlanLimitation> limitations;
++  final Map<String, String> equipmentNames;
++
++  const PlanLimitationsCard({
++    super.key,
++    required this.limitations,
++    this.equipmentNames = const {},
++  });
++
++  @override
++  Widget build(BuildContext context) {
++    if (limitations.isEmpty) return const SizedBox.shrink();
++    final theme = Theme.of(context);
++    return Card(
++      child: Padding(
++        padding: const EdgeInsets.all(16),
++        child: Column(
++          crossAxisAlignment: CrossAxisAlignment.start,
++          children: [
++            for (final l in limitations) ...[
++              Row(children: [
++                const Icon(Icons.info_outline),
++                const SizedBox(width: 8),
++                Expanded(child: Text(l.title, style: theme.textTheme.titleMedium)),
++              ]),
++              const SizedBox(height: 8),
++              Text(l.message),
++              if (l.optionalEquipmentCodes.isNotEmpty) ...[
++                const SizedBox(height: 8),
++                Text(
++                  'Si ya tienes alguno: '
++                  '${l.optionalEquipmentCodes.map((c) => equipmentNames[c] ?? c).join(', ')}.',
++                  style: theme.textTheme.bodySmall,
++                ),
++              ],
++              const SizedBox(height: 12),
++            ],
++          ],
++        ),
++      ),
++    );
++  }
++}
+diff --git a/test/features/equipment/equipment_test.dart b/test/features/equipment/equipment_test.dart
+new file mode 100644
+index 0000000..8efe3f1
+--- /dev/null
++++ b/test/features/equipment/equipment_test.dart
+@@ -0,0 +1,90 @@
++import 'package:dio/dio.dart';
++import 'package:fitsense_mobile/features/equipment/data/equipment_models.dart';
++import 'package:fitsense_mobile/features/equipment/data/equipment_remote_datasource.dart';
++import 'package:fitsense_mobile/features/equipment/presentation/equipment_providers.dart';
++import 'package:fitsense_mobile/features/equipment/presentation/equipment_selection_page.dart';
++import 'package:flutter/material.dart';
++import 'package:flutter_riverpod/flutter_riverpod.dart';
++import 'package:flutter_test/flutter_test.dart';
++
++/// Respuesta real de GET /catalog/equipment-types tras V39 (extracto).
++const catalogo = [
++  {'id': 1, 'code': 'body weight', 'nameEs': 'Peso corporal', 'requiresGym': false, 'displayOrder': 1},
++  {'id': 3, 'code': 'band', 'nameEs': 'Banda elástica', 'requiresGym': false, 'displayOrder': 3},
++  {'id': 40, 'code': 'step platform', 'nameEs': 'Step', 'requiresGym': false, 'displayOrder': 30},
++  {'id': 41, 'code': 'wall bars', 'nameEs': 'Espaldera', 'requiresGym': false, 'displayOrder': 32},
++  {'id': 42, 'code': 'anchor point', 'nameEs': 'Punto de anclaje', 'requiresGym': false, 'displayOrder': 33},
++  {'id': 43, 'code': 'ghd bench', 'nameEs': 'Banco GHD', 'requiresGym': true, 'displayOrder': 34},
++];
++
++class FakeDataSource extends EquipmentRemoteDataSource {
++  List<String>? guardado;
++  FakeDataSource() : super(Dio());
++
++  @override
++  Future<List<EquipmentType>> equipmentTypes() async =>
++      catalogo.map(EquipmentType.fromJson).toList();
++
++  @override
++  Future<Map<String, dynamic>> profile() async =>
++      {'userId': 7, 'age': 30, 'equipmentCodes': ['body weight']};
++
++  @override
++  Future<List<String>> saveEquipment(List<String> codes) async => guardado = codes;
++
++  @override
++  Future<List<PlanLimitation>> planLimitations() async => [
++        PlanLimitation.fromJson({
++          'type': 'SLOT',
++          'code': 'UPPER_PULL',
++          'title': 'Ejercicios de tracción',
++          'message': 'Con el equipamiento que indicaste no hay ejercicios de tracción. '
++              'No necesitas comprar nada.',
++          'optionalEquipmentCodes': ['band', 'wall bars', 'anchor point'],
++        })
++      ];
++}
++
++void main() {
++  test('el PUT conserva el perfil, cambia solo equipmentCodes y no reenvia lo de solo lectura', () {
++    final body = profileUpdateWithEquipment(
++      {'userId': 7, 'birthDate': '1990-01-01', 'age': 36, 'goalType': 'GENERAL_FITNESS',
++        'equipmentCodes': ['body weight'], 'allowHangingExercises': false},
++      ['body weight', 'wall bars'],
++    );
++    expect(body.containsKey('userId'), isFalse);
++    expect(body.containsKey('age'), isFalse);
++    expect(body['goalType'], 'GENERAL_FITNESS');
++    expect(body['allowHangingExercises'], isFalse);
++    expect(body['equipmentCodes'], ['body weight', 'wall bars']);
++  });
++
++  test('casa primero y luego gimnasio, por displayOrder', () {
++    final orden = sortedForDisplay(catalogo.reversed.map(EquipmentType.fromJson).toList());
++    expect(orden.last.code, 'ghd bench');
++    expect(orden.first.code, 'body weight');
++  });
++
++  testWidgets('lista los codigos del backend, explica la limitacion y guarda la seleccion',
++      (tester) async {
++    final fake = FakeDataSource();
++    await tester.pumpWidget(ProviderScope(
++      overrides: [equipmentDataSourceProvider.overrideWithValue(fake)],
++      child: const MaterialApp(home: EquipmentSelectionPage()),
++    ));
++    await tester.pumpAndSettle();
++
++    for (final nombre in ['Espaldera', 'Punto de anclaje', 'Banco GHD', 'Step']) {
++      expect(find.text(nombre), findsOneWidget);
++    }
++    expect(find.textContaining('No necesitas comprar nada'), findsOneWidget);
++    expect(find.textContaining('Banda elástica, Espaldera, Punto de anclaje'), findsOneWidget);
++
++    await tester.tap(find.byKey(const ValueKey('equipo-wall bars')));
++    await tester.pump();
++    await tester.scrollUntilVisible(find.text('Guardar'), 200);
++    await tester.tap(find.text('Guardar'));
++    await tester.pumpAndSettle();
++    expect(fake.guardado, ['body weight', 'wall bars']);
++  });
++}
+-- 
+2.43.0
+

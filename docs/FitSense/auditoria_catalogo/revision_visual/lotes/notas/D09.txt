@@ -1,0 +1,7 @@
+802|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell + banco Scott (no modelado)|Banco de predicador
+212|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench + rack|Tumbado en banco en un rack
+407|PROBABLE|MEDIA|movement_pattern|SHOULDER_EXTENSION|HORIZONTAL_PULL o SHOULDER_RAISE|Tiron horizontal con brazo extendido
+404|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco
+649|CONFIRMADO|MEDIA|movement_pattern|VERTICAL_PUSH|HORIZONTAL_PUSH|Press tumbado sobre balon
+649|CONFIRMADO|BAJA|requires_overhead|true|false|Press tumbado (restriccion de mas)
+187|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado en el suelo con las piernas sobre el banco

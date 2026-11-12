@@ -19,10 +19,61 @@ public record CandidateExercise(
          * que body_part mezcla: "upper arms" es tanto biceps como triceps, y
          * PUSH solo admite triceps y PULL solo biceps.
          */
-        String targetMuscle
+        String targetMuscle,
+
+        /**
+         * Patron de movimiento del Step 3A (V26). Es lo que decide a que slot de
+         * 4C pertenece el ejercicio; la traduccion esta en {@code MandatorySlot}.
+         * <p>
+         * Es un dato DISTINTO de bodyPartCode y no lo sustituye: «upper legs»
+         * mezcla sentadilla (KNEE_DOMINANT) con peso muerto (HIP_HINGE), que son
+         * dos slots obligatorios diferentes, y «back» mezcla remo
+         * (HORIZONTAL_PULL) con hiperextension (TRUNK_EXTENSION), que no es
+         * ningun slot. Por eso la cobertura de 4C no se puede calcular con la
+         * zona corporal, que es lo que ya usan V15 y el selector de reglas.
+         * <p>
+         * {@code null} posible: ejercicio sin clasificar. No se interpreta como
+         * «no cuenta para ningun slot» sino que se cuenta aparte, porque son dos
+         * cosas distintas y confundirlas infla la cobertura.
+         */
+        String movementPattern,
+
+        /**
+         * P-C2: {@code exercises.high_impact} (V10). {@code null} cuando el origen no lo informa (pruebas, datos
+         * antiguos): se trata como desconocido, nunca como "bajo impacto".
+         */
+        Boolean highImpact,
+
+        /**
+         * Auditoria v46 (P15-C, experimental): {@code exercises.is_isolation}. Solo lo usa {@code CoberturaDePatron}
+         * cuando el experimento esta activado; {@code null} = desconocido (se trata como multiarticular).
+         */
+        Boolean isolation
 ) {
     public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
+                             int difficulty, PrescriptionType defaultPrescription, String targetMuscle,
+                             String movementPattern, Boolean highImpact) {
+        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription, targetMuscle,
+                movementPattern, highImpact, null);
+    }
+
+    public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
+                             int difficulty, PrescriptionType defaultPrescription, String targetMuscle,
+                             String movementPattern) {
+        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription, targetMuscle,
+                movementPattern, null);
+    }
+
+    public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
                              int difficulty, PrescriptionType defaultPrescription) {
-        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription, null);
+        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription,
+                null, null, null);
+    }
+
+    public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
+                             int difficulty, PrescriptionType defaultPrescription,
+                             String targetMuscle) {
+        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription,
+                targetMuscle, null, null);
     }
 }

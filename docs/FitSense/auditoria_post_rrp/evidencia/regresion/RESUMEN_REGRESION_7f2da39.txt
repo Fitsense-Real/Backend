@@ -1,0 +1,318 @@
+commit: 7f2da39 (regresion completa: sh ./mvnw -o -B -ntp verify -Pintegration)
+[INFO] Tests run: 1218, Failures: 0, Errors: 0, Skipped: 1
+[INFO] Tests run: 525, Failures: 0, Errors: 0, Skipped: 43
+[INFO] BUILD SUCCESS
+
+Clases con pruebas ejecutadas:
+0 ? publicar sin IA: la semana conservada se publica y la evidencia dice la verdad
+0b ? cortacircuitos abierto: publica el respaldo sin invocar Replicate
+0c ? INC-CAT-1374: semanas que ya contienen el 1374
+1 ? flujo del MVP
+1 ? formula de la semana
+1 ? lectura y ejecucion: una sesion con un ejercicio inseguro se marca y no se puede hacer
+1 ? todas las principales disponibles: semana COMPLETA en los cuatro objetivos
+1 ? una reclasificacion no altera en silencio una sesion conservada
+1(a) ? solo una PROGRESION posterior al acortamiento, de la misma sesion, habilita la reincorporacion
+2 ? algunas principales factibles y otras no: se publica con las disponibles y secundarias
+2 ? complementos de cardio y movilidad en la adaptacion
+2 ? formula de la sesion y del ejercicio
+2 ? interrupciones y reintentos
+2 ? reparacion por version nueva
+3 ? la consulta de exposicion de solo lectura mide lo que el backend bloquea
+3 ? tiempo: las principales primero, las secundarias solo con lo que sobra
+3 ? transiciones invalidas e historial
+3 ? un ejercicio bloqueado por el participante
+3 ? una sola vez por entrenamiento
+4 ? ejecucion pendiente
+4 ? ninguna principal factible: semana segura con las secundarias
+4 ? seguridad
+4D v3.1 ? GAIN_MUSCLE
+4D v3.2: V24 admite la serie adicional del relleno de zona pequena solo cuando hace falta
+4D v3.4 + C-8: GAIN_MUSCLE genera planes validos en cada minuto de 30 a 75 (rejilla de 312 perfiles)
+4D v3.4: tope de colocaciones de GAIN_MUSCLE derivado del piso de V20 (30-75 min)
+4D v4: la dosis depende de la capacidad, no hay un esquema unico
+5 ? lo que recibe la adherencia
+5 ? restricciones y casos limite
+6 ? barrido: cada perfil recibe COMPLETO, PARCIAL o un NO_FACTIBLE explicado
+7 ? GAIN_MUSCLE con 4D v3.1: 30, 45 y 60 minutos
+ADMIN: hereda USER y ve la administracion
+Adaptacion por causas: falta de tiempo con contexto (A01), sin IA cuando no hay nada que pedir
+AdaptationOutcome: NO_FACTIBLE estructurado y compatible con la respuesta anterior
+Aislamiento: un USER nunca ve recursos de otro
+Analitica: cifras de las columnas existentes, poblacion del estudio
+C4/C6: auditoria de cruces entre grupo y slot
+Campana MVP: 8 usuarios x 8 semanas con IA real, adaptacion, progresion y reincorporacion
+Campana con Replicate real ? generacion y adaptacion en los cuatro objetivos
+Caso 1: un slot sin ningun ejercicio elegible
+Caso 2: cobertura fragil (1 o 2 opciones en algun slot)
+Caso 3: cobertura completa
+Caso 4: reintento de la IA
+Caso 5: el borrador del motor de reglas
+Cero dias: el slot no aparece en toda la semana
+Ciclo semanal concurrente: bloqueo de sesion por participante
+CicloSemanalBloqueo: conexion directa, clave por participante y fallo seguro
+Comparacion perfil a perfil: volcado de planes completos
+Continuidad semanal: generacion y copia con el mismo V15
+Contrato IA y V4-C: max_session_seconds solo con V4-C; historica identica
+Contrato de errores de la API: 401/400/404 con el cuerpo ApiErrorResource
+Copia semanal y mantenimiento sin IA: llamadas a la IA por escenario
+Correcciones tras Replicate real ? progresion apagada
+Correcciones tras Replicate real ? progresion encendida
+Cuentas y roles
+D1 ? 853 y 1117 salen de revision solo con su clasificacion revisada
+D8 ? la copia de una sesion acortada con autorizacion se publica; sin ella, rige V20
+D8 ? la herencia sigue tras un sin efecto o respaldo identico; se corta si cambia la sesion, sin D8 o con dolor
+D8 ? la herencia sigue tras una senalada sin cambios; el dolor no la aprovecha
+DEV-R: control del consumo real de Replicate por tokens
+Diagnostico V8C: sustituciones (patron por conjunto, musculo, distribucion, numero, dificultad)
+Dolor en el 135 sin sustituto de igual o menor dificultad, de extremo a extremo (limite + preferencia, C)
+Dolor en el 135 sin sustituto de igual o menor dificultad, de extremo a extremo (limite off)
+Dolor en el 135 sin sustituto de igual o menor dificultad, de extremo a extremo (limite on)
+E1/E2: la correccion de grupos conserva capacidad y publica
+El defecto: LOSE_WEIGHT no puede prescribir gemelos
+El desglose NO cambia el criterio de aceptacion
+El mapa de patrones y los datos degradados
+Endurecimiento
+Evaluacion ? generacion de 4-6 dias y V20 al 70 % exacto (motor de reglas, sin IA)
+Evaluacion final K20: 20 usuarios de extremo a extremo sobre la version candidata
+Evaluacion limpia ? 72 perfiles nuevos, 10 semanas con la progresion encendida
+FITSENSE_CORS_ORIGINS ? solo origenes exactos
+FIX-PR-1.2 ? el texto de cada intervencion concuerda con sus permisos
+Falta de tiempo: la intervencion depende de lo declarado (DISENO_ADAPTACION_CONTEXTUAL v0.3)
+H1 ? V8C multiconjunto (por defecto): el caso U04 de extremo a extremo
+H1 ? V8C: conservacion del patron (conjunto historico frente a multiconjunto candidato)
+H1 ? compatibilidad: regla historica CONJUNTO explicita (reversion)
+I: limitaciones del plan por equipamiento
+IA de generacion simulada con PLAN-HIST-1: la misma propuesta se rechaza por la V4 de siempre (minutos)
+IA de generacion simulada con PLAN-V4-0.1: 35 min declarados y > 2.070 s estimados -> V4 rechaza
+INC-P2D-01 ? V8C y la validacion estricta, juntas y de verdad
+INC-P2D-01 ? la semana acortada pasa la validacion estricta
+Investigacion ? factibilidad de 30-120 min por objetivo, nivel, dias y equipo (motor de reglas)
+Jerarquia ROLE_ADMIN > ROLE_USER tambien en @PreAuthorize
+Justificacion de la adaptacion: solo afirma lo que el sistema registra
+La cobertura no toca la dosis
+Laboratorio: estrategias A/B/C de SUST-SEG-1, descartes por etapa y casos sin sustituto (960 perfiles)
+Laboratorio: factibilidad de retirar solo el ejercicio que dolio (21 perfiles, validadores reales)
+Laboratorio: impacto del limite de dificultad en SUST-SEG-1 y exposicion en VARIANTE (960 perfiles)
+Laboratorio: los 22 perfiles de los 24 casos del 135 sin sustituto, de extremo a extremo
+Lectura ? planes existentes frente a la V24 por capacidades (A: hoy, B: progresion encendida)
+Lectura directa (sin Docker) ? planes existentes frente a la V24 por capacidades
+Limite de dificultad (candidato): solo con difficulty-guard=on, sin tocar la regla de patron
+Limite de dificultad (candidato, apagado por defecto): ningun sustituto mas dificil ante TOO_DIFFICULT o dolor
+Limite de dificultad (encendido solo aqui) ? TOO_DIFFICULT de extremo a extremo con IA simulada
+Limite de dificultad ? TOO_DIFFICULT: escenarios 1-12 con A/B/C (V8C real, H1 multiconjunto)
+Limite de dificultad ? dolor: casos A-G e I con A/B/C (SUST-SEG-1 real y V8C)
+Mensaje de la intervencion: intencion, sin prometer resultados
+Motor de reglas ? CASO A de la investigacion 30-120 (existia un plan valido y no se construia)
+Neon ? el bloqueo del ciclo usa el endpoint directo y una sesion estable (solo lectura)
+P-T2: message_shown lleva la intencion; el reason tecnico no cambia
+P2-D ? corrida de evidencia ? correccion real de Replicate (v16)
+P2-D ? las invariantes de V33 en la base, no en Java
+P2-D ? plan y evidencia, o ninguno de los dos (v2 ? 21/10/2026)
+P2-D ? tg_paa_coherencia rechaza al COMMIT, no en la sentencia
+P3: el texto publicado de un respaldo con sustitucion por seguridad describe el cambio
+PLAN-HIST-1 con ACORTAR: la traza registra la regla historica aplicada y los dos minutos
+PLAN-V4-0.1 en el ciclo real: techo en segundos estimados, persistencia y traza
+Pendientes de la progresion: recuperacion de series, carga y ciclos simultaneos
+Perfil fijo durante el estudio: se corrige antes del primer plan, despues no
+Perfil local: nunca contra Neon ni Railway, IA apagada
+Perfiles limite: 15 minutos, una sesion y siete dias
+Politica de planificacion versionada: catalogo, seleccion, V4-C, y traza
+Progresion al 100 % en dos semanas consecutivas; la adaptacion sigue en el 80 %
+Promocion a ADMIN: solo con autorizacion explicita
+Prompt de adaptacion V2 (experimental): factibilidad previa y compatibilidad con V1
+Prompt de adaptacion V2.1 (experimental): pertinencia por causa sin cambiar reglas
+R0548 (GM intermedio, casa, 7 dias, 75 min): la generacion inicial publica un plan valido (4D v3.4)
+Recuperacion de contrasena: token de un solo uso, caducidad, limite y sin enumeracion
+Referencias historicas de generacion: intactas
+Reincorporacion con IA real: adapta, cumple, progresa, reincorpora y se entrena
+Respaldo ? el motor de reglas genera semanas validas de 5 y 6 dias
+Respaldo de reglas: 5 y 6 dias de 60 minutos publican plan
+Respaldo forzado: con dolor y sustituto, sin dolor, y con dolor sin sustituto
+Retirada localizada (configuracion experimental): el 1373 sin sustituto se retira y la semana se publica
+Retirada localizada ante dolor (limite + preferencia C + retirada on): valida, rechazada por V20, por P-03 y por sesion no senalada
+Retirada localizada ante dolor (limite on + retirada on): valida, rechazada por V20, por P-03 y por sesion no senalada
+Retirada localizada pedida sin limite: queda inactiva y el respaldo es el de siempre
+Retirada localizada por dolor: V8C solo la admite si es exactamente lo autorizado
+Retirada localizada: APAGADA por defecto
+SafetyConflictPolicy: la causa sale de una bandera contra una restriccion, no de un id ausente
+Seguridad ? roles USER/ADMIN, aislamiento de datos y endurecimiento
+Sustitucion de mayor dificultad: lo que hoy permite el backend (sin cambiarlo)
+TrainingWeek: lunes a domingo, limites de mes y de ano, bisiestos y semana de referencia de las pruebas
+Traza V4-C: limite aplicado frente a minutos efectivos, contrastado con el validador real
+USER: sus funciones, nada de administracion
+Un dia: el caso del plan 4, que la cuenta de colocaciones escondia
+V15 ? cuenta como disponible solo lo que el objetivo puede prescribir
+V15 ? el relleno cambiado de grupo conserva capacidad y dosis y publica
+V15 conserva su proteccion
+V20 ? el piso es el 70 % exacto en segundos, sin redondeo
+V20 exacto: los perfiles que rompia la simulacion
+V34 ? V24 + V8C: solo la dosis autorizada y en rango; la generacion, intacta
+V36: correccion de ejercicios del catalogo segun su GIF
+V39: datos corregidos, equipamiento real y perfiles solo con peso corporal
+V4-C en el validador real (segundos estimados) frente a V4 historico
+V40: coherencia grupo, patron y slot (C4/C6)
+V41: coherencia grupo, patron y slot, segunda fase (C4/C6)
+V43 ? migracion sobre un esquema historico (V42) y reinicio
+V44 ? version de politica sobre un esquema historico (V43) y reinicio
+V44_1 ? codigos del NO_FACTIBLE sobre un esquema historico (V44) y reinicio
+V44_2 ? recuperacion de contrasena sobre un esquema historico (V44) y reinicio
+V4: brecha de redondeo de la historica frente a V4-C, con la duracion declarada = calculada
+V8C ? carga: solo la reduccion autorizada cuenta como adaptacion; lo demas se rechaza
+V8C ? dolor: sustituir o retirar, sin mas ejercicios ni mas volumen
+V8C ? la IA no sube series, repeticiones ni segundos en una sesion senalada, con o sin interruptores
+V8C ? retirar relleno si, estructural no, y sin tocar lo que queda (INC-P2D-01)
+V9 ? series minimas tambien en DURATION, sin exigir series donde pueden faltar
+Validacion multisemana: escenarios humanos con el ciclo real, en los cuatro objetivos
+Varios dias: el reparto que se quiere
+Zona horaria del usuario: plan vigente segun su dia local y vencimiento con horario de verano
+baja adherencia
+caida frente a la semana anterior
+cobertura: COMPLETO, PARCIAL o NO_FACTIBLE, solo por las principales
+ejercicio inseguro y reporte
+el productor
+la excepcion de V8C: solo la sustitucion obligatoria por seguridad, comprobada
+la politica de sustitucion
+main.web.services.fitsense.BaseDeProduccionBloqueadaTest
+main.web.services.fitsense.FitsenseApplicationIT
+main.web.services.fitsense.SpringBootEnSuiteUnitariaTest
+main.web.services.fitsense.adaptation.application.internal.commandservices.SinAjustePorcentualTest
+main.web.services.fitsense.adaptation.domain.services.AdaptationOrderDeciderTest
+main.web.services.fitsense.adaptation.interfaces.acl.AdaptationContextFacadeProyeccionTest
+main.web.services.fitsense.analytics.AbandonoIT
+main.web.services.fitsense.analytics.AdherenciaIT
+main.web.services.fitsense.analytics.AdherenciaRiesgoIT
+main.web.services.fitsense.analytics.application.DiasSinEntrenarTest
+main.web.services.fitsense.analytics.domain.services.AdherenciaSinPesosTest
+main.web.services.fitsense.analytics.domain.services.OmisionDeclaradaTest
+main.web.services.fitsense.analytics.domain.services.RegistrationCoverageTest
+main.web.services.fitsense.analytics.domain.services.RiesgoEscenariosTest
+main.web.services.fitsense.analytics.domain.services.SessionOutcomeIdentifierTest
+main.web.services.fitsense.execution.EjecucionEntrenamientosIT
+main.web.services.fitsense.execution.EjecucionReglasTest
+main.web.services.fitsense.iam.infrastructure.notification.PasswordResetNotifiersTest
+main.web.services.fitsense.lectura.SemillaLecturaIT
+main.web.services.fitsense.orchestation.A01AdaptacionRealIT
+main.web.services.fitsense.orchestation.AdaptacionCompletaIT
+main.web.services.fitsense.orchestation.C2ReproduccionN03IT
+main.web.services.fitsense.orchestation.CampanaP123Cohorte02IT
+main.web.services.fitsense.orchestation.DiagnosticoRespaldoMultisemanaIT
+main.web.services.fitsense.orchestation.LinajeIntegridadIT
+main.web.services.fitsense.orchestation.PoliticasP123IT
+main.web.services.fitsense.orchestation.ProgresionIT
+main.web.services.fitsense.orchestration.application.internal.WeeklyCycleAdjustmentTest
+main.web.services.fitsense.p2d.AdaptacionRegresionIT
+main.web.services.fitsense.p2d.ProteccionPlanesPublicadosIT
+main.web.services.fitsense.planning.BarridoGeneracionInicialIT
+main.web.services.fitsense.planning.CatalogoElegibleIT
+main.web.services.fitsense.planning.CatalogoV37IT
+main.web.services.fitsense.planning.DiagnosticoGeneracionJ03IT
+main.web.services.fitsense.planning.DiagnosticoV20ComposicionIT
+main.web.services.fitsense.planning.DuracionForzadaIT
+main.web.services.fitsense.planning.DuracionForzadaPlan60IT
+main.web.services.fitsense.planning.FactibilidadPorObjetivoIT
+main.web.services.fitsense.planning.GeneracionPorObjetivoIT
+main.web.services.fitsense.planning.GeneracionReferenciaCandidataIT
+main.web.services.fitsense.planning.GeneracionReferenciaIT
+main.web.services.fitsense.planning.GeneracionReferenciaV35IT
+main.web.services.fitsense.planning.GeneracionReferenciaV36IT
+main.web.services.fitsense.planning.GeneracionReferenciaV37IT
+main.web.services.fitsense.planning.GeneracionReferenciaV39IT
+main.web.services.fitsense.planning.GeneracionReferenciaV40IT
+main.web.services.fitsense.planning.ImpactoRestriccionesIT
+main.web.services.fitsense.planning.MigracionPropuesta1374IT
+main.web.services.fitsense.planning.Plan55CardioIT
+main.web.services.fitsense.planning.Plan58FuerzaIT
+main.web.services.fitsense.planning.Plan60HipertrofiaIT
+main.web.services.fitsense.planning.ProgresionFactibilidadIT
+main.web.services.fitsense.planning.ProgresionReservaIT
+main.web.services.fitsense.planning.Usuario31ReproduccionIT
+main.web.services.fitsense.planning.Usuario31V37IT
+main.web.services.fitsense.planning.application.internal.commandservices.AdaptedWeekCommandServiceTest
+main.web.services.fitsense.planning.application.internal.commandservices.PlanGenerationPipelineCircuitBreakerTest
+main.web.services.fitsense.planning.application.internal.commandservices.PreviousWeekRecordedTest
+main.web.services.fitsense.planning.application.internal.commandservices.PrimeraSemanaTest
+main.web.services.fitsense.planning.application.internal.commandservices.PublishAdaptedTest
+main.web.services.fitsense.planning.application.internal.commandservices.Reincorporacion4DTest
+main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogServiceContencion1374Test
+main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogServiceRetencionTest
+main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcomeTest
+main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicyTest
+main.web.services.fitsense.planning.domain.model.valueobjects.MvpClaseDosisTest
+main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicyTest
+main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfileDeclaradasTest
+main.web.services.fitsense.planning.domain.services.AdaptationEvidenceMapperTest
+main.web.services.fitsense.planning.domain.services.AdaptedWeekProducerTest
+main.web.services.fitsense.planning.domain.services.AnalisisSustitucion1373IT
+main.web.services.fitsense.planning.domain.services.ConservationValidatorTest
+main.web.services.fitsense.planning.domain.services.FactibilidadPreviaIATest
+main.web.services.fitsense.planning.domain.services.PlanDraftNormalizerDuracionTest
+main.web.services.fitsense.planning.domain.services.internal.CapacidadesPorObjetivoTest
+main.web.services.fitsense.planning.domain.services.internal.CardioPorSesionTest
+main.web.services.fitsense.planning.domain.services.internal.CatalogEligibilityPolicyTest
+main.web.services.fitsense.planning.domain.services.internal.CatalogoV15CoherenciaTest
+main.web.services.fitsense.planning.domain.services.internal.FuerzaPorSlotTest
+main.web.services.fitsense.planning.domain.services.internal.GoalFeasibilityPolicyTest
+main.web.services.fitsense.planning.domain.services.internal.SessionFixApplierTest
+main.web.services.fitsense.planning.domain.services.internal.SlotCoverage4CTest
+main.web.services.fitsense.planning.domain.services.internal.SlotCoverageDistinctIdsTest
+main.web.services.fitsense.planning.domain.services.internal.SustitucionSeguridadTest
+main.web.services.fitsense.planning.domain.services.internal.WeekDerivationBuilderTest
+main.web.services.fitsense.planning.domain.services.internal.WeeklySlotDistributionTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.AirCircuitBreakerTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.MinExercisesPerSessionTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.PistasDeReintentoTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.PlanDraftOverflowTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshotDosisTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.PromptCapacidadesTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateSchemaRoutingTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTimingInstrumentationTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTimingTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixFromJsonAssemblerTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixInputSnapshotTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixJsonSchemaTest
+main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilderTest
+main.web.services.fitsense.planning.infrastructure.generation.rules.ExerciseSelectorEstructuralTest
+main.web.services.fitsense.planning.infrastructure.validation.StrictValidationAdapterTest
+main.web.services.fitsense.profiling.domain.model.aggregates.PoliticaP01DuracionMinimaTest
+main.web.services.fitsense.profiling.domain.model.valueobjects.MovementAllowancesTest
+main.web.services.fitsense.shared.domain.model.valueobjects.EvidenceRuleTest
+omisiones seguidas
+omitir un entrenamiento
+sobreesfuerzo, nivel maximo y abandono
+validadores: V23, V24 extendida y V25 dicen lo mismo que el generador
+
+Clases con pruebas omitidas (opt-in):
+1 DEV-R: control del consumo real de Replicate por tokens
+1 main.web.services.fitsense.planning.GeneracionReferenciaCandidataIT
+1 main.web.services.fitsense.planning.ImpactoRestriccionesIT
+1 main.web.services.fitsense.planning.ProgresionFactibilidadIT
+1 main.web.services.fitsense.planning.DiagnosticoGeneracionJ03IT
+2 main.web.services.fitsense.planning.DiagnosticoV20ComposicionIT
+3 Evaluacion ? generacion de 4-6 dias y V20 al 70 % exacto (motor de reglas, sin IA)
+1 main.web.services.fitsense.planning.BarridoGeneracionInicialIT
+1 main.web.services.fitsense.planning.ProgresionReservaIT
+2 main.web.services.fitsense.planning.domain.services.AnalisisSustitucion1373IT
+1 Laboratorio: impacto del limite de dificultad en SUST-SEG-1 y exposicion en VARIANTE (960 perfiles)
+1 Laboratorio: estrategias A/B/C de SUST-SEG-1, descartes por etapa y casos sin sustituto (960 perfiles)
+2 Investigacion ? factibilidad de 30-120 min por objetivo, nivel, dias y equipo (motor de reglas)
+1 P2-D ? corrida de evidencia ? correccion real de Replicate (v16)
+3 P2-D ? las invariantes de V33 en la base, no en Java
+2 P2-D ? plan y evidencia, o ninguno de los dos (v2 ? 21/10/2026)
+2 P2-D ? tg_paa_coherencia rechaza al COMMIT, no en la sentencia
+1 Neon ? el bloqueo del ciclo usa el endpoint directo y una sesion estable (solo lectura)
+1 Lectura directa (sin Docker) ? planes existentes frente a la V24 por capacidades
+1 Lectura ? planes existentes frente a la V24 por capacidades (A: hoy, B: progresion encendida)
+1 main.web.services.fitsense.lectura.SemillaLecturaIT
+2 main.web.services.fitsense.orchestation.CampanaP123Cohorte02IT
+1 Evaluacion final K20: 20 usuarios de extremo a extremo sobre la version candidata
+1 main.web.services.fitsense.orchestation.A01AdaptacionRealIT
+1 Evaluacion limpia ? 72 perfiles nuevos, 10 semanas con la progresion encendida
+1 Laboratorio: factibilidad de retirar solo el ejercicio que dolio (21 perfiles, validadores reales)
+1 main.web.services.fitsense.orchestation.DiagnosticoRespaldoMultisemanaIT
+1 Reincorporacion con IA real: adapta, cumple, progresa, reincorpora y se entrena
+1 Campana MVP: 8 usuarios x 8 semanas con IA real, adaptacion, progresion y reincorporacion
+1 Campana con Replicate real ? generacion y adaptacion en los cuatro objetivos
+1 Comparacion perfil a perfil: volcado de planes completos
+2 Validacion multisemana: escenarios humanos con el ciclo real, en los cuatro objetivos
+1 Laboratorio: los 22 perfiles de los 24 casos del 135 sin sustituto, de extremo a extremo

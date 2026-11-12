@@ -1,0 +1,4 @@
+prediction_id,user_id,week,attempt,estado,modelo,version,tokens_entrada,tokens_salida,predict_time_s,total_ms_backend,resultado,coste_estimado_usd
+yzfjxe2f35rmr0d1hz68qd2yq0,3,4,1,succeeded,openai/gpt-5-structured,hidden,8605,3315,29.42,30602,SUCCEEDED,0.01
+rgqjsqp3hsrmr0d1hz68t2rayg,3,4,2,succeeded,openai/gpt-5-structured,hidden,9302,4439,38.21,39183,SUCCEEDED,0.01
+0a5g9wjza9rmw0d1hz6rn98nj8,3,6,1,succeeded,openai/gpt-5-structured,hidden,8507,2467,22.74,23437,SUCCEEDED,0.01

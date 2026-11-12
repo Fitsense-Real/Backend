@@ -1,0 +1,57 @@
+corrida_existente,aspecto,celdas,celdas_distintas,perfiles_distintos
+O_S,A1_generacion,20,0,-
+O_S,A2_personalizacion_restricciones,20,0,-
+O_S,A3_registro_ejecucion,20,0,-
+O_S,A4_adherencia,20,0,-
+O_S,A5_adaptacion_ia,20,0,-
+O_S,A6_mantenimiento,20,0,-
+O_S,A7_progresion,20,2,O03 FALLO->APROBADO;O14 FALLO->APROBADO
+O_S,A8_reincorporacion,20,1,O19 FALLO->APROBADO
+O_S,A9_continuidad,20,0,-
+O_S,A10_seguridad_integridad,20,0,-
+O_S,fichero semanas.csv,-,0,identico byte a byte
+O_S,fichero adaptaciones.csv,-,0,identico byte a byte
+O_S,fichero pasos_progresion.csv,-,0,identico byte a byte
+O_S,fichero huella_normalizada.txt,-,0,identico byte a byte
+O_Sp,A1_generacion,20,0,-
+O_Sp,A2_personalizacion_restricciones,20,0,-
+O_Sp,A3_registro_ejecucion,20,0,-
+O_Sp,A4_adherencia,20,0,-
+O_Sp,A5_adaptacion_ia,20,0,-
+O_Sp,A6_mantenimiento,20,0,-
+O_Sp,A7_progresion,20,2,O03 FALLO->APROBADO;O14 FALLO->APROBADO
+O_Sp,A8_reincorporacion,20,1,O19 FALLO->APROBADO
+O_Sp,A9_continuidad,20,0,-
+O_Sp,A10_seguridad_integridad,20,0,-
+O_Sp,fichero semanas.csv,-,0,identico byte a byte
+O_Sp,fichero adaptaciones.csv,-,0,identico byte a byte
+O_Sp,fichero pasos_progresion.csv,-,0,identico byte a byte
+O_Sp,fichero huella_normalizada.txt,-,0,identico byte a byte
+O_D,A1_generacion,20,0,-
+O_D,A2_personalizacion_restricciones,20,0,-
+O_D,A3_registro_ejecucion,20,0,-
+O_D,A4_adherencia,20,0,-
+O_D,A5_adaptacion_ia,20,0,-
+O_D,A6_mantenimiento,20,0,-
+O_D,A7_progresion,20,0,-
+O_D,A8_reincorporacion,20,0,-
+O_D,A9_continuidad,20,0,-
+O_D,A10_seguridad_integridad,20,0,-
+O_D,fichero semanas.csv,-,0,identico byte a byte
+O_D,fichero adaptaciones.csv,-,0,identico byte a byte
+O_D,fichero pasos_progresion.csv,-,0,identico byte a byte
+O_D,fichero huella_normalizada.txt,-,0,identico byte a byte
+O_HIST,A1_generacion,20,0,-
+O_HIST,A2_personalizacion_restricciones,20,0,-
+O_HIST,A3_registro_ejecucion,20,0,-
+O_HIST,A4_adherencia,20,0,-
+O_HIST,A5_adaptacion_ia,20,0,-
+O_HIST,A6_mantenimiento,20,0,-
+O_HIST,A7_progresion,20,0,-
+O_HIST,A8_reincorporacion,20,0,-
+O_HIST,A9_continuidad,20,0,-
+O_HIST,A10_seguridad_integridad,20,0,-
+O_HIST,fichero semanas.csv,-,0,identico byte a byte
+O_HIST,fichero adaptaciones.csv,-,0,identico byte a byte
+O_HIST,fichero pasos_progresion.csv,-,0,identico byte a byte
+O_HIST,fichero huella_normalizada.txt,-,0,identico byte a byte

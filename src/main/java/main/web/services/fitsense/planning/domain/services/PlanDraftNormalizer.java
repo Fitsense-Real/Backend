@@ -61,6 +61,7 @@ public class PlanDraftNormalizer {
                         workout.exercises().stream()
                                 .map(exercise -> normalizeExercise(exercise, catalogo, context, correcciones))
                                 .toList()))
+                .map(workout -> conDuracionCalculada(workout, context, correcciones))
                 .toList();
 
         if (correcciones.isEmpty()) return new Result(draft, List.of());
@@ -72,6 +73,28 @@ public class PlanDraftNormalizer {
         return new Result(new PlanDraft(draft.source(), draft.modelName(), draft.planName(),
                 draft.declaredTotalVolume(), draft.rationale(), workouts), List.copyOf(correcciones));
     }
+
+    /**
+     * Orden de optimizacion (31/10/2026), B2: la duracion declarada la calcula el backend con el
+     * estimador de V17 a partir del contenido; no se confia en los minutos que estima la IA (11 de
+     * los rechazos de las 48 predicciones reales eran V17). V4 y el techo de minutos de ACORTAR se
+     * comprueban asi sobre la duracion real.
+     */
+    private static PlanDraft.DraftWorkout conDuracionCalculada(PlanDraft.DraftWorkout workout,
+                                                               PlanGenerationContext context,
+                                                               List<String> correcciones) {
+        if (context.prescription() == null || workout.exercises() == null || workout.exercises().isEmpty())
+            return workout;
+        int calculados = ESTIMADOR.estimateMinutes(workout, context.prescription());
+        if (calculados == workout.expectedDurationMinutes()) return workout;
+        correcciones.add("DURACION: el entrenamiento del %s declaraba %d min y su contenido dura %d; se usa %d."
+                .formatted(workout.scheduledDate(), workout.expectedDurationMinutes(), calculados, calculados));
+        return new PlanDraft.DraftWorkout(workout.scheduledDate(), workout.focus(), workout.name(), calculados,
+                workout.exercises());
+    }
+
+    /** Sin estado: el mismo calculo de V17 y V20. */
+    private static final SessionDurationEstimator ESTIMADOR = new SessionDurationEstimator();
 
     private PlanDraft.DraftExercise normalizeExercise(PlanDraft.DraftExercise exercise,
                                                       Map<Long, CandidateExercise> catalogo,

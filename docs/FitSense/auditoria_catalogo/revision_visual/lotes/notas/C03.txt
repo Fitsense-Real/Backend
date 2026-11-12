@@ -1,0 +1,35 @@
+171|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+204|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+206|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+207|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+209|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+210|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+248|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+690|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado en un banco que no se exige
+250|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+252|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+732|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+331|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|Una rodilla en el suelo
+371|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado en el suelo
+797|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+834|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+840|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+841|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+842|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+1242|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+208|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+245|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+369|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+370|CONFIRMADO|MEDIA|equipment|sin banco|+ bench|Tumbado o recostado en un banco que no se exige
+847|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+251|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+330|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+244|CONFIRMADO|MEDIA|equipment|barbell|barbell + banco Scott (no modelado)|Banco de predicador
+249|CONFIRMADO|MEDIA|equipment|barbell|barbell + banco Scott (no modelado)|Banco de predicador
+398|CONFIRMADO|MEDIA|equipment|cable|cable + banco Scott (no modelado)|Banco de predicador
+403|CONFIRMADO|MEDIA|equipment|cable|cable + banco Scott (no modelado)|Banco de predicador
+411|CONFIRMADO|MEDIA|equipment|cable|cable + banco Scott (no modelado)|Banco de predicador
+441|CONFIRMADO|MEDIA|equipment|cable|cable + banco Scott (no modelado)|Banco de predicador
+445|CONFIRMADO|MEDIA|equipment|cable|cable + banco Scott (no modelado)|Banco de predicador
+447|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+562|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco

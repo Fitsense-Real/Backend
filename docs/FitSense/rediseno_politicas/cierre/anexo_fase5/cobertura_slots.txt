@@ -1,0 +1,15 @@
+HIST_final
+   GAIN_MUSCLE {'planes': 945}
+   GENERAL_FITNESS {'planes': 945}
+   INCREASE_STRENGTH {'planes': 945}
+   LOSE_WEIGHT {'planes': 945, 'sin_cadera': 57, 'sin_empuje': 72, 'sin_rodilla': 42}
+REV2_final
+   GAIN_MUSCLE {'planes': 945}
+   GENERAL_FITNESS {'planes': 945, 'sin_cadera': 6}
+   INCREASE_STRENGTH {'planes': 945, 'sin_cadera': 4}
+   LOSE_WEIGHT {'planes': 945, 'sin_cadera': 448, 'sin_rodilla': 184}
+barrido_REV2_e2e8152
+   GAIN_MUSCLE {'planes': 945}
+   GENERAL_FITNESS {'planes': 945, 'sin_cadera': 6}
+   INCREASE_STRENGTH {'planes': 945, 'sin_cadera': 4}
+   LOSE_WEIGHT {'planes': 945, 'sin_cadera': 117, 'sin_rodilla': 94}

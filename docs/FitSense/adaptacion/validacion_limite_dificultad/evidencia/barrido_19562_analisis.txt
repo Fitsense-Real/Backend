@@ -1,0 +1,18 @@
+filas 19562 19562
+A y B frente al barrido anterior (perfil, fecha, ejercicio, sustituto A, sustituto B) distintos: 0
+HISTORICA {'IGUAL': 13438, 'MAYOR': 2469, 'MENOR': 3264, 'SIN_SUSTITUTO': 391}
+LIMITE {'IGUAL': 15881, 'MENOR': 3266, 'SIN_SUSTITUTO': 415}
+LIMITE_Y_PREFERENCIA {'IGUAL': 18758, 'MENOR': 389, 'SIN_SUSTITUTO': 415}
+B vs C: misma eleccion 16659 distinta 2903
+ cambios B->C {('MENOR', 'IGUAL'): 2877, ('MENOR', 'MENOR'): 26}
+HISTORICA con sustituto 19171 misma zona 18027 mismo patron 18293 mismo musculo 17487
+LIMITE con sustituto 19147 misma zona 17979 mismo patron 18197 mismo musculo 17398
+LIMITE_Y_PREFERENCIA con sustituto 19147 misma zona 17979 mismo patron 18197 mismo musculo 17398
+A->B cambian de sustituto 2445 pierden misma zona 24 pierden patron 72 pierden musculo 65 ganan patron 0
+descartes totales por etapa: {'ES_EL_MISMO': 0, 'MISMO_SLOT': 5477373, 'MISMA_PRESCRIPCION': 742219, 'MISMO_COMPLEMENTO': 55341, 'ZONA_DEL_ENFOQUE': 345902, 'BRAZO_DEL_ENFOQUE': 12010, 'NO_EN_REVISION': 10083, 'NO_EN_LA_SESION_NI_CONTIGUO': 39835, 'DIFICULTAD_NO_MAYOR': 154146}
+sin sustituto B 415 de ellos ya sin sustituto en A 391
+por ejercicio (solo nuevos): Counter({'135': 24})
+nivel {'ADVANCED': {'n': 6600, 'A_mayor': 1167, 'B_sin_nuevo': 11, 'C_menor': 243, 'B_menor': 1918}, 'BEGINNER': {'n': 6366, 'A_mayor': 0, 'B_sin_nuevo': 0, 'C_menor': 0, 'B_menor': 0}, 'INTERMEDIATE': {'n': 6596, 'A_mayor': 1302, 'B_sin_nuevo': 13, 'C_menor': 146, 'B_menor': 1348}}
+objetivo {'GAIN_MUSCLE': {'n': 4930, 'A_mayor': 763, 'B_sin_nuevo': 5, 'C_menor': 115, 'B_menor': 936}, 'GENERAL_FITNESS': {'n': 5509, 'A_mayor': 609, 'B_sin_nuevo': 7, 'C_menor': 116, 'B_menor': 878}, 'INCREASE_STRENGTH': {'n': 5080, 'A_mayor': 706, 'B_sin_nuevo': 7, 'C_menor': 109, 'B_menor': 888}, 'LOSE_WEIGHT': {'n': 4043, 'A_mayor': 391, 'B_sin_nuevo': 5, 'C_menor': 49, 'B_menor': 564}}
+equipo {'CASA_MANCUERNAS_BANDAS': {'n': 5916, 'A_mayor': 702, 'B_sin_nuevo': 24, 'C_menor': 94, 'B_menor': 1012}, 'CASA_PESO_CORPORAL': {'n': 5981, 'A_mayor': 835, 'B_sin_nuevo': 0, 'C_menor': 266, 'B_menor': 488}, 'GIMNASIO': {'n': 7665, 'A_mayor': 932, 'B_sin_nuevo': 0, 'C_menor': 29, 'B_menor': 1766}}
+perfiles con alguna subida en A 573 perfiles con algun nuevo sin sustituto en B 22

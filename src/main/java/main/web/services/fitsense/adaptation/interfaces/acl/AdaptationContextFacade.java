@@ -1,14 +1,17 @@
 package main.web.services.fitsense.adaptation.interfaces.acl;
 
 import main.web.services.fitsense.adaptation.domain.model.commands.DecideWeeklyAdjustmentCommand;
+import main.web.services.fitsense.adaptation.domain.model.valueobjects.AdaptationOutcome;
 import main.web.services.fitsense.adaptation.domain.model.commands.LinkResultingPlanCommand;
 import main.web.services.fitsense.adaptation.domain.model.commands.RecordInterventionOutcomeCommand;
 import main.web.services.fitsense.adaptation.domain.services.UserInterventionCommandService;
+import main.web.services.fitsense.adaptation.infrastructure.persistence.jpa.repositories.UserInterventionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,9 +23,29 @@ import java.util.Optional;
 public class AdaptationContextFacade {
 
     private final UserInterventionCommandService commandService;
+    private final UserInterventionRepository interventionRepository;
 
+    /** Para pruebas que construyen el facade a mano: sin consulta del plan producido. */
     public AdaptationContextFacade(UserInterventionCommandService commandService) {
+        this(commandService, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public AdaptationContextFacade(UserInterventionCommandService commandService,
+                                   UserInterventionRepository interventionRepository) {
         this.commandService = commandService;
+        this.interventionRepository = interventionRepository;
+    }
+
+    /**
+     * El plan que ya produjo esa intervencion, si lo produjo. Hace idempotente
+     * el ciclo semanal: un segundo ciclo sobre la misma semana medida no vuelve
+     * a publicar.
+     */
+    @Transactional(readOnly = true)
+    public Optional<Long> resultingPlanOf(Long interventionId) {
+        if (interventionRepository == null || interventionId == null) return Optional.empty();
+        return interventionRepository.findById(interventionId).map(i -> i.getResultingPlanId());
     }
 
     /** Vacio si no habia nada que ajustar: primera semana o semana sin plan. */
@@ -45,9 +68,23 @@ public class AdaptationContextFacade {
                 measuredPlanId, adherenceAfterPct));
     }
 
+    /**
+     * PROYECCION, no copia. La orden de dentro lleva seis campos por sesion
+     * senalada; cruzan dos. Los otros cuatro -fecha, cumplimiento, motivo y
+     * RPE- son del contexto de adaptacion, y planning los obtiene de
+     * {@code context.previousWeek()} por el mismo identificador cuando los
+     * necesita para el prompt.
+     */
     private static AdjustmentOrderView toView(UserInterventionCommandService.AdjustmentResult result) {
         var intervention = result.intervention();
         var decision = result.decision();
+        var orden = result.orden();
+
+        var senaladas = orden == null ? List.<AdjustmentOrderView.TargetedSessionView>of()
+                : orden.sessions().stream()
+                .map(s -> new AdjustmentOrderView.TargetedSessionView(
+                        s.plannedWorkoutId(), s.intervencion()))
+                .toList();
 
         return new AdjustmentOrderView(
                 intervention.getId(),
@@ -65,6 +102,8 @@ public class AdaptationContextFacade {
                 intervention.getTriggerSkipReason() == null ? null
                         : intervention.getTriggerSkipReason().name(),
                 decision.distributionHint(),
-                decision.message());
+                decision.message(),
+                orden == null ? AdaptationOutcome.NO_CHANGE.name() : orden.outcome().name(),
+                senaladas);
     }
 }

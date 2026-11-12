@@ -12,7 +12,8 @@ public class AuthenticatedUserResourceFromEntityAssembler {
                 entity.getId(),
                 entity.emailAddress(),
                 entity.getName().fullName(),
-                token
+                token,
+                entity.getRole().name()
         );
     }
 }

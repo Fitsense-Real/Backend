@@ -1,0 +1,3 @@
+etiqueta,operacion,user_id,intento,latencia_ms,rechazos_previos,error
+U02 · s3,ADAPTACION,1,1,30564,,
+U02 · s5,ADAPTACION,1,1,36145,,

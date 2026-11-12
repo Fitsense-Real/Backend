@@ -27,7 +27,8 @@ public class ExternalPlanningService {
                         workout.expectedDurationMinutes(),
                         workout.assignedExercises(),
                         workout.status(),
-                        workout.skipReason()))
+                        workout.skipReason(),
+                        workout.planId()))
                 .toList();
 
         return new WeekPlanInput(week.planId(), week.weekNumber(), workouts);

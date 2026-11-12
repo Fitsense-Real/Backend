@@ -41,13 +41,16 @@ public class WeeklyCycleController {
         var newWeek = TrainingWeek.containing(LocalDate.now());
         var measuredWeek = newWeek.previous();
 
-        var planId = weeklyCycleService.runFor(principal.getUserId(),
+        var resultado = weeklyCycleService.ejecutar(principal.getUserId(),
                 measuredWeek.startDate(), newWeek.startDate());
+        var planId = resultado.planId();
 
         var response = new LinkedHashMap<String, Object>();
         response.put("measuredWeekStart", measuredWeek.startDate().toString());
         response.put("newWeekStart", newWeek.startDate().toString());
         response.put("generatedPlanId", planId.orElse(null));
+        // EN_CURSO: otro ciclo de esta persona esta en marcha; no se publico nada en esta llamada.
+        response.put("cycleStatus", resultado.estado().name());
         return ResponseEntity.ok(response);
     }
 }

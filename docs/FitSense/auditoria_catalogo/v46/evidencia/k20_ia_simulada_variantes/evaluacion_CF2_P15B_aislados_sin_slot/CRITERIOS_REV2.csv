@@ -1,0 +1,25 @@
+criterio,dimension,cohorte,comprobacion,valor,resultado
+A-1,FACTIBILIDAD,N,CF2_P15B_aislados_sin_slot_S_N: 0 DEFECTO (PASS + ESPERADO_SIN_PLAN = todos),PASS 19 · ESPERADO_SIN_PLAN 1 · DEFECTO 0 ,CUMPLE
+A-2,FACTIBILIDAD,N,CF2_P15B_aislados_sin_slot_S_N: 0 incumplimientos de seguridad del oraculo,0,CUMPLE
+B-0,ACEPTACION,N,CF2_P15B_aislados_sin_slot_S_N: ciclos con IA / aceptados intento 1 / aceptados al final / con fallo del proveedor,14 / 0 / 14 / 0,INFORMATIVO
+B-2,ACEPTACION,N,"CF2_P15B_aislados_sin_slot_S_N: ciclos con fallo del proveedor <= 10 % (si no: INCIDENCIA_PROVEEDOR, la corrida no vale para B ni C y se evalua aparte)",0/14,CUMPLE
+C-1,PERTINENCIA,N,CF2_P15B_aislados_sin_slot_S_N: 0 cambios de la IA NO pertinentes (todas las sesiones),0,CUMPLE
+D-1,SIN_PLAN_ESPERADO,N,CF2_P15B_aislados_sin_slot_S_N: perfiles ESPERADO_SIN_PLAN (aparte; no cuentan como PASS ni como exito),N19,INFORMATIVO
+G-1,GASTO,N,CF2_P15B_aislados_sin_slot_S_N: predicciones / USD medido / bloqueo,0 / 0.0000 / ninguno,INFORMATIVO
+B-1,ACEPTACION,N,R + R': aceptados por los validadores al final >= 80% de los ciclos con IA (sin fallos del proveedor),14/14 = 100.0%,CUMPLE
+B-1,ACEPTACION,N,R + R': limite inferior de Wilson al 95 % >= 63 %,78.5%,CUMPLE
+C-2,PERTINENCIA,N,R + R': efectivas y pertinentes >= 80% de las factibles evaluables (sin REQUIERE_REVISION: 2),12/12 = 100.0%,CUMPLE
+C-2,PERTINENCIA,N,R + R': limite inferior de Wilson al 95 % >= 63 %,75.8%,CUMPLE
+C-3,PERTINENCIA,N,CF2_P15B_aislados_sin_slot_S_N: ninguna corrida por debajo del 75% de sus factibles evaluables,12/12,CUMPLE
+C-4,PERTINENCIA,N,R + R': cambios que tocan ejercicios con error de catalogo (REQUIERE_REVISION),2,INFORMATIVO
+A-1,FACTIBILIDAD,U,CF2_P15B_aislados_sin_slot_S_U: 0 DEFECTO (PASS + ESPERADO_SIN_PLAN = todos),PASS 20 · ESPERADO_SIN_PLAN 0 · DEFECTO 0 ,CUMPLE
+A-2,FACTIBILIDAD,U,CF2_P15B_aislados_sin_slot_S_U: 0 incumplimientos de seguridad del oraculo,0,CUMPLE
+B-0,ACEPTACION,U,CF2_P15B_aislados_sin_slot_S_U: ciclos con IA / aceptados intento 1 / aceptados al final / con fallo del proveedor,8 / 0 / 8 / 0,INFORMATIVO
+B-2,ACEPTACION,U,"CF2_P15B_aislados_sin_slot_S_U: ciclos con fallo del proveedor <= 10 % (si no: INCIDENCIA_PROVEEDOR, la corrida no vale para B ni C y se evalua aparte)",0/8,CUMPLE
+C-1,PERTINENCIA,U,CF2_P15B_aislados_sin_slot_S_U: 0 cambios de la IA NO pertinentes (todas las sesiones),0,CUMPLE
+D-1,SIN_PLAN_ESPERADO,U,CF2_P15B_aislados_sin_slot_S_U: perfiles ESPERADO_SIN_PLAN (aparte; no cuentan como PASS ni como exito),ninguno,INFORMATIVO
+G-1,GASTO,U,CF2_P15B_aislados_sin_slot_S_U: predicciones / USD medido / bloqueo,0 / 0.0000 / ninguno,INFORMATIVO
+B-1,ACEPTACION,U,R + R': aceptados por los validadores al final >= 90% de los ciclos con IA (sin fallos del proveedor),8/8 = 100.0%,CUMPLE
+C-2,PERTINENCIA,U,R + R': efectivas y pertinentes >= 90% de las factibles evaluables (sin REQUIERE_REVISION: 2),10/10 = 100.0%,CUMPLE
+C-3,PERTINENCIA,U,CF2_P15B_aislados_sin_slot_S_U: ninguna corrida por debajo del 80% de sus factibles evaluables,10/10,CUMPLE
+C-4,PERTINENCIA,U,R + R': cambios que tocan ejercicios con error de catalogo (REQUIERE_REVISION),2,INFORMATIVO

@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import main.web.services.fitsense.iam.application.internal.outboundservices.tokens.TokenService;
+import main.web.services.fitsense.iam.domain.model.aggregates.User;
 import main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
 import main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import org.slf4j.Logger;
@@ -52,7 +53,10 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
             if (token != null && tokenService.validateToken(token)) {
                 var userId = tokenService.extractUserId(token);
 
-                userRepository.findById(userId).ifPresent(user -> {
+                // Solo una cuenta ACTIVE se autentica. Un token aun vigente de una
+                // cuenta INACTIVE o DELETED deja la peticion sin autenticar y
+                // termina en 401: desactivar la cuenta revoca sus tokens al momento.
+                userRepository.findById(userId).filter(User::canSignIn).ifPresent(user -> {
                     // El principal debe ser UserDetailsImpl, no el User del
                     // dominio: es el tipo que los controladores reciben con
                     // @AuthenticationPrincipal. Con el agregado directo, Spring

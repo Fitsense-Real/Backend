@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.planning.RespaldoCincoSeisDiasIT
+-------------------------------------------------------------------------------
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.823 s -- in main.web.services.fitsense.planning.RespaldoCincoSeisDiasIT

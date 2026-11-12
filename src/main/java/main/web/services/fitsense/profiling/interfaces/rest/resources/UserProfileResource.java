@@ -21,5 +21,10 @@ public record UserProfileResource(
         short sessionMinutes,
         List<String> equipmentCodes,
         List<Long> blockedExerciseIds,
-        String healthNotes
+        String healthNotes,
+        boolean allowHighImpact,
+        boolean allowFloorExercises,
+        boolean allowKneelingExercises,
+        boolean allowHangingExercises,
+        boolean allowOverheadExercises
 ) {}

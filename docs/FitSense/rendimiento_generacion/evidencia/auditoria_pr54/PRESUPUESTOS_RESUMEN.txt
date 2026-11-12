@@ -1,0 +1,8 @@
+GRA (PR-1.7, configuracion e sin presupuesto  IA=40 respaldo= 0 perdidos=0 cortadas=0 no_empezados=0 intentos=56 p50=74.3 p95=267.6 max=345.1 
+GRA (PR-1.7, configuracion e 360 s            IA=40 respaldo= 0 perdidos=0 cortadas=0 no_empezados=0 intentos=56 p50=74.3 p95=267.6 max=345.1 
+GRA (PR-1.7, configuracion e 420 s            IA=40 respaldo= 0 perdidos=0 cortadas=0 no_empezados=0 intentos=56 p50=74.3 p95=267.6 max=345.1 
+GRA (PR-1.7, configuracion e 480 s            IA=40 respaldo= 0 perdidos=0 cortadas=0 no_empezados=0 intentos=56 p50=74.3 p95=267.6 max=345.1 
+Campana de estres (prompt an sin presupuesto  IA= 6 respaldo= 2 perdidos=0 cortadas=0 no_empezados=0 intentos=17 p50=144.2 p95=432.5 max=455.3 
+Campana de estres (prompt an 360 s            IA= 4 respaldo= 4 perdidos=2 cortadas=2 no_empezados=0 intentos=17 p50=144.2 p95=360.0 max=360 U06 (460 s); U02 (394 s)
+Campana de estres (prompt an 420 s            IA= 5 respaldo= 3 perdidos=1 cortadas=1 no_empezados=0 intentos=17 p50=144.2 p95=409.5 max=420 U06 (460 s)
+Campana de estres (prompt an 480 s            IA= 6 respaldo= 2 perdidos=0 cortadas=0 no_empezados=0 intentos=17 p50=144.2 p95=432.5 max=455.3 

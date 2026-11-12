@@ -1,0 +1,28 @@
+353|CONFIRMADO|ALTA|requires_overhead|false|true|Tumbado en banco inclinado, tira desde polea por encima de la cabeza
+353|CONFIRMADO|MEDIA|equipment|cable|cable + bench|Banco inclinado
+353|PROBABLE|MEDIA|movement_pattern|ELBOW_EXTENSION|SHOULDER_EXTENSION|Brazos casi rectos
+391|CONFIRMADO|MEDIA|movement_pattern|ELBOW_EXTENSION|SHOULDER_EXTENSION|Brazos rectos de la horizontal a la cadera
+300|PROBABLE|MEDIA|movement_pattern|HORIZONTAL_PULL|VERTICAL_PULL|Dominada con pies en el banco
+594|PROBABLE|ALTA|requires_overhead|false|true|Y-raise: brazos en prolongacion del tronco por encima de la cabeza
+804|CONFIRMADO|ALTA|requires_floor|false|true|Prono sobre balon con manos en el suelo
+74|CONFIRMADO|ALTA|requires_kneeling|false|true|Rodillas en la almohadilla de asistencia
+75|CONFIRMADO|ALTA|requires_kneeling|false|true|Rodillas en la almohadilla de asistencia
+464|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|2-3 (probable)|Dominada libre completa
+874|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|3 (probable)|Dominada Gironda al esternon
+1108|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|2-3 (probable)|Dominada libre completa
+1191|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|3 (probable)|Dominada desplazandose de lado a lado
+231|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench|Tumbado en banco
+231|PENDIENTE_CRITERIO|MEDIA|combinado|back / VERTICAL_PUSH|pullover + press|
+1294|CONFIRMADO|ALTA|requires_hanging / requires_overhead|false / false|true / true|Colgado de la barra balanceandose
+1294|CONFIRMADO|MEDIA|equipment|body weight|pull-up bar|
+1294|CONFIRMADO|ALTA|difficulty_level|1|3|Balanceo gimnastico colgado
+1223|CONFIRMADO|MEDIA|equipment|smith machine|smith machine + bench|Banco inclinado
+1223|PENDIENTE_CRITERIO|BAJA|movement_pattern|HORIZONTAL_PULL|protraccion escapular (SHOULDER_RAISE u OTHER)|Empuje de escapulas, no es remo
+323|CONFIRMADO|MEDIA|equipment|cable|cable + bench|Tumbado en banco
+495|CONFIRMADO|MEDIA|equipment|body weight|body weight + bench|Pies sobre el banco
+155|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench|Tumbado en banco
+178|CONFIRMADO|MEDIA|equipment|barbell|barbell + bench|Banco inclinado
+382|CONFIRMADO|MEDIA|body_part / movement_pattern|chest / TRUNK_ROTATION_LATERAL_FLEXION|shoulders / SHOULDER_RAISE|Elevacion lateral inclinado con polea
+922|PROBABLE|MEDIA|body_part|lower arms|upper legs o shoulders|Cargada colgante: no trabaja el antebrazo como principal
+262|PENDIENTE_CRITERIO|MEDIA|combinado|shoulders / HIP_HINGE|bisagra + balanceo de brazos|
+953|PROBABLE|MEDIA|body_part|shoulders|upper legs|Cargada con bisagra de cadera

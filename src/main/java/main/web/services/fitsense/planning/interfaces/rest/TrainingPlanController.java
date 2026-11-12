@@ -21,6 +21,9 @@ import main.web.services.fitsense.planning.interfaces.rest.resources.SkipWorkout
 import main.web.services.fitsense.planning.interfaces.rest.resources.WeeklyTrainingPlanResource;
 import main.web.services.fitsense.planning.interfaces.rest.transform.WeeklyTrainingPlanResourceFromEntityAssembler;
 import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
+import main.web.services.fitsense.planning.application.internal.queryservices.PlanLimitationsService;
+import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
+import main.web.services.fitsense.planning.interfaces.rest.resources.PlanLimitationsResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,15 +50,39 @@ public class TrainingPlanController {
     private final WeeklyTrainingPlanCommandService commandService;
     private final ExternalCatalogService externalCatalogService;
     private final JsonSupport jsonSupport;
+    private final PublishedPlanSafetyService publishedPlanSafety;
+    private final PlanLimitationsService planLimitations;
+    private final main.web.services.fitsense.planning.application.internal.queryservices.AdaptationOutcomeQueryService adaptaciones;
+    /** Zona del usuario y reloj: «hoy» es el dia LOCAL del usuario, no el del servidor (cierre definitivo, 2.4). */
+    private final main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalIamService iam;
+    private final java.time.Clock reloj;
+    /** R-5: el primer plan, con exclusion entre peticiones y limite de frecuencia. */
+    private final main.web.services.fitsense.planning.application.internal.commandservices
+            .GeneracionInicialService generacionInicial;
 
     public TrainingPlanController(WeeklyTrainingPlanQueryService queryService,
                                   WeeklyTrainingPlanCommandService commandService,
                                   ExternalCatalogService externalCatalogService,
-                                  JsonSupport jsonSupport) {
+                                  JsonSupport jsonSupport,
+                                  PublishedPlanSafetyService publishedPlanSafety,
+                                  PlanLimitationsService planLimitations,
+                                  main.web.services.fitsense.planning.application.internal.queryservices
+                                          .AdaptationOutcomeQueryService adaptaciones,
+                                  main.web.services.fitsense.planning.application.internal.outboundservices.acl
+                                          .ExternalIamService iam,
+                                  org.springframework.beans.factory.ObjectProvider<java.time.Clock> reloj,
+                                  main.web.services.fitsense.planning.application.internal.commandservices
+                                          .GeneracionInicialService generacionInicial) {
+        this.generacionInicial = generacionInicial;
+        this.iam = iam;
+        this.reloj = reloj.getIfAvailable(java.time.Clock::systemUTC);
         this.queryService = queryService;
         this.commandService = commandService;
         this.externalCatalogService = externalCatalogService;
         this.jsonSupport = jsonSupport;
+        this.publishedPlanSafety = publishedPlanSafety;
+        this.planLimitations = planLimitations;
+        this.adaptaciones = adaptaciones;
     }
 
     @GetMapping("/users/me/plan/current")
@@ -62,7 +90,13 @@ public class TrainingPlanController {
     public ResponseEntity<WeeklyTrainingPlanResource> current(
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
-        return queryService.handle(new GetActivePlanQuery(principal.getUserId(), LocalDate.now()))
+        // Si el primer plan empieza el lunes que viene (se genero a mitad de
+        // semana), el vigente de hoy no existe todavia: se devuelve ese.
+        // «Hoy» en la zona del usuario: con el servidor en UTC, un usuario de Lima el domingo despues de las 19:00
+        // ya estaria en «lunes» y no encontraria la semana que esta terminando (antes: LocalDate.now() del servidor).
+        var hoy = LocalDate.now(reloj.withZone(iam.timezoneOf(principal.getUserId())));
+        return queryService.handle(new GetActivePlanQuery(principal.getUserId(), hoy))
+                .or(() -> queryService.handle(new GetActivePlanQuery(principal.getUserId(), hoy.plusWeeks(1))))
                 .map(this::toResource)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> PlanNotFoundException.active(principal.getUserId()));
@@ -80,20 +114,33 @@ public class TrainingPlanController {
      * Las transacciones viven dentro de prepare() y persist(), que son cortas.
      */
     @PostMapping("/users/me/plan/generate")
-    @Operation(summary = "Genera el plan de esta semana. Falla si ya existe uno activo.")
+    @Operation(summary = "Genera el primer plan: esta semana si ninguna de sus sesiones ya paso; si no, la "
+            + "siguiente. Falla si ya existe uno activo.")
     public ResponseEntity<WeeklyTrainingPlanResource> generate(
             @AuthenticationPrincipal UserDetailsImpl principal) {
 
-        var monday = TrainingWeek.containing(LocalDate.now()).startDate();
+        // La fecha local del participante decide; antes era la del servidor y
+        // siempre la semana actual, aunque sus dias ya hubieran pasado.
+        var monday = commandService.firstPlanWeekStart(principal.getUserId());
         var command = GenerateWeeklyPlanCommand.firstPlan(principal.getUserId(), monday);
 
-        var prepared = commandService.prepare(command);
-        var generated = commandService.generate(prepared);
-
-        return commandService.persist(prepared, generated)
+        // R-5: prepare, generate y persist con exclusion (409 si ya hay una en curso, tambien del ciclo semanal) y
+        // limite de frecuencia (429). Lo que se genera y como no cambia.
+        return generacionInicial.generar(command)
                 .map(this::toResource)
                 .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    /**
+     * Solo lectura: mide el conjunto elegible de la proxima generacion y no escribe nada.
+     * La app lo usa para explicar por que falta algo (por ejemplo, traccion sin banda).
+     */
+    @GetMapping("/users/me/plan/limitations")
+    @Operation(summary = "Lo que el plan no puede cubrir con el equipamiento y las restricciones declarados")
+    public ResponseEntity<PlanLimitationsResource> limitations(
+            @AuthenticationPrincipal UserDetailsImpl principal) {
+        return ResponseEntity.ok(planLimitations.limitationsFor(principal.getUserId()));
     }
 
     @GetMapping("/users/me/plan/{planId}")
@@ -106,6 +153,17 @@ public class TrainingPlanController {
                 .map(this::toResource)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new PlanNotFoundException(planId));
+    }
+
+    /**
+     * Que paso en cada ciclo semanal, tambien en los que no publicaron semana (NO_FACTIBLE): solo lee V32.
+     * Es la unica forma de que la app sepa por que una semana no tiene plan nuevo.
+     */
+    @GetMapping("/users/me/plan/adaptations")
+    @Operation(summary = "Resultado de la adaptacion de cada semana: aplicada, conservada, imposible o no factible")
+    public ResponseEntity<List<main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcome>> adaptations(
+            @AuthenticationPrincipal UserDetailsImpl principal) {
+        return ResponseEntity.ok(adaptaciones.history(principal.getUserId()));
     }
 
     @GetMapping("/users/me/plans")
@@ -126,7 +184,8 @@ public class TrainingPlanController {
                                      @Valid @RequestBody SkipWorkoutResource resource) {
 
         commandService.handle(new SkipPlannedWorkoutCommand(
-                principal.getUserId(), plannedWorkoutId, resource.reason()));
+                principal.getUserId(), plannedWorkoutId, resource.reason(), resource.lackOfTimeContext(),
+                resource.availableMinutes()));
         return ResponseEntity.noContent().build();
     }
 
@@ -141,7 +200,11 @@ public class TrainingPlanController {
         // para pintar la pantalla del ejercicio sin una llamada por cada uno.
         return WeeklyTrainingPlanResourceFromEntityAssembler.toResourceFromEntity(
                 plan, externalCatalogService.fetchDetails(exerciseIds),
-                EffortGuidance.forLevel(fitnessLevelOf(plan)));
+                EffortGuidance.forLevel(fitnessLevelOf(plan)),
+                // Un plan guardado no se revalida solo: las sesiones abiertas se
+                // comprueban contra la seguridad de HOY (INC-CAT-1374 y otras).
+                publishedPlanSafety.conflictos(plan),
+                adaptaciones.forPlan(plan.getId()).orElse(null));
     }
 
     /**

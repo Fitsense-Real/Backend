@@ -20,7 +20,13 @@ public record PlanningProfile(
         List<Short> availableDays,
         int sessionMinutes,
         List<String> equipmentCodes,
-        List<Long> blockedExerciseIds
+        List<Long> blockedExerciseIds,
+        /**
+         * INC-4C-03: lo que el participante declaro que PUEDE hacer. Nunca
+         * nulo. Se combina con la politica por edad y nivel en SafetyProfile:
+         * basta que uno de los dos excluya para que el ejercicio no entre.
+         */
+        main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile.Declaradas declaradas
 ) {
     /** BEGINNER -> 1, INTERMEDIATE -> 2, ADVANCED -> 3 (20.3). */
     public int maxDifficultyLevel() {

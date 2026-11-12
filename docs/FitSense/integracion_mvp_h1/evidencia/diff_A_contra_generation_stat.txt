@@ -1,0 +1,8 @@
+ .../domain/services/ConservationValidator.java     |  83 ++++++
+ src/main/resources/application.properties          |   4 +
+ .../fitsense/p2d/ConservacionPatronH1Base.java     | 265 +++++++++++++++++++
+ .../p2d/ConservacionPatronH1ConjuntoIT.java        |  60 +++++
+ .../fitsense/p2d/ConservacionPatronH1IT.java       |  74 ++++++
+ .../internal/V8CConservacionPatronH1Test.java      | 285 +++++++++++++++++++++
+ .../internal/V8CDiagnosticoSustitucionesTest.java  | 152 +++++++++++
+ 7 files changed, 923 insertions(+)

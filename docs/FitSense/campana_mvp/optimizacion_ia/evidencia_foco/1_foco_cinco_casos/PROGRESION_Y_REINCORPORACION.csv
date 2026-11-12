@@ -1,0 +1,2 @@
+usuario,semana,tipo,sesion_origen,ejercicio,dosis_antes,dosis_despues,volumen_antes,volumen_despues,volumen_base,techo,incremento_pct,estado_reserva,resultado
+U04,2,PROGRESION,13,1095,"{""reps"":15,""series"":2,""descanso"":45,""segundos"":null}","{""reps"":16,""series"":2,""descanso"":45,""segundos"":null}",89,91,89,97,2.25,,PUBLICADO

@@ -25,7 +25,9 @@ public record ProfileSnapshot(
         int maxDifficultyLevel,
         List<String> equipmentCodes,
         List<Long> blockedExerciseIds,
-        String healthNotes
+        String healthNotes,
+        /** INC-4C-03: lo que el participante declaro. Nunca nulo. */
+        main.web.services.fitsense.profiling.domain.model.valueobjects.MovementAllowances allowances
 ) {
     public boolean excludesGymOnlyEquipment() {
         return "HOME".equals(trainingLocation);

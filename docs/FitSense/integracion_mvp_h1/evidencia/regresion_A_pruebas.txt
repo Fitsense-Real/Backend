@@ -1,0 +1,247 @@
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Perfil local: nunca contra Neon ni Railway, IA apagada
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in FIX-PR-1.2 ? el texto de cada intervencion concuerda con sus permisos
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.shared.domain.model.valueobjects.EvidenceRuleTest
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0 -- in TrainingWeek: lunes a domingo, limites de mes y de ano, bisiestos y semana de referencia de las pruebas
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.SpringBootEnSuiteUnitariaTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in Contrato IA y V4-C: max_session_seconds solo con V4-C; historica identica
+Tests run: 25, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilderTest
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixInputSnapshotTest
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTimingTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixJsonSchemaTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.MinExercisesPerSessionTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateSchemaRoutingTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.PistasDeReintentoTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTimingInstrumentationTest
+Tests run: 29, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixFromJsonAssemblerTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.AirCircuitBreakerTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.PlanDraftOverflowTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.PromptCapacidadesTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshotDosisTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.generation.rules.ExerciseSelectorEstructuralTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0 -- in V4-C en el validador real (segundos estimados) frente a V4 historico
+Tests run: 15, Failures: 0, Errors: 0, Skipped: 0 -- in Traza V4-C: limite aplicado frente a minutos efectivos, contrastado con el validador real
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.infrastructure.validation.StrictValidationAdapterTest
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0 -- in V4: brecha de redondeo de la historica frente a V4-C, con la duracion declarada = calculada
+Tests run: 15, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.commandservices.AdaptedWeekCommandServiceTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.commandservices.Reincorporacion4DTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.commandservices.PlanGenerationPipelineCircuitBreakerTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.commandservices.PrimeraSemanaTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.commandservices.PublishAdaptedTest
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in D8 ? la herencia sigue tras un sin efecto o respaldo identico; se corta si cambia la sesion, sin D8 o con dolor
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.commandservices.PreviousWeekRecordedTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in 1(a) ? solo una PROGRESION posterior al acortamiento, de la misma sesion, habilita la reincorporacion
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogServiceRetencionTest
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogServiceContencion1374Test
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfileDeclaradasTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.model.valueobjects.AdaptationOutcomeTest
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicyTest
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in AdaptationOutcome: NO_FACTIBLE estructurado y compatible con la respuesta anterior
+Tests run: 30, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicyTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.model.valueobjects.MvpClaseDosisTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in V9 ? series minimas tambien en DURATION, sin exigir series donde pueden faltar
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.PlanDraftNormalizerDuracionTest
+Tests run: 39, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.ConservationValidatorTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in D1 ? 853 y 1117 salen de revision solo con su clasificacion revisada
+Tests run: 40, Failures: 0, Errors: 0, Skipped: 0 -- in V8C ? la IA no sube series, repeticiones ni segundos en una sesion senalada, con o sin interruptores
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0 -- in Politica de planificacion versionada: catalogo, seleccion, V4-C, y traza
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in INC-P2D-01 ? la semana acortada pasa la validacion estricta
+Tests run: 34, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.AdaptedWeekProducerTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Falta de tiempo: la intervencion depende de lo declarado (DISENO_ADAPTACION_CONTEXTUAL v0.3)
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in V8C ? dolor: sustituir o retirar, sin mas ejercicios ni mas volumen
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in INC-P2D-01 ? V8C y la validacion estricta, juntas y de verdad
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0 -- in Diagnostico V8C: sustituciones (patron por conjunto, musculo, distribucion, numero, dificultad)
+Tests run: 32, Failures: 0, Errors: 0, Skipped: 0 -- in H1 ? V8C: conservacion del patron (conjunto historico frente a multiconjunto candidato)
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0 -- in V34 ? V24 + V8C: solo la dosis autorizada y en rango; la generacion, intacta
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.AdaptationEvidenceMapperTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0 -- in D8 ? la copia de una sesion acortada con autorizacion se publica; sin ella, rige V20
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.FactibilidadPreviaIATest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in V8C ? retirar relleno si, estructural no, y sin tocar lo que queda (INC-P2D-01)
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.CardioPorSesionTest
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0 -- in V15 conserva su proteccion
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in El defecto: LOSE_WEIGHT no puede prescribir gemelos
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in V15 ? cuenta como disponible solo lo que el objetivo puede prescribir
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.WeekDerivationBuilderTest
+Tests run: 23, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.GoalFeasibilityPolicyTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in Caso 4: reintento de la IA
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in El mapa de patrones y los datos degradados
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Caso 1: un slot sin ningun ejercicio elegible
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in Caso 2: cobertura fragil (1 o 2 opciones en algun slot)
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in Caso 3: cobertura completa
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in La cobertura no toca la dosis
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Caso 5: el borrador del motor de reglas
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.SlotCoverage4CTest
+Tests run: 21, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.SessionFixApplierTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in 4D v3.1 ? GAIN_MUSCLE
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in cobertura: COMPLETO, PARCIAL o NO_FACTIBLE, solo por las principales
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in validadores: V23, V24 extendida y V25 dicen lo mismo que el generador
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in 4D v4: la dosis depende de la capacidad, no hay un esquema unico
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.CapacidadesPorObjetivoTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.SlotCoverageDistinctIdsTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.CatalogoV15CoherenciaTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.FuerzaPorSlotTest
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0 -- in V20 ? el piso es el 70 % exacto en segundos, sin redondeo
+Tests run: 32, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.CatalogEligibilityPolicyTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in SafetyConflictPolicy: la causa sale de una bandera contra una restriccion, no de un id ausente
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in la excepcion de V8C: solo la sustitucion obligatoria por seguridad, comprobada
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in la politica de sustitucion
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in el productor
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.SustitucionSeguridadTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in El desglose NO cambia el criterio de aceptacion
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Varios dias: el reparto que se quiere
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in Un dia: el caso del plan 4, que la cuenta de colocaciones escondia
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Cero dias: el slot no aparece en toda la semana
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.domain.services.internal.WeeklySlotDistributionTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in V8C ? carga: solo la reduccion autorizada cuenta como adaptacion; lo demas se rechaza
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in Referencias historicas de generacion: intactas
+Tests run: 45, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.profiling.domain.model.aggregates.PoliticaP01DuracionMinimaTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.profiling.domain.model.valueobjects.MovementAllowancesTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in CicloSemanalBloqueo: conexion directa, clave por participante y fallo seguro
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.orchestration.application.internal.WeeklyCycleAdjustmentTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.BaseDeProduccionBloqueadaTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.iam.infrastructure.notification.PasswordResetNotifiersTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in FITSENSE_CORS_ORIGINS ? solo origenes exactos
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.adaptation.interfaces.acl.AdaptationContextFacadeProyeccionTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.adaptation.application.internal.commandservices.SinAjustePorcentualTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.adaptation.domain.services.AdaptationOrderDeciderTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.application.DiasSinEntrenarTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.domain.services.SessionOutcomeIdentifierTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in caida frente a la semana anterior
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in sobreesfuerzo, nivel maximo y abandono
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in omisiones seguidas
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in baja adherencia
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.domain.services.RiesgoEscenariosTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.domain.services.OmisionDeclaradaTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.domain.services.AdherenciaSinPesosTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.domain.services.RegistrationCoverageTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in omitir un entrenamiento
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in ejercicio inseguro y reporte
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.execution.EjecucionReglasTest
+Tests run: 1086, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in I: limitaciones del plan por equipamiento
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.DuracionForzadaPlan60IT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in 6 ? barrido: cada perfil recibe COMPLETO, PARCIAL o un NO_FACTIBLE explicado
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in 7 ? GAIN_MUSCLE con 4D v3.1: 30, 45 y 60 minutos
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in 5 ? restricciones y casos limite
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in 2 ? algunas principales factibles y otras no: se publica con las disponibles y secundarias
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in 1 ? todas las principales disponibles: semana COMPLETA en los cuatro objetivos
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in 3 ? tiempo: las principales primero, las secundarias solo con lo que sobra
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in 4 ? ninguna principal factible: semana segura con las secundarias
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.GeneracionPorObjetivoIT
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.FactibilidadPorObjetivoIT
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.DuracionForzadaIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in V15 ? el relleno cambiado de grupo conserva capacidad y dosis y publica
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in E1/E2: la correccion de grupos conserva capacidad y publica
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in V41: coherencia grupo, patron y slot, segunda fase (C4/C6)
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.GeneracionReferenciaV36IT
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in V40: coherencia grupo, patron y slot (C4/C6)
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in 4D v3.2: V24 admite la serie adicional del relleno de zona pequena solo cuando hace falta
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in main.web.services.fitsense.planning.GeneracionReferenciaCandidataIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in main.web.services.fitsense.planning.ImpactoRestriccionesIT
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.MigracionPropuesta1374IT
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in V36: correccion de ejercicios del catalogo segun su GIF
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in main.web.services.fitsense.planning.ProgresionFactibilidadIT
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in Motor de reglas ? CASO A de la investigacion 30-120 (existia un plan valido y no se construia)
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.CatalogoV37IT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.GeneracionReferenciaV37IT
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Respaldo de reglas: 5 y 6 dias de 60 minutos publican plan
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.GeneracionReferenciaIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.Plan55CardioIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.GeneracionReferenciaV35IT
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in Zona horaria del usuario: plan vigente segun su dia local y vencimiento con horario de verano
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in V20 exacto: los perfiles que rompia la simulacion
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.GeneracionReferenciaV40IT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in C4/C6: auditoria de cruces entre grupo y slot
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.Usuario31V37IT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.GeneracionReferenciaV39IT
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in V39: datos corregidos, equipamiento real y perfiles solo con peso corporal
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.Plan60HipertrofiaIT
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in Perfiles limite: 15 minutos, una sesion y siete dias
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.Plan58FuerzaIT
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0 -- in Respaldo ? el motor de reglas genera semanas validas de 5 y 6 dias
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.CatalogoElegibleIT
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 2 -- in main.web.services.fitsense.planning.DiagnosticoV20ComposicionIT
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 3 -- in Evaluacion ? generacion de 4-6 dias y V20 al 70 % exacto (motor de reglas, sin IA)
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.planning.Usuario31ReproduccionIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in main.web.services.fitsense.planning.ProgresionReservaIT
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 2 -- in main.web.services.fitsense.planning.domain.services.AnalisisSustitucion1373IT
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in Continuidad semanal: generacion y copia con el mismo V15
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 2 -- in Investigacion ? factibilidad de 30-120 min por objetivo, nivel, dias y equipo (motor de reglas)
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in P2-D ? corrida de evidencia ? correccion real de Replicate (v16)
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in H1 ? compatibilidad: regla historica CONJUNTO explicita (reversion)
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in H1 ? V8C multiconjunto (por defecto): el caso U04 de extremo a extremo
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in 3 ? la consulta de exposicion de solo lectura mide lo que el backend bloquea
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in 2 ? reparacion por version nueva
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in 1 ? lectura y ejecucion: una sesion con un ejercicio inseguro se marca y no se puede hacer
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.p2d.ProteccionPlanesPublicadosIT
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 3 -- in P2-D ? las invariantes de V33 en la base, no en Java
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 2 -- in P2-D ? plan y evidencia, o ninguno de los dos (v2 ? 21/10/2026)
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 2 -- in P2-D ? tg_paa_coherencia rechaza al COMMIT, no en la sentencia
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in 3 ? un ejercicio bloqueado por el participante
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in 0b ? cortacircuitos abierto: publica el respaldo sin invocar Replicate
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in 2 ? complementos de cardio y movilidad en la adaptacion
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in 1 ? una reclasificacion no altera en silencio una sesion conservada
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in 0 ? publicar sin IA: la semana conservada se publica y la evidencia dice la verdad
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in 0c ? INC-CAT-1374: semanas que ya contienen el 1374
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.p2d.AdaptacionRegresionIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in Perfil fijo durante el estudio: se corrige antes del primer plan, despues no
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Neon ? el bloqueo del ciclo usa el endpoint directo y una sesion estable (solo lectura)
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in V44_1 ? codigos del NO_FACTIBLE sobre un esquema historico (V44) y reinicio
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in V44_2 ? recuperacion de contrasena sobre un esquema historico (V44) y reinicio
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in V43 ? migracion sobre un esquema historico (V42) y reinicio
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in Contrato de errores de la API: 401/400/404 con el cuerpo ApiErrorResource
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in Recuperacion de contrasena: token de un solo uso, caducidad, limite y sin enumeracion
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in ADMIN: hereda USER y ve la administracion
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in Jerarquia ROLE_ADMIN > ROLE_USER tambien en @PreAuthorize
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in USER: sus funciones, nada de administracion
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in Aislamiento: un USER nunca ve recursos de otro
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0 -- in Analitica: cifras de las columnas existentes, poblacion del estudio
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in Endurecimiento
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in Cuentas y roles
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in Promocion a ADMIN: solo con autorizacion explicita
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in Seguridad ? roles USER/ADMIN, aislamiento de datos y endurecimiento
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Lectura directa (sin Docker) ? planes existentes frente a la V24 por capacidades
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Lectura ? planes existentes frente a la V24 por capacidades (A: hoy, B: progresion encendida)
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in main.web.services.fitsense.lectura.SemillaLecturaIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in V44 ? version de politica sobre un esquema historico (V43) y reinicio
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.FitsenseApplicationIT
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in 1 ? formula de la semana
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0 -- in 2 ? formula de la sesion y del ejercicio
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in 3 ? una sola vez por entrenamiento
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in 4 ? ejecucion pendiente
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.AdherenciaIT
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.AdherenciaRiesgoIT
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.analytics.AbandonoIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.orchestation.C2ReproduccionN03IT
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 2 -- in main.web.services.fitsense.orchestation.CampanaP123Cohorte02IT
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in D8 ? la herencia sigue tras una senalada sin cambios; el dolor no la aprovecha
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in main.web.services.fitsense.orchestation.A01AdaptacionRealIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Evaluacion limpia ? 72 perfiles nuevos, 10 semanas con la progresion encendida
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in main.web.services.fitsense.orchestation.DiagnosticoRespaldoMultisemanaIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Reincorporacion con IA real: adapta, cumple, progresa, reincorpora y se entrena
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in Pendientes de la progresion: recuperacion de series, carga y ciclos simultaneos
+Tests run: 22, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.orchestation.AdaptacionCompletaIT
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in PLAN-V4-0.1 en el ciclo real: techo en segundos estimados, persistencia y traza
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in Progresion al 100 % en dos semanas consecutivas; la adaptacion sigue en el 80 %
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Campana MVP: 8 usuarios x 8 semanas con IA real, adaptacion, progresion y reincorporacion
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in Correcciones tras Replicate real ? progresion apagada
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0 -- in Ciclo semanal concurrente: bloqueo de sesion por participante
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in IA de generacion simulada con PLAN-HIST-1: la misma propuesta se rechaza por la V4 de siempre (minutos)
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Campana con Replicate real ? generacion y adaptacion en los cuatro objetivos
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in Respaldo forzado: con dolor y sustituto, sin dolor, y con dolor sin sustituto
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0 -- in Correcciones tras Replicate real ? progresion encendida
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 1 -- in Comparacion perfil a perfil: volcado de planes completos
+Tests run: 57, Failures: 0, Errors: 0, Skipped: 2 -- in Validacion multisemana: escenarios humanos con el ciclo real, en los cuatro objetivos
+Tests run: 39, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.orchestation.PoliticasP123IT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.orchestation.LinajeIntegridadIT
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0 -- in Copia semanal y mantenimiento sin IA: llamadas a la IA por escenario
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0 -- in Adaptacion por causas: falta de tiempo con contexto (A01), sin IA cuando no hay nada que pedir
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in IA de generacion simulada con PLAN-V4-0.1: 35 min declarados y > 2.070 s estimados -> V4 rechaza
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in PLAN-HIST-1 con ACORTAR: la traza registra la regla historica aplicada y los dos minutos
+Tests run: 24, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.orchestation.ProgresionIT
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0 -- in 3 ? transiciones invalidas e historial
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0 -- in 1 ? flujo del MVP
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0 -- in 4 ? seguridad
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0 -- in 5 ? lo que recibe la adherencia
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0 -- in 2 ? interrupciones y reintentos
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0 -- in main.web.services.fitsense.execution.EjecucionEntrenamientosIT
+Tests run: 494, Failures: 0, Errors: 0, Skipped: 36

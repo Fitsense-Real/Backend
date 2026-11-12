@@ -1,0 +1,8 @@
+usuario,total_ms,fases_ms
+U02,1162,"{prepare=606, validar=25, persist=427, generate=107}"
+U01,1079,"{prepare=760, validar=36, persist=118, generate=132}"
+U04,1203,"{prepare=707, validar=87, persist=233, generate=229}"
+U03,1083,"{prepare=483, validar=76, persist=377, generate=203}"
+U06,1290,"{prepare=686, validar=95, persist=177, generate=405}"
+U05,1080,"{prepare=478, validar=54, persist=390, generate=198}"
+U08,1335,"{prepare=779, validar=158, persist=117, generate=393}"

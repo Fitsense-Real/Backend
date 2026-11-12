@@ -1,0 +1,21 @@
+[ {
+  "user_id" : 2,
+  "attempt_id" : 9,
+  "intervencion" : "ACORTAR_O_REORGANIZAR",
+  "origen" : 27,
+  "derivada" : 58,
+  "scheduled_date" : 1795046400000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+}, {
+  "user_id" : 7,
+  "attempt_id" : 11,
+  "intervencion" : "SEGURIDAD_ANTE_DOLOR",
+  "origen" : 29,
+  "derivada" : 62,
+  "scheduled_date" : 1794960000000,
+  "a_s" : 1.00000000000000000000,
+  "resultado" : "COMPLETADA",
+  "misma_causa" : false
+} ]

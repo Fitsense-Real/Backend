@@ -1,0 +1,15 @@
+71|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+325|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+355|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+356|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+389|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+485|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+487|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+390|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado en un banco
+977|CONFIRMADO|MEDIA|equipment|pull-up bar|captains chair o pull-up bar|Dominada en la estacion
+1071|CONFIRMADO|BAJA|name_en|one arm chin-up|dominada a dos manos|El GIF muestra una dominada con dos manos
+1323|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Jalon sentado
+1189|PENDIENTE_CRITERIO|BAJA|requires_hanging|true|false (probable)|Pies en el suelo: dominada parcial desde de pie
+1336|PENDIENTE_CRITERIO|BAJA|requires_hanging|true|false (probable)|Pies en el suelo
+1337|PENDIENTE_CRITERIO|BAJA|requires_hanging|true|false (probable)|Pies en el suelo
+338|CONFIRMADO|MEDIA|equipment|cable|cable + bench|Banco declinado

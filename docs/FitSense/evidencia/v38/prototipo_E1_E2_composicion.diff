@@ -1,0 +1,42 @@
+diff --git a/src/main/java/main/web/services/fitsense/planning/infrastructure/generation/rules/CapabilityWeekBuilder.java b/src/main/java/main/web/services/fitsense/planning/infrastructure/generation/rules/CapabilityWeekBuilder.java
+index e091b07..68351af 100644
+--- a/src/main/java/main/web/services/fitsense/planning/infrastructure/generation/rules/CapabilityWeekBuilder.java
++++ b/src/main/java/main/web/services/fitsense/planning/infrastructure/generation/rules/CapabilityWeekBuilder.java
+@@ -375,15 +375,18 @@ class CapabilityWeekBuilder {
+      */
+     private void asegurarGrupos(LocalDate fecha, WorkoutFocus enfoque, List<Colocacion> dia,
+                                 Set<Long> bloqueados, int piso, int techo) {
+-        if (enfoque == WorkoutFocus.FULL_BODY) return;   // ya lo resuelve el selector
++        // PROTOTIPO E1/E2 (no subir): tambien FULL_BODY, y tambien un grupo por encima de la mitad.
+         var trabajo = dia.stream().filter(col -> !complementos.contains(col.candidato().exerciseId())).toList();
+         var cubiertos = trabajo.stream().map(col -> col.candidato().bodyPartCode())
+                 .filter(enfoque::accepts).collect(Collectors.toSet());
+-        if (trabajo.size() < 2 || cubiertos.size() >= 2) return;
++        boolean mitadOk = respetaMitad(enfoque, dia);
++        if (trabajo.size() < 2 || (cubiertos.size() >= 2 && mitadOk)) return;
++        String dominante = trabajo.stream().collect(Collectors.groupingBy(col -> col.candidato().bodyPartCode(),
++                Collectors.counting())).entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(null);
+ 
+         var enDia = dia.stream().map(col -> col.candidato().exerciseId()).collect(Collectors.toSet());
+         for (var grupo : enfoque.bodyPartCodes()) {
+-            if (cubiertos.contains(grupo)) continue;
++            if (mitadOk ? cubiertos.contains(grupo) : grupo.equals(dominante)) continue;
+             var candidatos = resistidos.stream()
+                     .filter(c -> grupo.equals(c.bodyPartCode()))
+                     .filter(c -> ExerciseSelector.allowedIn(enfoque, c))
+@@ -404,12 +407,15 @@ class CapabilityWeekBuilder {
+             }
+             for (int k : quitablesPorGrupo(dia)) {
+                 var quitado = dia.get(k);
++                if (!mitadOk && !quitado.candidato().bodyPartCode().equals(dominante)) continue;
+                 for (var c : ordenados) {
+                     var col = colocar(c, quitado.capacidad(), quitado.principal());
+                     if (col == null) continue;
+                     var con = new ArrayList<>(dia);
+                     con.set(k, col);
+                     if (minutos(fecha, enfoque, con) > techo || !respetaMitad(enfoque, con)) continue;
++                    if (con.stream().filter(x -> !complementos.contains(x.candidato().exerciseId()))
++                            .map(x -> x.candidato().bodyPartCode()).filter(enfoque::accepts).distinct().count() < 2) continue;
+                     if (piso > 0 && corto(fecha, enfoque, con, piso)) ampliarSeries(fecha, enfoque, con, piso, techo);
+                     if (piso > 0 && corto(fecha, enfoque, con, piso)) continue;
+                     dia.clear();

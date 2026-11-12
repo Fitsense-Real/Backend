@@ -94,9 +94,75 @@ public class Exercise {
     @Column(name = "requires_floor", nullable = false)
     private boolean requiresFloor;
 
-    /** Carga sobre columna o cuello, o posicion invertida. */
+    /** Carga sobre columna o cuello. La posicion invertida va aparte, en requiresInversion. */
     @Column(name = "axial_load", nullable = false)
     private boolean axialLoad;
+
+    /*
+     * Banderas de V25. Existian en la tabla desde el 28/09 y este agregado no
+     * las mapeaba, asi que la consulta del conjunto elegible no podia filtrarlas
+     * y el participante recibia ejercicios que habia declarado no poder hacer.
+     *
+     * requiresInversion se separa de axialLoad a proposito: el comentario de
+     * GetEligibleExercisesQuery prometia que excludeAxialLoad retiraba "carga
+     * axial e invertidos", y el SQL solo comprobaba axial_load. Medido sobre el
+     * catalogo activo: de los 33 ejercicios con requires_inversion, NINGUNO
+     * tiene axial_load, y 28 no los retira ningun otro filtro.
+     */
+
+    /** Exige apoyar las rodillas en el suelo. Restriccion declarada por el perfil. */
+    @Column(name = "requires_kneeling", nullable = false)
+    private boolean requiresKneeling;
+
+    /** Exige suspenderse de una barra o anillas. Restriccion declarada por el perfil. */
+    @Column(name = "requires_hanging", nullable = false)
+    private boolean requiresHanging;
+
+    /** Exige llevar los brazos por encima de la cabeza. Restriccion declarada por el perfil. */
+    @Column(name = "requires_overhead", nullable = false)
+    private boolean requiresOverhead;
+
+    /** Posicion con la cabeza por debajo del corazon (declinado, invertido). */
+    @Column(name = "requires_inversion", nullable = false)
+    private boolean requiresInversion;
+
+    /*
+     * Clasificacion del Step 3A, migracion V26. Mismo caso que las banderas de
+     * V25: las columnas estaban en la tabla desde el 22/09 y este agregado no
+     * las mapeaba, asi que ni la cobertura de 4C ni la distincion compuesto /
+     * aislamiento podian usarse desde la aplicacion.
+     *
+     * SOLO LECTURA. insertable = false, updatable = false: quien escribe estas
+     * dos columnas es la migracion V26, con su procedencia por etiqueta
+     * (HUMANO_RONDA_D3.1, HUMANO_RONDA_D3.2, DETECTOR_D3.2_VERIFICADO,
+     * HUMANO_READJUDICADO) y su concordancia medida. La aplicacion no las
+     * recalcula ni las corrige: si una etiqueta esta mal, se abre una migracion,
+     * no un UPDATE desde el backend.
+     */
+
+    /**
+     * Patron principal de movimiento, una sola clase por ejercicio. 24 clases
+     * cerradas, definidas en reglas-patrones-v2.md y con CHECK en V26
+     * ({@code ck_exercises_movement_pattern}).
+     * <p>
+     * {@code NULL} solo en ejercicios inactivos: V26 anade
+     * {@code ck_exercises_activo_clasificado}, que obliga a que todo activo
+     * tenga patron. El conjunto elegible solo trae activos, asi que en
+     * planificacion no deberia llegar nunca nulo; se trata como nulo posible de
+     * todas formas, porque una restriccion de base no es una excusa para que el
+     * codigo reviente si cambia.
+     */
+    @Column(name = "movement_pattern", length = 50, insertable = false, updatable = false)
+    private String movementPattern;
+
+    /**
+     * TRUE si el ejercicio mueve una sola articulacion. En tronco, movilidad,
+     * equilibrio y OTHER no aplica y V26 guarda FALSE (reglas-patrones-v2.md
+     * §8). No lo usa la cobertura 4C; se mapea aqui porque es la otra mitad del
+     * Step 3A y dejarla sin mapear invita a repetir este mismo hallazgo.
+     */
+    @Column(name = "is_isolation", insertable = false, updatable = false)
+    private Boolean isolation;
 
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private OffsetDateTime createdAt;

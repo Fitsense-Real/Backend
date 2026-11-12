@@ -1,0 +1,9 @@
+usuario,objetivo,nivel,dias_disponibles,num_dias_disponibles,maximo_programable,sesiones_reales_semana1,minutos,lugar,equipamiento,ejercicios_bloqueados,restricciones,plan_inicial
+U01,GAIN_MUSCLE,INTERMEDIATE,"[1, 4]",2,2,2,30,GYM,"[body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]",,ninguna,"AI, LIVE 2, REPLAY 0, SIN_SALIDA 0, SIN_PRESUPUESTO 0"
+U02,GAIN_MUSCLE,ADVANCED,"[1, 2, 3, 5, 6]",5,5,5,60,HOME,"[body weight, dumbbell, band]",,ninguna,"AI, LIVE 3, REPLAY 0, SIN_SALIDA 0, SIN_PRESUPUESTO 0"
+U03,LOSE_WEIGHT,BEGINNER,"[1, 2, 3, 4, 5, 6, 7]",7,4,4,30,HOME,"[body weight, band]",,"sin impacto, sin colgado","RULE_ENGINE, LIVE 3, REPLAY 0, SIN_SALIDA 0, SIN_PRESUPUESTO 0"
+U04,LOSE_WEIGHT,INTERMEDIATE,"[1, 2, 3, 4, 5, 6]",6,6,6,45,GYM,"[body weight, dumbbell, cable, leverage machine, bench, treadmill, stationary bike]",1176;1293;1324,ninguna,"AI, LIVE 1, REPLAY 0, SIN_SALIDA 0, SIN_PRESUPUESTO 0"
+U05,INCREASE_STRENGTH,BEGINNER,[3],1,1,1,45,HOME,"[body weight, dumbbell, band]",,ninguna,"AI, LIVE 1, REPLAY 0, SIN_SALIDA 0, SIN_PRESUPUESTO 0"
+U06,INCREASE_STRENGTH,ADVANCED,"[1, 2, 4, 5]",4,4,4,60,GYM,"[body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]",495;350;1264,sin sobre_cabeza,"AI, LIVE 3, REPLAY 0, SIN_SALIDA 0, SIN_PRESUPUESTO 0"
+U07,GENERAL_FITNESS,BEGINNER,[6],1,1,0,15,HOME,[body weight],,"sin impacto, sin colgado",SIN_PLAN
+U08,GENERAL_FITNESS,INTERMEDIATE,"[1, 3, 5]",3,3,3,45,GYM,"[body weight, dumbbell, barbell, cable, leverage machine, bench, band, stationary bike, treadmill, kettlebell, ez barbell, smith machine]",507;878,sin rodillas,"AI, LIVE 1, REPLAY 0, SIN_SALIDA 0, SIN_PRESUPUESTO 0"

@@ -1,0 +1,8 @@
+424|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco
+1062|CONFIRMADO|MEDIA|equipment|body weight|bench|Tumbado en un banco
+1062|CONFIRMADO|BAJA|requires_floor|true|false|En banco (restriccion de mas)
+1063|CONFIRMADO|MEDIA|equipment|body weight|bench|Banco declinado
+1063|CONFIRMADO|BAJA|requires_floor|true|false|En banco (restriccion de mas)
+1063|PROBABLE|BAJA|requires_inversion|false|true|Banco declinado: coherencia con 504 y 505
+1142|CONFIRMADO|MEDIA|equipment|body weight|bench|Sentado en el borde de un banco
+58|CONFIRMADO|MEDIA|equipment|body weight|banco de hiperextension (no modelado)|Inclinacion lateral en banco romano

@@ -1,0 +1,12 @@
+Aspecto,APROBADO,FALLO,NO APLICA,REQUIERE REVISIÓN,Aplicables (AP+FA),Aprobación técnica
+1. Generación inicial,6,0,0,14,6,100.0 %
+2. Personalización y restricciones,20,0,0,0,20,100.0 %
+3. Registro de ejecución,19,0,1,0,19,100.0 %
+4. Cálculo de adherencia,19,0,1,0,19,100.0 %
+5. Adaptación con IA (Replicate real),9,0,10,1,9,100.0 %
+6. Mantenimiento sin adaptar,19,0,1,0,19,100.0 %
+7. Progresión gradual,8,0,12,0,8,100.0 %
+8. Reincorporación condicionada,2,0,18,0,2,100.0 %
+9. Continuidad multisemana,19,0,1,0,19,100.0 %
+10. Seguridad e integridad,19,0,1,0,19,100.0 %
+TOTAL (20 × 10 = 200),140,0,45,15,140,100.0 %
