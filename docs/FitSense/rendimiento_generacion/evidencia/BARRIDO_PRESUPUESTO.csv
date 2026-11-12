@@ -1,0 +1,6 @@
+presupuesto_s,gra_desenlaces_que_cambian_de_40,estres_desenlaces_que_cambian_de_8,gra_espera_maxima_s,estres_espera_maxima_s
+240,4,3,240,240
+300,2,2,300,300
+360,0,2,345.1,360
+420,0,1,345.1,420
+480,0,0,345.1,455.3
