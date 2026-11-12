@@ -450,6 +450,9 @@ public class AdaptedWeekCommandService {
                         intento, context.userId(), e.problems());
                 continue;
             }
+            // R-1: la respuesta ilegible de Replicate ya llega aqui como AiProviderUnavailableException (respaldo).
+            // Un error INESPERADO de otro tipo sigue el contrato del ciclo semanal: el ciclo lo captura, no publica
+            // nada, suelta el bloqueo y el siguiente ciclo lo reintenta (CicloConcurrenteIT.falloLiberaBloqueo).
 
             var resultado = producir(context, derivation, correcciones, elegibles, exclusiones);
             if (resultado.publicable())
