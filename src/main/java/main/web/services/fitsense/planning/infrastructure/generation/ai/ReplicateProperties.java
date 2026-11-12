@@ -28,7 +28,13 @@ public record ReplicateProperties(
          */
         int connectTimeoutSeconds,
         int readTimeoutSeconds,
-        int pollReadTimeoutSeconds
+        int pollReadTimeoutSeconds,
+        /*
+         * RENDIMIENTO (12/11/2026): pausa entre dos consultas del sondeo. Eran 3 s fijos: de media 1,5 s entre que la
+         * prediccion termina y el backend se entera (medido: 1,9 s de diferencia mediana entre la espera del backend y
+         * el predict_time de Replicate en GRA). Con 1 s, 0,5 s de media. Ver docs/FitSense/rendimiento_generacion.
+         */
+        int pollIntervalMillis
 ) {
 
     /** Por omision, 10 s para conectar. */
@@ -37,11 +43,21 @@ public record ReplicateProperties(
     public static final int MARGEN_LECTURA_POST = 30;
     /** Lectura de cada GET de sondeo (y de la cancelacion). */
     public static final int LECTURA_SONDEO_POR_OMISION = 30;
+    /** Pausa del sondeo por omision (antes, 3000 fijos). */
+    public static final int INTERVALO_SONDEO_POR_OMISION_MS = 1000;
 
     /** La forma anterior, sin los limites HTTP: quedan los de omision. */
     public ReplicateProperties(boolean enabled, String apiToken, String baseUrl, String model,
                                String reasoningEffort, int timeoutSeconds, int preferWaitSeconds) {
         this(enabled, apiToken, baseUrl, model, reasoningEffort, timeoutSeconds, preferWaitSeconds, 0, 0, 0);
+    }
+
+    /** La forma de R-3, sin la pausa del sondeo: queda la de omision. */
+    public ReplicateProperties(boolean enabled, String apiToken, String baseUrl, String model,
+                               String reasoningEffort, int timeoutSeconds, int preferWaitSeconds,
+                               int connectTimeoutSeconds, int readTimeoutSeconds, int pollReadTimeoutSeconds) {
+        this(enabled, apiToken, baseUrl, model, reasoningEffort, timeoutSeconds, preferWaitSeconds,
+                connectTimeoutSeconds, readTimeoutSeconds, pollReadTimeoutSeconds, 0);
     }
 
     /**
@@ -80,15 +96,28 @@ public record ReplicateProperties(
         // Leer cada GET de sondeo: 2-120 s. El sondeo entero lo limita timeoutSeconds.
         if (pollReadTimeoutSeconds <= 0) pollReadTimeoutSeconds = LECTURA_SONDEO_POR_OMISION;
         pollReadTimeoutSeconds = Math.max(2, Math.min(pollReadTimeoutSeconds, 120));
+        // Pausa del sondeo: 250 ms - 5 s. Por debajo, solo mas peticiones a Replicate por casi nada; por encima, mas
+        // espera tras terminar la prediccion.
+        if (pollIntervalMillis <= 0) pollIntervalMillis = INTERVALO_SONDEO_POR_OMISION_MS;
+        pollIntervalMillis = Math.max(250, Math.min(pollIntervalMillis, 5000));
     }
 
     /**
-     * Cota de la espera total de UNA llamada, para documentarla y probarla: conectar y leer el POST, el sondeo
-     * entero y, como mucho, un GET mas que empiece justo antes del limite (con su conexion y la pausa de 3 s).
+     * Cota de la espera de UNA llamada (un intento), sin la cancelacion: conectar y leer el POST, el sondeo entero y,
+     * como mucho, un GET mas que empiece justo antes del limite (con su conexion y la pausa del sondeo). Es por
+     * intento: la generacion puede hacer hasta tres, y la acota {@code fitsense.ai.generate.total-budget-seconds}.
      */
     public long esperaMaximaSegundos() {
         return (long) connectTimeoutSeconds + readTimeoutSeconds
-                + timeoutSeconds + 3 + connectTimeoutSeconds + pollReadTimeoutSeconds;
+                + timeoutSeconds + (pollIntervalMillis + 999) / 1000 + connectTimeoutSeconds + pollReadTimeoutSeconds;
+    }
+
+    /**
+     * La de {@link #esperaMaximaSegundos()} mas la cancelacion de R-2 (otra conexion y otra lectura), que se pide
+     * cuando la prediccion sigue en curso al dejar de esperarla.
+     */
+    public long esperaMaximaConCancelacionSegundos() {
+        return esperaMaximaSegundos() + connectTimeoutSeconds + pollReadTimeoutSeconds;
     }
 
     /**

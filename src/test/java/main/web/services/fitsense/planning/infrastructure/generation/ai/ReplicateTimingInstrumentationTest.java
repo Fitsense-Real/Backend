@@ -151,8 +151,9 @@ class ReplicateTimingInstrumentationTest {
         var t = timing();
         assertEquals("SUCCEEDED", t.get("resultado"));
         assertEquals("2", t.get("polling_requests"), "dos consultas, no una ni tres");
-        assertTrue(Long.parseLong(t.get("polling_ms")) >= 6_000,
-                "dos esperas de 3 s: el tramo de sondeo tiene que reflejarlas");
+        // Rendimiento (12/11/2026): la pausa del sondeo es de 1 s por omision (antes 3 s fijos).
+        assertTrue(Long.parseLong(t.get("polling_ms")) >= 2_000,
+                "dos esperas de la pausa (1 s): el tramo de sondeo tiene que reflejarlas");
         assertEquals(Long.parseLong(t.get("post_ms")) + Long.parseLong(t.get("polling_ms")),
                 Long.parseLong(t.get("total_ms")));
     }
