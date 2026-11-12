@@ -65,6 +65,11 @@ public record ReplicateTiming(
         /** El POST no llego a completarse: red, 4xx, 5xx. */
         POST_ERROR,
         /**
+         * El POST respondio 2xx, pero el cuerpo no es una respuesta de Replicate (no es JSON, esta cortado o tiene
+         * otra forma). R-1: es un fallo del proveedor, no del modelo.
+         */
+        INVALID_RESPONSE,
+        /**
          * Una consulta de sondeo fallo, o la prediccion llego en curso y sin
          * urls.get al que preguntar. NO es un timeout: puede haber ocurrido a
          * los tres segundos.
