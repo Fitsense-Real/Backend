@@ -37,6 +37,21 @@
 | Planes inválidos publicados | 0 | **0** | Validación completa en todos los caminos; regresión |
 | Regresiones V24 / V8C | — | **0** | Regresión completa (§3) |
 
-## 3. Regresión
+## 3. Regresión (local, `./mvnw verify -Pintegration`, sin token de Replicate)
 
-Ver la PR de rendimiento: regresión completa (unitarias e integración) sobre `generation` con R-1 a R-5, escenarios O06, O12 y O20 con IA simulada, y CI.
+| Árbol | Unitarias | Integración | Resultado |
+|---|---|---|---|
+| `generation` `3a1d92f` (R-1 a R-5 fusionadas) | 1396 / 0 / 1 omitida | 606 / 0 / 44 omitidas | BUILD SUCCESS |
+| **Esta rama** | **1414 / 0 / 1** (+18 nuevas) | **609 / 0 / 45** (+2 nuevas; el laboratorio opt-in `TiemposGeneracionIT` cuenta como omitido) | **BUILD SUCCESS** |
+
+**Incluidas sin cambios de resultado:**
+- Los cuatro objetivos (`GeneracionPorObjetivoIT`, `FactibilidadPorObjetivoIT`, cobertura completa por objetivo).
+- V24 (generación intacta y V24 + V8C).
+- V8C (H-A1/H-A2, sustituciones, dolor, carga y retiradas).
+- Progresión, reincorporación y guardas de dificultad y dolor.
+- `CicloConcurrenteIT`, `GeneracionInicialConcurrenteIT` (R-5), `ConfiguracionEvaluadaIT` y `HG9GeneralFitnessIT`.
+
+**Cohorte integral con IA simulada** (`EvaluacionK20IT`, PLAN-REV-2.0, progresión activada):
+- Escenarios O06, O12 y O20, 8 semanas cada uno.
+- **0 diferencias** de estado, decisión, tipos del informe y llamadas, frente a `generation` anterior y frente a `generation` final.
+- 0 llamadas evitadas por la comprobación previa: ninguno de esos perfiles es de una sesión inviable.
