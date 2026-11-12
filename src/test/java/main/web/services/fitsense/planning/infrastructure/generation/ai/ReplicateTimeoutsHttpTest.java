@@ -245,7 +245,7 @@ class ReplicateTimeoutsHttpTest {
         assertEquals(300, largo.readTimeoutSeconds());
         assertEquals(120, largo.pollReadTimeoutSeconds());
 
-        // 10 + 90 + 150 + 3 + 10 + 30
-        assertEquals(293, omision.esperaMaximaSegundos(), "la espera de una llamada tiene un maximo conocido");
+        // 10 + 90 + 150 + 1 + 10 + 30 (rendimiento, 12/11/2026: la pausa del sondeo paso de 3 s a 1 s por omision)
+        assertEquals(291, omision.esperaMaximaSegundos(), "la espera de una llamada tiene un maximo conocido");
     }
 }

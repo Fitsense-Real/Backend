@@ -1,0 +1,30 @@
+DIAG_TIEMPOS caso="LOSE_WEIGHT 3x45" etapa=prepare_perfil_catalogo n=15 p50_ms=40.1 p95_ms=65.0 max_ms=65.0
+DIAG_TIEMPOS caso="LOSE_WEIGHT 3x45" etapa=construir_prompt n=15 p50_ms=4.7 p95_ms=6.4 max_ms=6.4
+DIAG_TIEMPOS caso="LOSE_WEIGHT 3x45" etapa=validar_una_propuesta n=15 p50_ms=3.5 p95_ms=16.9 max_ms=16.9
+DIAG_TIEMPOS caso="LOSE_WEIGHT 3x45" etapa=motor_de_reglas_y_validacion n=15 p50_ms=10.6 p95_ms=15.2 max_ms=15.2
+DIAG_TIEMPOS caso="LOSE_WEIGHT 3x45" etapa=persistir n=15 p50_ms=39.5 p95_ms=48.8 max_ms=48.8
+DIAG_TIEMPOS caso="LOSE_WEIGHT 3x45" prompt_caracteres=58534
+DIAG_TIEMPOS caso="GAIN_MUSCLE 4x60" etapa=prepare_perfil_catalogo n=15 p50_ms=42.2 p95_ms=55.9 max_ms=55.9
+DIAG_TIEMPOS caso="GAIN_MUSCLE 4x60" etapa=construir_prompt n=15 p50_ms=2.2 p95_ms=3.2 max_ms=3.2
+DIAG_TIEMPOS caso="GAIN_MUSCLE 4x60" etapa=validar_una_propuesta n=15 p50_ms=2.7 p95_ms=5.9 max_ms=5.9
+DIAG_TIEMPOS caso="GAIN_MUSCLE 4x60" etapa=motor_de_reglas_y_validacion n=15 p50_ms=8.4 p95_ms=13.0 max_ms=13.0
+DIAG_TIEMPOS caso="GAIN_MUSCLE 4x60" etapa=persistir n=15 p50_ms=44.5 p95_ms=72.4 max_ms=72.4
+DIAG_TIEMPOS caso="GAIN_MUSCLE 4x60" prompt_caracteres=194480
+DIAG_TIEMPOS caso="INCREASE_STRENGTH 3x60" etapa=prepare_perfil_catalogo n=15 p50_ms=38.8 p95_ms=51.8 max_ms=51.8
+DIAG_TIEMPOS caso="INCREASE_STRENGTH 3x60" etapa=construir_prompt n=15 p50_ms=9.4 p95_ms=47.2 max_ms=47.2
+DIAG_TIEMPOS caso="INCREASE_STRENGTH 3x60" etapa=validar_una_propuesta n=15 p50_ms=4.2 p95_ms=12.9 max_ms=12.9
+DIAG_TIEMPOS caso="INCREASE_STRENGTH 3x60" etapa=motor_de_reglas_y_validacion n=15 p50_ms=12.7 p95_ms=27.0 max_ms=27.0
+DIAG_TIEMPOS caso="INCREASE_STRENGTH 3x60" etapa=persistir n=15 p50_ms=35.3 p95_ms=52.6 max_ms=52.6
+DIAG_TIEMPOS caso="INCREASE_STRENGTH 3x60" prompt_caracteres=193790
+DIAG_TIEMPOS caso="GENERAL_FITNESS 3x45" etapa=prepare_perfil_catalogo n=15 p50_ms=30.1 p95_ms=44.2 max_ms=44.2
+DIAG_TIEMPOS caso="GENERAL_FITNESS 3x45" etapa=construir_prompt n=15 p50_ms=9.8 p95_ms=17.4 max_ms=17.4
+DIAG_TIEMPOS caso="GENERAL_FITNESS 3x45" etapa=validar_una_propuesta n=15 p50_ms=3.7 p95_ms=5.0 max_ms=5.0
+DIAG_TIEMPOS caso="GENERAL_FITNESS 3x45" etapa=motor_de_reglas_y_validacion n=15 p50_ms=13.0 p95_ms=26.5 max_ms=26.5
+DIAG_TIEMPOS caso="GENERAL_FITNESS 3x45" etapa=persistir n=15 p50_ms=38.1 p95_ms=47.2 max_ms=47.2
+DIAG_TIEMPOS caso="GENERAL_FITNESS 3x45" prompt_caracteres=126943
+DIAG_TIEMPOS caso="H-G9 GENERAL_FITNESS INT 1x30" etapa=prepare_perfil_catalogo n=15 p50_ms=39.6 p95_ms=61.0 max_ms=61.0
+DIAG_TIEMPOS caso="H-G9 GENERAL_FITNESS INT 1x30" etapa=construir_prompt n=15 p50_ms=17.7 p95_ms=33.2 max_ms=33.2
+DIAG_TIEMPOS caso="H-G9 GENERAL_FITNESS INT 1x30" etapa=validar_una_propuesta n=15 p50_ms=5.8 p95_ms=9.6 max_ms=9.6
+DIAG_TIEMPOS caso="H-G9 GENERAL_FITNESS INT 1x30" etapa=motor_de_reglas_y_validacion n=15 p50_ms=21.4 p95_ms=31.1 max_ms=31.1
+DIAG_TIEMPOS caso="H-G9 GENERAL_FITNESS INT 1x30" etapa=persistir n=15 p50_ms=32.7 p95_ms=45.0 max_ms=45.0
+DIAG_TIEMPOS caso="H-G9 GENERAL_FITNESS INT 1x30" prompt_caracteres=225233

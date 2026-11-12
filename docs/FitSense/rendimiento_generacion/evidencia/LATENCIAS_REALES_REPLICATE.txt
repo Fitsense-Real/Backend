@@ -1,0 +1,23 @@
+Fuente: docs/FitSense/evaluacion_integral_O/generacion_ia_real/entregables (GRA, gpt-5-mini, PR-1.7, reasoning medium)
+GENERACION predict_time_s (Replicate: ejecucion del modelo): n=56 p50=67.6 p95=133.8 min=35.7 max=144.9
+GENERACION espera_backend_s (POST + sondeo, medida por FitSense): n=56 p50=69.5 p95=134.8 min=37.9 max=148.0
+GENERACION diferencia_s (red + cola + retraso del sondeo): n=56 p50=1.9 p95=3.1 min=0.4 max=3.4
+GENERACION tokens_entrada: n=56 p50=26692.5 p95=78695.8 min=7806.0 max=89341.0
+GENERACION tokens_salida (incluye razonamiento): n=56 p50=6962.0 p95=10225.2 min=3808.0 max=13545.0
+ADAPTACION predict_time_s (Replicate: ejecucion del modelo): n=20 p50=25.1 p95=44.0 min=6.4 max=46.9
+ADAPTACION espera_backend_s (POST + sondeo, medida por FitSense): n=20 p50=28.6 p95=44.5 min=7.1 max=47.7
+ADAPTACION diferencia_s (red + cola + retraso del sondeo): n=20 p50=0.9 p95=3.7 min=0.3 max=3.7
+ADAPTACION tokens_entrada: n=20 p50=26985.5 p95=74308.2 min=8907.0 max=74350.0
+ADAPTACION tokens_salida (incluye razonamiento): n=20 p50=2435.0 p95=3584.2 min=429.0 max=4101.0
+GENERACION completa (s): n=40 p50=75.8 p95=268.7 min=41.2 max=350.1
+  con 1 llamada(s): n=27 p50=60.5 p95=121.6 min=41.2 max=148.0
+  con 2 llamada(s): n=10 p50=148.2 p95=243.3 min=101.6 max=246.0
+  con 3 llamada(s): n=3 p50=346.9 p95=349.8 min=264.6 max=350.1
+distribucion de llamadas por generacion: {'1': 27, '2': 10, '3': 3}
+
+Fuente: docs/FitSense/campana_estres/GENERACIONES_REPLICATE.csv (gpt-5-mini, prompt anterior a PR-1.7)
+POST retenido por Replicate (s): n=17 p50=20.5 p95=21.3 min=20.2 max=21.4
+sondeo (s): n=17 p50=66.0 p95=135.4 min=25.0 max=150.8
+consultas de sondeo: n=17 p50=21.0 p95=43.2 min=8.0 max=48.0
+diferencia espera - predict_time (s): n=17 p50=1.6 p95=3.1 min=0.4 max=3.2
+Cola de Replicate (started_at - created_at) en 65 predicciones reales (campana de estres + campana MVP): p50=0.015 s p95=0.030 s max=0.041 s

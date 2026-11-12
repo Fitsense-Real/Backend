@@ -26,9 +26,6 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
     private static final Logger log = LoggerFactory.getLogger(ReplicateTrainingPlanGenerator.class);
 
-    /** Cada cuanto se vuelve a preguntar por una prediccion en curso. */
-    private static final Duration POLL_INTERVAL = Duration.ofSeconds(3);
-
     private final ReplicateProperties properties;
     private final PlanPromptBuilder promptBuilder;
     private final PlanDraftFromJsonAssembler assembler;
@@ -88,10 +85,11 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // R-3: limites HTTP explicitos (antes, el cliente del JDK sin limite de conexion ni de lectura).
         this(properties, promptBuilder, assembler, jsonSupport,
                 ReplicateHttp.post(properties), ReplicateHttp.sondeo(properties));
-        log.info("Replicate HTTP: conectar {} s, leer POST {} s (Prefer: wait {} s), leer sondeo {} s, sondeo {} s;"
-                        + " espera maxima por llamada ~{} s",
+        log.info("Replicate HTTP: conectar {} s, leer POST {} s (Prefer: wait {} s), leer sondeo {} s, sondeo {} s"
+                        + " consultando cada {} ms; espera maxima por llamada ~{} s (~{} s si hay que cancelarla)",
                 properties.connectTimeoutSeconds(), properties.readTimeoutSeconds(), properties.preferWaitSeconds(),
-                properties.pollReadTimeoutSeconds(), properties.timeoutSeconds(), properties.esperaMaximaSegundos());
+                properties.pollReadTimeoutSeconds(), properties.timeoutSeconds(), properties.pollIntervalMillis(),
+                properties.esperaMaximaSegundos(), properties.esperaMaximaConCancelacionSegundos());
     }
 
     /**
@@ -159,7 +157,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         var snapshot = PlanInputSnapshot.of(context);
         var snapshotJson = jsonSupport.write(snapshot);
         var prompt = promptBuilder.build(context, snapshotJson, feedback);
-        return call(prompt, context.effectiveDaysPerWeek(),
+        return call(prompt, Peticion.deSemana(context.effectiveDaysPerWeek()),
                 context.userId(), context.weekNumber(), attempt);
     }
 
@@ -226,15 +224,24 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
      */
     String call(String prompt, Peticion peticion,
                 Long userId, short weekNumber, int attempt) {
+        // RENDIMIENTO (12/11/2026): el plazo del presupuesto total de la generacion, si lo hay
+        // (PlazoDeGeneracion). Acota el Prefer: wait del POST y el sondeo; si se agota con la prediccion en curso,
+        // se cancela como cualquier otro limite (R-2). Sin plazo (la adaptacion no lo fija), todo sigue como antes.
+        return call(prompt, peticion, userId, weekNumber, attempt, PlazoDeGeneracion.actual());
+    }
+
+    /** La misma, con el plazo del presupuesto total (null = sin plazo). */
+    String call(String prompt, Peticion peticion,
+                Long userId, short weekNumber, int attempt, java.time.Instant plazo) {
         var medicion = new Medicion();
         try {
-            return callMedido(prompt, peticion, medicion);
+            return callMedido(prompt, peticion, medicion, plazo);
         } finally {
             log.info("{}", medicion.timing(userId, weekNumber, attempt).describe());
         }
     }
 
-    private String callMedido(String prompt, Peticion peticion, Medicion medicion) {
+    private String callMedido(String prompt, Peticion peticion, Medicion medicion, java.time.Instant plazo) {
         var input = new LinkedHashMap<String, Object>();
         input.put("model", properties.model());
         input.put("prompt", prompt);
@@ -243,7 +250,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
         String rawBody;
         try {
-            rawBody = post(input);
+            rawBody = post(input, esperaDelPost(plazo));
         } catch (RuntimeException e) {
             // ANTES SALIA post_ms=0 SIEMPRE. Un POST que revienta a los 50 s y
             // uno que revienta al instante se registraban igual, y por tanto ese
@@ -284,7 +291,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         if (response != null && response.pending()) {
             // Copia final: la lambda no puede capturar una variable que se reasigna.
             final var enCurso = response;
-            var sondeo = medicion.sondeando(() -> awaitCompletion(enCurso));
+            var sondeo = medicion.sondeando(() -> awaitCompletion(enCurso, plazo));
             desenlace = sondeo.desenlace();
             response = sondeo.response();
             medicion.predictionId(response == null ? null : response.id());
@@ -438,7 +445,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
      * fitsense.ai.timeout-seconds, que ya NO esta atado a los 60 s de la
      * cabecera Prefer.
      */
-    private Sondeo awaitCompletion(ReplicateResponse pending) {
+    private Sondeo awaitCompletion(ReplicateResponse pending, java.time.Instant plazo) {
         var pollUrl = pending.pollUrl();
         if (pollUrl == null) {
             log.warn("La prediccion sigue en curso y no trae urls.get: no se puede consultar");
@@ -446,12 +453,16 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         }
 
         var limite = reloj.instant().plusSeconds(properties.timeoutSeconds());
+        // RENDIMIENTO: el presupuesto total de la generacion puede acabar antes que el limite propio del sondeo.
+        boolean porPresupuesto = plazo != null && plazo.isBefore(limite);
+        if (porPresupuesto) limite = plazo;
+        var pausa = Duration.ofMillis(properties.pollIntervalMillis());
         var actual = pending;
         int consultas = 0;
 
         while (actual != null && actual.pending() && reloj.instant().isBefore(limite)) {
             try {
-                durmiente.dormir(POLL_INTERVAL);
+                durmiente.dormir(pausa);
             } catch (InterruptedException e) {
                 // Restaurar la marca: alguien esta parando la aplicacion y no
                 // queremos dejar el hilo en un estado inconsistente.
@@ -476,7 +487,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             }
         }
 
-        if (actual != null && actual.pending())
+        if (actual != null && actual.pending() && porPresupuesto)
+            log.warn("REPLICATE_PRESUPUESTO la prediccion {} seguia en curso al agotarse el presupuesto total de la"
+                    + " generacion ({} consulta(s)); se deja de esperar y se cancela", pending.id(), consultas);
+        else if (actual != null && actual.pending())
             log.warn("La prediccion {} seguia en curso tras {} s de sondeo "
                             + "(el POST ya habia esperado hasta {} s con Prefer: wait)",
                     pending.id(), properties.timeoutSeconds(), properties.preferWaitSeconds());
@@ -548,12 +562,23 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 pendiente.status(), desenlace, resultado, estado == null ? "desconocido" : estado);
     }
 
-    private String post(Map<String, Object> input) {
+    /**
+     * Cuanto pedir a Replicate que retenga el POST: lo configurado o, si queda menos presupuesto, lo que quede (al
+     * menos 1 s). Asi el POST tampoco se come el presupuesto.
+     */
+    int esperaDelPost(java.time.Instant plazo) {
+        int configurada = properties.preferWaitSeconds();
+        if (plazo == null) return configurada;
+        long quedan = Duration.between(reloj.instant(), plazo).toSeconds();
+        return (int) Math.max(1, Math.min(configurada, quedan));
+    }
+
+    private String post(Map<String, Object> input, int esperaSegundos) {
         try {
             return restClient.post()
                     .uri(properties.baseUrl())
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
-                    .header("Prefer", "wait=" + properties.preferWaitSeconds())
+                    .header("Prefer", "wait=" + esperaSegundos)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(Map.of("input", input))
                     .retrieve()
