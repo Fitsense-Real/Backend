@@ -28,12 +28,12 @@
 | Tiempo total, GRA (40 generaciones con IA) | p50 75,8 s · p95 268,7 s · máx. 350,1 s | p50 74,3 s · p95 267,6 s · máx. 345,1 s | SIMULADO sobre trazas REALES (`REPRODUCCION_TRAZAS.csv`) |
 | Tiempo total, válidas al primer intento | p50 60,5 s | p50 59,9 s | ídem |
 | Tiempo total, H-G9 | ~210 s (3 × p50 real) | ~0,1 s | SIMULADO + `FactibilidadGeneracionIAIT` |
-| Peor caso teórico de una petición | ~919 s | 360 s + una lectura en curso + cancelación (≤ ~490 s) | Cálculo (`01` §5, `02` C) |
+| Peor caso teórico de una petición | ~919 s | Sin cambio por omisión: el presupuesto queda desactivado tras la auditoría. Con 360 s activado: 360 s + una lectura en curso + cancelación (≤ ~490 s) | Cálculo (`01` §5, `02` C, `04` §6) |
 | Retraso del sondeo por predicción | media 1555 ms · p95 2894 ms | media 501 ms · p95 941 ms | SIMULADO con los 56 `predict_time` REALES |
 | Intentos, GRA | 56 | 56 (0 desenlaces cambian) | SIMULADO sobre trazas REALES |
 | Intentos, H-G9 (por generación) | 3 + respaldo | 0 + respaldo | `FactibilidadGeneracionIAIT` |
 | Llamadas evitadas | — | 3 por generación inicial H-G9. 6 de 240 perfiles de un día. 0 en los demás | `FactibilidadGeneracionIAIT` |
-| Uso de respaldo | H-G9: respaldo tras 3 rechazos | H-G9: respaldo directo. GRA: igual (0 → 0). Colas > 360 s (prompt anterior): 2 de 8 pasan a respaldo | ídem y `BARRIDO_PRESUPUESTO.csv` |
+| Uso de respaldo | H-G9: respaldo tras 3 rechazos | H-G9: respaldo directo. Por lo demás, igual: el presupuesto está desactivado. Con 360 s, 2 de 8 generaciones de estrés pasarían al respaldo | ídem y `auditoria_pr54/PRESUPUESTOS_SOBRE_TRAZAS.csv` |
 | Planes inválidos publicados | 0 | **0** | Validación completa en todos los caminos; regresión |
 | Regresiones V24 / V8C | — | **0** | Regresión completa (§3) |
 

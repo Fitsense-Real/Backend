@@ -64,8 +64,23 @@ public final class FactibilidadGeneracionIA {
         }
     }
 
+    /**
+     * La decision: presente SOLO si la inviabilidad esta demostrada. Vacio significa "no demostrada" (factible, o
+     * fuera del alcance de la comprobacion): entonces la IA se llama como siempre.
+     */
     public static Optional<Inviabilidad> evaluar(PlanGenerationContext ctx, SlotCoverageEnforcement cobertura,
                                                  DoseEnforcement capacidades) {
+        return calcular(ctx, cobertura, capacidades)
+                .filter(c -> c.segundosMinimos() < 0
+                        || ctx.policy().excedeTecho(c.segundosMinimos(), 0, c.minutosPerfil()));
+    }
+
+    /**
+     * La cota inferior y sus datos, decida lo que decida V4 (para auditarla contra borradores validos). Vacio si el
+     * caso queda fuera del alcance (mas de una sesion, GAIN_MUSCLE, sin V4 en segundos, V24/V25 sin bloquear...).
+     */
+    public static Optional<Inviabilidad> calcular(PlanGenerationContext ctx, SlotCoverageEnforcement cobertura,
+                                                  DoseEnforcement capacidades) {
         if (ctx == null || ctx.profile() == null || ctx.prescription() == null || ctx.policy() == null
                 || ctx.availableExercises() == null || cobertura == null || capacidades == null) return Optional.empty();
         if (ctx.effectiveDaysPerWeek() != 1 || !ctx.policy().v4Segundos() || !capacidades.bloquea())
@@ -112,7 +127,6 @@ public final class FactibilidadGeneracionIA {
                 (long) ctx.prescription().warmupMinutesOrDefault() * 60, ctx.prescription().transitionSecondsOrDefault());
         int minutos = ctx.profile().sessionMinutes();
         long limite = ctx.policy().limiteV4SegundosDe(minutos);
-        if (cota >= 0 && !ctx.policy().excedeTecho(cota, 0, minutos)) return Optional.empty();
         return Optional.of(new Inviabilidad(cota, limite, minutos,
                 exigidas.isEmpty() ? EnumSet.noneOf(Capability.class) : EnumSet.copyOf(exigidas),
                 List.copyOf(slots), v23));

@@ -63,14 +63,21 @@ Las tres actúan sobre lo que controla FitSense: cuántas predicciones se piden,
 - la cola de Replicate es de 0,015 s;
 - la diferencia restante es red y lectura del JSON.
 
-## C. Presupuesto total de la fase de IA
+## C. Presupuesto total de la fase de IA (DESACTIVADO por omisión tras la auditoría)
+
+> **Actualización (auditoría de la PR #54, `04_AUDITORIA_FACTIBILIDAD_Y_REINTENTOS.md` §6):**
+> - El presupuesto queda **desactivado por omisión** (`total-budget-seconds=0`) y configurable.
+> - Con 360 s, la campaña de estrés habría perdido 2 planes de IA.
+> - 480 s no perdió ninguno de los 48 observados, pero la muestra es pequeña.
+>
+> Lo que sigue describe el mecanismo, que sigue disponible si se activa.
 
 **Problema:**
 - Solo había límites por llamada (§4 de `01`).
 - Con tres intentos, una petición podía esperar hasta unos 919 s antes del respaldo.
 
 **Cambio** (`PlanGenerationPipeline` + `PlazoDeGeneracion`):
-- `fitsense.ai.generate.total-budget-seconds`: **360 por omisión**, acotado a 60–1800.
+- `fitsense.ai.generate.total-budget-seconds`: **0 = desactivado (por omisión)**. Si se activa, se acota a 60–1800.
 - `fitsense.ai.generate.min-attempt-seconds`: **40 por omisión**, acotado a 10–150.
 - **Antes de cada intento:** si queda menos del mínimo, no se empieza (`IA_PRESUPUESTO_AGOTADO`) y decide el motor de reglas. 40 s porque la predicción de generación más corta medida tardó 35,7 s: con menos no puede terminar.
 - **Durante el intento:**
@@ -79,7 +86,7 @@ Las tres actúan sobre lo que controla FitSense: cuántas predicciones se piden,
   - Agotar el presupuesto **no cuenta** como fallo del proveedor para el cortacircuitos.
 - **El plazo viaja en el hilo** (`PlazoDeGeneracion`), sin cambiar la firma de `requestOutput`, que simulan decenas de pruebas y arneses de evaluación. La adaptación no lo fija y sigue igual.
 
-**Por qué 360 s** (REAL, reproducción de trazas, `evidencia/BARRIDO_PRESUPUESTO.csv`):
+**Barrido inicial** (REAL, reproducción de trazas, `evidencia/BARRIDO_PRESUPUESTO.csv`):
 
 | Presupuesto | Desenlaces que cambian en GRA (de 40, PR-1.7) | En la campaña de estrés (de 8, prompt anterior) | Espera máxima GRA |
 |---|---|---|---|
@@ -89,10 +96,11 @@ Las tres actúan sobre lo que controla FitSense: cuántas predicciones se piden,
 | 420 s | 0 | 1 | 345 s |
 | 480 s | 0 | 0 | 345 s |
 
-- 360 s **no cambia ningún desenlace** de la configuración evaluada (GRA) y acota la cola.
-- Si se quisiera conservar también las colas del prompt anterior: `FITSENSE_AI_GENERATE_TOTAL_BUDGET_SECONDS=480`.
+- 360 s no cambia ningún desenlace de GRA.
+- Pero sí habría cambiado 2 planes de IA de la campaña de estrés por el respaldo. Por eso no se activa por omisión.
+- 480 s fue el menor valor que no cambió ninguno de los 48 observados.
 
-**Peor caso nuevo:**
+**Peor caso si se activa:**
 - 360 s más lo que tarde en devolver error una lectura HTTP ya en curso (≤ 90 s si fuera el POST) más la cancelación (≤ 40 s): ≤ ~490 s teóricos, frente a ~919 s.
 - En la práctica, el desfase medido en simulación es de una pausa del sondeo (≤ 1 s).
 
@@ -109,7 +117,7 @@ Las tres actúan sobre lo que controla FitSense: cuántas predicciones se piden,
 
 ## Descartado (fuera de alcance o sin justificación)
 
-- **Bajar `reasoning_effort`, cambiar de modelo o reducir el catálogo del prompt:** es lo que más acortaría la predicción, pero cambia la calidad evaluada y exige medirlo con llamadas pagadas. Ver `04`.
+- **Bajar `reasoning_effort`, cambiar de modelo o reducir el catálogo del prompt:** es lo que más acortaría la predicción, pero cambia la calidad evaluada y exige medirlo con llamadas pagadas. Ver `05`.
 - **Generación asíncrona** (202 y consulta desde la app): cambia el contrato HTTP y la app.
 - **Webhooks de Replicate:** ahorrarían como mucho los 0,5 s que quedan de sondeo y necesitan un punto de entrada público.
 - **Cortar reintentos por rechazos corregibles (V15, V26…):** el reintento es lo que convierte un tercio de las propuestas rechazadas en planes de IA válidos (GRA: 20/20 publicados desde la IA).

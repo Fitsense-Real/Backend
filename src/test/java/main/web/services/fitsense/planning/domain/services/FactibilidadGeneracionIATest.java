@@ -98,22 +98,54 @@ class FactibilidadGeneracionIATest {
         }
     }
 
+    @Test
+    @DisplayName("AUDITORIA PR #54 · casos limite: hasta 4 capacidades y 4 slots, V23 siempre o por posiciones,"
+            + " opciones escasas; la cota coincide con la fuerza bruta en 600 casos")
+    void casosLimite() {
+        var r = new java.util.Random(54L);
+        for (int caso = 0; caso < 600; caso++) {
+            int caps = 1 + r.nextInt(4), slots = r.nextInt(5);
+            boolean v23 = r.nextBoolean(), siempre = v23 && r.nextInt(3) == 0;
+            int bits = caps + slots;
+            var m = new HashMap<Integer, Long>();
+            int n = 1 + r.nextInt(10);
+            for (int k = 0; k < n; k++) m.merge(r.nextInt(1 << bits), 1L + r.nextInt(600), Math::min);
+            long c = FactibilidadGeneracionIA.cotaInferior(m, caps, slots, v23, siempre, W, T);
+            long minimo = fuerzaBruta(m, caps, slots, v23, siempre, Math.max(6, bits + 1));
+            assertEquals(minimo, c, "caso " + caso + " caps=" + caps + " slots=" + slots + " v23=" + v23
+                    + " siempre=" + siempre + " " + m);
+        }
+    }
+
+    @Test
+    @DisplayName("AUDITORIA PR #54 · umbral: la decision usa la cota exacta (2265 s cabe en 38 min y no en 37)")
+    void umbral() {
+        // Techo de V4 en REV2: segundos > M x 60 (tolerancia 0). 37 min = 2220 s; 38 min = 2280 s.
+        assertTrue(2265 > 37 * 60);
+        assertFalse(2265 > 38 * 60);
+    }
+
     /** Todas las multiconjuntas de hasta 6 colocaciones. */
     private static long fuerzaBruta(Map<Integer, Long> m, int caps, int slots, boolean v23) {
+        return fuerzaBruta(m, caps, slots, v23, false, 6);
+    }
+
+    private static long fuerzaBruta(Map<Integer, Long> m, int caps, int slots, boolean v23, boolean siempre, int max) {
         var opciones = m.entrySet().stream().toList();
         long[] mejor = {Long.MAX_VALUE};
-        recorrer(opciones, 0, 0, 0, 0, caps, slots, v23, mejor);
+        recorrer(opciones, 0, 0, 0, 0, caps, slots, v23, siempre, max, mejor);
         return mejor[0] == Long.MAX_VALUE ? -1 : mejor[0];
     }
 
     private static void recorrer(java.util.List<Map.Entry<Integer, Long>> o, int desde, int mask, int n, long suma,
-                                 int caps, int slots, boolean v23, long[] mejor) {
+                                 int caps, int slots, boolean v23, boolean siempre, int max, long[] mejor) {
         int todasCap = (1 << caps) - 1, todosSlots = ((1 << slots) - 1) << caps;
         if (n >= 2 && (mask & todasCap) == todasCap
-                && (!v23 || n < slots || (mask & todosSlots) == todosSlots))
+                && (!v23 || (!siempre && n < slots) || (mask & todosSlots) == todosSlots))
             mejor[0] = Math.min(mejor[0], W + suma + (long) (n - 1) * T);
-        if (n == 6) return;
+        if (n == max) return;
         for (int i = desde; i < o.size(); i++)
-            recorrer(o, i, mask | o.get(i).getKey(), n + 1, suma + o.get(i).getValue(), caps, slots, v23, mejor);
+            recorrer(o, i, mask | o.get(i).getKey(), n + 1, suma + o.get(i).getValue(), caps, slots, v23, siempre,
+                    max, mejor);
     }
 }

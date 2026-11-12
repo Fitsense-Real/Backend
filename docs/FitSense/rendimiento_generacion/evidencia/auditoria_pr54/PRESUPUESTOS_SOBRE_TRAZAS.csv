@@ -1,0 +1,9 @@
+conjunto,configuracion,generaciones,planes_de_ia,respaldos,planes_de_ia_perdidos,cuales,predicciones_cortadas_y_canceladas,intentos_no_empezados,intentos_completados_o_cortados,p50_s,p95_s,max_s
+"GRA (PR-1.7, configuracion evaluada)",sin presupuesto,40,40,0,0,,0,0,56,74.3,267.6,345.1
+"GRA (PR-1.7, configuracion evaluada)",360 s,40,40,0,0,,0,0,56,74.3,267.6,345.1
+"GRA (PR-1.7, configuracion evaluada)",420 s,40,40,0,0,,0,0,56,74.3,267.6,345.1
+"GRA (PR-1.7, configuracion evaluada)",480 s,40,40,0,0,,0,0,56,74.3,267.6,345.1
+Campana de estres (prompt anterior),sin presupuesto,8,6,2,0,,0,0,17,144.2,432.5,455.3
+Campana de estres (prompt anterior),360 s,8,4,4,2,U06 (460 s); U02 (394 s),2,0,17,144.2,360.0,360
+Campana de estres (prompt anterior),420 s,8,5,3,1,U06 (460 s),1,0,17,144.2,409.5,420
+Campana de estres (prompt anterior),480 s,8,6,2,0,,0,0,17,144.2,432.5,455.3

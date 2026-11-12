@@ -21,7 +21,8 @@
 | `01_DIAGNOSTICO_LATENCIA.md` | Dónde se va el tiempo, por etapa. Separa FitSense de Replicate. p50/p95 reales. Qué significan los ~293 s |
 | `02_OPTIMIZACIONES.md` | A: llamadas imposibles (H-G9). B: sondeo. C: presupuesto total. Más observabilidad |
 | `03_PRUEBAS_Y_RESULTADOS.md` | Escenarios, antes y después (real frente a simulado), regresión |
-| `04_LIMITACIONES_DEL_PROVEEDOR.md` | Lo que no depende de FitSense, por qué 30 s no es alcanzable hoy y qué lo acercaría |
+| `04_AUDITORIA_FACTIBILIDAD_Y_REINTENTOS.md` | **Auditoría de la PR #54:** cota inferior verificada contra el validador real, históricos, H-G9, reintentos, presupuestos y decisión por optimización |
+| `05_LIMITACIONES_DEL_PROVEEDOR.md` | Lo que no depende de FitSense, por qué 30 s no es alcanzable hoy y qué lo acercaría |
 | `evidencia/` | Trazas reales, simulaciones, script de reproducción y salidas de los laboratorios |
 
 **Resumen:**
@@ -31,5 +32,5 @@
 - **Lo que FitSense controla y se ha optimizado:**
   - **Llamadas imposibles evitadas:** 3 predicciones (~210 s) en los perfiles H-G9.
   - **Retraso del sondeo:** de 1,5 s a 0,5 s de media por predicción.
-  - **Espera total acotada:** de un peor caso teórico de ~919 s a 360 s más una lectura HTTP en curso y la cancelación.
+  - **Presupuesto total:** desactivado por omisión tras la auditoría (`04`). Es configurable, y 480 s no cambió ninguno de los 48 desenlaces observados.
 - **La meta de 30 s no se alcanza con el modelo actual.** La predicción de generación más rápida medida tardó 35,7 s.

@@ -62,12 +62,16 @@ public class PlanGenerationPipeline {
     private final AirCircuitBreaker breaker;
 
     /**
-     * RENDIMIENTO (12/11/2026) · PRESUPUESTO TOTAL DE LA FASE DE IA. Antes solo habia limites por llamada (unos
-     * 290-330 s cada una, R-3/R-2), y con tres intentos una generacion podia esperar mas de 15 minutos antes del
-     * respaldo. Ahora: no se empieza un intento si quedan menos de {@link #minimoPorIntento} (la prediccion de
-     * generacion mas corta medida tardo 35,7 s: con menos no puede terminar), y la que esta en curso deja de esperarse
-     * al agotarse (se cancela, R-2). Los valores por omision (360 s / 40 s) cubren la generacion mas larga medida con
-     * Replicate real (350 s, tres intentos, GRA): no cambian ningun desenlace observado, solo acotan la cola.
+     * RENDIMIENTO (12/11/2026) · PRESUPUESTO TOTAL DE LA FASE DE IA, DESACTIVADO POR OMISION. Sin el, solo hay limites
+     * por llamada (unos 290-330 s cada una, R-3/R-2). Si se activa ({@code fitsense.ai.generate.total-budget-seconds}
+     * mayor que 0): no se empieza un intento si quedan menos de {@link #minimoPorIntento} (la prediccion de generacion
+     * mas corta medida tardo 35,7 s), y la que esta en curso deja de esperarse al agotarse (se cancela, R-2).
+     * <p>
+     * AUDITORIA DE LA PR #54: con las trazas reales, 360 s no cambia ningun desenlace de GRA (40/40), pero habria
+     * cambiado 2 planes de IA de la campana de estres (prompt anterior; generaciones de 394 y 460 s) por el respaldo;
+     * 420 s, 1; 480 s, ninguno de los 48 observados. Como un plan valido lento es preferible a un respaldo rapido, no se
+     * activa por omision hasta decidir un valor ({@code docs/FitSense/rendimiento_generacion/04_AUDITORIA_...}).
+     * Null = desactivado.
      */
     private final Duration presupuesto;
     private final Duration minimoPorIntento;
@@ -77,7 +81,8 @@ public class PlanGenerationPipeline {
 
     private final Clock reloj;
 
-    public static final int PRESUPUESTO_POR_OMISION_S = 360;
+    /** 0 = sin presupuesto total (por omision, tras la auditoria de la PR #54). */
+    public static final int PRESUPUESTO_POR_OMISION_S = 0;
     public static final int MINIMO_POR_INTENTO_POR_OMISION_S = 40;
 
     /**
@@ -93,16 +98,18 @@ public class PlanGenerationPipeline {
                                   PlanDraftValidator validator,
                                   PlanDraftNormalizer normalizer,
                                   @org.springframework.beans.factory.annotation.Value(
-                                          "${fitsense.ai.generate.total-budget-seconds:360}") int presupuestoSegundos,
+                                          "${fitsense.ai.generate.total-budget-seconds:0}") int presupuestoSegundos,
                                   @org.springframework.beans.factory.annotation.Value(
                                           "${fitsense.ai.generate.min-attempt-seconds:40}") int minimoPorIntentoSegundos,
                                   @org.springframework.beans.factory.annotation.Value(
                                           "${fitsense.ai.generate.feasibility-precheck:true}") boolean factibilidadPrevia) {
         this(aiGenerator, ruleGenerator, validator, normalizer, new AirCircuitBreaker(), Clock.systemUTC(),
                 presupuestoSegundos, minimoPorIntentoSegundos, factibilidadPrevia);
-        log.info("Generacion con IA: presupuesto total {} s, sin empezar un intento con menos de {} s,"
-                        + " comprobacion previa de factibilidad {}", presupuesto.toSeconds(),
-                minimoPorIntento.toSeconds(), this.factibilidadPrevia ? "activa" : "apagada");
+        log.info("Generacion con IA: presupuesto total {}, comprobacion previa de factibilidad {}",
+                presupuesto == null ? "desactivado (solo los limites por llamada)"
+                        : presupuesto.toSeconds() + " s, sin empezar un intento con menos de "
+                        + minimoPorIntento.toSeconds() + " s",
+                this.factibilidadPrevia ? "activa" : "apagada");
     }
 
     /** Con los valores por omision (pruebas). */
@@ -143,15 +150,22 @@ public class PlanGenerationPipeline {
         this.normalizer = normalizer;
         this.breaker = breaker;
         this.reloj = reloj == null ? Clock.systemUTC() : reloj;
-        // Acotados, no rechazados: 60 s - 30 min; el minimo por intento, 10 s - 150 s y nunca mayor que el total.
-        int total = presupuestoSegundos <= 0 ? PRESUPUESTO_POR_OMISION_S : Math.max(60, Math.min(presupuestoSegundos, 1800));
+        // 0 o negativo: sin presupuesto. Si no, acotados: 60 s - 30 min; el minimo por intento, 10 s - 150 s y nunca
+        // mayor que el total.
         int minimo = minimoPorIntentoSegundos <= 0 ? MINIMO_POR_INTENTO_POR_OMISION_S
                 : Math.max(10, Math.min(minimoPorIntentoSegundos, 150));
-        this.presupuesto = Duration.ofSeconds(total);
-        this.minimoPorIntento = Duration.ofSeconds(Math.min(minimo, total));
+        if (presupuestoSegundos <= 0) {
+            this.presupuesto = null;
+            this.minimoPorIntento = Duration.ofSeconds(minimo);
+        } else {
+            int total = Math.max(60, Math.min(presupuestoSegundos, 1800));
+            this.presupuesto = Duration.ofSeconds(total);
+            this.minimoPorIntento = Duration.ofSeconds(Math.min(minimo, total));
+        }
         this.factibilidadPrevia = factibilidadPrevia;
     }
 
+    /** Null si no hay presupuesto total. */
     public Duration presupuesto() { return presupuesto; }
 
     public Duration minimoPorIntento() { return minimoPorIntento; }
@@ -191,10 +205,10 @@ public class PlanGenerationPipeline {
                     context.userId(), inviable.get().describe());
         } else if (aiGenerator.isEnabled() && proveedorDisponible(context.userId())) {
             tiempos.motivo = "RECHAZOS";
-            var plazo = reloj.instant().plus(presupuesto);
+            var plazo = presupuesto == null ? null : reloj.instant().plus(presupuesto);
             for (int attempt = 1; attempt <= AI_ATTEMPTS; attempt++) {
-                var restante = Duration.between(reloj.instant(), plazo);
-                if (restante.compareTo(minimoPorIntento) < 0) {
+                var restante = plazo == null ? null : Duration.between(reloj.instant(), plazo);
+                if (restante != null && restante.compareTo(minimoPorIntento) < 0) {
                     // RENDIMIENTO: con menos de lo que tarda la prediccion mas corta medida, el intento no puede
                     // terminar dentro del presupuesto. Decide el motor de reglas, como tras un rechazo.
                     tiempos.motivo = "PRESUPUESTO";
@@ -248,7 +262,7 @@ public class PlanGenerationPipeline {
                 } catch (AiProviderUnavailableException e) {
                     // El proveedor esta caido: no tiene sentido gastar el segundo
                     // intento, va a fallar igual.
-                    if (!reloj.instant().isBefore(plazo)) {
+                    if (plazo != null && !reloj.instant().isBefore(plazo)) {
                         // RENDIMIENTO: la prediccion se dejo de esperar porque se agoto el presupuesto total, no
                         // porque el proveedor fallara: no cuenta para el cortacircuitos.
                         tiempos.motivo = "PRESUPUESTO";

@@ -134,6 +134,20 @@ class PresupuestoGeneracionTest {
     }
 
     @Test
+    @DisplayName("AUDITORIA PR #54 · por omision NO hay presupuesto: predicciones de 170 s, los tres intentos y sin"
+            + " plazo en el hilo (un plan valido lento no se cambia por el respaldo)")
+    void sinPresupuestoPorOmision() {
+        iaQueTardaYSeRechaza(170);
+        var p = new PlanGenerationPipeline(ia, reglas, validador, mock(PlanDraftNormalizer.class), breaker);
+        assertNull(p.presupuesto());
+        var r = p.run(contexto(), 30);
+        verify(ia, times(3)).requestOutput(any(), any(), anyInt());
+        assertEquals(4, r.attempts());
+        assertTrue(plazosVistos.stream().allMatch(java.util.Objects::isNull), "sin plazo: " + plazosVistos);
+        assertTrue(lineas("IA_PRESUPUESTO_AGOTADO").isEmpty());
+    }
+
+    @Test
     @DisplayName("comparacion: con el presupuesto maximo (30 min) el mismo caso hace los tres intentos")
     void sinPresupuestoEfectivoComoAntes() {
         iaQueTardaYSeRechaza(170);
@@ -185,11 +199,11 @@ class PresupuestoGeneracionTest {
     }
 
     @Test
-    @DisplayName("valores fuera de rango se acotan: 60 s - 30 min; el minimo por intento, 10-150 s y <= total")
+    @DisplayName("0 desactiva; si se activa se acota: 60 s - 30 min; el minimo por intento, 10-150 s y <= total")
     void acotado() {
         assertEquals(60, pipeline(5, 40).presupuesto().toSeconds());
         assertEquals(1800, pipeline(99999, 40).presupuesto().toSeconds());
-        assertEquals(360, pipeline(0, 0).presupuesto().toSeconds());
+        assertNull(pipeline(0, 0).presupuesto(), "0 = sin presupuesto total");
         assertEquals(40, pipeline(0, 0).minimoPorIntento().toSeconds());
         assertEquals(10, pipeline(360, 1).minimoPorIntento().toSeconds());
         assertEquals(60, pipeline(60, 150).minimoPorIntento().toSeconds());
