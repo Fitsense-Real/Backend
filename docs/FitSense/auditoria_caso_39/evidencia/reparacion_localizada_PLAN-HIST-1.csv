@@ -1,0 +1,6 @@
+experimento;resultado;motivos
+E1_ia_tal_cual;RECHAZADO;V15: el entrenamiento del 2026-11-19 dedica 4 de 6 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY. | V15: el entrenamiento del 2026-11-22 dedica 4 de 6 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY.
+E4_motor_de_reglas;VALIDO;
+E2_superior_ia_mas_inferior_reglas;VALIDO;
+E3_ia_con_un_cambio_por_sesion_inferior;VALIDO;
+E5_solo_sesiones_superiores_ia;RECHAZADO;V2: se esperaban 4 entrenamientos y el plan trae 2. | V23: la semana no cubre LOWER_KNEE, LOWER_HIP. Step 4C exige que la semana toque los cuatro patrones obligatorios cuando hay ejercicios para ellos. Hay LOWER_KNEE=27, LOWER_HIP=18 elegibles para esos patrones. Cambia algun ejercicio por uno de ese patron sin tocar series, repeticiones ni descansos: el volumen total no debe cambiar.

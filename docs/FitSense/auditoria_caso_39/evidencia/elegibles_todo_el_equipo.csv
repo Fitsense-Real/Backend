@@ -1,0 +1,397 @@
+exercise_id;body_part;equipment;slot;sin_patron;requisitos
+78;upper arms;leverage machine;UPPER_PUSH;false;1:leverage machine
+128;upper arms;band;FUERA;false;1:band
+129;upper arms;band;UPPER_PUSH;false;1:band
+130;upper arms;band;FUERA;false;1:band
+132;upper arms;band;FUERA;false;1:band
+313;upper arms;bench;UPPER_PUSH;false;1:bench
+314;upper arms;bench;UPPER_PUSH;false;1:bench
+315;upper arms;body weight;FUERA;false;
+316;upper arms;pull-up bar;UPPER_PULL;false;1:pull-up bar
+318;upper arms;body weight;UPPER_PUSH;false;
+319;upper arms;body weight;FUERA;false;
+320;upper arms;body weight;FUERA;false;
+368;upper arms;cable;FUERA;false;1:cable
+446;upper arms;cable;FUERA;false;1:cable
+448;upper arms;cable;FUERA;false;1:cable
+491;upper arms;cable;FUERA;false;1:cable|2:bench
+508;upper arms;body weight;UPPER_PUSH;false;
+509;upper arms;body weight;UPPER_PUSH;false;
+510;upper arms;body weight;UPPER_PUSH;false;
+524;upper arms;dumbbell;FUERA;false;1:dumbbell
+526;upper arms;dumbbell;FUERA;false;1:dumbbell|2:stability ball
+596;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+597;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+598;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+599;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+600;upper arms;dumbbell;UPPER_PUSH;false;1:dumbbell|2:stability ball
+601;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+608;upper arms;dumbbell;FUERA;false;1:dumbbell|2:stability ball
+686;upper arms;dumbbell;UPPER_PUSH;false;1:dumbbell|2:bench
+691;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+692;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+719;upper arms;dumbbell;FUERA;false;1:dumbbell|2:stability ball
+721;upper arms;dumbbell;FUERA;false;1:dumbbell
+722;upper arms;dumbbell;FUERA;false;1:dumbbell
+723;upper arms;dumbbell;FUERA;false;1:dumbbell
+724;upper arms;dumbbell;FUERA;false;1:dumbbell|2:stability ball
+726;upper arms;dumbbell;FUERA;false;1:dumbbell
+727;upper arms;dumbbell;FUERA;false;1:dumbbell
+728;upper arms;dumbbell;FUERA;false;1:dumbbell
+729;upper arms;dumbbell;FUERA;false;1:dumbbell
+756;upper arms;dumbbell;FUERA;false;1:dumbbell|2:bench
+757;upper arms;dumbbell;FUERA;false;1:dumbbell
+777;upper arms;parallel bars;UPPER_PUSH;false;1:parallel bars
+812;upper arms;stability ball;UPPER_PUSH;false;1:stability ball
+921;upper arms;smith machine;UPPER_PUSH;false;1:smith machine
+1011;upper arms;leverage machine;FUERA;false;1:leverage machine
+1012;upper arms;leverage machine;FUERA;false;1:leverage machine
+1047;upper arms;leverage machine;UPPER_PUSH;false;1:leverage machine
+1048;upper arms;leverage machine;FUERA;false;1:leverage machine
+1049;upper arms;leverage machine;FUERA;false;1:leverage machine
+1050;upper arms;leverage machine;FUERA;false;1:leverage machine
+1051;upper arms;leverage machine;UPPER_PUSH;false;1:leverage machine
+1052;upper arms;leverage machine;FUERA;false;1:leverage machine
+1079;upper arms;stability ball;UPPER_PUSH;false;1:stability ball
+1088;upper arms;medicine ball;UPPER_PUSH;false;1:medicine ball
+1089;upper arms;medicine ball;UPPER_PUSH;false;1:medicine ball
+1120;upper arms;body weight;UPPER_PUSH;false;
+1152;upper arms;body weight;UPPER_PUSH;false;
+1160;upper arms;band;FUERA;false;1:band
+1206;upper arms;body weight;UPPER_PUSH;false;
+1318;upper arms;bench;UPPER_PUSH;false;1:bench
+1320;upper arms;body weight;UPPER_PUSH;false;
+1321;upper arms;smith machine;UPPER_PUSH;false;1:smith machine
+1322;upper arms;body weight;FUERA;false;
+1338;upper arms;medicine ball;FUERA;false;1:medicine ball|2:stability ball
+67;upper legs;body weight;FUERA;false;
+94;upper legs;balance board;FUERA;false;1:balance board
+121;upper legs;band;LOWER_HIP;false;1:band
+122;upper legs;band;LOWER_HIP;false;1:band
+123;upper legs;band;FUERA;false;1:band
+125;upper legs;band;LOWER_HIP;false;1:band
+126;upper legs;band;FUERA;false;1:band
+142;upper legs;band;LOWER_HIP;false;1:band
+144;upper legs;band;LOWER_KNEE;false;1:band
+145;upper legs;band;LOWER_KNEE;false;1:band
+146;upper legs;band;LOWER_KNEE;false;1:band|2:plyo box|2:step platform
+147;upper legs;band;LOWER_HIP;false;1:band
+148;upper legs;band;LOWER_HIP;false;1:band
+309;upper legs;bench;LOWER_HIP;false;1:bench
+310;upper legs;body weight;FUERA;false;
+312;upper legs;body weight;FUERA;false;
+327;upper legs;cable;LOWER_KNEE;false;1:cable
+465;upper legs;body weight;FUERA;false;
+507;upper legs;body weight;LOWER_KNEE;false;
+791;upper legs;dumbbell;LOWER_KNEE;false;1:dumbbell|2:bench|2:plyo box
+811;upper legs;stability ball;FUERA;false;1:stability ball
+824;upper legs;stability ball;LOWER_HIP;false;1:stability ball
+827;upper legs;stability ball;FUERA;false;1:stability ball
+875;upper legs;bench;FUERA;false;1:bench
+877;upper legs;body weight;LOWER_KNEE;false;
+878;upper legs;body weight;LOWER_HIP;false;
+879;upper legs;bench;LOWER_HIP;false;1:bench
+880;upper legs;body weight;LOWER_KNEE;false;1:body weight|2:ghd bench
+881;upper legs;body weight;FUERA;false;
+884;upper legs;body weight;FUERA;false;
+915;upper legs;bench;LOWER_KNEE;false;1:bench
+916;upper legs;cable;LOWER_KNEE;false;1:cable
+917;upper legs;body weight;FUERA;false;
+939;upper legs;body weight;LOWER_KNEE;false;
+978;upper legs;body weight;FUERA;false;
+1003;upper legs;leverage machine;LOWER_KNEE;false;1:leverage machine
+1004;upper legs;leverage machine;LOWER_HIP;false;1:leverage machine
+1005;upper legs;leverage machine;LOWER_HIP;false;1:leverage machine
+1007;upper legs;leverage machine;LOWER_KNEE;false;1:leverage machine
+1008;upper legs;leverage machine;LOWER_KNEE;false;1:leverage machine
+1009;upper legs;leverage machine;LOWER_KNEE;false;1:leverage machine
+1042;upper legs;leverage machine;LOWER_HIP;false;1:leverage machine
+1043;upper legs;leverage machine;LOWER_HIP;false;1:leverage machine
+1044;upper legs;leverage machine;FUERA;false;1:leverage machine
+1045;upper legs;leverage machine;FUERA;false;1:leverage machine
+1046;upper legs;leverage machine;LOWER_KNEE;false;1:leverage machine
+1059;upper legs;body weight;LOWER_KNEE;false;
+1073;upper legs;body weight;LOWER_HIP;false;
+1075;upper legs;body weight;FUERA;false;
+1076;upper legs;body weight;LOWER_KNEE;false;
+1077;upper legs;body weight;FUERA;false;
+1103;upper legs;body weight;LOWER_KNEE;false;
+1112;upper legs;body weight;LOWER_HIP;false;
+1114;upper legs;body weight;LOWER_KNEE;false;
+1118;upper legs;body weight;LOWER_HIP;false;
+1148;upper legs;bench;LOWER_HIP;false;1:bench
+1149;upper legs;body weight;FUERA;false;
+1150;upper legs;body weight;FUERA;false;
+1151;upper legs;body weight;FUERA;false;
+1157;upper legs;band;LOWER_HIP;false;1:band
+1158;upper legs;band;FUERA;false;1:band
+1159;upper legs;band;FUERA;false;1:band
+1161;upper legs;stability ball;LOWER_HIP;false;1:stability ball
+1193;upper legs;body weight;FUERA;false;
+1194;upper legs;body weight;FUERA;false;
+1195;upper legs;body weight;LOWER_KNEE;false;
+1196;upper legs;body weight;LOWER_KNEE;false;
+1197;upper legs;step platform;LOWER_KNEE;false;1:step platform
+1198;upper legs;body weight;FUERA;false;
+1199;upper legs;body weight;FUERA;false;
+1200;upper legs;body weight;FUERA;false;
+1201;upper legs;body weight;FUERA;false;
+1205;upper legs;body weight;LOWER_KNEE;false;
+1263;upper legs;body weight;LOWER_KNEE;false;
+1311;upper legs;body weight;FUERA;false;
+1312;upper legs;suspension straps;LOWER_KNEE;false;1:suspension straps
+1314;upper legs;body weight;FUERA;false;
+1315;upper legs;body weight;LOWER_KNEE;false;
+1375;upper legs;body weight;FUERA;false;
+66;back;bench;FUERA;false;1:bench
+69;back;stability ball;FUERA;false;1:stability ball
+119;back;band;UPPER_PULL;false;1:band
+120;back;band;FUERA;false;1:band
+301;back;body weight;UPPER_PULL;false;1:body weight|2:wall bars
+302;back;body weight;UPPER_PULL;false;1:body weight|2:wall bars
+304;back;body weight;UPPER_PULL;false;1:body weight|2:wall bars
+307;back;body weight;UPPER_PULL;false;1:body weight|2:wall bars
+308;back;body weight;UPPER_PULL;false;1:body weight|2:wall bars
+349;back;cable;UPPER_PULL;false;1:cable
+350;back;cable;UPPER_PULL;false;1:cable
+352;back;cable;UPPER_PULL;false;1:cable|2:bench
+357;back;cable;UPPER_PULL;false;1:cable
+394;back;cable;UPPER_PULL;false;1:cable
+395;back;cable;UPPER_PULL;false;1:cable
+432;back;cable;UPPER_PULL;false;1:cable|2:bench
+433;back;cable;UPPER_PULL;false;1:cable
+436;back;cable;UPPER_PULL;false;1:cable
+437;back;cable;UPPER_PULL;false;1:cable
+482;back;cable;UPPER_PULL;false;1:cable
+592;back;dumbbell;UPPER_PULL;false;1:dumbbell|2:bench
+593;back;dumbbell;FUERA;false;1:dumbbell|2:bench
+594;back;dumbbell;FUERA;false;1:dumbbell|2:bench
+712;back;dumbbell;UPPER_PULL;false;1:dumbbell|2:bench
+775;back;body weight;UPPER_PUSH;false;
+804;back;stability ball;FUERA;false;1:stability ball
+807;back;stability ball;FUERA;false;1:stability ball
+808;back;stability ball;FUERA;false;1:stability ball
+809;back;stability ball;FUERA;false;1:stability ball
+822;back;stability ball;FUERA;false;1:stability ball
+908;back;body weight;FUERA;false;1:body weight|2:bench
+909;back;bench;FUERA;false;1:bench
+910;back;pull-up bar;UPPER_PULL;false;1:pull-up bar|1:smith machine|1:suspension straps
+911;back;pull-up bar;UPPER_PULL;false;1:pull-up bar|1:smith machine
+912;back;bench;UPPER_PULL;false;1:bench
+914;back;suspension straps;UPPER_PULL;false;1:suspension straps
+994;back;leverage machine;UPPER_PULL;false;1:leverage machine
+996;back;leverage machine;FUERA;false;1:leverage machine
+997;back;leverage machine;UPPER_PULL;false;1:leverage machine
+999;back;leverage machine;FUERA;false;1:leverage machine
+1000;back;leverage machine;FUERA;false;1:leverage machine
+1001;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1002;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1035;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1036;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1037;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1038;back;leverage machine;FUERA;false;1:leverage machine
+1039;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1040;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1041;back;leverage machine;UPPER_PULL;false;1:leverage machine
+1066;back;body weight;FUERA;false;
+1146;back;bench;UPPER_PUSH;false;1:bench
+1156;back;band;UPPER_PULL;false;1:band
+1257;back;body weight;FUERA;false;
+1258;back;body weight;FUERA;false;
+1260;back;body weight;FUERA;false;
+1261;back;body weight;FUERA;false;
+1307;back;suspension straps;UPPER_PULL;false;1:suspension straps
+1309;back;body weight;FUERA;false;
+1310;back;body weight;FUERA;false;
+57;waist;body weight;FUERA;false;
+58;waist;body weight;FUERA;false;1:body weight|2:hyperextension bench
+59;waist;body weight;FUERA;false;
+60;waist;body weight;FUERA;false;
+70;waist;medicine ball;FUERA;false;1:medicine ball
+105;waist;band;FUERA;false;1:band|2:ab wheel
+106;waist;band;FUERA;false;1:band
+107;waist;band;FUERA;false;1:band
+109;waist;band;FUERA;false;1:band
+110;waist;band;FUERA;false;1:band
+111;waist;band;FUERA;false;1:band
+112;waist;band;FUERA;false;1:band
+138;waist;band;FUERA;false;1:band
+139;waist;band;FUERA;false;1:band
+296;waist;bench;FUERA;false;1:bench
+297;waist;body weight;FUERA;false;
+298;waist;body weight;FUERA;false;
+299;waist;body weight;FUERA;false;
+348;waist;cable;FUERA;false;1:cable
+424;waist;cable;FUERA;false;1:cable
+425;waist;cable;FUERA;false;1:cable
+462;waist;captains chair;FUERA;false;1:captains chair
+497;waist;body weight;FUERA;false;
+498;waist;body weight;FUERA;false;
+499;waist;body weight;FUERA;false;
+501;waist;body weight;FUERA;false;
+502;waist;body weight;FUERA;false;
+503;waist;body weight;FUERA;false;
+504;waist;body weight;FUERA;false;1:body weight|2:bench
+505;waist;body weight;FUERA;false;1:body weight|2:bench
+530;waist;stability ball;FUERA;false;1:stability ball
+531;waist;stability ball;FUERA;false;1:stability ball
+774;waist;body weight;FUERA;false;
+814;waist;body weight;FUERA;false;
+856;waist;body weight;FUERA;false;
+859;waist;body weight;FUERA;false;
+863;waist;body weight;FUERA;false;
+864;waist;body weight;FUERA;false;
+872;waist;body weight;FUERA;false;
+902;waist;body weight;FUERA;false;
+903;waist;body weight;FUERA;false;
+904;waist;body weight;FUERA;false;1:body weight|2:bench
+905;waist;body weight;FUERA;false;1:body weight|2:bench
+907;waist;body weight;FUERA;false;
+935;waist;body weight;FUERA;false;
+936;waist;body weight;FUERA;false;
+976;waist;bench;FUERA;false;1:bench
+993;waist;leverage machine;FUERA;false;1:leverage machine
+1027;waist;leverage machine;FUERA;false;1:leverage machine
+1028;waist;leverage machine;FUERA;false;1:leverage machine
+1029;waist;leverage machine;FUERA;false;1:leverage machine
+1030;waist;leverage machine;FUERA;false;1:leverage machine
+1060;waist;body weight;FUERA;false;
+1061;waist;bench;FUERA;false;1:bench
+1062;waist;bench;FUERA;false;1:bench
+1063;waist;bench;FUERA;false;1:bench
+1064;waist;bench;FUERA;false;1:bench
+1065;waist;body weight;FUERA;false;
+1101;waist;body weight;FUERA;false;
+1104;waist;body weight;FUERA;false;
+1105;waist;body weight;FUERA;false;
+1107;waist;body weight;FUERA;false;
+1124;waist;stability ball;FUERA;false;1:stability ball
+1125;waist;stability ball;FUERA;false;1:stability ball
+1139;waist;body weight;FUERA;false;
+1140;waist;body weight;FUERA;false;
+1141;waist;body weight;FUERA;false;
+1142;waist;bench;FUERA;false;1:bench
+1181;waist;body weight;FUERA;false;
+1182;waist;plyo box;FUERA;false;1:plyo box|1:step platform
+1183;waist;body weight;FUERA;false;
+1184;waist;parallel bars;FUERA;false;1:parallel bars
+1186;waist;body weight;FUERA;false;
+1187;waist;body weight;FUERA;false;
+1256;waist;body weight;FUERA;false;
+1269;waist;stability ball;FUERA;false;1:stability ball
+1300;waist;suspension straps;FUERA;false;1:suspension straps
+1301;waist;suspension straps;FUERA;false;1:suspension straps
+1302;waist;body weight;FUERA;false;
+1303;waist;parallel bars;FUERA;false;1:captains chair|1:parallel bars
+1304;waist;parallel bars;FUERA;false;1:captains chair|1:parallel bars
+1305;waist;body weight;FUERA;false;
+1306;waist;parallel bars;FUERA;false;1:parallel bars
+72;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+73;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+102;chest;band;UPPER_PUSH;false;1:band|2:bench
+341;chest;cable;UPPER_PUSH;false;1:cable|2:bench
+342;chest;cable;FUERA;false;1:cable|2:bench
+343;chest;cable;FUERA;false;1:cable|2:stability ball
+421;chest;cable;UPPER_PUSH;false;1:cable
+460;chest;body weight;UPPER_PUSH;false;
+466;chest;stability ball;FUERA;false;1:stability ball
+494;chest;body weight;UPPER_PUSH;false;
+495;chest;bench;UPPER_PUSH;false;1:bench
+496;chest;body weight;UPPER_PUSH;false;
+547;chest;dumbbell;UPPER_PUSH;false;1:dumbbell|2:bench
+548;chest;dumbbell;UPPER_PUSH;false;1:dumbbell|2:bench
+580;chest;dumbbell;UPPER_PUSH;false;1:dumbbell|2:bench
+581;chest;dumbbell;FUERA;false;1:dumbbell|2:bench
+582;chest;dumbbell;FUERA;false;1:dumbbell|2:stability ball
+583;chest;dumbbell;UPPER_PUSH;false;1:dumbbell|2:bench
+588;chest;dumbbell;UPPER_PUSH;false;1:dumbbell|2:bench
+589;chest;dumbbell;UPPER_PUSH;false;1:dumbbell|2:stability ball
+591;chest;dumbbell;FUERA;false;1:dumbbell|2:bench
+773;chest;body weight;FUERA;false;
+896;chest;step platform;UPPER_PUSH;false;1:step platform
+897;chest;plyo box;UPPER_PUSH;false;1:plyo box|1:step platform
+898;chest;smith machine;UPPER_PUSH;false;1:smith machine
+899;chest;body weight;UPPER_PUSH;false;1:body weight|2:bench
+900;chest;body weight;FUERA;false;
+901;chest;body weight;FUERA;false;
+933;chest;body weight;UPPER_PUSH;false;
+988;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+989;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+990;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+991;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+992;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+1025;chest;leverage machine;FUERA;false;1:leverage machine
+1026;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+1058;chest;body weight;UPPER_PUSH;false;
+1080;chest;medicine ball;UPPER_PUSH;false;1:medicine ball
+1081;chest;medicine ball;UPPER_PUSH;false;1:medicine ball
+1082;chest;medicine ball;UPPER_PUSH;false;1:medicine ball
+1092;chest;leverage machine;UPPER_PUSH;false;1:leverage machine
+1095;chest;body weight;UPPER_PUSH;false;
+1096;chest;body weight;UPPER_PUSH;false;
+1097;chest;body weight;UPPER_PUSH;false;
+1098;chest;body weight;UPPER_PUSH;false;
+1099;chest;body weight;UPPER_PUSH;false;
+1111;chest;body weight;UPPER_PUSH;false;
+1113;chest;body weight;UPPER_PUSH;false;
+1115;chest;body weight;UPPER_PUSH;false;
+1122;chest;stability ball;UPPER_PUSH;false;1:stability ball
+1123;chest;stability ball;UPPER_PUSH;false;1:stability ball
+1126;chest;medicine ball;UPPER_PUSH;false;1:medicine ball
+1138;chest;body weight;UPPER_PUSH;false;
+1155;chest;band;UPPER_PUSH;false;1:band
+1179;chest;body weight;UPPER_PUSH;false;
+1262;chest;body weight;UPPER_PUSH;false;
+1297;chest;suspension straps;UPPER_PUSH;false;1:suspension straps
+1334;chest;body weight;UPPER_PUSH;false;
+98;shoulders;band;FUERA;false;1:band
+99;shoulders;band;FUERA;false;1:band
+100;shoulders;band;FUERA;false;1:band
+135;shoulders;band;UPPER_PULL;false;1:band
+336;shoulders;cable;UPPER_PULL;false;1:cable
+416;shoulders;cable;FUERA;false;1:cable
+417;shoulders;cable;FUERA;false;1:cable
+575;shoulders;dumbbell;FUERA;false;1:dumbbell|2:bench
+576;shoulders;dumbbell;FUERA;false;1:dumbbell|2:bench
+703;shoulders;dumbbell;FUERA;false;1:dumbbell
+706;shoulders;dumbbell;FUERA;false;1:dumbbell
+707;shoulders;dumbbell;FUERA;false;1:dumbbell
+708;shoulders;dumbbell;FUERA;false;1:dumbbell
+709;shoulders;dumbbell;FUERA;false;1:dumbbell
+973;shoulders;body weight;FUERA;false;
+986;shoulders;leverage machine;FUERA;false;1:leverage machine
+1020;shoulders;leverage machine;FUERA;false;1:leverage machine
+1021;shoulders;leverage machine;FUERA;false;1:leverage machine
+1137;shoulders;body weight;FUERA;false;
+55;lower legs;body weight;FUERA;false;
+134;lower legs;band;FUERA;false;1:band
+294;lower legs;body weight;FUERA;false;
+453;lower legs;body weight;FUERA;false;
+454;lower legs;body weight;FUERA;false;
+455;lower legs;body weight;FUERA;false;
+493;lower legs;bench;FUERA;false;1:bench|2:step platform
+695;lower legs;dumbbell;FUERA;false;1:dumbbell
+816;lower legs;stability ball;FUERA;false;1:stability ball|2:dumbbell
+817;lower legs;stability ball;FUERA;false;1:stability ball|2:dumbbell
+818;lower legs;stability ball;FUERA;false;1:stability ball|2:dumbbell
+984;lower legs;leverage machine;FUERA;false;1:leverage machine
+985;lower legs;leverage machine;FUERA;false;1:leverage machine
+1014;lower legs;leverage machine;FUERA;false;1:leverage machine
+1015;lower legs;leverage machine;FUERA;false;1:leverage machine
+1016;lower legs;leverage machine;FUERA;false;1:leverage machine
+1017;lower legs;leverage machine;FUERA;false;1:leverage machine
+1018;lower legs;leverage machine;FUERA;false;1:leverage machine
+1136;lower legs;body weight;FUERA;false;
+1253;lower legs;body weight;FUERA;false;1:body weight|2:step platform
+1254;lower legs;body weight;FUERA;false;
+1255;lower legs;bench;FUERA;false;1:bench
+1178;lower arms;body weight;FUERA;false;
+1373;lower arms;body weight;FUERA;false;
+253;cardio;body weight;FUERA;false;
+853;cardio;body weight;FUERA;false;
+1054;cardio;body weight;FUERA;false;
+1093;cardio;body weight;FUERA;false;
+1117;cardio;body weight;FUERA;false;
+1325;cardio;treadmill;FUERA;false;1:treadmill
+1053;neck;body weight;FUERA;false;
+1173;neck;body weight;FUERA;false;

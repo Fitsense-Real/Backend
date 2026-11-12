@@ -1,0 +1,33 @@
+fecha;enfoque;orden;exercise_id;nombre;body_part;equipo;complemento_4A;cuenta_V15;grupo_del_enfoque
+2026-11-16;UPPER_BODY;1;1036;Remo en T-bar con palanca invertida;back;leverage machine;false;true;true
+2026-11-16;UPPER_BODY;2;1096;Flexión;chest;body weight;false;true;true
+2026-11-16;UPPER_BODY;3;1054;Escalador;cardio;body weight;true;false;false
+2026-11-16;UPPER_BODY;4;1137;Estiramiento deltoides posterior;shoulders;body weight;true;false;true
+2026-11-16;UPPER_BODY;5;1120;Flexión en antebrazos;upper arms;body weight;false;true;true
+2026-11-16;UPPER_BODY;6;592;Remo inclinado con mancuerna;back;dumbbell;false;true;true
+2026-11-16;UPPER_BODY;7;706;Elevación lateral de brazo con mancuerna sentado;shoulders;dumbbell;false;true;true
+2026-11-16;UPPER_BODY;8;596;Curl de bíceps en banco inclinado con mancuerna;upper arms;dumbbell;false;true;true
+2026-11-19;LOWER_BODY;1;1004;Peso muerto con palanca;upper legs;leverage machine;false;true;true
+2026-11-19;LOWER_BODY;2;864;Abdominal medio;waist;body weight;false;true;true
+2026-11-19;LOWER_BODY;3;1325;Caminata en cinta inclinada;cardio;treadmill;true;false;false
+2026-11-19;LOWER_BODY;4;978;Estiramiento de isquiotibiales con pierna elevada;upper legs;body weight;true;false;true
+2026-11-19;LOWER_BODY;5;144;Sentadilla con banda;upper legs;band;false;true;true
+2026-11-19;LOWER_BODY;6;122;Elevacion de cadera con banda;upper legs;band;false;true;true
+2026-11-19;LOWER_BODY;7;294;Elevacion de talones de peso corporal de pie;lower legs;body weight;false;true;true
+2026-11-19;LOWER_BODY;8;1112;Inclinación pélvica hacia puente;upper legs;body weight;false;true;true
+2026-11-20;UPPER_BODY;1;991;Press de pecho inclinado con palanca;chest;leverage machine;false;true;true
+2026-11-20;UPPER_BODY;2;433;Remo sentado con cuerda;back;cable;false;true;true
+2026-11-20;UPPER_BODY;3;253;Gateo de oso;cardio;body weight;true;false;false
+2026-11-20;UPPER_BODY;4;1137;Estiramiento deltoides posterior;shoulders;body weight;true;false;true
+2026-11-20;UPPER_BODY;5;132;Extensión de tríceps lateral con banda;upper arms;band;false;true;true
+2026-11-20;UPPER_BODY;6;728;Curl de bíceps interior sentado con mancuerna;upper arms;dumbbell;false;true;true
+2026-11-20;UPPER_BODY;7;336;Remo espalda posterior en polea sentado con cuerda;shoulders;cable;false;true;true
+2026-11-20;UPPER_BODY;8;509;Flexión cerrada con rodillas;upper arms;body weight;false;true;true
+2026-11-22;LOWER_BODY;1;1005;Extensión de cadera con palanca v. 2;upper legs;leverage machine;false;true;true
+2026-11-22;LOWER_BODY;2;1301;Crunch invertido suspendido;waist;suspension straps;false;true;true
+2026-11-22;LOWER_BODY;3;1117;Pies rápidos v. 2;cardio;body weight;true;false;false
+2026-11-22;LOWER_BODY;4;1151;Estiramiento de glúteos sentado;upper legs;body weight;true;false;true
+2026-11-22;LOWER_BODY;5;1073;Puente de glúteos bajo en el suelo;upper legs;body weight;false;true;true
+2026-11-22;LOWER_BODY;6;1114;Sentadilla de baño con apoyo;upper legs;body weight;false;true;true
+2026-11-22;LOWER_BODY;7;1253;Elevación de gemelos de pie sobre escalón;lower legs;body weight;false;true;true
+2026-11-22;LOWER_BODY;8;1199;Abducción de cadera lateral;upper legs;body weight;false;true;true

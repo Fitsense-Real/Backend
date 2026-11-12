@@ -1,0 +1,72 @@
+equipo=[body weight, dumbbell, band, kettlebell, rope, barbell, ez barbell, olympic barbell, cable, leverage machine, smith machine, sled machine, weighted, assisted, other, bench, pull-up bar, suspension straps, parallel bars, gymnastic rings, bosu ball, step platform, plyo box, stationary bike, treadmill, landmine, captains chair, anchor point, ghd bench, hyperextension bench, squat rack, preacher bench, vertical pole]
+elegibles=350
+primera_semana_calculada=2026-11-16
+politica=PlanningPolicy[id=PLAN-HIST-1, candidata=false, v4Segundos=false, descripcion=V20 fijo al 70 %, V4 historico (minutos declarados frente a round(M x 1,15)), V24 y 4D vigentes, duracion=PISO_70, v4Maximo=false, volumenSemanal=false, pullReal=false, impacto=false, alternativasDeterministas=false, fatigaGM=false, sustitucionDesmotivacion=false, reparaCatalogoInactivo=false]
+perfil=PlanningProfile[userId=39, age=41, biologicalSex=MALE, heightCm=180.00, weightKg=100.00, targetWeightKg=80.00, fitnessLevel=BEGINNER, goalType=GENERAL_FITNESS, goalText=Quiero Correr un maraton UWU, healthNotes=null, trainingLocation=GYM, daysPerWeek=4, availableDays=[1, 4, 5, 7], sessionMinutes=60, equipmentCodes=[body weight, dumbbell, band, kettlebell, rope, barbell, ez barbell, olympic barbell, cable, leverage machine, smith machine, sled machine, weighted, assisted, other, bench, pull-up bar, suspension straps, parallel bars, gymnastic rings, bosu ball, step platform, plyo box, stationary bike, treadmill, landmine, captains chair, anchor point, ghd bench, hyperextension bench, squat rack, preacher bench, vertical pole], blockedExerciseIds=[], declaradas=Declaradas[allowHighImpact=true, allowFloorExercises=true, allowKneelingExercises=true, allowHangingExercises=false, allowOverheadExercises=false]]
+huella_previa_reproducida=[Cobertura 4C previa del usuario 39: LOWER_KNEE=27 LOWER_HIP=18 UPPER_PUSH=62 UPPER_PULL=33 fuera_de_slot=210 veredicto=ROBUSTO (350 elegibles, modo OBSERVE)]
+ids_ia_fuera_del_conjunto_elegible=[]
+motivos_intento1_reproducidos=[V15: el entrenamiento del 2026-11-19 dedica 4 de 6 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY., V15: el entrenamiento del 2026-11-22 dedica 4 de 6 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY.]
+motivos_intento1_identicos_al_log_real=true
+feedback_intento2_motivos=[V15: el entrenamiento del 2026-11-19 dedica 4 de 6 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY., V15: el entrenamiento del 2026-11-22 dedica 4 de 6 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY.]
+prompt1_caracteres=115051
+prompt2_caracteres=124794
+plan={plan_id=1, status=ACTIVE, generation_source=RULE_ENGINE, generation_attempts=3, planning_policy=PLAN-HIST-1, week_start_date=2026-11-16}
+huella_respaldo_reproducida=[COBERTURA_CAPACIDADES usuario 39 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=GENERAL_FITNESS resultado=COMPLETO cubiertas=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY] colocaciones={HYPERTROPHY=12, STRENGTH=4, MUSCULAR_ENDURANCE=8, CARDIO=4, MOBILITY=4} slots_sin_cubrir=[], COBERTURA_CAPACIDADES usuario 39 semana 1 origen RULE_ENGINE: version=4D-v4 objetivo=GENERAL_FITNESS resultado=COMPLETO cubiertas=[STRENGTH, MUSCULAR_ENDURANCE, CARDIO, MOBILITY] no_cubiertas={} omitidas=[] secundarias=[HYPERTROPHY] colocaciones={HYPERTROPHY=12, STRENGTH=4, MUSCULAR_ENDURANCE=8, CARDIO=4, MOBILITY=4} slots_sin_cubrir=[]]
+distribucion_respaldo_reproducida=[Usuario 39 · Cobertura 4C posterior - semana 1 (4 dias: [2026-11-16, 2026-11-19, 2026-11-20, 2026-11-22])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [0, 1, 0, 1]
+  LOWER_HIP   -> 5 colocaciones  | 2 dias | [0, 3, 0, 2]
+  UPPER_PUSH  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  UPPER_PULL  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide), Usuario 39 · Cobertura 4C posterior - semana 1 (4 dias: [2026-11-16, 2026-11-19, 2026-11-20, 2026-11-22])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [0, 1, 0, 1]
+  LOWER_HIP   -> 5 colocaciones  | 2 dias | [0, 3, 0, 2]
+  UPPER_PUSH  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  UPPER_PULL  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide), Usuario 39 · Cobertura 4C posterior - semana 1 (4 dias: [2026-11-16, 2026-11-19, 2026-11-20, 2026-11-22])
+  LOWER_KNEE  -> 4 colocaciones  | 2 dias | [0, 2, 0, 2]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [0, 1, 0, 0]
+  UPPER_PUSH  -> 6 colocaciones  | 2 dias | [3, 0, 3, 0]
+  UPPER_PULL  -> 5 colocaciones  | 2 dias | [3, 0, 2, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide), Usuario 39 · Cobertura 4C posterior - semana 1 (4 dias: [2026-11-16, 2026-11-19, 2026-11-20, 2026-11-22])
+  LOWER_KNEE  -> 4 colocaciones  | 2 dias | [0, 2, 0, 2]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [0, 1, 0, 0]
+  UPPER_PUSH  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  UPPER_PULL  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide), Usuario 39 · Cobertura 4C posterior - semana 1 (4 dias: [2026-11-16, 2026-11-19, 2026-11-20, 2026-11-22])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [0, 1, 0, 1]
+  LOWER_HIP   -> 4 colocaciones  | 2 dias | [0, 2, 0, 2]
+  UPPER_PUSH  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  UPPER_PULL  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide), Usuario 39 · Cobertura 4C posterior - semana 1 (2 dias: [2026-11-16, 2026-11-20])
+  LOWER_KNEE  -> 0 colocaciones  | 0 dias | [0, 0]
+  LOWER_HIP   -> 0 colocaciones  | 0 dias | [0, 0]
+  UPPER_PUSH  -> 4 colocaciones  | 2 dias | [2, 2]
+  UPPER_PULL  -> 4 colocaciones  | 2 dias | [2, 2]
+  Cobertura estructural: INCOMPLETA, faltan [LOWER_KNEE, LOWER_HIP]
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide), Usuario 39 · Cobertura 4C posterior - semana 1 (4 dias: [2026-11-16, 2026-11-19, 2026-11-20, 2026-11-22])
+  LOWER_KNEE  -> 2 colocaciones  | 2 dias | [0, 1, 0, 1]
+  LOWER_HIP   -> 5 colocaciones  | 2 dias | [0, 3, 0, 2]
+  UPPER_PUSH  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  UPPER_PULL  -> 4 colocaciones  | 2 dias | [2, 0, 2, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide), Usuario 39 · Cobertura 4C posterior - semana 1 (4 dias: [2026-11-16, 2026-11-19, 2026-11-20, 2026-11-22])
+  LOWER_KNEE  -> 4 colocaciones  | 2 dias | [0, 2, 0, 2]
+  LOWER_HIP   -> 1 colocacion    | 1 dia  | [0, 1, 0, 0]
+  UPPER_PUSH  -> 6 colocaciones  | 2 dias | [3, 0, 3, 0]
+  UPPER_PULL  -> 5 colocaciones  | 2 dias | [3, 0, 2, 0]
+  Cobertura estructural: COMPLETA
+  Distribucion semanal: sin slots concentrados en un solo dia
+  Modo: ENFORCE_AI_ONLY (la distribucion NO decide nada: solo se mide)]
+tiempos=[GENERACION_TIEMPOS user=39 semana=1 origen=RESPALDO motivo_respaldo=PROVEEDOR intentos_ia=2 ia_ms=[91, 30] validacion_ms=13 respaldo_ms=48 fitsense_ms=66 total_ms=187]

@@ -1,0 +1,13 @@
+con todo el equipo: {'UPPER_PUSH': 74, 'T': 396, 'F': 237, 'UPPER_PULL': 38, 'LOWER_HIP': 20, 'LOWER_KNEE': 27}
+equipos influyentes: ['body weight', 'dumbbell', 'band', 'stability ball', 'medicine ball', 'cable', 'leverage machine', 'smith machine', 'bench', 'pull-up bar', 'suspension straps', 'parallel bars', 'balance board', 'ab wheel', 'step platform', 'treadmill', 'captains chair', 'wall bars', 'ghd bench', 'hyperextension bench']
+10 subconjuntos reproducen la huella real:
+  sin ['stability ball', 'medicine ball', 'balance board', 'ab wheel', 'wall bars'] 
+  sin ['stability ball', 'medicine ball', 'balance board', 'treadmill', 'wall bars']   (descartado: la IA uso el 1325, cinta, y el validador lo acepto como elegible)
+  sin ['stability ball', 'medicine ball', 'balance board', 'captains chair', 'wall bars'] 
+  sin ['stability ball', 'medicine ball', 'balance board', 'wall bars', 'hyperextension bench'] 
+  sin ['stability ball', 'medicine ball', 'ab wheel', 'treadmill', 'wall bars']   (descartado: la IA uso el 1325, cinta, y el validador lo acepto como elegible)
+  sin ['stability ball', 'medicine ball', 'ab wheel', 'captains chair', 'wall bars'] 
+  sin ['stability ball', 'medicine ball', 'ab wheel', 'wall bars', 'hyperextension bench'] 
+  sin ['stability ball', 'medicine ball', 'treadmill', 'captains chair', 'wall bars']   (descartado: la IA uso el 1325, cinta, y el validador lo acepto como elegible)
+  sin ['stability ball', 'medicine ball', 'treadmill', 'wall bars', 'hyperextension bench']   (descartado: la IA uso el 1325, cinta, y el validador lo acepto como elegible)
+  sin ['stability ball', 'medicine ball', 'captains chair', 'wall bars', 'hyperextension bench'] 
