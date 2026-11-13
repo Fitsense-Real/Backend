@@ -52,6 +52,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Con V37 el paso no se activa en estos perfiles (el relleno no rompe V15); con V38 (la antigua V37.1)
  * si (GENERAL_FITNESS 4 dias en gimnasio). La prueba exige al menos un cambio solo cuando
  * V38 (la V37.1) esta aplicada y comprueba las propiedades de todos los que haya.
+ * <p>
+ * Con la clasificacion corregida de V50 (auditoria integral del catalogo) el paso ya no se activaba con 8 semillas;
+ * se recorren 24 para seguir ejercitandolo (se activa y todas sus propiedades se cumplen). La prueba no se relaja.
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -81,7 +84,7 @@ class V15CambioDeGrupoIT {
     @Autowired JdbcTemplate jdbc;
 
     static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
-    static final int SEMILLAS = 8;
+    static final int SEMILLAS = 24;
     /** El equipamiento de los perfiles de referencia (GeneracionReferenciaBase). */
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable",
             "leverage machine", "bench", "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine");

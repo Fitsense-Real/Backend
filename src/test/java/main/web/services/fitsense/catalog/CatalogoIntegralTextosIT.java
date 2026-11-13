@@ -92,11 +92,14 @@ class CatalogoIntegralTextosIT {
             }
             if (f.instrucciones() != null) {
                 instrucciones++;
-                assertEquals(f.instrucciones(), actual.get("instructions_es"), "instrucciones de " + f.id());
+                // V50 cambia el ultimo paso del 1254 al pasar a estiramiento por tiempo (DURATION).
+                String esperado = f.id() == 1254L ? f.instrucciones().replace("Repite el número de repeticiones indicado.",
+                        "Mantén la duración indicada.") : f.instrucciones();
+                assertEquals(esperado, actual.get("instructions_es"), "instrucciones de " + f.id());
                 // El JSON de pasos y el texto plano dicen lo mismo.
                 var pasos = jdbc.queryForList("SELECT jsonb_array_elements_text(instruction_steps_es)"
                         + " FROM exercises WHERE exercise_id = ?", String.class, f.id());
-                assertEquals(f.instrucciones(), String.join(" ", pasos), "pasos de " + f.id());
+                assertEquals(esperado, String.join(" ", pasos), "pasos de " + f.id());
                 assertTrue(pasos.size() >= 3 && pasos.size() <= 7, "pasos de " + f.id() + ": " + pasos.size());
             }
         }
