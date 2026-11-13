@@ -208,7 +208,12 @@ Pruebas necesarias:
 
 - **Sin cambios:** PR-1.7, FIX-PR-2.1-EXP, PLAN-REV-2.0, PLAN-HIST-1, V15, V24, V8C, V23 y V25–V27, reintentos, progresión, reincorporación, adaptación, presupuesto de IA y sondeo de Replicate. No se ha tocado ningún archivo de esas piezas; el diff solo afecta a `ExternalCatalogService`, `SafetyConflictPolicy`, `SafetyConflictChecker` y la clase nueva `ContencionTextoBandera`.
 - **Diferencias esperadas en los planes:** solo para perfiles que declaran colgarse, brazos arriba o suelo prohibidos, y solo porque se retiran los ids contenidos (§5: 85 perfiles con cambio esperado y 0 cambios no explicados).
-- **Resultado de la regresión completa:** ver la descripción de la PR.
+- **Resultado de la regresión completa local** (`mvnw -o verify -Pintegration`, PostgreSQL 16 en Testcontainers, sin Replicate):
+  - Unitarias: 1.439 ejecutadas, 0 fallos, 0 errores (1 omitida, ya lo estaba en `generation`).
+  - Integración: 630 ejecutadas, 47 omitidas (laboratorios opt-in, ya lo estaban), 3 fallos. Los tres eran cambios de expectativa provocados por la propia contención, no defectos, y se actualizaron como cambios documentados:
+    1. `CatalogoElegibleIT` (2 pruebas): su oráculo SQL independiente no conocía INC-CAT-C39 y seguía esperando 55, 1093, 1095, 1181 y 1311 en perfiles sin suelo. Se le añade la contención como lista propia de la prueba (sin leer `ContencionTextoBandera`), igual que ya hacía con INC-CAT-1374. Vuelve a 3/3: igualdad exacta id por id en los 432 casos de la matriz.
+    2. `Usuario31ReproduccionIT.catalogoActual`: el perfil 31 prohíbe suelo y colgarse. Al salir los ids contenidos de su conjunto elegible, la selección determinista del motor de reglas cambia (sábado 1320 → 314, domingo 107 → 1027). Ninguno de los cuatro está contenido y 1320 sigue elegible (lo comprueba la primera aserción). La prueba ahora exige 776 y 314 y que no aparezca ningún id contenido para sus restricciones. Vuelve a 2/2.
+  - Tras las dos correcciones, las dos clases afectadas pasan; el resto de la suite no se tocó. El CI de la PR vuelve a ejecutar la suite completa.
 
 ## 8. Siguientes etapas (sin implementar)
 

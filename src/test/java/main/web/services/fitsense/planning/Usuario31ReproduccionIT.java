@@ -54,7 +54,13 @@ class Usuario31ReproduccionIT extends Usuario31Base {
         assertEquals("actual elegibles: 776=si 1320=si 1185=si 309=si 1103=si 301=si", r.get(0));
         rechazosDeLaIa(r, 13);
         assertEquals("actual plan 63: VALIDA", r.get(4));
-        contiene(r.get(5), " 776[back/HIP_HINGE]", " 1320[upper arms/HORIZONTAL_PUSH]");
+        // INC-CAT-C39 (CORRECCIONES_SEGURIDAD.md): este perfil prohibe suelo y colgarse, asi que los ids contenidos
+        // salen de su conjunto elegible y la seleccion determinista del motor cambia (sabado 1320 -> 314, domingo
+        // 107 -> 1027; ninguno de los cuatro esta contenido). 1320 sigue elegible (linea 0) y 776 sigue en el plan.
+        contiene(r.get(5), " 776[back/HIP_HINGE]", " 314[upper arms/HORIZONTAL_PUSH]");
+        for (long id : new long[]{316, 1301, 1306, 1153, 1303, 1304, 1152, 55, 224, 637, 741, 875, 1062, 1063,
+                1093, 1095, 1156, 1181, 1193, 1311})
+            assertFalse(r.get(5).contains(" " + id + "["), "contenido INC-CAT-C39 en el plan: " + id);
     }
 
     @Test
