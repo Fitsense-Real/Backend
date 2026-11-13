@@ -26,6 +26,8 @@ public final class SafetyConflictPolicy {
 
     public static final String RETENIDO_INC_4C_03 = "INC-4C-03";
     public static final String CONTENIDO_INC_CAT_1374 = "INC-CAT-1374";
+    /** Contencion por texto del catalogo contra bandera (caso 39, {@link ContencionTextoBandera}). */
+    public static final String CONTENIDO_INC_CAT_C39 = ContencionTextoBandera.CODIGO;
     public static final String ALTO_IMPACTO = "alto_impacto";
     public static final String SUELO = "suelo";
     public static final String CARGA_AXIAL = "carga_axial";
@@ -48,7 +50,8 @@ public final class SafetyConflictPolicy {
     public static final String CATALOGO_INACTIVO = "catalogo_inactivo";
 
     /** Todas las causas admitidas. Un motivo fuera de esta lista no autoriza nada. */
-    public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, ALTO_IMPACTO,
+    public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, CONTENIDO_INC_CAT_C39,
+            ALTO_IMPACTO,
             SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
 
     private SafetyConflictPolicy() {}
@@ -61,9 +64,20 @@ public final class SafetyConflictPolicy {
      */
     public static List<String> causas(ExerciseSafetyFacts f, SafetyProfile s, boolean retenido,
                                       boolean contenido) {
+        return causas(f, s, retenido, contenido, false);
+    }
+
+    /**
+     * Igual, con la contencion INC-CAT-C39 (texto del catalogo contra bandera).
+     *
+     * @param contenidoC39 si INC-CAT-C39 lo contiene para este perfil
+     */
+    public static List<String> causas(ExerciseSafetyFacts f, SafetyProfile s, boolean retenido,
+                                      boolean contenido, boolean contenidoC39) {
         var causas = new ArrayList<String>();
         if (retenido) causas.add(RETENIDO_INC_4C_03);
         if (contenido) causas.add(CONTENIDO_INC_CAT_1374);
+        if (contenidoC39) causas.add(CONTENIDO_INC_CAT_C39);
         if (f == null || s == null) return List.copyOf(causas);
         if (s.excludeHighImpact() && f.highImpact()) causas.add(ALTO_IMPACTO);
         if (s.excludeFloorWork() && f.requiresFloor()) causas.add(SUELO);
