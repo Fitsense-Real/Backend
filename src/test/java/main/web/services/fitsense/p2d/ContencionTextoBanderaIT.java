@@ -208,12 +208,20 @@ class ContencionTextoBanderaIT {
         }
 
         @Test
-        @DisplayName("D · IA: ningun contenido en el catalogo que se envia a Replicate (instantanea real del prompt)")
+        @DisplayName("D · IA: el catalogo enviado a Replicate sale del conjunto elegible del motor, sin ningun contenido")
         void d_catalogoDeLaIA() {
             for (var r : List.of(SIN_COLGARSE, SIN_CABEZA, SIN_AMBAS, SIN_NADA)) {
                 long u = usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, r);
                 var ia = enviadosALaIA(u);
                 assertFalse(ia.isEmpty());
+                // El mismo catalogo de origen para la IA y para el motor de reglas (verificacion 3 de la reduccion):
+                // la IA recibe un subconjunto del conjunto elegible del motor -PlanInputSnapshot omite, por diseno
+                // previo, lo que no tiene dosis admisible para el objetivo (V24 lo rechazaria)- y nunca algo que el
+                // motor no tenga.
+                var motor = elegibles(u);
+                var deMas = new TreeSet<>(ia);
+                deMas.removeAll(motor);
+                assertTrue(deMas.isEmpty(), r + ": la IA recibe ejercicios fuera del conjunto elegible: " + deMas);
                 assertTrue(interseccion(ia, ContencionTextoBandera.contenidos(r.seguridad())).isEmpty(), r + " " + ia);
             }
         }
