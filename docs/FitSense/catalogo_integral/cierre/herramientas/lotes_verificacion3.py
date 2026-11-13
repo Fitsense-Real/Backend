@@ -1,13 +1,14 @@
 """Lotes de la verificacion independiente (tercera mirada) a partir de propuestas.tsv de la segunda revision.
 Excluye DIFICULTAD_BAJAR (nunca se aplica sin aprobacion humana, V27). Agrupa por ejercicio (todas las propuestas de un
 id van al mismo verificador) y reparte en lotes de ~TAM propuestas. Solo incluye los lotes de origen indicados.
-Uso: python3 -I -B lotes_verificacion3.py <propuestas.tsv> <catalogo.tsv> <dir salida> <prefijo> <TAM> L01,L02,..."""
+Uso: python3 -I -B lotes_verificacion3.py <propuestas.tsv> <catalogo.tsv> <dir salida> <prefijo> <TAM> L01,L02,... [TIPO1,TIPO2]"""
 import csv, os, sys, collections
 csv.field_size_limit(10**8)
 prop, cat, out, pref, tam, origenes = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]), set(sys.argv[6].split(','))
+tipos = set(sys.argv[7].split(',')) if len(sys.argv) > 7 else None
 C = {r['id']: r for r in csv.DictReader(open(cat, encoding='utf-8'), delimiter='\t', quoting=csv.QUOTE_NONE)}
 P = [r for r in csv.DictReader(open(prop, encoding='utf-8'), delimiter='\t', quoting=csv.QUOTE_NONE)
-     if r['lote'] in origenes and r['tipo'] != 'DIFICULTAD_BAJAR']
+     if r['lote'] in origenes and r['tipo'] != 'DIFICULTAD_BAJAR' and (tipos is None or r['tipo'] in tipos)]
 por_id = collections.OrderedDict()
 for r in sorted(P, key=lambda r: int(r['id'])): por_id.setdefault(r['id'], []).append(r)
 B = [('hi', 'HI'), ('floor', 'FL'), ('axial', 'AX'), ('kneel', 'KN'), ('hang', 'HG'), ('overhead', 'OH'), ('inv', 'INV')]
