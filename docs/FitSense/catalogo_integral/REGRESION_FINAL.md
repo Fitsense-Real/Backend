@@ -4,11 +4,18 @@
 
 Ejecutada con `sh mvnw -o verify -Pintegration`: todas las pruebas unitarias y las de integración, cada una sobre una base PostgreSQL 16 nueva con Flyway V1–V53, o V1–V52 en la PR A.
 
-PENDIENTE_TABLA_REGRESION
+| Rama | Unitarias | Integración | Fallos | Omitidas |
+|---|---|---|---|---|
+| `cierre/catalogo-final` (V51 + V52 + V53) | 1.454, 0 fallos | 722 | **2 errores** (HALL-PROG-01) | 1 unitaria y 50 de integración (opcionales: laboratorios, campañas y capturas) |
+| `cierre/v51-v52-correcciones` (V51 + V52) | 1.454, 0 fallos | 722 | **2 errores** (los mismos) | Las mismas |
+
+Las pruebas de V24 y V8C pasan todas en las dos ramas. Unitarias: `CargaV8CTest`, `DolorSinMasTrabajoV8CTest`, `DosisIaV8CTest`, `ProgresionV24V8CTest`, `RetiradaLocalizadaV8CTest`, `V8CConservacionPatronH1Test`, `V8CDiagnosticoSustitucionesTest` y `V8CRetiradasYDescansoTest`. De integración: `EvaluacionDirectaV24IT`, `EvaluacionLecturaV24IT`, las 6 `RetiradaLocalizada*IT` y las 4 `SinSustitutoDolor*IT`. Ningún validador se ha modificado en el cierre.
 
 ### 1.1 Fallos y su causa
 
-PENDIENTE_FALLOS
+Solo fallan dos pruebas, las mismas en las dos ramas:
+- `ProgresionIT.p02ProgresionSinElExcluido`: `NoSuchElementException` en la línea 524, porque la semana 4 queda sin plan;
+- `ProgresionRev2IT.p02ProgresionSinElExcluido`: la misma prueba con REV2.
 
 **HALL-PROG-01** (`ProgresionIT.p02ProgresionSinElExcluido` y su gemela `ProgresionRev2IT`). **No lo introduce el cierre:**
 
@@ -64,7 +71,15 @@ El cambio se debe a las subidas de nivel, a los ejercicios que dejan de ser esti
 
 ## 4. Segunda auditoría desde una base nueva
 
-PENDIENTE_AUDITORIA
+`ProcedenciaCatalogoIT` (`-Dfitsense.catalogo.procedencia=true`) creó una base PostgreSQL nueva y aplicó **V1–V53 una a una**, registrando cada atributo de cada ejercicio después de cada versión. Salida: `cierre/auditoria_final/` (`procedencia_cambios.tsv.gz`, `procedencia_resumen.tsv` y `SHA256SUMS`).
+
+| Versión | Ejercicios que cambian | Cambios de atributo | Comprobación |
+|---|---|---|---|
+| V51 | 1.376 | 2.752 | Exactamente `impact_level` e `is_stretch` en todos |
+| V52 | **442** | 900 | **Los ids coinciden exactamente con `decisiones_v52.tsv`** |
+| V53 | 1.376 | 1.376 | La columna nueva: `true` en exactamente los 16 de V53 y `false` en los otros 1.360 |
+
+Las migraciones se reproducen desde cero sin error, y el resultado coincide con lo decidido, ejercicio a ejercicio.
 
 ## 5. Otras verificaciones
 

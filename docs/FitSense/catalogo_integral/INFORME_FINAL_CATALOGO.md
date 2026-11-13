@@ -214,15 +214,22 @@ La consulta de solo lectura está en `IMPACTO_PLANES_PUBLICADOS.md` §3. **No se
 El código del motor no cambia, salvo que V51 sustituye la regla por nombre por el atributo explícito con el mismo valor.
 
 **26. ¿Se mantuvieron V24 y V8C?**
-Sí. Ningún validador se ha tocado. Sus pruebas pasan en la regresión: PENDIENTE_REGRESION_V24.
+Sí. Ningún validador se ha tocado y todas sus pruebas pasan en las dos ramas: 8 unitarias de V8C/V24 y las de integración de V24, retirada localizada y sustitución ante dolor (`REGRESION_FINAL.md` §1).
 
 **27. ¿Pasaron las pruebas completas?**
-PENDIENTE_REGRESION_TOTAL
+Casi todas, y el resto está explicado:
+
+| Tipo | Resultado en las dos ramas |
+|---|---|
+| Unitarias | 1.454, 0 fallos |
+| Integración | 722, de las que fallan **2** y se omiten 50 opcionales |
+
+Las 2 que fallan son `ProgresionIT` y `ProgresionRev2IT` p02 (HALL-PROG-01). **Ya fallan desde #56** (comprobado en su cabeza y en la base 57075e7) y pasan en `generation`. No se han tocado para que pasen.
 
 **28. ¿Todas las migraciones pueden reproducirse desde cero?**
 Sí:
 - cada prueba de integración crea una base nueva y aplica V1–V53;
-- `ProcedenciaCatalogoIT` las aplica una a una (`cierre/auditoria_final/`): PENDIENTE_AUDITORIA;
+- `ProcedenciaCatalogoIT` las aplica una a una sobre una base nueva (`cierre/auditoria_final/`). V52 cambia exactamente los 442 ejercicios decididos y V53 marca exactamente los 16;
 - V52 falla ante un estado previo inesperado y es idempotente frente a una base ya corregida.
 
 **29. ¿Qué PR deben fusionarse y en qué orden?**
