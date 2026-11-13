@@ -226,7 +226,11 @@ Casi todas, y el resto está explicado:
 | Unitarias | 1.454, 0 fallos |
 | Integración | 722, de las que fallan **2** y se omiten 50 opcionales |
 
-Las 2 que fallan son `ProgresionIT` y `ProgresionRev2IT` p02 (HALL-PROG-01). **Ya fallan desde #56** (comprobado en su cabeza y en la base 57075e7) y pasan en `generation`. No se han tocado para que pasen.
+Las 2 que fallan son `ProgresionIT` y `ProgresionRev2IT` p02 (HALL-PROG-01). La CI de GitHub de #60 y #61 da exactamente lo mismo.
+- En la CI de GitHub la base #55 pasa p02, así que **el fallo aparece con el cierre**.
+- En local falla ya en la base y en #56 por una diferencia de entorno que no está aislada.
+
+No se han tocado para que pasen. Es un bloqueo de #60.
 
 **28. ¿Todas las migraciones pueden reproducirse desde cero?**
 Sí:
@@ -236,7 +240,7 @@ Sí:
 
 **29. ¿Qué PR deben fusionarse y en qué orden?**
 **#56 → #57 → #58 → #59 → #55 → #60 (PR A: V51 + V52) → #61 (PR B: V53)**. Cada una tiene como base la anterior y Flyway no admite fusionarlas fuera de orden. Dos condiciones:
-- #56 arrastra HALL-PROG-01 (ver la 30);
+- #60 tiene la CI en rojo por HALL-PROG-01 (ver la 30);
 - PR B solo si apruebas el significado de V53.
 
 **30. ¿El catálogo está realmente listo para merge sin pendientes que comprometan su coherencia o seguridad?**
@@ -247,7 +251,7 @@ Sí:
 - la contradicción visible de 1083;
 - 7 hallazgos colaterales abiertos;
 - el plan 78;
-- HALL-PROG-01: con el catálogo de #56, un caso de progresión con dolor deja una semana sin plan por un defecto latente de la adaptación.
+- HALL-PROG-01: con el catálogo del cierre, un caso de progresión con dolor deja una semana sin plan. La CI de #60 está en rojo y la causa de fondo está en la adaptación.
 
 ## 3. Bloqueos
 
@@ -262,11 +266,11 @@ Sí:
 3. **Decisiones previas que exigen revisión humana:** D2 de V37.1 (854) y el dictamen de V39 (1113). Se respetan.
 4. **Plan 78:** la reparación no publica mientras la semana contenga ejercicios que subieron de nivel (916 y 910).
 5. **Hallazgos colaterales abiertos:** 231, 620, 1323, 367, 1182 y 1017. 1303 está contenido y 1084 quedó resuelto.
-6. **HALL-PROG-01**, desde #56:
+6. **HALL-PROG-01** (la CI de #60 y #61 está en rojo):
    - el sustituto de un ejercicio progresado hereda la dosis progresada y V24 lo rechaza, un defecto latente que ya existe en `generation`;
-   - con el catálogo de #56, la regeneración segura ya no encuentra una semana sin más trabajo y esa semana queda NO_FACTIBLE.
+   - con el catálogo nuevo, la regeneración segura ya no encuentra una semana sin más trabajo y esa semana queda NO_FACTIBLE.
 
-   `ProgresionIT` y `ProgresionRev2IT` p02 fallan desde #56. No se corrige aquí porque es un cambio de adaptación, fuera del catálogo.
+   En la CI de GitHub la base #55 pasa y #60 falla. En local falla ya desde #56, por una diferencia de entorno no aislada. No se corrige aquí: cambiar la adaptación está fuera del catálogo y cambiar la prueba está prohibido. Es una decisión tuya.
 
 ## 4. Veredicto
 
