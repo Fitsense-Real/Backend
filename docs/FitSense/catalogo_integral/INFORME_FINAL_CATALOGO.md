@@ -6,7 +6,9 @@
 
 **Ramas:**
 - `cierre/v51-v52-correcciones` (PR A: V51 + V52);
-- `cierre/catalogo-final` (PR B: V53, decisión de significado, sobre la PR A).
+- `cierre/v53-apoyo-suspendido` (PR B: V53, decisión de significado, sobre la PR A).
+
+**PR:** [#60](https://github.com/Fitsense-Real/Backend/pull/60) (PR A) y [#61](https://github.com/Fitsense-Real/Backend/pull/61) (PR B), abiertas como borrador y sin fusionar.
 
 **Lo que no se ha hecho:** nada se ha fusionado ni desplegado. No se han tocado datos de usuarios, no se ha gastado en Replicate, no se ha modificado Flutter y no se han relajado V15, V24, V8C, P-03 ni la progresión.
 
@@ -233,7 +235,7 @@ Sí:
 - V52 falla ante un estado previo inesperado y es idempotente frente a una base ya corregida.
 
 **29. ¿Qué PR deben fusionarse y en qué orden?**
-**#56 → #57 → #58 → #59 → #55 → PR A (V51 + V52) → PR B (V53)**. Cada una tiene como base la anterior y Flyway no admite fusionarlas fuera de orden. Dos condiciones:
+**#56 → #57 → #58 → #59 → #55 → #60 (PR A: V51 + V52) → #61 (PR B: V53)**. Cada una tiene como base la anterior y Flyway no admite fusionarlas fuera de orden. Dos condiciones:
 - #56 arrastra HALL-PROG-01 (ver la 30);
 - PR B solo si apruebas el significado de V53.
 
