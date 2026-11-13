@@ -11,11 +11,11 @@
 | V50 | Clasificación y equipamiento | [#58](https://github.com/Fitsense-Real/Backend/pull/58) | Abierta, sin fusionar |
 | — | Controles, documentación y Excel | [#59](https://github.com/Fitsense-Real/Backend/pull/59) | Abierta, sin fusionar |
 | — | Contención INC-CAT-C39 reducida a 8 | [#55](https://github.com/Fitsense-Real/Backend/pull/55) | Abierta, sin fusionar |
-| **V51** | `impact_level` e `is_stretch` explícitos; el nombre deja de decidir | Cierre, PR A | Nueva |
-| **V52** | Correcciones verificadas del cierre: 561 cambios en 442 ejercicios | Cierre, PR A | Nueva |
-| **V53** | `requires_suspended_support` en 16 ejercicios (**decisión de significado**) | Cierre, PR B | Nueva |
+| **V51** | `impact_level` e `is_stretch` explícitos; el nombre deja de decidir | [#60](https://github.com/Fitsense-Real/Backend/pull/60) (PR A) | Abierta, sin fusionar |
+| **V52** | Correcciones verificadas del cierre: 561 cambios en 442 ejercicios | [#60](https://github.com/Fitsense-Real/Backend/pull/60) (PR A) | Abierta, sin fusionar |
+| **V53** | `requires_suspended_support` en 16 ejercicios (**decisión de significado**) | [#61](https://github.com/Fitsense-Real/Backend/pull/61) (PR B) | Abierta, sin fusionar |
 
-Cadena de fusión obligatoria: #56 → #57 → #58 → #59 → #55 → PR A (`cierre/v51-v52-correcciones`: V51 + V52) → PR B (`cierre/catalogo-final`: V53). Cada PR tiene como base la anterior. V51 y V52 van juntas porque V52 corrige atributos que V51 crea, y sus pruebas (paridad, huella) dependen de las dos. V53 va aparte porque cambia el significado de un permiso del usuario: puede rechazarse sin tocar la PR A. Fusionar fuera de orden rompe Flyway (`outOfOrder` está desactivado) o hace fallar las protecciones de estado previo de V52.
+Cadena de fusión obligatoria: #56 → #57 → #58 → #59 → #55 → #60 (PR A, `cierre/v51-v52-correcciones`: V51 + V52) → #61 (PR B, `cierre/v53-apoyo-suspendido`: V53). Cada PR tiene como base la anterior. V51 y V52 van juntas porque V52 corrige atributos que V51 crea, y sus pruebas (paridad, huella) dependen de las dos. V53 va aparte porque cambia el significado de un permiso del usuario: puede rechazarse sin tocar la PR A. Fusionar fuera de orden rompe Flyway (`outOfOrder` está desactivado) o hace fallar las protecciones de estado previo de V52.
 
 ## 2. Protecciones de cada migración
 
