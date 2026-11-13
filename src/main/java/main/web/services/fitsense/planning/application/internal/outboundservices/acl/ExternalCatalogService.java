@@ -232,7 +232,7 @@ public class ExternalCatalogService {
         var facts = new java.util.HashMap<Long, ExerciseSafetyFacts>();
         catalogContextFacade.fetchSafetyFlags(exerciseIds).forEach((id, f) -> facts.put(id, new ExerciseSafetyFacts(
                 f.exerciseId(), f.active(), f.highImpact(), f.requiresFloor(), f.axialLoad(), f.requiresKneeling(),
-                f.requiresHanging(), f.requiresOverhead(), f.requiresInversion())));
+                f.requiresHanging(), f.requiresOverhead(), f.requiresInversion(), f.requiresSuspendedSupport())));
         return facts;
     }
 

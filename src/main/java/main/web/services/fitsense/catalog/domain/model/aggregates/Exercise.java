@@ -118,6 +118,14 @@ public class Exercise {
     @Column(name = "requires_hanging", nullable = false)
     private boolean requiresHanging;
 
+    /**
+     * V53 (DECISION de significado, ver docs/FitSense/catalogo_integral/cierre/VALIDACION_SEGURIDAD.md): el cuerpo se
+     * sostiene SOBRE el apoyo sin los pies en el suelo -fondos en paralelas o anillas, silla romana, pies en correas-.
+     * No cuelga del agarre, asi que requires_hanging no lo cubre; quien declara «no colgarse» tampoco lo recibe.
+     */
+    @Column(name = "requires_suspended_support", nullable = false, insertable = false, updatable = false)
+    private boolean requiresSuspendedSupport;
+
     /** Exige llevar los brazos por encima de la cabeza. Restriccion declarada por el perfil. */
     @Column(name = "requires_overhead", nullable = false)
     private boolean requiresOverhead;

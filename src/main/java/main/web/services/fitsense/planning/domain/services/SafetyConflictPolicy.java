@@ -33,6 +33,11 @@ public final class SafetyConflictPolicy {
     public static final String CARGA_AXIAL = "carga_axial";
     public static final String RODILLAS = "rodillas";
     public static final String SUSPENSION = "suspension";
+    /**
+     * V53 (decision de significado): apoyo suspendido -sin los pies en el suelo, sostenido sobre brazos o antebrazos, o
+     * con los pies en correas-. Lo excluye la restriccion «no colgarse»; causa propia para que se distinga en el registro.
+     */
+    public static final String APOYO_SUSPENDIDO = "apoyo_suspendido";
     public static final String BRAZOS_ARRIBA = "brazos_arriba";
     public static final String INVERSION = "inversion";
     /**
@@ -52,7 +57,7 @@ public final class SafetyConflictPolicy {
     /** Todas las causas admitidas. Un motivo fuera de esta lista no autoriza nada. */
     public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, CONTENIDO_INC_CAT_C39,
             ALTO_IMPACTO,
-            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
+            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, APOYO_SUSPENDIDO, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
 
     private SafetyConflictPolicy() {}
 
@@ -84,6 +89,7 @@ public final class SafetyConflictPolicy {
         if (s.excludeAxialLoad() && f.axialLoad()) causas.add(CARGA_AXIAL);
         if (s.excludeKneeling() && f.requiresKneeling()) causas.add(RODILLAS);
         if (s.excludeHanging() && f.requiresHanging()) causas.add(SUSPENSION);
+        if (s.excludeHanging() && f.requiresSuspendedSupport()) causas.add(APOYO_SUSPENDIDO);
         if (s.excludeOverhead() && f.requiresOverhead()) causas.add(BRAZOS_ARRIBA);
         if (s.excludeInversion() && f.requiresInversion()) causas.add(INVERSION);
         return List.copyOf(causas);
