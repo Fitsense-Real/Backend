@@ -1,0 +1,108 @@
+id	tipo	actual	decision	valor	antes	fundamento
+108	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+269	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+270	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+275	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+533	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+574	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+797	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+894	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+253	BANDERA_QUITAR	KN	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+811	BANDERA_QUITAR	KN	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+888	BANDERA_QUITAR	KN	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+1375	BANDERA_QUITAR	KN	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+296	BANDERA_QUITAR	FL	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+752	BANDERA_QUITAR	AX	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+1043	BANDERA_QUITAR	AX	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+550	BANDERA_QUITAR	INV	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+171	BANDERA_QUITAR	INV	NO_APLICAR			DEC-INV-DECLINADO: el catalogo trata el banco declinado de forma desigual; unificar el criterio es un cambio de significado de «sin inversion» que requiere decision profesional. Se mantiene INV
+377	BANDERA_QUITAR	INV	NO_APLICAR			DEC-INV-DECLINADO: el catalogo trata el banco declinado de forma desigual; unificar el criterio es un cambio de significado de «sin inversion» que requiere decision profesional. Se mantiene INV
+840	BANDERA_QUITAR	INV	NO_APLICAR			DEC-INV-DECLINADO: el catalogo trata el banco declinado de forma desigual; unificar el criterio es un cambio de significado de «sin inversion» que requiere decision profesional. Se mantiene INV
+496	BANDERA_QUITAR	KN	NO_APLICAR			V3: la fase baja (f13-f20) tapa las piernas; no se demuestra que nunca apoye la rodilla
+711	BANDERA_QUITAR	KN	NO_APLICAR			V3: la rodilla lejana queda tapada por el banco; no se demuestra que nunca apoye
+608	BANDERA_QUITAR	FL	NO_APLICAR			V3: la entrada al balon no se ve; no se demuestra que no haya que bajar al suelo
+922	BANDERA_QUITAR	HI	NO_APLICAR			derivado olimpico (clean) por nombre y fuente: ALTO por definicion; el GIF es un fundido y la identidad es dudosa. Revision profesional
+922	IMPACTO		NO_APLICAR			se mantiene ALTO: HI se mantiene (derivado olimpico)
+930	BANDERA_QUITAR	HI	NO_APLICAR			derivado olimpico (clean) por nombre y fuente: ALTO por definicion; el GIF es un fundido y la identidad es dudosa. Revision profesional
+930	IMPACTO		NO_APLICAR			se mantiene ALTO: HI se mantiene (derivado olimpico)
+971	BANDERA_QUITAR	HI	NO_APLICAR			derivado olimpico (clean) por nombre y fuente: ALTO por definicion; el GIF es un fundido y la identidad es dudosa. Revision profesional
+971	IMPACTO		NO_APLICAR			se mantiene ALTO: HI se mantiene (derivado olimpico)
+930	BANDERA_QUITAR	AX	NO_APLICAR			identidad AMBIGUA (clean frente a curl): se mantiene AX hasta revision profesional
+937	BANDERA_QUITAR	HI	NO_APLICAR			identidad AMBIGUA (muscle-up no visible completo): no se relaja una restriccion sobre un ejercicio no identificado
+937	IMPACTO		NO_APLICAR			se mantiene ALTO mientras HI se mantenga
+1068	BANDERA_QUITAR	HI	NO_APLICAR			identidad AMBIGUA (muscle-up no visible completo): no se relaja una restriccion sobre un ejercicio no identificado
+1068	IMPACTO		NO_APLICAR			se mantiene ALTO mientras HI se mantenga
+1069	BANDERA_QUITAR	HI	APLICAR			muscle-up claro sin salto ni aterrizaje (f1 colgado, f7 tiron, f13 apoyo): no es salto, pliometria ni olimpico; HG y dificultad 3 siguen excluyendolo de quien no debe colgarse
+1069	IMPACTO		APLICAR			pies nunca en el suelo ni aterrizaje (R2 + V3 ALTA)
+1084	BANDERA_QUITAR	HI	NO_APLICAR			DEC-HI-LANZAMIENTOS: si el lanzamiento balistico con balon medicinal cuenta como pliometria es un criterio sin fijar; se mantiene HI
+1084	IMPACTO		NO_APLICAR			se mantiene mientras HI se mantenga (DEC-HI-LANZAMIENTOS)
+1085	BANDERA_QUITAR	HI	NO_APLICAR			DEC-HI-LANZAMIENTOS: si el lanzamiento balistico con balon medicinal cuenta como pliometria es un criterio sin fijar; se mantiene HI
+1085	IMPACTO		NO_APLICAR			se mantiene mientras HI se mantenga (DEC-HI-LANZAMIENTOS)
+1087	BANDERA_QUITAR	HI	NO_APLICAR			DEC-HI-LANZAMIENTOS: si el lanzamiento balistico con balon medicinal cuenta como pliometria es un criterio sin fijar; se mantiene HI
+1087	IMPACTO		NO_APLICAR			se mantiene mientras HI se mantenga (DEC-HI-LANZAMIENTOS)
+1134	BANDERA_QUITAR	HI	NO_APLICAR			DEC-HI-CARRERA: 1133 y 1175 (carrera) conservan HI; sin criterio comun aprobado no se relaja una sola
+675	BANDERA_QUITAR	HI	APLICAR			el GIF es una sentadilla sumo sin vuelo (R2, V3 V04 y X01); el nombre y las instrucciones pasan a sentadilla sumo en V52, asi que ninguna parte del ejercicio implica salto
+675	IMPACTO		APLICAR			pies fijos en f1-f12 (V3 X01) y nombre corregido
+952	BANDERA_QUITAR	HI	APLICAR			thruster: no es salto, pliometria ni olimpico; pies con el mismo punto mas bajo en los 18 fotogramas (V3 ALTA)
+952	IMPACTO		APLICAR			pies siempre apoyados (V3 ALTA)
+1177	IMPACTO		NO_APLICAR			verificadores en desacuerdo (V07 NO_DECIDIBLE, X01 BAJO): fundido entre poses que no puede mostrar un vuelo; se mantiene ALTO y pasa a revision profesional
+1295	IMPACTO		APLICAR			zancada caminando con rodilla alta: siempre un pie en el suelo (R2 y V3 ALTA)
+300	EQUIPO		APLICAR	pull-up bar; 1:pull-up bar,2:bench	bench; 1:bench,1:pull-up bar	barra fija y banco hacen falta los dos (no son alternativas)
+756	EQUIPO		APLICAR	dumbbell; 1:dumbbell,2:preacher bench	dumbbell; 1:dumbbell,2:bench	curl Scott: hace falta el banco Scott
+1043	EQUIPO		APLICAR	cable; 1:cable	leverage machine; 1:leverage machine	polea baja con cable; no hay maquina de palanca
+1184	EQUIPO		APLICAR	captains chair; 1:captains chair	parallel bars; 1:parallel bars	silla de capitan, no paralelas
+215	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+216	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+950	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+1154	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+1158	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+1274	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+1279	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+306	EQUIPO		NO_APLICAR			no existe codigo de equipamiento «towel»; crearlo cambia el perfil y Flutter (fuera de alcance). La toalla ya figura en las instrucciones
+165	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/glutes	cuadriceps resaltados en todo el recorrido (R2 + V3)
+185	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/glutes	cuadriceps resaltados en todo el recorrido (R2 + V3)
+286	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/glutes	cuadriceps resaltados en todo el recorrido (R2 + V3)
+360	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/glutes	cuadriceps resaltados en todo el recorrido (R2 + V3)
+889	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/glutes	cuadriceps resaltados en todo el recorrido (R2 + V3)
+939	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/hamstrings	cuadriceps resaltados en todo el recorrido (R2 + V3)
+1017	ZONA_OBJETIVO		APLICAR	upper legs/quads	lower legs/calves	prensa de piernas: extension de rodilla con cuadriceps resaltados; coherente con el nombre y el patron corregidos
+1322	ZONA_OBJETIVO		APLICAR	shoulders/delts	upper arms/triceps	brazo recto cruzado: deltoides resaltado; con el codo extendido no se estira el triceps
+811	ZONA_OBJETIVO		NO_APLICAR			«hip flexors» no existe en el vocabulario de musculos objetivo del catalogo
+975	PRESCRIPCION		NO_APLICAR			pasar a DURATION exige reescribir las instrucciones, que no se propusieron ni verificaron
+1294	PRESCRIPCION		NO_APLICAR			identidad AMBIGUA e instrucciones NO_DECIDIBLE: revision profesional
+65	BANDERA_QUITAR	OH	NO_APLICAR			V3 MEDIA: la entrada a la posicion (desde el colgado, brazos arriba) no se ve; no se demuestra que nunca haya brazos por encima de la cabeza
+226	BANDERA_QUITAR	FL	APLICAR			rodillas y pies sobre el banco, manos en la barra; nunca tumbado, sentado ni a cuatro apoyos en el suelo (R2 + V3 ALTA). KN se mantiene
+262	BANDERA_QUITAR	HI	APLICAR			esquiador con barra: pies fijos y doble apoyo en f1, f4, f7, f10; no es salto, pliometria ni olimpico (R2 + V3 ALTA)
+262	IMPACTO		APLICAR			doble apoyo en todos los fotogramas (V3 ALTA)
+267	BANDERA_QUITAR	HI	APLICAR			thruster: sentadilla y press sin salto; no es olimpico (R2 + V3 ALTA). AX y OH se mantienen
+267	IMPACTO		APLICAR			doble apoyo en todos los fotogramas (V3 ALTA)
+97	ZONA_OBJETIVO		NO_APLICAR			«tibialis anterior» no existe en el vocabulario de musculos objetivo; se documenta para revision
+166	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/glutes	sentadilla frontal: cuadriceps resaltados en todo el recorrido (R2 + V3)
+198	ZONA_OBJETIVO		APLICAR	upper legs/quads	upper legs/glutes	sentadilla profunda con cuadriceps resaltados (R2 + V3)
+219	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+220	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+221	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+239	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+258	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+481	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+503	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+549	BANDERA_QUITAR	INV	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+805	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+806	BANDERA_QUITAR	OH	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+822	BANDERA_QUITAR	KN	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+830	BANDERA_QUITAR	AX	APLICAR			definicion literal demostrada en todos los fotogramas (R2 + V3)
+647	BANDERA_QUITAR	OH	NO_APLICAR			V3 MEDIA: el brazo queda ligeramente inclinado hacia la cabeza en f1; no se demuestra que nunca pase por encima
+841	BANDERA_QUITAR	INV	NO_APLICAR			DEC-INV-DECLINADO: criterio de banco declinado pendiente de decision profesional; se mantiene INV
+562	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+703	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+721	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+722	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+723	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+740	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+803	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
+913	BANDERA_QUITAR	OH	NO_APLICAR			contrato vigente ck_exercises_hanging_is_overhead (colgarse implica OH): no se relaja por un caso; se documenta como decision de definicion
+306	INSTRUCCIONES		APLICAR	Pasa una toalla resistente por un barrote de la espaldera a la altura del pecho y sujeta los dos extremos con una mano. Antes de cargar tu peso, comprueba que la espaldera está bien fijada a la pared y que la toalla no resbala. || Coloca los pies cerca de la base de la espaldera y déjate caer hacia atrás con el cuerpo recto y el brazo estirado. || Tira de la toalla llevando el codo hacia atrás hasta acercar el pecho a la espaldera y vuelve con control hasta estirar el brazo. || Completa las repeticiones y cambia de brazo. || Repite el número de repeticiones indicado.		texto V3 con la advertencia de V39 de nuevo en el primer paso (contrato de CatalogoV39IT: toalla resistente + comprueba + espaldera)
+1017	INSTRUCCIONES		APLICAR	Ajusta el asiento de la prensa para que las rodillas queden flexionadas con los pies sobre la plataforma. || Siéntate con la espalda apoyada en el respaldo y los pies separados a la anchura de los hombros. || Si la máquina tiene palancas de seguridad, suéltalas antes de empezar y vuelve a colocarlas al terminar. || Empuja con los pies para extender las rodillas sin llegar a bloquearlas. || Vuelve despacio a la posición inicial flexionando las rodillas. || Mantén la espalda apoyada durante todo el movimiento. || Repite el número de repeticiones indicado.		texto V3 mas la advertencia de las palancas de seguridad del texto anterior, en forma condicional (regla 4 del protocolo)
+854	BANDERA_QUITAR	HI	NO_APLICAR			decision previa D2 (DIAGNOSTICO_V37_1.md): «298 y 854: mantenerlos fuera, hasta una segunda revision HUMANA»; la revision del cierre es de IA. Se mantiene HI y pasa a revision profesional
+775	EQUIPO		NO_APLICAR			DEC-FACTIBILIDAD-775: correccion verificada (los codos van sobre dos apoyos elevados: banco) que deja sin plan a GAIN_MUSCLE intermedio en casa solo con peso corporal a 74-75 min (Hipertrofia4Dv34IT: techo 3210 s -> 3090 s, piso V20 3108 s). No se relaja V20 ni se aplica en silencio: decision explicita pendiente
+1113	DIFICULTAD_SUBIR		NO_APLICAR			decision previa V39 (INFORME_FINAL_V39.md, dictamen: «1113 conserva los valores de V39 sin cambiar la seguridad»; V39 SQL: «pendientes de verificacion visual, sin cambios: 1113 (grupo y dificultad)»). La revision del cierre es de IA: pasa a revision profesional

@@ -1,0 +1,325 @@
+id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificultad	contencion	pendiente_profesional	frase_final
+1083	Push de pecho con balón medicinal, repetición única	R03	Impacto ALTO implica HI	SETS_REPS	ALTO	NO	FL KN	2	-	-	Repite el número de repeticiones indicado.
+64	Dominada arco	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	HG OH	3	-	IDENTIDAD	Alterna los lados en cada repetición.
+257	Curl de muñeca con barra	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones indicado.
+261	Elevación de gemelos con balanceo de pierna de pie	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones deseado.
+310	Giro acostado con rodillas flexionadas	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD	Continúa alternando lados durante el número de repeticiones deseado.
+320	Curl de bíceps acostado de lado con peso corporal	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD	Repite el número de repeticiones indicado.
+427	Crunch lateral con polea en bosu	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL	2	-	IDENTIDAD	Repite el número de repeticiones indicado.
+494	Flexión en reloj	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD;TEXTO NO DECIDIBLE	Continúa alternando lados en cada repetición.
+535	Press cubano con mancuerna	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	AX OH	2	-	IDENTIDAD;TEXTO NO DECIDIBLE	Repite el número de repeticiones deseado.
+620	Elevación lateral trasera a una mano acostado con mancuerna	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+675	Sentadilla sumo con mancuerna	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones indicado.
+853	Marcha rápida en el sitio	R11	Identidad del movimiento confirmada (CLARA) en la R2	DURATION	BAJO	NO	-	1	-	IDENTIDAD	Mantén la duración indicada.
+902	Gusano caminando	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL INV	1	-	IDENTIDAD	Repite el número de repeticiones deseado.
+922	Hang clean alterno con kettlebell	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	ALTO	NO	HI AX	3	-	IDENTIDAD;SEGURIDAD	Repite el número de repeticiones indicado.
+930	Clean con kettlebell desde hang	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	ALTO	NO	HI AX	3	-	DIFICULTAD (V27);IDENTIDAD;SEGURIDAD;SEGURIDAD	Repite el número de repeticiones indicado.
+937	Muscle up kipping	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	ALTO	NO	HI HG OH	3	-	IDENTIDAD	Repite el número de repeticiones indicado.
+944	Jerk a una mano con kettlebell	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	ALTO	NO	HI AX OH	3	-	IDENTIDAD	Baja la pesa rusa de vuelta a la posición inicial flexionando las rodillas y las caderas, y repite el número de repeticiones deseado.
+994	Remo en palanca, agarre estrecho alterno	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Continúa alternando lados durante el número de repeticiones deseado.
+1068	Muscle up	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	ALTO	NO	HI HG OH	3	-	IDENTIDAD	Repite el número de repeticiones indicado.
+1086	Captura y lanzamiento por encima de la cabeza con balón medicinal	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	OH	1	-	IDENTIDAD;TEXTO NO DECIDIBLE	Baja de nuevo el cuerpo a la posición de sentadilla y repite el número de repeticiones deseado.
+1124	Giro prono en balón de estabilidad	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD	Continúa alternando lados durante el número de repeticiones deseado.
+1176	Saltos estilo patinador	R11	Identidad del movimiento confirmada (CLARA) en la R2	DURATION	ALTO	NO	HI	1	-	IDENTIDAD	Mantén la duración indicada.
+1177	Paso de esquí	R11	Identidad del movimiento confirmada (CLARA) en la R2	DURATION	ALTO	NO	HI	1	-	BANDERA_QUITAR;IDENTIDAD;SEGURIDAD	Mantén la duración indicada.
+1192	Skin the cat	R11	Identidad del movimiento confirmada (CLARA) en la R2	DURATION	BAJO	SI	HG OH	3	INC-4C-03	CONTENCION INC-4C-03;IDENTIDAD	Mantén la duración indicada.
+1261	Inclinación pélvica de pie	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Repite el número de repeticiones deseado.
+1294	Balanceo 360	R11	Identidad del movimiento confirmada (CLARA) en la R2	DURATION	BAJO	NO	HG OH	3	-	IDENTIDAD;SEGURIDAD;TEXTO NO DECIDIBLE	Recuerda respirar durante todo el ejercicio.
+1298	Maltés en apertura	R11	Identidad del movimiento confirmada (CLARA) en la R2	DURATION	BAJO	NO	FL	3	INC-4C-03	CONTENCION INC-4C-03;IDENTIDAD	Mantén la duración indicada.
+1311	Abductor de cadera externo con pierna recta	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Repite el número de repeticiones indicado.
+312	Postura mariposa	R12	Informativa: el nombre dice «estiramiento» y el atributo is_stretch coincide (el nombre ya no decide; las diferencias son decisiones V3)	DURATION	BAJO	SI	FL	1	-	-	Mantén la duración indicada.
+455	Estiramientos de rodilla en círculos	R12	Informativa: el nombre dice «estiramiento» y el atributo is_stretch coincide (el nombre ya no decide; las diferencias son decisiones V3)	DURATION	BAJO	NO	-	1	-	-	Mantén la duración indicada.
+773	Estiramiento dinámico de pecho	R12	Informativa: el nombre dice «estiramiento» y el atributo is_stretch coincide (el nombre ya no decide; las diferencias son decisiones V3)	DURATION	BAJO	NO	-	1	-	-	Mantén la duración indicada.
+1192	Skin the cat	R12	Informativa: el nombre dice «estiramiento» y el atributo is_stretch coincide (el nombre ya no decide; las diferencias son decisiones V3)	DURATION	BAJO	SI	HG OH	3	INC-4C-03	CONTENCION INC-4C-03;IDENTIDAD	Mantén la duración indicada.
+1194	Secuencia de pose sentada en ángulo ancho	R12	Informativa: el nombre dice «estiramiento» y el atributo is_stretch coincide (el nombre ya no decide; las diferencias son decisiones V3)	DURATION	BAJO	SI	FL	1	-	-	Mantén la duración indicada.
+64	Dominada arco	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	HG OH	3	-	IDENTIDAD	Alterna los lados en cada repetición.
+103	Press de pecho con banda y una mano, giro	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+131	Curl de bíceps a una mano con banda y brazo a la altura del hombro	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	CONTENCION INC-CAT-C39;DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+149	Elevacion de talones en piso con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+150	Elevación frontal con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+151	Press de banca con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+152	Press de banca declinado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+153	Pullover declinado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+154	Press declinado con agarre ancho	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+155	Elevación frontal y pullover con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+156	Pullover con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+157	Remo con barra inclinado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+158	Pullover con barra en declinado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+159	Pullover declinado con agarre ancho	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+161	Sentadilla en banco con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+166	Sentadilla frontal con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+167	Curl de bíceps alterno con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+168	Curl de bíceps con barra y blaster	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+169	Press de banca con agarre cerrado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+170	Curl con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+171	Press en declinado con agarre cerrado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DEC-INV-DECLINADO;DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+172	Curl arrastre con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+173	Curl de antebrazo con barra con palma hacia abajo sobre banco	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL KN	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+174	Curl de antebrazo con barra con palma hacia arriba sobre banco	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL KN	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+180	Remo a una mano con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+181	Remo Pendlay con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+182	Sentadilla profunda con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+186	Puente de glúteos con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+187	Puente de glúteos con barra en banco (hombre)	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+188	Buenos días con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+190	Sentadilla con barra alta	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+193	Zancada lateral con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite hacia el otro lado, dando el paso con el pie izquierdo.
+194	Sentadilla con barra baja	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+195	Zancada con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite con la pierna izquierda, alternando las piernas el número de repeticiones deseado.
+196	Hip thrust con barra (espalda apoyada en banco)	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+197	Sentadilla con pies estrechos	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+204	Extensión de tríceps acostado por detrás de la cabeza con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+206	Extensión de tríceps acostado con agarre cerrado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+207	Extensión acostado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+208	Curl predicador acostado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+209	Extensión de tríceps acostado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+210	Extensión de tríceps acostado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+212	Press de banca en rack con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+213	Curl de muñeca invertido v. 2 con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+214	Curl de muñeca invertido con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+215	Elevación de gemelos sentado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+216	Elevacion de talones sentado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+217	Elevación posterior de hombro con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+218	Remo a hombro posterior con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+228	Flexión lateral con barra v. 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+230	Pullover con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+231	Press desde pull-over con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+232	Remo con agarre inverso y tronco inclinado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+234	Encogimiento de hombros con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+235	Rack pull con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+236	Zancada trasera con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite con la otra pierna.
+238	Peso muerto rumano con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Baja la barra de vuelta a la posición inicial y repite el número de repeticiones deseado.
+241	Sentadilla dividida lateral con barra v. 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+244	Curl de predicador con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+247	Curl invertido con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+248	Extensión de tríceps acostado con barra agarre invertido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+249	Curl de predicador invertido con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+256	Curl de muñeca con barra por detrás de la espalda, de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+257	Curl de muñeca con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones indicado.
+258	Curl de muñeca versión 2 con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+259	Elevacion de talones de pie con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+260	Elevación de gemelos de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+261	Elevación de gemelos con balanceo de pierna de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones deseado.
+262	Esquiador con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+265	Elevación frontal por encima de la cabeza de pie con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+268	Remo vertical con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+269	Remo vertical con barra v. 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+270	Remo vertical con barra v. 3	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+271	Remo vertical con agarre ancho	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+272	Press de banca ancho con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+276	Giro de torso con barra de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+277	Sentadilla rápida con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+278	Sentadilla dividida con barra versión 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+279	Sentadilla con barra en rodillas	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL AX KN	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+282	Buenos días con piernas rígidas	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+283	Peso muerto con piernas rectas con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+287	Curl de agarre cerrado de pie con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+288	Curl de concentración de pie con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+289	Extensión de tríceps por encima de la cabeza de pie con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+290	Curl con agarre inverso de pie con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+291	Curl de bíceps con barra de agarre ancho	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+292	Curl con agarre amplio de pie con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+305	Remo a una mano de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+310	Giro acostado con rodillas flexionadas	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD	Continúa alternando lados durante el número de repeticiones deseado.
+320	Curl de bíceps acostado de lado con peso corporal	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD	Repite el número de repeticiones indicado.
+329	Curl de agarre cerrado en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+333	Elevación frontal con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+339	Press a una mano en declinado en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+359	Remo a una mano con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+362	Curl en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+372	Curl a una mano con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+373	Flexión de muñeca con agarre inverso en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+374	Elevación lateral a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+377	Aperturas de pecho a una mano en declinado con polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DEC-INV-DECLINADO;DIFICULTAD (V27)	Repite el número de repeticiones deseado y luego cambia al brazo izquierdo y repite el ejercicio.
+382	Cruce de cable a una mano con el tronco inclinado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+383	Press a una mano en balón	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+386	Jalón unilateral en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Cambia de lado y repite el ejercicio con el otro brazo.
+390	Jalón con barra pro lat	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+397	Curl de predicador a una mano en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+398	Curl de predicador invertido a una mano en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+399	Extensión de tríceps con polea alta, una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+400	Curl por encima de la cabeza en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	CONTENCION INC-CAT-C39	Repite el número de repeticiones indicado.
+403	Curl predicador con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+405	Extensión de tríceps con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+406	Extensión de tríceps con cuerda	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+410	Curl de un brazo al revés con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+413	Flexión de muñeca de pie en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+415	Elevacion de talones de una pierna de pie con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de pierna.
+426	Flexión lateral en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+427	Crunch lateral con polea en bosu	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	2	-	IDENTIDAD	Repite el número de repeticiones indicado.
+438	Encogimiento de trapecio en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+445	Curl de predicador martillo a una mano con cuerda en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+448	Curl por encima de la cabeza sentado en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	1	INC-CAT-C39	CONTENCION INC-CAT-C39	Repite el número de repeticiones indicado.
+451	Extensión de tríceps a una mano en polea alta	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+468	Remo acostado con barra cambered	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+470	Rotación externa de hombro de pie en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+486	Remo alto en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+488	Extensión de tríceps unilateral por encima de la cabeza, agarre inverso, de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+494	Flexión en reloj	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD;TEXTO NO DECIDIBLE	Continúa alternando lados en cada repetición.
+520	Curl de bíceps alterno con mancuernas	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, alternando los brazos.
+521	Curl alterno de bíceps con mancuerna y blaster	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Continúa alternando los brazos durante el número de repeticiones deseado.
+532	Bicicleta de aire con brazos	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	-	2	-	DIFICULTAD (V27)	Mantén la duración indicada.
+534	Curl de dedos con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+535	Press cubano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	2	-	IDENTIDAD;TEXTO NO DECIDIBLE	Repite el número de repeticiones deseado.
+539	Elevación lateral completa con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+543	Aperturas con mancuerna declinadas a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+555	Curl de bíceps con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+563	Curl martillo cruzado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+564	Curl martillo cruzado con mancuerna versión 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+565	Press de mancuerna a una mano en banco declinado con agarre martillo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+570	Curl martillo v. 2 con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+606	Extensión de tríceps atrás con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	KN	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+613	Pronación acostado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+616	Supinación de antebrazo con mancuerna en el suelo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+619	Deltoide posterior a una mano acostado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+620	Elevación lateral trasera a una mano acostado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+622	Elevación lateral a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+623	Elevación lateral a una mano con mancuerna con apoyo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de lado.
+625	Press a una mano acostado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+626	Press a una mano acostado con mancuerna v.2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+628	Aperturas en banco a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo y repite.
+629	Aperturas de pecho a una mano en balón	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+630	Press de pecho declinado a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+631	Aperturas a una mano en balón	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+633	Press a una mano en balón	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+634	Pullover a una mano en balón	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+636	Remo a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	KN	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+638	Extensión de tríceps con una mano pronada acostado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+639	Extensión de tríceps acostado a una mano supinada	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+640	Extensión única acostado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+646	Curl de concentración a una mano con mancuerna en pelota de estabilidad	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo y repite.
+647	Press francés con mancuerna a una mano sobre balón	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+648	Curl de predicador martillo a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+649	Press martillo a una mano en balón suizo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+650	Extensión de tríceps a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+651	Curl prono a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+652	Curl martillo prono a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+653	Curl de muñeca invertido a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+654	Curl de muñeca sentado con mancuerna, palma neutra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+655	Curl de muñeca a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia a la otra mano.
+656	Curl de antebrazo invertido con mancuerna sobre banco una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL KN	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+657	Curl de muñeca a una mano sobre banco con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL KN	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+659	Curl de muñeca sobre banco con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL KN	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+660	Aleteo inverso a una mano con mancuerna con apoyo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+661	Press de hombro a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+662	Press de hombro a una mano con mancuerna, versión 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+663	Remo vertical a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+667	Press de una mano con agarre invertido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+675	Sentadilla sumo con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones indicado.
+676	Curl predicador con mancuerna a un brazo, invertido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+677	Curl araña invertido a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+679	Curl martillo sentado a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+680	Curl de bíceps de pie a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+681	Curl martillo de pie a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado y después cambia de brazo.
+682	Extensión de tríceps a una mano con mancuerna en banco	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+683	Curl Zottman predicador a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+684	Curl de muñeca neutro sobre banco con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL KN	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+685	Curl de muñeca neutro a una mano sobre banco con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL KN	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+693	Curl de muñeca invertido con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+694	Rotación de antebrazo a una mano sentado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+700	Aleteo inverso con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+734	Elevación de talones sentado con mancuerna, una pierna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+735	Elevación de talón sentado a una pierna con mancuerna (agarre neutro)	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia a la otra pierna.
+737	Elevación de talones en una pierna con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+741	Elevación lateral de un brazo acostado con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+742	Porteo unilateral por encima de la cabeza con mancuerna	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Cambia de mano y repite el ejercicio.
+744	Levantamiento alterno de brazo de pie con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+747	Press de palma hacia adentro a una mano de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+749	Encogimiento de hombros con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+751	Peso muerto a una pierna con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de lado.
+752	Peso muerto a una pierna con mancuerna y apoyo en escalón	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+753	Sentadilla dividida a una pierna con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado y luego cambia de pierna y repite.
+762	Extensión de tríceps unilateral de pie, con mancuerna, tronco inclinado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+764	Curl de bíceps con mancuerna de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+766	Curl de bíceps desde dentro con mancuerna v. 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones recomendado.
+768	Curl de concentración a una mano con mancuerna de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
+771	Extensión de tríceps a una mano de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+772	Curl invertido a una mano con mancuerna de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
+775	Flexión inversa apoyado en los codos	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	1	-	DEC-FACTIBILIDAD-775	Repite el número de repeticiones indicado.
+800	Curl de bíceps de camarero	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+813	Bandera	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	HG OH	3	INC-4C-03	CONTENCION INC-4C-03	Mantén la duración indicada.
+829	Curl de dedos con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+830	Press anti gravitatorio con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+831	Pull-over acostado con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+832	Remo con barra EZ agarre invertido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+834	Extensión de tríceps acostado con barra EZ agarre estrecho detrás de la cabeza	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+836	Press francés de pie con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+837	Curl predicador con barra EZ, agarre cerrado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+838	Curl de agarre estrecho con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+839	Curl con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+840	Press de cara con agarre cerrado en declinada con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DEC-INV-DECLINADO;DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+841	Extensión de tríceps en declinado con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	INV	3	-	DEC-INV-DECLINADO;DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+844	Curl con agarre inverso con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+845	Curl predicador con agarre inverso con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+848	Curl araña con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+849	Curl Spider con barra EZ	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+850	Curl de bíceps con barra EZ y blaster	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+851	Press de banca con barra EZ en agarre cerrado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+852	Curl de bíceps con barra EZ agarre ancho de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+853	Marcha rápida en el sitio	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	-	1	-	IDENTIDAD	Mantén la duración indicada.
+854	Rodillas altas contra la pared	R13	Sin decision profesional pendiente	DURATION	MODERADO	NO	HI	1	-	DECISION PREVIA D2 (V37.1)	Mantén la duración indicada.
+858	Palanca frontal	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	HG OH	3	INC-4C-03	CONTENCION INC-4C-03	Mantén la duración indicada.
+861	Plancha completa	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	FL	3	INC-4C-03	CONTENCION INC-4C-03	Mantén la duración indicada.
+868	Pike colgado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	HG OH	3	-	BANDERA_ANADIR	Repite el número de repeticiones indicado.
+873	Remo en palanca frontal	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	HG OH	3	INC-4C-03	CONTENCION INC-4C-03	Repite el número de repeticiones indicado.
+885	Parada de manos	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	FL OH INV	3	INC-4C-03	CONTENCION INC-4C-03	Mantén la duración indicada.
+902	Gusano caminando	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL INV	1	-	IDENTIDAD	Repite el número de repeticiones deseado.
+922	Hang clean alterno con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI AX	3	-	IDENTIDAD;SEGURIDAD	Repite el número de repeticiones indicado.
+923	Press alterno con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	3	-	DIFICULTAD (V27)	Continúa alternando los brazos durante el número de repeticiones deseado.
+924	Press Arnold con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	3	-	DIFICULTAD (V27)	Alterna los lados.
+925	Press alterno con kettlebell en el suelo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado con cada brazo.
+929	Remo alterno con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Continúa alternando los brazos durante el número de repeticiones deseado.
+930	Clean con kettlebell desde hang	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI AX	3	-	DIFICULTAD (V27);IDENTIDAD;SEGURIDAD;SEGURIDAD	Repite el número de repeticiones indicado.
+937	Muscle up kipping	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI HG OH	3	-	IDENTIDAD	Repite el número de repeticiones indicado.
+944	Jerk a una mano con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI AX OH	3	-	IDENTIDAD	Baja la pesa rusa de vuelta a la posición inicial flexionando las rodillas y las caderas, y repite el número de repeticiones deseado.
+945	Press militar a un brazo hacia un lado	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de lado.
+948	Elevación frontal a una mano con kettlebell hasta arriba	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado y cambia de brazo.
+955	Press a una mano extendido en suelo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+956	Press a una mano en suelo con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+959	Figura 8 con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+961	Remo a una mano con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+963	Remo con kettlebell a dos manos	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+964	Sentadilla frontal con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+965	Sentadilla goblet con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+967	Lunge con pass-through con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+971	Clean doble alterno desde hang con kettlebell	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI AX	3	-	SEGURIDAD	Repite el número de repeticiones indicado.
+979	Elevación lateral con landmine	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado y cambia de brazo.
+980	Giro 180 con landmine	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+982	Remo a una mano con palanca	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+994	Remo en palanca, agarre estrecho alterno	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Continúa alternando lados durante el número de repeticiones deseado.
+1010	Curl de isquiotibiales tendido con palanca	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1068	Muscle up	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI HG OH	3	-	IDENTIDAD	Repite el número de repeticiones indicado.
+1084	Lanzamiento de pecho con balón medicinal	R13	Sin decision profesional pendiente	SETS_REPS	MODERADO	NO	HI	1	-	DEC-HI-LANZAMIENTOS	Repite el número de repeticiones indicado.
+1085	Golpe con balón medicinal a una mano	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI OH	2	-	DEC-HI-LANZAMIENTOS	Atrapa el balón medicinal al rebotar y repite el número de repeticiones deseado.
+1086	Captura y lanzamiento por encima de la cabeza con balón medicinal	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	1	-	IDENTIDAD;TEXTO NO DECIDIBLE	Baja de nuevo el cuerpo a la posición de sentadilla y repite el número de repeticiones deseado.
+1087	Golpe vertical con balón medicinal	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI OH	1	-	DEC-HI-LANZAMIENTOS	Atrapa el balón al rebotar y repite el número de repeticiones deseado.
+1113	Flexión pike a cobra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL INV	1	-	DECISION PREVIA V39	Repite el número de repeticiones deseado.
+1124	Giro prono en balón de estabilidad	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD	Continúa alternando lados durante el número de repeticiones deseado.
+1134	Correr en cinta	R13	Sin decision profesional pendiente	DURATION	MODERADO	NO	HI	1	-	DEC-HI-CARRERA	Mantén la duración indicada.
+1153	Fondos en anillas	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
+1176	Saltos estilo patinador	R13	Sin decision profesional pendiente	DURATION	ALTO	NO	HI	1	-	IDENTIDAD	Mantén la duración indicada.
+1177	Paso de esquí	R13	Sin decision profesional pendiente	DURATION	ALTO	NO	HI	1	-	BANDERA_QUITAR;IDENTIDAD;SEGURIDAD	Mantén la duración indicada.
+1192	Skin the cat	R13	Sin decision profesional pendiente	DURATION	BAJO	SI	HG OH	3	INC-4C-03	CONTENCION INC-4C-03;IDENTIDAD	Mantén la duración indicada.
+1207	Elevación de talones a una pierna con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1213	Elevacion de talones a una pierna en piso con Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1215	Elevaciones de talones invertidas en Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1226	Encogimiento trasero en smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1229	Remo a una mano en Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1234	Sentadilla frontal en Smith (agarre limpio)	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+1259	Arquero de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Continúa alternando lados durante el número de repeticiones deseado.
+1261	Inclinación pélvica de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Repite el número de repeticiones deseado.
+1266	Curl de pierna en una pierna de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de pierna.
+1274	Curl de muñeca sentado en Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+1275	Curl de muñeca de pie con Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1276	Elevacion de talones sentado a una pierna en Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1278	Elevación de talones sentado en Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1287	Encogimiento de hombros con Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+1288	Sentadilla dividida a una pierna con Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1294	Balanceo 360	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	HG OH	3	-	IDENTIDAD;SEGURIDAD;TEXTO NO DECIDIBLE	Recuerda respirar durante todo el ejercicio.
+1298	Maltés en apertura	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	FL	3	INC-4C-03	CONTENCION INC-4C-03;IDENTIDAD	Mantén la duración indicada.
+1301	Crunch invertido suspendido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
+1303	Elevación de piernas torsionada	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
+1304	Elevación de piernas torsionada (femenino)	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
+1306	Elevación de rodillas en silla romana	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
+1311	Abductor de cadera externo con pierna recta	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Repite el número de repeticiones indicado.
+1324	Pedaleo sentado en bicicleta estática	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	-	2	-	DIFICULTAD (V27)	Estira los músculos de las piernas después del entrenamiento para prevenir la rigidez y favorecer la recuperación.

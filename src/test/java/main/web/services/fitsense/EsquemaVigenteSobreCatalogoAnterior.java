@@ -36,7 +36,10 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V44_1 (codigos del NO_FACTIBLE): dos columnas NULL y dos CHECK, sin datos.
             "44.1:db/migration/V44_1__adaptation_reason_codes.sql",
             // V44_2 (recuperacion de contrasena): una tabla nueva, sin datos.
-            "44.2:db/migration/V44_2__password_reset_tokens.sql");
+            "44.2:db/migration/V44_2__password_reset_tokens.sql",
+            // V51 (cierre del catalogo) anade columnas Y datos del catalogo: aqui solo sus columnas, sin datos (script
+            // de prueba). Con impact_level e is_stretch NULL el motor usa la regla por nombre del catalogo fijado.
+            "51:catalogo/esquema_V51_V53_sin_datos.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {

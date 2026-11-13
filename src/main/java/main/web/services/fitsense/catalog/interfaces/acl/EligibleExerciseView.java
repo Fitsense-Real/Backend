@@ -36,8 +36,21 @@ public record EligibleExerciseView(
          */
         Boolean highImpact,
         /** V26 is_isolation (auditoria v46, P15-C experimental). {@code null} si el origen no lo informa. */
-        Boolean isolation
+        Boolean isolation,
+        /** V51 impact_level explicito (BAJO, MODERADO, ALTO). {@code null} si el origen no lo informa. */
+        String impactLevel,
+        /** V51 is_stretch explicito. {@code null} si el origen no lo informa. */
+        Boolean stretch
 ) {
+    /** Compatibilidad: sin los atributos explicitos de V51. */
+    public EligibleExerciseView(Long exerciseId, String nameEs, String bodyPartCode, String equipmentCode,
+                                String targetMuscle, short difficultyLevel, String defaultPrescription,
+                                String gifPath, String imagePath, String mediaAttribution, String movementPattern,
+                                Boolean highImpact, Boolean isolation) {
+        this(exerciseId, nameEs, bodyPartCode, equipmentCode, targetMuscle, difficultyLevel, defaultPrescription,
+                gifPath, imagePath, mediaAttribution, movementPattern, highImpact, isolation, null, null);
+    }
+
     /** Compatibilidad: sin el dato de aislamiento. */
     public EligibleExerciseView(Long exerciseId, String nameEs, String bodyPartCode, String equipmentCode,
                                 String targetMuscle, short difficultyLevel, String defaultPrescription,
