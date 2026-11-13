@@ -30,6 +30,19 @@ import java.util.TreeSet;
  * <p>
  * SIN INTERRUPTOR, como INC-4C-03 e INC-CAT-1374: es seguridad, no medicion. Un id sale de aqui solo cuando una
  * migracion auditada alinee texto y bandera con revision profesional.
+ * <p>
+ * REDUCCION A 8 (catalogo integral, PR #56-#59): la revision visual de los 26 ids originales confirmo que en todos
+ * el GIF y la bandera coinciden y lo erroneo era el texto de la fuente. V49 reescribio ese texto segun el GIF, asi
+ * que 18 ids salen del registro por completo (316, 1152, 1272, 1309, 1322, 55, 224, 637, 741, 875, 1062, 1063, 1093,
+ * 1095, 1156, 1181, 1193, 1311) y 1301, 1303 y 1304 pierden la parte de la contencion cuyo texto ya no lo pide
+ * (1301 brazos sobre la cabeza; 1303 y 1304 suelo). Ninguno sale porque haga falta para generar un plan: sale porque
+ * su texto ya no contradice su bandera ({@code ContencionTextoBanderaIT}, prueba «liberados»). Siguen contenidos los
+ * 8 cuyo MOVIMIENTO, no su texto, queda pendiente de decision profesional
+ * ({@code docs/FitSense/catalogo_integral/PROPUESTA_APOYO_SUSPENDIDO.md}):
+ * <ul>
+ *   <li>colgarse (apoyo suspendido, sin clase en el esquema): 1153, 1301, 1303, 1304, 1306;</li>
+ *   <li>brazos sobre la cabeza (curl «alto», posicion del brazo en el limite de la definicion): 131, 400, 448.</li>
+ * </ul>
  */
 public final class ContencionTextoBandera {
 
@@ -47,62 +60,39 @@ public final class ContencionTextoBandera {
 
     private static final Restriccion COLG = Restriccion.COLGARSE;
     private static final Restriccion CAB = Restriccion.SOBRE_LA_CABEZA;
-    private static final Restriccion SUE = Restriccion.SUELO;
 
-    /** El registro. Cada entrada cita la contradiccion verificada en el catalogo (ver CORRECCIONES_SEGURIDAD.md). */
+    /**
+     * El registro (8 ids tras la reduccion). Cada entrada cita por que el movimiento -texto ya corregido por V49 y
+     * GIF- sigue siendo incompatible o dudoso para quien declara la restriccion.
+     */
     static final Map<Long, Contencion> CONTENIDOS = Map.ofEntries(
-            // --- Colgarse / brazos arriba: el texto pide colgarse, la bandera (relajada en V38) dice que no
-            Map.entry(316L, c("Nombre «Dominadas con agarre estrecho» e instrucciones «Cuelgate de una barra de "
-                    + "dominadas»; V38 quito colgarse y brazos arriba por el GIF (remo invertido)", COLG, CAB)),
-            Map.entry(1301L, c("Instrucciones «Cuelgate de una barra de dominadas con los brazos completamente "
-                    + "extendidos»; V38 quito colgarse y brazos arriba y paso el equipo a correas", COLG, CAB)),
-            Map.entry(1306L, c("Instrucciones «Cuelgate de las barras paralelas»; nunca marcado como colgarse "
-                    + "(GIF: apoyo en antebrazos, silla romana)", COLG)),
-            Map.entry(1153L, c("Instrucciones «Comienza colgandote de las anillas»; no marcado como colgarse "
-                    + "(fondos en anillas: apoyo suspendido)", COLG)),
-            // --- Apoyo en paralelas / estacion de fondos con texto de otro ejercicio (pendiente profesional)
-            Map.entry(1303L, c("Equipo «parallel bars» (GIF: apoyo en la estacion de fondos) e instrucciones de "
-                    + "suelo «Tumbate sobre tu espalda»; V38 quito suelo", COLG, SUE)),
-            Map.entry(1304L, c("Gemelo del 1303: equipo «parallel bars» (GIF: estacion de fondos) e instrucciones "
-                    + "«Tumbate sobre tu espalda»; V38 quito suelo", COLG, SUE)),
-            Map.entry(1152L, c("Instrucciones de fondos en paralelas «Colocate entre dos barras paralelas con los "
-                    + "brazos completamente extendidos»; catalogo y GIF: en el suelo, sin paralelas (V38)", COLG)),
-            // --- Brazos por encima de la cabeza: el texto lo pide, la bandera dice que no
-            Map.entry(131L, c("Nombre «…sobre la cabeza…» e instrucciones «brazo completamente extendido por "
-                    + "encima de la cabeza»; V38 quito brazos arriba", CAB)),
-            Map.entry(400L, c("Nombre «Curl por encima de la cabeza en cable»; bandera brazos arriba = no", CAB)),
-            Map.entry(448L, c("Nombre «Curl por encima de la cabeza sentado en cable»; bandera brazos arriba = no",
-                    CAB)),
-            Map.entry(1272L, c("Instrucciones «Recibe la barra por encima de la cabeza»; bandera brazos arriba = no",
-                    CAB)),
-            Map.entry(1309L, c("Instrucciones «Eleva lentamente los brazos por encima de la cabeza»; V38 quito "
-                    + "brazos arriba (GIF: a la altura del hombro)", CAB)),
-            Map.entry(1322L, c("Instrucciones «Extiende un brazo por encima de la cabeza»; V38 quito brazos arriba "
-                    + "(GIF: brazo cruzado ante el pecho)", CAB)),
-            // --- Suelo: V38 quito suelo por el GIF (banco, de pie, taburete) y las instrucciones siguen en el suelo
-            Map.entry(55L, c("Instrucciones «Sientate en el suelo»; V38 quito suelo (GIF: de pie)", SUE)),
-            Map.entry(224L, c("Instrucciones «Tumbate boca arriba en una esterilla»; V38 quito suelo (GIF: banco)",
-                    SUE)),
-            Map.entry(637L, c("Instrucciones «Tumbate boca arriba… pies apoyados en el suelo»; V38 quito suelo "
-                    + "(GIF: banco)", SUE)),
-            Map.entry(741L, c("Instrucciones «Tumbate de lado»; V38 quito suelo (GIF: banco)", SUE)),
-            Map.entry(875L, c("Instrucciones «Tumbate boca arriba… levanta las piernas del suelo»; V38 quito suelo "
-                    + "(GIF: banco)", SUE)),
-            Map.entry(1062L, c("Instrucciones «Tumbate sobre tu espalda… levanta las piernas del suelo»; V38 quito "
-                    + "suelo (GIF: banco)", SUE)),
-            Map.entry(1063L, c("Instrucciones «Tumbate sobre tu espalda… pies apoyados en el suelo»; V38 quito "
-                    + "suelo (GIF: banco declinado)", SUE)),
-            Map.entry(1093L, c("Instrucciones «Comienza en posicion de flexion… baja el pecho hacia el suelo»; V38 "
-                    + "quito suelo (GIF: de pie elevando rodillas)", SUE)),
-            Map.entry(1095L, c("Instrucciones «Comienza en posicion de flexion… baja el pecho hacia el suelo»; V38 "
-                    + "quito suelo (GIF: de pie)", SUE)),
-            Map.entry(1156L, c("Instrucciones «Sientate en el suelo con las piernas extendidas»; V38 quito suelo "
-                    + "(GIF: asiento inclinado)", SUE)),
-            Map.entry(1181L, c("Instrucciones «Sientate en el suelo con la espalda contra una pared»; V38 quito "
-                    + "suelo (GIF: sentadilla isometrica contra la pared)", SUE)),
-            Map.entry(1193L, c("Instrucciones «Sientate en el suelo con las piernas extendidas»; V38 quito suelo "
-                    + "(GIF: taburete)", SUE)),
-            Map.entry(1311L, c("Instrucciones «Tumbate de lado»; V38 quito suelo (GIF: de pie)", SUE)));
+            // --- Colgarse: apoyo suspendido (el cuerpo sin apoyo en el suelo, sostenido por brazos o antebrazos).
+            //     requires_hanging no lo cubre y la decision de clasificarlo es profesional (PROPUESTA_APOYO_SUSPENDIDO).
+            Map.entry(1153L, c("Fondos en anillas (GIF): apoyo sobre los brazos extendidos, pies sin apoyo; "
+                    + "requires_hanging = no. Apoyo suspendido pendiente de decision profesional", COLG)),
+            Map.entry(1301L, c("Plancha con los pies en correas de suspension (GIF): pies suspendidos; V38 quito "
+                    + "colgarse. Brazos sobre la cabeza ya no aplica: V49 corrigio el texto", COLG)),
+            Map.entry(1303L, c("Silla romana / estacion de fondos (GIF): apoyo en antebrazos con los pies sin apoyo; "
+                    + "requires_hanging = no. Suelo ya no aplica: V49 corrigio el texto", COLG)),
+            Map.entry(1304L, c("Gemelo del 1303 (GIF: silla romana, apoyo en antebrazos, pies sin apoyo); "
+                    + "requires_hanging = no. Suelo ya no aplica: V49 corrigio el texto", COLG)),
+            Map.entry(1306L, c("Elevacion de rodillas en silla romana (GIF): apoyo en antebrazos con los pies sin "
+                    + "apoyo; nunca marcado como colgarse", COLG)),
+            // --- Brazos sobre la cabeza: curl «alto» con el brazo abierto a la altura del hombro y las manos hacia
+            //     la cabeza; la posicion queda en el limite de la definicion de requires_overhead.
+            Map.entry(131L, c("Curl alto (GIF): brazo a la altura del hombro y manos hacia la cabeza; "
+                    + "requires_overhead = no (V38). Limite de la definicion, pendiente profesional", CAB)),
+            Map.entry(400L, c("Curl alto en polea (GIF): brazos a la altura del hombro y manos hacia la cabeza; "
+                    + "requires_overhead = no. Limite de la definicion, pendiente profesional", CAB)),
+            Map.entry(448L, c("Curl alto en polea sentado (GIF): brazos a la altura del hombro y manos hacia la "
+                    + "cabeza; requires_overhead = no. Limite de la definicion, pendiente profesional", CAB)));
+
+    /**
+     * Los 18 ids que la PR #55 original contenia y que V49 libero por completo: su texto ya describe el GIF y no
+     * contradice su bandera. Solo documentacion y pruebas; no filtra nada.
+     */
+    public static final Set<Long> LIBERADOS_POR_V49 = Set.of(316L, 1152L, 1272L, 1309L, 1322L, 55L, 224L, 637L, 741L,
+            875L, 1062L, 1063L, 1093L, 1095L, 1156L, 1181L, 1193L, 1311L);
 
     private ContencionTextoBandera() {}
 

@@ -49,12 +49,15 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * INC-CAT-C39 · CONTENCION POR TEXTO DEL CATALOGO CONTRA BANDERA, con el catalogo real (V1-V46), PostgreSQL efimero,
+ * INC-CAT-C39 · CONTENCION POR TEXTO DEL CATALOGO CONTRA BANDERA, con el catalogo real (V1-V50: incluye las
+ * correcciones del catalogo integral, PR #56-#59), PostgreSQL efimero,
  * motor de reglas y la instantanea que recibe la IA; sin llamadas a Replicate. Los planes publicados se manipulan
  * SOLO en esta base aislada (copias controladas), nunca en datos reales.
  * <p>
  * A colgarse, B brazos arriba, C ambas (y suelo), D catalogo de la IA, E motor de reglas, F plan publicado con una
- * sesion pendiente, G sesion en curso, H factibilidad sin compensar con prohibidos, I coherencia texto-bandera.
+ * sesion pendiente, G sesion en curso, H factibilidad sin compensar con prohibidos, I coherencia texto-bandera,
+ * L liberados por V49 (vuelven solo porque su texto ya no contradice su bandera) y R los dos perfiles LOSE_WEIGHT
+ * que recuperan su semana con la contencion reducida a 8.
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -166,8 +169,13 @@ class ContencionTextoBanderaIT {
             var e = elegibles(u);
             assertTrue(conBandera(e, "requires_hanging").isEmpty());
             assertTrue(interseccion(e, ContencionTextoBandera.contenidos(SIN_COLGARSE.seguridad())).isEmpty(), e.toString());
-            // Lo contenido solo por brazos arriba o suelo sigue llegando (1309, 1322, 1093 en este gimnasio).
-            assertTrue(e.containsAll(List.of(1309L, 1322L, 1093L)), e.toString());
+            assertTrue(interseccion(e, Set.of(1153L, 1301L, 1303L, 1304L, 1306L)).isEmpty(), e.toString());
+            // Lo contenido solo por brazos arriba sigue llegando: lo que el perfil libre recibe de 131/400/448
+            // (en este gimnasio y nivel, al menos el 448) llega igual a quien solo prohibe colgarse.
+            var libre = elegibles(usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, LIBRE));
+            var soloCabeza = interseccion(libre, Set.of(131L, 400L, 448L));
+            assertTrue(soloCabeza.contains(448L), soloCabeza.toString());
+            assertTrue(e.containsAll(soloCabeza), soloCabeza + " " + e);
         }
 
         @Test
@@ -177,7 +185,9 @@ class ContencionTextoBanderaIT {
             var e = elegibles(u);
             assertTrue(conBandera(e, "requires_overhead").isEmpty());
             assertTrue(interseccion(e, ContencionTextoBandera.contenidos(SIN_CABEZA.seguridad())).isEmpty(), e.toString());
+            assertTrue(interseccion(e, Set.of(131L, 400L, 448L)).isEmpty(), e.toString());
             assertTrue(e.contains(1306L), "1306 solo se contiene por colgarse");
+            assertTrue(e.contains(1301L), "1301 ya no se contiene por brazos arriba: V49 corrigio su texto");
         }
 
         @Test
@@ -224,12 +234,13 @@ class ContencionTextoBanderaIT {
     }
 
     /**
-     * Unico perfil de esta rejilla que deja de tener plan con la contencion (comparacion antes/despues de
-     * CORRECCIONES_SEGURIDAD.md): LOSE_WEIGHT principiante en casa sin suelo. Su semana anterior dependia del 1093,
-     * cuyas instrucciones son una flexion en el suelo. Ahora V25 (cardio por sesion) lo detecta y no se publica nada:
-     * es el comportamiento pedido -no compensar con un prohibido-, documentado como cambio esperado.
+     * Perfiles de esta rejilla sin plan. Con la contencion de 26 sobre el catalogo antiguo, LOSE_WEIGHT principiante
+     * en casa quedaba sin plan: su cardio de pie (1093) tenia instrucciones de flexion en el suelo. V49 alineo ese
+     * texto con el GIF (elevacion de rodilla de pie) y la contencion reducida a 8 ya no lo retiene, asi que el perfil
+     * recupera su semana sin que se relaje V25 ni ninguna bandera (prueba R). Ninguno queda sin plan: cualquier
+     * NO_FACTIBLE nuevo es una regresion.
      */
-    static final Set<String> SIN_PLAN_ESPERADO = Set.of("LOSE_WEIGHT/BEGINNER/HOME");
+    static final Set<String> SIN_PLAN_ESPERADO = Set.of();
 
     @Test
     @DisplayName("H · factibilidad: 4 objetivos x 2 niveles x gimnasio/casa con las 3 restricciones; nunca un prohibido")
@@ -433,13 +444,13 @@ class ContencionTextoBanderaIT {
     }
 
     @Test
-    @DisplayName("I · la contencion no modifica el catalogo: banderas, nombres e instrucciones de los 26 siguen igual")
+    @DisplayName("I · la contencion no modifica el catalogo: las banderas de los 8 contenidos siguen sin la restriccion")
     void i_sinCambiosDeDatos() {
         // Las banderas actuales de los contenidos son las que dejo V38 (ninguna relajada mas, ninguna endurecida).
         var filas = jdbc.queryForList("SELECT exercise_id, requires_hanging, requires_overhead, requires_floor, is_active"
                 + " FROM exercises WHERE exercise_id = ANY (?)",
                 (Object) ContencionTextoBandera.registro().keySet().toArray(Long[]::new));
-        assertEquals(26, filas.size());
+        assertEquals(8, filas.size());
         for (var f : filas) {
             long id = ((Number) f.get("exercise_id")).longValue();
             var r = ContencionTextoBandera.registro().get(id).restricciones();
@@ -447,6 +458,130 @@ class ContencionTextoBanderaIT {
             if (r.contains(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)) assertEquals(false, f.get("requires_overhead"), "id " + id);
             if (r.contains(ContencionTextoBandera.Restriccion.SUELO)) assertEquals(false, f.get("requires_floor"), "id " + id);
             assertEquals(true, f.get("is_active"), "no se desactiva ni se borra: " + id);
+        }
+    }
+
+    // =====================================================================
+
+    /** Patrones de texto que PIDEN la accion restringida (los mismos de la prueba I). */
+    static final Pattern COLGARSE_TXT = Pattern.compile("\\bcu[eé]lgate\\b|\\bcolg[aá]ndote\\b|\\bcolgad[oa]\\b|dominad",
+            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    static final Pattern CABEZA_TXT = Pattern.compile("por encima de (la|tu) cabeza|sobre la cabeza",
+            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    static final Pattern SUELO_TXT = Pattern.compile("(t[uú]mbate|acu[eé]state|si[eé]ntate|tumbad[oa]|sentad[oa])"
+            + " (boca (arriba|abajo) |de lado |de espaldas )?(en|sobre) (el suelo|el piso|una esterilla|la esterilla|"
+            + "una colchoneta)|posici[oó]n de (flexi[oó]n|plancha)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** La contencion que cada id tenia en la PR #55 original (26), para comprobar por que se libero. */
+    static final Map<Long, Set<ContencionTextoBandera.Restriccion>> ORIGINAL = Map.ofEntries(
+            Map.entry(316L, EnumSet.of(ContencionTextoBandera.Restriccion.COLGARSE, ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
+            Map.entry(1152L, EnumSet.of(ContencionTextoBandera.Restriccion.COLGARSE)),
+            Map.entry(1272L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
+            Map.entry(1309L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
+            Map.entry(1322L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
+            Map.entry(55L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(224L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(637L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(741L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(875L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1062L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1063L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1093L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1095L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1156L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1181L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1193L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1311L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            // Liberados en parte: la restriccion que se quita (la que se mantiene sigue en el registro)
+            Map.entry(1301L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
+            Map.entry(1303L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
+            Map.entry(1304L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)));
+
+    /**
+     * L · POR QUE SE LIBERA CADA ID. Para cada restriccion que la PR #55 original aplicaba y la reducida ya no aplica,
+     * el texto actual (nombre e instrucciones, tras V49) ya no pide esa accion, o la bandera del catalogo ya la declara
+     * (y entonces el filtro de seguridad normal la excluye). Si no, la liberacion no estaria justificada y esta prueba
+     * falla: ningun id sale porque haga falta para generar un plan.
+     */
+    @Test
+    @DisplayName("L · liberados: el texto corregido por V49 ya no pide la accion restringida (o la bandera la declara)")
+    void l_liberadosJustificados() {
+        assertEquals(ContencionTextoBandera.LIBERADOS_POR_V49.size() + 3, ORIGINAL.size());
+        assertTrue(ORIGINAL.keySet().containsAll(ContencionTextoBandera.LIBERADOS_POR_V49));
+        assertTrue(interseccion(ContencionTextoBandera.LIBERADOS_POR_V49, ContencionTextoBandera.registro().keySet()).isEmpty());
+        var injustificados = new ArrayList<String>();
+        ORIGINAL.forEach((id, quitadas) -> {
+            var f = jdbc.queryForMap("SELECT coalesce(name_es,'') n, coalesce(instructions_es,'') i, requires_hanging h,"
+                    + " requires_overhead o, requires_floor s, is_active a FROM exercises WHERE exercise_id = ?", id);
+            String texto = f.get("n") + " " + f.get("i");
+            assertEquals(true, f.get("a"), "no se desactiva: " + id);
+            var mantiene = Optional.ofNullable(ContencionTextoBandera.registro().get(id))
+                    .map(ContencionTextoBandera.Contencion::restricciones).orElse(Set.of());
+            for (var r : quitadas) {
+                assertFalse(mantiene.contains(r), id + " sigue contenido por " + r);
+                boolean pide = switch (r) {
+                    case COLGARSE -> COLGARSE_TXT.matcher(texto).find();
+                    case SOBRE_LA_CABEZA -> CABEZA_TXT.matcher(texto).find();
+                    case SUELO -> SUELO_TXT.matcher(texto).find();
+                };
+                boolean declarada = switch (r) {
+                    case COLGARSE -> (Boolean) f.get("h");
+                    case SOBRE_LA_CABEZA -> (Boolean) f.get("o");
+                    case SUELO -> (Boolean) f.get("s");
+                };
+                if (pide && !declarada) injustificados.add(id + " " + r + ": " + texto);
+            }
+        });
+        assertTrue(injustificados.isEmpty(), String.join("\n", injustificados));
+    }
+
+    /**
+     * L · LOS LIBERADOS VUELVEN DE VERDAD, Y SOLO SEGUN SUS BANDERAS. Para cada restriccion, todo liberado que el
+     * perfil sin restricciones recibe llega tambien al perfil restringido, salvo si su bandera declara esa restriccion
+     * (entonces lo excluye el filtro de seguridad normal, no INC-CAT-C39).
+     */
+    @Test
+    @DisplayName("L · liberados: vuelven al conjunto elegible salvo que su propia bandera los excluya")
+    void l_liberadosVuelven() {
+        var libre = elegibles(usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, LIBRE));
+        var candidatos = interseccion(libre, ContencionTextoBandera.LIBERADOS_POR_V49);
+        assertFalse(candidatos.isEmpty(), "el gimnasio del caso 39 recibe liberados");
+        for (var r : List.of(SIN_COLGARSE, SIN_CABEZA, new Restricciones(true, false, false), SIN_NADA)) {
+            var e = elegibles(usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, r));
+            var esperados = new TreeSet<>(candidatos);
+            if (r.sinColgarse()) esperados.removeAll(conBandera(candidatos, "requires_hanging"));
+            if (r.sinBrazosArriba()) esperados.removeAll(conBandera(candidatos, "requires_overhead"));
+            if (r.sinSuelo()) esperados.removeAll(conBandera(candidatos, "requires_floor"));
+            var faltan = new TreeSet<>(esperados);
+            faltan.removeAll(e);
+            assertTrue(faltan.isEmpty(), r + " no recibe liberados sin bandera: " + faltan);
+        }
+    }
+
+    /**
+     * R · LOS DOS PERFILES QUE LA PR #55 ORIGINAL DEJABA SIN PLAN (LOSE_WEIGHT principiante en casa, «sin suelo» y
+     * «sin las tres»). Con la contencion reducida publican su semana: el validador obligatorio (V1-V25) la acepta, no
+     * contiene nada contenido ni con bandera restringida, y cada sesion lleva cardio (V25 en LOSE_WEIGHT), que viene
+     * de ejercicios de pie sin bandera de suelo.
+     */
+    @Test
+    @DisplayName("R · LOSE_WEIGHT principiante en casa (sin suelo / sin las tres): semana valida sin prohibidos")
+    void r_perfilesRecuperados() {
+        for (var r : List.of(new Restricciones(true, false, false), SIN_NADA)) {
+            long u = usuario(GoalType.LOSE_WEIGHT, FitnessLevel.BEGINNER, TrainingLocation.HOME, CASA, r);
+            long plan = generar(u);
+            assertEquals("ACTIVE", jdbc.queryForObject("SELECT status FROM weekly_training_plans WHERE plan_id = ?",
+                    String.class, plan));
+            var ids = ejerciciosDelPlan(plan);
+            assertTrue(interseccion(ids, ContencionTextoBandera.contenidos(r.seguridad())).isEmpty(), r + " " + ids);
+            assertTrue(conBandera(ids, "requires_floor").isEmpty(), r + " " + ids);
+            if (r.sinColgarse()) assertTrue(conBandera(ids, "requires_hanging").isEmpty());
+            if (r.sinBrazosArriba()) assertTrue(conBandera(ids, "requires_overhead").isEmpty());
+            var sesionesSinCardio = jdbc.queryForList("SELECT pw.planned_workout_id FROM planned_workouts pw WHERE pw.plan_id = ?"
+                    + " AND NOT EXISTS (SELECT 1 FROM planned_workout_exercises pwe JOIN exercises x ON x.exercise_id = pwe.exercise_id"
+                    + " WHERE pwe.planned_workout_id = pw.planned_workout_id AND x.movement_pattern = 'LOCOMOTION_CARDIO')",
+                    Long.class, plan);
+            assertTrue(sesionesSinCardio.isEmpty(), r + " sesiones sin cardio: " + sesionesSinCardio);
         }
     }
 }

@@ -39,7 +39,7 @@ class ExternalCatalogServiceContencionC39Test {
         Mockito.when(fachada.fetchEligibleExercises(anyList(), anyBoolean(), anyInt(), anyList(),
                         anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(),
                         anyBoolean(), anyBoolean(), anyBoolean()))
-                .thenReturn(List.of(vista(316), vista(1309), vista(1093), vista(910), vista(61)));
+                .thenReturn(List.of(vista(1301), vista(400), vista(1093), vista(910), vista(61)));
         var servicio = new ExternalCatalogService(fachada);
         var normal = servicio.fetchEligibleFor(perfil(), 1, seguridad).stream().map(c -> c.exerciseId()).toList();
         var silenciosa = servicio.fetchEligibleForExplanation(perfil(), 1, seguridad).stream()
@@ -50,12 +50,12 @@ class ExternalCatalogServiceContencionC39Test {
 
     @ParameterizedTest(name = "suelo={0} colgarse={1} cabeza={2} -> {3}")
     @CsvSource(delimiter = ';', value = {
-            "false;false;false;316,1309,1093,910,61",
-            "false;true;false;1309,1093,910,61",
-            "false;false;true;1093,910,61",
+            "false;false;false;1301,400,1093,910,61",
+            "false;true;false;400,1093,910,61",
+            "false;false;true;1301,1093,910,61",
             "false;true;true;1093,910,61",
-            "true;false;false;316,1309,910,61",
-            "true;true;true;910,61"
+            "true;false;false;1301,400,1093,910,61",
+            "true;true;true;1093,910,61"
     })
     void soloParaQuienDeclaraLaRestriccion(boolean suelo, boolean colgarse, boolean cabeza, String esperado) {
         var seguridad = new SafetyProfile(false, suelo, false, false, colgarse, cabeza, false);
@@ -63,10 +63,13 @@ class ExternalCatalogServiceContencionC39Test {
         assertEquals(java.util.Arrays.stream(esperado.split(",")).map(Long::valueOf).toList(), ids);
         // 910 (remo invertido, talones en el suelo) no esta en el registro: sin incidencia, nunca se contiene.
         assertTrue(ids.contains(910L));
+        // 1093 (liberado por V49: su texto ya describe la elevacion de rodilla de pie del GIF) tampoco.
+        assertTrue(ids.contains(1093L));
     }
 
     @ParameterizedTest(name = "contenidoIncCatC39({0}) con colgarse prohibido = {1}")
-    @CsvSource({"316, true", "1301, true", "1303, true", "1152, true", "853, false", "910, false", "1093, false"})
+    @CsvSource({"1301, true", "1303, true", "1304, true", "1306, true", "1153, true", "316, false", "1152, false",
+            "853, false", "910, false", "1093, false", "400, false"})
     void fachadaEstatica(long id, boolean esperado) {
         assertEquals(esperado, ExternalCatalogService.contenidoIncCatC39(id,
                 new SafetyProfile(false, false, false, false, true, false, false)));

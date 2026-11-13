@@ -17,10 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("INC-CAT-C39 · contencion por texto contra bandera")
 class ContencionTextoBanderaTest {
 
-    static final Set<Long> COLGARSE = Set.of(316L, 1301L, 1306L, 1153L, 1303L, 1304L, 1152L);
-    static final Set<Long> CABEZA = Set.of(316L, 1301L, 131L, 400L, 448L, 1272L, 1309L, 1322L);
-    static final Set<Long> SUELO = Set.of(55L, 224L, 637L, 741L, 875L, 1062L, 1063L, 1093L, 1095L, 1156L, 1181L,
-            1193L, 1303L, 1304L, 1311L);
+    /*
+     * Contencion reducida a 8 sobre el catalogo integral (V47-V50): solo el MOVIMIENTO pendiente de decision
+     * profesional. Los 18 liberados por V49 y la parte de 1301 (cabeza) y 1303/1304 (suelo) ya no se contienen.
+     */
+    static final Set<Long> COLGARSE = Set.of(1153L, 1301L, 1303L, 1304L, 1306L);
+    static final Set<Long> CABEZA = Set.of(131L, 400L, 448L);
+    static final Set<Long> SUELO = Set.of();
+    /** Los 26 de la PR #55 original. */
+    static final Set<Long> ORIGINAL_26 = Set.of(316L, 1301L, 1306L, 1153L, 1303L, 1304L, 1152L, 131L, 400L, 448L,
+            1272L, 1309L, 1322L, 55L, 224L, 637L, 741L, 875L, 1062L, 1063L, 1093L, 1095L, 1156L, 1181L, 1193L, 1311L);
 
     /** (alto impacto, suelo, axial, rodillas, colgarse, brazos arriba, inversion) */
     static SafetyProfile seg(boolean suelo, boolean colgarse, boolean cabeza) {
@@ -38,18 +44,18 @@ class ContencionTextoBanderaTest {
     void sinRestricciones() {
         assertTrue(ContencionTextoBandera.contenidos(SafetyProfile.none()).isEmpty());
         assertTrue(ContencionTextoBandera.contenidos(seg(false, false, false)).isEmpty());
-        assertFalse(ContencionTextoBandera.contiene(316L, seg(false, false, false)));
-        assertFalse(ContencionTextoBandera.contiene(316L, null));
+        assertFalse(ContencionTextoBandera.contiene(1303L, seg(false, false, false)));
+        assertFalse(ContencionTextoBandera.contiene(1303L, null));
     }
 
     @Test
-    @DisplayName("A · quien prohibe colgarse: exactamente los ids cuyo texto pide colgarse o apoyo suspendido")
+    @DisplayName("A · quien prohibe colgarse: exactamente los ids de apoyo suspendido pendientes de decision")
     void prohibeColgarse() {
         assertEquals(new TreeSet<>(COLGARSE), ContencionTextoBandera.contenidos(seg(false, true, false)));
     }
 
     @Test
-    @DisplayName("B · quien prohibe brazos sobre la cabeza: exactamente los ids cuyo texto los pide")
+    @DisplayName("B · quien prohibe brazos sobre la cabeza: exactamente los tres curl altos")
     void prohibeSobreLaCabeza() {
         assertEquals(new TreeSet<>(CABEZA), ContencionTextoBandera.contenidos(seg(false, false, true)));
     }
@@ -61,9 +67,32 @@ class ContencionTextoBanderaTest {
     }
 
     @Test
-    @DisplayName("quien prohibe el suelo: los relajados en V38 cuyas instrucciones siguen en el suelo")
+    @DisplayName("quien prohibe el suelo: nada (V49 alineo con el GIF todos los textos de suelo contenidos)")
     void prohibeSuelo() {
         assertEquals(new TreeSet<>(SUELO), ContencionTextoBandera.contenidos(seg(true, false, false)));
+        assertFalse(ContencionTextoBandera.contiene(1303L, seg(true, false, false)), "1303 ya no por suelo");
+        assertFalse(ContencionTextoBandera.contiene(1093L, seg(true, false, false)), "1093 liberado");
+    }
+
+    @Test
+    @DisplayName("1301 se contiene solo por colgarse: brazos sobre la cabeza ya no aplica (V49)")
+    void parcial1301() {
+        assertTrue(ContencionTextoBandera.contiene(1301L, seg(false, true, false)));
+        assertFalse(ContencionTextoBandera.contiene(1301L, seg(false, false, true)));
+    }
+
+    @Test
+    @DisplayName("liberados por V49: 18 ids que no se contienen para ninguna combinacion de restricciones")
+    void liberados() {
+        assertEquals(18, ContencionTextoBandera.LIBERADOS_POR_V49.size());
+        var todos = seg(true, true, true);
+        for (var id : ContencionTextoBandera.LIBERADOS_POR_V49) {
+            assertFalse(ContencionTextoBandera.registro().containsKey(id), "liberado en el registro: " + id);
+            assertFalse(ContencionTextoBandera.contiene(id, todos), "liberado contenido: " + id);
+        }
+        // 18 liberados + 8 contenidos = los 26 originales; nada nuevo entra en el registro.
+        assertEquals(new TreeSet<>(ORIGINAL_26),
+                union(ContencionTextoBandera.LIBERADOS_POR_V49, ContencionTextoBandera.registro().keySet()));
     }
 
     @Test
@@ -76,7 +105,7 @@ class ContencionTextoBanderaTest {
     @Test
     @DisplayName("trazabilidad: cada entrada tiene restricciones y una contradiccion citada")
     void trazabilidad() {
-        assertEquals(26, ContencionTextoBandera.registro().size(), "26 ejercicios documentados en el registro");
+        assertEquals(8, ContencionTextoBandera.registro().size(), "8 ejercicios documentados en el registro");
         ContencionTextoBandera.registro().forEach((id, c) -> {
             assertFalse(c.restricciones().isEmpty(), "sin restricciones: " + id);
             assertTrue(c.contradiccion() != null && c.contradiccion().length() > 20, "sin justificacion: " + id);
@@ -94,7 +123,7 @@ class ContencionTextoBanderaTest {
     @Test
     @DisplayName("causa de seguridad con nombre: autoriza bloqueo y sustitucion como INC-CAT-1374")
     void causaDeSeguridad() {
-        var hechos = new ExerciseSafetyFacts(316L, true, false, true, false, false, false, false, false);
+        var hechos = new ExerciseSafetyFacts(1303L, true, false, true, false, false, false, false, false);
         var causas = SafetyConflictPolicy.causas(hechos, seg(false, true, false), false, false, true);
         assertEquals(java.util.List.of(SafetyConflictPolicy.CONTENIDO_INC_CAT_C39), causas);
         assertEquals("INC-CAT-C39", SafetyConflictPolicy.CONTENIDO_INC_CAT_C39);

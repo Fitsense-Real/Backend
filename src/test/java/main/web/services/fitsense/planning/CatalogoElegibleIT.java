@@ -88,14 +88,13 @@ class CatalogoElegibleIT {
     static final List<Long> RETENIDOS = List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
 
     /*
-     * INC-CAT-C39 (CORRECCIONES_SEGURIDAD.md, tabla 3.1), escrito aqui sin leer ContencionTextoBandera: ids cuyo
-     * nombre o instrucciones piden colgarse, brazos sobre la cabeza o suelo y cuya bandera no lo refleja. Solo
-     * salen para quien declara (o recibe por edad) esa restriccion.
+     * INC-CAT-C39 reducida a 8 sobre el catalogo integral (CORRECCIONES_SEGURIDAD.md §6), escrito aqui sin leer
+     * ContencionTextoBandera: apoyo suspendido (colgarse) y curl alto (brazos sobre la cabeza), pendientes de decision
+     * profesional. Solo salen para quien declara (o recibe por edad) esa restriccion. Suelo: ninguno (V49 corrigio
+     * todos los textos de suelo que la PR #55 original contenia).
      */
-    static final List<Long> C39_COLGARSE = List.of(316L, 1301L, 1306L, 1153L, 1303L, 1304L, 1152L);
-    static final List<Long> C39_CABEZA = List.of(316L, 1301L, 131L, 400L, 448L, 1272L, 1309L, 1322L);
-    static final List<Long> C39_SUELO = List.of(55L, 224L, 637L, 741L, 875L, 1062L, 1063L, 1093L, 1095L, 1156L,
-            1181L, 1193L, 1303L, 1304L, 1311L);
+    static final List<Long> C39_COLGARSE = List.of(1153L, 1301L, 1303L, 1304L, 1306L);
+    static final List<Long> C39_CABEZA = List.of(131L, 400L, 448L);
 
     static final List<String> FILAS = new ArrayList<>();
 
@@ -235,7 +234,6 @@ class CatalogoElegibleIT {
         excluidos.addAll(bloqueados);
         if (sinSuspension) excluidos.addAll(C39_COLGARSE);
         if (sinOverhead) excluidos.addAll(C39_CABEZA);
-        if (sinSuelo) excluidos.addAll(C39_SUELO);
 
         boolean cardio = !filtroAnterior && Set.of("LOSE_WEIGHT", "GENERAL_FITNESS").contains(objetivo);
         boolean movilidad = !filtroAnterior && "GENERAL_FITNESS".equals(objetivo);
