@@ -248,7 +248,8 @@ class CatalogoElegibleIT {
                    and (not :sinSuelo or not e.requires_floor)
                    and (not :sinAxial or not e.axial_load)
                    and (not :sinRodillas or not e.requires_kneeling)
-                   and (not :sinSuspension or not e.requires_hanging)
+                   -- V53 (decision de significado): «no colgarse» excluye tambien el apoyo suspendido sobre un aparato
+                   and (not :sinSuspension or not (e.requires_hanging or e.requires_suspended_support))
                    and (not :sinOverhead or not e.requires_overhead)
                    and (not :sinInversion or not e.requires_inversion)
                    -- INC-CAT-1374: solo con barra declarada y sin restringir colgarse ni brazos arriba

@@ -96,7 +96,7 @@ public class CatalogContextFacade {
                 .collect(Collectors.toMap(Exercise::getId, e -> new ExerciseSafetyFlagsView(e.getId(),
                         e.isActive(), e.isHighImpact(), e.isRequiresFloor(), e.isAxialLoad(),
                         e.isRequiresKneeling(), e.isRequiresHanging(), e.isRequiresOverhead(),
-                        e.isRequiresInversion()), (a, b) -> a));
+                        e.isRequiresInversion(), e.isRequiresSuspendedSupport()), (a, b) -> a));
     }
 
     @Transactional(readOnly = true)

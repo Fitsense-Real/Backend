@@ -81,7 +81,7 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
              AND (:excludeFloorWork  = false OR e.requiresFloor = false)
              AND (:excludeAxialLoad  = false OR e.axialLoad = false)
              AND (:excludeKneeling   = false OR e.requiresKneeling = false)
-             AND (:excludeHanging    = false OR e.requiresHanging = false)
+             AND (:excludeHanging    = false OR (e.requiresHanging = false AND e.requiresSuspendedSupport = false))
              AND (:excludeOverhead   = false OR e.requiresOverhead = false)
              AND (:excludeInversion  = false OR e.requiresInversion = false)
            ORDER BY e.bodyPartId ASC, e.difficultyLevel ASC, e.id ASC

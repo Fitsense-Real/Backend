@@ -17,5 +17,15 @@ public record ExerciseSafetyFlagsView(
         boolean requiresKneeling,
         boolean requiresHanging,
         boolean requiresOverhead,
-        boolean requiresInversion
-) {}
+        boolean requiresInversion,
+        /** V53: apoyo suspendido (sin los pies en el suelo, sostenido sobre brazos o antebrazos, o pies en correas). */
+        boolean requiresSuspendedSupport
+) {
+    /** Compatibilidad: sin el dato de V53. */
+    public ExerciseSafetyFlagsView(Long exerciseId, boolean active, boolean highImpact, boolean requiresFloor,
+                                   boolean axialLoad, boolean requiresKneeling, boolean requiresHanging,
+                                   boolean requiresOverhead, boolean requiresInversion) {
+        this(exerciseId, active, highImpact, requiresFloor, axialLoad, requiresKneeling, requiresHanging,
+                requiresOverhead, requiresInversion, false);
+    }
+}
