@@ -18,3 +18,5 @@ Contencion	Contenciones vigentes	16 (8 C39, 7 INC-4C-03, 1 INC-CAT-1374); ningun
 Planes publicados	Plan 78: bloqueo del jueves por 1303	Correcto (INC-CAT-C39+apoyo_suspendido con V53)	Plan78ContencionReducidaIT
 Planes publicados	Plan 78: reparacion	No publica (916 y 910 subieron de nivel); no se relaja	Plan78ContencionReducidaIT
 Validadores	V15, V24, V8C, P-03 y progresion sin cambios de codigo	Sin cambios	git diff del cierre
+Regresion	Regresion completa en las dos ramas	1.454 unitarias OK; 722 IT con 2 errores (HALL-PROG-01, desde #56)	REGRESION_FINAL.md
+Migraciones	V1-V53 desde una base nueva, una a una	V52 = 442 decididos; V53 = 16	cierre/auditoria_final/

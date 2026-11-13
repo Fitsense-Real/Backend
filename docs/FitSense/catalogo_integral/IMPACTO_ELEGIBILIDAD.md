@@ -75,9 +75,15 @@ Son los dos perfiles que antes eran NO_FACTIBLE con la contención de 26 ejercic
 
 Los dos siguen teniendo plan. No se relajó ninguna regla ni se liberó ningún ejercicio contenido para conseguirlo.
 
-## 5. Sin V53
+## 5. Sin V53 (PR A sola)
 
-Sin V53 (PR A sola), las cifras son las mismas salvo en «sin colgarse» y «sin todo»: ahí siguen elegibles los 16 ejercicios de apoyo suspendido que no estén contenidos por otro motivo. La referencia de generación (`GeneracionReferenciaIT`, 72 planes) es idéntica con y sin V53, porque no usa la restricción de colgarse.
+La rejilla se ejecutó también sobre la PR A sola (V51 + V52). El resultado está en `cierre/impacto/despues_V52_sin_V53.csv`.
+- **168 de 168 perfiles con plan.**
+- Solo cambian 16 perfiles: los 8 «sin colgarse» y los 8 «sin todo».
+- La única diferencia es que siguen elegibles 10 ejercicios de apoyo suspendido: 457, 458, 459, 920, 934, 1317 y 1335 en 8 perfiles cada uno, y 462, 777 y 1184 en 16 perfiles cada uno.
+- Los otros 6 marcados por V53 no aparecen en esa diferencia: 1153, 1301, 1303, 1304 y 1306 siguen fuera por la contención INC-CAT-C39, y 1069 tampoco entra en esos perfiles.
+
+La referencia de generación (`GeneracionReferenciaIT`, 72 planes) es idéntica con y sin V53, porque no usa la restricción de colgarse.
 
 ---
 
