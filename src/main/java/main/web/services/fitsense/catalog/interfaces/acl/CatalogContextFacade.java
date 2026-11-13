@@ -136,6 +136,9 @@ public class CatalogContextFacade {
                 // V10, para P-C2 (impacto).
                 exercise.isHighImpact(),
                 // V26 is_isolation (auditoria v46, P15-C experimental).
-                exercise.getIsolation());
+                exercise.getIsolation(),
+                // V51: impacto y estiramiento explicitos (ya no se deducen del nombre).
+                exercise.getImpactLevel(),
+                exercise.getStretch());
     }
 }

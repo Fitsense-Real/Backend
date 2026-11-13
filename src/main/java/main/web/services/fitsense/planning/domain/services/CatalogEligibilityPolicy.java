@@ -93,14 +93,23 @@ public final class CatalogEligibilityPolicy {
         return Optional.ofNullable(RUTAS.get(candidate.movementPattern().trim().toUpperCase(Locale.ROOT)));
     }
 
-    /** Las exclusiones funcionales anteriores al Paso 2, sin cambios. */
+    /**
+     * Las exclusiones funcionales anteriores al Paso 2. Desde V51 el estiramiento es un ATRIBUTO EXPLICITO del catalogo
+     * ({@code exercises.is_stretch}): si el candidato lo trae, decide el dato y no el nombre. La palabra «estiramiento»
+     * en el nombre ({@link #estiramientoPorNombre}) queda solo como respaldo para candidatos sin el dato.
+     */
     public static Optional<Decision> exclusionHeredada(CandidateExercise candidate) {
         if (candidate.bodyPartCode() != null && ZONAS_FUERA_DE_ENFOQUE.contains(candidate.bodyPartCode()))
             return Optional.of(Decision.EXCLUIDO_FUERA_DE_ENFOQUE);
-        if (candidate.name() != null
-                && candidate.name().toLowerCase(Locale.ROOT).contains("estiramiento"))
-            return Optional.of(Decision.EXCLUIDO_ESTIRAMIENTO);
+        boolean estiramiento = candidate.stretch() != null ? candidate.stretch()
+                : estiramientoPorNombre(candidate.name());
+        if (estiramiento) return Optional.of(Decision.EXCLUIDO_ESTIRAMIENTO);
         return Optional.empty();
+    }
+
+    /** RESPALDO anterior a V51; publico para la prueba de paridad de V51. */
+    public static boolean estiramientoPorNombre(String name) {
+        return name != null && name.toLowerCase(Locale.ROOT).contains("estiramiento");
     }
 
     /** Capacidades del objetivo, principales y secundarias. Vacio si no hay matriz. */
