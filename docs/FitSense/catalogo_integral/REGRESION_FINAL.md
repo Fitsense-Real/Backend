@@ -17,24 +17,29 @@ Solo fallan dos pruebas, las mismas en las dos ramas:
 - `ProgresionIT.p02ProgresionSinElExcluido`: `NoSuchElementException` en la línea 524, porque la semana 4 queda sin plan;
 - `ProgresionRev2IT.p02ProgresionSinElExcluido`: la misma prueba con REV2.
 
-**HALL-PROG-01** (`ProgresionIT.p02ProgresionSinElExcluido` y su gemela `ProgresionRev2IT`). **No lo introduce el cierre:**
+**HALL-PROG-01** (`ProgresionIT.p02ProgresionSinElExcluido` y su gemela `ProgresionRev2IT`).
 
-| Estado | p02 |
-|---|---|
-| `generation` (623c4fa) | Pasa (48/48 en las dos clases) |
-| Cabeza de #56 (d8ffe4c, V47 y V48) | **Falla** |
-| Base del cierre (57075e7, #55 sobre #56–#59) | **Falla** |
-| Cierre con el catálogo fijado en V50 | **Falla** |
-| Cierre (V51–V53) | **Falla** |
+| Dónde | Estado | Resultado de p02 |
+|---|---|---|
+| **CI de GitHub** | Cabeza de #56 (05:50 UTC) | Pasa |
+| **CI de GitHub** | Base del cierre, #55 sobre #56–#59 (57075e7: 16:10 y otra vez a las 22:16 UTC) | **Pasa** |
+| **CI de GitHub** | #60 (V51 + V52) y #61 (+ V53), 21:55 UTC | **Falla** |
+| Local | `generation` (623c4fa) | Pasa |
+| Local | Cabeza de #56 y base 57075e7 | **Falla** |
+| Local | Cierre, también con el catálogo fijado en V50 | **Falla** |
 
-Causa, con trazas:
+**En la CI de GitHub el fallo aparece con el cierre**: la base pasa y #60 falla, con el mismo código de prueba. En local falla ya en la base. Esa diferencia de entorno no está aislada: no se explica por la versión de Postgres (falla también con 16.16, la de la CI) ni por el reloj de la JVM (falla también fijado a las 16:15 UTC). Así que **no se puede afirmar que el fallo sea ajeno al cierre**.
+
+Mecanismo observado en local, con trazas:
 1. La progresión sube el ejercicio marcado a 3x19.
 2. El usuario lo señala con dolor y la semana conservada lo sustituye.
 3. El sustituto hereda la dosis progresada 3x19, que V24 rechaza por no ser la dosis de ninguna capacidad. En `generation` es el ejercicio 72.
 4. En `generation`, la regeneración segura lo resuelve.
-5. Con el catálogo de #56, la semana regenerada con dosis base sube los segundos (1.140 → 1.260). P-03 nivel 2 la rechaza y la semana queda NO_FACTIBLE (V32).
+5. Con el catálogo nuevo, la semana regenerada con dosis base sube los segundos (1.140 → 1.260). P-03 nivel 2 la rechaza y la semana queda NO_FACTIBLE (V32).
 
-No se relaja P-03 ni V24, no se cambia la prueba y no se toca el motor de adaptación.
+No se relaja P-03 ni V24, no se cambia la prueba y no se toca el motor de adaptación. **Es un bloqueo de #60**: su CI está en rojo.
+
+La CI de GitHub de #60 y #61 coincide con la regresión local: 722 pruebas de integración y solo estos 2 errores.
 
 ## 2. Pruebas modificadas en el cierre y por qué
 

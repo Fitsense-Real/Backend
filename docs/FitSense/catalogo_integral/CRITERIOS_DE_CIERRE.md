@@ -12,8 +12,8 @@
 | 8 | Segunda pasada independiente | **Sí** | R2 y V3 independientes, más el coordinador |
 | 9 | Correcciones en migraciones versionadas y protegidas | **Sí** | V51, V52 y V53 fallan ante un estado previo inesperado |
 | 10 | Contenciones reevaluadas con evidencia | **Sí** | `CONTENCIONES_DEFINITIVAS.md`. Ninguna se retira sin decisión: 5 de INC-4C-03 quedan con propuesta de liberación |
-| 11 | Coherencia del sistema: generación, adaptación, progresión, reincorporación y planes publicados | **Sí, con hallazgos** | Plan 78: el 910 se suma al 916 como límite de la reparación. La corrección de equipo de 775 dejaría sin plan a GM intermedio en casa con solo peso corporal a 74–75 min, así que **no se aplica** y queda como decisión. HALL-PROG-01: p02 de progresión falla desde #56 (`IMPACTO_GENERACION_ADAPTACION.md`) |
-| 12 | Regresión profunda | **Sí, con 2 fallos ajenos al cierre** | En las dos ramas: 1.454 unitarias y 722 de integración. Fallan solo las 2 de HALL-PROG-01, que vienen de #56 (`REGRESION_FINAL.md`) |
+| 11 | Coherencia del sistema: generación, adaptación, progresión, reincorporación y planes publicados | **Sí, con hallazgos** | Plan 78: el 910 se suma al 916 como límite de la reparación. La corrección de equipo de 775 dejaría sin plan a GM intermedio en casa con solo peso corporal a 74–75 min, así que **no se aplica** y queda como decisión. HALL-PROG-01: p02 de progresión falla con el cierre en la CI (`IMPACTO_GENERACION_ADAPTACION.md`) |
+| 12 | Regresión profunda | **Sí, con 2 fallos (HALL-PROG-01)** | En las dos ramas: 1.454 unitarias y 722 de integración. Fallan solo las 2 de HALL-PROG-01, igual en la CI de #60 y #61. En la CI la base pasa, así que el fallo aparece con el cierre (`REGRESION_FINAL.md`) |
 | 13 | Segunda auditoría desde una base nueva | **Sí** | V1–V53 una a una: V52 = 442 decididos y V53 = 16 (`cierre/auditoria_final/`) |
 | 14 | Registro maestro de 1.376 filas | **Sí** | `REGISTRO_MAESTRO_CATALOGO.xlsx`. Contrastado campo a campo con la huella de la base real: 0 discrepancias |
 | 15 | Controles permanentes | **Sí** | Huella ampliada (impacto, estiramiento, apoyo suspendido y firma de textos), paridad con V51, oráculo de elegibilidad con atributos explícitos, CHECK de V51 y matriz de 13 reglas (`MATRIZ_COHERENCIA_FINAL.xlsx`). La matriz encontró 6 contradicciones texto/prescripción, ya corregidas, y la de 1083, que sigue abierta |
@@ -42,4 +42,4 @@
 5. **Contradicciones materiales abiertas en elegibles:**
    - 1083: impacto ALTO sin HI, decide DEC-HI-LANZAMIENTOS;
    - hallazgos colaterales sin R2 ni V3: 231, 620, 1323, 367, 1182 y 1017. 1084 ya está resuelto y 1303 está contenido.
-6. **HALL-PROG-01**, desde #56: `ProgresionIT` y `ProgresionRev2IT` p02 fallan por la herencia de la dosis progresada en el sustituto (defecto latente de la adaptación) y la composición del catálogo de #56. Hay que decidirlo antes de fusionar #56 (`IMPACTO_GENERACION_ADAPTACION.md` §3).
+6. **HALL-PROG-01**: la CI de #60 y #61 está en rojo por `ProgresionIT` y `ProgresionRev2IT` p02. La causa de fondo está en la adaptación: el sustituto hereda la dosis progresada. En la CI la base pasa, así que aparece con el cierre. Para resolverlo hay que cambiar la adaptación o decidir sobre la prueba, y las dos cosas son decisión tuya.
