@@ -54,7 +54,7 @@ class Usuario31ReproduccionIT extends Usuario31Base {
         assertEquals("actual elegibles: 776=si 1320=si 1185=si 309=si 1103=si 301=si", r.get(0));
         rechazosDeLaIa(r, 13);
         assertEquals("actual plan 63: VALIDA", r.get(4));
-        // INC-CAT-C39 reducida a 8 (CORRECCIONES_SEGURIDAD.md §6): este perfil prohibe suelo y colgarse, asi que solo
+        // INC-CAT-C39 reducida a 8 (CORRECCIONES_SEGURIDAD.md §9): este perfil prohibe suelo y colgarse, asi que solo
         // salen de su conjunto los cinco de apoyo suspendido, que el motor no elegia: la semana es la misma que sin la
         // contencion (sabado 1320, como en la pila del catalogo integral) y ningun contenido entra.
         contiene(r.get(5), " 776[back/HIP_HINGE]", " 1320[upper arms/HORIZONTAL_PUSH]");

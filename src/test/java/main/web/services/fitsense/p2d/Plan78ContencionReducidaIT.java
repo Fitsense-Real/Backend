@@ -96,6 +96,24 @@ class Plan78ContencionReducidaIT {
     static final List<String> ENFOQUE = List.of("UPPER_BODY", "LOWER_BODY", "UPPER_BODY", "LOWER_BODY");
     static final List<Integer> MINUTOS = List.of(43, 42, 43, 43);
 
+    /** Copia literal de la consulta de PLANES_PUBLICADOS_C39.md §2 (si cambia alli, cambia aqui). */
+    static final String CONSULTA_IDENTIFICACION = """
+            SELECT p.user_id, p.plan_id, p.week_start_date, pw.planned_workout_id, pw.scheduled_date, pw.status,
+                   pwe.exercise_id, x.name_es,
+                   CASE WHEN pwe.exercise_id IN (1153,1301,1303,1304,1306) THEN 'colgarse' ELSE 'brazos sobre la cabeza' END AS restriccion,
+                   EXISTS (SELECT 1 FROM planned_workouts o WHERE o.plan_id = p.plan_id
+                           AND o.status IN ('COMPLETED','PARTIAL','SKIPPED')) AS semana_empezada
+            FROM weekly_training_plans p
+            JOIN user_profiles up            ON up.user_id = p.user_id
+            JOIN planned_workouts pw         ON pw.plan_id = p.plan_id AND pw.status IN ('SCHEDULED','IN_PROGRESS')
+            JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id
+            JOIN exercises x                 ON x.exercise_id = pwe.exercise_id
+            WHERE p.status = 'ACTIVE'
+              AND (   (pwe.exercise_id IN (1153,1301,1303,1304,1306) AND up.allow_hanging_exercises  = false)
+                   OR (pwe.exercise_id IN (131,400,448)              AND up.allow_overhead_exercises = false))
+            ORDER BY pw.scheduled_date, p.user_id
+            """;
+
     record Fila(int sesion, int orden, long ejercicio, String tipo, Integer series, Integer reps, Integer duracion,
                 Integer descanso) {}
 
@@ -200,6 +218,13 @@ class Plan78ContencionReducidaIT {
         // Con la contencion reducida: el jueves por el 1303 (apoyo suspendido); el viernes (1152 liberado, 910 nunca
         // contenido) y el lunes (1093 liberado) ya no.
         assertEquals(Map.of(1, Map.of(1303L, "INC-CAT-C39")), b);
+        // La consulta de identificacion de PLANES_PUBLICADOS_C39.md §2 (solo lectura) encuentra lo mismo.
+        var consulta = jdbc.queryForList(CONSULTA_IDENTIFICACION).stream()
+                .filter(f -> ((Number) f.get("user_id")).longValue() == c.userId()).toList();
+        assertEquals(1, consulta.size(), consulta.toString());
+        assertEquals(1303L, ((Number) consulta.get(0).get("exercise_id")).longValue());
+        assertEquals(c.sesiones().get(1), ((Number) consulta.get(0).get("planned_workout_id")).longValue());
+        assertEquals(false, consulta.get(0).get("semana_empezada"));
         var error = assertThrows(WorkoutNotAvailableException.class,
                 () -> sesiones.handle(new StartWorkoutSessionCommand(c.userId(), c.sesiones().get(1))));
         assertTrue(error.getMessage().contains("INC-CAT-C39"), error.getMessage());

@@ -88,7 +88,7 @@ class CatalogoElegibleIT {
     static final List<Long> RETENIDOS = List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
 
     /*
-     * INC-CAT-C39 reducida a 8 sobre el catalogo integral (CORRECCIONES_SEGURIDAD.md §6), escrito aqui sin leer
+     * INC-CAT-C39 reducida a 8 sobre el catalogo integral (CORRECCIONES_SEGURIDAD.md §9), escrito aqui sin leer
      * ContencionTextoBandera: apoyo suspendido (colgarse) y curl alto (brazos sobre la cabeza), pendientes de decision
      * profesional. Solo salen para quien declara (o recibe por edad) esa restriccion. Suelo: ninguno (V49 corrigio
      * todos los textos de suelo que la PR #55 original contenia).
