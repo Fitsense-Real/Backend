@@ -4,6 +4,8 @@
 
 **Rama:** `fix/contencion-seguridad-catalogo`, desde `generation` `623c4fa`.
 
+> **Actualización (13/11/2026): contención reducida de 26 a 8 sobre el catálogo integral corregido.** La rama incorpora las PR #56–#59 (V47–V50) y la contención queda en 8 ejercicios. Ver **§9** y `docs/FitSense/contencion_c39_reducida/`. Las secciones 1–8 describen la versión original de 26 y se conservan como historia.
+
 **Alcance:**
 - Solo seguridad: contención y pruebas.
 - Sin cambios en PR-1.7, FIX-PR-2.1-EXP, PLAN-REV-2.0, PLAN-HIST-1, V15, V24, V8C, V23, V25–V27, reintentos, progresión, reincorporación, adaptación ni Replicate.
@@ -223,3 +225,34 @@ Pruebas necesarias:
 4. **H6:** estados de entrenamiento, con las correcciones (a) y (b) de §6.
 5. **H3:** experiencia de los 30 s en la app.
 6. **Reparación localizada** (investigación).
+
+## 9. Reducción a 8 sobre el catálogo integral corregido (PR #56–#59)
+
+La auditoría integral del catálogo revisó fotograma a fotograma los GIF de los 26 ejercicios contenidos.
+- En **los 26**, el GIF y la bandera coinciden: lo erróneo era el texto de la fuente.
+- V49 reescribió ese texto según el GIF.
+
+La contención se reduce así:
+
+| Qué | Ids | Por qué |
+|---|---|---|
+| **Se mantiene: colgarse** | 1153, 1301, 1303, 1304, 1306 | Apoyo suspendido: el cuerpo, sin apoyo en el suelo, queda sostenido por los brazos o los antebrazos. `requires_hanging` no lo cubre y la clasificación es una decisión profesional (`catalogo_integral/PROPUESTA_APOYO_SUSPENDIDO.md`). |
+| **Se mantiene: brazos sobre la cabeza** | 131, 400, 448 | Curl «alto»: el brazo queda a la altura del hombro y las manos van hacia la cabeza, en el límite de la definición de `requires_overhead`. El nombre de 400 y 448 sigue diciendo «por encima de la cabeza». |
+| **Se libera por completo** | 316, 1152, 1272, 1309, 1322, 55, 224, 637, 741, 875, 1062, 1063, 1093, 1095, 1156, 1181, 1193, 1311 | Su texto, ya corregido, describe el GIF y no pide la acción restringida, o la bandera ya la declara: 224, brazos arriba; 316, 1152 y 1301, suelo. |
+| **Se libera en parte** | 1301 (brazos arriba), 1303 y 1304 (suelo) | El texto ya no pide esa acción; se conserva la parte de colgarse. |
+
+**Criterio, comprobado por la prueba `ContencionTextoBanderaIT.l_liberadosJustificados`.** Para cada restricción que deja de aplicarse:
+- el texto actual (nombre e instrucciones) ya no pide esa acción, según los mismos patrones de la prueba I;
+- o la bandera del catálogo la declara, y entonces la excluye el filtro de seguridad normal.
+
+Ningún id sale porque haga falta para generar un plan.
+
+**Efectos comprobados** (detalle en `docs/FitSense/contencion_c39_reducida/`):
+- **LOSE_WEIGHT / principiante / casa** («sin suelo» y «sin las tres») publica una semana válida (prueba R): sin prohibidos, con cardio de pie en cada sesión, sin relajar V25 ni ninguna bandera.
+- La rejilla de la prueba H ya no tiene ningún NO_FACTIBLE.
+- **Plan 78** (`p2d/Plan78ContencionReducidaIT`): solo se bloquea la sesión del jueves, por el 1303. La del viernes (1152 liberado, 910) ya no.
+
+**Limitaciones que deja a la vista** (no se corrigen aquí):
+- **La reparación del plan 78 no publica.** Revalida la semana entera y la misma sesión lleva el 916, que V48 subió a dificultad 3: V1 la rechaza.
+- **Con la semana empezada no se repara.** La sesión bloqueada vence como SKIPPED sin motivo y cuenta en la adherencia.
+

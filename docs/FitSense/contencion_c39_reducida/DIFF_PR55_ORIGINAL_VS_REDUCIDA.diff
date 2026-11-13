@@ -1,0 +1,970 @@
+diff --git a/docs/FitSense/auditoria_caso_39/CORRECCIONES_SEGURIDAD.md b/docs/FitSense/auditoria_caso_39/CORRECCIONES_SEGURIDAD.md
+index 75d3c20..0860593 100644
+--- a/docs/FitSense/auditoria_caso_39/CORRECCIONES_SEGURIDAD.md
++++ b/docs/FitSense/auditoria_caso_39/CORRECCIONES_SEGURIDAD.md
+@@ -4,6 +4,8 @@
+ 
+ **Rama:** `fix/contencion-seguridad-catalogo`, desde `generation` `623c4fa`.
+ 
++> **Actualización (13/11/2026): contención reducida de 26 a 8 sobre el catálogo integral corregido.** La rama incorpora las PR #56–#59 (V47–V50) y la contención queda en 8 ejercicios. Ver **§9** y `docs/FitSense/contencion_c39_reducida/`. Las secciones 1–8 describen la versión original de 26 y se conservan como historia.
++
+ **Alcance:**
+ - Solo seguridad: contención y pruebas.
+ - Sin cambios en PR-1.7, FIX-PR-2.1-EXP, PLAN-REV-2.0, PLAN-HIST-1, V15, V24, V8C, V23, V25–V27, reintentos, progresión, reincorporación, adaptación ni Replicate.
+@@ -223,3 +225,34 @@ Pruebas necesarias:
+ 4. **H6:** estados de entrenamiento, con las correcciones (a) y (b) de §6.
+ 5. **H3:** experiencia de los 30 s en la app.
+ 6. **Reparación localizada** (investigación).
++
++## 9. Reducción a 8 sobre el catálogo integral corregido (PR #56–#59)
++
++La auditoría integral del catálogo revisó fotograma a fotograma los GIF de los 26 ejercicios contenidos.
++- En **los 26**, el GIF y la bandera coinciden: lo erróneo era el texto de la fuente.
++- V49 reescribió ese texto según el GIF.
++
++La contención se reduce así:
++
++| Qué | Ids | Por qué |
++|---|---|---|
++| **Se mantiene: colgarse** | 1153, 1301, 1303, 1304, 1306 | Apoyo suspendido: el cuerpo, sin apoyo en el suelo, queda sostenido por los brazos o los antebrazos. `requires_hanging` no lo cubre y la clasificación es una decisión profesional (`catalogo_integral/PROPUESTA_APOYO_SUSPENDIDO.md`). |
++| **Se mantiene: brazos sobre la cabeza** | 131, 400, 448 | Curl «alto»: el brazo queda a la altura del hombro y las manos van hacia la cabeza, en el límite de la definición de `requires_overhead`. El nombre de 400 y 448 sigue diciendo «por encima de la cabeza». |
++| **Se libera por completo** | 316, 1152, 1272, 1309, 1322, 55, 224, 637, 741, 875, 1062, 1063, 1093, 1095, 1156, 1181, 1193, 1311 | Su texto, ya corregido, describe el GIF y no pide la acción restringida, o la bandera ya la declara: 224, brazos arriba; 316, 1152 y 1301, suelo. |
++| **Se libera en parte** | 1301 (brazos arriba), 1303 y 1304 (suelo) | El texto ya no pide esa acción; se conserva la parte de colgarse. |
++
++**Criterio, comprobado por la prueba `ContencionTextoBanderaIT.l_liberadosJustificados`.** Para cada restricción que deja de aplicarse:
++- el texto actual (nombre e instrucciones) ya no pide esa acción, según los mismos patrones de la prueba I;
++- o la bandera del catálogo la declara, y entonces la excluye el filtro de seguridad normal.
++
++Ningún id sale porque haga falta para generar un plan.
++
++**Efectos comprobados** (detalle en `docs/FitSense/contencion_c39_reducida/`):
++- **LOSE_WEIGHT / principiante / casa** («sin suelo» y «sin las tres») publica una semana válida (prueba R): sin prohibidos, con cardio de pie en cada sesión, sin relajar V25 ni ninguna bandera.
++- La rejilla de la prueba H ya no tiene ningún NO_FACTIBLE.
++- **Plan 78** (`p2d/Plan78ContencionReducidaIT`): solo se bloquea la sesión del jueves, por el 1303. La del viernes (1152 liberado, 910) ya no.
++
++**Limitaciones que deja a la vista** (no se corrigen aquí):
++- **La reparación del plan 78 no publica.** Revalida la semana entera y la misma sesión lleva el 916, que V48 subió a dificultad 3: V1 la rechaza.
++- **Con la semana empezada no se repara.** La sesión bloqueada vence como SKIPPED sin motivo y cuenta en la adherencia.
++
+diff --git a/src/main/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBandera.java b/src/main/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBandera.java
+index b17f812..d8429c5 100644
+--- a/src/main/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBandera.java
++++ b/src/main/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBandera.java
+@@ -30,6 +30,19 @@ import java.util.TreeSet;
+  * <p>
+  * SIN INTERRUPTOR, como INC-4C-03 e INC-CAT-1374: es seguridad, no medicion. Un id sale de aqui solo cuando una
+  * migracion auditada alinee texto y bandera con revision profesional.
++ * <p>
++ * REDUCCION A 8 (catalogo integral, PR #56-#59): la revision visual de los 26 ids originales confirmo que en todos
++ * el GIF y la bandera coinciden y lo erroneo era el texto de la fuente. V49 reescribio ese texto segun el GIF, asi
++ * que 18 ids salen del registro por completo (316, 1152, 1272, 1309, 1322, 55, 224, 637, 741, 875, 1062, 1063, 1093,
++ * 1095, 1156, 1181, 1193, 1311) y 1301, 1303 y 1304 pierden la parte de la contencion cuyo texto ya no lo pide
++ * (1301 brazos sobre la cabeza; 1303 y 1304 suelo). Ninguno sale porque haga falta para generar un plan: sale porque
++ * su texto ya no contradice su bandera ({@code ContencionTextoBanderaIT}, prueba «liberados»). Siguen contenidos los
++ * 8 cuyo MOVIMIENTO, no su texto, queda pendiente de decision profesional
++ * ({@code docs/FitSense/catalogo_integral/PROPUESTA_APOYO_SUSPENDIDO.md}):
++ * <ul>
++ *   <li>colgarse (apoyo suspendido, sin clase en el esquema): 1153, 1301, 1303, 1304, 1306;</li>
++ *   <li>brazos sobre la cabeza (curl «alto», posicion del brazo en el limite de la definicion): 131, 400, 448.</li>
++ * </ul>
+  */
+ public final class ContencionTextoBandera {
+ 
+@@ -47,62 +60,39 @@ public final class ContencionTextoBandera {
+ 
+     private static final Restriccion COLG = Restriccion.COLGARSE;
+     private static final Restriccion CAB = Restriccion.SOBRE_LA_CABEZA;
+-    private static final Restriccion SUE = Restriccion.SUELO;
+ 
+-    /** El registro. Cada entrada cita la contradiccion verificada en el catalogo (ver CORRECCIONES_SEGURIDAD.md). */
++    /**
++     * El registro (8 ids tras la reduccion). Cada entrada cita por que el movimiento -texto ya corregido por V49 y
++     * GIF- sigue siendo incompatible o dudoso para quien declara la restriccion.
++     */
+     static final Map<Long, Contencion> CONTENIDOS = Map.ofEntries(
+-            // --- Colgarse / brazos arriba: el texto pide colgarse, la bandera (relajada en V38) dice que no
+-            Map.entry(316L, c("Nombre «Dominadas con agarre estrecho» e instrucciones «Cuelgate de una barra de "
+-                    + "dominadas»; V38 quito colgarse y brazos arriba por el GIF (remo invertido)", COLG, CAB)),
+-            Map.entry(1301L, c("Instrucciones «Cuelgate de una barra de dominadas con los brazos completamente "
+-                    + "extendidos»; V38 quito colgarse y brazos arriba y paso el equipo a correas", COLG, CAB)),
+-            Map.entry(1306L, c("Instrucciones «Cuelgate de las barras paralelas»; nunca marcado como colgarse "
+-                    + "(GIF: apoyo en antebrazos, silla romana)", COLG)),
+-            Map.entry(1153L, c("Instrucciones «Comienza colgandote de las anillas»; no marcado como colgarse "
+-                    + "(fondos en anillas: apoyo suspendido)", COLG)),
+-            // --- Apoyo en paralelas / estacion de fondos con texto de otro ejercicio (pendiente profesional)
+-            Map.entry(1303L, c("Equipo «parallel bars» (GIF: apoyo en la estacion de fondos) e instrucciones de "
+-                    + "suelo «Tumbate sobre tu espalda»; V38 quito suelo", COLG, SUE)),
+-            Map.entry(1304L, c("Gemelo del 1303: equipo «parallel bars» (GIF: estacion de fondos) e instrucciones "
+-                    + "«Tumbate sobre tu espalda»; V38 quito suelo", COLG, SUE)),
+-            Map.entry(1152L, c("Instrucciones de fondos en paralelas «Colocate entre dos barras paralelas con los "
+-                    + "brazos completamente extendidos»; catalogo y GIF: en el suelo, sin paralelas (V38)", COLG)),
+-            // --- Brazos por encima de la cabeza: el texto lo pide, la bandera dice que no
+-            Map.entry(131L, c("Nombre «…sobre la cabeza…» e instrucciones «brazo completamente extendido por "
+-                    + "encima de la cabeza»; V38 quito brazos arriba", CAB)),
+-            Map.entry(400L, c("Nombre «Curl por encima de la cabeza en cable»; bandera brazos arriba = no", CAB)),
+-            Map.entry(448L, c("Nombre «Curl por encima de la cabeza sentado en cable»; bandera brazos arriba = no",
+-                    CAB)),
+-            Map.entry(1272L, c("Instrucciones «Recibe la barra por encima de la cabeza»; bandera brazos arriba = no",
+-                    CAB)),
+-            Map.entry(1309L, c("Instrucciones «Eleva lentamente los brazos por encima de la cabeza»; V38 quito "
+-                    + "brazos arriba (GIF: a la altura del hombro)", CAB)),
+-            Map.entry(1322L, c("Instrucciones «Extiende un brazo por encima de la cabeza»; V38 quito brazos arriba "
+-                    + "(GIF: brazo cruzado ante el pecho)", CAB)),
+-            // --- Suelo: V38 quito suelo por el GIF (banco, de pie, taburete) y las instrucciones siguen en el suelo
+-            Map.entry(55L, c("Instrucciones «Sientate en el suelo»; V38 quito suelo (GIF: de pie)", SUE)),
+-            Map.entry(224L, c("Instrucciones «Tumbate boca arriba en una esterilla»; V38 quito suelo (GIF: banco)",
+-                    SUE)),
+-            Map.entry(637L, c("Instrucciones «Tumbate boca arriba… pies apoyados en el suelo»; V38 quito suelo "
+-                    + "(GIF: banco)", SUE)),
+-            Map.entry(741L, c("Instrucciones «Tumbate de lado»; V38 quito suelo (GIF: banco)", SUE)),
+-            Map.entry(875L, c("Instrucciones «Tumbate boca arriba… levanta las piernas del suelo»; V38 quito suelo "
+-                    + "(GIF: banco)", SUE)),
+-            Map.entry(1062L, c("Instrucciones «Tumbate sobre tu espalda… levanta las piernas del suelo»; V38 quito "
+-                    + "suelo (GIF: banco)", SUE)),
+-            Map.entry(1063L, c("Instrucciones «Tumbate sobre tu espalda… pies apoyados en el suelo»; V38 quito "
+-                    + "suelo (GIF: banco declinado)", SUE)),
+-            Map.entry(1093L, c("Instrucciones «Comienza en posicion de flexion… baja el pecho hacia el suelo»; V38 "
+-                    + "quito suelo (GIF: de pie elevando rodillas)", SUE)),
+-            Map.entry(1095L, c("Instrucciones «Comienza en posicion de flexion… baja el pecho hacia el suelo»; V38 "
+-                    + "quito suelo (GIF: de pie)", SUE)),
+-            Map.entry(1156L, c("Instrucciones «Sientate en el suelo con las piernas extendidas»; V38 quito suelo "
+-                    + "(GIF: asiento inclinado)", SUE)),
+-            Map.entry(1181L, c("Instrucciones «Sientate en el suelo con la espalda contra una pared»; V38 quito "
+-                    + "suelo (GIF: sentadilla isometrica contra la pared)", SUE)),
+-            Map.entry(1193L, c("Instrucciones «Sientate en el suelo con las piernas extendidas»; V38 quito suelo "
+-                    + "(GIF: taburete)", SUE)),
+-            Map.entry(1311L, c("Instrucciones «Tumbate de lado»; V38 quito suelo (GIF: de pie)", SUE)));
++            // --- Colgarse: apoyo suspendido (el cuerpo sin apoyo en el suelo, sostenido por brazos o antebrazos).
++            //     requires_hanging no lo cubre y la decision de clasificarlo es profesional (PROPUESTA_APOYO_SUSPENDIDO).
++            Map.entry(1153L, c("Fondos en anillas (GIF): apoyo sobre los brazos extendidos, pies sin apoyo; "
++                    + "requires_hanging = no. Apoyo suspendido pendiente de decision profesional", COLG)),
++            Map.entry(1301L, c("Plancha con los pies en correas de suspension (GIF): pies suspendidos; V38 quito "
++                    + "colgarse. Brazos sobre la cabeza ya no aplica: V49 corrigio el texto", COLG)),
++            Map.entry(1303L, c("Silla romana / estacion de fondos (GIF): apoyo en antebrazos con los pies sin apoyo; "
++                    + "requires_hanging = no. Suelo ya no aplica: V49 corrigio el texto", COLG)),
++            Map.entry(1304L, c("Gemelo del 1303 (GIF: silla romana, apoyo en antebrazos, pies sin apoyo); "
++                    + "requires_hanging = no. Suelo ya no aplica: V49 corrigio el texto", COLG)),
++            Map.entry(1306L, c("Elevacion de rodillas en silla romana (GIF): apoyo en antebrazos con los pies sin "
++                    + "apoyo; nunca marcado como colgarse", COLG)),
++            // --- Brazos sobre la cabeza: curl «alto» con el brazo abierto a la altura del hombro y las manos hacia
++            //     la cabeza; la posicion queda en el limite de la definicion de requires_overhead.
++            Map.entry(131L, c("Curl alto (GIF): brazo a la altura del hombro y manos hacia la cabeza; "
++                    + "requires_overhead = no (V38). Limite de la definicion, pendiente profesional", CAB)),
++            Map.entry(400L, c("Curl alto en polea (GIF): brazos a la altura del hombro y manos hacia la cabeza; "
++                    + "requires_overhead = no. Limite de la definicion, pendiente profesional", CAB)),
++            Map.entry(448L, c("Curl alto en polea sentado (GIF): brazos a la altura del hombro y manos hacia la "
++                    + "cabeza; requires_overhead = no. Limite de la definicion, pendiente profesional", CAB)));
++
++    /**
++     * Los 18 ids que la PR #55 original contenia y que V49 libero por completo: su texto ya describe el GIF y no
++     * contradice su bandera. Solo documentacion y pruebas; no filtra nada.
++     */
++    public static final Set<Long> LIBERADOS_POR_V49 = Set.of(316L, 1152L, 1272L, 1309L, 1322L, 55L, 224L, 637L, 741L,
++            875L, 1062L, 1063L, 1093L, 1095L, 1156L, 1181L, 1193L, 1311L);
+ 
+     private ContencionTextoBandera() {}
+ 
+diff --git a/src/test/java/main/web/services/fitsense/p2d/ContencionTextoBanderaIT.java b/src/test/java/main/web/services/fitsense/p2d/ContencionTextoBanderaIT.java
+index 03dae1d..0165644 100644
+--- a/src/test/java/main/web/services/fitsense/p2d/ContencionTextoBanderaIT.java
++++ b/src/test/java/main/web/services/fitsense/p2d/ContencionTextoBanderaIT.java
+@@ -49,12 +49,15 @@ import java.util.stream.Collectors;
+ import static org.junit.jupiter.api.Assertions.*;
+ 
+ /**
+- * INC-CAT-C39 · CONTENCION POR TEXTO DEL CATALOGO CONTRA BANDERA, con el catalogo real (V1-V46), PostgreSQL efimero,
++ * INC-CAT-C39 · CONTENCION POR TEXTO DEL CATALOGO CONTRA BANDERA, con el catalogo real (V1-V50: incluye las
++ * correcciones del catalogo integral, PR #56-#59), PostgreSQL efimero,
+  * motor de reglas y la instantanea que recibe la IA; sin llamadas a Replicate. Los planes publicados se manipulan
+  * SOLO en esta base aislada (copias controladas), nunca en datos reales.
+  * <p>
+  * A colgarse, B brazos arriba, C ambas (y suelo), D catalogo de la IA, E motor de reglas, F plan publicado con una
+- * sesion pendiente, G sesion en curso, H factibilidad sin compensar con prohibidos, I coherencia texto-bandera.
++ * sesion pendiente, G sesion en curso, H factibilidad sin compensar con prohibidos, I coherencia texto-bandera,
++ * L liberados por V49 (vuelven solo porque su texto ya no contradice su bandera) y R los dos perfiles LOSE_WEIGHT
++ * que recuperan su semana con la contencion reducida a 8.
+  */
+ @Testcontainers
+ @SpringBootTest(properties = {
+@@ -166,8 +169,13 @@ class ContencionTextoBanderaIT {
+             var e = elegibles(u);
+             assertTrue(conBandera(e, "requires_hanging").isEmpty());
+             assertTrue(interseccion(e, ContencionTextoBandera.contenidos(SIN_COLGARSE.seguridad())).isEmpty(), e.toString());
+-            // Lo contenido solo por brazos arriba o suelo sigue llegando (1309, 1322, 1093 en este gimnasio).
+-            assertTrue(e.containsAll(List.of(1309L, 1322L, 1093L)), e.toString());
++            assertTrue(interseccion(e, Set.of(1153L, 1301L, 1303L, 1304L, 1306L)).isEmpty(), e.toString());
++            // Lo contenido solo por brazos arriba sigue llegando: lo que el perfil libre recibe de 131/400/448
++            // (en este gimnasio y nivel, al menos el 448) llega igual a quien solo prohibe colgarse.
++            var libre = elegibles(usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, LIBRE));
++            var soloCabeza = interseccion(libre, Set.of(131L, 400L, 448L));
++            assertTrue(soloCabeza.contains(448L), soloCabeza.toString());
++            assertTrue(e.containsAll(soloCabeza), soloCabeza + " " + e);
+         }
+ 
+         @Test
+@@ -177,7 +185,9 @@ class ContencionTextoBanderaIT {
+             var e = elegibles(u);
+             assertTrue(conBandera(e, "requires_overhead").isEmpty());
+             assertTrue(interseccion(e, ContencionTextoBandera.contenidos(SIN_CABEZA.seguridad())).isEmpty(), e.toString());
++            assertTrue(interseccion(e, Set.of(131L, 400L, 448L)).isEmpty(), e.toString());
+             assertTrue(e.contains(1306L), "1306 solo se contiene por colgarse");
++            assertTrue(e.contains(1301L), "1301 ya no se contiene por brazos arriba: V49 corrigio su texto");
+         }
+ 
+         @Test
+@@ -198,12 +208,20 @@ class ContencionTextoBanderaIT {
+         }
+ 
+         @Test
+-        @DisplayName("D · IA: ningun contenido en el catalogo que se envia a Replicate (instantanea real del prompt)")
++        @DisplayName("D · IA: el catalogo enviado a Replicate sale del conjunto elegible del motor, sin ningun contenido")
+         void d_catalogoDeLaIA() {
+             for (var r : List.of(SIN_COLGARSE, SIN_CABEZA, SIN_AMBAS, SIN_NADA)) {
+                 long u = usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, r);
+                 var ia = enviadosALaIA(u);
+                 assertFalse(ia.isEmpty());
++                // El mismo catalogo de origen para la IA y para el motor de reglas (verificacion 3 de la reduccion):
++                // la IA recibe un subconjunto del conjunto elegible del motor -PlanInputSnapshot omite, por diseno
++                // previo, lo que no tiene dosis admisible para el objetivo (V24 lo rechazaria)- y nunca algo que el
++                // motor no tenga.
++                var motor = elegibles(u);
++                var deMas = new TreeSet<>(ia);
++                deMas.removeAll(motor);
++                assertTrue(deMas.isEmpty(), r + ": la IA recibe ejercicios fuera del conjunto elegible: " + deMas);
+                 assertTrue(interseccion(ia, ContencionTextoBandera.contenidos(r.seguridad())).isEmpty(), r + " " + ia);
+             }
+         }
+@@ -224,12 +242,13 @@ class ContencionTextoBanderaIT {
+     }
+ 
+     /**
+-     * Unico perfil de esta rejilla que deja de tener plan con la contencion (comparacion antes/despues de
+-     * CORRECCIONES_SEGURIDAD.md): LOSE_WEIGHT principiante en casa sin suelo. Su semana anterior dependia del 1093,
+-     * cuyas instrucciones son una flexion en el suelo. Ahora V25 (cardio por sesion) lo detecta y no se publica nada:
+-     * es el comportamiento pedido -no compensar con un prohibido-, documentado como cambio esperado.
++     * Perfiles de esta rejilla sin plan. Con la contencion de 26 sobre el catalogo antiguo, LOSE_WEIGHT principiante
++     * en casa quedaba sin plan: su cardio de pie (1093) tenia instrucciones de flexion en el suelo. V49 alineo ese
++     * texto con el GIF (elevacion de rodilla de pie) y la contencion reducida a 8 ya no lo retiene, asi que el perfil
++     * recupera su semana sin que se relaje V25 ni ninguna bandera (prueba R). Ninguno queda sin plan: cualquier
++     * NO_FACTIBLE nuevo es una regresion.
+      */
+-    static final Set<String> SIN_PLAN_ESPERADO = Set.of("LOSE_WEIGHT/BEGINNER/HOME");
++    static final Set<String> SIN_PLAN_ESPERADO = Set.of();
+ 
+     @Test
+     @DisplayName("H · factibilidad: 4 objetivos x 2 niveles x gimnasio/casa con las 3 restricciones; nunca un prohibido")
+@@ -433,13 +452,13 @@ class ContencionTextoBanderaIT {
+     }
+ 
+     @Test
+-    @DisplayName("I · la contencion no modifica el catalogo: banderas, nombres e instrucciones de los 26 siguen igual")
++    @DisplayName("I · la contencion no modifica el catalogo: las banderas de los 8 contenidos siguen sin la restriccion")
+     void i_sinCambiosDeDatos() {
+         // Las banderas actuales de los contenidos son las que dejo V38 (ninguna relajada mas, ninguna endurecida).
+         var filas = jdbc.queryForList("SELECT exercise_id, requires_hanging, requires_overhead, requires_floor, is_active"
+                 + " FROM exercises WHERE exercise_id = ANY (?)",
+                 (Object) ContencionTextoBandera.registro().keySet().toArray(Long[]::new));
+-        assertEquals(26, filas.size());
++        assertEquals(8, filas.size());
+         for (var f : filas) {
+             long id = ((Number) f.get("exercise_id")).longValue();
+             var r = ContencionTextoBandera.registro().get(id).restricciones();
+@@ -449,4 +468,128 @@ class ContencionTextoBanderaIT {
+             assertEquals(true, f.get("is_active"), "no se desactiva ni se borra: " + id);
+         }
+     }
++
++    // =====================================================================
++
++    /** Patrones de texto que PIDEN la accion restringida (los mismos de la prueba I). */
++    static final Pattern COLGARSE_TXT = Pattern.compile("\\bcu[eé]lgate\\b|\\bcolg[aá]ndote\\b|\\bcolgad[oa]\\b|dominad",
++            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
++    static final Pattern CABEZA_TXT = Pattern.compile("por encima de (la|tu) cabeza|sobre la cabeza",
++            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
++    static final Pattern SUELO_TXT = Pattern.compile("(t[uú]mbate|acu[eé]state|si[eé]ntate|tumbad[oa]|sentad[oa])"
++            + " (boca (arriba|abajo) |de lado |de espaldas )?(en|sobre) (el suelo|el piso|una esterilla|la esterilla|"
++            + "una colchoneta)|posici[oó]n de (flexi[oó]n|plancha)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
++
++    /** La contencion que cada id tenia en la PR #55 original (26), para comprobar por que se libero. */
++    static final Map<Long, Set<ContencionTextoBandera.Restriccion>> ORIGINAL = Map.ofEntries(
++            Map.entry(316L, EnumSet.of(ContencionTextoBandera.Restriccion.COLGARSE, ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
++            Map.entry(1152L, EnumSet.of(ContencionTextoBandera.Restriccion.COLGARSE)),
++            Map.entry(1272L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
++            Map.entry(1309L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
++            Map.entry(1322L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
++            Map.entry(55L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(224L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(637L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(741L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(875L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1062L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1063L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1093L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1095L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1156L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1181L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1193L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1311L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            // Liberados en parte: la restriccion que se quita (la que se mantiene sigue en el registro)
++            Map.entry(1301L, EnumSet.of(ContencionTextoBandera.Restriccion.SOBRE_LA_CABEZA)),
++            Map.entry(1303L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)),
++            Map.entry(1304L, EnumSet.of(ContencionTextoBandera.Restriccion.SUELO)));
++
++    /**
++     * L · POR QUE SE LIBERA CADA ID. Para cada restriccion que la PR #55 original aplicaba y la reducida ya no aplica,
++     * el texto actual (nombre e instrucciones, tras V49) ya no pide esa accion, o la bandera del catalogo ya la declara
++     * (y entonces el filtro de seguridad normal la excluye). Si no, la liberacion no estaria justificada y esta prueba
++     * falla: ningun id sale porque haga falta para generar un plan.
++     */
++    @Test
++    @DisplayName("L · liberados: el texto corregido por V49 ya no pide la accion restringida (o la bandera la declara)")
++    void l_liberadosJustificados() {
++        assertEquals(ContencionTextoBandera.LIBERADOS_POR_V49.size() + 3, ORIGINAL.size());
++        assertTrue(ORIGINAL.keySet().containsAll(ContencionTextoBandera.LIBERADOS_POR_V49));
++        assertTrue(interseccion(ContencionTextoBandera.LIBERADOS_POR_V49, ContencionTextoBandera.registro().keySet()).isEmpty());
++        var injustificados = new ArrayList<String>();
++        ORIGINAL.forEach((id, quitadas) -> {
++            var f = jdbc.queryForMap("SELECT coalesce(name_es,'') n, coalesce(instructions_es,'') i, requires_hanging h,"
++                    + " requires_overhead o, requires_floor s, is_active a FROM exercises WHERE exercise_id = ?", id);
++            String texto = f.get("n") + " " + f.get("i");
++            assertEquals(true, f.get("a"), "no se desactiva: " + id);
++            var mantiene = Optional.ofNullable(ContencionTextoBandera.registro().get(id))
++                    .map(ContencionTextoBandera.Contencion::restricciones).orElse(Set.of());
++            for (var r : quitadas) {
++                assertFalse(mantiene.contains(r), id + " sigue contenido por " + r);
++                boolean pide = switch (r) {
++                    case COLGARSE -> COLGARSE_TXT.matcher(texto).find();
++                    case SOBRE_LA_CABEZA -> CABEZA_TXT.matcher(texto).find();
++                    case SUELO -> SUELO_TXT.matcher(texto).find();
++                };
++                boolean declarada = switch (r) {
++                    case COLGARSE -> (Boolean) f.get("h");
++                    case SOBRE_LA_CABEZA -> (Boolean) f.get("o");
++                    case SUELO -> (Boolean) f.get("s");
++                };
++                if (pide && !declarada) injustificados.add(id + " " + r + ": " + texto);
++            }
++        });
++        assertTrue(injustificados.isEmpty(), String.join("\n", injustificados));
++    }
++
++    /**
++     * L · LOS LIBERADOS VUELVEN DE VERDAD, Y SOLO SEGUN SUS BANDERAS. Para cada restriccion, todo liberado que el
++     * perfil sin restricciones recibe llega tambien al perfil restringido, salvo si su bandera declara esa restriccion
++     * (entonces lo excluye el filtro de seguridad normal, no INC-CAT-C39).
++     */
++    @Test
++    @DisplayName("L · liberados: vuelven al conjunto elegible salvo que su propia bandera los excluya")
++    void l_liberadosVuelven() {
++        var libre = elegibles(usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, LIBRE));
++        var candidatos = interseccion(libre, ContencionTextoBandera.LIBERADOS_POR_V49);
++        assertFalse(candidatos.isEmpty(), "el gimnasio del caso 39 recibe liberados");
++        for (var r : List.of(SIN_COLGARSE, SIN_CABEZA, new Restricciones(true, false, false), SIN_NADA)) {
++            var e = elegibles(usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, r));
++            var esperados = new TreeSet<>(candidatos);
++            if (r.sinColgarse()) esperados.removeAll(conBandera(candidatos, "requires_hanging"));
++            if (r.sinBrazosArriba()) esperados.removeAll(conBandera(candidatos, "requires_overhead"));
++            if (r.sinSuelo()) esperados.removeAll(conBandera(candidatos, "requires_floor"));
++            var faltan = new TreeSet<>(esperados);
++            faltan.removeAll(e);
++            assertTrue(faltan.isEmpty(), r + " no recibe liberados sin bandera: " + faltan);
++        }
++    }
++
++    /**
++     * R · LOS DOS PERFILES QUE LA PR #55 ORIGINAL DEJABA SIN PLAN (LOSE_WEIGHT principiante en casa, «sin suelo» y
++     * «sin las tres»). Con la contencion reducida publican su semana: el validador obligatorio (V1-V25) la acepta, no
++     * contiene nada contenido ni con bandera restringida, y cada sesion lleva cardio (V25 en LOSE_WEIGHT), que viene
++     * de ejercicios de pie sin bandera de suelo.
++     */
++    @Test
++    @DisplayName("R · LOSE_WEIGHT principiante en casa (sin suelo / sin las tres): semana valida sin prohibidos")
++    void r_perfilesRecuperados() {
++        for (var r : List.of(new Restricciones(true, false, false), SIN_NADA)) {
++            long u = usuario(GoalType.LOSE_WEIGHT, FitnessLevel.BEGINNER, TrainingLocation.HOME, CASA, r);
++            long plan = generar(u);
++            assertEquals("ACTIVE", jdbc.queryForObject("SELECT status FROM weekly_training_plans WHERE plan_id = ?",
++                    String.class, plan));
++            var ids = ejerciciosDelPlan(plan);
++            assertTrue(interseccion(ids, ContencionTextoBandera.contenidos(r.seguridad())).isEmpty(), r + " " + ids);
++            assertTrue(conBandera(ids, "requires_floor").isEmpty(), r + " " + ids);
++            if (r.sinColgarse()) assertTrue(conBandera(ids, "requires_hanging").isEmpty());
++            if (r.sinBrazosArriba()) assertTrue(conBandera(ids, "requires_overhead").isEmpty());
++            var sesionesSinCardio = jdbc.queryForList("SELECT pw.planned_workout_id FROM planned_workouts pw WHERE pw.plan_id = ?"
++                    + " AND NOT EXISTS (SELECT 1 FROM planned_workout_exercises pwe JOIN exercises x ON x.exercise_id = pwe.exercise_id"
++                    + " WHERE pwe.planned_workout_id = pw.planned_workout_id AND x.movement_pattern = 'LOCOMOTION_CARDIO')",
++                    Long.class, plan);
++            assertTrue(sesionesSinCardio.isEmpty(), r + " sesiones sin cardio: " + sesionesSinCardio);
++        }
++    }
+ }
+diff --git a/src/test/java/main/web/services/fitsense/p2d/Plan78ContencionReducidaIT.java b/src/test/java/main/web/services/fitsense/p2d/Plan78ContencionReducidaIT.java
+new file mode 100644
+index 0000000..a542734
+--- /dev/null
++++ b/src/test/java/main/web/services/fitsense/p2d/Plan78ContencionReducidaIT.java
+@@ -0,0 +1,323 @@
++package main.web.services.fitsense.p2d;
++
++import main.web.services.fitsense.execution.domain.exceptions.WorkoutNotAvailableException;
++import main.web.services.fitsense.execution.domain.model.commands.StartWorkoutSessionCommand;
++import main.web.services.fitsense.execution.domain.services.WorkoutSessionCommandService;
++import main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
++import main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositories.UserRepository;
++import main.web.services.fitsense.planning.application.internal.commandservices.PublishedPlanSafetyRepairService.Estado;
++import main.web.services.fitsense.planning.domain.model.commands.ExpireOverdueWorkoutsCommand;
++import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
++import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
++import main.web.services.fitsense.planning.domain.services.ContencionTextoBandera;
++import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService;
++import main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade;
++import main.web.services.fitsense.planning.interfaces.rest.TrainingPlanController;
++import main.web.services.fitsense.planning.interfaces.rest.resources.WeeklyTrainingPlanResource;
++import main.web.services.fitsense.profiling.domain.model.commands.CreateUserProfileCommand;
++import main.web.services.fitsense.profiling.domain.model.valueobjects.BiologicalSex;
++import main.web.services.fitsense.profiling.domain.model.valueobjects.FitnessLevel;
++import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
++import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
++import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
++import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
++import org.junit.jupiter.api.DisplayName;
++import org.junit.jupiter.api.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.test.context.SpringBootTest;
++import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
++import org.springframework.jdbc.core.JdbcTemplate;
++import org.springframework.transaction.PlatformTransactionManager;
++import org.springframework.transaction.support.TransactionTemplate;
++import org.testcontainers.junit.jupiter.Container;
++import org.testcontainers.junit.jupiter.Testcontainers;
++import org.testcontainers.postgresql.PostgreSQLContainer;
++
++import java.io.IOException;
++import java.io.InputStream;
++import java.math.BigDecimal;
++import java.nio.charset.StandardCharsets;
++import java.nio.file.Files;
++import java.nio.file.Path;
++import java.time.LocalDate;
++import java.time.OffsetDateTime;
++import java.util.*;
++import java.util.concurrent.atomic.AtomicInteger;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++/**
++ * INC-CAT-C39 REDUCIDA · IMPACTO SOBRE EL PLAN 78 (usuario 39), con el catalogo V1-V50 y PostgreSQL efimero, sin
++ * Replicate. Los planes se manipulan SOLO en esta base aislada (copia controlada), nunca en datos reales.
++ * <p>
++ * El contenido es el plan 78 REPRODUCIDO por la auditoria del caso 39 ({@code src/test/resources/caso39/plan78.csv}):
++ * coincide con el real en fechas, enfoques, duraciones, estructura, 1303 y 910; la identidad ejercicio a ejercicio
++ * esta pendiente de una consulta sobre los datos reales. El perfil es el real: GENERAL_FITNESS principiante, gimnasio
++ * completo (29 codigos), lunes/jueves/viernes/domingo, sin colgarse y sin brazos sobre la cabeza. La semana es la
++ * siguiente a hoy con el mismo patron de dias, para que la prueba no caduque.
++ * <p>
++ * Escribe la evidencia en {@code -Dfitsense.plan78.salida} (por omision target/plan78_contencion.csv) ANTES de
++ * comprobar nada, para poder ejecutarla tambien sobre otras variantes de la contencion y comparar.
++ */
++@Testcontainers
++@SpringBootTest(properties = {
++        "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
++        "fitsense.ai.enabled=false",
++        "fitsense.ai.api-token="
++})
++@DisplayName("INC-CAT-C39 reducida · plan 78 del usuario 39 (copia controlada)")
++class Plan78ContencionReducidaIT {
++
++    @Container
++    @ServiceConnection
++    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
++
++    @Autowired PlanningContextFacade planning;
++    @Autowired WeeklyTrainingPlanCommandService planComandos;
++    @Autowired UserProfileCommandService perfiles;
++    @Autowired WorkoutSessionCommandService sesiones;
++    @Autowired TrainingPlanController planes;
++    @Autowired UserRepository usuarios;
++    @Autowired JdbcTemplate jdbc;
++    @Autowired PlatformTransactionManager transacciones;
++
++    static final AtomicInteger SECUENCIA = new AtomicInteger();
++    static final LocalDate HOY = LocalDate.now();
++    static final LocalDate SEMANA = TrainingWeek.containing(HOY).startDate().plusWeeks(1);
++    static final SafetyProfile SEGURIDAD_39 = new SafetyProfile(false, false, false, false, true, true, false);
++
++    static final List<String> GIMNASIO = List.of("assisted", "band", "barbell", "bench", "body weight", "cable",
++            "captains chair", "dumbbell", "ez barbell", "ghd bench", "gymnastic rings", "hyperextension bench",
++            "landmine", "leverage machine", "olympic barbell", "other", "parallel bars", "preacher bench",
++            "pull-up bar", "rope", "sled machine", "smith machine", "squat rack", "stationary bike", "step platform",
++            "suspension straps", "treadmill", "vertical pole", "weighted");
++
++    /** Enfoque y minutos declarados de cada sesion del plan 78 (lunes, jueves, viernes, domingo). */
++    static final List<String> ENFOQUE = List.of("UPPER_BODY", "LOWER_BODY", "UPPER_BODY", "LOWER_BODY");
++    static final List<Integer> MINUTOS = List.of(43, 42, 43, 43);
++
++    /** Copia literal de la consulta de PLANES_PUBLICADOS_C39.md §2 (si cambia alli, cambia aqui). */
++    static final String CONSULTA_IDENTIFICACION = """
++            SELECT p.user_id, p.plan_id, p.week_start_date, pw.planned_workout_id, pw.scheduled_date, pw.status,
++                   pwe.exercise_id, x.name_es,
++                   CASE WHEN pwe.exercise_id IN (1153,1301,1303,1304,1306) THEN 'colgarse' ELSE 'brazos sobre la cabeza' END AS restriccion,
++                   EXISTS (SELECT 1 FROM planned_workouts o WHERE o.plan_id = p.plan_id
++                           AND o.status IN ('COMPLETED','PARTIAL','SKIPPED')) AS semana_empezada
++            FROM weekly_training_plans p
++            JOIN user_profiles up            ON up.user_id = p.user_id
++            JOIN planned_workouts pw         ON pw.plan_id = p.plan_id AND pw.status IN ('SCHEDULED','IN_PROGRESS')
++            JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id
++            JOIN exercises x                 ON x.exercise_id = pwe.exercise_id
++            WHERE p.status = 'ACTIVE'
++              AND (   (pwe.exercise_id IN (1153,1301,1303,1304,1306) AND up.allow_hanging_exercises  = false)
++                   OR (pwe.exercise_id IN (131,400,448)              AND up.allow_overhead_exercises = false))
++            ORDER BY pw.scheduled_date, p.user_id
++            """;
++
++    record Fila(int sesion, int orden, long ejercicio, String tipo, Integer series, Integer reps, Integer duracion,
++                Integer descanso) {}
++
++    static List<Fila> plan78() throws IOException {
++        try (InputStream in = Plan78ContencionReducidaIT.class.getResourceAsStream("/caso39/plan78.csv")) {
++            var filas = new ArrayList<Fila>();
++            for (var linea : new String(Objects.requireNonNull(in).readAllBytes(), StandardCharsets.UTF_8).split("\n")) {
++                if (linea.isBlank() || linea.startsWith("#")) continue;
++                var c = linea.split(";", -1);
++                filas.add(new Fila(Integer.parseInt(c[0]), Integer.parseInt(c[1]), Long.parseLong(c[2]), c[3],
++                        entero(c[4]), entero(c[5]), entero(c[6]), entero(c[7])));
++            }
++            return filas;
++        }
++    }
++
++    private static Integer entero(String s) {
++        return s == null || s.isBlank() ? null : Integer.valueOf(s.trim());
++    }
++
++    record Copia(long userId, long planId, List<Long> sesiones) {}
++
++    /** Perfil real del usuario 39 y una semana publicada cuyo contenido pasa a ser el del plan 78. */
++    private Copia copiaDelPlan78() throws IOException {
++        int n = SECUENCIA.incrementAndGet();
++        String email = "plan78-" + n + "@pruebas.invalid";
++        jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
++                + " VALUES (?, 'x', 'P78', now(), now())", email);
++        long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
++        // allowHighImpact, allowFloor, allowKneeling, allowHanging, allowOverhead
++        perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1985, 6, 1), BiologicalSex.MALE,
++                new BigDecimal("180"), new BigDecimal("100"), new BigDecimal("80"), FitnessLevel.BEGINNER,
++                GoalType.GENERAL_FITNESS, "Quiero Correr un maraton", TrainingLocation.GYM, (short) 4,
++                List.of((short) 1, (short) 4, (short) 5, (short) 7), (short) 60, GIMNASIO, List.of(), null, true,
++                true, true, false, false));
++        long plan = planning.generateWeeklyPlan(u, SEMANA, PlanAdjustment.none(), null, null)
++                .orElseThrow(() -> new AssertionError("no se genero la semana"));
++        var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
++                + " ORDER BY scheduled_date", Long.class, plan);
++        assertEquals(4, ids.size(), "lunes, jueves, viernes y domingo, como el plan 78");
++        for (int i = 0; i < ids.size(); i++)
++            jdbc.update("UPDATE planned_workouts SET focus_code = ?, expected_duration_minutes = ? WHERE planned_workout_id = ?",
++                    ENFOQUE.get(i), MINUTOS.get(i), ids.get(i));
++        jdbc.update("DELETE FROM planned_workout_exercises WHERE planned_workout_id IN"
++                + " (SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?)", plan);
++        for (var f : plan78())
++            jdbc.update("INSERT INTO planned_workout_exercises (planned_workout_id, exercise_id, exercise_order,"
++                            + " prescription_type, planned_sets, planned_reps, planned_duration_seconds, rest_seconds)"
++                            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?)", ids.get(f.sesion()), f.ejercicio(), f.orden(),
++                    f.tipo(), f.series(), f.reps(), f.duracion(), f.descanso());
++        return new Copia(u, plan, ids);
++    }
++
++    private WeeklyTrainingPlanResource leer(long userId, long planId) {
++        var principal = UserDetailsImpl.build(usuarios.findById(userId).orElseThrow());
++        return new TransactionTemplate(transacciones).execute(tx -> planes.byId(principal, planId).getBody());
++    }
++
++    /** Por sesion (0..3): los ejercicios bloqueados con su causa. */
++    private Map<Integer, Map<Long, String>> bloqueos(Copia c) {
++        var plan = leer(c.userId(), c.planId());
++        var r = new TreeMap<Integer, Map<Long, String>>();
++        for (int i = 0; i < c.sesiones().size(); i++) {
++            long id = c.sesiones().get(i);
++            var w = plan.workouts().stream().filter(x -> x.plannedWorkoutId() == id).findFirst().orElseThrow();
++            var m = new TreeMap<Long, String>();
++            w.exercises().stream().filter(e -> e.safetyBlockReason() != null)
++                    .forEach(e -> m.put(e.exerciseId(), e.safetyBlockReason()));
++            if (w.safetyBlocked() != !m.isEmpty()) throw new AssertionError("bloqueo de sesion incoherente " + i);
++            if (!m.isEmpty()) r.put(i, m);
++        }
++        return r;
++    }
++
++    private List<Map<String, Object>> contenido(long planId) {
++        return jdbc.queryForList("SELECT pw.scheduled_date, pwe.exercise_order, pwe.exercise_id, pwe.prescription_type,"
++                + " pwe.planned_sets, pwe.planned_reps, pwe.planned_duration_seconds, pwe.rest_seconds"
++                + " FROM planned_workouts pw JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id"
++                + " WHERE pw.plan_id = ? ORDER BY pw.scheduled_date, pwe.exercise_order", planId);
++    }
++
++    private static int num(Object o) {
++        return o == null ? 0 : ((Number) o).intValue();
++    }
++
++    @Test
++    @DisplayName("semana sin empezar: solo el jueves (1303) se bloquea; la reparacion no publica por el 916 (V48)")
++    void semanaSinEmpezar() throws IOException {
++        var c = copiaDelPlan78();
++        var b = bloqueos(c);
++
++        // Evidencia primero (se compara entre variantes de la contencion).
++        var sb = new StringBuilder("variante;registro;sesion;ejercicio;causa\n");
++        b.forEach((s, m) -> m.forEach((id, causa) -> sb.append(ContencionTextoBandera.registro().size()).append(';')
++                .append(ContencionTextoBandera.registro().keySet().stream().sorted().toList()).append(';')
++                .append(List.of("lun", "jue", "vie", "dom").get(s)).append(';').append(id).append(';').append(causa)
++                .append('\n')));
++        var salida = Path.of(System.getProperty("fitsense.plan78.salida", "target/plan78_contencion.csv"));
++        Files.createDirectories(salida.toAbsolutePath().getParent());
++        Files.writeString(salida, sb.toString(), StandardCharsets.UTF_8);
++
++        // Con la contencion reducida: el jueves por el 1303 (apoyo suspendido); el viernes (1152 liberado, 910 nunca
++        // contenido) y el lunes (1093 liberado) ya no.
++        assertEquals(Map.of(1, Map.of(1303L, "INC-CAT-C39")), b);
++        // La consulta de identificacion de PLANES_PUBLICADOS_C39.md §2 (solo lectura) encuentra lo mismo.
++        var consulta = jdbc.queryForList(CONSULTA_IDENTIFICACION).stream()
++                .filter(f -> ((Number) f.get("user_id")).longValue() == c.userId()).toList();
++        assertEquals(1, consulta.size(), consulta.toString());
++        assertEquals(1303L, ((Number) consulta.get(0).get("exercise_id")).longValue());
++        assertEquals(c.sesiones().get(1), ((Number) consulta.get(0).get("planned_workout_id")).longValue());
++        assertEquals(false, consulta.get(0).get("semana_empezada"));
++        var error = assertThrows(WorkoutNotAvailableException.class,
++                () -> sesiones.handle(new StartWorkoutSessionCommand(c.userId(), c.sesiones().get(1))));
++        assertTrue(error.getMessage().contains("INC-CAT-C39"), error.getMessage());
++        assertTrue(sesiones.handle(new StartWorkoutSessionCommand(c.userId(), c.sesiones().get(2))).isPresent(),
++                "la sesion del viernes (1152, 910) se puede iniciar");
++        jdbc.update("UPDATE planned_workouts SET status = 'SCHEDULED' WHERE planned_workout_id = ?", c.sesiones().get(2));
++        jdbc.update("DELETE FROM workout_sessions WHERE planned_workout_id = ?", c.sesiones().get(2));
++
++        // Reparacion explicita. LIMITACION ACTUAL, documentada: la reparacion revalida la semana ENTERA contra el
++        // catalogo de hoy, y la misma sesion del jueves lleva el 916 (curl de piernas invertido en polea), que V48
++        // subio a dificultad 3 y ya no es elegible para un principiante. V1 rechaza la version nueva y no se publica
++        // nada: el jueves sigue bloqueado y la version 1 queda intacta. La dificultad no es causa de seguridad, asi
++        // que el 916 por si solo no bloquea ninguna sesion publicada.
++        assertEquals(3, jdbc.queryForObject("SELECT difficulty_level FROM exercises WHERE exercise_id = 916", Integer.class));
++        var antes = contenido(c.planId());
++        var r = planning.repairPublishedPlanForSafety(c.userId(), SEMANA, HOY);
++        assertEquals(Estado.NO_VALIDA, r.estado(), r.toString());
++        assertEquals(List.of("V1: el ejercicio 916 no esta en available_exercises."), r.problemas(), r.toString());
++        assertEquals(antes, contenido(c.planId()), "la version 1 no se toca");
++        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
++                Integer.class, c.userId()), "no se publica ninguna version nueva");
++        assertEquals(Map.of(1, Map.of(1303L, "INC-CAT-C39")), bloqueos(c), "el jueves sigue bloqueado");
++    }
++
++    /**
++     * La misma semana SIN el 916 (sustituido por el curl de piernas sentado 1046, nivel 1, misma familia y sin banderas, antes de aplicar la
++     * restriccion): la reparacion publica una version nueva que solo cambia el 1303, sin aumentar dosis (V8C).
++     * Aisla el mecanismo de reparacion del efecto de V48 sobre el plan 78.
++     */
++    @Test
++    @DisplayName("sin el 916: la reparacion sustituye solo el 1303, sin aumentar la dosis (V8C)")
++    void reparacionLocalizada() throws IOException {
++        var c = copiaDelPlan78();
++        jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1046 WHERE exercise_id = 916 AND planned_workout_id = ?",
++                c.sesiones().get(1));
++        var antes = contenido(c.planId());
++        var r = planning.repairPublishedPlanForSafety(c.userId(), SEMANA, HOY);
++        assertEquals(Estado.REPARADA, r.estado(), r.toString());
++        assertEquals(antes, contenido(c.planId()), "la version 1 no se toca");
++        long v2 = jdbc.queryForObject("SELECT plan_id FROM weekly_training_plans WHERE user_id = ? AND status = 'ACTIVE'",
++                Long.class, c.userId());
++        var despues = contenido(v2);
++        assertEquals(antes.size(), despues.size());
++        int cambios = 0;
++        for (int i = 0; i < antes.size(); i++) {
++            var a = antes.get(i);
++            var d = despues.get(i);
++            if (Objects.equals(a, d)) continue;
++            cambios++;
++            assertEquals(1303L, ((Number) a.get("exercise_id")).longValue(), "solo cambia la fila del 1303: " + a);
++            long sustituto = ((Number) d.get("exercise_id")).longValue();
++            assertFalse(ContencionTextoBandera.contiene(sustituto, SEGURIDAD_39), "sustituto contenido: " + sustituto);
++            assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM exercises WHERE exercise_id = ? AND"
++                    + " (requires_hanging OR requires_overhead)", Integer.class, sustituto), "sustituto restringido");
++            assertEquals(a.get("scheduled_date"), d.get("scheduled_date"));
++            assertTrue(num(d.get("planned_sets")) <= num(a.get("planned_sets")), "sin mas series: " + a + " -> " + d);
++            if (a.get("planned_reps") != null && d.get("planned_reps") != null)
++                assertTrue(num(d.get("planned_reps")) <= num(a.get("planned_reps")), "sin mas repeticiones: " + a + " -> " + d);
++            if (a.get("planned_duration_seconds") != null && d.get("planned_duration_seconds") != null)
++                assertTrue(num(d.get("planned_duration_seconds")) <= num(a.get("planned_duration_seconds")),
++                        "sin mas duracion: " + a + " -> " + d);
++        }
++        assertEquals(1, cambios, "una sola sustitucion localizada");
++        assertTrue(bloqueos(new Copia(c.userId(), v2, jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts"
++                + " WHERE plan_id = ? ORDER BY scheduled_date", Long.class, v2))).isEmpty(), "la version 2 no bloquea nada");
++    }
++
++    /**
++     * LIMITACION ACTUAL, documentada (no es el comportamiento deseado): con una sesion ya terminada la reparacion no
++     * versiona la semana (SEMANA_EMPEZADA). La sesion del jueves sigue bloqueada, no se puede iniciar y, al vencer,
++     * la tarea de vencimiento la cierra como SKIPPED SIN MOTIVO: cuenta en la adherencia como no hecha aunque el
++     * participante no pudo hacerla. Ver docs/FitSense/contencion_c39_reducida/PLANES_PUBLICADOS_C39.md.
++     */
++    @Test
++    @DisplayName("semana empezada: el jueves sigue bloqueado y al vencer queda SKIPPED sin motivo (limitacion actual)")
++    void semanaEmpezada() throws IOException {
++        var c = copiaDelPlan78();
++        jdbc.update("UPDATE planned_workouts SET status = 'COMPLETED' WHERE planned_workout_id = ?", c.sesiones().get(0));
++        var antes = contenido(c.planId());
++
++        var r = planning.repairPublishedPlanForSafety(c.userId(), SEMANA, HOY);
++        assertEquals(Estado.SEMANA_EMPEZADA, r.estado(), r.toString());
++        assertEquals(antes, contenido(c.planId()), "nada se sustituye en silencio");
++        assertEquals(Map.of(1, Map.of(1303L, "INC-CAT-C39")), bloqueos(c));
++        assertThrows(WorkoutNotAvailableException.class,
++                () -> sesiones.handle(new StartWorkoutSessionCommand(c.userId(), c.sesiones().get(1))));
++
++        var vence = jdbc.queryForObject("SELECT expires_at FROM planned_workouts WHERE planned_workout_id = ?",
++                OffsetDateTime.class, c.sesiones().get(1));
++        planComandos.handle(new ExpireOverdueWorkoutsCommand(vence.plusMinutes(1)));
++        var fila = jdbc.queryForMap("SELECT status, skip_reason FROM planned_workouts WHERE planned_workout_id = ?",
++                c.sesiones().get(1));
++        assertEquals("SKIPPED", fila.get("status"));
++        assertNull(fila.get("skip_reason"), "no existe un motivo de seguridad: se cuenta como no hecha");
++    }
++}
+diff --git a/src/test/java/main/web/services/fitsense/planning/CatalogoElegibleIT.java b/src/test/java/main/web/services/fitsense/planning/CatalogoElegibleIT.java
+index 3c14a59..71c963c 100644
+--- a/src/test/java/main/web/services/fitsense/planning/CatalogoElegibleIT.java
++++ b/src/test/java/main/web/services/fitsense/planning/CatalogoElegibleIT.java
+@@ -88,14 +88,13 @@ class CatalogoElegibleIT {
+     static final List<Long> RETENIDOS = List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
+ 
+     /*
+-     * INC-CAT-C39 (CORRECCIONES_SEGURIDAD.md, tabla 3.1), escrito aqui sin leer ContencionTextoBandera: ids cuyo
+-     * nombre o instrucciones piden colgarse, brazos sobre la cabeza o suelo y cuya bandera no lo refleja. Solo
+-     * salen para quien declara (o recibe por edad) esa restriccion.
++     * INC-CAT-C39 reducida a 8 sobre el catalogo integral (CORRECCIONES_SEGURIDAD.md §9), escrito aqui sin leer
++     * ContencionTextoBandera: apoyo suspendido (colgarse) y curl alto (brazos sobre la cabeza), pendientes de decision
++     * profesional. Solo salen para quien declara (o recibe por edad) esa restriccion. Suelo: ninguno (V49 corrigio
++     * todos los textos de suelo que la PR #55 original contenia).
+      */
+-    static final List<Long> C39_COLGARSE = List.of(316L, 1301L, 1306L, 1153L, 1303L, 1304L, 1152L);
+-    static final List<Long> C39_CABEZA = List.of(316L, 1301L, 131L, 400L, 448L, 1272L, 1309L, 1322L);
+-    static final List<Long> C39_SUELO = List.of(55L, 224L, 637L, 741L, 875L, 1062L, 1063L, 1093L, 1095L, 1156L,
+-            1181L, 1193L, 1303L, 1304L, 1311L);
++    static final List<Long> C39_COLGARSE = List.of(1153L, 1301L, 1303L, 1304L, 1306L);
++    static final List<Long> C39_CABEZA = List.of(131L, 400L, 448L);
+ 
+     static final List<String> FILAS = new ArrayList<>();
+ 
+@@ -235,7 +234,6 @@ class CatalogoElegibleIT {
+         excluidos.addAll(bloqueados);
+         if (sinSuspension) excluidos.addAll(C39_COLGARSE);
+         if (sinOverhead) excluidos.addAll(C39_CABEZA);
+-        if (sinSuelo) excluidos.addAll(C39_SUELO);
+ 
+         boolean cardio = !filtroAnterior && Set.of("LOSE_WEIGHT", "GENERAL_FITNESS").contains(objetivo);
+         boolean movilidad = !filtroAnterior && "GENERAL_FITNESS".equals(objetivo);
+diff --git a/src/test/java/main/web/services/fitsense/planning/Usuario31ReproduccionIT.java b/src/test/java/main/web/services/fitsense/planning/Usuario31ReproduccionIT.java
+index dceef66..91f867f 100644
+--- a/src/test/java/main/web/services/fitsense/planning/Usuario31ReproduccionIT.java
++++ b/src/test/java/main/web/services/fitsense/planning/Usuario31ReproduccionIT.java
+@@ -54,12 +54,11 @@ class Usuario31ReproduccionIT extends Usuario31Base {
+         assertEquals("actual elegibles: 776=si 1320=si 1185=si 309=si 1103=si 301=si", r.get(0));
+         rechazosDeLaIa(r, 13);
+         assertEquals("actual plan 63: VALIDA", r.get(4));
+-        // INC-CAT-C39 (CORRECCIONES_SEGURIDAD.md): este perfil prohibe suelo y colgarse, asi que los ids contenidos
+-        // salen de su conjunto elegible y la seleccion determinista del motor cambia (sabado 1320 -> 314, domingo
+-        // 107 -> 1027; ninguno de los cuatro esta contenido). 1320 sigue elegible (linea 0) y 776 sigue en el plan.
+-        contiene(r.get(5), " 776[back/HIP_HINGE]", " 314[upper arms/HORIZONTAL_PUSH]");
+-        for (long id : new long[]{316, 1301, 1306, 1153, 1303, 1304, 1152, 55, 224, 637, 741, 875, 1062, 1063,
+-                1093, 1095, 1156, 1181, 1193, 1311})
++        // INC-CAT-C39 reducida a 8 (CORRECCIONES_SEGURIDAD.md §9): este perfil prohibe suelo y colgarse, asi que solo
++        // salen de su conjunto los cinco de apoyo suspendido, que el motor no elegia: la semana es la misma que sin la
++        // contencion (sabado 1320, como en la pila del catalogo integral) y ningun contenido entra.
++        contiene(r.get(5), " 776[back/HIP_HINGE]", " 1320[upper arms/HORIZONTAL_PUSH]");
++        for (long id : new long[]{1153, 1301, 1303, 1304, 1306})
+             assertFalse(r.get(5).contains(" " + id + "["), "contenido INC-CAT-C39 en el plan: " + id);
+     }
+ 
+diff --git a/src/test/java/main/web/services/fitsense/planning/application/internal/outboundservices/acl/ExternalCatalogServiceContencionC39Test.java b/src/test/java/main/web/services/fitsense/planning/application/internal/outboundservices/acl/ExternalCatalogServiceContencionC39Test.java
+index 7ff3201..05cc185 100644
+--- a/src/test/java/main/web/services/fitsense/planning/application/internal/outboundservices/acl/ExternalCatalogServiceContencionC39Test.java
++++ b/src/test/java/main/web/services/fitsense/planning/application/internal/outboundservices/acl/ExternalCatalogServiceContencionC39Test.java
+@@ -39,7 +39,7 @@ class ExternalCatalogServiceContencionC39Test {
+         Mockito.when(fachada.fetchEligibleExercises(anyList(), anyBoolean(), anyInt(), anyList(),
+                         anyBoolean(), anyBoolean(), anyBoolean(), anyBoolean(),
+                         anyBoolean(), anyBoolean(), anyBoolean()))
+-                .thenReturn(List.of(vista(316), vista(1309), vista(1093), vista(910), vista(61)));
++                .thenReturn(List.of(vista(1301), vista(400), vista(1093), vista(910), vista(61)));
+         var servicio = new ExternalCatalogService(fachada);
+         var normal = servicio.fetchEligibleFor(perfil(), 1, seguridad).stream().map(c -> c.exerciseId()).toList();
+         var silenciosa = servicio.fetchEligibleForExplanation(perfil(), 1, seguridad).stream()
+@@ -50,12 +50,12 @@ class ExternalCatalogServiceContencionC39Test {
+ 
+     @ParameterizedTest(name = "suelo={0} colgarse={1} cabeza={2} -> {3}")
+     @CsvSource(delimiter = ';', value = {
+-            "false;false;false;316,1309,1093,910,61",
+-            "false;true;false;1309,1093,910,61",
+-            "false;false;true;1093,910,61",
++            "false;false;false;1301,400,1093,910,61",
++            "false;true;false;400,1093,910,61",
++            "false;false;true;1301,1093,910,61",
+             "false;true;true;1093,910,61",
+-            "true;false;false;316,1309,910,61",
+-            "true;true;true;910,61"
++            "true;false;false;1301,400,1093,910,61",
++            "true;true;true;1093,910,61"
+     })
+     void soloParaQuienDeclaraLaRestriccion(boolean suelo, boolean colgarse, boolean cabeza, String esperado) {
+         var seguridad = new SafetyProfile(false, suelo, false, false, colgarse, cabeza, false);
+@@ -63,10 +63,13 @@ class ExternalCatalogServiceContencionC39Test {
+         assertEquals(java.util.Arrays.stream(esperado.split(",")).map(Long::valueOf).toList(), ids);
+         // 910 (remo invertido, talones en el suelo) no esta en el registro: sin incidencia, nunca se contiene.
+         assertTrue(ids.contains(910L));
++        // 1093 (liberado por V49: su texto ya describe la elevacion de rodilla de pie del GIF) tampoco.
++        assertTrue(ids.contains(1093L));
+     }
+ 
+     @ParameterizedTest(name = "contenidoIncCatC39({0}) con colgarse prohibido = {1}")
+-    @CsvSource({"316, true", "1301, true", "1303, true", "1152, true", "853, false", "910, false", "1093, false"})
++    @CsvSource({"1301, true", "1303, true", "1304, true", "1306, true", "1153, true", "316, false", "1152, false",
++            "853, false", "910, false", "1093, false", "400, false"})
+     void fachadaEstatica(long id, boolean esperado) {
+         assertEquals(esperado, ExternalCatalogService.contenidoIncCatC39(id,
+                 new SafetyProfile(false, false, false, false, true, false, false)));
+diff --git a/src/test/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBanderaTest.java b/src/test/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBanderaTest.java
+index 954bcab..50b9805 100644
+--- a/src/test/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBanderaTest.java
++++ b/src/test/java/main/web/services/fitsense/planning/domain/services/ContencionTextoBanderaTest.java
+@@ -17,10 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
+ @DisplayName("INC-CAT-C39 · contencion por texto contra bandera")
+ class ContencionTextoBanderaTest {
+ 
+-    static final Set<Long> COLGARSE = Set.of(316L, 1301L, 1306L, 1153L, 1303L, 1304L, 1152L);
+-    static final Set<Long> CABEZA = Set.of(316L, 1301L, 131L, 400L, 448L, 1272L, 1309L, 1322L);
+-    static final Set<Long> SUELO = Set.of(55L, 224L, 637L, 741L, 875L, 1062L, 1063L, 1093L, 1095L, 1156L, 1181L,
+-            1193L, 1303L, 1304L, 1311L);
++    /*
++     * Contencion reducida a 8 sobre el catalogo integral (V47-V50): solo el MOVIMIENTO pendiente de decision
++     * profesional. Los 18 liberados por V49 y la parte de 1301 (cabeza) y 1303/1304 (suelo) ya no se contienen.
++     */
++    static final Set<Long> COLGARSE = Set.of(1153L, 1301L, 1303L, 1304L, 1306L);
++    static final Set<Long> CABEZA = Set.of(131L, 400L, 448L);
++    static final Set<Long> SUELO = Set.of();
++    /** Los 26 de la PR #55 original. */
++    static final Set<Long> ORIGINAL_26 = Set.of(316L, 1301L, 1306L, 1153L, 1303L, 1304L, 1152L, 131L, 400L, 448L,
++            1272L, 1309L, 1322L, 55L, 224L, 637L, 741L, 875L, 1062L, 1063L, 1093L, 1095L, 1156L, 1181L, 1193L, 1311L);
+ 
+     /** (alto impacto, suelo, axial, rodillas, colgarse, brazos arriba, inversion) */
+     static SafetyProfile seg(boolean suelo, boolean colgarse, boolean cabeza) {
+@@ -38,18 +44,18 @@ class ContencionTextoBanderaTest {
+     void sinRestricciones() {
+         assertTrue(ContencionTextoBandera.contenidos(SafetyProfile.none()).isEmpty());
+         assertTrue(ContencionTextoBandera.contenidos(seg(false, false, false)).isEmpty());
+-        assertFalse(ContencionTextoBandera.contiene(316L, seg(false, false, false)));
+-        assertFalse(ContencionTextoBandera.contiene(316L, null));
++        assertFalse(ContencionTextoBandera.contiene(1303L, seg(false, false, false)));
++        assertFalse(ContencionTextoBandera.contiene(1303L, null));
+     }
+ 
+     @Test
+-    @DisplayName("A · quien prohibe colgarse: exactamente los ids cuyo texto pide colgarse o apoyo suspendido")
++    @DisplayName("A · quien prohibe colgarse: exactamente los ids de apoyo suspendido pendientes de decision")
+     void prohibeColgarse() {
+         assertEquals(new TreeSet<>(COLGARSE), ContencionTextoBandera.contenidos(seg(false, true, false)));
+     }
+ 
+     @Test
+-    @DisplayName("B · quien prohibe brazos sobre la cabeza: exactamente los ids cuyo texto los pide")
++    @DisplayName("B · quien prohibe brazos sobre la cabeza: exactamente los tres curl altos")
+     void prohibeSobreLaCabeza() {
+         assertEquals(new TreeSet<>(CABEZA), ContencionTextoBandera.contenidos(seg(false, false, true)));
+     }
+@@ -61,9 +67,32 @@ class ContencionTextoBanderaTest {
+     }
+ 
+     @Test
+-    @DisplayName("quien prohibe el suelo: los relajados en V38 cuyas instrucciones siguen en el suelo")
++    @DisplayName("quien prohibe el suelo: nada (V49 alineo con el GIF todos los textos de suelo contenidos)")
+     void prohibeSuelo() {
+         assertEquals(new TreeSet<>(SUELO), ContencionTextoBandera.contenidos(seg(true, false, false)));
++        assertFalse(ContencionTextoBandera.contiene(1303L, seg(true, false, false)), "1303 ya no por suelo");
++        assertFalse(ContencionTextoBandera.contiene(1093L, seg(true, false, false)), "1093 liberado");
++    }
++
++    @Test
++    @DisplayName("1301 se contiene solo por colgarse: brazos sobre la cabeza ya no aplica (V49)")
++    void parcial1301() {
++        assertTrue(ContencionTextoBandera.contiene(1301L, seg(false, true, false)));
++        assertFalse(ContencionTextoBandera.contiene(1301L, seg(false, false, true)));
++    }
++
++    @Test
++    @DisplayName("liberados por V49: 18 ids que no se contienen para ninguna combinacion de restricciones")
++    void liberados() {
++        assertEquals(18, ContencionTextoBandera.LIBERADOS_POR_V49.size());
++        var todos = seg(true, true, true);
++        for (var id : ContencionTextoBandera.LIBERADOS_POR_V49) {
++            assertFalse(ContencionTextoBandera.registro().containsKey(id), "liberado en el registro: " + id);
++            assertFalse(ContencionTextoBandera.contiene(id, todos), "liberado contenido: " + id);
++        }
++        // 18 liberados + 8 contenidos = los 26 originales; nada nuevo entra en el registro.
++        assertEquals(new TreeSet<>(ORIGINAL_26),
++                union(ContencionTextoBandera.LIBERADOS_POR_V49, ContencionTextoBandera.registro().keySet()));
+     }
+ 
+     @Test
+@@ -76,7 +105,7 @@ class ContencionTextoBanderaTest {
+     @Test
+     @DisplayName("trazabilidad: cada entrada tiene restricciones y una contradiccion citada")
+     void trazabilidad() {
+-        assertEquals(26, ContencionTextoBandera.registro().size(), "26 ejercicios documentados en el registro");
++        assertEquals(8, ContencionTextoBandera.registro().size(), "8 ejercicios documentados en el registro");
+         ContencionTextoBandera.registro().forEach((id, c) -> {
+             assertFalse(c.restricciones().isEmpty(), "sin restricciones: " + id);
+             assertTrue(c.contradiccion() != null && c.contradiccion().length() > 20, "sin justificacion: " + id);
+@@ -94,7 +123,7 @@ class ContencionTextoBanderaTest {
+     @Test
+     @DisplayName("causa de seguridad con nombre: autoriza bloqueo y sustitucion como INC-CAT-1374")
+     void causaDeSeguridad() {
+-        var hechos = new ExerciseSafetyFacts(316L, true, false, true, false, false, false, false, false);
++        var hechos = new ExerciseSafetyFacts(1303L, true, false, true, false, false, false, false, false);
+         var causas = SafetyConflictPolicy.causas(hechos, seg(false, true, false), false, false, true);
+         assertEquals(java.util.List.of(SafetyConflictPolicy.CONTENIDO_INC_CAT_C39), causas);
+         assertEquals("INC-CAT-C39", SafetyConflictPolicy.CONTENIDO_INC_CAT_C39);
+diff --git a/src/test/resources/caso39/plan78.csv b/src/test/resources/caso39/plan78.csv
+new file mode 100644
+index 0000000..0eb194f
+--- /dev/null
++++ b/src/test/resources/caso39/plan78.csv
+@@ -0,0 +1,34 @@
++# Plan 78 del usuario 39 (semana 2026-11-16) REPRODUCIDO por el motor de reglas con el equipo exacto (auditoria_caso_39, cierre/plan78_reproducido_equipo_exacto.csv). Coincide con el real en fechas, enfoques, duraciones, estructura, 1303 y 910; la identidad ejercicio a ejercicio queda pendiente de la consulta SQL §G-2 de la auditoria (sin acceso a datos reales).
++# sesion (0..3 = lun, jue, vie, dom);orden;exercise_id;tipo;series;reps;duracion_s;descanso_s
++0;1;314;SETS_REPS;3;8;;120
++0;2;349;SETS_REPS;3;8;;120
++0;3;135;SETS_REPS;3;10;;90
++0;4;1334;SETS_REPS;2;10;;90
++0;5;357;SETS_REPS;2;10;;90
++0;6;421;SETS_REPS;3;15;;45
++0;7;1093;DURATION;3;;90;60
++0;8;1255;DURATION;2;;30;15
++1;1;916;SETS_REPS;3;8;;120
++1;2;309;SETS_REPS;3;8;;120
++1;3;493;SETS_REPS;2;13;;90
++1;4;1303;SETS_REPS;2;13;;90
++1;5;1141;SETS_REPS;2;13;;90
++1;6;507;SETS_REPS;3;15;;45
++1;7;853;DURATION;3;;90;60
++1;8;1136;DURATION;2;;30;15
++2;1;1152;SETS_REPS;3;10;;90
++2;2;1092;SETS_REPS;3;10;;90
++2;3;436;SETS_REPS;2;10;;90
++2;4;494;SETS_REPS;3;15;;45
++2;5;910;SETS_REPS;3;15;;45
++2;6;707;SETS_REPS;3;15;;45
++2;7;253;DURATION;3;;90;60
++2;8;1137;DURATION;2;;30;15
++3;1;1315;SETS_REPS;3;10;;90
++3;2;1064;SETS_REPS;3;13;;90
++3;3;1009;SETS_REPS;2;10;;90
++3;4;1200;SETS_REPS;3;15;;45
++3;5;134;SETS_REPS;3;15;;45
++3;6;905;SETS_REPS;3;15;;45
++3;7;1325;DURATION;3;;90;60
++3;8;454;DURATION;2;;30;15
