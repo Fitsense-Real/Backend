@@ -50,14 +50,41 @@ Ningún ejercicio entra en un conjunto en el que antes no estuviera: V47–V50 s
 
 Los dos perfiles LOSE_WEIGHT / principiante / casa («sin suelo» y «sin las tres») recuperan un plan **válido** cuando la contención C39 se reduce a los 8 ejercicios que siguen sin resolver. Ver `IMPACTO_PR55.md`; no se relajó V25 ni ninguna bandera.
 
-## 3. Por qué cambian semanas con el mismo conjunto elegible
+## 3. Atribución por migración (rejilla de 168 perfiles)
 
-En 8 perfiles el conjunto elegible es idéntico y la semana cambia. Todos contienen:
-- el 1093, que pierde «correr» en el nombre (V49), con lo que su impacto por nombre pasa de MODERADO a BAJO;
-- algún ejercicio reclasificado por V50.
+La rejilla se ejecutó también sobre la rama 1 (V47–V48) y la rama 2 (V47–V49) para separar el efecto de cada migración (`evidencia/cmp_r1.csv`, `evidencia/cmp_r2.csv`).
 
-Tanto `CapabilityWeekBuilder.rangoImpacto` (orden por impacto) como la asignación por patrón (huecos de 4C, V15) usan esos datos, así que la secuencia pseudoaleatoria determinista se desplaza. Es un cambio esperado por datos corregidos: los validadores aceptan las 168 semanas.
+| Paso | Semana idéntica | Mismo conjunto elegible, semana distinta | Conjunto elegible distinto | Desenlace cambiado |
+|---|---|---|---|---|
+| antes → rama 1 (V47, V48) | 45 | 11 | 112 | 0 |
+| rama 1 → rama 2 (V49) | 84 | **84** | **0** | 0 |
+| rama 2 → final (V50) | 0 | 28 | 140 | 0 |
+| antes → final | 0 | 8 | 160 | 0 |
+
+**V49 no cambia ningún conjunto elegible.** Las 84 semanas que cambian son exactamente los 84 perfiles LOSE_WEIGHT y GENERAL_FITNESS (los que tienen cardio) en los que el 1093 es elegible. Al quitar «correr» del nombre, el impacto por nombre del 1093 pasa de MODERADO a BAJO. Es la única excepción documentada a «reglas por nombre intactas» (`CatalogoIntegralTextosIT.reglasPorNombreIntactas`).
+
+`CapabilityWeekBuilder.rangoImpacto` reordena entonces los huecos de cardio:
+- En las 84, las posiciones y el número de huecos de cardio por día son los mismos.
+- En 5, el multiconjunto de ejercicios es idéntico y solo cambia el orden.
+- En 28, la parte de fuerza es idéntica.
+- En el resto, la secuencia pseudoaleatoria determinista (semilla por usuario y semana) se desplaza y cambia también la elección de fuerza.
+
+Los validadores aceptan todas las semanas y ningún desenlace cambia.
+
+En V47–V48 (11 perfiles) y V50 (28 perfiles) los cambios con el mismo conjunto elegible vienen de datos que el motor usa para ordenar o asignar huecos:
+- impacto, por la bandera HI de V47;
+- patrón y grupo, por V50 (huecos de 4C y V15).
+
+Es el mismo mecanismo determinista. Son cambios esperados por datos corregidos.
 
 ## 4. Referencias de generación (72 perfiles)
 
-Ver `evidencia/DIFERENCIAS_REFERENCIA_V47_V48.md` (rama 1) y sus equivalentes en las ramas 2 y 3: 68 de 72 semanas cambian con V47/V48 y todas siguen VALIDA.
+`GeneracionReferenciaIT`, con 72 perfiles fijos:
+
+| Rama | Semanas que cambian respecto a la anterior | Evidencia |
+|---|---|---|
+| Rama 1 (V47, V48) | 47 de 72: 16 por un ejercicio afectado directamente y 31 en cascada | `evidencia/DIFERENCIAS_REFERENCIA_V47_V48.md` |
+| Rama 2 (V49) | 0 de 72: la referencia no tiene perfiles en los que el orden del 1093 importe | — |
+| Rama 3 (V50) | 68 de 72: 25 directas y el resto en cascada | `evidencia/DIFERENCIAS_REFERENCIA_V50.md` |
+
+En las tres ramas, todas las semanas siguen VALIDA.
