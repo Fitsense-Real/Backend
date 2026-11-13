@@ -782,7 +782,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 851	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:ez barbell,2:bench	-	BAJO	false	false	---	d099b96e2869
 852	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	BAJO	false	false	---	327ef58aeb27
 853	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	BAJO	false	false	---	8d47cacf1192
-854	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	MODERADO	false	false	M--	7fa2aed72c3e
+854	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	MODERADO	false	false	M--	6997e8aac926
 855	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	FL	BAJO	false	false	---	ceea6e804e85
 856	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	BAJO	false	false	---	8912c1452e0b
 857	waist	abs	CORE_STABILITY	3	DURATION	false	-	FL INV	BAJO	false	false	---	0a35a3bbe298
@@ -825,7 +825,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 897	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:plyo box,1:step platform	-	BAJO	false	false	---	5b93c5f51744
 898	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:smith machine	-	BAJO	false	false	---	8ec47c54f4ca
 899	chest	serratus anterior	HORIZONTAL_PUSH	1	SETS_REPS	false	1:body weight,2:bench	-	BAJO	false	false	---	2ea32190259b
-900	chest	pectorals	HORIZONTAL_ADDUCTION	1	DURATION	true	-	-	BAJO	false	false	---	80008e7fa9c3
+900	chest	pectorals	HORIZONTAL_ADDUCTION	1	DURATION	true	-	-	BAJO	false	false	---	67d1548ffe2b
 901	chest	pectorals	HORIZONTAL_PUSH	2	DURATION	false	-	FL	BAJO	false	false	---	14b9c1d59be6
 902	waist	abs	LOCOMOTION_CARDIO	1	SETS_REPS	false	-	FL INV	BAJO	false	false	---	67e269b4b094
 903	waist	abs	MOBILITY	1	SETS_REPS	false	-	FL	BAJO	false	false	---	f7589bec58e1
@@ -897,7 +897,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 971	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	false	1:kettlebell	HI AX	ALTO	false	false	---	8ada8295646c
 972	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	HI FL AX KN	ALTO	false	false	-A-	2a8416cd8a23
 973	shoulders	delts	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	-	BAJO	false	false	---	8507d88433ce
-974	waist	abs	CORE_STABILITY	3	DURATION	false	-	FL	BAJO	false	false	---	aa908f089026
+974	waist	abs	CORE_STABILITY	3	DURATION	false	-	FL	BAJO	false	false	---	9fac47f13ed5
 975	waist	abs	CORE_STABILITY	3	SETS_REPS	false	-	FL	BAJO	false	false	---	d04677228fd0
 976	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:bench	-	BAJO	false	false	---	1652e391bfda
 977	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:captains chair,1:pull-up bar	HG OH	BAJO	false	false	---	99cb7b3ca3f0
@@ -976,7 +976,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1051	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	BAJO	false	false	---	b6400d1b0930
 1052	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:leverage machine	-	BAJO	false	false	---	080c47fc8610
 1053	neck	levator scapulae	MOBILITY	1	DURATION	false	-	-	BAJO	true	false	--E	478bf222ad5f
-1054	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	FL	BAJO	false	false	---	c758ae2e65dd
+1054	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	FL	BAJO	false	false	---	6c80325a66db
 1055	lower arms	forearms	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL KN	BAJO	false	false	---	4c69c6d74cff
 1056	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:bench	-	BAJO	false	false	---	b3760957bd32
 1057	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	-	-	BAJO	false	false	---	2a3b6a5bb9d5
@@ -1033,7 +1033,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1110	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:bench,1:plyo box	-	BAJO	false	false	---	c5cb32372fa1
 1111	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	FL	BAJO	false	false	---	634cde28e568
 1112	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	-	FL	BAJO	false	false	---	2fb3cf6c2c09
-1113	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	FL INV	BAJO	false	false	---	64d32ac9707d
+1113	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL INV	BAJO	false	false	---	64d32ac9707d
 1114	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	-	-	BAJO	false	false	---	cca83529fe4e
 1115	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	FL	BAJO	false	false	---	c255d76ca3a8
 1117	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	MODERADO	false	false	---	0a3c52bc08f1
@@ -1080,7 +1080,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1173	neck	levator scapulae	MOBILITY	1	DURATION	false	-	-	BAJO	true	false	--E	935b1ab9dba0
 1174	cardio	cardiovascular system	KNEE_DOMINANT	2	SETS_REPS	false	-	HI	ALTO	false	false	-A-	4c754ecf63b7
 1175	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	MODERADO	false	false	M--	f21f681541da
-1176	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	ALTO	false	false	-A-	df9caeda7d38
+1176	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	ALTO	false	false	-A-	76623e0c4dfa
 1177	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	ALTO	false	false	---	7f1cdf8c9566
 1178	lower arms	forearms	MOBILITY	1	DURATION	false	-	-	BAJO	true	false	--E	353be9a27895
 1179	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	BAJO	false	false	---	cf5ac7256e4c
@@ -1178,7 +1178,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1289	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	BAJO	false	false	---	9ac3b80126ad
 1290	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	BAJO	false	false	---	ff5fd6af3130
 1291	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	BAJO	false	false	---	92dbd4e9f6cb
-1293	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	-	HI OH	ALTO	false	false	-A-	68fd931532af
+1293	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	-	HI OH	ALTO	false	false	-A-	23e6ee8861da
 1294	cardio	cardiovascular system	TRUNK_ROTATION_LATERAL_FLEXION	3	DURATION	false	1:pull-up bar	HG OH	BAJO	false	false	---	b7f4d5c1f3db
 1295	cardio	cardiovascular system	KNEE_DOMINANT	1	SETS_REPS	false	-	-	BAJO	false	false	M--	849d1ef742ed
 1296	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	FL OH	BAJO	false	false	---	a8a87fae37fb

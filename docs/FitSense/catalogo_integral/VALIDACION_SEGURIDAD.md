@@ -77,7 +77,7 @@ La revisión R2/V3 del catálogo completo encontró 32 casos y la adjudicación 
 - Todo HG tiene OH.
 - Todo activo tiene impacto y estiramiento explícitos.
 - Las banderas declaradas coinciden con el texto (`CatalogoCalidadIT.textoContraBandera`, verde).
-- La huella cambia exactamente en los 437 ejercicios decididos.
+- La huella cambia exactamente en los 442 ejercicios decididos.
 
 ## 7. Lo que la IA no puede validar
 

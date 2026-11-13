@@ -1,6 +1,6 @@
 # Correcciones definitivas del cierre (V51, V52, V53)
 
-El detalle por ejercicio, con valor anterior, valor nuevo y fundamento de R2 y V3, está en `cierre/adjudicacion/decisiones_v52.tsv` (556 filas). La traza completa de cada propuesta está en `adjudicacion_traza.tsv`, y el SQL generado en `V52__catalogo_cierre_correcciones_verificadas.sql`.
+El detalle por ejercicio, con valor anterior, valor nuevo y fundamento de R2 y V3, está en `cierre/adjudicacion/decisiones_v52.tsv` (561 filas). La traza completa de cada propuesta está en `adjudicacion_traza.tsv`, y el SQL generado en `V52__catalogo_cierre_correcciones_verificadas.sql`.
 
 ## 1. V51: el nombre deja de decidir
 
@@ -11,12 +11,12 @@ El detalle por ejercicio, con valor anterior, valor nuevo y fundamento de R2 y V
 
 V51 rellena exactamente lo que la regla derivaba sobre V50, así que **no cambia el comportamiento**. Las correcciones van en V52.
 
-## 2. V52: 556 cambios en 437 ejercicios
+## 2. V52: 561 cambios en 442 ejercicios
 
 | Atributo | Cambios |
 |---|---|
-| Instrucciones | 323 |
-| Dificultad (todas al alza: 61 de 1→2 y 3 de 2→3) | 64 |
+| Instrucciones (323 de la revisión y 6 por la norma de texto, ver §2.1) | 329 |
+| Dificultad (todas al alza: 60 de 1→2 y 3 de 2→3). La de 1113 se vetó por la decisión previa de V39 | 63 |
 | Nombre | 40 |
 | OH (14 añadidas, 12 quitadas) | 26 |
 | Patrón | 24 |
@@ -30,6 +30,10 @@ V51 rellena exactamente lo que la regla derivaba sobre V50, así que **no cambia
 | Equipamiento: 300, 756, 1043, 1184 | 4 |
 | Estiramiento explícito: 312, 1192 y 1194 a TRUE; 455 y 773 a FALSE | 5 |
 | FL (2 añadidas, 2 quitadas) | 4 |
+
+### 2.1 Norma de texto aplicada fuera de las propuestas
+
+La matriz de coherencia (regla R07 de `MATRIZ_COHERENCIA_FINAL.xlsx`) detectó 6 activos con prescripción DURATION cuya frase final pedía repeticiones: 854, 900, 974, 1054, 1176 y 1293. La R2 no había propuesto cambiar ni el texto ni la prescripción, y en los seis la prescripción es la correcta (isometrías y cardio por tiempo). Solo se sustituye la frase final por «Mantén la duración indicada.». El resto del texto y los demás atributos no cambian, y la traza tiene el tipo `FRASE_FINAL`.
 
 Normas de texto:
 - Cada paso termina en punto.

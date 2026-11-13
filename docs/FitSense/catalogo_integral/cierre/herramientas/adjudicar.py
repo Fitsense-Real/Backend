@@ -105,6 +105,23 @@ for d in list(dec):
         if pasos and pasos[-1] == fin[d['antes']]:
             add(i, 'instructions_es', C[i]['instr_es'], ' || '.join(pasos[:-1] + [fin[d['despues']]]), 'frase final coherente con la nueva prescripcion')
         else: pend.append({'id': i, 'tipo': 'PRESCRIPCION_TEXTO', 'motivo': 'la frase final no es la reglamentaria; revisar a mano'})
+# Norma de texto del cierre aplicada a los activos que la R2 no propuso reescribir: en DURATION la frase final no puede
+# pedir repeticiones (contradice la prescripcion vigente, que la R2 no propuso cambiar). Solo cambia la frase final.
+presc_final = {i: C[i]['presc'] for i in C}
+for d in dec:
+    if d['atributo'] == 'default_prescription': presc_final[d['id']] = d['despues']
+textos = {d['id'] for d in dec if d['atributo'] == 'instructions_es'}
+for i in sorted(C, key=int):
+    if C[i].get('active') not in ('t', 'true', 'SI') or i in textos or presc_final[i] != 'DURATION': continue
+    pasos = json.loads(C[i]['steps_es']) if C[i]['steps_es'] else []
+    if pasos and 'repetici' in pasos[-1].lower():
+        add(i, 'instructions_es', C[i]['instr_es'], ' || '.join(pasos[:-1] + ['Mantén la duración indicada.']),
+            'norma de texto del cierre: la frase final pedia repeticiones («' + pasos[-1] + '») y la prescripcion vigente es '
+            'DURATION, que la R2 (animacion completa) no propuso cambiar; solo se sustituye la frase final')
+        traza.append({'id': i, 'tipo': 'FRASE_FINAL', 'actual': pasos[-1], 'propuesto': 'Mantén la duración indicada.',
+                      'r2_lote': '-', 'r2_confianza': '-', 'v3_lote': '-', 'v3_decision': '-', 'v3_confianza': '-',
+                      'v3_evidencia': '-', 'coordinador': 'APLICAR (norma de texto)', 'resultado': 'APLICADO',
+                      'motivo': 'contradiccion texto/prescripcion detectada por la matriz de coherencia (R07)'})
 # un ejercicio con HI no puede quedar en BAJO
 for i, e in estado.items():
     if e['hi'] == 't' and e['imp'] == 'BAJO': pend.append({'id': i, 'tipo': 'HI_CON_BAJO', 'motivo': 'contradice ck_exercises_high_impact_not_bajo'})

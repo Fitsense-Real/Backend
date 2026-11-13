@@ -9,7 +9,7 @@
 -- NO baja ninguna dificultad (V27: requiere aprobacion humana). NO cambia el significado de ninguna restriccion del
 -- perfil. NO activa ni desactiva ejercicios. Cada ejercicio exige su estado anterior exacto: si no coincide y no esta
 -- ya corregido, la migracion FALLA.
--- Cambios: {'axial_load': 14, 'default_prescription': 16, 'difficulty_level': 64, 'equipo': 4, 'high_impact': 5, 'impact_level': 9, 'instructions_es': 323, 'is_stretch': 5, 'movement_pattern': 24, 'name_es': 40, 'requires_floor': 4, 'requires_inversion': 6, 'requires_kneeling': 6, 'requires_overhead': 26, 'zona': 10} en 437 ejercicios.
+-- Cambios: {'axial_load': 14, 'default_prescription': 16, 'difficulty_level': 63, 'equipo': 4, 'high_impact': 5, 'impact_level': 9, 'instructions_es': 329, 'is_stretch': 5, 'movement_pattern': 24, 'name_es': 40, 'requires_floor': 4, 'requires_inversion': 6, 'requires_kneeling': 6, 'requires_overhead': 26, 'zona': 10} en 442 ejercicios.
 -- Generada por docs/FitSense/catalogo_integral/cierre/herramientas/gen_v52.py.
 -- =====================================================================
 
@@ -2330,6 +2330,15 @@ DO $v52$ DECLARE n INT; BEGIN
     RAISE EXCEPTION 'V52: ejercicio 846 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
+-- 854 high knee against wall: instructions_es: norma de texto del cierre: la frase final pedia repeticiones («Repite durante la duración o el número de repeticiones deseado.») y la prescripcion vigente es DURATION, que la R2 (animacion completa) no propuso cambiar; solo se sustituye la frase final
+DO $v52$ DECLARE n INT; BEGIN
+  UPDATE exercises SET instructions_es = 'Ponte de pie frente a una pared con los pies separados a la altura de las caderas. Coloca las manos en la pared para mayor apoyo. Activa el core y levanta la rodilla derecha hacia el pecho, mientras mantienes el pie izquierdo en el suelo. Cambia rápidamente de pierna, llevando la rodilla izquierda hacia el pecho y bajando el pie derecho de nuevo. Continúa alternando las piernas con un movimiento de carrera, llevando las rodillas lo más alto posible. Mantén un ritmo rápido y la parte superior del cuerpo estable durante todo el ejercicio. Mantén la duración indicada.', instruction_steps_es = '["Ponte de pie frente a una pared con los pies separados a la altura de las caderas.", "Coloca las manos en la pared para mayor apoyo.", "Activa el core y levanta la rodilla derecha hacia el pecho, mientras mantienes el pie izquierdo en el suelo.", "Cambia rápidamente de pierna, llevando la rodilla izquierda hacia el pecho y bajando el pie derecho de nuevo.", "Continúa alternando las piernas con un movimiento de carrera, llevando las rodillas lo más alto posible.", "Mantén un ritmo rápido y la parte superior del cuerpo estable durante todo el ejercicio.", "Mantén la duración indicada."]'::jsonb
+   WHERE exercise_id = 854 AND name_en = 'high knee against wall' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'a83442945b525b4498fd7502107435ff';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 854 AND name_en = 'high knee against wall' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'e3c40cfce1442e6f7dbb1755a11cb4f7') THEN
+    RAISE EXCEPTION 'V52: ejercicio 854 no esta en el estado anterior esperado';
+  END IF;
+END $v52$;
 -- 855 full planche push-up: instructions_es: R2 L05 (ALTA): El texto empieza en flexión con los pies en el suelo y los levanta al bajar; el GIF muestra los pies sin apoyo durante todo el ejercicio / V3 V05 ACEPTAR: f1-f12 los pies nunca apoyan; f1 brazos extendidos, f7 codos flexionados con el pecho cerca del suelo; el texto actual empieza con los pies en el suelo y los le
 DO $v52$ DECLARE n INT; BEGIN
   UPDATE exercises SET instructions_es = 'Colócate con las manos en el suelo y los brazos extendidos, inclina el tronco hacia delante y sostén el cuerpo horizontal sin apoyar los pies. Mantén el cuerpo recto desde la cabeza hasta los talones y el abdomen firme. Flexiona los codos y baja el cuerpo hasta que el pecho quede cerca del suelo. Empuja con las manos hasta extender los brazos sin dejar caer las piernas. Repite el número de repeticiones indicado.', instruction_steps_es = '["Colócate con las manos en el suelo y los brazos extendidos, inclina el tronco hacia delante y sostén el cuerpo horizontal sin apoyar los pies.", "Mantén el cuerpo recto desde la cabeza hasta los talones y el abdomen firme.", "Flexiona los codos y baja el cuerpo hasta que el pecho quede cerca del suelo.", "Empuja con las manos hasta extender los brazos sin dejar caer las piernas.", "Repite el número de repeticiones indicado."]'::jsonb
@@ -2598,6 +2607,15 @@ DO $v52$ DECLARE n INT; BEGIN
   GET DIAGNOSTICS n = ROW_COUNT;
   IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 896 AND name_en = 'incline push-up' AND requires_floor = TRUE) THEN
     RAISE EXCEPTION 'V52: ejercicio 896 no esta en el estado anterior esperado';
+  END IF;
+END $v52$;
+-- 900 isometric chest squeeze: instructions_es: norma de texto del cierre: la frase final pedia repeticiones («Repite el número de repeticiones deseado.») y la prescripcion vigente es DURATION, que la R2 (animacion completa) no propuso cambiar; solo se sustituye la frase final
+DO $v52$ DECLARE n INT; BEGIN
+  UPDATE exercises SET instructions_es = 'Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas. Extiende los brazos rectos frente a ti, paralelos al suelo, con las palmas una frente a la otra. Aprieta los músculos del pecho con la mayor fuerza posible, manteniendo los brazos rectos. Mantén esta posición durante unos segundos, concentrándote en contraer los músculos del pecho. Suelta la contracción y relaja los músculos del pecho. Mantén la duración indicada.', instruction_steps_es = '["Ponte de pie con los pies separados a la altura de los hombros y las rodillas ligeramente flexionadas.", "Extiende los brazos rectos frente a ti, paralelos al suelo, con las palmas una frente a la otra.", "Aprieta los músculos del pecho con la mayor fuerza posible, manteniendo los brazos rectos.", "Mantén esta posición durante unos segundos, concentrándote en contraer los músculos del pecho.", "Suelta la contracción y relaja los músculos del pecho.", "Mantén la duración indicada."]'::jsonb
+   WHERE exercise_id = 900 AND name_en = 'isometric chest squeeze' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'c78dce9edcfadc7108ba6bbecebe8616';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 900 AND name_en = 'isometric chest squeeze' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '40d0e13721f411cd4a6d51e1ad053d2a') THEN
+    RAISE EXCEPTION 'V52: ejercicio 900 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
 -- 901 isometric wipers: movement_pattern: R2 L08 (MEDIA): El movimiento principal es un empuje horizontal con desplazamiento lateral, no una rotación ni flexión lateral del tronco. Se propone dificultad 2 por la carga  / V3 V05 ACEPTAR: f1 cuerpo desplazado sobre un brazo flexionado; f7 desplazado hacia el otro; tronco rígido sin rotación ni flexión lateral: el trabajo es un empuje de brazos en | difficulty_level: R2 L08 (MEDIA): fuerza relativa moderada de empuje / V3 V05 ACEPTAR: f1-f12 vaivén lateral en plancha baja cargando el peso sobre un brazo flexionado: fuerza relativa moderada de empuje, por encima del nivel 1
@@ -2942,6 +2960,15 @@ DO $v52$ DECLARE n INT; BEGIN
     RAISE EXCEPTION 'V52: ejercicio 972 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
+-- 974 l-sit on floor: instructions_es: norma de texto del cierre: la frase final pedia repeticiones («Repite el número de repeticiones deseado.») y la prescripcion vigente es DURATION, que la R2 (animacion completa) no propuso cambiar; solo se sustituye la frase final
+DO $v52$ DECLARE n INT; BEGIN
+  UPDATE exercises SET instructions_es = 'Siéntate en el suelo con las piernas extendidas frente a ti. Coloca las manos en el suelo junto a las caderas, con los dedos apuntando hacia adelante. Activa el core y levanta las piernas del suelo, manteniéndolas rectas. Intenta llevar las piernas paralelas al suelo, formando una ''L'' con el cuerpo. Mantén esta posición durante el mayor tiempo posible. Baja lentamente las piernas de vuelta a la posición inicial. Mantén la duración indicada.', instruction_steps_es = '["Siéntate en el suelo con las piernas extendidas frente a ti.", "Coloca las manos en el suelo junto a las caderas, con los dedos apuntando hacia adelante.", "Activa el core y levanta las piernas del suelo, manteniéndolas rectas.", "Intenta llevar las piernas paralelas al suelo, formando una ''L'' con el cuerpo.", "Mantén esta posición durante el mayor tiempo posible.", "Baja lentamente las piernas de vuelta a la posición inicial.", "Mantén la duración indicada."]'::jsonb
+   WHERE exercise_id = 974 AND name_en = 'l-sit on floor' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'ace7920cbd9be5fac9b12b574523b849';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 974 AND name_en = 'l-sit on floor' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '2b97668e7811c5e9406d3c952f01bc6f') THEN
+    RAISE EXCEPTION 'V52: ejercicio 974 no esta en el estado anterior esperado';
+  END IF;
+END $v52$;
 -- 978 leg up hamstring stretch: instructions_es: R2 L03 (ALTA): El texto incluye una dosis concreta («Mantén el estiramiento durante 20-30 segundos»), que no debe aparecer; el resto coincide con el GIF, que muestra además un / V3 V06 ACEPTAR: f1 boca arriba con la cabeza en el suelo y las manos detrás del muslo; f5-f8 la rodilla se extiende hasta casi la vertical y vuelve a flexionarse en vaivén; el 
 DO $v52$ DECLARE n INT; BEGIN
   UPDATE exercises SET instructions_es = 'Túmbate boca arriba en el suelo con las piernas extendidas. Flexiona una rodilla y sujeta con ambas manos la parte posterior del muslo. Estira la rodilla llevando la pierna hacia la vertical hasta notar el estiramiento detrás del muslo, sin despegar la cabeza del suelo. Puedes flexionar y extender la rodilla suavemente. Alterna los lados. Mantén la duración indicada.', instruction_steps_es = '["Túmbate boca arriba en el suelo con las piernas extendidas.", "Flexiona una rodilla y sujeta con ambas manos la parte posterior del muslo.", "Estira la rodilla llevando la pierna hacia la vertical hasta notar el estiramiento detrás del muslo, sin despegar la cabeza del suelo.", "Puedes flexionar y extender la rodilla suavemente.", "Alterna los lados.", "Mantén la duración indicada."]'::jsonb
@@ -3204,6 +3231,15 @@ DO $v52$ DECLARE n INT; BEGIN
     RAISE EXCEPTION 'V52: ejercicio 1053 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
+-- 1054 mountain climber: instructions_es: norma de texto del cierre: la frase final pedia repeticiones («Repite el número de repeticiones deseado.») y la prescripcion vigente es DURATION, que la R2 (animacion completa) no propuso cambiar; solo se sustituye la frase final
+DO $v52$ DECLARE n INT; BEGIN
+  UPDATE exercises SET instructions_es = 'Comienza en una posición de plancha alta con las manos justo debajo de los hombros y el cuerpo en línea recta. Activa el core y lleva la rodilla derecha hacia el pecho, luego cambia rápidamente y lleva la rodilla izquierda hacia el pecho. Continúa alternando las piernas con un movimiento de carrera, manteniendo las caderas bajas y el core activado. Mantén un ritmo constante y respira de forma regular durante todo el ejercicio. Mantén la duración indicada.', instruction_steps_es = '["Comienza en una posición de plancha alta con las manos justo debajo de los hombros y el cuerpo en línea recta.", "Activa el core y lleva la rodilla derecha hacia el pecho, luego cambia rápidamente y lleva la rodilla izquierda hacia el pecho.", "Continúa alternando las piernas con un movimiento de carrera, manteniendo las caderas bajas y el core activado.", "Mantén un ritmo constante y respira de forma regular durante todo el ejercicio.", "Mantén la duración indicada."]'::jsonb
+   WHERE exercise_id = 1054 AND name_en = 'mountain climber' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'c5f11e4ceb02256fa8d99107e1f3f08b';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1054 AND name_en = 'mountain climber' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '54da0dd0397d5f1fb041c5741007d85a') THEN
+    RAISE EXCEPTION 'V52: ejercicio 1054 no esta en el estado anterior esperado';
+  END IF;
+END $v52$;
 -- 1056 one leg donkey calf raise: instructions_es: R2 L20 (ALTA): El texto dice apoyar las manos en una pared o una barra, sin mencionar la inclinación del tronco; el GIF muestra el tronco casi horizontal con las manos en un b / V3 W06 ACEPTAR: f1 y f7 tronco inclinado hacia delante con las manos apoyadas en un banco plano y brazos extendidos, una rodilla flexionada con el pie atrás en el aire; f7 taló
 DO $v52$ DECLARE n INT; BEGIN
   UPDATE exercises SET instructions_es = 'Colócate de pie frente a un banco plano, inclina el tronco hacia delante y apoya las manos sobre él con los brazos extendidos. Levanta una pierna del suelo flexionando la rodilla hacia atrás. Eleva el talón de la pierna de apoyo lo más alto posible. Haz una pausa arriba y baja el talón despacio. Completa las repeticiones y cambia de pierna. Repite el número de repeticiones indicado.', instruction_steps_es = '["Colócate de pie frente a un banco plano, inclina el tronco hacia delante y apoya las manos sobre él con los brazos extendidos.", "Levanta una pierna del suelo flexionando la rodilla hacia atrás.", "Eleva el talón de la pierna de apoyo lo más alto posible.", "Haz una pausa arriba y baja el talón despacio.", "Completa las repeticiones y cambia de pierna.", "Repite el número de repeticiones indicado."]'::jsonb
@@ -3355,15 +3391,6 @@ DO $v52$ DECLARE n INT; BEGIN
   GET DIAGNOSTICS n = ROW_COUNT;
   IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1111 AND name_en = 'outside leg kick push-up' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'a04dc7ff086130bda4a8e0db5aa593ca' AND difficulty_level = 2) THEN
     RAISE EXCEPTION 'V52: ejercicio 1111 no esta en el estado anterior esperado';
-  END IF;
-END $v52$;
--- 1113 pike-to-cobra push-up: difficulty_level: R2 L15 (MEDIA): fuerza relativa moderada de empuje; movilidad de hombros y columna / V3 W06 ACEPTAR: f1 V invertida, f13 plancha baja con codos flexionados y pecho cerca del suelo, f19 cobra con brazos extendidos: incluye empujar el peso corporal desde la posic
-DO $v52$ DECLARE n INT; BEGIN
-  UPDATE exercises SET difficulty_level = 2
-   WHERE exercise_id = 1113 AND name_en = 'pike-to-cobra push-up' AND difficulty_level = 1;
-  GET DIAGNOSTICS n = ROW_COUNT;
-  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1113 AND name_en = 'pike-to-cobra push-up' AND difficulty_level = 2) THEN
-    RAISE EXCEPTION 'V52: ejercicio 1113 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
 -- 1115 push-up inside leg kick: instructions_es: R2 L17 (MEDIA): El texto indica levantar la pierna recta al empujar hacia arriba; en el GIF la pierna se despega mientras baja, está elevada en la posición baja con la rodilla  / V3 W06 ACEPTAR: f1 plancha alta con brazos extendidos y pies juntos; f7 posición baja con una pierna despegada y elevada hacia el lado con la rodilla flexionada; f12 vuelve arr | difficulty_level: R2 L17 (MEDIA): fuerza relativa moderada; apoyo sobre una pierna / V3 W06 ACEPTAR: f7 flexión en posición baja con apoyo en las dos manos y un solo pie: fuerza relativa moderada y estabilidad del tronco con tres apoyos; no es asequible para un
@@ -3535,6 +3562,15 @@ DO $v52$ DECLARE n INT; BEGIN
   GET DIAGNOSTICS n = ROW_COUNT;
   IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1175 AND name_en = 'short stride run' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'e46ff80251451c317971c9620c94b01a') THEN
     RAISE EXCEPTION 'V52: ejercicio 1175 no esta en el estado anterior esperado';
+  END IF;
+END $v52$;
+-- 1176 skater hops: instructions_es: norma de texto del cierre: la frase final pedia repeticiones («Repite el número de repeticiones deseado.») y la prescripcion vigente es DURATION, que la R2 (animacion completa) no propuso cambiar; solo se sustituye la frase final
+DO $v52$ DECLARE n INT; BEGIN
+  UPDATE exercises SET instructions_es = 'Ponte de pie con los pies separados a la altura de los hombros. Dobla ligeramente las rodillas y salta hacia la derecha, aterrizando sobre el pie derecho. Al aterrizar, balancea la pierna izquierda detrás de la pierna derecha y toca el suelo con los dedos del pie izquierdo. Salta inmediatamente hacia la izquierda, aterrizando sobre el pie izquierdo. Al aterrizar, balancea la pierna derecha detrás de la pierna izquierda y toca el suelo con los dedos del pie derecho. Continúa alternando los lados, saltando y tocando el suelo con cada pierna. Mantén la duración indicada.', instruction_steps_es = '["Ponte de pie con los pies separados a la altura de los hombros.", "Dobla ligeramente las rodillas y salta hacia la derecha, aterrizando sobre el pie derecho.", "Al aterrizar, balancea la pierna izquierda detrás de la pierna derecha y toca el suelo con los dedos del pie izquierdo.", "Salta inmediatamente hacia la izquierda, aterrizando sobre el pie izquierdo.", "Al aterrizar, balancea la pierna derecha detrás de la pierna izquierda y toca el suelo con los dedos del pie derecho.", "Continúa alternando los lados, saltando y tocando el suelo con cada pierna.", "Mantén la duración indicada."]'::jsonb
+   WHERE exercise_id = 1176 AND name_en = 'skater hops' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = 'b77bf73883311c5effaa096fd4b36a5b';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1176 AND name_en = 'skater hops' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '1201673edb71bf57cb814c9b43dfd268') THEN
+    RAISE EXCEPTION 'V52: ejercicio 1176 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
 -- 1178 side wrist pull stretch: instructions_es: R2 L04 (MEDIA): El texto pide extender el brazo hacia el lado; en el GIF el brazo se extiende al frente, por delante del cuerpo, sujetado por la otra mano / V3 V08 ACEPTAR: f5-f9 el brazo se mantiene extendido al frente y cruzado por delante del pecho a la altura del hombro, sujeto por la otra mano; f1 y f12 mismo agarre más bajo; 
@@ -3761,6 +3797,15 @@ DO $v52$ DECLARE n INT; BEGIN
   GET DIAGNOSTICS n = ROW_COUNT;
   IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1281 AND name_en = 'smith standing behind head military press' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '80d1071a3113783f8045aab4335fb95e') THEN
     RAISE EXCEPTION 'V52: ejercicio 1281 no esta en el estado anterior esperado';
+  END IF;
+END $v52$;
+-- 1293 star jump (male): instructions_es: norma de texto del cierre: la frase final pedia repeticiones («Repite el número de repeticiones deseado.») y la prescripcion vigente es DURATION, que la R2 (animacion completa) no propuso cambiar; solo se sustituye la frase final
+DO $v52$ DECLARE n INT; BEGIN
+  UPDATE exercises SET instructions_es = 'Ponte de pie con los pies separados a la altura de los hombros y los brazos a los costados. Flexiona ligeramente las rodillas y salta hacia arriba de forma explosiva. Mientras saltas, separa las piernas y extiende los brazos hacia los lados, formando una figura de estrella con tu cuerpo. Aterriza suavemente sobre la punta de los pies con las rodillas ligeramente flexionadas. Mantén la duración indicada.', instruction_steps_es = '["Ponte de pie con los pies separados a la altura de los hombros y los brazos a los costados.", "Flexiona ligeramente las rodillas y salta hacia arriba de forma explosiva.", "Mientras saltas, separa las piernas y extiende los brazos hacia los lados, formando una figura de estrella con tu cuerpo.", "Aterriza suavemente sobre la punta de los pies con las rodillas ligeramente flexionadas.", "Mantén la duración indicada."]'::jsonb
+   WHERE exercise_id = 1293 AND name_en = 'star jump (male)' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '1d17d753f6ea859b177485f878ee2eb3';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1293 AND name_en = 'star jump (male)' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '5f871a5657f489a73ae0c4bb8212e298') THEN
+    RAISE EXCEPTION 'V52: ejercicio 1293 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
 -- 1295 walking high knees lunge: impact_level: R2 L02 (ALTA): pies=ALTERNOS_SIN_VUELO; De pie, eleva una rodilla a la altura de la cadera y da un paso adelante bajando a una zancada con la rodilla trasera cerca del suelo;  / V3 X01 ACEPTAR: f1 y f13 apoyo sobre una pierna con la otra rodilla elevada a la altura de la cadera; f7 y f19 zancada con ambos pies en el suelo y rodilla trasera cerca del su / coordinador: zancada caminando con rodilla alta: siempre un pie en el suelo (R2 y V3 ALTA)

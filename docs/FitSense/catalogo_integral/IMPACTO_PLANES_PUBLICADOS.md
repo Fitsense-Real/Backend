@@ -13,8 +13,8 @@ Las migraciones **no tocan** `planned_workout_exercises`. El efecto llega al lee
 |---|---|
 | Bandera añadida (OH 14, AX 11, INV 4, FL 2, KN 1) | Si el perfil declara esa restricción, el ejercicio pasa a ser causa de seguridad: la sesión queda **bloqueada** y no se puede iniciar. Es lo correcto: el plan pedía algo que el perfil no admite |
 | V53 (apoyo suspendido, 16 ejercicios) | Con «no colgarse», nueva causa `apoyo_suspendido`. En el plan 78, el 1303 lleva ahora `INC-CAT-C39+apoyo_suspendido`, la misma sesión bloqueada con dos motivos |
-| Bandera quitada (30) | Puede **desbloquear** una sesión que solo estaba bloqueada por esa bandera |
-| Dificultad subida (64) | **No bloquea** ninguna sesión: la dificultad no es causa de seguridad. Pero la **reparación** revalida la semana entera y rechaza el plan si contiene un ejercicio por encima del nivel |
+| Bandera quitada (29: OH 12, KN 5, HI 5, AX 3, INV 2, FL 2) | Puede **desbloquear** una sesión que solo estaba bloqueada por esa bandera |
+| Dificultad subida (63) | **No bloquea** ninguna sesión: la dificultad no es causa de seguridad. Pero la **reparación** revalida la semana entera y rechaza el plan si contiene un ejercicio por encima del nivel |
 | Textos, nombre, patrón, prescripción | Se muestra el texto nuevo. No cambia la dosis publicada |
 
 ## 2. Plan 78 (usuario 39)

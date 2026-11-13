@@ -10,7 +10,7 @@ Entraron los **1.219 activos**, sin excepción. Ya no se distingue entre VERIFIC
 | Hojas | Script | Todos los fotogramas del GIF original más la imagen fija, por ejercicio (`hojas_completas.py`). Normalmente 12 fotogramas; algunos tienen 18, 24 o 36 | 1.219 hojas |
 | R2: segunda revisión | 20 revisores independientes (IA), lotes intercalados L01–L20 | Cada atributo final contra la animación completa, con el protocolo `cierre/PROTOCOLO_REVISION_2.md`. Sin acceso a revisiones anteriores | 1.219 filas de 33 columnas |
 | V3: verificación | 18 verificadores independientes (IA): lotes V01–V09, W01–W07, X01 y Y01 | Cada propuesta de R2 contra el GIF (`cierre/PROTOCOLO_VERIFICACION_3.md`). Decisiones: ACEPTAR, RECHAZAR, MEJORAR o NO_DECIDIBLE | 717 propuestas |
-| Adjudicación | Coordinador (IA) | Reglas de `VALIDACION_SEGURIDAD.md` §1. Las retiradas de seguridad se deciden una a una, y el coordinador revisó personalmente los GIF de 503, 853 y 1093 | 556 cambios en 437 ejercicios; 16 en V53 |
+| Adjudicación | Coordinador (IA) | Reglas de `VALIDACION_SEGURIDAD.md` §1. Las retiradas de seguridad se deciden una a una, y el coordinador revisó personalmente los GIF de 503, 853 y 1093 | 561 cambios en 442 ejercicios; 16 en V53 |
 
 ## 2. Resultados de la R2
 
@@ -47,21 +47,21 @@ Sobre 717 propuestas, todas menos DIFICULTAD_BAJAR, que nunca se aplica:
 
 | Resultado | Filas |
 |---|---|
-| APLICADO en V52 | 556 |
+| APLICADO en V52 | 555 de propuestas, más 6 por la norma de texto (`FRASE_FINAL`) |
 | V53 (apoyo suspendido sobre un aparato) | 24 propuestas → 16 ejercicios marcados; 8 de suelo documentados |
 | DOCUMENTADO (máquina asistida) | 8 |
-| NO_APLICADO (V3 rechaza, coordinador veta, criterio V50 o contrato vigente) | 94 |
+| NO_APLICADO (V3 rechaza, coordinador veta, criterio V50, contrato vigente o decisión previa) | 97 |
 | PROFESIONAL (bloqueo, ver `REVISION_PROFESIONAL.md`) | 281 |
 
 ## 5. Hallazgos que no formaban parte de ninguna propuesta
 
-Los verificadores anotaron contradicciones que la R2 no había propuesto corregir. **No se aplicó ninguna**, porque no tienen R2 ni V3. Quedan para la siguiente ronda de revisión:
+Los verificadores anotaron contradicciones que la R2 no había propuesto corregir. **No se aplicó ninguna por esta vía**, porque no tienen R2 ni V3. Siguen elegibles y son contradicciones materiales abiertas, salvo 1084, que ya resolvió V52 por otra propuesta, y 1303, que está contenido. Quedan para la siguiente ronda de revisión:
 
 | Id | Hallazgo |
 |---|---|
 | 231 | El GIF es un press de banca cerrado, no un press desde pull-over; el patrón sería HORIZONTAL_PUSH |
 | 620 | El GIF es una extensión de hombro con el brazo recto, no una elevación lateral |
-| 1084 | El nombre dice «y carrera» y el GIF no muestra ninguna carrera |
+| 1084 | El nombre decía «y carrera» y el GIF no muestra ninguna carrera. **Resuelto por V52**: la R2 propuso el nombre por su cuenta y V52 aplica «Lanzamiento de pecho con balón medicinal» |
 | 1182 | El equipo «plyo box» probablemente sobra: los pies están en el suelo |
 | 1303 | Las instrucciones dicen «silla romana» y el aparato es una silla de capitán |
 | 1323 | Las instrucciones mencionan unos rodillos que no aparecen en el GIF |
