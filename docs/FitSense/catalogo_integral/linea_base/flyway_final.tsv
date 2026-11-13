@@ -1,0 +1,53 @@
+version	description	checksum	success
+1	users and profiles	-678966405	true
+2	catalog	651578135	true
+3	catalog data	1680758998	true
+4	planning	-1152190055	true
+5	execution	929158503	true
+6	metrics and config	204928614	true
+7	config data	1980706201	true
+8	catalog seed minimal	-1271547332	true
+9	catalog full	1152946875	true
+10	exercise safety flags	-1904518747	true
+11	catalog translations and activation	-1518291972	true
+12	prescription ranges	1708888069	true
+13	study design	1743904853	true
+14	duration estimation	-1546661447	true
+15	progression limits	1533528815	true
+16	retroactive report limit	-2051754892	true
+17	volume components	-218904124	true
+18	prescription principles	20200680	true
+19	rebuild config from mvp14	1554409127	true
+20	prescription coherence	1768651817	true
+21	catalog difficulty sync neon	1711657821	true
+22	equipment types for missing implements	362149561	true
+23	exercise equipment requirements	-1944369015	true
+24	catalog review fixes	294325208	true
+25	movement flags	2056790089	true
+26	movement pattern	1227099085	true
+27	exercise difficulty review	-194571502	true
+28	approve lower hip difficulty	1697904350	true
+29	exercise equipment requirements fixes	1120156040	true
+30	registration coverage	-1909631081	true
+31	workout derivation	771469784	true
+32	adaptation evidence	144068871	true
+33	aplicada exige sesiones	-203171488	true
+34	progresion de sesiones	1002673606	true
+35	user roles	-960399539	true
+36	catalog review gif corrections	-51841380	true
+37	catalog safety corrections	947077141	true
+38	catalog classification equipment	2029678383	true
+39	catalog functional equipment	-1189624467	true
+40	catalog c4 c6	1416139223	true
+41	catalog c4 c6 fase2	-1448470956	true
+42	adaptation lack of time context	1124753346	true
+43	pain memory and safe regeneration	1353889575	true
+44	planning policy version	-1030707221	true
+44.1	adaptation reason codes	1932191075	true
+44.2	password reset tokens	285867526	true
+44.3	planning policy rediseno	715117576	true
+46	catalogo traducciones objetivas	788686407	true
+47	catalogo integral banderas seguridad	1413171677	true
+48	catalogo integral dificultad conservadora	2099270468	true
+49	catalogo integral textos	-990868514	true
+50	catalogo integral clasificacion equipamiento	1632526631	true
