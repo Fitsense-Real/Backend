@@ -26,6 +26,20 @@ PATRONES = set('KNEE_DOMINANT HIP_HINGE HIP_EXTENSION HIP_ABDUCTION_ADDUCTION AN
 def q(s): return "'" + s.replace("'", "''") + "'"
 def b(s): return {'t': 'TRUE', 'f': 'FALSE'}[s]
 def md5n(s): return hashlib.md5(re.sub(r'[\t\r\n]+', ' ', s).encode('utf-8')).hexdigest()
+FIN = {'SETS_REPS': 'Repite el número de repeticiones indicado.', 'DURATION': 'Mantén la duración indicada.'}
+def pasos_norm(texto):
+    pasos = []
+    for p in [x.strip() for x in texto.split('||') if x.strip()]:
+        p = p if p.endswith(('.', '!', '?')) else p + '.'
+        for corte in ('Alterna los lados. ', 'Completa las repeticiones y cambia de lado. '):
+            if p.startswith(corte) and len(p) > len(corte): pasos.append(corte.strip()); p = p[len(corte):]
+        for f in FIN.values():
+            if p.endswith(f) and len(p) > len(f):
+                cab = p[:-len(f)].strip()
+                pasos.append(cab[0].upper() + cab[1:]); p = f
+        pasos.append(p[0].upper() + p[1:])
+    return pasos
+problemas = []
 def norm_req(s): return ','.join(sorted(x.strip() for x in s.split(',') if x.strip()))
 por_id = collections.OrderedDict()
 for d in sorted(D, key=lambda d: int(d['id'])):
@@ -45,8 +59,10 @@ for i, ds in por_id.items():
             sets.append(f"name_es = {q(despues)}"); guards.append(f"name_es = {q(antes)}"); nuevos.append(f"name_es = {q(despues)}")
         elif a == 'instructions_es':
             assert antes == c['instr_es'], (i, a)
-            pasos = [p.strip() for p in despues.split('||') if p.strip()]
-            assert 3 <= len(pasos) <= 7 and pasos[-1].startswith(('Repite el número', 'Mantén la duración')), (i, pasos)
+            pasos = pasos_norm(despues)
+            presc = next((x['despues'] for x in ds if x['atributo'] == 'default_prescription'), c['presc'])
+            if not (3 <= len(pasos) <= 8) or not pasos[-1].startswith(FIN[presc][:18]):
+                problemas.append((i, presc, pasos[-1] if pasos else '')); continue
             texto = ' '.join(pasos)
             sets.append(f"instructions_es = {q(texto)}, instruction_steps_es = {q(json.dumps(pasos, ensure_ascii=False))}::jsonb")
             guards.append(f"md5(regexp_replace(instructions_es, '[\\t\\r\\n]+', ' ', 'g')) = '{md5n(antes)}'")
@@ -119,3 +135,4 @@ cab = f"""-- ===================================================================
 """
 open(out, 'w', encoding='utf-8').write(cab + '\n' + '\n'.join(sql) + '\n')
 print(len(por_id), 'ejercicios', dict(cuenta))
+for x in problemas: print('PROBLEMA', *x)

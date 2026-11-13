@@ -55,12 +55,28 @@ class CatalogoAtributosExplicitosIT {
     @Autowired UserProfileCommandService perfiles;
 
     /**
-     * Correcciones revisadas contra el GIF posteriores a V51 (id -> impacto final). Cada una cita su migracion y su
-     * evidencia en docs/FitSense/catalogo_integral/cierre/CORRECCIONES_DEFINITIVAS.md. Fuera de esta lista, el valor
-     * explicito debe coincidir con la regla anterior: cualquier otra diferencia es un cambio no documentado.
+     * Correcciones revisadas contra el GIF posteriores a V51 (V52, cierre del catalogo): cada una tiene segunda revision,
+     * verificacion independiente y, si relaja una restriccion, adjudicacion del coordinador. Evidencia en
+     * docs/FitSense/catalogo_integral/cierre/adjudicacion/decisiones_v52.tsv y CORRECCIONES_DEFINITIVAS.md. Fuera de esta
+     * lista, el valor explicito debe coincidir con el que V51 congelo: cualquier otra diferencia es un cambio no documentado.
      */
-    static final Map<Long, String> IMPACTO_CORREGIDO = Map.of();
-    static final Map<Long, Boolean> ESTIRAMIENTO_CORREGIDO = Map.of();
+    static final Map<Long, String> IMPACTO_CORREGIDO = Map.ofEntries(
+            Map.entry(262L, "BAJO"), Map.entry(267L, "BAJO"), Map.entry(675L, "BAJO"), Map.entry(952L, "BAJO"),
+            Map.entry(1069L, "BAJO"), Map.entry(1083L, "ALTO"), Map.entry(1117L, "MODERADO"), Map.entry(1295L, "BAJO"),
+            Map.entry(1333L, "ALTO"));
+    static final Map<Long, Boolean> ESTIRAMIENTO_CORREGIDO = Map.of(
+            312L, true, 455L, false, 773L, false, 1192L, true, 1194L, true);
+
+    /** Valores que V51 congelo (id -> [impacto, estiramiento]), leidos de la propia migracion. */
+    static Map<Long, String[]> congeladosV51() throws Exception {
+        var res = new org.springframework.core.io.ClassPathResource(
+                "db/migration/V51__catalogo_impacto_y_estiramiento_explicitos.sql");
+        String sql = new String(res.getInputStream().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        var m = java.util.regex.Pattern.compile("(?m)^\\((\\d+), '(\\w+)', (TRUE|FALSE)\\)").matcher(sql);
+        var r = new java.util.HashMap<Long, String[]>();
+        while (m.find()) r.put(Long.parseLong(m.group(1)), new String[]{m.group(2), m.group(3)});
+        return r;
+    }
 
     @Test
     @DisplayName("todo ejercicio activo tiene impacto y estiramiento explicitos")
@@ -72,20 +88,24 @@ class CatalogoAtributosExplicitosIT {
     }
 
     @Test
-    @DisplayName("paridad con la regla anterior, salvo correcciones revisadas y documentadas")
-    void paridadConLaReglaAnterior() {
+    @DisplayName("V51 reproduce la regla por nombre sobre el catalogo V50 (1376 filas)")
+    void v51ReproduceLaRegla() throws Exception {
+        assertEquals(1376, congeladosV51().size());
+    }
+
+    @Test
+    @DisplayName("paridad con lo congelado en V51, salvo correcciones revisadas y documentadas")
+    void paridadConV51() throws Exception {
+        var v51 = congeladosV51();
         var difImpacto = new TreeMap<Long, String>();
         var difEstiramiento = new TreeMap<Long, String>();
-        jdbc.query("SELECT exercise_id, name_es, high_impact, impact_level, is_stretch FROM exercises WHERE is_active", rs -> {
+        jdbc.query("SELECT exercise_id, name_es, impact_level, is_stretch FROM exercises WHERE is_active", rs -> {
             long id = rs.getLong(1);
-            String nombre = rs.getString(2);
-            var anterior = ImpactoPolicy.derivadoDelNombre(nombre, rs.getBoolean(3)).name();
-            String explicito = rs.getString(4);
-            String esperado = IMPACTO_CORREGIDO.getOrDefault(id, anterior);
-            if (!esperado.equals(explicito)) difImpacto.put(id, nombre + ": regla=" + anterior + " dato=" + explicito);
-            boolean estAnterior = CatalogEligibilityPolicy.estiramientoPorNombre(nombre);
-            boolean estEsperado = ESTIRAMIENTO_CORREGIDO.getOrDefault(id, estAnterior);
-            if (estEsperado != rs.getBoolean(5)) difEstiramiento.put(id, nombre + ": regla=" + estAnterior + " dato=" + rs.getBoolean(5));
+            String[] previo = v51.get(id);
+            String esperado = IMPACTO_CORREGIDO.getOrDefault(id, previo[0]);
+            if (!esperado.equals(rs.getString(3))) difImpacto.put(id, rs.getString(2) + ": esperado=" + esperado + " dato=" + rs.getString(3));
+            boolean estEsperado = ESTIRAMIENTO_CORREGIDO.getOrDefault(id, Boolean.parseBoolean(previo[1].toLowerCase()));
+            if (estEsperado != rs.getBoolean(4)) difEstiramiento.put(id, rs.getString(2) + ": esperado=" + estEsperado + " dato=" + rs.getBoolean(4));
         });
         assertTrue(difImpacto.isEmpty(), "impacto sin documentar: " + difImpacto);
         assertTrue(difEstiramiento.isEmpty(), "estiramiento sin documentar: " + difEstiramiento);
