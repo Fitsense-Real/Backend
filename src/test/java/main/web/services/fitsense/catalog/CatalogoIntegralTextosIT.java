@@ -138,6 +138,18 @@ class CatalogoIntegralTextosIT {
         }
     }
 
+    @Test
+    @DisplayName("se conservan las advertencias de seguridad e indicaciones tecnicas del texto anterior")
+    void advertenciasConservadas() {
+        var esperadas = java.util.Map.of(
+                308L, "Antes de cargar tu peso, comprueba que la espaldera está bien fijada a la pared",
+                1072L, "Comprueba que el anclaje aguanta antes de cargar tu peso",
+                144L, "rodillas alineadas", 1004L, "sin redondear los hombros", 827L, "detente al notar el estiramiento");
+        esperadas.forEach((id, frase) -> assertTrue(jdbc.queryForObject(
+                "SELECT instructions_es FROM exercises WHERE exercise_id = ?", String.class, id).contains(frase),
+                id + " perdio: " + frase));
+    }
+
     static Object campo(String nombre) throws Exception {
         var f = ImpactoPolicy.class.getDeclaredField(nombre);
         f.setAccessible(true);
