@@ -704,7 +704,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 772	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell	-	BAJO	false	false	---	e0ae764d807a
 773	chest	pectorals	MOBILITY	1	DURATION	false	-	-	BAJO	false	false	--E	dcbca3727964
 774	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	BAJO	false	false	---	1bd2452e2f47
-775	back	upper back	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	FL	BAJO	false	false	---	43ac4645f43b
+775	back	upper back	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	BAJO	false	false	---	43ac4645f43b
 777	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:parallel bars	-	BAJO	false	true	---	a5a352e066d7
 778	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	BAJO	false	false	---	6aeb43b731ac
 779	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	BAJO	false	false	---	472cb050bd7c
@@ -782,7 +782,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 851	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:ez barbell,2:bench	-	BAJO	false	false	---	d099b96e2869
 852	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	BAJO	false	false	---	327ef58aeb27
 853	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	BAJO	false	false	---	8d47cacf1192
-854	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	MODERADO	false	false	M--	7fa2aed72c3e
+854	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	MODERADO	false	false	M--	7fa2aed72c3e
 855	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	FL	BAJO	false	false	---	ceea6e804e85
 856	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	BAJO	false	false	---	8912c1452e0b
 857	waist	abs	CORE_STABILITY	3	DURATION	false	-	FL INV	BAJO	false	false	---	0a35a3bbe298
@@ -939,7 +939,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1014	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	BAJO	false	false	---	ce62b776378d
 1015	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	BAJO	false	false	---	bb6de74e6b9b
 1016	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	BAJO	false	false	---	e9faf0bb7dfe
-1017	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	true	1:leverage machine	-	BAJO	false	false	---	ee6282f89a66
+1017	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	true	1:leverage machine	-	BAJO	false	false	---	e0d59087c9dc
 1018	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	AX	BAJO	false	false	---	f3570ef0b00a
 1019	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:barbell,2:landmine	AX OH	BAJO	false	false	---	9755e5e4e8d3
 1020	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:leverage machine	-	BAJO	false	false	---	f31341f74172

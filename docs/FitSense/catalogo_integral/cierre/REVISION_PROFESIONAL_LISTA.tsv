@@ -1,0 +1,311 @@
+id	nombre_V50	categoria	decision_pendiente	evidencia
+868	Pike colgado	BANDERA_ANADIR	identidad o evidencia no decidible con el GIF	f7 piernas verticales con los pies por encima de la barra; la cadera queda a la altura aproximada de los hombros (aprox. un brazo por debajo de la barra) y la cabeza queda oculta tras el cuerpo: no se puede afirmar que esté claramente por debajo de la cadera
+1177	Paso de esquí	BANDERA_QUITAR	identidad o evidencia no decidible con el GIF	f1 y f13 tijera adelante-atrás opuesta; f7 y f19 pies juntos en el centro: los dos pies cambian de posición a la vez, compatible con un salto en tijera, pero ningún fotograma muestra vuelo por el fundido. El GIF no demuestra que nunca haya salto: se mantiene HI hasta revisión humana
+813	Bandera	CONTENCION INC-4C-03	criterio de salida cumplido (dificultad 3, requisitos, unidad y texto verificados): propuesta de liberacion	no se libera sin aprobacion
+858	Palanca frontal	CONTENCION INC-4C-03	criterio de salida cumplido (dificultad 3, requisitos, unidad y texto verificados): propuesta de liberacion	no se libera sin aprobacion
+861	Plancha completa	CONTENCION INC-4C-03	criterio de salida cumplido (dificultad 3, requisitos, unidad y texto verificados): propuesta de liberacion	no se libera sin aprobacion
+873	Remo en palanca frontal	CONTENCION INC-4C-03	criterio de salida cumplido (dificultad 3, requisitos, unidad y texto verificados): propuesta de liberacion	no se libera sin aprobacion
+885	Parada de manos	CONTENCION INC-4C-03	criterio de salida cumplido (dificultad 3, requisitos, unidad y texto verificados): propuesta de liberacion	no se libera sin aprobacion
+1192	Skin the cat	CONTENCION INC-4C-03	identidad AMBIGUA: se mantiene retenido	R2 y V3: identidad no confirmable con el GIF
+1298	Maltés en apertura	CONTENCION INC-4C-03	identidad AMBIGUA: se mantiene retenido	R2 y V3: identidad no confirmable con el GIF
+131	Curl de bíceps a una mano con banda y brazo a la altura del hombro	CONTENCION INC-CAT-C39	brazos sobre la cabeza en el limite de la definicion	R2 ALTA: brazos a la altura de los hombros; la contencion sigue hasta decision profesional
+400	Curl por encima de la cabeza en cable	CONTENCION INC-CAT-C39	brazos sobre la cabeza en el limite de la definicion	R2 ALTA: brazos a la altura de los hombros; la contencion sigue hasta decision profesional
+448	Curl por encima de la cabeza sentado en cable	CONTENCION INC-CAT-C39	brazos sobre la cabeza en el limite de la definicion	R2 ALTA: brazos a la altura de los hombros; la contencion sigue hasta decision profesional
+1153	Fondos en anillas	DEC-APOYO-SUSPENDIDO (V53)	excluir el apoyo suspendido con «no colgarse»	V53 marca el dato; la contencion C39 se mantiene hasta aprobar el significado
+1301	Crunch invertido suspendido	DEC-APOYO-SUSPENDIDO (V53)	excluir el apoyo suspendido con «no colgarse»	V53 marca el dato; la contencion C39 se mantiene hasta aprobar el significado
+1303	Elevación de piernas torsionada	DEC-APOYO-SUSPENDIDO (V53)	excluir el apoyo suspendido con «no colgarse»	V53 marca el dato; la contencion C39 se mantiene hasta aprobar el significado
+1304	Elevación de piernas torsionada (femenino)	DEC-APOYO-SUSPENDIDO (V53)	excluir el apoyo suspendido con «no colgarse»	V53 marca el dato; la contencion C39 se mantiene hasta aprobar el significado
+1306	Elevación de piernas vertical en paralelas	DEC-APOYO-SUSPENDIDO (V53)	excluir el apoyo suspendido con «no colgarse»	V53 marca el dato; la contencion C39 se mantiene hasta aprobar el significado
+1134	Correr con equipamiento	DEC-HI-CARRERA	BANDERA_QUITAR HI: no aplicado	DEC-HI-CARRERA: 1133 y 1175 (carrera) conservan HI; sin criterio comun aprobado no se relaja una sola
+1084	Press de pecho con balón medicinal y carrera	DEC-HI-LANZAMIENTOS	BANDERA_QUITAR HI: no aplicado	DEC-HI-LANZAMIENTOS: si el lanzamiento balistico con balon medicinal cuenta como pliometria es un criterio sin fijar; se mantiene HI
+1085	Golpe con balón medicinal a una mano	DEC-HI-LANZAMIENTOS	BANDERA_QUITAR HI: no aplicado	DEC-HI-LANZAMIENTOS: si el lanzamiento balistico con balon medicinal cuenta como pliometria es un criterio sin fijar; se mantiene HI
+1087	Golpe vertical con balón medicinal	DEC-HI-LANZAMIENTOS	BANDERA_QUITAR HI: no aplicado	DEC-HI-LANZAMIENTOS: si el lanzamiento balistico con balon medicinal cuenta como pliometria es un criterio sin fijar; se mantiene HI
+171	Press en declinado con agarre cerrado	DEC-INV-DECLINADO	BANDERA_QUITAR INV: no aplicado	DEC-INV-DECLINADO: el catalogo trata el banco declinado de forma desigual; unificar el criterio es un cambio de significado de «sin inversion» que requiere decision profesional. Se mantiene INV
+377	Aperturas de pecho a una mano en declinado con polea	DEC-INV-DECLINADO	BANDERA_QUITAR INV: no aplicado	DEC-INV-DECLINADO: el catalogo trata el banco declinado de forma desigual; unificar el criterio es un cambio de significado de «sin inversion» que requiere decision profesional. Se mantiene INV
+840	Press de cara con agarre cerrado en declinada con barra EZ	DEC-INV-DECLINADO	BANDERA_QUITAR INV: no aplicado	DEC-INV-DECLINADO: el catalogo trata el banco declinado de forma desigual; unificar el criterio es un cambio de significado de «sin inversion» que requiere decision profesional. Se mantiene INV
+841	Extensión de tríceps en declinado con barra EZ	DEC-INV-DECLINADO	BANDERA_QUITAR INV: no aplicado	DEC-INV-DECLINADO: criterio de banco declinado pendiente de decision profesional; se mantiene INV
+103	Press de pecho con banda y una mano, giro	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+131	Curl de bíceps a una mano con banda y brazo a la altura del hombro	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+149	Elevacion de talones en piso con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+150	Elevación frontal con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+151	Press de banca con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+152	Press de banca declinado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+153	Pullover declinado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+154	Press declinado con agarre ancho	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+155	Elevación frontal y pullover con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+156	Pullover con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+157	Remo con barra inclinado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+158	Pullover con barra en declinado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+159	Pullover declinado con agarre ancho	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+161	Sentadilla en banco con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+166	Sentadilla frontal con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+167	Curl de bíceps alterno con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+168	Curl de bíceps con barra y blaster	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+169	Press de banca con agarre cerrado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+170	Curl con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+171	Press en declinado con agarre cerrado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+172	Curl arrastre con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+173	Curl de antebrazo con barra con palma hacia abajo sobre banco	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+174	Curl de antebrazo con barra con palma hacia arriba sobre banco	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+180	Remo a una mano con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+181	Remo Pendlay con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+182	Sentadilla profunda con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+186	Puente de glúteos con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+187	Puente de glúteos con barra en banco (hombre)	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+188	Buenos días con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+190	Sentadilla con barra alta	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+193	Zancada lateral con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+194	Sentadilla con barra baja	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+195	Zancada con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+196	Hip thrust con barra (espalda apoyada en banco)	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+197	Sentadilla con pies estrechos	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+204	Extensión de tríceps acostado por detrás de la cabeza con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+206	Extensión de tríceps acostado con agarre cerrado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+207	Extensión acostado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+208	Curl predicador acostado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+209	Extensión de tríceps acostado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+210	Extensión de tríceps acostado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+212	Press de clavija con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+213	Curl de muñeca invertido v. 2 con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+214	Curl de muñeca invertido con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+215	Elevación de gemelos sentado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+216	Elevacion de talones sentado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+217	Elevación posterior de hombro con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+218	Remo a hombro posterior con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+228	Flexión lateral con barra v. 2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+230	Pullover con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+231	Press desde pull-over con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+232	Remo con agarre inverso y tronco inclinado con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+234	Encogimiento de hombros con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+235	Rack pull con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+236	Zancada trasera con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+238	Peso muerto rumano con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+241	Sentadilla dividida lateral con barra v. 2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+244	Curl de predicador con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+247	Curl invertido con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+248	Extensión de tríceps acostado con barra agarre invertido	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+249	Curl de predicador invertido con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+256	Curl de muñeca de dorso de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+257	Curl de muñeca con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+258	Curl de muñeca versión 2 con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+259	Elevacion de talones de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+260	Elevación de gemelos de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+261	Elevación de gemelos con balanceo de pierna de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+262	Esquiador con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+265	Elevación frontal por encima de la cabeza de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+268	Remo vertical con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+269	Remo vertical con barra v. 2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+270	Remo vertical con barra v. 3	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+271	Remo vertical con agarre ancho	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+272	Press de banca ancho con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+276	Giro de torso con barra de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+277	Sentadilla rápida con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+278	Sentadilla dividida con barra versión 2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+279	Sentadilla con barra en rodillas	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+282	Buenos días con piernas rígidas	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+283	Peso muerto con piernas rectas con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+287	Curl de agarre cerrado de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+288	Curl de concentración de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+289	Extensión de tríceps por encima de la cabeza de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+290	Curl con agarre inverso de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+291	Curl de bíceps con barra de agarre ancho	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+292	Curl con agarre amplio de pie con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+305	Remo a una mano de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+329	Curl de agarre cerrado en cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+333	Elevación frontal con cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+339	Press a una mano en declinado en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+359	Remo a una mano con cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+362	Curl en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+372	Curl a una mano con cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+373	Flexión de muñeca con agarre inverso en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+374	Elevación lateral a una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+377	Aperturas de pecho a una mano en declinado con polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+382	Cruce de cable a una mano con el tronco inclinado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+383	Press a una mano en balón	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+386	Jalón unilateral en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+390	Jalón con barra pro lat	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+397	Curl de predicador a una mano en cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+398	Curl de predicador invertido a una mano en cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+399	Extensión de tríceps con polea alta, una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+403	Curl predicador con cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+405	Extensión de tríceps con cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+406	Extensión de tríceps con cuerda	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+410	Curl de un brazo al revés con cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+413	Flexión de muñeca de pie en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+415	Elevacion de talones de una pierna de pie con cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+426	Flexión lateral en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+438	Encogimiento de trapecio en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+445	Curl de predicador martillo a una mano con cuerda en cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+451	Extensión de tríceps a una mano en polea alta	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+468	Remo acostado con barra cambered	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+470	Rotación externa de hombro de pie en polea	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+486	Remo alto en cable	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+488	Extensión de tríceps unilateral por encima de la cabeza, agarre inverso, de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+520	Curl de bíceps alterno con mancuerdas	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+521	Curl alterno de bíceps con mancuerna y blaster	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+532	Bicicleta de aire con brazos	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+534	Curl de dedos con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+539	Elevación lateral completa con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+543	Aperturas con mancuerna declinadas a una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+555	Curl de bíceps con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+563	Curl martillo cruzado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+564	Curl martillo cruzado con mancuerna versión 2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+565	Press de mancuerna a una mano en banco declinado con agarre martillo	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+570	Curl martillo v. 2 con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+606	Extensión de tríceps atrás con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+613	Pronación acostado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+616	Supinación de antebrazo con mancuerna en el suelo	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+619	Deltoide posterior a una mano acostado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+620	Elevación lateral trasera a una mano acostado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+622	Elevación lateral a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+623	Elevación lateral a una mano con mancuerna con apoyo	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+625	Press a una mano acostado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+626	Press a una mano acostado con mancuerna v.2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+628	Aperturas en banco a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+629	Aperturas de pecho a una mano en balón	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+630	Press de pecho declinado a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+631	Aperturas a una mano en balón	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+633	Press a una mano en balón	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+634	Pullover a una mano en balón	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+636	Remo a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+638	Extensión de tríceps con una mano pronada acostado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+639	Extensión de tríceps acostado a una mano supinada	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+640	Extensión única acostado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+646	Curl de concentración a una mano con mancuerna en pelota de estabilidad	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+647	Press francés con mancuerna a una mano sobre balón	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+648	Curl de predicador martillo a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+649	Press martillo a una mano en balón suizo	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+650	Extensión de tríceps a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+651	Curl prono a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+652	Curl martillo prono a una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+653	Curl de muñeca invertido a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+654	Curl de muñeca sentado con mancuerna, palma neutra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+655	Curl de muñeca a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+656	Curl de antebrazo invertido con mancuerna sobre banco una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+657	Curl de muñeca a una mano sobre banco con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+659	Curl de muñeca sobre banco con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+660	Aleteo inverso a una mano con mancuerna con apoyo	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+661	Press de hombro a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+662	Press de hombro a una mano con mancuerna, versión 2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+663	Remo vertical a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+667	Press de una mano con agarre invertido	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+675	Sentadilla pliométrica con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+676	Curl predicador con mancuerna a un brazo, invertido	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+677	Curl araña invertido a una mano con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+679	Curl martillo sentado a una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+680	Curl de bíceps de pie a una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+681	Curl martillo de pie a una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+682	Extensión de tríceps a una mano con mancuerna en banco	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+683	Curl Zottman predicador a una mano	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+684	Curl de muñeca neutro sobre banco con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+685	Curl de muñeca neutro a una mano sobre banco con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+693	Curl de muñeca invertido con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+694	Rotación de antebrazo a una mano sentado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+700	Aleteo inverso con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+734	Elevación de talones sentado con mancuerna, una pierna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+735	Elevacion de talones sentado a una pierna con mancuerna (agarre martillo)	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+737	Elevación de talones en una pierna con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+741	Elevación lateral de un brazo acostado con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+742	Porteo unilateral por encima de la cabeza con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+744	Levantamiento alterno de brazo de pie con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+747	Press de palma hacia adentro a una mano de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+749	Encogimiento de hombros con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+751	Peso muerto a una pierna con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+752	Peso muerto a una pierna con mancuerna y apoyo en escalón	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+753	Sentadilla dividida a una pierna con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+762	Extensión de tríceps unilateral de pie, con mancuerna, tronco inclinado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+764	Curl de bíceps con mancuerna de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+766	Curl de bíceps desde dentro con mancuerna v. 2	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+768	Curl de concentración a una mano con mancuerna de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+771	Extensión de tríceps a una mano de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+772	Curl invertido a una mano con mancuerna de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+800	Curl de bíceps de camarero	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+829	Curl de dedos con barra	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+830	Press anti gravitatorio con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+831	Pull-over acostado con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+832	Remo con barra EZ agarre invertido	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+834	Extensión de tríceps acostado con barra EZ agarre estrecho detrás de la cabeza	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+836	Press francés de pie con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+837	Curl predicador con barra EZ, agarre cerrado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+838	Curl de agarre estrecho con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+839	Curl con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+840	Press de cara con agarre cerrado en declinada con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+841	Extensión de tríceps en declinado con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+844	Curl con agarre inverso con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+845	Curl predicador con agarre inverso con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+848	Curl araña con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+849	Curl Spider con barra EZ	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+850	Curl de bíceps con barra EZ y blaster	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+851	Press de banca con barra EZ en agarre cerrado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+852	Curl de bíceps con barra EZ agarre ancho de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+923	Press alterno con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+924	Press Arnold con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+925	Press alterno con kettlebell en el suelo	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+929	Remo alterno con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+930	Clean con kettlebell desde hang	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+945	Press militar a un brazo hacia un lado	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+948	Elevación frontal a una mano con kettlebell hasta arriba	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+955	Press a una mano extendido en suelo	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+956	Press a una mano en suelo con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+959	Figura 8 con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+961	Remo a una mano con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+963	Remo con kettlebell a dos manos	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+964	Sentadilla frontal con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+965	Sentadilla goblet con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+967	Lunge con pass-through con kettlebell	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+979	Elevación lateral con landmine	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+980	Giro 180 con landmine	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+982	Remo a una mano con palanca	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1010	Curl de isquiotibiales tendido con palanca	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1207	Elevación de talones a una pierna con mancuerna	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1213	Elevacion de talones a una pierna en piso con Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1215	Elevaciones de talones invertidas en Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1226	Encogimiento trasero en smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1229	Remo a una mano en Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1234	Sentadilla frontal en Smith (agarre limpio)	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1259	Arquero de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1266	Curl de pierna en una pierna de pie	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1274	Curl de muñeca sentado en Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1275	Curl de muñeca de pie con Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1276	Elevacion de talones sentado a una pierna en Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1278	Elevación de talones sentado en Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1287	Encogimiento de hombros con Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1288	Sentadilla dividida a una pierna con Smith	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+1324	Bicicleta estática caminando	DIFICULTAD (V27)	bajar una dificultad exige aprobacion humana (V27)	R2: BAJAR
+64	Dominada arco	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 colgado centrado entre las manos; f4-f7 sube desplazando la cabeza claramente hacia una mano, con el otro brazo más extendido: dominada arquero identificable; solo se ve un lado, sin alternancia
+257	Curl de muñeca con barra	IDENTIDAD	identidad o evidencia no decidible con el GIF	Curl de muñeca con barra y antebrazos sobre un banco claramente visible (f1-f12), pero la vista cenital no muestra piernas ni cadera: no se puede saber si está de pie, sentado o arrodillado, por lo que KN/FL no son decidibles
+261	Elevación de gemelos con balanceo de pierna de pie	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1-f12 de pie con barra en la espalda y gemelos resaltados; f4-f10 ligero desplazamiento lateral y elevación de talones de poca amplitud; se reconoce una elevación de gemelos con barra, pero no puede confirmarse el balanceo alterno entre piernas que indica el nombre
+310	Giro acostado con rodillas flexionadas	IDENTIDAD	identidad o evidencia no decidible con el GIF	Vista cenital: tumbado boca arriba con brazos abiertos (f1-f18); f7 muslos casi verticales y espinillas horizontales, f1/f13 piernas flexionadas giradas a un lado. No se puede confirmar si los pies se apoyan en el suelo o las piernas están elevadas, y solo se ve un lado
+320	Curl de bíceps acostado de lado con peso corporal	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1-f12 vista cenital: tumbado boca arriba con rodillas flexionadas, el tronco se eleva hacia las rodillas (f7) con las manos junto a los muslos y se resalta el abdomen; no se ve con claridad una flexión de codo contra resistencia ni si las manos tiran de los muslos: identidad AMBIGUA, no identificab
+427	Crunch lateral con polea en bosu	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1-f12 sentado sobre un bosu de espaldas a la columna de poleas, rodillas flexionadas; la pila de peso sube en f7; f1 una mano con un asa junto a la cadera, en f7 la mano se desplaza hacia el centro y el tronco cambia de inclinación; no se ve el cable ni si hay flexión lateral, rotación o solo flexi
+494	Flexión en reloj	IDENTIDAD	identidad o evidencia no decidible con el GIF	Es una flexión de brazos en el suelo (f1 plancha alta, f7 parte baja), pero el componente de reloj no puede identificarse: fundido entre dos vistas sin giro visible; identidad AMBIGUA
+535	Press cubano con mancuerna	IDENTIDAD	identidad o evidencia no decidible con el GIF	Fundido entre poses: f1 brazos abajo, f7 elevación lateral, f13 mancuernas a la cadera con los codos flexionados, f19 brazos arriba; no se ve la rotación externa ni el recorrido hasta arriba del press cubano; identidad AMBIGUA
+620	Elevación lateral trasera a una mano acostado con mancuerna	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 tumbado boca abajo en banco plano con el brazo colgando; f7 el brazo recto queda atrás a lo largo del cuerpo con la mancuerna por encima de la cadera, no hacia el lado; f2-f5 son fundido entre las dos poses; el movimiento se identifica: extensión de hombro con brazo recto, que no coincide con el 
+675	Sentadilla pliométrica con mancuerna	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1-f12 se identifica con seguridad una sentadilla sumo con una mancuerna, sin vuelo; no corresponde al nombre de la fuente (plyo squat), por eso la ficha es ambigua mientras conserve ese nombre; queda resuelto con el nombre e instrucciones de sentadilla sumo
+853	Marcha rápida en el sitio	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 y f13 una rodilla elevada hasta la horizontal con el pie de apoyo de puntillas (alterna de pierna); f6-f8 y f18-f20 ambos pies en el suelo con semiflexión de rodillas; la punta del pie de apoyo toca el suelo en todos los fotogramas y no hay fase de vuelo visible; puede ser una marcha con rodillas
+902	Gusano caminando	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 tumbado boca abajo en el suelo; f4-f6 fundido a plancha y pica; f13 pica; f14-f19 fundido a de pie; f20-f24 fundido de de pie a tumbado. No se ve el caminar de manos propio del gusano, solo fundidos entre poses clave
+922	Hang clean alterno con kettlebell	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 dos pesas rusas colgando, f7 una en rack junto al hombro y la otra colgando; fundido sin fase intermedia ni impulso visible: igual puede ser un clean que un curl hasta el rack; solo se ve un brazo
+930	Clean con kettlebell desde hang	IDENTIDAD	identidad o evidencia no decidible con el GIF	Se ve: de pie erguido con una pesa rusa colgando a un lado (f1) que pasa a posición invertida delante del hombro (f7) y vuelve. El fundido entre f1 y f7 no deja ver si es una cargada con impulso o un curl; no coincide con un clean desde hang (sin bisagra). Identidad AMBIGUA confirmada
+937	Muscle up kipping	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 colgado de anillas; f7 balanceo con el tronco casi horizontal; no aparece tirón, transición sobre las anillas ni fondo: solo la fase de balanceo del muscle-up
+944	Jerk a una mano con kettlebell	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1-f12 la pesa rusa siempre bloqueada arriba con un brazo; f7 media sentadilla y vuelta a de pie; no se ven el rack, el impulso ni el empuje: puede ser la fase de recepción de un jerk o una sentadilla parcial con la pesa arriba
+994	Remo en palanca, agarre estrecho alterno	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1-f12 vista posterior de remo sentado en máquina de palanca; solo se ve el brazo derecho tirando (f1 extendido, f7 mano al pecho); el brazo izquierdo queda oculto y no se ve alternancia en los 12 fotogramas: el remo es claro pero el trabajo alterno no puede confirmarse
+1068	Muscle up	IDENTIDAD	identidad o evidencia no decidible con el GIF	Identidad AMBIGUA confirmada: f1 colgado de anillas con brazos extendidos, f4-f10 sube hasta llevar las anillas al pecho, f12 vuelve; no se ve en ningún fotograma la transición por encima de las anillas ni el apoyo con brazos extendidos propios del muscle-up. Lo visible es una dominada en anillas al
+1086	Captura y lanzamiento por encima de la cabeza con balón medicinal	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 bisagra con balón; f7 balón al frente; f13 balón detrás de la cabeza; nunca se ve soltar ni atrapar el balón, por lo que la parte de lanzamiento y captura del nombre no se puede confirmar
+1124	Giro prono en balón de estabilidad	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 y f7 ampliados: tronco boca abajo sobre el balón, pies en el suelo y una mano en el suelo; se ve un giro del tronco pero la posición de los brazos y la amplitud del giro no se distinguen con seguridad
+1176	Saltos estilo patinador	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 y f13 apoyo a una pierna en extremos opuestos con la otra cruzada detrás; f7 y f19 postura intermedia con un pie en el suelo y el otro elevado; ningún fotograma con los dos pies en el aire por el fundido: el patrón de patinador se ve, pero no si es salto o paso
+1177	Paso de esquí	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1-f24 tijera alterna de piernas con manos en la cintura y pies juntos intermedios (f7, f19); por el fundido no se distingue si es paso o salto
+1192	Skin the cat	IDENTIDAD	identidad o evidencia no decidible con el GIF	Se ve solo un colgado alemán estático en anillas (f1-f12); el giro de skin the cat que da nombre al ejercicio no aparece; la cabeza queda a la altura de la cadera, no claramente por debajo, por lo que INV no se demuestra en el GIF
+1261	Inclinación pélvica de pie	IDENTIDAD	identidad o evidencia no decidible con el GIF	f1 de pie con lordosis lumbar y brazos colgando; f7 rodillas algo flexionadas, pelvis adelantada en retroversión, zona lumbar aplanada y manos en las caderas; fundido entre dos poses pero coherente con una inclinación pélvica de pie. La duda señalada es de clasificación (patrón), no de identidad
+1294	Balanceo 360	IDENTIDAD	identidad o evidencia no decidible con el GIF	Se ve: colgado de una barra (f1), recogida de piernas (f7), giro del cuerpo con fases casi horizontales (f13) y erguidas con la barra a la altura del pecho (f19) y vuelta al colgado (f24). Fundidos entre poses; no se puede identificar con seguridad la técnica ni si algún pie toca el suelo
+1298	Maltés en apertura	IDENTIDAD	identidad o evidencia no decidible con el GIF	Se ve un sostenimiento horizontal boca abajo sobre las manos con piernas abiertas y flexionadas, compatible con un maltés en apertura, pero el dibujo no muestra línea de suelo y las piernas flexionadas y la posición de las manos no permiten confirmarlo con seguridad
+1311	Abductor de cadera externo con pierna recta	IDENTIDAD	identidad o evidencia no decidible con el GIF	f5-f8 cruce de pierna por detrás con desplazamiento lateral de cadera e inclinación del tronco, compatible con un estiramiento de la parte externa de la cadera; no se ve una abducción con pierna recta como dice el nombre
+922	Hang clean alterno con kettlebell	SEGURIDAD	BANDERA_QUITAR HI: no aplicado	derivado olimpico (clean) por nombre y fuente: ALTO por definicion; el GIF es un fundido y la identidad es dudosa. Revision profesional
+930	Clean con kettlebell desde hang	SEGURIDAD	BANDERA_QUITAR HI: no aplicado	derivado olimpico (clean) por nombre y fuente: ALTO por definicion; el GIF es un fundido y la identidad es dudosa. Revision profesional
+930	Clean con kettlebell desde hang	SEGURIDAD	BANDERA_QUITAR AX: no aplicado	identidad AMBIGUA (clean frente a curl): se mantiene AX hasta revision profesional
+971	Clean doble alterno desde hang con kettlebell	SEGURIDAD	BANDERA_QUITAR HI: no aplicado	derivado olimpico (clean) por nombre y fuente: ALTO por definicion; el GIF es un fundido y la identidad es dudosa. Revision profesional
+1177	Paso de esquí	SEGURIDAD	IMPACTO : no aplicado	verificadores en desacuerdo (V07 NO_DECIDIBLE, X01 BAJO): fundido entre poses que no puede mostrar un vuelo; se mantiene ALTO y pasa a revision profesional
+1294	Balanceo 360	SEGURIDAD	PRESCRIPCION : no aplicado	identidad AMBIGUA e instrucciones NO_DECIDIBLE: revision profesional
+494	Flexión en reloj	TEXTO NO DECIDIBLE	identidad o evidencia no decidible con el GIF	f1 plancha alta en vista lateral y f7 parte baja de la flexión en vista frontal, unidas por un fundido (f2-f6); no se distingue si gira el cuerpo o la cámara ni se ven pasos de los pies; tampoco se ve ningún brazo extendido al lado; ni el texto actual ni el propuesto se pueden comprobar
+535	Press cubano con mancuerna	TEXTO NO DECIDIBLE	identidad o evidencia no decidible con el GIF	f1 brazos a los costados, f7 elevación lateral a la altura de los hombros, f13 mancuernas a la altura de la cadera con los codos flexionados, f19 mancuernas sobre la cabeza; el paso de f13 a f19 es un fundido, así que no se ve cómo suben las mancuernas (remo, rotación o press); el texto actual contr
+1086	Captura y lanzamiento por encima de la cabeza con balón medicinal	TEXTO NO DECIDIBLE	identidad o evidencia no decidible con el GIF	f1 bisagra de cadera con rodillas casi extendidas y balón junto a las espinillas (no hay sentadilla); f7 balón al frente; f13 balón detrás de la cabeza con codos flexionados; f14-f18 vuelta por fundido. No se ve si el balón se lanza ni se recoge, ni el recorrido de vuelta, que el texto propuesto afi
+1294	Balanceo 360	TEXTO NO DECIDIBLE	identidad o evidencia no decidible con el GIF	El texto actual (círculos de brazos de pie) es claramente erróneo: f1 colgado de una barra; f7 piernas recogidas bajo la barra; f13 cuerpo casi horizontal girando; f19 tronco erguido con la barra a la altura del pecho y una pierna al frente; f24 colgado de nuevo. No se distingue la trayectoria del g

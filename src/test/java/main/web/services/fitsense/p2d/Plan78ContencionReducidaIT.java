@@ -199,8 +199,11 @@ class Plan78ContencionReducidaIT {
         return o == null ? 0 : ((Number) o).intValue();
     }
 
+    /** V53: el 1303 tiene ademas apoyo suspendido, que «no colgarse» excluye; las dos causas se informan. */
+    static final String CAUSA_1303 = "INC-CAT-C39+apoyo_suspendido";
+
     @Test
-    @DisplayName("semana sin empezar: solo el jueves (1303) se bloquea; la reparacion no publica por el 916 (V48)")
+    @DisplayName("semana sin empezar: solo el jueves (1303) se bloquea; la reparacion no publica por el 916 (V48) ni el 910 (V52)")
     void semanaSinEmpezar() throws IOException {
         var c = copiaDelPlan78();
         var b = bloqueos(c);
@@ -217,7 +220,7 @@ class Plan78ContencionReducidaIT {
 
         // Con la contencion reducida: el jueves por el 1303 (apoyo suspendido); el viernes (1152 liberado, 910 nunca
         // contenido) y el lunes (1093 liberado) ya no.
-        assertEquals(Map.of(1, Map.of(1303L, "INC-CAT-C39")), b);
+        assertEquals(Map.of(1, Map.of(1303L, CAUSA_1303)), b);
         // La consulta de identificacion de PLANES_PUBLICADOS_C39.md §2 (solo lectura) encuentra lo mismo.
         var consulta = jdbc.queryForList(CONSULTA_IDENTIFICACION).stream()
                 .filter(f -> ((Number) f.get("user_id")).longValue() == c.userId()).toList();
@@ -242,11 +245,15 @@ class Plan78ContencionReducidaIT {
         var antes = contenido(c.planId());
         var r = planning.repairPublishedPlanForSafety(c.userId(), SEMANA, HOY);
         assertEquals(Estado.NO_VALIDA, r.estado(), r.toString());
-        assertEquals(List.of("V1: el ejercicio 916 no esta en available_exercises."), r.problemas(), r.toString());
+        // V52 sube tambien el 910 (remo invertido, sesion del viernes) a nivel 2 con verificacion independiente: la
+        // revalidacion de la semana entera lo rechaza igual que al 916. Ninguno de los dos bloquea una sesion publicada.
+        assertEquals(2, jdbc.queryForObject("SELECT difficulty_level FROM exercises WHERE exercise_id = 910", Integer.class));
+        assertEquals(Set.of("V1: el ejercicio 916 no esta en available_exercises.", "V1: el ejercicio 910 no esta en available_exercises."),
+                Set.copyOf(r.problemas()), r.toString());
         assertEquals(antes, contenido(c.planId()), "la version 1 no se toca");
         assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
                 Integer.class, c.userId()), "no se publica ninguna version nueva");
-        assertEquals(Map.of(1, Map.of(1303L, "INC-CAT-C39")), bloqueos(c), "el jueves sigue bloqueado");
+        assertEquals(Map.of(1, Map.of(1303L, CAUSA_1303)), bloqueos(c), "el jueves sigue bloqueado");
     }
 
     /**
@@ -255,11 +262,15 @@ class Plan78ContencionReducidaIT {
      * Aisla el mecanismo de reparacion del efecto de V48 sobre el plan 78.
      */
     @Test
-    @DisplayName("sin el 916: la reparacion sustituye solo el 1303, sin aumentar la dosis (V8C)")
+    @DisplayName("sin el 916 ni el 910: la reparacion sustituye solo el 1303, sin aumentar la dosis (V8C)")
     void reparacionLocalizada() throws IOException {
         var c = copiaDelPlan78();
         jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1046 WHERE exercise_id = 916 AND planned_workout_id = ?",
                 c.sesiones().get(1));
+        // Y SIN el 910, que V52 sube a nivel 2: remo sentado con cuerda 433 (nivel 1, misma familia de traccion
+        // horizontal, polea como el resto del plan, sin banderas y fuera del plan 78).
+        assertEquals(1, jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 433 WHERE exercise_id = 910"
+                + " AND planned_workout_id = ?", c.sesiones().get(2)));
         var antes = contenido(c.planId());
         var r = planning.repairPublishedPlanForSafety(c.userId(), SEMANA, HOY);
         assertEquals(Estado.REPARADA, r.estado(), r.toString());
@@ -308,7 +319,7 @@ class Plan78ContencionReducidaIT {
         var r = planning.repairPublishedPlanForSafety(c.userId(), SEMANA, HOY);
         assertEquals(Estado.SEMANA_EMPEZADA, r.estado(), r.toString());
         assertEquals(antes, contenido(c.planId()), "nada se sustituye en silencio");
-        assertEquals(Map.of(1, Map.of(1303L, "INC-CAT-C39")), bloqueos(c));
+        assertEquals(Map.of(1, Map.of(1303L, CAUSA_1303)), bloqueos(c));
         assertThrows(WorkoutNotAvailableException.class,
                 () -> sesiones.handle(new StartWorkoutSessionCommand(c.userId(), c.sesiones().get(1))));
 

@@ -43,14 +43,12 @@ id	tipo	actual	decision	valor	antes	fundamento
 1134	BANDERA_QUITAR	HI	NO_APLICAR			DEC-HI-CARRERA: 1133 y 1175 (carrera) conservan HI; sin criterio comun aprobado no se relaja una sola
 675	BANDERA_QUITAR	HI	APLICAR			el GIF es una sentadilla sumo sin vuelo (R2, V3 V04 y X01); el nombre y las instrucciones pasan a sentadilla sumo en V52, asi que ninguna parte del ejercicio implica salto
 675	IMPACTO		APLICAR			pies fijos en f1-f12 (V3 X01) y nombre corregido
-854	BANDERA_QUITAR	HI	APLICAR			rodillas altas con manos en la pared: el pie de apoyo toca el suelo en todos los fotogramas (V3 ALTA)
 952	BANDERA_QUITAR	HI	APLICAR			thruster: no es salto, pliometria ni olimpico; pies con el mismo punto mas bajo en los 18 fotogramas (V3 ALTA)
 952	IMPACTO		APLICAR			pies siempre apoyados (V3 ALTA)
 1177	IMPACTO		NO_APLICAR			verificadores en desacuerdo (V07 NO_DECIDIBLE, X01 BAJO): fundido entre poses que no puede mostrar un vuelo; se mantiene ALTO y pasa a revision profesional
 1295	IMPACTO		APLICAR			zancada caminando con rodilla alta: siempre un pie en el suelo (R2 y V3 ALTA)
 300	EQUIPO		APLICAR	pull-up bar; 1:pull-up bar,2:bench	bench; 1:bench,1:pull-up bar	barra fija y banco hacen falta los dos (no son alternativas)
 756	EQUIPO		APLICAR	dumbbell; 1:dumbbell,2:preacher bench	dumbbell; 1:dumbbell,2:bench	curl Scott: hace falta el banco Scott
-775	EQUIPO		APLICAR	bench; 1:bench	body weight; -	codos sobre dos apoyos elevados: hace falta un banco (principal = banco por tg_requisitos_principal)
 1043	EQUIPO		APLICAR	cable; 1:cable	leverage machine; 1:leverage machine	polea baja con cable; no hay maquina de palanca
 1184	EQUIPO		APLICAR	captains chair; 1:captains chair	parallel bars; 1:parallel bars	silla de capitan, no paralelas
 215	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
@@ -103,3 +101,7 @@ id	tipo	actual	decision	valor	antes	fundamento
 740	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
 803	EQUIPO		NO_APLICAR			criterio V50: no se exige banco a lo que solo se hace sentado (sirve cualquier asiento)
 913	BANDERA_QUITAR	OH	NO_APLICAR			contrato vigente ck_exercises_hanging_is_overhead (colgarse implica OH): no se relaja por un caso; se documenta como decision de definicion
+306	INSTRUCCIONES		APLICAR	Pasa una toalla resistente por un barrote de la espaldera a la altura del pecho y sujeta los dos extremos con una mano. Antes de cargar tu peso, comprueba que la espaldera está bien fijada a la pared y que la toalla no resbala. || Coloca los pies cerca de la base de la espaldera y déjate caer hacia atrás con el cuerpo recto y el brazo estirado. || Tira de la toalla llevando el codo hacia atrás hasta acercar el pecho a la espaldera y vuelve con control hasta estirar el brazo. || Completa las repeticiones y cambia de brazo. || Repite el número de repeticiones indicado.		texto V3 con la advertencia de V39 de nuevo en el primer paso (contrato de CatalogoV39IT: toalla resistente + comprueba + espaldera)
+1017	INSTRUCCIONES		APLICAR	Ajusta el asiento de la prensa para que las rodillas queden flexionadas con los pies sobre la plataforma. || Siéntate con la espalda apoyada en el respaldo y los pies separados a la anchura de los hombros. || Si la máquina tiene palancas de seguridad, suéltalas antes de empezar y vuelve a colocarlas al terminar. || Empuja con los pies para extender las rodillas sin llegar a bloquearlas. || Vuelve despacio a la posición inicial flexionando las rodillas. || Mantén la espalda apoyada durante todo el movimiento. || Repite el número de repeticiones indicado.		texto V3 mas la advertencia de las palancas de seguridad del texto anterior, en forma condicional (regla 4 del protocolo)
+854	BANDERA_QUITAR	HI	NO_APLICAR			decision previa D2 (DIAGNOSTICO_V37_1.md): «298 y 854: mantenerlos fuera, hasta una segunda revision HUMANA»; la revision del cierre es de IA. Se mantiene HI y pasa a revision profesional
+775	EQUIPO		NO_APLICAR			DEC-FACTIBILIDAD-775: correccion verificada (los codos van sobre dos apoyos elevados: banco) que deja sin plan a GAIN_MUSCLE intermedio en casa solo con peso corporal a 74-75 min (Hipertrofia4Dv34IT: techo 3210 s -> 3090 s, piso V20 3108 s). No se relaja V20 ni se aplica en silencio: decision explicita pendiente
