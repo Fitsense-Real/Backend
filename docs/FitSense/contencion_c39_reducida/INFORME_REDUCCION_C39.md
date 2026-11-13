@@ -63,7 +63,7 @@ Después de esa ejecución se añadieron dos comprobaciones a pruebas ya existen
 - la consulta SQL en el plan 78;
 - el subconjunto IA ⊆ motor en D.
 
-Las dos se ejecutaron por separado y pasan: `Plan78ContencionReducidaIT` 3/3 y `ContencionTextoBanderaIT` 15/15. El CI de GitHub ejecuta la suite completa en el último commit de la PR.
+Por eso se repitió la regresión completa sobre el **commit entregado `5df34f6`**: unitarias 1.445 / 0 fallos; integración 717 / 0 fallos (49 opt-in); BUILD SUCCESS. Las 339 clases comunes con la pila dan el mismo resultado (`evidencia/regresion_commit_entregado.txt`). El CI de GitHub en `5df34f6` también está en verde.
 
 ## 5. Planes publicados (resumen)
 
