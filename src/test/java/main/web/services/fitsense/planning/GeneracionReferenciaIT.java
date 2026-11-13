@@ -14,7 +14,11 @@ import java.nio.file.Path;
  * catalogo vigente, deben ser identicos -ejercicios, dosis, estructura y resultado
  * de la validacion- a {@code docs/FitSense/evidencia/progresion/generacion_referencia.txt}.
  * <p>
- * Referencia oficial del catalogo V39 (V38 + V39, decisiones F y G del 30/10/2026) con el
+ * Referencia regenerada con V47 (banderas de seguridad que el GIF exige) y V48 (dificultad conservadora) de la
+ * auditoria integral del catalogo: 47 de 72 semanas cambian y todas siguen VALIDA, explicadas una a una en
+ * {@code docs/FitSense/catalogo_integral/evidencia/DIFERENCIAS_REFERENCIA_V47_V48.md}. Regenerada de nuevo con V50
+ * (clasificacion y equipamiento): 68 de 72 cambian y siguen VALIDA, en {@code .../DIFERENCIAS_REFERENCIA_V50.md}.
+ * Antes: referencia oficial del catalogo V39 (V38 + V39, decisiones F y G del 30/10/2026) con el
  * motor de E1/E2. Las 72 diferencias frente a V37 estan revisadas en
  * {@code docs/FitSense/evidencia/v39/DIFERENCIAS_REFERENCIAS_V39.md}. Las anteriores se
  * conservan intactas: {@code generacion_referencia_v37_motor_v20.txt} (V37 con V20 exacto,
