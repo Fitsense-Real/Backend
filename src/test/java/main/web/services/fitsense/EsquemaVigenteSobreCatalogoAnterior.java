@@ -39,7 +39,9 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             "44.2:db/migration/V44_2__password_reset_tokens.sql",
             // V51 (cierre del catalogo) anade columnas Y datos del catalogo: aqui solo sus columnas, sin datos (script
             // de prueba). Con impact_level e is_stretch NULL el motor usa la regla por nombre del catalogo fijado.
-            "51:catalogo/esquema_V51_V53_sin_datos.sql");
+            "51:catalogo/esquema_V51_V53_sin_datos.sql",
+            // V54 (propuesta: constancia del bloqueo de seguridad al vencer): una columna nullable, sin datos.
+            "54:db/migration/V54__vencimiento_con_bloqueo_de_sistema.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {
