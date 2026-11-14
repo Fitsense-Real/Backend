@@ -106,7 +106,7 @@ class HerenciaD8IT {
     enum Dia { HECHO, TIEMPO, FATIGA, DIFICIL, DOLOR }
 
     /** Que hace la IA simulada en una senalada que no es ACORTAR. */
-    enum Modo { IGUAL, SUBE }
+    enum Modo { IGUAL, SUBE, BAJA }
 
     private Modo modo = Modo.IGUAL;
 
@@ -209,9 +209,11 @@ class HerenciaD8IT {
         assertTrue(Long.parseLong(despues[0]) <= Long.parseLong(antes[0])
                         && Long.parseLong(despues[1]) <= Long.parseLong(antes[1]),
                 "mas trabajo que la semana medida: " + trabajo(medido) + " -> " + trabajo(regenerado));
-        assertEquals(List.of(), jdbc.queryForList("SELECT n.exercise_id FROM (" + DOSIS + ") n JOIN (" + DOSIS + ") m"
-                + " ON m.exercise_id = n.exercise_id WHERE n.series > m.series OR n.reps > m.reps OR n.segundos > m.segundos",
-                Long.class, regenerado, medido), "un ejercicio comun sube su dosis");
+        // Por COLOCACION, no por maximo semanal (orden de 14/11/2026, fase 1): el maximo ocultaba una subida localizada.
+        var porColocacion = ComparadorDosisPorColocacion.comparar(colocaciones(medido), colocaciones(regenerado),
+                Set.copyOf(excluidos));
+        assertTrue(porColocacion.sinAumentos(), porColocacion.describir());
+        assertTrue(porColocacion.trabajoTotalNoSube(), porColocacion.describir());
         // 4. La semana valida entera SIN autorizaciones: dosis BASE (sin progresion, recuperacion, reincorporacion ni
         //    herencia) y V20 sin la exencion de D8 (ninguna fecha reducible).
         var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
@@ -224,11 +226,15 @@ class HerenciaD8IT {
         assertSinViolaciones();
     }
 
-    /** Dosis por ejercicio de un plan (la mayor si se repite): series, repeticiones y segundos. */
-    static final String DOSIS = "SELECT pwe.exercise_id, max(coalesce(pwe.planned_sets, 1)) AS series,"
-            + " max(coalesce(pwe.planned_reps, 0)) AS reps, max(coalesce(pwe.planned_duration_seconds, 0)) AS segundos"
-            + " FROM planned_workouts pw JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id"
-            + " WHERE pw.plan_id = ? GROUP BY pwe.exercise_id";
+    /** Cada colocacion del plan (fecha, ejercicio, dosis), en el orden de la sesion. */
+    private List<ComparadorDosisPorColocacion.Colocacion> colocaciones(long plan) {
+        return jdbc.query("SELECT pw.scheduled_date, pwe.exercise_id, coalesce(pwe.planned_sets, 1),"
+                        + " coalesce(pwe.planned_reps, 0), coalesce(pwe.planned_duration_seconds, 0), pwe.exercise_order FROM planned_workouts pw"
+                        + " JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id"
+                        + " WHERE pw.plan_id = ? AND pw.status <> 'REPLACED' ORDER BY pw.scheduled_date, pwe.exercise_order",
+                (rs, k) -> new ComparadorDosisPorColocacion.Colocacion(rs.getDate(1).toLocalDate(), rs.getLong(2),
+                        rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6)), plan);
+    }
 
     /**
      * EXPLORACION (opt-in, -Dfitsense.d8.exploracion=true): para cada user_id de un rango, el desenlace del caso de dolor
@@ -285,6 +291,58 @@ class HerenciaD8IT {
         Files.createDirectories(f);
         Files.writeString(f.resolve("desenlaces.csv"), salida.toString());
         Files.writeString(f.resolve("elegibles.txt"), String.join("\n", elegibles));
+    }
+
+    /**
+     * EXPLORACION (opt-in, -Dfitsense.d8.reduccion=true): reduccion autorizada de carga por fatiga (viernes), copia, y
+     * dolor el lunes. P-03 nivel 2 regenera con dosis BASE: compara POR COLOCACION la semana regenerada con la medida
+     * (que lleva la reduccion heredada) para ver si alguna colocacion recupera la dosis reducida aunque el total no
+     * suba. No afirma nada: mide.
+     */
+    @Test
+    @org.junit.jupiter.api.condition.EnabledIfSystemProperty(named = "fitsense.d8.reduccion", matches = "true")
+    void exploracionReduccionYDolor() throws Exception {
+        var salida = new StringBuilder("user_id;fatiga;copia;dolor;regeneracion;trabajo;aumentos;detalle\n");
+        int desde = Integer.getInteger("fitsense.d8.desde", 9_601), hasta = Integer.getInteger("fitsense.d8.hasta", 9_640);
+        for (long id = desde; id <= hasta; id++) {
+            long u = participante(id);
+            long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+            modo = Modo.BAJA;
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.FATIGA);
+            var r1 = ciclo.runFor(u, S1, S1.plusWeeks(1));
+            String fatiga = String.valueOf(ultimo(u).get("status"));
+            if (r1.isEmpty()) { salida.append(id).append(';').append(fatiga).append(";;;;;;\n"); continue; }
+            modo = Modo.IGUAL;
+            ejecutar(u, r1.get(), Dia.HECHO, Dia.HECHO, Dia.HECHO);
+            var r2 = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2));
+            String copia = String.valueOf(ultimo(u).get("status"));
+            if (r2.isEmpty()) { salida.append(id).append(';').append(fatiga).append(';').append(copia).append(";;;;;\n"); continue; }
+            long medido = r2.get();
+            ejecutar(u, medido, Dia.DOLOR, Dia.HECHO, Dia.HECHO);
+            var r3 = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
+            var reg = jdbc.queryForList("SELECT outcome FROM safe_regeneration_attempts WHERE user_id = ?", String.class, u);
+            String detalle = "", aumentos = "";
+            var excl = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND status = 'ACTIVA'",
+                    Long.class, u);
+            String motivo = String.valueOf(jdbc.queryForObject("SELECT coalesce(rejection_reason, '') || ' | ' ||"
+                    + " coalesce(targeted_interventions::text, '') || ' | ' || coalesce(decision, '') FROM plan_adaptation_attempts"
+                    + " WHERE user_id = ? ORDER BY attempt_id DESC LIMIT 1", String.class, u)).replace(';', ',');
+            if (r3.isPresent()) {
+                var pub = jdbc.queryForList("SELECT DISTINCT pwe.exercise_id FROM planned_workouts pw JOIN planned_workout_exercises pwe"
+                        + " ON pwe.planned_workout_id = pw.planned_workout_id WHERE pw.plan_id = ?", Long.class, r3.get());
+                detalle = "excluidos=" + excl + " reaparecen=" + pub.stream().filter(excl::contains).toList() + " motivo=" + motivo + " ";
+                var c = ComparadorDosisPorColocacion.comparar(colocaciones(medido), colocaciones(r3.get()), Set.copyOf(excl));
+                aumentos = String.valueOf(c.aumentos().size());
+                detalle += c.describir().replace(';', ',');
+            }
+            salida.append(id).append(';').append(fatiga).append(';').append(copia).append(';')
+                    .append(String.valueOf(ultimo(u).get("status"))).append(r3.isPresent() ? "/PUBLICADO" : "/NO_PUBLICADO")
+                    .append(';').append(reg).append(';').append(trabajo(medido)).append("->")
+                    .append(r3.map(this::trabajo).orElse("-")).append(';').append(aumentos).append(';').append(detalle).append('\n');
+        }
+        var f = Path.of(System.getProperty("fitsense.d8.salida", "target/d8_exploracion"));
+        Files.createDirectories(f);
+        Files.writeString(f.resolve("reduccion_y_dolor.csv"), salida.toString());
     }
 
     /** Repeticiones y segundos totales planificados (series x repeticiones, series x segundos), como P-03 nivel 2. */
@@ -384,6 +442,17 @@ class HerenciaD8IT {
                         lista.remove(k);
                         break;
                     }
+                minutos = estimador.estimateMinutes(new PlanDraft.DraftWorkout(fecha,
+                        WorkoutFocus.valueOf((String) f.get("focus_code")), "x", 0, lista), ctx.prescription());
+            } else if (modo == Modo.BAJA) {
+                // Reduccion de carga: una serie menos en cada ejercicio de la sesion senalada (minimo 1).
+                for (int k = 0; k < lista.size(); k++) {
+                    var e = lista.get(k);
+                    if (e.plannedSets() != null && e.plannedSets() > 1)
+                        lista.set(k, new PlanDraft.DraftExercise(e.exerciseId(), e.prescriptionType(),
+                                (short) (e.plannedSets() - 1), e.plannedReps(), e.plannedDurationSeconds(),
+                                e.targetLoadKg(), e.restSeconds(), null));
+                }
                 minutos = estimador.estimateMinutes(new PlanDraft.DraftWorkout(fecha,
                         WorkoutFocus.valueOf((String) f.get("focus_code")), "x", 0, lista), ctx.prescription());
             } else if (modo == Modo.SUBE) {
