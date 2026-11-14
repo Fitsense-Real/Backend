@@ -75,15 +75,22 @@ Son los dos perfiles que antes eran NO_FACTIBLE con la contención de 26 ejercic
 
 Los dos siguen teniendo plan. No se relajó ninguna regla ni se liberó ningún ejercicio contenido para conseguirlo.
 
-## 5. Sin V53 (PR A sola)
+## 5. PR A tras la orden de desbloqueo (V51 + V52 con 1083 y 775), y V53 con el interruptor
 
-La rejilla se ejecutó también sobre la PR A sola (V51 + V52). El resultado está en `cierre/impacto/despues_V52_sin_V53.csv`.
-- **168 de 168 perfiles con plan.**
-- Solo cambian 16 perfiles: los 8 «sin colgarse» y los 8 «sin todo».
-- La única diferencia es que siguen elegibles 10 ejercicios de apoyo suspendido: 457, 458, 459, 920, 934, 1317 y 1335 en 8 perfiles cada uno, y 462, 777 y 1184 en 16 perfiles cada uno.
-- Los otros 6 marcados por V53 no aparecen en esa diferencia: 1153, 1301, 1303, 1304 y 1306 siguen fuera por la contención INC-CAT-C39, y 1069 tampoco entra en esos perfiles.
+La rejilla se ejecutó de nuevo el 14/11/2026 sobre la cabeza final de cada rama.
 
-La referencia de generación (`GeneracionReferenciaIT`, 72 planes) es idéntica con y sin V53, porque no usa la restricción de colgarse.
+| Variante | Perfiles con plan | Evidencia |
+|---|---|---|
+| PR A (V51 + V52) | **168 de 168** | `cierre/impacto/despues_V52_sin_V53.csv` |
+| PR B, V53 con el interruptor **apagado** (por defecto) | **168 de 168**, idéntica a la PR A: mismos elegibles, ejercicios y desenlace en los 168 | `cierre/impacto/despues_V53.csv` |
+| PR B, V53 **encendido** (`fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true`) | **168 de 168** | `cierre/impacto/despues_V53_interruptor_encendido.csv` |
+
+- **Frente a la PR A anterior a la orden,** la única diferencia de elegibles es el **775**, que exige banco y sale en 60 perfiles de casa. Cambia el contenido de 57 planes de casa. Ninguno pierde el plan.
+- **1083** no cambia la rejilla: exige balón medicinal, que ningún perfil de la rejilla declara.
+- **Con V53 encendido** cambian los elegibles de 16 perfiles (los 8 «sin colgarse» y los 8 «sin todo»). Salen 10 ejercicios: 457, 458, 459, 462, 777, 920, 934, 1184, 1317 y 1335. Ningún perfil pierde el plan. Los otros 5 de V53 (1069, 1153, 1303, 1304 y 1306) ya no eran elegibles en esos perfiles.
+- **Pérdida de factibilidad legítima por 775:** la mide la rejilla de hipertrofia de 30 a 75 minutos, no esta. Afecta a 14 perfiles de casa solo con peso corporal (`IMPACTO_GENERACION_ADAPTACION.md` §2).
+
+La referencia de generación (`GeneracionReferenciaIT`, 72 planes) no usa la restricción de colgarse: es idéntica con V53 encendido o apagado.
 
 ---
 

@@ -13,7 +13,7 @@
 | 9 | Correcciones en migraciones versionadas y protegidas | **Sí** | V51, V52 y V53 fallan ante un estado previo inesperado |
 | 10 | Contenciones reevaluadas con evidencia | **Sí** | `CONTENCIONES_DEFINITIVAS.md`. Ninguna se retira sin decisión: 5 de INC-4C-03 quedan con propuesta de liberación |
 | 11 | Coherencia del sistema: generación, adaptación, progresión, reincorporación y planes publicados | **Sí, con hallazgos documentados** | HALL-PROG-01 corregido en el motor (`HALL_PROG_01.md`). 775 aplicado: 14 perfiles de casa solo con peso corporal quedan sin plan (V20, legítimo). Plan 78: el 910 y el 916 siguen siendo el límite de la reparación |
-| 12 | Regresión profunda | **Sí, con 2 fallos (HALL-PROG-01)** | En las dos ramas: 1.454 unitarias y 722 de integración. Fallan solo las 2 de HALL-PROG-01, igual en la CI de #60 y #61. En la CI la base pasa, así que el fallo aparece con el cierre (`REGRESION_FINAL.md`) |
+| 12 | Regresión profunda | **Sí, sin fallos** | PR A: 1.468 unitarias y 722 de integración. PR B: 1.468 y 727. #62: 1.431 y 617. **0 fallos** y CI en verde en las tres (`REGRESION_FINAL.md`) |
 | 13 | Segunda auditoría desde una base nueva | **Sí** | V1–V53 una a una (`cierre/auditoria_final/`); ver `REGRESION_FINAL.md` §4 |
 | 14 | Registro maestro de 1.376 filas | **Sí** | `REGISTRO_MAESTRO_CATALOGO.xlsx`. Contrastado campo a campo con la huella de la base real: 0 discrepancias |
 | 15 | Controles permanentes | **Sí** | Huella ampliada, paridad con V51, oráculo de elegibilidad, CHECK de V51, **CHECK «ALTO implica HI» en V52** y matriz de 13 reglas. R03 (1083) ya no tiene incumplimientos |
