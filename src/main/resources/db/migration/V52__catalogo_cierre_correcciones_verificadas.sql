@@ -9,7 +9,7 @@
 -- NO baja ninguna dificultad (V27: requiere aprobacion humana). NO cambia el significado de ninguna restriccion del
 -- perfil. NO activa ni desactiva ejercicios. Cada ejercicio exige su estado anterior exacto: si no coincide y no esta
 -- ya corregido, la migracion FALLA.
--- Cambios: {'axial_load': 14, 'default_prescription': 16, 'difficulty_level': 63, 'equipo': 4, 'high_impact': 5, 'impact_level': 9, 'instructions_es': 329, 'is_stretch': 5, 'movement_pattern': 24, 'name_es': 40, 'requires_floor': 4, 'requires_inversion': 6, 'requires_kneeling': 6, 'requires_overhead': 26, 'zona': 10} en 442 ejercicios.
+-- Cambios: {'axial_load': 14, 'default_prescription': 16, 'difficulty_level': 63, 'equipo': 5, 'high_impact': 6, 'impact_level': 9, 'instructions_es': 329, 'is_stretch': 5, 'movement_pattern': 24, 'name_es': 40, 'requires_floor': 4, 'requires_inversion': 6, 'requires_kneeling': 6, 'requires_overhead': 26, 'zona': 10} en 442 ejercicios.
 -- Generada por docs/FitSense/catalogo_integral/cierre/herramientas/gen_v52.py.
 -- =====================================================================
 
@@ -2060,7 +2060,7 @@ DO $v52$ DECLARE n INT; BEGIN
     RAISE EXCEPTION 'V52: ejercicio 774 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
--- 775 elbow lift - reverse push-up: name_es: R2 L06 (MEDIA): Las almohadillas o bancos bajos bajo los codos son imprescindibles en el movimiento del GIF. Se mantiene FL porque las piernas quedan apoyadas en el suelo y hay / V3 V04 ACEPTAR: f1 boca arriba con los codos sobre dos almohadillas altas y la cadera baja, talones en el suelo; f7 tronco y cadera elevados alineados empujando con los codos:  | instructions_es: R2 L06 (MEDIA): El texto describe tumbarse boca abajo en el suelo y empujar con las palmas; el GIF muestra a la persona boca arriba, con los talones en el suelo, empujando con  / V3 V04 MEJORAR: f1 boca arriba entre dos almohadillas con cada codo apoyado en una y la cadera baja, talones en el suelo; f7 cuerpo elevado y alineado; la espalda no apoya en n
+-- 775 elbow lift - reverse push-up: name_es: R2 L06 (MEDIA): Las almohadillas o bancos bajos bajo los codos son imprescindibles en el movimiento del GIF. Se mantiene FL porque las piernas quedan apoyadas en el suelo y hay / V3 V04 ACEPTAR: f1 boca arriba con los codos sobre dos almohadillas altas y la cadera baja, talones en el suelo; f7 tronco y cadera elevados alineados empujando con los codos:  | instructions_es: R2 L06 (MEDIA): El texto describe tumbarse boca abajo en el suelo y empujar con las palmas; el GIF muestra a la persona boca arriba, con los talones en el suelo, empujando con  / V3 V04 MEJORAR: f1 boca arriba entre dos almohadillas con cada codo apoyado en una y la cadera baja, talones en el suelo; f7 cuerpo elevado y alineado; la espalda no apoya en n | equipo: R2 L06 (MEDIA): Las almohadillas o bancos bajos bajo los codos son imprescindibles en el movimiento del GIF. Se mantiene FL porque las piernas quedan apoyadas en el suelo y hay / V3 V04 ACEPTAR: f1-f12 los codos se apoyan en dos almohadillas o bancos bajos elevados que permiten bajar la cadera por debajo de ellos; imprescindibles para el movimiento del 
 DO $v52$ DECLARE n INT; BEGIN
   UPDATE exercises SET name_es = 'Flexión inversa apoyado en los codos', instructions_es = 'Coloca dos almohadillas o bancos bajos en paralelo y sitúate boca arriba entre ellos, con las piernas extendidas y los talones en el suelo. Flexiona los codos y apoya cada uno sobre una almohadilla, a los lados del tronco. Empuja con los codos hacia abajo para elevar el tronco y la cadera hasta alinear el cuerpo de los hombros a los talones. Baja despacio a la posición inicial. Repite el número de repeticiones indicado.', instruction_steps_es = '["Coloca dos almohadillas o bancos bajos en paralelo y sitúate boca arriba entre ellos, con las piernas extendidas y los talones en el suelo.", "Flexiona los codos y apoya cada uno sobre una almohadilla, a los lados del tronco.", "Empuja con los codos hacia abajo para elevar el tronco y la cadera hasta alinear el cuerpo de los hombros a los talones.", "Baja despacio a la posición inicial.", "Repite el número de repeticiones indicado."]'::jsonb
    WHERE exercise_id = 775 AND name_en = 'elbow lift - reverse push-up' AND name_es = 'Elevación de codo y push-up invertido' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '8dcedb658e26cc1fccbfff04186f602e';
@@ -2068,6 +2068,16 @@ DO $v52$ DECLARE n INT; BEGIN
   IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 775 AND name_en = 'elbow lift - reverse push-up' AND name_es = 'Flexión inversa apoyado en los codos' AND md5(regexp_replace(instructions_es, '[\t\r\n]+', ' ', 'g')) = '43f6045ef20859ab94c8f7692fcfd6ff') THEN
     RAISE EXCEPTION 'V52: ejercicio 775 no esta en el estado anterior esperado';
   END IF;
+END $v52$;
+DO $v52$ BEGIN
+  IF (SELECT count(*) FROM equipment_types WHERE code IN ('bench')) <> 1 THEN
+    RAISE EXCEPTION 'V52: faltan codigos de equipamiento para 775';
+  END IF;
+  IF (SELECT coalesce(string_agg(r.group_no || ':' || t.code, ',' ORDER BY r.group_no || ':' || t.code), '') FROM exercise_equipment_requirements r JOIN equipment_types t ON t.equipment_id = r.equipment_id WHERE r.exercise_id = 775) = '1:bench' THEN RETURN; END IF;
+  IF (SELECT coalesce(string_agg(r.group_no || ':' || t.code, ',' ORDER BY r.group_no || ':' || t.code), '') FROM exercise_equipment_requirements r JOIN equipment_types t ON t.equipment_id = r.equipment_id WHERE r.exercise_id = 775) <> '' THEN RAISE EXCEPTION 'V52: requisitos de 775 distintos de los esperados'; END IF;
+  DELETE FROM exercise_equipment_requirements WHERE exercise_id = 775;
+  INSERT INTO exercise_equipment_requirements (exercise_id, group_no, equipment_id) VALUES (775, 1, (SELECT equipment_id FROM equipment_types WHERE code = 'bench'));
+  UPDATE exercises SET equipment_id = (SELECT equipment_id FROM equipment_types WHERE code = 'bench') WHERE exercise_id = 775;
 END $v52$;
 -- 777 elbow dips: instructions_es: R2 L07 (MEDIA): El texto describe un fondo normal; el GIF muestra además una fase con los antebrazos apoyados sobre las barras antes de volver a extender los brazos / V3 V04 ACEPTAR: f1 brazos extendidos sin pies apoyados; f7 fondo profundo con los codos flexionados; f13 antebrazos apoyados sobre las barras con el tronco erguido; f14-f18 vue | difficulty_level: R2 L07 (MEDIA): apoyo suspendido sobre brazos; fuerza relativa alta / V3 V04 ACEPTAR: f1-f18 fondo en paralelas con el cuerpo sostenido en apoyo suspendido sobre los brazos: fuerza relativa alta, nivel 3 según la definición (fondos)
 DO $v52$ DECLARE n INT; BEGIN
@@ -3321,12 +3331,12 @@ DO $v52$ DECLARE n INT; BEGIN
     RAISE EXCEPTION 'V52: ejercicio 1082 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
--- 1083 medicine ball chest push single response: impact_level: R2 L07 (MEDIA): pies=NO_APLICA; De rodillas en el suelo con un balón medicinal al pecho, lo lanza al frente, cae hacia delante recibiéndose sobre las manos, hace una flexión co / V3 X01 ACEPTAR: f1 de rodillas con balón al pecho; f2-f7 lanzamiento explosivo del balón al frente; f8-f13 el tronco cae hacia delante y se recibe sobre las manos en flexión co
+-- 1083 medicine ball chest push single response: high_impact: R2 L07 (MEDIA): La caída sobre las manos y el empuje explosivo para volver a la posición erguida son un gesto pliométrico de tren superior: falta HI por coherencia con la defin / V3 V07 RECHAZAR: No se añade HI. f1-f18 rodillas siempre en el suelo, sin salto ni vuelo; f7 lanzamiento, f13 caída a posición de flexión y f14-f18 vuelta por fundido, sin rebot / coordinador (conservador): Orden de desbloqueo (14/11/2026): no debe recomendarse a un perfil sin alto impacto. Evidencia del movimiento (V3 X01): lanzamiento balistico y caida con recepcion del cuerpo sobre las manos, pliometria de tren superior; su impacto explicito ya es ALTO (V3 ACEPTAR). Coherencia con su familia: 1084, 1085 y 1087 (lanzamientos con balon medicinal) ya llevan HI. La V3 V07 rechazo HI solo por no haber salto; queda en DEC-HI-LANZAMIENTOS si la pliometria de tren superior debe tener otra clase | impact_level: HI anadido: el impacto explicito no puede ser BAJO
 DO $v52$ DECLARE n INT; BEGIN
-  UPDATE exercises SET impact_level = 'ALTO'
-   WHERE exercise_id = 1083 AND name_en = 'medicine ball chest push single response' AND impact_level = 'BAJO';
+  UPDATE exercises SET high_impact = TRUE, impact_level = 'ALTO'
+   WHERE exercise_id = 1083 AND name_en = 'medicine ball chest push single response' AND high_impact = FALSE AND impact_level = 'BAJO';
   GET DIAGNOSTICS n = ROW_COUNT;
-  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1083 AND name_en = 'medicine ball chest push single response' AND impact_level = 'ALTO') THEN
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1083 AND name_en = 'medicine ball chest push single response' AND high_impact = TRUE AND impact_level = 'ALTO') THEN
     RAISE EXCEPTION 'V52: ejercicio 1083 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
@@ -4033,3 +4043,10 @@ DO $v52$ DECLARE n INT; BEGIN
     RAISE EXCEPTION 'V52: ejercicio 1375 no esta en el estado anterior esperado';
   END IF;
 END $v52$;
+
+-- Control permanente (orden de desbloqueo, 14/11/2026): un activo con impacto explicito ALTO es de alto impacto.
+-- Sin esto, «sin alto impacto» (que filtra por high_impact) dejaba pasar un ejercicio etiquetado ALTO (caso 1083).
+-- Los triggers diferidos de requisitos se comprueban ya: Postgres no admite ALTER TABLE con eventos pendientes.
+SET CONSTRAINTS ALL IMMEDIATE;
+ALTER TABLE exercises ADD CONSTRAINT ck_exercises_alto_implica_high_impact
+    CHECK (NOT is_active OR impact_level IS DISTINCT FROM 'ALTO' OR high_impact);

@@ -323,8 +323,47 @@ public class AdaptedWeekProducer {
         // cambia la dosis de un ejercicio que luego SUST-SEG-1 sustituye por seguridad, el sustituto hereda la dosis
         // de la IA y V8C ya no la compara (es un ejercicio nuevo). La dosis del sustituto no puede superar la que le
         // daria SUST-SEG-1 partiendo de la semana MEDIDA: una bajada sigue valiendo; una subida se rechaza.
-        return revisarYCerrar(context, reparada.semana(), informe, source, motivo, eligible, reparada.problemas(),
+        // Desde HALL-PROG-01 el sustituto ya no hereda la dosis de la IA: recibe una dosis de capacidad sin mas trabajo.
+        // Asi, la subida que la IA hizo sobre un ejercicio que luego se sustituye ya no llega al sustituto, pero la IA
+        // SI la propuso. V8C la sigue rechazando: se compara la dosis que la IA dio al ejercicio quitado con la que tenia
+        // antes de la IA. Rechazar es lo conservador (se pasa al respaldo); nunca se publica una propuesta que sube dosis.
+        var subidas = new ArrayList<String>(
                 subidasPorSustitucion(reparada.semana(), reparada.sustituciones(), context, eligible));
+        subidas.addAll(subidasDeLaIaEnQuitados(derivation.workouts(), adaptada.workouts(), reparada.sustituciones()));
+        return revisarYCerrar(context, reparada.semana(), informe, source, motivo, eligible, reparada.problemas(),
+                subidas);
+    }
+
+    /**
+     * Ejercicios que SUST-SEG-1 sustituyo y a los que la IA, antes, les habia SUBIDO la dosis (series, repeticiones o
+     * segundos) respecto de la semana derivada que recibio. La IA nunca sube dosis, tampoco sobre un ejercicio que va a
+     * desaparecer: aunque el sustituto no herede esa dosis, la propuesta se rechaza (V8C).
+     */
+    static List<String> subidasDeLaIaEnQuitados(List<DerivedWorkout> antesDeLaIa,
+                                                List<DerivedWorkout> conLaIa,
+                                                List<SustitucionSeguridad> sustituciones) {
+        var problemas = new ArrayList<String>();
+        if (antesDeLaIa == null || conLaIa == null || sustituciones == null) return problemas;
+        for (var sust : sustituciones) {
+            var antes = buscar(antesDeLaIa, sust.sesionOrigen(), sust.quitado());
+            var ia = buscar(conLaIa, sust.sesionOrigen(), sust.quitado());
+            if (antes == null || ia == null) continue;
+            if (mayor(antes.plannedSets(), ia.plannedSets())
+                    || mayor(antes.plannedReps(), ia.plannedReps())
+                    || mayor(antes.plannedDurationSeconds(), ia.plannedDurationSeconds()))
+                problemas.add(("V8C: la sesion %d sube la dosis de %d antes de que SUST-SEG-1 lo sustituya por %d (%s;"
+                        + " antes de la IA %s). La IA no puede subir dosis: solo el backend progresa.")
+                        .formatted(sust.sesionOrigen(), sust.quitado(), sust.puesto(), describir(ia), describir(antes)));
+        }
+        return problemas;
+    }
+
+    private static PlanDraft.DraftExercise buscar(List<DerivedWorkout> semana, Long sesion, Long ejercicio) {
+        return semana.stream()
+                .filter(d -> sesion.equals(d.sourcePlannedWorkoutId()))
+                .flatMap(d -> d.workout().exercises().stream())
+                .filter(e -> ejercicio.equals(e.exerciseId()))
+                .findFirst().orElse(null);
     }
 
     /**

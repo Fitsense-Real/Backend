@@ -1,6 +1,6 @@
 # Correcciones definitivas del cierre (V51, V52, V53)
 
-El detalle por ejercicio, con valor anterior, valor nuevo y fundamento de R2 y V3, está en `cierre/adjudicacion/decisiones_v52.tsv` (561 filas). La traza completa de cada propuesta está en `adjudicacion_traza.tsv`, y el SQL generado en `V52__catalogo_cierre_correcciones_verificadas.sql`.
+El detalle por ejercicio, con valor anterior, valor nuevo y fundamento de R2 y V3, está en `cierre/adjudicacion/decisiones_v52.tsv` (563 filas). La traza completa de cada propuesta está en `adjudicacion_traza.tsv`, y el SQL generado en `V52__catalogo_cierre_correcciones_verificadas.sql`.
 
 ## 1. V51: el nombre deja de decidir
 
@@ -11,7 +11,9 @@ El detalle por ejercicio, con valor anterior, valor nuevo y fundamento de R2 y V
 
 V51 rellena exactamente lo que la regla derivaba sobre V50, así que **no cambia el comportamiento**. Las correcciones van en V52.
 
-## 2. V52: 561 cambios en 442 ejercicios
+## 2. V52: 563 cambios en 442 ejercicios
+
+Tras la orden de desbloqueo se suman 2 cambios a ejercicios que ya estaban en la lista: el HI de 1083 y el banco de 775.
 
 | Atributo | Cambios |
 |---|---|
@@ -24,10 +26,10 @@ V51 rellena exactamente lo que la regla derivaba sobre V50, así que **no cambia
 | AX (11 añadidas, 3 quitadas) | 14 |
 | Zona y músculo objetivo | 10 |
 | Impacto explícito (6 bajadas y 3 subidas) | 9 |
-| HI (todas retiradas) | 5 |
+| HI (5 retiradas; 1 añadida: 1083, conservadora) | 6 |
 | INV (4 añadidas, 2 quitadas en banco inclinado) | 6 |
 | KN (1 añadida, 5 quitadas) | 6 |
-| Equipamiento: 300, 756, 1043, 1184 | 4 |
+| Equipamiento: 300, 756, 775, 1043, 1184 | 5 |
 | Estiramiento explícito: 312, 1192 y 1194 a TRUE; 455 y 773 a FALSE | 5 |
 | FL (2 añadidas, 2 quitadas) | 4 |
 
@@ -43,12 +45,20 @@ Normas de texto:
 
 Muestra: 675 «Sentadilla pliométrica con mancuerna» pasa a «Sentadilla sumo con mancuerna», con nuevas instrucciones y sin HI. 1017 «Elevación de talones sobre prensa» pasa a «Prensa de piernas sentado en máquina», con patrón KNEE_DOMINANT y zona upper legs/quads.
 
-## 3. V53: apoyo suspendido (decisión de significado)
+## 3. V53: apoyo suspendido (solo dato; comportamiento apagado hasta la aprobación)
 
-- `requires_suspended_support` = TRUE en 16 ejercicios: 457, 458, 459, 462, 777, 920, 934, 1069, 1153, 1184, 1301, 1303, 1304, 1306, 1317 y 1335.
-- En el motor:
-  - `ExerciseRepository.findEligible` excluye `requires_suspended_support` cuando `excludeHanging`.
-  - `SafetyConflictPolicy` añade la causa `apoyo_suspendido` en los planes publicados.
+- `requires_suspended_support` = TRUE en **15** ejercicios: 457, 458, 459, 462, 777, 920, 934, 1069, 1153, 1184, 1303, 1304, 1306, 1317 y 1335.
+- 1301 sale de la lista tras la revisión con el criterio conservador (orden de desbloqueo): tiene las manos en el suelo y los pies en correas. Sigue contenido por INC-CAT-C39.
+- En el motor, **solo con `fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true`** (por defecto `false`):
+  - `CatalogContextFacade` excluye `requires_suspended_support` de los elegibles cuando el perfil restringe colgarse;
+  - `SafetyConflictPolicy` recibe el hecho y añade la causa `apoyo_suspendido` en los planes publicados.
+- Apagado, «no colgarse» significa exactamente lo mismo que antes de V53 (`ApoyoSuspendidoInterruptorIT`). Detalle en `cierre/V53_APOYO_SUSPENDIDO.md` (PR B).
+
+## 3 bis. Orden de desbloqueo (14/11/2026)
+
+- **1083**: HI añadido de forma conservadora (coordinador `APLICAR_CONSERVADOR`) y V52 añade `CHECK (NOT is_active OR impact_level IS DISTINCT FROM 'ALTO' OR high_impact)`. Desaparece la contradicción R03 y no se baja su impacto. Contención en el código: `ExerciseRepository.findEligible` excluye también `impact_level = 'ALTO'` cuando el perfil no admite impacto.
+- **775**: exige banco (`bench; 1:bench`), como muestra el GIF. Ya no figura como solo peso corporal para conservar la factibilidad. Consecuencia: 14 perfiles GAIN_MUSCLE en casa solo con peso corporal (3–4 días, 58–75 min) quedan sin plan por V20 (`Hipertrofia4Dv34IT`).
+- **HALL-PROG-01**: corrección del motor en `SafetySubstitutionPolicy` (`HALL_PROG_01.md`), independiente del catálogo (PR #62 y dentro de la PR A).
 
 ## 4. Lo que no se corrigió y por qué
 
@@ -57,6 +67,6 @@ Muestra: 675 «Sentadilla pliométrica con mancuerna» pasa a «Sentadilla sumo 
 | 248 bajadas de dificultad | V27: no se baja sin aprobación humana |
 | 27 identidades ambiguas, 7 no decidibles | El GIF no permite decidir |
 | 35 retiradas de bandera (incluida 854 por la decisión D2) | V3 rechaza o no demuestra la condición, criterio sin fijar (DEC-INV-DECLINADO, DEC-HI-LANZAMIENTOS, DEC-HI-CARRERA), identidad dudosa o contrato vigente (913) |
-| 25 equipamientos | Criterio V50: no se exige banco a lo que solo se hace sentado; «towel» no existe como código; **775** (codos sobre apoyos elevados → banco) es correcto pero deja sin plan a GM intermedio en casa con peso corporal a 74–75 min: DEC-FACTIBILIDAD-775, pendiente de tu decisión |
+| 24 equipamientos | Criterio V50: no se exige banco a lo que solo se hace sentado; «towel» no existe como código. (**775** sí se aplicó por la orden de desbloqueo: ver §3 bis) |
 | Hallazgos colaterales (231, 620, 1084, 1182, 1303, 1323, 367, 1017) | Sin R2 ni V3: siguiente ronda |
 | Dependencia de las contenciones | Sin cambios de código (`CONTENCIONES_DEFINITIVAS.md`) |

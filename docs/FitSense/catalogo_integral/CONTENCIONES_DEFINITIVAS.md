@@ -15,7 +15,7 @@ Criterio: una contención sale del código solo cuando un dato auditado la hace 
 | 400 | Brazos sobre la cabeza | R2 (ALTA): igual que 131 | **Se mantiene** |
 | 448 | Brazos sobre la cabeza | R2 (ALTA): igual que 131 | **Se mantiene** |
 
-Con V53 aprobada, un perfil «sin colgarse» excluye los 5 primeros por dos vías equivalentes (dato y registro). Sin V53, solo los excluye el registro: por eso no se retiran todavía.
+Con V53 aprobada y el interruptor encendido, un perfil «sin colgarse» excluye 1153, 1303, 1304 y 1306 por dos vías equivalentes (dato y registro). 1301 ya no está en V53 (manos en el suelo), así que solo lo excluye el registro. Mientras V53 no se apruebe y encienda, solo los excluye el registro: por eso no se retiran.
 
 ## 2. INC-4C-03 (`ExternalCatalogService.RETENIDOS_INC_4C_03`): 7 ids
 
@@ -46,6 +46,6 @@ La contención exige barra y que el perfil no restrinja colgarse ni brazos arrib
 
 | Contención | Antes | Después del cierre | Cambio de código |
 |---|---|---|---|
-| INC-CAT-C39 | 8 | 8 (5 redundantes si se aprueba V53) | Ninguno |
+| INC-CAT-C39 | 8 | 8 (4 redundantes si se aprueba y enciende V53) | Ninguno |
 | INC-4C-03 | 7 | 7 (5 con propuesta de liberación) | Ninguno |
 | INC-CAT-1374 | 1 | 1 (redundante) | Ninguno |

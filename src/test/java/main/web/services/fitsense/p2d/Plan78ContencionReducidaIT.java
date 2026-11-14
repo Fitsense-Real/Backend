@@ -199,8 +199,8 @@ class Plan78ContencionReducidaIT {
         return o == null ? 0 : ((Number) o).intValue();
     }
 
-    /** V53: el 1303 tiene ademas apoyo suspendido, que «no colgarse» excluye; las dos causas se informan. */
-    static final String CAUSA_1303 = "INC-CAT-C39+apoyo_suspendido";
+    /** Causa del bloqueo del 1303 (contencion INC-CAT-C39). */
+    static final String CAUSA_1303 = "INC-CAT-C39";
 
     @Test
     @DisplayName("semana sin empezar: solo el jueves (1303) se bloquea; la reparacion no publica por el 916 (V48) ni el 910 (V52)")

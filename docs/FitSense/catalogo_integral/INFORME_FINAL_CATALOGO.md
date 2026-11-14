@@ -22,12 +22,12 @@
 
    Ver `REVISION_VISUAL_COMPLETA.md`.
 3. **V51.** `impact_level` e `is_stretch` pasan a ser atributos explícitos y el nombre deja de decidir. No cambia el comportamiento (`CatalogoAtributosExplicitosIT`).
-4. **V52.** 561 correcciones en 442 ejercicios, con protección del valor anterior exacto:
-   - 555 vienen de las propuestas verificadas;
+4. **V52.** 563 correcciones en 442 ejercicios, con protección del valor anterior exacto:
+   - 557 vienen de las propuestas verificadas (2 de ellas por la orden de desbloqueo: HI de 1083 y banco de 775);
    - 6 aplican la norma de texto a contradicciones texto/prescripción que encontró la matriz de coherencia.
 
    Ver `CORRECCIONES_DEFINITIVAS.md`.
-5. **V53.** `requires_suspended_support` en 16 ejercicios. Es una **decisión de significado** del permiso «no colgarse» y queda en una PR propia para tu aprobación.
+5. **V53.** `requires_suspended_support` en 15 ejercicios (antes 16: 1301 sale). Es una **decisión de significado** del permiso «no colgarse» y queda en una PR propia para tu aprobación, con el comportamiento **apagado** hasta entonces.
 6. **Controles permanentes.**
    - Huella ampliada: impacto, estiramiento, apoyo y firma md5 de nombre y textos.
    - Paridad con V51 y oráculo de elegibilidad con atributos explícitos.
@@ -63,7 +63,7 @@ No es una revisión humana (ver la 3).
 **Ninguno.** No hubo acceso a ningún profesional y no se ha inventado ninguna firma. Es un bloqueo del cierre (`REVISION_PROFESIONAL.md`).
 
 **5. ¿Cuántos ejercicios tenían errores reales?**
-- **442 activos** con contradicciones demostradas entre el GIF (o la prescripción) y el dato: 561 cambios.
+- **442 activos** con contradicciones demostradas entre el GIF (o la prescripción) y el dato: 563 cambios.
 - Además, **16** con apoyo suspendido que el permiso actual no cubre (V53).
 - Otros errores probables no se corrigen porque exigen una decisión, entre ellos:
   - 775 (equipo);

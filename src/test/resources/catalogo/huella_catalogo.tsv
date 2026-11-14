@@ -704,7 +704,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 772	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell	-	BAJO	false	false	---	e0ae764d807a
 773	chest	pectorals	MOBILITY	1	DURATION	false	-	-	BAJO	false	false	--E	dcbca3727964
 774	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	BAJO	false	false	---	1bd2452e2f47
-775	back	upper back	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	BAJO	false	false	---	43ac4645f43b
+775	back	upper back	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	FL	BAJO	false	false	---	43ac4645f43b
 777	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:parallel bars	-	BAJO	false	true	---	a5a352e066d7
 778	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	BAJO	false	false	---	6aeb43b731ac
 779	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	BAJO	false	false	---	472cb050bd7c
@@ -1005,7 +1005,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1080	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	-	BAJO	false	false	---	5fe554554aa4
 1081	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	-	BAJO	false	false	---	21e83d9cbc12
 1082	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:medicine ball	FL KN	BAJO	false	false	---	50d56c534067
-1083	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:medicine ball	FL KN	ALTO	false	false	---	ce033196dc5a
+1083	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:medicine ball	HI FL KN	ALTO	false	false	---	ce033196dc5a
 1084	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	HI	MODERADO	false	false	---	c4a69bea801c
 1085	waist	abs	SHOULDER_EXTENSION	2	SETS_REPS	true	1:medicine ball	HI OH	ALTO	false	false	---	fcf77ef5bd9d
 1086	back	lats	HIP_HINGE	1	SETS_REPS	false	1:medicine ball	OH	BAJO	false	false	---	9f5a23973313
@@ -1186,7 +1186,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1298	waist	abs	CORE_STABILITY	3	DURATION	false	-	FL	BAJO	false	false	---	3062d120b6ec
 1299	waist	abs	CORE_STABILITY	3	DURATION	false	-	FL	BAJO	false	false	---	3d00fa1fbeaf
 1300	waist	abs	CORE_STABILITY	1	SETS_REPS	false	1:suspension straps	OH	BAJO	false	false	---	59ef0af8627d
-1301	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:suspension straps	FL	BAJO	false	true	---	2bdcc79bd372
+1301	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:suspension straps	FL	BAJO	false	false	---	2bdcc79bd372
 1302	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	BAJO	false	false	---	e88c80134a23
 1303	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:captains chair,1:parallel bars	-	BAJO	false	true	---	e3bfde4e006d
 1304	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:captains chair,1:parallel bars	-	BAJO	false	true	---	3cd12e9e7657

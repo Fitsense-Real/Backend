@@ -41,7 +41,9 @@ R2 = {r['id']: r for r in rd(ci('cierre/adjudicacion/revision2_consolidada.tsv')
 T = collections.defaultdict(list)
 for t in rd(ci('cierre/adjudicacion/adjudicacion_traza.tsv')): T[t['id']].append(t)
 PRO = collections.defaultdict(set)
-for r in rd(ci('cierre/REVISION_PROFESIONAL_LISTA.tsv')): PRO[r['id']].add(r['categoria'])
+# Registro unico de decisiones (orden de desbloqueo, 14/11/2026): cuenta lo que sigue abierto o contenido.
+for r in rd(ci('cierre/REGISTRO_DECISIONES_PENDIENTES.tsv')):
+    if r['id'] and r['estado'] != 'RESUELTA_TECNICA': PRO[r['id']].add(r['origen'])
 INA = {r['id']: r for r in rd(ci('cierre/inactivos/INVENTARIO_INACTIVOS.tsv'))}
 proc = {}
 with gzip.open(ci('cierre/linea_base/procedencia_cambios_V1_V50.tsv.gz'), 'rt', encoding='utf-8') as fh:

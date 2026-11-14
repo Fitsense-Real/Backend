@@ -1,45 +1,33 @@
 # Regresión final y segunda auditoría
 
-## 1. Regresión completa
+## 1. Regresión completa (orden de desbloqueo, 14/11/2026)
 
-Ejecutada con `sh mvnw -o verify -Pintegration`: todas las pruebas unitarias y las de integración, cada una sobre una base PostgreSQL 16 nueva con Flyway V1–V53, o V1–V52 en la PR A.
+Ejecutada con `sh mvnw -o verify -Pintegration` en local: todas las pruebas unitarias y de integración, cada una sobre una base PostgreSQL 16 nueva con Flyway.
 
-| Rama | Unitarias | Integración | Fallos | Omitidas |
-|---|---|---|---|---|
-| `cierre/catalogo-final` (V51 + V52 + V53) | 1.454, 0 fallos | 722 | **2 errores** (HALL-PROG-01) | 1 unitaria y 50 de integración (opcionales: laboratorios, campañas y capturas) |
-| `cierre/v51-v52-correcciones` (V51 + V52) | 1.454, 0 fallos | 722 | **2 errores** (los mismos) | Las mismas |
+| Rama (cabeza probada) | Catálogo | Unitarias | Integración | Fallos | Omitidas |
+|---|---|---|---|---|---|
+| PR A `cierre/v51-v52-correcciones` (52442ae) | V1–V52 | **1.468, 0 fallos** | **722, 0 fallos ni errores** | **0** | 1 + 50 (opcionales: laboratorios, campañas y capturas) |
+| PR B `cierre/v53-apoyo-suspendido` (b202ca4) | V1–V53, interruptor apagado | **1.468, 0 fallos** | **727, 0 fallos ni errores** | **0** | 1 + 50 |
+| #62 `fix/sustituto-dosis-capacidad` (1da115a) | `generation` + corrección | **1.431, 0 fallos** | **617, 0 fallos ni errores** | **0** | 1 + 46 |
 
-Las pruebas de V24 y V8C pasan todas en las dos ramas. Unitarias: `CargaV8CTest`, `DolorSinMasTrabajoV8CTest`, `DosisIaV8CTest`, `ProgresionV24V8CTest`, `RetiradaLocalizadaV8CTest`, `V8CConservacionPatronH1Test`, `V8CDiagnosticoSustitucionesTest` y `V8CRetiradasYDescansoTest`. De integración: `EvaluacionDirectaV24IT`, `EvaluacionLecturaV24IT`, las 6 `RetiradaLocalizada*IT` y las 4 `SinSustitutoDolor*IT`. Ningún validador se ha modificado en el cierre.
+Después de la cabeza probada de la PR A solo cambian documentos.
 
-### 1.1 Fallos y su causa
+**CI de GitHub** en las cabezas de #60, #61 y #62: **verde** (`verify`).
 
-Solo fallan dos pruebas, las mismas en las dos ramas:
-- `ProgresionIT.p02ProgresionSinElExcluido`: `NoSuchElementException` en la línea 524, porque la semana 4 queda sin plan;
-- `ProgresionRev2IT.p02ProgresionSinElExcluido`: la misma prueba con REV2.
+| Comprobación de la orden | Resultado |
+|---|---|
+| Cero regresiones no explicadas | **Sí.** La primera pasada con la corrección encontró 2 (O12 `subeSeries`): era un efecto colateral real, que se cerró reforzando V8C sin tocar la prueba (`HALL_PROG_01.md` §4 bis). En la pasada final: 0 |
+| Cero violaciones de seguridad | **Sí.** Pasan todas las pruebas de V24, V8C, P-03, P-02 (lo que dolió no vuelve), contención y elegibilidad (oráculo independiente) |
+| Cero aumentos de dosis no autorizados | **Sí.** O12 `subeSeries` se rechaza (RESPALDO); pasan `SubidaPorSustitucionTest`, `SubidaIaEnQuitadoTest` y `SustitutoDosisCapacidadTest` («nunca más trabajo») y las unitarias V8C |
+| Los dos p02 correctos | **Sí,** en las tres ramas y en las 5 semillas probadas |
+| Los cuatro objetivos conservan factibilidad cuando hay solución válida | **Sí.** Rejilla de 168 perfiles: 168 de 168 con plan en PR A y PR B (también encendido). Hipertrofia de 30 a 75 min: solo pierden el plan los 14 perfiles de casa con peso corporal que dependían del falso «775 sin banco», y no tienen solución válida con su equipo |
+| 72 planes de referencia válidos y cambios justificados | **Sí.** 72 de 72 VALIDA. Cambian 30, todos de casa, por 775 con banco (§3) |
+| V51–V53 reproducibles | **Sí.** Segunda auditoría desde una base nueva (§4) |
+| Las PR existentes no pierden garantías | **Sí.** Ninguna prueba de las PR #55–#59 ni de `generation` se ha debilitado. #62 pasa la regresión completa sobre `generation` |
 
-**HALL-PROG-01** (`ProgresionIT.p02ProgresionSinElExcluido` y su gemela `ProgresionRev2IT`).
+### 1.1 HALL-PROG-01 (resuelto)
 
-| Dónde | Estado | Resultado de p02 |
-|---|---|---|
-| **CI de GitHub** | Cabeza de #56 (05:50 UTC) | Pasa |
-| **CI de GitHub** | Base del cierre, #55 sobre #56–#59 (57075e7: 16:10 y otra vez a las 22:16 UTC) | **Pasa** |
-| **CI de GitHub** | #60 (V51 + V52) y #61 (+ V53), 21:55 UTC | **Falla** |
-| Local | `generation` (623c4fa) | Pasa |
-| Local | Cabeza de #56 y base 57075e7 | **Falla** |
-| Local | Cierre, también con el catálogo fijado en V50 | **Falla** |
-
-**En la CI de GitHub el fallo aparece con el cierre**: la base pasa y #60 falla, con el mismo código de prueba. En local falla ya en la base. Esa diferencia de entorno no está aislada: no se explica por la versión de Postgres (falla también con 16.16, la de la CI) ni por el reloj de la JVM (falla también fijado a las 16:15 UTC). Así que **no se puede afirmar que el fallo sea ajeno al cierre**.
-
-Mecanismo observado en local, con trazas:
-1. La progresión sube el ejercicio marcado a 3x19.
-2. El usuario lo señala con dolor y la semana conservada lo sustituye.
-3. El sustituto hereda la dosis progresada 3x19, que V24 rechaza por no ser la dosis de ninguna capacidad. En `generation` es el ejercicio 72.
-4. En `generation`, la regeneración segura lo resuelve.
-5. Con el catálogo nuevo, la semana regenerada con dosis base sube los segundos (1.140 → 1.260). P-03 nivel 2 la rechaza y la semana queda NO_FACTIBLE (V32).
-
-No se relaja P-03 ni V24, no se cambia la prueba y no se toca el motor de adaptación. **Es un bloqueo de #60**: su CI está en rojo.
-
-La CI de GitHub de #60 y #61 coincide con la regresión local: 722 pruebas de integración y solo estos 2 errores.
+Ver `HALL_PROG_01.md`: reproducción por semilla, causa, corrección y refuerzo de V8C. Sustituye el análisis anterior de esta sección, que atribuía el fallo a la aparición con el cierre. El defecto ya existía en el motor.
 
 ## 2. Pruebas modificadas en el cierre y por qué
 
@@ -54,37 +42,38 @@ No se ha convertido en verde ninguna prueba cambiando su expectativa para tapar 
 | `CatalogoIntegralTextosIT` | Los textos reescritos por V52 ya no tienen que ser los de V49 | Se leen de las cabeceras de V52, sin una lista a mano |
 | `CatalogoIntegralSeguridadIT` | 503 sale de la lista de V47 | V52 le quita una OH que no tiene, con R2, V3 y el coordinador |
 | `CatalogoElegibleIT` (oráculo) | Atributos explícitos y apoyo suspendido | El oráculo debe reflejar el contrato vigente |
-| `ContencionTextoBanderaIT` | Perfil INTERMEDIATE en dos casos; causa `INC-CAT-C39+apoyo_suspendido` | 1301, 1303, 1304 y 1306 suben a nivel 2 (V3) y salían por nivel antes de llegar a la contención que se prueba |
+| `ContencionTextoBanderaIT` | Perfil INTERMEDIATE en dos casos | 1301, 1303, 1304 y 1306 suben a nivel 2 (V3) y salían por nivel antes de llegar a la contención que se prueba. La causa vuelve a ser `INC-CAT-C39` porque V53 está apagado |
 | `Plan78ContencionReducidaIT` | El 910 entre los problemas de la reparación; sustituto 433 | El 910 sube a nivel 2 en V52 |
 | `RetiradaLocalizada*IT`, `LinajeIntegridadIT` y `TextoRespaldoSustitucionIT` | Fijadas a V50 con el esquema vigente | Son escenarios construidos con planes de V50: el mecanismo no cambia, pero la premisa («el plan lleva el 135») desaparece |
 | `EsquemaVigenteSobreCatalogoAnterior` | Script de solo esquema V51–V53 | Las pruebas fijadas a un catálogo anterior necesitan las columnas nuevas |
-| `GeneracionReferenciaIT` | Referencia regenerada | Ver §3 |
+| `GeneracionReferenciaIT` | Referencia regenerada (dos veces: cierre y orden de desbloqueo) | Ver §3 |
+| `Hipertrofia4Dv34IT` | Exige que fallen exactamente 14 perfiles de casa solo con peso corporal, y solo por V20 | 775 exige banco (orden de desbloqueo). Cualquier otro fallo sigue rompiendo la prueba |
+| `CatalogoElegibleIT` (oráculo) | «Sin impacto» excluye también `impact_level = 'ALTO'` | Contención de 1083 |
+| `ApoyoSuspendidoInterruptorIT` (nueva, PR B) | Dato, apagado, encendido, causa y script de solo lectura | V53 tras un interruptor |
+| `SustitutoDosisCapacidadTest` y `SubidaIaEnQuitadoTest` (nuevas) | Dosis del sustituto y refuerzo de V8C | HALL-PROG-01 |
 
 ## 3. Referencia de generación (`GeneracionReferenciaIT`, 72 planes)
 
-| Medida | Valor |
-|---|---|
-| Planes que cambian | 70 de 72 |
-| Planes VALIDA | 72 de 72 |
-| Con y sin V53 | Idéntica |
+| Medida | Cierre (V52 inicial) | Tras la orden de desbloqueo |
+|---|---|---|
+| Planes que cambian | 70 de 72 respecto de V50 | **30 de 72** respecto de la referencia del cierre, **todos de casa** (los 36 de gimnasio, idénticos) |
+| Planes VALIDA | 72 de 72 | **72 de 72** |
+| Causa | Subidas de nivel, estiramientos y banderas retiradas | **775 exige banco**: sale de los 10 planes de casa que lo llevaban, y el resto es el reparto determinista sobre el conjunto elegible sin 775 |
+| Con V53 encendido o apagado | Idéntica | Idéntica |
 
-Ejercicios que más salen: 1262, 1115 y 1099 (12 apariciones cada uno), y 1334 y 1097 (9).
+Diff: `git log -p -- docs/FitSense/evidencia/progresion/generacion_referencia.txt`.
 
-Ejercicios que más entran: 1138 (13), 1179 (12), 933 y 1096 (10) y 1155 (9).
+## 4. Segunda auditoría desde una base nueva (repetida el 14/11/2026)
 
-El cambio se debe a las subidas de nivel, a los ejercicios que dejan de ser estiramiento y a las banderas retiradas. Diff: `git diff -- docs/FitSense/evidencia/progresion/generacion_referencia.txt`.
-
-## 4. Segunda auditoría desde una base nueva
-
-`ProcedenciaCatalogoIT` (`-Dfitsense.catalogo.procedencia=true`) creó una base PostgreSQL nueva y aplicó **V1–V53 una a una**, registrando cada atributo de cada ejercicio después de cada versión. Salida: `cierre/auditoria_final/` (`procedencia_cambios.tsv.gz`, `procedencia_resumen.tsv` y `SHA256SUMS`).
+`ProcedenciaCatalogoIT` (`-Dfitsense.catalogo.procedencia=true`) creó una base PostgreSQL nueva en la cabeza de la PR B y aplicó **V1–V53 una a una**, registrando cada atributo de cada ejercicio después de cada versión. Salida: `cierre/auditoria_final/` (`procedencia_cambios.tsv.gz`, `procedencia_resumen.tsv` y `SHA256SUMS`).
 
 | Versión | Ejercicios que cambian | Cambios de atributo | Comprobación |
 |---|---|---|---|
 | V51 | 1.376 | 2.752 | Exactamente `impact_level` e `is_stretch` en todos |
-| V52 | **442** | 900 | **Los ids coinciden exactamente con `decisiones_v52.tsv`** |
-| V53 | 1.376 | 1.376 | La columna nueva: `true` en exactamente los 16 de V53 y `false` en los otros 1.360 |
+| V52 | **442** | 904 | **Los ids coinciden exactamente con `decisiones_v52.tsv`** (563 decisiones, incluidas las de 1083 y 775) |
+| V53 | 1.376 | 1.376 | La columna nueva: `true` en exactamente los **15** de V53 y `false` en los otros 1.361 |
 
-Las migraciones se reproducen desde cero sin error, y el resultado coincide con lo decidido, ejercicio a ejercicio.
+Las migraciones se reproducen desde cero sin error y el resultado coincide con lo decidido, ejercicio a ejercicio. La restricción `ck_exercises_alto_implica_high_impact` se crea sin error, porque ningún activo queda ALTO sin HI.
 
 ## 5. Otras verificaciones
 
@@ -92,6 +81,6 @@ Las migraciones se reproducen desde cero sin error, y el resultado coincide con 
 |---|---|
 | Huella de la base frente a las decisiones (PR A y rama final) | 442 = 442 |
 | Registro maestro frente a la huella real | 0 discrepancias de textos y dificultad en 1.219 activos |
-| Matriz de coherencia (13 reglas) | Ver `MATRIZ_COHERENCIA_FINAL.xlsx`: 0 incumplimientos estructurales y 1 contradicción abierta (1083) |
-| Rejilla de 168 perfiles | 168 → 168 con plan (`IMPACTO_ELEGIBILIDAD.md`) |
-| Hipertrofia de 30 a 75 minutos | Como con V50, con 775 aplazado |
+| Matriz de coherencia (13 reglas) | `MATRIZ_COHERENCIA_FINAL.xlsx`, regenerada con el registro único (calculada sobre V1–V53): R01–R10 sin incumplimientos (**R03, la de 1083, pasa a 0**); R11: 27 identidades no confirmadas; R12 (informativa): 5; R13: 295 activos con decisión pendiente |
+| Rejilla de 168 perfiles | 168 → 168 con plan en PR A, PR B apagado (idéntica) y PR B encendido (`IMPACTO_ELEGIBILIDAD.md` §5) |
+| Hipertrofia de 30 a 75 minutos | 298 de 312 con plan. Los 14 sin plan son de casa con peso corporal, por 775 con banco (V20, legítimo) |

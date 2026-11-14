@@ -34,8 +34,9 @@ public final class SafetyConflictPolicy {
     public static final String RODILLAS = "rodillas";
     public static final String SUSPENSION = "suspension";
     /**
-     * V53 (decision de significado): apoyo suspendido -sin los pies en el suelo, sostenido sobre brazos o antebrazos, o
-     * con los pies en correas-. Lo excluye la restriccion «no colgarse»; causa propia para que se distinga en el registro.
+     * V53 (propuesta pendiente de aprobacion): apoyo suspendido sobre un aparato sin soporte de pies. Causa propia para
+     * que se distinga en el registro. Solo aparece con el interruptor de V53 encendido: apagado, la fachada del catalogo
+     * entrega el hecho siempre en false.
      */
     public static final String APOYO_SUSPENDIDO = "apoyo_suspendido";
     public static final String BRAZOS_ARRIBA = "brazos_arriba";

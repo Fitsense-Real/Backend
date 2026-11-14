@@ -1,5 +1,4 @@
 id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificultad	contencion	pendiente_profesional	frase_final
-1083	Push de pecho con balón medicinal, repetición única	R03	Impacto ALTO implica HI	SETS_REPS	ALTO	NO	FL KN	2	-	-	Repite el número de repeticiones indicado.
 64	Dominada arco	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	HG OH	3	-	IDENTIDAD	Alterna los lados en cada repetición.
 257	Curl de muñeca con barra	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones indicado.
 261	Elevación de gemelos con balanceo de pierna de pie	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones deseado.
@@ -9,7 +8,7 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 494	Flexión en reloj	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL	1	-	IDENTIDAD;TEXTO NO DECIDIBLE	Continúa alternando lados en cada repetición.
 535	Press cubano con mancuerna	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	AX OH	2	-	IDENTIDAD;TEXTO NO DECIDIBLE	Repite el número de repeticiones deseado.
 620	Elevación lateral trasera a una mano acostado con mancuerna	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones deseado, luego cambia al otro brazo.
-675	Sentadilla sumo con mancuerna	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones indicado.
+675	Sentadilla sumo con mancuerna	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 853	Marcha rápida en el sitio	R11	Identidad del movimiento confirmada (CLARA) en la R2	DURATION	BAJO	NO	-	1	-	IDENTIDAD	Mantén la duración indicada.
 902	Gusano caminando	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	BAJO	NO	FL INV	1	-	IDENTIDAD	Repite el número de repeticiones deseado.
 922	Hang clean alterno con kettlebell	R11	Identidad del movimiento confirmada (CLARA) en la R2	SETS_REPS	ALTO	NO	HI AX	3	-	IDENTIDAD;SEGURIDAD	Repite el número de repeticiones indicado.
@@ -83,7 +82,7 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 218	Remo a hombro posterior con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
 228	Flexión lateral con barra v. 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 230	Pullover con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
-231	Press desde pull-over con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+231	Press desde pull-over con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27);HALLAZGO COLATERAL	Repite el número de repeticiones indicado.
 232	Remo con agarre inverso y tronco inclinado con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 234	Encogimiento de hombros con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
 235	Rack pull con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
@@ -127,6 +126,7 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 339	Press a una mano en declinado en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 359	Remo a una mano con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 362	Curl en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
+367	Patada de tríceps en cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	HALLAZGO COLATERAL	Repite el número de repeticiones indicado.
 372	Curl a una mano con cable	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
 373	Flexión de muñeca con agarre inverso en polea	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
 374	Elevación lateral a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
@@ -205,7 +205,7 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 662	Press de hombro a una mano con mancuerna, versión 2	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
 663	Remo vertical a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
 667	Press de una mano con agarre invertido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
-675	Sentadilla sumo con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27);IDENTIDAD	Repite el número de repeticiones indicado.
+675	Sentadilla sumo con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 676	Curl predicador con mancuerna a un brazo, invertido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 677	Curl araña invertido a una mano con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 679	Curl martillo sentado a una mano	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
@@ -235,7 +235,6 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 768	Curl de concentración a una mano con mancuerna de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia de brazo.
 771	Extensión de tríceps a una mano de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
 772	Curl invertido a una mano con mancuerna de pie	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado, luego cambia al otro brazo.
-775	Flexión inversa apoyado en los codos	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	1	-	DEC-FACTIBILIDAD-775	Repite el número de repeticiones indicado.
 800	Curl de bíceps de camarero	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 813	Bandera	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	HG OH	3	INC-4C-03	CONTENCION INC-4C-03	Mantén la duración indicada.
 829	Curl de dedos con barra	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones deseado.
@@ -288,7 +287,9 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 982	Remo a una mano con palanca	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 994	Remo en palanca, agarre estrecho alterno	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Continúa alternando lados durante el número de repeticiones deseado.
 1010	Curl de isquiotibiales tendido con palanca	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
+1017	Prensa de piernas sentado en máquina	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	1	-	HALLAZGO COLATERAL	Repite el número de repeticiones indicado.
 1068	Muscle up	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI HG OH	3	-	IDENTIDAD	Repite el número de repeticiones indicado.
+1083	Push de pecho con balón medicinal, repetición única	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI FL KN	2	-	ORDEN 14/11 punto 2	Repite el número de repeticiones indicado.
 1084	Lanzamiento de pecho con balón medicinal	R13	Sin decision profesional pendiente	SETS_REPS	MODERADO	NO	HI	1	-	DEC-HI-LANZAMIENTOS	Repite el número de repeticiones indicado.
 1085	Golpe con balón medicinal a una mano	R13	Sin decision profesional pendiente	SETS_REPS	ALTO	NO	HI OH	2	-	DEC-HI-LANZAMIENTOS	Atrapa el balón medicinal al rebotar y repite el número de repeticiones deseado.
 1086	Captura y lanzamiento por encima de la cabeza con balón medicinal	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	1	-	IDENTIDAD;TEXTO NO DECIDIBLE	Baja de nuevo el cuerpo a la posición de sentadilla y repite el número de repeticiones deseado.
@@ -299,6 +300,7 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 1153	Fondos en anillas	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
 1176	Saltos estilo patinador	R13	Sin decision profesional pendiente	DURATION	ALTO	NO	HI	1	-	IDENTIDAD	Mantén la duración indicada.
 1177	Paso de esquí	R13	Sin decision profesional pendiente	DURATION	ALTO	NO	HI	1	-	BANDERA_QUITAR;IDENTIDAD;SEGURIDAD	Mantén la duración indicada.
+1182	Toque de hombro	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	1	-	HALLAZGO COLATERAL	Repite el número de repeticiones deseado.
 1192	Skin the cat	R13	Sin decision profesional pendiente	DURATION	BAJO	SI	HG OH	3	INC-4C-03	CONTENCION INC-4C-03;IDENTIDAD	Mantén la duración indicada.
 1207	Elevación de talones a una pierna con mancuerna	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 1213	Elevacion de talones a una pierna en piso con Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
@@ -317,9 +319,10 @@ id	nombre	regla	descripcion	prescripcion	impacto	estiramiento	banderas	dificulta
 1288	Sentadilla dividida a una pierna con Smith	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	AX	3	-	DIFICULTAD (V27)	Repite el número de repeticiones indicado.
 1294	Balanceo 360	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	HG OH	3	-	IDENTIDAD;SEGURIDAD;TEXTO NO DECIDIBLE	Recuerda respirar durante todo el ejercicio.
 1298	Maltés en apertura	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	FL	3	INC-4C-03	CONTENCION INC-4C-03;IDENTIDAD	Mantén la duración indicada.
-1301	Crunch invertido suspendido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
-1303	Elevación de piernas torsionada	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
+1301	Crunch invertido suspendido	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	FL	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53);ORDEN 14/11 punto 3	Repite el número de repeticiones indicado.
+1303	Elevación de piernas torsionada	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53);HALLAZGO COLATERAL	Repite el número de repeticiones indicado.
 1304	Elevación de piernas torsionada (femenino)	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
 1306	Elevación de rodillas en silla romana	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	2	INC-CAT-C39	DEC-APOYO-SUSPENDIDO (V53)	Repite el número de repeticiones indicado.
 1311	Abductor de cadera externo con pierna recta	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	-	1	-	IDENTIDAD	Repite el número de repeticiones indicado.
+1323	Jalón en dos poleas altas con agarre paralelo	R13	Sin decision profesional pendiente	SETS_REPS	BAJO	NO	OH	2	-	HALLAZGO COLATERAL	Repite el número de repeticiones indicado.
 1324	Pedaleo sentado en bicicleta estática	R13	Sin decision profesional pendiente	DURATION	BAJO	NO	-	2	-	DIFICULTAD (V27)	Estira los músculos de las piernas después del entrenamiento para prevenir la rigidez y favorecer la recuperación.
