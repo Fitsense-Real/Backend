@@ -704,7 +704,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 772	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell	-	BAJO	false	---	e0ae764d807a
 773	chest	pectorals	MOBILITY	1	DURATION	false	-	-	BAJO	false	--E	dcbca3727964
 774	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	BAJO	false	---	1bd2452e2f47
-775	back	upper back	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	BAJO	false	---	43ac4645f43b
+775	back	upper back	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	FL	BAJO	false	---	43ac4645f43b
 777	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:parallel bars	-	BAJO	false	---	a5a352e066d7
 778	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	BAJO	false	---	6aeb43b731ac
 779	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	BAJO	false	---	472cb050bd7c
@@ -1005,7 +1005,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1080	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	-	BAJO	false	---	5fe554554aa4
 1081	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	-	BAJO	false	---	21e83d9cbc12
 1082	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:medicine ball	FL KN	BAJO	false	---	50d56c534067
-1083	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:medicine ball	FL KN	ALTO	false	---	ce033196dc5a
+1083	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:medicine ball	HI FL KN	ALTO	false	---	ce033196dc5a
 1084	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	HI	MODERADO	false	---	c4a69bea801c
 1085	waist	abs	SHOULDER_EXTENSION	2	SETS_REPS	true	1:medicine ball	HI OH	ALTO	false	---	fcf77ef5bd9d
 1086	back	lats	HIP_HINGE	1	SETS_REPS	false	1:medicine ball	OH	BAJO	false	---	9f5a23973313

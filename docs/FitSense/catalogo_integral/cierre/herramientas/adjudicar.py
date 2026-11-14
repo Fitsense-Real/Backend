@@ -52,6 +52,14 @@ for p in P:
         motivo = 'vetado por el coordinador: ' + k['fundamento']
     elif t == 'IDENTIDAD' or vd == 'NO_DECIDIBLE':
         res, motivo = ('RESUELTO', k['fundamento']) if kd == 'RESUELTO' else ('PROFESIONAL', 'identidad o evidencia no decidible con el GIF')
+    elif t == 'BANDERA_ANADIR' and kd == 'APLICAR_CONSERVADOR':
+        # Solo para anadir una restriccion de seguridad (nunca para quitarla): el coordinador la aplica aunque la V3
+        # no la aceptara, cuando hay evidencia del movimiento y una orden expresa (fundamento escrito). Mas conservador.
+        col, c = FLAG[p['actual']]
+        add(i, col, 'f', 't', fund + ' / coordinador (conservador): ' + k['fundamento']); res = 'APLICADO'
+        if p['actual'] == 'HI':
+            estado[i]['hi'] = 't'
+            if estado[i]['imp'] == 'BAJO': add(i, 'impact_level', 'BAJO', 'ALTO', 'HI anadido: el impacto explicito no puede ser BAJO'); estado[i]['imp'] = 'ALTO'
     elif vd not in ('ACEPTAR', 'MEJORAR'):
         motivo = f'V3 {vd}'
     elif t == 'BANDERA_ANADIR':
