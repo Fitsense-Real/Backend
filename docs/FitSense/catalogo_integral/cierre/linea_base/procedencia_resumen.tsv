@@ -1,0 +1,53 @@
+version	descripcion	ejercicios	cambios
+1	users and profiles	0	0
+2	catalog	0	0
+3	catalog data	0	0
+4	planning	0	0
+5	execution	0	0
+6	metrics and config	0	0
+7	config data	0	0
+8	catalog seed minimal	52	1040
+9	catalog full	1324	26480
+10	exercise safety flags	1376	5026
+11	catalog translations and activation	1376	2601
+12	prescription ranges	0	0
+13	study design	0	0
+14	duration estimation	0	0
+15	progression limits	0	0
+16	retroactive report limit	0	0
+17	volume components	0	0
+18	prescription principles	59	59
+19	rebuild config from mvp14	0	0
+20	prescription coherence	0	0
+21	catalog difficulty sync neon	33	33
+22	equipment types for missing implements	0	0
+23	exercise equipment requirements	1376	1376
+24	catalog review fixes	224	401
+25	movement flags	1376	5802
+26	movement pattern	1376	2752
+27	exercise difficulty review	0	0
+28	approve lower hip difficulty	0	0
+29	exercise equipment requirements fixes	80	80
+30	registration coverage	0	0
+31	workout derivation	0	0
+32	adaptation evidence	0	0
+33	aplicada exige sesiones	0	0
+34	progresion de sesiones	0	0
+35	user roles	0	0
+36	catalog review gif corrections	9	37
+37	catalog safety corrections	102	157
+38	catalog classification equipment	154	245
+39	catalog functional equipment	43	70
+40	catalog c4 c6	7	13
+41	catalog c4 c6 fase2	15	32
+42	adaptation lack of time context	0	0
+43	pain memory and safe regeneration	0	0
+44	planning policy version	0	0
+44.1	adaptation reason codes	0	0
+44.2	password reset tokens	0	0
+44.3	planning policy rediseno	0	0
+46	catalogo traducciones objetivas	2	2
+47	catalogo integral banderas seguridad	26	28
+48	catalogo integral dificultad conservadora	12	12
+49	catalogo integral textos	408	825
+50	catalogo integral clasificacion equipamiento	26	47

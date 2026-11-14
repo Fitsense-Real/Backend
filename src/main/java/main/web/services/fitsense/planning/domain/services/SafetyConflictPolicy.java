@@ -26,11 +26,19 @@ public final class SafetyConflictPolicy {
 
     public static final String RETENIDO_INC_4C_03 = "INC-4C-03";
     public static final String CONTENIDO_INC_CAT_1374 = "INC-CAT-1374";
+    /** Contencion por texto del catalogo contra bandera (caso 39, {@link ContencionTextoBandera}). */
+    public static final String CONTENIDO_INC_CAT_C39 = ContencionTextoBandera.CODIGO;
     public static final String ALTO_IMPACTO = "alto_impacto";
     public static final String SUELO = "suelo";
     public static final String CARGA_AXIAL = "carga_axial";
     public static final String RODILLAS = "rodillas";
     public static final String SUSPENSION = "suspension";
+    /**
+     * V53 (propuesta pendiente de aprobacion): apoyo suspendido sobre un aparato sin soporte de pies. Causa propia para
+     * que se distinga en el registro. Solo aparece con el interruptor de V53 encendido: apagado, la fachada del catalogo
+     * entrega el hecho siempre en false.
+     */
+    public static final String APOYO_SUSPENDIDO = "apoyo_suspendido";
     public static final String BRAZOS_ARRIBA = "brazos_arriba";
     public static final String INVERSION = "inversion";
     /**
@@ -48,8 +56,9 @@ public final class SafetyConflictPolicy {
     public static final String CATALOGO_INACTIVO = "catalogo_inactivo";
 
     /** Todas las causas admitidas. Un motivo fuera de esta lista no autoriza nada. */
-    public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, ALTO_IMPACTO,
-            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
+    public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, CONTENIDO_INC_CAT_C39,
+            ALTO_IMPACTO,
+            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, APOYO_SUSPENDIDO, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
 
     private SafetyConflictPolicy() {}
 
@@ -61,15 +70,27 @@ public final class SafetyConflictPolicy {
      */
     public static List<String> causas(ExerciseSafetyFacts f, SafetyProfile s, boolean retenido,
                                       boolean contenido) {
+        return causas(f, s, retenido, contenido, false);
+    }
+
+    /**
+     * Igual, con la contencion INC-CAT-C39 (texto del catalogo contra bandera).
+     *
+     * @param contenidoC39 si INC-CAT-C39 lo contiene para este perfil
+     */
+    public static List<String> causas(ExerciseSafetyFacts f, SafetyProfile s, boolean retenido,
+                                      boolean contenido, boolean contenidoC39) {
         var causas = new ArrayList<String>();
         if (retenido) causas.add(RETENIDO_INC_4C_03);
         if (contenido) causas.add(CONTENIDO_INC_CAT_1374);
+        if (contenidoC39) causas.add(CONTENIDO_INC_CAT_C39);
         if (f == null || s == null) return List.copyOf(causas);
         if (s.excludeHighImpact() && f.highImpact()) causas.add(ALTO_IMPACTO);
         if (s.excludeFloorWork() && f.requiresFloor()) causas.add(SUELO);
         if (s.excludeAxialLoad() && f.axialLoad()) causas.add(CARGA_AXIAL);
         if (s.excludeKneeling() && f.requiresKneeling()) causas.add(RODILLAS);
         if (s.excludeHanging() && f.requiresHanging()) causas.add(SUSPENSION);
+        if (s.excludeHanging() && f.requiresSuspendedSupport()) causas.add(APOYO_SUSPENDIDO);
         if (s.excludeOverhead() && f.requiresOverhead()) causas.add(BRAZOS_ARRIBA);
         if (s.excludeInversion() && f.requiresInversion()) causas.add(INVERSION);
         return List.copyOf(causas);

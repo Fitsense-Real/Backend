@@ -1,0 +1,27 @@
+id	nombre_final_V50	equipo	contencion_26	contencion_8	liberado	banderas_HG_OH_FL	texto_pide_lo_liberado	bandera_declara_lo_liberado	justificacion	resultado
+55	Círculos de tobillo	body weight	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+131	Curl de bíceps a una mano con banda y brazo a la altura del hombro	band	CAB	CAB	-	-	no	-	curl alto: brazo a la altura del hombro y manos hacia la cabeza; limite de la definicion de requires_overhead	SE MANTIENE (8)
+224	Abdominal con press de barra en banco declinado	barbell	SUE	-	SUE	OH	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+316	Remo invertido con agarre estrecho en barra baja	pull-up bar	CAB COLG	-	CAB COLG	FL	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+400	Curl por encima de la cabeza en cable	cable	CAB	CAB	-	-	no	-	curl alto: brazo a la altura del hombro y manos hacia la cabeza; limite de la definicion de requires_overhead	SE MANTIENE (8)
+448	Curl por encima de la cabeza sentado en cable	cable	CAB	CAB	-	-	no	-	curl alto: brazo a la altura del hombro y manos hacia la cabeza; limite de la definicion de requires_overhead	SE MANTIENE (8)
+637	Femorales acostado con mancuerna	dumbbell	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+741	Elevación lateral de un brazo acostado con mancuerna	dumbbell	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+875	Patadas flutter	bench	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1062	Elevación de cadera acostado	bench	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1063	Crunch negativo	bench	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1093	Elevación de rodilla con patada frontal alterna	body weight	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1095	Empuje y tracción con peso corporal	body weight	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1152	Press a cobra desde el suelo	body weight	COLG	-	COLG	FL	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1153	Fondos en anillas	gymnastic rings	COLG	COLG	-	-	no	-	apoyo suspendido (cuerpo sostenido por brazos/antebrazos, pies sin apoyo); requires_hanging no lo cubre; decision profesional	SE MANTIENE (8)
+1156	Remo sentado con banda de espalda recta	band	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1181	Crunch lateral sentado contra pared	body weight	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1193	Estiramiento sentado del piriforme	body weight	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1272	Tracción snatch	barbell	CAB	-	CAB	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1301	Crunch invertido suspendido	suspension straps	CAB COLG	COLG	CAB	FL	no	-	liberado CAB: el texto V49 ya no lo pide; se mantiene COLG: apoyo suspendido (cuerpo sostenido por brazos/antebrazos, pies sin apoyo); requires_hanging no lo cubre; decision profesional	LIBERADO EN PARTE
+1303	Elevación de piernas torsionada	parallel bars	COLG SUE	COLG	SUE	-	no	-	liberado SUE: el texto V49 ya no lo pide; se mantiene COLG: apoyo suspendido (cuerpo sostenido por brazos/antebrazos, pies sin apoyo); requires_hanging no lo cubre; decision profesional	LIBERADO EN PARTE
+1304	Elevación de piernas torsionada (femenino)	parallel bars	COLG SUE	COLG	SUE	-	no	-	liberado SUE: el texto V49 ya no lo pide; se mantiene COLG: apoyo suspendido (cuerpo sostenido por brazos/antebrazos, pies sin apoyo); requires_hanging no lo cubre; decision profesional	LIBERADO EN PARTE
+1306	Elevación de piernas vertical en paralelas	parallel bars	COLG	COLG	-	-	no	-	apoyo suspendido (cuerpo sostenido por brazos/antebrazos, pies sin apoyo); requires_hanging no lo cubre; decision profesional	SE MANTIENE (8)
+1309	Estiramiento de espalda alta	body weight	CAB	-	CAB	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1311	Abductor de cadera externo con pierna recta	body weight	SUE	-	SUE	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)
+1322	Estiramiento de tríceps	body weight	CAB	-	CAB	-	no	-	texto V49 coherente con el GIF y con la bandera	LIBERADO (18)

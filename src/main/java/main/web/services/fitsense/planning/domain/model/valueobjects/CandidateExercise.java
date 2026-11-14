@@ -48,8 +48,29 @@ public record CandidateExercise(
          * Auditoria v46 (P15-C, experimental): {@code exercises.is_isolation}. Solo lo usa {@code CoberturaDePatron}
          * cuando el experimento esta activado; {@code null} = desconocido (se trata como multiarticular).
          */
-        Boolean isolation
+        Boolean isolation,
+
+        /**
+         * V51: {@code exercises.impact_level} explicito (BAJO, MODERADO, ALTO), revisado contra el GIF. Si llega,
+         * ImpactoPolicy lo usa tal cual y el nombre no interviene. {@code null} = el origen no lo informa (pruebas,
+         * datos antiguos): entonces ImpactoPolicy aplica su respaldo por nombre, documentado.
+         */
+        String impactLevel,
+
+        /**
+         * V51: {@code exercises.is_stretch} explicito. Si llega, CatalogEligibilityPolicy lo usa tal cual. {@code null}
+         * = el origen no lo informa: respaldo por la palabra «estiramiento» en el nombre.
+         */
+        Boolean stretch
 ) {
+    /** Compatibilidad: sin los atributos explicitos de V51. */
+    public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
+                             int difficulty, PrescriptionType defaultPrescription, String targetMuscle,
+                             String movementPattern, Boolean highImpact, Boolean isolation) {
+        this(exerciseId, name, bodyPartCode, equipmentCode, difficulty, defaultPrescription, targetMuscle,
+                movementPattern, highImpact, isolation, null, null);
+    }
+
     public CandidateExercise(Long exerciseId, String name, String bodyPartCode, String equipmentCode,
                              int difficulty, PrescriptionType defaultPrescription, String targetMuscle,
                              String movementPattern, Boolean highImpact) {

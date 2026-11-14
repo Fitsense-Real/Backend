@@ -1,0 +1,34 @@
+# Plan 78 del usuario 39 (semana 2026-11-16) REPRODUCIDO por el motor de reglas con el equipo exacto (auditoria_caso_39, cierre/plan78_reproducido_equipo_exacto.csv). Coincide con el real en fechas, enfoques, duraciones, estructura, 1303 y 910; la identidad ejercicio a ejercicio queda pendiente de la consulta SQL §G-2 de la auditoria (sin acceso a datos reales).
+# sesion (0..3 = lun, jue, vie, dom);orden;exercise_id;tipo;series;reps;duracion_s;descanso_s
+0;1;314;SETS_REPS;3;8;;120
+0;2;349;SETS_REPS;3;8;;120
+0;3;135;SETS_REPS;3;10;;90
+0;4;1334;SETS_REPS;2;10;;90
+0;5;357;SETS_REPS;2;10;;90
+0;6;421;SETS_REPS;3;15;;45
+0;7;1093;DURATION;3;;90;60
+0;8;1255;DURATION;2;;30;15
+1;1;916;SETS_REPS;3;8;;120
+1;2;309;SETS_REPS;3;8;;120
+1;3;493;SETS_REPS;2;13;;90
+1;4;1303;SETS_REPS;2;13;;90
+1;5;1141;SETS_REPS;2;13;;90
+1;6;507;SETS_REPS;3;15;;45
+1;7;853;DURATION;3;;90;60
+1;8;1136;DURATION;2;;30;15
+2;1;1152;SETS_REPS;3;10;;90
+2;2;1092;SETS_REPS;3;10;;90
+2;3;436;SETS_REPS;2;10;;90
+2;4;494;SETS_REPS;3;15;;45
+2;5;910;SETS_REPS;3;15;;45
+2;6;707;SETS_REPS;3;15;;45
+2;7;253;DURATION;3;;90;60
+2;8;1137;DURATION;2;;30;15
+3;1;1315;SETS_REPS;3;10;;90
+3;2;1064;SETS_REPS;3;13;;90
+3;3;1009;SETS_REPS;2;10;;90
+3;4;1200;SETS_REPS;3;15;;45
+3;5;134;SETS_REPS;3;15;;45
+3;6;905;SETS_REPS;3;15;;45
+3;7;1325;DURATION;3;;90;60
+3;8;454;DURATION;2;;30;15
