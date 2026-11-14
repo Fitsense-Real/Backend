@@ -134,7 +134,23 @@ public class ExternalCatalogService {
 
     private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
                                               SafetyProfile safety, boolean registrar) {
-        var delCatalogo = catalogContextFacade.fetchEligibleExercises(
+        // V53-B: con la opcion B encendida, la exclusion del apoyo suspendido va EXPLICITA (la resolvio
+        // SafetyProfile con el permiso propio). Apagada -por defecto- se llama exactamente como antes de V53-B.
+        var delCatalogo = catalogContextFacade.permisoApoyoSuspendidoActivo()
+                ? catalogContextFacade.fetchEligibleExercises(
+                profile.equipmentCodes(),
+                profile.excludesGymOnlyEquipment(),
+                maxDifficultyLevel,
+                profile.blockedExerciseIds(),
+                safety.excludeHighImpact(),
+                safety.excludeFloorWork(),
+                safety.excludeAxialLoad(),
+                safety.excludeKneeling(),
+                safety.excludeHanging(),
+                safety.excludeOverhead(),
+                safety.excludeInversion(),
+                safety.excludeSuspendedSupport())
+                : catalogContextFacade.fetchEligibleExercises(
                 profile.equipmentCodes(),
                 profile.excludesGymOnlyEquipment(),
                 maxDifficultyLevel,
