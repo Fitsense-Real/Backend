@@ -382,5 +382,12 @@ class Plan78ContencionReducidaIT {
                 c.sesiones().get(1));
         assertEquals("SKIPPED", fila.get("status"));
         assertNull(fila.get("skip_reason"), "no existe un motivo de seguridad: se cuenta como no hecha");
+        // V54 (propuesta, fase 9): la tarea de vencimiento deja constancia de la causa del bloqueo vigente. Solo
+        // constancia: el estado y la causa de omision (NULL) no cambian, y ningun calculo la lee.
+        assertEquals("1303=" + CAUSA_1303, jdbc.queryForObject("SELECT system_block_cause FROM planned_workouts"
+                + " WHERE planned_workout_id = ?", String.class, c.sesiones().get(1)));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workouts WHERE plan_id = ?"
+                + " AND planned_workout_id <> ? AND system_block_cause IS NOT NULL", Integer.class, c.planId(),
+                c.sesiones().get(1)), "las sesiones no bloqueadas no llevan causa");
     }
 }
