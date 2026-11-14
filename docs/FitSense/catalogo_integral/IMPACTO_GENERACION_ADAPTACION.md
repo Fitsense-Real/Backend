@@ -17,7 +17,7 @@ Ejercicios que más salen del conjunto elegible:
 - 312 y 1194: pasan a estiramiento (`is_stretch`) y salen del trabajo principal.
 - 1205, 318, 510, 1111, 508, 1058, 1115, 1262, 1305, 901 y 1180: suben a nivel 2.
 - 1113 **no** sube: la subida que proponía la revisión se vetó por la decisión previa de V39 («1113 conserva los valores de V39») y pasa a la lista profesional.
-- 1184, 462 y 777: suben a nivel 2 y, con V53, quedan fuera de «sin colgarse».
+- 1184, 462 y 777: suben a nivel 2 y, con V53 encendido, quedarían fuera de «sin colgarse».
 
 Ejercicios que más entran:
 - 455 y 773: dejan de ser estiramientos.
@@ -33,39 +33,20 @@ Evidencia en `cierre/impacto/` (`antes_V50.csv`, `despues_V53.csv` y `resumen_16
 - Con V50, el plan llevaba 775 en las tres sesiones y llegaba a 3.210 s.
 - Sin 775, el techo baja a 3.090 s, por debajo del piso V20 (3.108 s a 74 min).
 
-**Decisión.** No se relaja V20 y no se aplica en silencio. La corrección de 775 **sale de V52** y queda como **DEC-FACTIBILIDAD-775**, con sus textos corregidos. Con esa decisión, la rejilla queda como con V50 (`REGRESION_FINAL.md`).
+**Decisión (orden de desbloqueo, 14/11/2026).** «Si necesita banco, no debe permanecer clasificado como solo peso corporal para conservar la factibilidad.» V52 aplica ahora la corrección de 775 (`bench; 1:bench`). No se relaja V20.
+
+**Efecto medido** con el catálogo final de la PR A (`Hipertrofia4Dv34IT`): **14 perfiles** GAIN_MUSCLE en casa solo con peso corporal quedan sin plan, todos por V20 (piso de la sesión):
+- intermedio, 3 y 4 días, a 58, 59, 60, 74 y 75 minutos (10);
+- principiante y avanzado, 3 días, a 60 y 75 minutos (4).
+
+La prueba fija la lista exacta, de modo que un perfil más o uno menos la hace fallar. Es una pérdida de factibilidad **legítima**: no existe una semana válida con el equipo que esos perfiles declaran. Queda documentada para el propietario y la retira un perfil que declare banco.
 
 ## 3. Adaptación, progresión y reincorporación
 
 - **Código del motor:** sin cambios, salvo que V51 sustituye la regla por nombre por el atributo explícito con el mismo valor (`CatalogoAtributosExplicitosIT`).
 - **Pruebas de adaptación ante dolor, retirada localizada y linaje** (`RetiradaLocalizada*IT`, `TextoRespaldoSustitucionIT` y `LinajeIntegridadIT`): sus escenarios estaban construidos con perfiles y planes elegidos sobre el catálogo V50. Con V52 el motor elige otros ejercicios y la **premisa** del escenario deja de darse (por ejemplo, «el plan lleva el 135»); el mecanismo no falla. Se fijan al catálogo V50, igual que las demás pruebas históricas, y siguen probando el mecanismo.
-- **Progresión y reincorporación.** `ProgresionIT.p02ProgresionSinElExcluido` y su gemela `ProgresionRev2IT` fallan:
-
-  | Dónde | Estado | Resultado de p02 |
-  |---|---|---|
-  | **CI de GitHub** | Cabeza de #56 (05:50 UTC) | Pasa |
-  | **CI de GitHub** | Base del cierre, #55 sobre #56–#59 (57075e7: 16:10 y otra vez a las 22:16 UTC) | **Pasa** |
-  | **CI de GitHub** | #60 (V51 + V52) y #61 (+ V53), 21:55 UTC | **Falla** |
-  | Local | `generation` (623c4fa) | Pasa |
-  | Local | Cabeza de #56 y base 57075e7 | **Falla** |
-  | Local | Cierre, también con el catálogo fijado en V50 | **Falla** |
-
-  **En la CI de GitHub el fallo aparece con el cierre**: la base pasa y #60 falla, con el mismo código de prueba. En local falla ya en la base. Esa diferencia de entorno no está aislada: no se explica por la versión de Postgres (falla también con 16.16, la de la CI) ni por el reloj de la JVM (falla también fijado a las 16:15 UTC). Así que **no se puede afirmar que el fallo sea ajeno al cierre**.
-
-  **Mecanismo observado en local** (en la CI no hay trazas: el informe de pruebas queda en el artefacto):
-  1. La progresión sube el ejercicio marcado a 3x19.
-  2. El usuario lo señala con dolor.
-  3. La semana conservada lo sustituye, y **el sustituto hereda la dosis progresada 3x19**. V24 lo rechaza: no es la dosis de ninguna capacidad. Esto ya ocurre en `generation` (ejercicio 72).
-  4. En `generation`, la regeneración segura lo resuelve en el mismo ciclo.
-  5. Con el catálogo nuevo, la semana regenerada con dosis base sube los segundos (1.140 → 1.260). P-03 nivel 2 la rechaza («ante dolor no se añade trabajo»), y esa semana queda sin plan (NO_FACTIBLE registrado en V32).
-
-  **Lo que no se hace:**
-  - No se relaja P-03 ni V24.
-  - No se cambia la prueba.
-  - No se toca el motor de adaptación: corregir la herencia de dosis del sustituto es un cambio de adaptación, fuera del catálogo.
-
-  Queda como hallazgo **HALL-PROG-01**. **Bloquea #60**: es rojo en su CI y no se corrige aquí, porque las dos salidas posibles están prohibidas por la orden. Cambiar el motor de adaptación (la herencia de la dosis del sustituto) es un cambio fuera del catálogo; cambiar la prueba sería convertirla en verde a la fuerza. Ninguna de las dos se aplica en silencio y queda para tu decisión (`REGRESION_FINAL.md`).
-- **Generación de referencia** (`GeneracionReferenciaIT`): la referencia cambia porque cambia el catálogo. Ejemplos: 1117 sube a impacto MODERADO y 253 pierde KN. Se regenera: 70 de 72 planes cambian y los 72 siguen VALIDA. Es idéntica con y sin V53. El diff está en `REGRESION_FINAL.md` §2, para tu aprobación.
+- **Progresión y reincorporación: HALL-PROG-01 (corregido).** `ProgresionIT.p02ProgresionSinElExcluido` y su gemela `ProgresionRev2IT` fallaban porque el sustituto de seguridad heredaba una dosis progresada (3x19) que V24 rechaza. La reproducción por semilla demuestra que el defecto **ya existía en el motor antes del cierre**: falla en 5 de 5 semillas en la base 57075e7 y en 4 de 5 en `generation`. El catálogo solo cambia qué semillas lo disparan. Corrección mínima en `SafetySubstitutionPolicy`: el sustituto recibe una dosis de capacidad válida para él, nunca con más trabajo. V24, V8C, P-03 y la prueba no se tocan. Pasan las 5 semillas en las tres ramas. Detalle, trazas y pruebas en `HALL_PROG_01.md` (PR #62, y el mismo commit en #60).
+- **Generación de referencia** (`GeneracionReferenciaIT`): la referencia cambia porque cambia el catálogo. Ejemplos: 1117 sube a impacto MODERADO y 253 pierde KN. Se regenera: 70 de 72 planes cambian y los 72 siguen VALIDA. Tras la orden de desbloqueo se regeneró otra vez por 775: cambian 30 planes, todos de casa, y los 72 siguen VALIDA (`REGRESION_FINAL.md` §3). Es idéntica con V53 apagado.
 
 ## 4. Planes publicados
 

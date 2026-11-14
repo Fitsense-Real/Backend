@@ -12,10 +12,11 @@
 | — | Controles, documentación y Excel | [#59](https://github.com/Fitsense-Real/Backend/pull/59) | Abierta, sin fusionar |
 | — | Contención INC-CAT-C39 reducida a 8 | [#55](https://github.com/Fitsense-Real/Backend/pull/55) | Abierta, sin fusionar |
 | **V51** | `impact_level` e `is_stretch` explícitos; el nombre deja de decidir | [#60](https://github.com/Fitsense-Real/Backend/pull/60) (PR A) | Abierta, sin fusionar |
-| **V52** | Correcciones verificadas del cierre: 561 cambios en 442 ejercicios | [#60](https://github.com/Fitsense-Real/Backend/pull/60) (PR A) | Abierta, sin fusionar |
-| **V53** | `requires_suspended_support` en 16 ejercicios (**decisión de significado**) | [#61](https://github.com/Fitsense-Real/Backend/pull/61) (PR B) | Abierta, sin fusionar |
+| **V52** | Correcciones verificadas del cierre: 563 cambios en 442 ejercicios | [#60](https://github.com/Fitsense-Real/Backend/pull/60) (PR A) | Abierta, sin fusionar |
+| **V53** | `requires_suspended_support` en 15 ejercicios (solo el dato; el comportamiento queda tras `fitsense.seguridad.apoyo-suspendido-en-no-colgarse`, apagado, hasta aprobar el significado) | [#61](https://github.com/Fitsense-Real/Backend/pull/61) (PR B) | Abierta, sin fusionar |
+| — | HALL-PROG-01: dosis de capacidad del sustituto SUST-SEG-1 (motor, sin migración) | [#62](https://github.com/Fitsense-Real/Backend/pull/62) sobre `generation`; el mismo commit va en #60 | Abierta, sin fusionar |
 
-Cadena de fusión obligatoria: #56 → #57 → #58 → #59 → #55 → #60 (PR A, `cierre/v51-v52-correcciones`: V51 + V52) → #61 (PR B, `cierre/v53-apoyo-suspendido`: V53). Cada PR tiene como base la anterior. V51 y V52 van juntas porque V52 corrige atributos que V51 crea, y sus pruebas (paridad, huella) dependen de las dos. V53 va aparte porque cambia el significado de un permiso del usuario: puede rechazarse sin tocar la PR A. Fusionar fuera de orden rompe Flyway (`outOfOrder` está desactivado) o hace fallar las protecciones de estado previo de V52.
+Cadena de fusión obligatoria: #56 → #57 → #58 → #59 → #55 → #60 (PR A, `cierre/v51-v52-correcciones`: V51 + V52) → #61 (PR B, `cierre/v53-apoyo-suspendido`: V53). Cada PR tiene como base la anterior. V51 y V52 van juntas porque V52 corrige atributos que V51 crea, y sus pruebas (paridad, huella) dependen de las dos. V53 va aparte porque cambia el significado de un permiso del usuario: puede rechazarse sin tocar la PR A. Además, aunque se fusione, no cambia nada para el usuario mientras el interruptor siga apagado. Fusionar fuera de orden rompe Flyway (`outOfOrder` está desactivado) o hace fallar las protecciones de estado previo de V52.
 
 ## 2. Protecciones de cada migración
 
@@ -23,7 +24,7 @@ Cadena de fusión obligatoria: #56 → #57 → #58 → #59 → #55 → #60 (PR A
 |---|---|
 | V51 | Rellena desde una tabla temporal con los 1.376 ids. Falla si falta algún id o si queda un activo sin valor. Añade `CHECK`: un activo debe tener impacto y estiramiento, y lo marcado `high_impact` nunca es `BAJO`. |
 | V52 | Un único `UPDATE` por ejercicio que exige el **valor anterior exacto** de cada columna; los textos se comparan por md5 normalizado. Si no actualiza nada y el ejercicio no está ya en el estado nuevo, **la migración falla**: nunca se salta un cambio en silencio. El equipamiento exige la cadena de requisitos anterior exacta y que existan los códigos. Es idempotente frente a una base ya corregida. |
-| V53 | Columna `NOT NULL DEFAULT FALSE`. Comprueba que los 16 ids coinciden con su nombre de la fuente antes de marcar. |
+| V53 | Columna `NOT NULL DEFAULT FALSE`. Comprueba que los 15 ids coinciden con su nombre de la fuente antes de marcar. |
 
 V52 lo genera `cierre/herramientas/gen_v52.py` a partir de `cierre/adjudicacion/decisiones_v52.tsv`, y no se edita a mano. El generador rechaza:
 - bajar una dificultad;

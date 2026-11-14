@@ -56,7 +56,7 @@ Impacto explícito: 262, 267, 675, 952 y 1069 pasan de ALTO a BAJO; 1295 de MODE
 - **1093:** R2 propuso MODERADO por ritmo de carrera. La V3 W06 lo **rechaza**: ningún fotograma con los dos pies en el aire, siempre un pie plano o de puntillas y ritmo pausado. Queda **BAJO**, coherente con lo documentado en V49.
 - **Dependencia del nombre eliminada (V51):** ImpactoPolicy y la exclusión de estiramientos usan `impact_level` e `is_stretch`. Renombrar un ejercicio ya no cambia su impacto (`AtributosExplicitosV51Test`, `CatalogoAtributosExplicitosIT`).
 
-## 5. Apoyo suspendido: 13 + 5 casos y V53
+## 5. Apoyo suspendido: 13 + 5 casos y V53 (revisado por la orden de desbloqueo)
 
 La revisión R2/V3 del catálogo completo encontró 32 casos y la adjudicación los reparte así:
 
@@ -64,12 +64,12 @@ La revisión R2/V3 del catálogo completo encontró 32 casos y la adjudicación 
 |---|---|---|
 | Sobre un aparato: brazos extendidos | 457, 458, 459, 777, 920, 934, 1069, 1153, 1317, 1335 | **V53** |
 | Sobre un aparato: antebrazos | 462, 1184, 1303, 1304, 1306 | **V53** |
-| Pies en correas | 1301 | **V53** |
+| Pies en correas, manos en el suelo | 1301 | **Sale de V53** con el criterio conservador (orden de desbloqueo). Sigue contenido por INC-CAT-C39 y pendiente de un profesional (A-1301) |
 | Manos en el suelo (planchas, maltés, pino, L-sit) | 855, 857, 860, 861, 885, 974, 1298, 1299 | Documentado, **no se marca**: no hay aparato del que caer ni agarre |
 | Máquina asistida | 72, 73, 74, 75, 76, 77, 78, 995 | Documentado, **no se marca**: la máquina reduce la carga |
 | Rechazado por V3 | 821 (pies sobre balón) | — |
 
-**V53 es una decisión de significado pendiente de tu aprobación:** «no colgarse» (`allow_hanging_exercises = false`) pasa a excluir también los 16 ejercicios marcados. Va en una PR propia que puede rechazarse sin afectar a V51 ni a V52. Mientras no se apruebe, la contención INC-CAT-C39 sigue protegiendo 1153, 1301, 1303, 1304 y 1306.
+**V53 es una decisión de significado pendiente de tu aprobación.** Propuesta conservadora: «no colgarse» (`allow_hanging_exercises = false`) excluiría también el apoyo suspendido sobre un aparato sin soporte de pies, es decir, los **15** ejercicios marcados. Va en una PR propia que puede rechazarse sin afectar a V51 ni a V52. **El comportamiento está apagado** (`fitsense.seguridad.apoyo-suspendido-en-no-colgarse=false`): V53 solo migra el dato. Mientras no se apruebe, la contención INC-CAT-C39 sigue protegiendo 1153, 1301, 1303, 1304 y 1306. Significado, revisión de los 16 candidatos e impacto sobre los permisos guardados: `cierre/V53_APOYO_SUSPENDIDO.md` (PR B).
 
 ## 6. Invariantes comprobados tras V52 y V53
 
