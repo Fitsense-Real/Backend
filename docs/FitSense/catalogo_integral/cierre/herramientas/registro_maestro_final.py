@@ -34,6 +34,33 @@ for d in rd(ci('cierre/adjudicacion/decisiones_v52.tsv')):
     elif d['atributo'] == 'zona': c['bp'], c['target'] = d['despues'].split('/', 1)
     elif d['atributo'] == 'equipo':
         p, r = [x.strip() for x in d['despues'].split(';', 1)]; c['equip'] = p; c['reqs'] = r
+# V52.1 (orden de cierre de pendientes, 14/11/2026): se aplica leyendo la propia migracion; la huella lo contrasta abajo.
+V521 = open(mig + 'V52_1__catalogo_cierre_pendientes_tecnicos.sql', encoding='utf-8').read()
+cambios521 = collections.defaultdict(list)
+for bloque in V521.split('END $v521$;'):
+    m = re.search(r"WHERE exercise_id = (\d+)", bloque)
+    if not m: continue
+    i = m.group(1); c = C[i]
+    # Solo la parte SET del UPDATE (el WHERE repite atributos con su valor ANTERIOR).
+    original = bloque
+    bloque = bloque.split('UPDATE exercises SET', 1)[1].split('\n   WHERE')[0] if 'UPDATE exercises SET' in bloque else bloque
+    for col, campo in [('name_es', 'name_es'), ('movement_pattern', 'pattern'), ('target_muscle', 'target'), ('synergist_muscle', 'synergist')]:
+        v = re.search(r"\b" + col + r" = '((?:[^']|'')*)'", bloque)
+        if v: c[campo] = v.group(1).replace("''", "'"); cambios521[i].append(col)
+    v = re.search(r"body_part_id = \(SELECT body_part_id FROM body_parts WHERE code = '([^']+)'\),", bloque)
+    if v: c['bp'] = v.group(1); cambios521[i].append('zona')
+    v = re.search(r"secondary_muscles = ARRAY\[([^\]]*)\]", bloque)
+    if v: c['secondary'] = '{' + ','.join(x.strip().strip("'") for x in v.group(1).split(',')) + '}'; cambios521[i].append('secondary_muscles')
+    v = re.search(r"secondary_muscles = secondary_muscles \|\| ARRAY\['(\w+)'\]", bloque)
+    if v: c['secondary'] = c['secondary'].rstrip('}') + (',' if c['secondary'].strip('{}') else '') + v.group(1) + '}'; cambios521[i].append('secondary_muscles')
+    v = re.search(r"^\s*instructions_es = replace\(instructions_es, '((?:[^']|'')*)',\s*'((?:[^']|'')*)'\)", bloque)
+    if v: c['instr_es'] = c['instr_es'].replace(v.group(1), v.group(2)); cambios521[i].append('instructions_es')
+    v = re.search(r",\s+instructions_es = '((?:[^']|'')*)'", bloque)
+    if v: c['instr_es'] = v.group(1).replace("''", "'"); cambios521[i].append('instructions_es')
+    if 'requires_inversion = TRUE' in bloque: c['inv'] = 't'; cambios521[i].append('requires_inversion')
+    if 'DELETE FROM exercise_equipment_requirements' in original: c['equip'] = 'body weight'; c['reqs'] = ''; cambios521[i].append('equipo')
+assert set(cambios521) == {'231', '367', '620', '868', '1017', '1182', '1323'}, dict(cambios521)
+for i, a in cambios521.items(): cambios[i].extend('V52.1:' + x for x in a)
 v53 = {r['id']: r['clase'] for r in rd(ci('cierre/adjudicacion/apoyo_suspendido_v53.tsv'))}
 v53_marcados = set(re.findall(r"^\s+\((\d+), '", open(mig + 'V53__catalogo_apoyo_suspendido.sql', encoding='utf-8').read(), re.M))
 R1 = {r['ID']: r for r in rd(ci('registro_maestro.tsv'))}
@@ -49,6 +76,7 @@ proc = {}
 with gzip.open(ci('cierre/linea_base/procedencia_cambios_V1_V50.tsv.gz'), 'rt', encoding='utf-8') as fh:
     for r in csv.DictReader(fh, delimiter='\t', quoting=csv.QUOTE_NONE): proc[(r['id'], r['atributo'])] = 'V' + r['version']
 def origen(i, atr, attr52):
+    if 'V52.1:' + attr52 in cambios[i]: return 'V52.1'
     if attr52 in cambios[i]: return 'V52'
     return proc.get((i, atr), '-')
 B = [('hi', 'HI'), ('floor', 'FL'), ('axial', 'AX'), ('kneel', 'KN'), ('hang', 'HG'), ('overhead', 'OH'), ('inv', 'INV')]
@@ -72,7 +100,7 @@ try:
         for x in B_[k] - A_[k]: CMP.setdefault(x, [0, 0])[1] += 1
 except FileNotFoundError: pass
 C39 = {'1153', '1301', '1303', '1304', '1306', '131', '400', '448'}
-RET = {'813', '858', '861', '873', '885', '1192', '1298'}
+RET = {'813', '858', '861', '873', '885', '1192', '1294', '1298'}
 V28 = {'122', '776', '872', '878'}
 def bandas(c): return ' '.join(tag for col, tag in B if c[col] == 't') or '-'
 filas = []
@@ -82,7 +110,7 @@ for i, c in sorted(C.items(), key=lambda x: int(x[0])):
     if not act: estado = 'INACTIVO'
     elif pro: estado = 'BLOQUEO_PROFESIONAL'
     elif cambios[i] or i in v53_marcados: estado = 'CORREGIDO_CIERRE'
-    else: estado = 'VERIFICADO_CIERRE'
+    else: estado = 'REVISADO_IA_SIN_HALLAZGO'
     banderas = ' '.join(tag for col, tag in B if c[col] == 't') or '-'
     flag_orig = max((origen(i, a, a52) for a, a52 in [('high_impact', 'high_impact'), ('requires_floor', 'requires_floor'), ('axial_load', 'axial_load'),
                      ('requires_kneeling', 'requires_kneeling'), ('requires_hanging', 'requires_hanging'), ('requires_overhead', 'requires_overhead'),
@@ -104,7 +132,7 @@ for i, c in sorted(C.items(), key=lambda x: int(x[0])):
                     ('; '.join(f"{x['tipo']}: {x['actual'][:60]} -> {x['propuesto'][:80]}" for x in t if x['resultado'] in ('APLICADO', 'V53'))
                      or ('sin problema aplicable' if act else '-')),
                     ('; '.join((x['v3_evidencia'] if x['v3_evidencia'] != '-' else x['motivo'])[:160] for x in t if x['resultado'] in ('APLICADO', 'V53') and (x['v3_evidencia'] != '-' or x['tipo'] == 'FRASE_FINAL'))[:600] or '-'),
-                    ('V52' if cambios[i] else '') + (' V53' if i in v53_marcados else '') or 'sin cambio en el cierre (ver origen_*)',
+                    (('V52.1' if any(x.startswith('V52.1:') for x in cambios[i]) else 'V52') if cambios[i] else '') + (' V53' if i in v53_marcados else '') or 'sin cambio en el cierre (ver origen_*)',
                     'CatalogoCalidadIT.huella; CatalogoAtributosExplicitosIT' + ('; ContencionTextoBanderaIT' if i in C39 else '') + ('; Plan78ContencionReducidaIT' if i in ('1303', '910', '916') else ''),
                     ('INC-CAT-C39' if i in C39 else '') + ('INC-4C-03' if i in RET else '') + ('INC-CAT-1374' if i == '1374' else '') or '-',
                     (f"sale en {CMP[i][0]} y entra en {CMP[i][1]} de 168 perfiles" if i in CMP else ('sin cambio en la rejilla de 168' if act else 'inactivo')),
@@ -131,7 +159,7 @@ for k, v in [('Filas', len(filas)), ('Activos', sum(f[2] == 'SI' for f in filas)
     res.append([k, v])
 res.append(['Ejercicios corregidos por V52', sum(1 for i in C if cambios[i])])
 res.append(['Marcados con apoyo suspendido (V53)', len(v53_marcados)])
-res.append(['Leyenda de estado_cierre', 'VERIFICADO_CIERRE: R2 sin propuestas aplicables o rechazadas por V3; CORREGIDO_CIERRE: corregido en V52/V53; '
+res.append(['Leyenda de estado_cierre', 'REVISADO_IA_SIN_HALLAZGO: R2 sin propuestas aplicables o rechazadas por V3 (revision de IA, NO verificacion humana); CORREGIDO_CIERRE: corregido en V52/V52.1/V53; '
             'BLOQUEO_PROFESIONAL: alguna decision exige profesional (ver REVISION_PROFESIONAL.md); INACTIVO: ver inactivo_motivo'])
 for c in res[1]: c.font = Font(bold=True)
 res.column_dimensions['A'].width = 40; res.column_dimensions['B'].width = 120
