@@ -92,8 +92,14 @@ class HerenciaD8IT {
     @Autowired main.web.services.fitsense.planning.domain.services.PlanDraftValidator validador;
     @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planComandos;
 
-    static final AtomicInteger SECUENCIA = new AtomicInteger();
-    static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    /**
+     * Semana y participantes FIJOS (orden de 14/11/2026 sobre las regresiones de V52.1). El motor de reglas siembra con
+     * {@code userId x 1.000.003 + weekStartDate}: con la semana calculada desde hoy y {@code user_id} autoincremental,
+     * el escenario dependia del dia de ejecucion y del orden de los metodos de la clase. Se usa la semana de referencia
+     * de las pruebas ({@link main.web.services.fitsense.RelojPruebas}) y cada caso crea a sus participantes con un
+     * {@code user_id} explicito.
+     */
+    static final LocalDate S1 = main.web.services.fitsense.RelojPruebas.SEMANA_REFERENCIA;
     static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
     static final int PISO = 45 * 70 / 100;
 
@@ -117,7 +123,7 @@ class HerenciaD8IT {
     @Test
     @DisplayName("ACORTAR -> copia -> fatiga con RESPALDO identico -> la copia del viernes conserva la exencion")
     void respaldoIdenticoConservaD8() throws Exception {
-        recorrer(Modo.SUBE, "RESPALDO");
+        recorrer(Modo.SUBE, "RESPALDO", 8_101, 8_102, 8_103, 8_104, 8_105, 8_106, 8_107, 8_108, 8_109, 8_110);
     }
 
     /**
@@ -128,14 +134,16 @@ class HerenciaD8IT {
     @Test
     @DisplayName("ACORTAR -> copia -> fatiga con la IA devolviendolo igual (C-2: SIN_EFECTO) -> la copia conserva la exencion")
     void propuestaIdenticaConservaD8() throws Exception {
-        recorrer(Modo.IGUAL, "SIN_EFECTO");
+        recorrer(Modo.IGUAL, "SIN_EFECTO", 8_201, 8_202, 8_203, 8_204, 8_205, 8_206, 8_207, 8_208, 8_209, 8_210);
     }
 
     @Test
     @DisplayName("el dolor no aprovecha D8: el viernes acortado que dolio, conservado tal cual, no se publica")
     void dolorNoAprovechaD8() throws Exception {
         modo = Modo.IGUAL;
-        var a = acortado();
+        // Participante FIJO (9001): con la semana de referencia, P-03 nivel 2 subiria el trabajo antes y despues de
+        // V52.1 (456 -> 490 y 456 -> 496). Exploracion: -Dfitsense.d8.exploracion=true -Dfitsense.d8.desde=9001.
+        var a = acortado(9_001);
         long u = a.u();
         long plan = a.plan();
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
@@ -156,8 +164,139 @@ class HerenciaD8IT {
         assertSinViolaciones();
     }
 
-    private void recorrer(Modo enLaFatiga, String estadoFatiga) throws Exception {
-        var a = acortado();
+    /**
+     * El otro desenlace legitimo de P-03 nivel 2 ante el mismo dolor (orden de 14/11/2026). Con el participante 9004
+     * la semana regenerada con el motor de reglas NO sube el trabajo de la semana medida, y P-03 la publica; ocurre
+     * igual antes de V52.1 (486 -> 476 repeticiones) que despues (476 -> 476). Se comprueba, de forma independiente
+     * del servicio, todo lo que P-03 promete: la IA no publico; publica solo P-03 nivel 2; ningun ejercicio excluido
+     * por dolor reaparece (el viernes que dolio no vuelve); no hay mas trabajo ni mas dosis por ejercicio que en la
+     * semana medida; la semana valida entera con el validador SIN ninguna autorizacion (todas las dosis son BASE: sin
+     * progresion, recuperacion, reincorporacion ni herencia) y sin la exencion de V20 de D8.
+     */
+    @Test
+    @DisplayName("el dolor no aprovecha D8: si P-03 regenera, la semana nueva no trae lo que dolio ni mas trabajo, y valida sin exenciones")
+    void dolorConRegeneracionSegura() throws Exception {
+        modo = Modo.IGUAL;
+        var a = acortado(9_004);
+        long u = a.u();
+        long plan = a.plan();
+        ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+        plan = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2)).orElseThrow();   // copia exenta
+        long medido = plan;
+        ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
+        var r = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
+
+        assertTrue(r.isPresent(), "premisa del caso: P-03 nivel 2 publica para el participante 9004");
+        long regenerado = r.get();
+        // 1. La IA no publico (su intento sigue NO_FACTIBLE); publica SOLO P-03 nivel 2, con su fila.
+        assertEquals("NO_FACTIBLE", ultimo(u).get("status"));
+        var excluidos = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND status ="
+                + " 'ACTIVA'", Long.class, u);
+        assertFalse(excluidos.isEmpty(), "la exclusion por dolor se conserva");
+        var fila = jdbc.queryForMap("SELECT outcome, resulting_plan_id, measured_plan_id FROM safe_regeneration_attempts"
+                + " WHERE user_id = ?", u);
+        assertEquals("PUBLICADO", fila.get("outcome"));
+        assertEquals(regenerado, ((Number) fila.get("resulting_plan_id")).longValue());
+        assertEquals(medido, ((Number) fila.get("measured_plan_id")).longValue());
+        // 2. Nada de lo excluido por dolor reaparece: el viernes que dolio no vuelve.
+        var publicados = jdbc.queryForList("SELECT DISTINCT pwe.exercise_id FROM planned_workouts pw JOIN"
+                + " planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id WHERE pw.plan_id = ?",
+                Long.class, regenerado);
+        assertEquals(List.of(), publicados.stream().filter(excluidos::contains).toList(), "reaparece lo que dolio");
+        // 3. Ante dolor no se anade trabajo: ni en total (P-03) ni en la dosis de ningun ejercicio comun (V8C).
+        var antes = trabajo(medido).split(":");
+        var despues = trabajo(regenerado).split(":");
+        assertTrue(Long.parseLong(despues[0]) <= Long.parseLong(antes[0])
+                        && Long.parseLong(despues[1]) <= Long.parseLong(antes[1]),
+                "mas trabajo que la semana medida: " + trabajo(medido) + " -> " + trabajo(regenerado));
+        assertEquals(List.of(), jdbc.queryForList("SELECT n.exercise_id FROM (" + DOSIS + ") n JOIN (" + DOSIS + ") m"
+                + " ON m.exercise_id = n.exercise_id WHERE n.series > m.series OR n.reps > m.reps OR n.segundos > m.segundos",
+                Long.class, regenerado, medido), "un ejercicio comun sube su dosis");
+        // 4. La semana valida entera SIN autorizaciones: dosis BASE (sin progresion, recuperacion, reincorporacion ni
+        //    herencia) y V20 sin la exencion de D8 (ninguna fecha reducible).
+        var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                .GenerateWeeklyPlanCommand(u, S1.plusWeeks(3), null, true, null, null)).context();
+        var independiente = new ValidacionIndependiente(jdbc).validar(regenerado, ctx, validador, 30);
+        assertEquals("VALIDA", independiente.estado(), independiente.texto());
+        assertEquals(java.util.Set.of("BASE"), independiente.origenes().keySet(), independiente.texto());
+        assertEquals(0, independiente.fechasReducibles());
+        assertTrue(viernes(regenerado) >= PISO, "el viernes regenerado no es el acortado exento: " + viernes(regenerado));
+        assertSinViolaciones();
+    }
+
+    /** Dosis por ejercicio de un plan (la mayor si se repite): series, repeticiones y segundos. */
+    static final String DOSIS = "SELECT pwe.exercise_id, max(coalesce(pwe.planned_sets, 1)) AS series,"
+            + " max(coalesce(pwe.planned_reps, 0)) AS reps, max(coalesce(pwe.planned_duration_seconds, 0)) AS segundos"
+            + " FROM planned_workouts pw JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id"
+            + " WHERE pw.plan_id = ? GROUP BY pwe.exercise_id";
+
+    /**
+     * EXPLORACION (opt-in, -Dfitsense.d8.exploracion=true): para cada user_id de un rango, el desenlace del caso de dolor
+     * y el conjunto elegible del perfil. Sirve para elegir de forma determinista los participantes de cada caso y para
+     * comparar el catalogo antes y despues de V52.1. No afirma nada.
+     */
+    @Test
+    @org.junit.jupiter.api.condition.EnabledIfSystemProperty(named = "fitsense.d8.exploracion", matches = "true")
+    void exploracionDolor() throws Exception {
+        var salida = new StringBuilder("user_id;premisa;viernes;desenlace;regeneracion;trabajo_medido;trabajo_regenerado;"
+                + "excluidos;reaparecen;validacion\n");
+        // Por defecto un rango que no choca con los participantes fijos de las pruebas; el analisis de la orden de
+        // 14/11/2026 se hizo con -Dfitsense.d8.desde=9001 -Dfitsense.d8.hasta=9040, ejecutando SOLO este metodo.
+        int desde = Integer.getInteger("fitsense.d8.desde", 9_501), hasta = Integer.getInteger("fitsense.d8.hasta", 9_540);
+        for (long id = desde; id <= hasta; id++) {
+            modo = Modo.IGUAL;
+            long u = participante(id);
+            long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
+            var r0 = ciclo.runFor(u, S1, S1.plusWeeks(1));
+            if (r0.isEmpty() || viernes(r0.get()) >= PISO) {
+                salida.append(id).append(";NO;").append(r0.map(this::viernes).orElse(-1)).append(";;;;;;;\n");
+                continue;
+            }
+            plan = r0.get();
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.HECHO);
+            plan = ciclo.runFor(u, S1.plusWeeks(1), S1.plusWeeks(2)).orElseThrow();
+            long medido = plan;
+            ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
+            var r = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
+            var reg = jdbc.queryForList("SELECT outcome, validation_problems FROM safe_regeneration_attempts WHERE user_id = ?", u);
+            var excluidos = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND status = 'ACTIVA'", Long.class, u);
+            String reaparecen = "", tReg = "", validacion = "";
+            if (r.isPresent()) {
+                var ej = jdbc.queryForList("SELECT DISTINCT pwe.exercise_id FROM planned_workouts pw JOIN planned_workout_exercises pwe"
+                        + " ON pwe.planned_workout_id = pw.planned_workout_id WHERE pw.plan_id = ?", Long.class, r.get());
+                reaparecen = ej.stream().filter(excluidos::contains).toList().toString();
+                tReg = trabajo(r.get());
+                var ctx = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                        .GenerateWeeklyPlanCommand(u, S1.plusWeeks(3), null, true, null, null)).context();
+                validacion = new ValidacionIndependiente(jdbc).validar(r.get(), ctx, validador, 30).texto();
+            }
+            salida.append(id).append(";SI;").append(viernes(medido)).append(';').append(r.isPresent() ? "PUBLICADO" : "NO_PUBLICADO")
+                    .append(';').append(reg.isEmpty() ? "-" : reg.get(0).get("outcome") + " " + String.valueOf(reg.get(0).get("validation_problems")).replace(';', ','))
+                    .append(';').append(trabajo(medido)).append(';').append(tReg).append(';').append(excluidos).append(';')
+                    .append(reaparecen).append(';').append(validacion.replace(';', ',')).append('\n');
+        }
+        // Conjunto elegible del perfil SIN historial (sin exclusiones por dolor ni ejercicios recientes): participante nuevo.
+        long limpio = participante(9_999);
+        var elegibles = planComandos.prepare(new main.web.services.fitsense.planning.domain.model.commands
+                .GenerateWeeklyPlanCommand(limpio, S1, null, true, null, null)).context().availableExercises().stream()
+                .map(c -> c.exerciseId() + ":" + c.movementPattern() + ":" + c.bodyPartCode()).sorted().toList();
+        var f = Path.of(System.getProperty("fitsense.d8.salida", "target/d8_exploracion"));
+        Files.createDirectories(f);
+        Files.writeString(f.resolve("desenlaces.csv"), salida.toString());
+        Files.writeString(f.resolve("elegibles.txt"), String.join("\n", elegibles));
+    }
+
+    /** Repeticiones y segundos totales planificados (series x repeticiones, series x segundos), como P-03 nivel 2. */
+    private String trabajo(long plan) {
+        return jdbc.queryForObject("SELECT coalesce(sum(coalesce(pwe.planned_sets, 1) * coalesce(pwe.planned_reps, 0)), 0)"
+                + " || ':' || coalesce(sum(coalesce(pwe.planned_sets, 1) * coalesce(pwe.planned_duration_seconds, 0)), 0)"
+                + " FROM planned_workouts pw JOIN planned_workout_exercises pwe ON pwe.planned_workout_id = pw.planned_workout_id"
+                + " WHERE pw.plan_id = ?", String.class, plan);
+    }
+
+    private void recorrer(Modo enLaFatiga, String estadoFatiga, long... candidatos) throws Exception {
+        var a = acortado(candidatos);
         long u = a.u();
         long plan = a.plan();
         int minutos = viernes(plan);
@@ -196,17 +335,18 @@ class HerenciaD8IT {
      * suficientes para bajar del piso, el escenario no se da con ese participante y
      * se prueba con otro (busqueda de precondicion, como en CatalogoV36IT).
      */
-    private Acortado acortado() {
+    private Acortado acortado(long... candidatos) {
         var vistos = new ArrayList<Integer>();
-        for (int intento = 0; intento < 10; intento++) {
-            long u = participante();
+        for (long candidato : candidatos) {
+            long u = participante(candidato);
             long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
             ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.TIEMPO);
             long nuevo = publicar(u, 0, "APLICADA");
             if (viernes(nuevo) < PISO) return new Acortado(u, nuevo);
             vistos.add(viernes(nuevo));
         }
-        return fail("premisa: ningun viernes acortado bajo el piso " + PISO + " en 10 participantes: " + vistos);
+        return fail("premisa: ningun viernes acortado bajo el piso " + PISO + " en " + Arrays.toString(candidatos)
+                + ": " + vistos);
     }
 
     private long publicar(long u, int k, String estado) {
@@ -262,11 +402,11 @@ class HerenciaD8IT {
     // Material
     // =======================================================================
 
-    private long participante() {
-        String email = "herencia-d8-" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";
-        jdbc.update("INSERT INTO users (email, password_hash, first_name, consent_granted_at, enrolled_at)"
-                + " VALUES (?, 'x', 'Prueba', now(), now())", email);
-        long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
+    /** Participante con {@code user_id} explicito: la semilla del motor de reglas no depende del orden de la clase. */
+    private long participante(long u) {
+        String email = "herencia-d8-" + u + "@pruebas.invalid";
+        jdbc.update("INSERT INTO users (user_id, email, password_hash, first_name, consent_granted_at, enrolled_at)"
+                + " OVERRIDING SYSTEM VALUE VALUES (?, ?, 'x', 'Prueba', now(), now())", u, email);
         perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1992, 5, 10), BiologicalSex.FEMALE,
                 new BigDecimal("165"), new BigDecimal("68"), null, FitnessLevel.INTERMEDIATE, GoalType.GAIN_MUSCLE,
                 "herencia d8", TrainingLocation.GYM, (short) 3, List.of((short) 1, (short) 3, (short) 5), (short) 45,
@@ -285,6 +425,7 @@ class HerenciaD8IT {
     }
 
     private void ejecutar(long u, long planId, Dia... dias) {
+        main.web.services.fitsense.RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         var principal = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
         var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?"
                 + " ORDER BY scheduled_date", Long.class, planId);
