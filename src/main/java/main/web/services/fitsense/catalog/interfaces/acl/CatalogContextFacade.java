@@ -25,13 +25,24 @@ public class CatalogContextFacade {
     private final ExerciseQueryService exerciseQueryService;
     private final BodyPartRepository bodyPartRepository;
     private final EquipmentTypeRepository equipmentTypeRepository;
+    /**
+     * V53 · DECISION DE SIGNIFICADO PENDIENTE DE APROBACION: si «no colgarse» excluye tambien el apoyo suspendido
+     * sobre un aparato sin soporte de pies (fondos en paralelas o anillas, silla del capitan, muscle-up). V53 migra
+     * el dato (requires_suspended_support), pero el comportamiento queda APAGADO por defecto: con false, el permiso
+     * significa exactamente lo mismo que antes. Se activa con fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true.
+     */
+    private final boolean apoyoSuspendidoEnNoColgarse;
 
     public CatalogContextFacade(ExerciseQueryService exerciseQueryService,
                                 BodyPartRepository bodyPartRepository,
-                                EquipmentTypeRepository equipmentTypeRepository) {
+                                EquipmentTypeRepository equipmentTypeRepository,
+                                @org.springframework.beans.factory.annotation.Value(
+                                        "${fitsense.seguridad.apoyo-suspendido-en-no-colgarse:false}")
+                                boolean apoyoSuspendidoEnNoColgarse) {
         this.exerciseQueryService = exerciseQueryService;
         this.bodyPartRepository = bodyPartRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
+        this.apoyoSuspendidoEnNoColgarse = apoyoSuspendidoEnNoColgarse;
     }
 
     /**
@@ -63,7 +74,9 @@ public class CatalogContextFacade {
         var bodyParts = indexBodyParts();
         var equipment = indexEquipment();
 
+        boolean sinApoyoSuspendido = excludeHanging && apoyoSuspendidoEnNoColgarse;
         return exerciseQueryService.handle(query).stream()
+                .filter(exercise -> !(sinApoyoSuspendido && exercise.isRequiresSuspendedSupport()))
                 .map(exercise -> toView(exercise, bodyParts, equipment))
                 .toList();
     }
@@ -96,7 +109,7 @@ public class CatalogContextFacade {
                 .collect(Collectors.toMap(Exercise::getId, e -> new ExerciseSafetyFlagsView(e.getId(),
                         e.isActive(), e.isHighImpact(), e.isRequiresFloor(), e.isAxialLoad(),
                         e.isRequiresKneeling(), e.isRequiresHanging(), e.isRequiresOverhead(),
-                        e.isRequiresInversion()), (a, b) -> a));
+                        e.isRequiresInversion(), apoyoSuspendidoEnNoColgarse && e.isRequiresSuspendedSupport()), (a, b) -> a));
     }
 
     @Transactional(readOnly = true)

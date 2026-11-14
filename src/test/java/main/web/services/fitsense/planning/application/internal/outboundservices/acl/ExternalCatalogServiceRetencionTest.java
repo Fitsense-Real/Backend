@@ -28,9 +28,9 @@ import static org.mockito.ArgumentMatchers.anyList;
  */
 class ExternalCatalogServiceRetencionTest {
 
-    /** Los tres de la auditoria del bloque 7 y los cuatro de 4D v2 §4. */
+    /** Los tres de la auditoria del bloque 7, los cuatro de 4D v2 §4 y 1294 (cierre de pendientes, texto erroneo). */
     private static final List<Long> RETENIDOS =
-            List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
+            List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1294L, 1298L);
 
     private static EligibleExerciseView vista(long id, String nombre) {
         return new EligibleExerciseView(id, nombre, "back", "body weight", "lats",

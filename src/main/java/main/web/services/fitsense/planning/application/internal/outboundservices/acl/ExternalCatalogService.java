@@ -50,9 +50,18 @@ public class ExternalCatalogService {
      * <p>
      * TEMPORAL. Sale cuando la revision controlada devuelva nivel, requisitos y
      * unidad verificados para cada uno. No sustituye a corregir el dato.
+     * <p>
+     * UNO MAS (cierre de pendientes, 14/11/2026): 1294 «Balanceo 360». Su texto
+     * describe circulos de brazos de pie y el GIF un balanceo acrobatico de 360
+     * grados colgado de una barra (f1 colgado, f7 piernas recogidas, f13 cuerpo
+     * horizontal, f19 tronco sobre la barra). Instruccion contradictoria e
+     * identidad no confirmable: se retiene para todos hasta que una revision
+     * profesional fije texto e identidad. Hoy no era elegible en ninguno de los
+     * 168 perfiles de la rejilla; la retencion lo garantiza tambien en planes
+     * publicados y en la IA.
      */
     private static final Set<Long> RETENIDOS_INC_4C_03 =
-            Set.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
+            Set.of(813L, 858L, 861L, 873L, 885L, 1192L, 1294L, 1298L);
 
     /**
      * CONTENCION INC-CAT-1374 (23/10/2026). El 1374 «wind sprints» es, segun su
@@ -232,7 +241,7 @@ public class ExternalCatalogService {
         var facts = new java.util.HashMap<Long, ExerciseSafetyFacts>();
         catalogContextFacade.fetchSafetyFlags(exerciseIds).forEach((id, f) -> facts.put(id, new ExerciseSafetyFacts(
                 f.exerciseId(), f.active(), f.highImpact(), f.requiresFloor(), f.axialLoad(), f.requiresKneeling(),
-                f.requiresHanging(), f.requiresOverhead(), f.requiresInversion())));
+                f.requiresHanging(), f.requiresOverhead(), f.requiresInversion(), f.requiresSuspendedSupport())));
         return facts;
     }
 

@@ -118,6 +118,15 @@ public class Exercise {
     @Column(name = "requires_hanging", nullable = false)
     private boolean requiresHanging;
 
+    /**
+     * V53 (dato; el significado esta PENDIENTE DE APROBACION, ver docs/FitSense/catalogo_integral/cierre/
+     * V53_APOYO_SUSPENDIDO.md): el cuerpo se sostiene SOBRE un aparato sin soporte de pies -fondos en paralelas, barra
+     * o anillas, silla del capitan, muscle-up-. No cuelga del agarre, asi que requires_hanging no lo cubre. Solo lo
+     * excluye «no colgarse» con fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true (apagado por defecto).
+     */
+    @Column(name = "requires_suspended_support", nullable = false, insertable = false, updatable = false)
+    private boolean requiresSuspendedSupport;
+
     /** Exige llevar los brazos por encima de la cabeza. Restriccion declarada por el perfil. */
     @Column(name = "requires_overhead", nullable = false)
     private boolean requiresOverhead;

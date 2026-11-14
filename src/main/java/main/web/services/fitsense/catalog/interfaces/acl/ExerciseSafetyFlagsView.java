@@ -17,5 +17,15 @@ public record ExerciseSafetyFlagsView(
         boolean requiresKneeling,
         boolean requiresHanging,
         boolean requiresOverhead,
-        boolean requiresInversion
-) {}
+        boolean requiresInversion,
+        /** V53: apoyo suspendido sobre un aparato sin soporte de pies. Solo es true con el interruptor de V53 encendido. */
+        boolean requiresSuspendedSupport
+) {
+    /** Compatibilidad: sin el dato de V53. */
+    public ExerciseSafetyFlagsView(Long exerciseId, boolean active, boolean highImpact, boolean requiresFloor,
+                                   boolean axialLoad, boolean requiresKneeling, boolean requiresHanging,
+                                   boolean requiresOverhead, boolean requiresInversion) {
+        this(exerciseId, active, highImpact, requiresFloor, axialLoad, requiresKneeling, requiresHanging,
+                requiresOverhead, requiresInversion, false);
+    }
+}
