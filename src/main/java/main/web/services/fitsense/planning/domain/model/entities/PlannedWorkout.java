@@ -64,6 +64,13 @@ public class PlannedWorkout {
     private SkipReason skipReason;
 
     /**
+     * V54 (propuesta): causa del bloqueo de seguridad vigente cuando la tarea de vencimiento cerro la sesion.
+     * Solo constancia: no es una causa de omision declarada y no entra en ningun calculo.
+     */
+    @Column(name = "system_block_cause", length = 200)
+    private String systemBlockCause;
+
+    /**
      * Respuesta opcional tras omitir por falta de tiempo (V42, DISENO_ADAPTACION_CONTEXTUAL v0.3).
      * Null si no respondio o si la causa es otra.
      */
@@ -155,6 +162,16 @@ public class PlannedWorkout {
         this.skipReason = outcome == WorkoutStatus.SKIPPED ? reason : null;
         this.lackOfTimeContext = null;
         this.declaredAvailableMinutes = null;
+    }
+
+    /** V54: deja constancia del bloqueo de seguridad al vencer. No toca el estado ni la causa de omision. */
+    public void registrarBloqueoDeSistema(String causa) {
+        if (causa == null || causa.isBlank()) return;
+        this.systemBlockCause = causa.length() <= 200 ? causa : causa.substring(0, 200);
+    }
+
+    public String getSystemBlockCause() {
+        return systemBlockCause;
     }
 
     /**
