@@ -43,5 +43,5 @@ También se pasaron `ProteccionPlanesPublicadosIT`, `ContencionTextoBanderaIT` y
 ## 4. Respuesta a la orden
 
 - **¿Puede repararse correctamente el plan 78?** Sí, con el interruptor encendido, mientras su semana no haya empezado. Con el contrato vigente (apagado), no: el 916 y el 910 impiden publicar.
-- **Impacto de activarlo:** solo afecta a las reparaciones de seguridad de planes publicados cuyos ejercicios subieron de dificultad después de publicarse. El conjunto de planes afectados en datos reales se mide con la consulta de solo lectura de `PLANES_PUBLICADOS_C39.md` §2. Aquí no se han leído datos reales.
+- **Impacto de activarlo:** solo afecta a las reparaciones de seguridad de planes publicados cuyos ejercicios subieron de dificultad después de publicarse. El conjunto de planes afectados en datos reales se mide con la consulta de solo lectura de `docs/FitSense/contencion_c39_reducida/PLANES_PUBLICADOS_C39.md` §2. Aquí no se han leído datos reales.
 - **Para aprobar:** que un ejercicio publicado y seguro hoy pueda seguir en la versión reparada aunque su dificultad haya subido después, con la constancia en el snapshot.

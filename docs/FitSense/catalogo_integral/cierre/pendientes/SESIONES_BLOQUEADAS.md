@@ -26,4 +26,4 @@
 - no se rellena `skip_reason` (sería inventar un motivo que la persona no dio);
 - nada de esto se activa sin aprobación.
 
-**Datos reales:** el número de sesiones que vencieron bloqueadas antes de V54 no se puede reconstruir con exactitud, porque la causa no se guardaba. Se puede estimar con la consulta de solo lectura de `PLANES_PUBLICADOS_C39.md` §2, aplicada a sesiones `SKIPPED` con motivo NULL. No se ha ejecutado contra datos reales.
+**Datos reales:** el número de sesiones que vencieron bloqueadas antes de V54 no se puede reconstruir con exactitud, porque la causa no se guardaba. Se puede estimar con la consulta de solo lectura de `docs/FitSense/contencion_c39_reducida/PLANES_PUBLICADOS_C39.md` §2, aplicada a sesiones `SKIPPED` con motivo NULL. No se ha ejecutado contra datos reales.
