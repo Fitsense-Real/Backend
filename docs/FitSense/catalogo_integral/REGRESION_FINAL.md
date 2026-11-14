@@ -81,6 +81,6 @@ Las migraciones se reproducen desde cero sin error y el resultado coincide con l
 |---|---|
 | Huella de la base frente a las decisiones (PR A y rama final) | 442 = 442 |
 | Registro maestro frente a la huella real | 0 discrepancias de textos y dificultad en 1.219 activos |
-| Matriz de coherencia (13 reglas) | Ver `MATRIZ_COHERENCIA_FINAL.xlsx`, regenerada con el registro único |
+| Matriz de coherencia (13 reglas) | `MATRIZ_COHERENCIA_FINAL.xlsx`, regenerada con el registro único (calculada sobre V1–V53): R01–R10 sin incumplimientos (**R03, la de 1083, pasa a 0**); R11: 27 identidades no confirmadas; R12 (informativa): 5; R13: 295 activos con decisión pendiente |
 | Rejilla de 168 perfiles | 168 → 168 con plan en PR A, PR B apagado (idéntica) y PR B encendido (`IMPACTO_ELEGIBILIDAD.md` §5) |
 | Hipertrofia de 30 a 75 minutos | 298 de 312 con plan. Los 14 sin plan son de casa con peso corporal, por 775 con banco (V20, legítimo) |
