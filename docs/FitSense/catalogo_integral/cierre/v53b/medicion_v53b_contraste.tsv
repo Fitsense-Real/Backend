@@ -1,0 +1,7 @@
+comparacion	perfiles	elegibles_iguales	planes_iguales
+B_sin_responder_vs_A	168	168	168
+B_confirma_si_vs_apagado	168	168	168
+A_permiso_true_vs_A_null	168	168	168
+A_permiso_false_vs_A_null	168	168	168
+apagado_permiso_true_vs_null	168	168	168
+apagado_permiso_false_vs_null	168	168	168

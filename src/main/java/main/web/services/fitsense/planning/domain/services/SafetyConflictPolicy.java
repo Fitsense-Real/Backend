@@ -35,8 +35,8 @@ public final class SafetyConflictPolicy {
     public static final String SUSPENSION = "suspension";
     /**
      * V53 (propuesta pendiente de aprobacion): apoyo suspendido sobre un aparato sin soporte de pies. Causa propia para
-     * que se distinga en el registro. Solo aparece con el interruptor de V53 encendido: apagado, la fachada del catalogo
-     * entrega el hecho siempre en false.
+     * que se distinga en el registro. Solo aparece con el interruptor de V53 (opcion A) o el de V53-B (opcion B, permiso
+     * propio) encendido: apagados, la fachada del catalogo entrega el hecho siempre en false.
      */
     public static final String APOYO_SUSPENDIDO = "apoyo_suspendido";
     public static final String BRAZOS_ARRIBA = "brazos_arriba";
@@ -90,7 +90,9 @@ public final class SafetyConflictPolicy {
         if (s.excludeAxialLoad() && f.axialLoad()) causas.add(CARGA_AXIAL);
         if (s.excludeKneeling() && f.requiresKneeling()) causas.add(RODILLAS);
         if (s.excludeHanging() && f.requiresHanging()) causas.add(SUSPENSION);
-        if (s.excludeHanging() && f.requiresSuspendedSupport()) causas.add(APOYO_SUSPENDIDO);
+        // V53-B: el componente propio. Con la opcion A (y en todo SafetyProfile construido como antes) vale lo mismo
+        // que excludeHanging; apagado, el hecho llega en false. Con la opcion B lo decide el permiso propio.
+        if (s.excludeSuspendedSupport() && f.requiresSuspendedSupport()) causas.add(APOYO_SUSPENDIDO);
         if (s.excludeOverhead() && f.requiresOverhead()) causas.add(BRAZOS_ARRIBA);
         if (s.excludeInversion() && f.requiresInversion()) causas.add(INVERSION);
         return List.copyOf(causas);

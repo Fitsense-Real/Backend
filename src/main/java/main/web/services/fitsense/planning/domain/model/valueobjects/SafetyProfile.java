@@ -28,8 +28,27 @@ public record SafetyProfile(
         boolean excludeKneeling,
         boolean excludeHanging,
         boolean excludeOverhead,
-        boolean excludeInversion
+        boolean excludeInversion,
+        /*
+         * V53-B (propuesta, apagada por defecto): fuera el apoyo suspendido sobre un aparato sin soporte de pies
+         * (requires_suspended_support). Solo tiene efecto si la fachada del catalogo entrega ese hecho, es decir, con
+         * la opcion A o la B encendida (ModoApoyoSuspendido). Apagado, el hecho llega siempre en false y este
+         * componente no cambia nada.
+         */
+        boolean excludeSuspendedSupport
 ) {
+
+    /**
+     * COMPATIBILIDAD con los siete componentes anteriores a V53-B: el apoyo suspendido sigue a «no colgarse», que es
+     * exactamente la semantica de la opcion A (y, apagado, la de antes de V53, porque el hecho llega en false). Todos
+     * los sitios que construian un SafetyProfile siguen dando el mismo resultado.
+     */
+    public SafetyProfile(boolean excludeHighImpact, boolean excludeFloorWork, boolean excludeAxialLoad,
+                         boolean excludeKneeling, boolean excludeHanging, boolean excludeOverhead,
+                         boolean excludeInversion) {
+        this(excludeHighImpact, excludeFloorWork, excludeAxialLoad, excludeKneeling, excludeHanging,
+                excludeOverhead, excludeInversion, excludeHanging);
+    }
 
     /** Desde esta edad se retiran saltos, pliometria y levantamientos olimpicos. */
     public static final int EDAD_SIN_IMPACTO = 60;
@@ -60,10 +79,30 @@ public record SafetyProfile(
             Boolean allowFloorExercises,
             Boolean allowKneelingExercises,
             Boolean allowHangingExercises,
-            Boolean allowOverheadExercises
+            Boolean allowOverheadExercises,
+            /*
+             * V53-B (propuesta, apagada por defecto): el permiso propio «apoyo suspendido»
+             * (user_profiles.allow_suspended_support, V55). null = sin responder: hereda «no colgarse». El ACL de
+             * profiling solo lo rellena con la opcion B encendida; con la A o apagado llega siempre en null.
+             */
+            Boolean allowSuspendedSupport
     ) {
+        /** Compatibilidad con las cinco declaraciones anteriores a V53-B: sin permiso propio (null, hereda). */
+        public Declaradas(Boolean allowHighImpact, Boolean allowFloorExercises, Boolean allowKneelingExercises,
+                          Boolean allowHangingExercises, Boolean allowOverheadExercises) {
+            this(allowHighImpact, allowFloorExercises, allowKneelingExercises, allowHangingExercises,
+                    allowOverheadExercises, null);
+        }
+
         public static Declaradas sinLimitaciones() {
             return new Declaradas(true, true, true, true, true);
+        }
+
+        /** Las mismas declaraciones sin el permiso propio: lo que ve el filtro fuera de la opcion B. */
+        public Declaradas sinPermisoApoyoSuspendido() {
+            return allowSuspendedSupport == null ? this
+                    : new Declaradas(allowHighImpact, allowFloorExercises, allowKneelingExercises,
+                    allowHangingExercises, allowOverheadExercises);
         }
 
         private static boolean prohibe(Boolean permite) {
@@ -83,14 +122,32 @@ public record SafetyProfile(
                                                        Declaradas declaradas) {
         var d = declaradas == null ? Declaradas.sinLimitaciones() : declaradas;
         var politica = forAgeAndLevel(age, fitnessLevel);
+        boolean sinColgarse = Declaradas.prohibe(d.allowHangingExercises());
         return new SafetyProfile(
                 politica.excludeHighImpact() || Declaradas.prohibe(d.allowHighImpact()),
                 politica.excludeFloorWork()  || Declaradas.prohibe(d.allowFloorExercises()),
                 politica.excludeAxialLoad(),
                 Declaradas.prohibe(d.allowKneelingExercises()),
-                Declaradas.prohibe(d.allowHangingExercises()),
+                sinColgarse,
                 Declaradas.prohibe(d.allowOverheadExercises()),
-                age >= EDAD_SIN_CARGA_AXIAL);
+                age >= EDAD_SIN_CARGA_AXIAL,
+                // V53-B: sin permiso propio (null) hereda «no colgarse», que es tambien la semantica de la opcion A y
+                // la del constructor de compatibilidad. Con permiso propio manda el permiso, en los dos sentidos.
+                d.allowSuspendedSupport() == null ? sinColgarse : !d.allowSuspendedSupport());
+    }
+
+    /**
+     * V53-B · la misma resolucion con el modo EXPLICITO. Fuera de {@link ModoApoyoSuspendido#PERMISO_PROPIO} el
+     * permiso propio se ignora (el apoyo suspendido sigue a «no colgarse»; apagado, ademas, el hecho del catalogo
+     * llega en false y no tiene efecto). Con la opcion B:
+     * {@code excludeSuspendedSupport = allowSuspendedSupport == null ? !allowHanging : !allowSuspendedSupport}.
+     * Ningun otro componente depende del modo: la opcion B no levanta ninguna restriccion existente.
+     */
+    public static SafetyProfile forAgeLevelAndDeclared(int age, String fitnessLevel, Declaradas declaradas,
+                                                       ModoApoyoSuspendido modo) {
+        var d = declaradas == null ? Declaradas.sinLimitaciones() : declaradas;
+        return forAgeLevelAndDeclared(age, fitnessLevel,
+                modo == ModoApoyoSuspendido.PERMISO_PROPIO ? d : d.sinPermisoApoyoSuspendido());
     }
 
     /**
@@ -116,6 +173,13 @@ public record SafetyProfile(
     public static SafetyProfile none() {
         return new SafetyProfile(false, false, false, false, false, false, false);
     }
+
+    /**
+     * V53-B: hasRestrictions() y describe() NO miran excludeSuspendedSupport, a proposito. El conjunto elegible ya
+     * retira el apoyo suspendido cuando corresponde; anadir una frase al prompt cambiaria el texto que recibe la IA
+     * para perfiles con «no colgarse» tambien en la opcion A, y el texto actual («Evita suspenderse de una barra»)
+     * sigue ligado a «no colgarse». Queda documentado en cierre/v53b/PROPUESTA_V53B.md.
+     */
 
     public boolean hasRestrictions() {
         return excludeHighImpact || excludeFloorWork || excludeAxialLoad
