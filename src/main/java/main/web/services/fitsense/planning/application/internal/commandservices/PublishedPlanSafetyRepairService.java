@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalConfigurationService;
 import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
@@ -116,6 +117,17 @@ public class PublishedPlanSafetyRepairService {
     private final JsonSupport json;
     private final TransactionTemplate escritura;
     private final TransactionTemplate lectura;
+    /**
+     * PROPUESTA (orden de cierre de pendientes, 14/11/2026), APAGADA por defecto: tolerar, en la revalidacion de la semana
+     * reparada, los ejercicios YA PUBLICADOS y conservados (no sustituidos) que hoy solo faltan del conjunto elegible
+     * porque su dificultad subio despues de publicarse (plan 78: 916 por V48 y 910 por V52). Solo la dificultad: si
+     * faltan por seguridad, equipamiento o cualquier otra regla, se rechaza como hasta ahora; y lo que hoy es inseguro
+     * ya se sustituyo antes (SUST-SEG-1) y se comprueba aparte. Nunca entra como sustituto: los sustitutos salen del
+     * conjunto elegible de hoy. Queda en el snapshot (tolerated_publication_difficulty) para la trazabilidad.
+     * Cambia el contrato de reparacion aprobado: no se activa sin decision del propietario.
+     */
+    private final boolean tolerarDificultadDePublicacion;
+    private final ExternalCatalogService catalogo;
 
     public PublishedPlanSafetyRepairService(WeeklyTrainingPlanRepository planRepository,
                                             WeeklyTrainingPlanCommandService commandService,
@@ -126,7 +138,11 @@ public class PublishedPlanSafetyRepairService {
                                             StrictPlanValidation estricta,
                                             ExternalConfigurationService configuracion,
                                             JsonSupport json,
-                                            PlatformTransactionManager transacciones) {
+                                            PlatformTransactionManager transacciones,
+                                            ExternalCatalogService catalogo,
+                                            @org.springframework.beans.factory.annotation.Value(
+                                                    "${fitsense.reparacion.tolerar-dificultad-de-publicacion:false}")
+                                            boolean tolerarDificultadDePublicacion) {
         this.planRepository = planRepository;
         this.commandService = commandService;
         this.assembler = assembler;
@@ -136,6 +152,8 @@ public class PublishedPlanSafetyRepairService {
         this.estricta = estricta;
         this.configuracion = configuracion;
         this.json = json;
+        this.catalogo = catalogo;
+        this.tolerarDificultadDePublicacion = tolerarDificultadDePublicacion;
         this.escritura = new TransactionTemplate(transacciones);
         this.lectura = new TransactionTemplate(transacciones);
         this.lectura.setReadOnly(true);
@@ -188,19 +206,35 @@ public class PublishedPlanSafetyRepairService {
                     .formatted(quedan, leido.causaPorEjercicio()));
         // P-P2 (auditoria post R/R'): la reparacion emite las dosis HEREDADAS con linaje (y nada mas: sin paso).
         // Antes no las emitia y una semana con una dosis progresada o reducida no se podia reparar (NO_VALIDA).
+        var toleradas = tolerarDificultadDePublicacion
+                ? soloPorDificultad(leido, reparada.semana(), elegibles, contexto) : List.<CandidateExercise>of();
+        var elegiblesValidacion = new LinkedHashMap<>(elegibles);
+        toleradas.forEach(t -> elegiblesValidacion.put(t.exerciseId(), t));
+        var contextoValidacion = toleradas.isEmpty() ? contexto : new PlanGenerationContext(contexto.userId(),
+                contexto.weekNumber(), contexto.weekStartDate(), contexto.weekEndDate(), contexto.profile(),
+                contexto.adjustment(), contexto.previousWeek(), List.copyOf(elegiblesValidacion.values()),
+                contexto.safety(), contexto.prescription(), contexto.policy());
         var informe = v8c.validateContinuidad(new WeekDerivation(reparada.semana(), List.of()),
-                contexto.previousWeek(), elegibles, exclusiones, reparada.sustituciones(), null, true);
+                contexto.previousWeek(), elegiblesValidacion, exclusiones, reparada.sustituciones(), null, true);
         problemas.addAll(informe.problems());
         problemas.addAll(estricta.revisar(new PlanDraft(leido.origen(), null, null, null, informe.describe(),
-                reparada.semana().stream().map(DerivedWorkout::workout).toList()), contexto, informe));
+                reparada.semana().stream().map(DerivedWorkout::workout).toList()), contextoValidacion, informe));
+        // Propuesta plan 78: la tolerancia cubre SOLO V6 (dificultad maxima) de los ejercicios ya publicados que hoy
+        // no son elegibles unicamente por dificultad. Cualquier otro problema (seguridad, V8C, dosis, V1 de otro
+        // ejercicio) sigue rechazando la version nueva.
+        if (!toleradas.isEmpty()) {
+            var prefijosV6 = toleradas.stream().map(t -> "V6: el ejercicio " + t.exerciseId() + " tiene dificultad ").toList();
+            problemas.removeIf(p -> prefijosV6.stream().anyMatch(p::startsWith));
+        }
         if (!problemas.isEmpty())
             return registrar(userId, week, Resultado.de(Estado.NO_VALIDA, leido.planId(), leido.conflictos(),
                     problemas));
 
         // FASE 4 · publicar la version nueva, en una transaccion corta.
         try {
+            var toleradasIds = toleradas.stream().map(CandidateExercise::exerciseId).sorted().toList();
             var nuevo = escritura.execute(tx -> publicar(userId, week, leido, reparada.semana(),
-                    reparada.sustituciones()));
+                    reparada.sustituciones(), toleradasIds));
             if (nuevo == null)
                 return registrar(userId, week, Resultado.de(Estado.CAMBIO_CONCURRENTE, leido.planId(),
                         leido.conflictos(), List.of("La version %d ya no es la activa.".formatted(leido.version()))));
@@ -251,8 +285,27 @@ public class PublishedPlanSafetyRepairService {
                 .toList());
     }
 
+    /**
+     * Ejercicios de la semana reparada que ya estaban PUBLICADOS en la misma sesion, no son sustitutos, hoy no estan en
+     * el conjunto elegible y SI lo estarian con cualquier dificultad (mismo perfil, misma seguridad, mismo equipamiento):
+     * su unica causa de exclusion es una dificultad que subio despues de publicarse.
+     */
+    private List<CandidateExercise> soloPorDificultad(Leido leido, List<DerivedWorkout> semana,
+                                              Map<Long, CandidateExercise> elegibles, PlanGenerationContext contexto) {
+        var publicados = leido.semana().stream().flatMap(d -> d.workout().exercises().stream())
+                .map(PlanDraft.DraftExercise::exerciseId).collect(Collectors.toSet());
+        var fuera = semana.stream().flatMap(d -> d.workout().exercises().stream())
+                .map(PlanDraft.DraftExercise::exerciseId)
+                .filter(id -> !elegibles.containsKey(id) && publicados.contains(id)
+                        && !leido.causaPorEjercicio().containsKey(id))
+                .collect(Collectors.toCollection(TreeSet::new));
+        if (fuera.isEmpty()) return List.of();
+        var sinTopeDeDificultad = catalogo.fetchEligibleForExplanation(contexto.profile(), 3, contexto.safety());
+        return sinTopeDeDificultad.stream().filter(c -> fuera.contains(c.exerciseId())).toList();
+    }
+
     private Long publicar(Long userId, TrainingWeek week, Leido leido, List<DerivedWorkout> semana,
-                         List<SustitucionSeguridad> sustituciones) {
+                         List<SustitucionSeguridad> sustituciones, List<Long> toleradas) {
         var anterior = planRepository.findByUserIdAndWeekStartDateAndStatus(userId, week.startDate(), PlanStatus.ACTIVE)
                 .orElse(null);
         // Solo sobre la MISMA version que se leyo y valido.
@@ -282,7 +335,7 @@ public class PublishedPlanSafetyRepairService {
             copias.add(Map.of("from_planned_workout_id", original.getId(), "display_order",
                     (int) copia.getDisplayOrder()));
         }
-        nuevo.attachOutputSnapshot(json.write(new LinkedHashMap<>(Map.of(
+        var snapshot = new LinkedHashMap<String, Object>(Map.of(
                 "schema_version", ESQUEMA,
                 "repaired_plan_id", anterior.getId(),
                 "repaired_plan_version", anterior.getPlanVersion(),
@@ -290,7 +343,9 @@ public class PublishedPlanSafetyRepairService {
                 "conflicts", leido.conflictos(),
                 "substitutions", sustituciones,
                 "workouts", copias,
-                "repaired_at", OffsetDateTime.now().toString()))));
+                "repaired_at", OffsetDateTime.now().toString()));
+        if (!toleradas.isEmpty()) snapshot.put("tolerated_publication_difficulty", toleradas);
+        nuevo.attachOutputSnapshot(json.write(snapshot));
 
         anterior.markReplaced();
         planRepository.saveAndFlush(anterior);
