@@ -2,6 +2,22 @@
 
 Todo se ejecutó en local con Testcontainers (Postgres 16, base nueva en cada contexto), sin datos reales y sin Replicate.
 
+> **Actualización (orden de 14/11/2026 sobre las regresiones de V52.1).** Los dos fallos del §1 están **resueltos** sin código de producción. El detalle está en `REGRESIONES_V52_1.md` (commit `b5231cb`).
+>
+> | Rama | Unitarias | Integración |
+> |---|---|---|
+> | Integración (`72d6808`) | 1.468 / 0 fallos | 730 / 0 fallos / 0 errores / 51 omitidas |
+> | #64 (`f9daccb`) | 1.468 / 0 fallos | 726 / 0 / 0 / 51 |
+> | #63 (`eda15de`) | 1.468 / 0 fallos | 725 / 0 / 0 / 51 |
+>
+> Rejillas de 168 perfiles: 168 de 168 con V53 apagado y encendido. Con V53 apagado, la rejilla es idéntica a la medición anterior; con V53 encendido cambian 16 perfiles.
+>
+> Procedencia V1–V53: V52.1 toca 7 ejercicios, con 25 cambios de atributo.
+>
+> CI en verde en #61 (`f42d473`), #63 (`eda15de`) y #64 (`f9daccb`).
+>
+> Las secciones siguientes reflejan el estado anterior a esa corrección.
+
 ## 1. Resultados
 
 | Rama | Contenido | Unitarias | Integración | Resultado |
