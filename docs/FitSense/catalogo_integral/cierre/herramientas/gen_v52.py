@@ -133,6 +133,14 @@ cab = f"""-- ===================================================================
 -- Generada por docs/FitSense/catalogo_integral/cierre/herramientas/gen_v52.py.
 -- =====================================================================
 """
-open(out, 'w', encoding='utf-8').write(cab + '\n' + '\n'.join(sql) + '\n')
+pie = """
+-- Control permanente (orden de desbloqueo, 14/11/2026): un activo con impacto explicito ALTO es de alto impacto.
+-- Sin esto, «sin alto impacto» (que filtra por high_impact) dejaba pasar un ejercicio etiquetado ALTO (caso 1083).
+-- Los triggers diferidos de requisitos se comprueban ya: Postgres no admite ALTER TABLE con eventos pendientes.
+SET CONSTRAINTS ALL IMMEDIATE;
+ALTER TABLE exercises ADD CONSTRAINT ck_exercises_alto_implica_high_impact
+    CHECK (NOT is_active OR impact_level IS DISTINCT FROM 'ALTO' OR high_impact);
+"""
+open(out, 'w', encoding='utf-8').write(cab + '\n' + '\n'.join(sql) + '\n' + pie)
 print(len(por_id), 'ejercicios', dict(cuenta))
 for x in problemas: print('PROBLEMA', *x)

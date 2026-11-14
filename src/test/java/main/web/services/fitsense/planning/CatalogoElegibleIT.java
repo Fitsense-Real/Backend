@@ -244,7 +244,7 @@ class CatalogoElegibleIT {
                  where e.is_active
                    and e.difficulty_level <= :maxDificultad
                    and e.exercise_id not in (:excluidos)
-                   and (not :sinImpacto or not e.high_impact)
+                   and (not :sinImpacto or (not e.high_impact and coalesce(e.impact_level, '') <> 'ALTO'))
                    and (not :sinSuelo or not e.requires_floor)
                    and (not :sinAxial or not e.axial_load)
                    and (not :sinRodillas or not e.requires_kneeling)
