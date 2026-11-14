@@ -340,8 +340,7 @@ class ContencionTextoBanderaIT {
             var inseguros = w.exercises().stream().filter(e -> e.safetyBlockReason() != null).toList();
             assertEquals(1, inseguros.size());
             assertEquals(1303L, inseguros.get(0).exerciseId());
-            // V53: el 1303 tiene ademas apoyo suspendido, que «no colgarse» excluye; las dos causas se informan.
-            assertEquals("INC-CAT-C39+apoyo_suspendido", inseguros.get(0).safetyBlockReason());
+            assertEquals("INC-CAT-C39", inseguros.get(0).safetyBlockReason());
 
             var error = assertThrows(WorkoutNotAvailableException.class,
                     () -> sesiones.handle(new StartWorkoutSessionCommand(p.userId(), afectada)));

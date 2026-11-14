@@ -18,7 +18,7 @@ public record ExerciseSafetyFlagsView(
         boolean requiresHanging,
         boolean requiresOverhead,
         boolean requiresInversion,
-        /** V53: apoyo suspendido (sin los pies en el suelo, sostenido sobre brazos o antebrazos, o pies en correas). */
+        /** V53: apoyo suspendido sobre un aparato sin soporte de pies. Solo es true con el interruptor de V53 encendido. */
         boolean requiresSuspendedSupport
 ) {
     /** Compatibilidad: sin el dato de V53. */

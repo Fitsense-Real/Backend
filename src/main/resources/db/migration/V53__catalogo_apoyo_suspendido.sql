@@ -1,25 +1,31 @@
 -- =====================================================================
 -- FitSense - V53: APOYO SUSPENDIDO como atributo explicito del catalogo (cierre del catalogo)
 --
--- DECISION DE SIGNIFICADO PENDIENTE DE APROBACION (ver docs/FitSense/catalogo_integral/cierre/VALIDACION_SEGURIDAD.md).
--- Hasta ahora «no colgarse» (user_profiles.allow_hanging_exercises = false) excluia solo requires_hanging: el cuerpo
--- cuelga del agarre. Con esta migracion excluye tambien el APOYO SUSPENDIDO: el cuerpo, sin los pies en el suelo, se
--- sostiene SOBRE brazos extendidos (fondos en paralelas o anillas), antebrazos (silla romana o del capitan) o con los
--- pies en correas o anillas. Carga el hombro con todo el peso corporal, como colgarse o mas, y la caida es posible.
--- El apoyo parcial en maquina (rodillas o pies en la plataforma de asistencia) NO se marca: no hay suspension.
+-- SOLO DATO. El COMPORTAMIENTO esta APAGADO hasta la aprobacion del propietario (orden de desbloqueo, 14/11/2026:
+-- "No actives el cambio hasta nuestra aprobacion del comportamiento final"). Esta migracion anade y rellena la columna;
+-- el significado del permiso «no colgarse» (user_profiles.allow_hanging_exercises = false) NO cambia mientras la
+-- propiedad fitsense.seguridad.apoyo-suspendido-en-no-colgarse sea false (valor por defecto).
 --
--- Sustituye, con un dato comprobable, la contencion por lista de ids de INC-CAT-C39 para colgarse.
+-- Criterio conservador PROPUESTO (pendiente de aprobacion): «no colgarse» excluiria tambien el APOYO SUSPENDIDO SOBRE UN
+-- APARATO SIN SOPORTE DE PIES: el cuerpo, sin los pies en el suelo ni en una plataforma, se sostiene sobre brazos
+-- extendidos (fondos en paralelas, barra o anillas; muscle-up) o sobre los antebrazos (silla del capitan, paralelas).
+-- Carga el hombro con todo el peso corporal, como colgarse o mas, y la caida desde el aparato es posible.
+-- NO se marca: el apoyo parcial en maquina (rodillas o pies en la plataforma de asistencia), ni las posiciones con las
+-- manos en el SUELO (planchas, maltes, pino, L-sit, y 1301 con los pies en correas y las manos en el suelo), donde no
+-- hay aparato del que caer. Detalle: docs/FitSense/catalogo_integral/cierre/V53_APOYO_SUSPENDIDO.md
 -- =====================================================================
 
 ALTER TABLE exercises ADD COLUMN requires_suspended_support BOOLEAN NOT NULL DEFAULT FALSE;
 COMMENT ON COLUMN exercises.requires_suspended_support IS
-    'El cuerpo, sin los pies en el suelo, se sostiene sobre brazos extendidos, antebrazos o con los pies en correas. '
-    'Lo excluye la restriccion «no colgarse» (decision de significado del cierre del catalogo, V53).';
+    'El cuerpo, sin los pies en el suelo ni en una plataforma, se sostiene sobre un aparato con los brazos extendidos o los antebrazos. '
+    'Propuesta pendiente de aprobacion: la restriccion «no colgarse» lo excluiria solo con '
+    'fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true (apagado por defecto).';
 
--- Ejercicios con apoyo suspendido SOBRE UN APARATO (16), adjudicados con tres miradas al GIF completo (segunda revision,
--- verificacion independiente y coordinador). Las posiciones con las manos en el SUELO (planchas, maltes, pino, L-sit:
--- 855, 857, 860, 861, 885, 974, 1298, 1299) se documentan pero NO se marcan: no hay aparato del que caer ni agarre, y ampliar a ellas
--- «no colgarse» estiraria aun mas el significado del permiso. Todas son de dificultad 3.
+-- Ejercicios con apoyo suspendido SOBRE UN APARATO SIN SOPORTE DE PIES (15), adjudicados con tres miradas al GIF completo
+-- (segunda revision, verificacion independiente y coordinador) y revisados de nuevo contra el criterio conservador.
+-- De los 16 candidatos de la primera version, 1301 (suspended reverse crunch) NO cumple el criterio: las manos estan en
+-- el suelo y los pies en correas; sigue contenido por INC-CAT-C39. Las posiciones con las manos en el SUELO (855, 857,
+-- 860, 861, 885, 974, 1298, 1299) se documentan pero NO se marcan.
 -- Detalle y evidencia: docs/FitSense/catalogo_integral/cierre/adjudicacion/apoyo_suspendido_v53.tsv
 CREATE TEMP TABLE v53_apoyo (exercise_id BIGINT PRIMARY KEY, name_en TEXT NOT NULL, clase TEXT NOT NULL) ON COMMIT DROP;
 INSERT INTO v53_apoyo (exercise_id, name_en, clase) VALUES
@@ -33,7 +39,6 @@ INSERT INTO v53_apoyo (exercise_id, name_en, clase) VALUES
     (1069, 'muscle-up (on vertical bar)', 'BRAZOS_EXTENDIDOS'),
     (1153, 'ring dips', 'BRAZOS_EXTENDIDOS'),
     (1184, 'side hip (on parallel bars)', 'ANTEBRAZOS'),
-    (1301, 'suspended reverse crunch', 'PIES_SUSPENDIDOS'),
     (1303, 'twisted leg raise', 'ANTEBRAZOS'),
     (1304, 'twisted leg raise (female)', 'ANTEBRAZOS'),
     (1306, 'vertical leg raise (on parallel bars)', 'ANTEBRAZOS'),
