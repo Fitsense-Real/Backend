@@ -89,11 +89,19 @@ class CatalogoIntegralTextosIT {
         var ids = new java.util.TreeSet<Long>();
         var m = java.util.regex.Pattern.compile("(?m)^-- (\\d+) [^\\n]*?(?:: | \\| )" + campo + ":").matcher(sql);
         while (m.find()) ids.add(Long.parseLong(m.group(1)));
+        // V52.1 (cierre de pendientes, 14/11/2026) reescribe algunos textos mas, con la misma regla: el texto final lo
+        // fija la huella de CatalogoCalidadIT.
+        var v521 = java.nio.file.Files.readString(java.nio.file.Path.of(
+                "src/main/resources/db/migration/V52_1__catalogo_cierre_pendientes_tecnicos.sql"));
+        for (var bloque : v521.split("DO \\$v521\\$")) {
+            var id = java.util.regex.Pattern.compile("WHERE exercise_id = (\\d+)").matcher(bloque);
+            if (id.find() && bloque.contains(campo + " = ")) ids.add(Long.parseLong(id.group(1)));
+        }
         return ids;
     }
 
     @Test
-    @DisplayName("las 408 filas se aplican y dejan exactamente el texto nuevo (salvo lo que V52 reescribe despues)")
+    @DisplayName("las 408 filas se aplican y dejan exactamente el texto nuevo (salvo lo que V52 y V52.1 reescriben despues)")
     void seAplicanTodas() throws Exception {
         var filas = filas();
         var nombresV52 = reescritosPorV52("name_es");

@@ -163,7 +163,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 228	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:barbell	AX	BAJO	false	false	---	3fba5496e49b
 229	waist	abs	TRUNK_FLEXION	3	SETS_REPS	false	1:barbell	FL AX OH	BAJO	false	false	---	8678da79682c
 230	back	lats	SHOULDER_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH	BAJO	false	false	---	1c70b2b9d9ae
-231	back	lats	VERTICAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	OH	BAJO	false	false	---	fb28cbe71f75
+231	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	OH	BAJO	false	false	---	6e76349ec926
 232	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	BAJO	false	false	---	b28a407d1f84
 233	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:barbell,2:bench	-	BAJO	false	false	---	9e7f22d02b37
 234	back	traps	SCAPULAR_ELEVATION	3	SETS_REPS	true	1:barbell	AX	BAJO	false	false	---	24b56823cb07
@@ -297,7 +297,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 364	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	BAJO	false	false	---	84df976120f3
 365	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	OH	BAJO	false	false	---	98e1c6c6fe61
 366	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:cable,2:bench	OH	BAJO	false	false	---	1cb982f26aa3
-367	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	BAJO	false	false	---	29130062335c
+367	shoulders	delts	SHOULDER_EXTENSION	2	SETS_REPS	true	1:cable	-	BAJO	false	false	---	4733faaa9179
 368	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:cable,2:bench	FL KN OH	BAJO	false	false	---	9558a3125138
 369	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:bench	-	BAJO	false	false	---	6536d14f0535
 370	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:bench	-	BAJO	false	false	---	ff3773c967f5
@@ -549,7 +549,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 617	shoulders	delts	OTHER	2	SETS_REPS	false	1:dumbbell	FL	BAJO	false	false	---	2fcf37bcff69
 618	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	FL OH	BAJO	false	false	---	21afe9562b8e
 619	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	false	---	7ebb15eec387
-620	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	false	---	4543f08abef9
+620	shoulders	delts	SHOULDER_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	false	---	f747e3e572b9
 621	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	false	---	04a72778718f
 622	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell	-	BAJO	false	false	---	65559fdac807
 623	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell	-	BAJO	false	false	---	611856027c2e
@@ -796,7 +796,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 865	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:pull-up bar	HG OH	BAJO	false	false	---	dc800496b1dc
 866	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:pull-up bar	HG OH	BAJO	false	false	---	64c5669dd01f
 867	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:pull-up bar	HG OH	BAJO	false	false	---	8f978a02caaf
-868	waist	abs	TRUNK_FLEXION	3	SETS_REPS	false	1:pull-up bar	HG OH	BAJO	false	false	---	696f6a35d62d
+868	waist	abs	TRUNK_FLEXION	3	SETS_REPS	false	1:pull-up bar	HG OH INV	BAJO	false	false	---	696f6a35d62d
 869	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:pull-up bar	HG OH	BAJO	false	false	---	8b29d54fc401
 870	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:pull-up bar	HG OH	BAJO	false	false	---	0a793e808dfd
 871	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:pull-up bar,2:other	HG OH	BAJO	false	false	---	adfd50e0022c
@@ -1086,7 +1086,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1179	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	BAJO	false	false	---	cf5ac7256e4c
 1180	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	FL	BAJO	false	false	---	173008d09b73
 1181	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	-	BAJO	false	false	---	318f0d7ea853
-1182	waist	abs	CORE_STABILITY	1	SETS_REPS	false	1:plyo box,1:step platform	FL	BAJO	false	false	---	d567a8b767da
+1182	waist	abs	CORE_STABILITY	1	SETS_REPS	false	-	FL	BAJO	false	false	---	d567a8b767da
 1183	waist	abs	CORE_STABILITY	1	SETS_REPS	false	-	FL	BAJO	false	false	---	ebec1544ff5e
 1184	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	true	1:captains chair	-	BAJO	false	true	---	fbe76014d289
 1185	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	OH	BAJO	false	false	---	3d0a32c55c42
@@ -1206,7 +1206,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 1320	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	BAJO	false	false	---	4adaf1d744ee
 1321	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	false	1:smith machine	-	BAJO	false	false	---	5c4f763f9ec8
 1322	shoulders	delts	MOBILITY	1	DURATION	false	-	-	BAJO	true	false	--E	6fdf48ae92f3
-1323	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	BAJO	false	false	---	7848ee190097
+1323	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	BAJO	false	false	---	3630f262f129
 1324	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	1:stationary bike	-	BAJO	false	false	---	c987924e9c7b
 1325	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	1:treadmill	-	BAJO	false	false	---	3b5303916267
 1333	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	-	HI	ALTO	false	false	M--	d82a362cb56d

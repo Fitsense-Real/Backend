@@ -153,6 +153,66 @@ for clave, i, nombre, bloque, prio, cons, dec in [
     fila(clave, i, NOMBRE.get(i, nombre), bloque, prio, TEC, 'ABIERTA', cons, dec,
          'huella_catalogo.tsv id ' + i, 'REVISION_VISUAL_COMPLETA.md §5 (verificadores V3)', 'HALLAZGO COLATERAL')
 
+# ---------------------------------------------------------------------------------------------------------------
+# ORDEN DE CIERRE DE PENDIENTES (14/11/2026). Estado final de cada decision con uno de los cuatro resultados de la
+# orden, sin inventar validaciones: ninguna fila tiene validacion profesional registrada.
+CORREGIDO = 'Corregido y validado tecnicamente'
+DESCARTADO = 'Correcto, con evidencia que descarta el hallazgo'
+CONTENIDO = 'Contenido preventivamente'
+BLOQUEADO = 'Bloqueado por validacion especializada'
+DOC = 'CIERRE_PENDIENTES.md'
+CIERRE = {
+    'A-231': (CORREGIDO, 'Nombre, zona (upper arms), objetivo (triceps), sinergista y patron HORIZONTAL_PUSH como los otros press de banca cerrados. OH se conserva (quitarlo relajaria una restriccion: profesional)', 'V52.1', 'huella 231; CatalogoIntegralTextosIT; GeneracionReferenciaIT'),
+    'A-367': (CORREGIDO, 'Extension de hombro con brazo estirado en polea baja: shoulders/delts, SHOULDER_EXTENSION (como 262)', 'V52.1', 'huella 367; GeneracionReferenciaIT'),
+    'A-1323': (CORREGIDO, 'Se sustituye la frase de los rodillos por el banco entre dos poleas altas, en instrucciones y pasos', 'V52.1', 'huella 1323; CatalogoIntegralTextosIT'),
+    'A-1182': (CORREGIDO, 'Peso corporal sin requisitos (los pies estan en el suelo; no hay cajon). FL se conserva', 'V52.1', 'huella 1182; GeneracionReferenciaIT'),
+    'A-1017': (CORREGIDO, 'Gemelos anadidos como secundarios (resaltados en f1 y f7)', 'V52.1', 'huella 1017'),
+    'A-1303T': (DESCARTADO, '«Silla romana» es el nombre habitual en espanol de la estacion de elevaciones con apoyo de antebrazos (silla del capitan): el texto coincide con el GIF. Sin cambio', '-', 'revision del GIF f1-f12 en esta orden'),
+    'P001': (CONTENIDO, 'Se anade requires_inversion (las piernas pasan por encima de la barra y la cadera por encima de la cabeza en f5-f8). Solo restringe mas; el profesional confirma', 'V52.1', 'huella 868 (HG OH INV)'),
+    'P276': (DESCARTADO, 'Identidad confirmada por V3 (CLARA) y por la revision de esta orden: solo visto bueno profesional opcional', '-', 'verificacion3_consolidada.tsv'),
+    'P284': (CORREGIDO, 'Extension de hombro tumbado boca abajo (no elevacion lateral): nombre, patron SHOULDER_EXTENSION e instrucciones', 'V52.1', 'huella 620; CatalogoIntegralTextosIT'),
+    'P299': (DESCARTADO, 'Identidad confirmada por V3 (CLARA) y por la revision de esta orden: solo visto bueno profesional opcional', '-', 'verificacion3_consolidada.tsv'),
+}
+# A-V53 no esta contenida: con el interruptor apagado, los 10 de V53 que eran elegibles siguen siendolo para quien
+# declara «no colgarse». Contenerlos seria activar V53, que la orden prohibe sin autorizacion. Incertidumbre material.
+V53_ABIERTA = (BLOQUEADO, 'Sin cambio y SIN contencion: 457, 458, 459, 462, 777, 920, 934, 1184, 1317 y 1335 siguen elegibles para «no colgarse» hasta la decision (V53_DEFINITIVO.md)', 'V53 (dato; comportamiento apagado)', 'ApoyoSuspendidoInterruptorIT')
+TEXTO_1294 = (CONTENIDO, 'El texto describe circulos de brazos y el GIF un balanceo de 360 grados en barra: RETENIDO (INC-4C-03) para todos hasta que el profesional decida el texto', 'ExternalCatalogService', 'CatalogoElegibleIT; ExternalCatalogServiceRetencionTest; ContencionTextoBanderaIT')
+for r in OUT:
+    r['estado_anterior'] = r['estado']
+    clave, i = r['clave'], r['id']
+    if clave in CIERRE:
+        final, corr, mig, pru = CIERRE[clave]
+    elif r['bloque'] == 'TEXTO' and i == '1294':
+        final, corr, mig, pru = TEXTO_1294
+    elif clave == 'A-V53':
+        final, corr, mig, pru = V53_ABIERTA
+        r['vigente_conservador'] = 'NO'
+    elif r['bloque'] == 'DIFICULTAD':
+        final, corr, mig, pru = BLOQUEADO, 'Sin cambio: V27 prohibe bajar la dificultad sin aprobacion humana' + (
+            '; V39 es una decision historica que no se modifica sin aprobacion (vigente NO conservador)' if i in SUBIR_SIN_APLICAR else
+            '; el nivel vigente (mas alto) es el conservador'), '-', r['comprobacion']
+    elif r['quien_decide'].startswith('NINGUNO'):
+        final, corr, mig, pru = (CORREGIDO if r['estado'] == 'RESUELTA_TECNICA' else r['estado']), 'Resuelta antes de esta orden', '-', r['comprobacion']
+    elif (r['bloque'] == 'SEGURIDAD' or r['prioridad'] == 1) and r['vigente_conservador'] == 'SI':
+        final, corr, mig, pru = CONTENIDO, 'Sin cambio: el valor vigente o la contencion es el conservador (EXPEDIENTE_SEGURIDAD.tsv)', '-', r['comprobacion']
+    else:
+        final, corr, mig, pru = BLOQUEADO, 'Sin cambio: requiere criterio especializado', '-', r['comprobacion']
+    if clave in CIERRE or (r['bloque'] == 'TEXTO' and i == '1294'):
+        r['estado'] = 'RESUELTA_TECNICA' if final in (CORREGIDO, DESCARTADO) else 'CONTENIDA'
+        if final in (CORREGIDO, DESCARTADO) and clave.startswith('A-'):
+            r['quien_decide'] = 'NINGUNO (resuelto tecnicamente en la orden de cierre)'
+            r['vigente_conservador'] = 'SI'
+        elif final in (CORREGIDO, DESCARTADO):
+            r['quien_decide'] = 'NINGUNO (visto bueno profesional opcional)'
+        if clave == 'P001' or i == '1294':
+            r['vigente_conservador'] = 'SI'
+    r['correccion'] = corr
+    r['migracion'] = mig
+    r['pruebas'] = pru
+    r['estado_final'] = final
+    r['revisor'] = 'IA: R2 + V3 + coordinador; revision de la animacion completa en la orden de cierre' if final != BLOQUEADO or r['bloque'] != 'DIFICULTAD' else 'IA: R2 (propuesta); sin revision humana'
+    r['validacion_profesional'] = 'NINGUNA (no registrada)'
+
 CAMPOS = list(OUT[0].keys())
 with open(BASE + 'REGISTRO_DECISIONES_PENDIENTES.tsv', 'w', newline='', encoding='utf-8') as f:
     w = csv.DictWriter(f, CAMPOS, delimiter='\t', lineterminator='\n'); w.writeheader(); w.writerows(OUT)
@@ -163,6 +223,7 @@ print('por estado', dict(c(r['estado'] for r in OUT)))
 print('por quien', dict(c(r['quien_decide'] for r in OUT)))
 print('por prioridad', dict(sorted(c(r['prioridad'] for r in OUT).items())))
 print('por bloque', dict(c(r['bloque'] for r in OUT)))
+print('estado final', dict(c(r['estado_final'] for r in OUT)))
 print('vigente NO conservador', [(r['clave'], r['id']) for r in OUT if r['vigente_conservador'] == 'NO'])
 dif = [r for r in OUT if r['bloque'] == 'DIFICULTAD' and r['origen'] == 'DIFICULTAD (V27)']
 print('dificultad: elegibles en alguna rejilla', sum(1 for r in dif if ELEGIBLE_REJILLA[r['id']]),
