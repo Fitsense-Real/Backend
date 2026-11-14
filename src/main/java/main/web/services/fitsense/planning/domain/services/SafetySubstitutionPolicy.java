@@ -295,11 +295,22 @@ public final class SafetySubstitutionPolicy {
      * repeticiones o series x segundos), prefiriendo la del mismo descanso (la misma capacidad) y, entre ellas, la de
      * mas trabajo. Ante dolor nunca se anade trabajo. Si ninguna cabe, se deja la heredada y la semana la rechazan
      * los validadores: no se publica un plan invalido ni se inventa una dosis.
+     * <p>
+     * HALL-GM-01 (GAIN_MUSCLE, 4D): la dosis heredada es la BASE de la clase del sustituto ({@link MvpDosePolicy}). Si
+     * la colocacion quitada tenia una dosis autorizada MENOR (el mantenimiento P-A1 ante fatiga, 3x10 -> 2x10), la base
+     * deshacia esa reduccion y anadia trabajo ante dolor. La misma regla: nunca mas trabajo que el quitado. Si la base
+     * lo supera, el sustituto conserva series, repeticiones y descanso del quitado; el sustituto no hereda ninguna
+     * autorizacion, asi que V24 rechaza esa dosis y la semana no se publica por esta via (no se relaja V24 ni se
+     * transfiere la autorizacion).
      */
     static PlanDraft.DraftExercise dosis(CandidateExercise c, PlanDraft.DraftExercise original,
                                          PlanGenerationContext context) {
         var heredada = dosisHeredada(c, original, context);
         var perfil = context == null ? null : context.profile();
+        if (perfil != null && MvpDosePolicy.aplicaA(perfil.goalType())
+                && heredada.prescriptionType() == PrescriptionType.SETS_REPS && masTrabajo(heredada, original))
+            return new PlanDraft.DraftExercise(c.exerciseId(), PrescriptionType.SETS_REPS, original.plannedSets(),
+                    original.plannedReps(), null, null, original.restSeconds(), null);
         if (perfil == null || !CapabilityPrescriptionPolicy.gobiernaGeneracion(perfil.goalType())) return heredada;
         var limites = context.prescription() == null ? null : context.prescription().repLimits();
         String objetivo = perfil.goalType();
@@ -326,6 +337,15 @@ public final class SafetySubstitutionPolicy {
             }
         }
         return mejor != null ? mejor : heredada;
+    }
+
+    /**
+     * {@code d} tiene mas trabajo (series x repeticiones) que el quitado; el mismo criterio que el tope de HALL-PROG-01.
+     * Si falta un dato o el tipo difiere, no se puede medir y no se toca.
+     */
+    static boolean masTrabajo(PlanDraft.DraftExercise d, PlanDraft.DraftExercise original) {
+        long t = trabajo(d), tope = trabajo(original);
+        return t >= 0 && tope >= 0 && original.prescriptionType() == d.prescriptionType() && t > tope;
     }
 
     /** Trabajo de una colocacion: series x repeticiones (o x segundos). -1 si falta un dato. */

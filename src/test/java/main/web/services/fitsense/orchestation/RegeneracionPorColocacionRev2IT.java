@@ -169,6 +169,38 @@ class RegeneracionPorColocacionRev2IT {
         assertFalse(sinRetirados.sinAumentos(), "premisa: sin la correspondencia de sustitucion se marcaria");
     }
 
+    /**
+     * 9703 · HALL-GM-01. El ejercicio que dolio el viernes estaba a mantenimiento (2x10). Antes, su sustituto (118)
+     * recibia la base de su clase (3x10) y se publicaba una semana con mas trabajo (442 -> 452) y la reduccion
+     * deshecha. Ahora el sustituto no supera el trabajo del quitado, V24 rechaza esa dosis (el 118 no tiene ninguna
+     * autorizacion), P-03 nivel 2 tampoco puede regenerar sin subir el trabajo, y el desenlace es NO_FACTIBLE: no se
+     * publica nada, la semana medida queda intacta y la exclusion por dolor sigue activa.
+     */
+    @Test
+    @DisplayName("HALL-GM-01: el sustituto del ejercicio a mantenimiento no recibe la base; sin alternativa segura, NO_FACTIBLE")
+    void sustitutoDeMantenimientoSinMasTrabajo() {
+        var r = recorrer(9_703);
+        assertEquals("APLICADA", r.fatiga(), "premisa: el mantenimiento se aplico");
+        assertEquals("SIN_ORDEN", r.copia(), "premisa: la copia lo hereda");
+        assertTrue(r.reducidasEnLaMedida() > 0, "premisa: la semana medida lleva colocaciones reducidas");
+        assertEquals("NO_FACTIBLE", r.dolor(), r.toString());
+        assertNull(r.publicado(), "no se publica una semana con mas trabajo que la medida: " + r);
+        assertEquals("[NO_FACTIBLE]", r.regeneracion(), "P-03 nivel 2 tampoco publica");
+        assertFalse(r.excluidos().isEmpty(), "la exclusion por dolor sigue activa");
+        var traza = jdbc.queryForMap("SELECT measured_plan_id, resulting_plan_id, adaptation_rejection,"
+                + " validation_problems FROM safe_regeneration_attempts WHERE user_id = ?", r.u());
+        assertEquals(r.medido(), ((Number) traza.get("measured_plan_id")).longValue());
+        assertNull(traza.get("resulting_plan_id"));
+        // El rechazo de la adaptacion es V24 sobre el sustituto con la dosis del quitado (no una dosis inventada).
+        assertTrue(String.valueOf(traza.get("adaptation_rejection")).contains("V24"), traza.toString());
+        assertTrue(String.valueOf(traza.get("validation_problems")).contains("sube el trabajo"), traza.toString());
+        long planes = jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?", Long.class, r.u());
+        assertEquals(3, planes, "solo los tres planes previos: generado, mantenimiento y copia (la medida)");
+        var medidoHoy = colocaciones(r.medido());
+        assertEquals(r.reducidasEnLaMedida(), medidoHoy.stream().filter(c -> c.series() == 2 && c.reps() == 10).count(),
+                "la semana medida no se toca");
+    }
+
     private Recorrido comprobar(Recorrido r) {
         assertEquals("APLICADA", r.fatiga(), "premisa: el mantenimiento se aplico");
         assertEquals("SIN_ORDEN", r.copia(), "premisa: la copia lo hereda");
