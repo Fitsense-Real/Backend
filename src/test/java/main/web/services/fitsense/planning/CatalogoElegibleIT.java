@@ -85,7 +85,7 @@ class CatalogoElegibleIT {
             new Restricciones("SIN_SUELO_NI_OVERHEAD", new SafetyProfile.Declaradas(true, false, true, true, false)),
             new Restricciones("TODAS", new SafetyProfile.Declaradas(false, false, false, false, false)));
 
-    static final List<Long> RETENIDOS = List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
+    static final List<Long> RETENIDOS = List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1294L, 1298L);
 
     /*
      * INC-CAT-C39 reducida a 8 sobre el catalogo integral (CORRECCIONES_SEGURIDAD.md §9), escrito aqui sin leer

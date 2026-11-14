@@ -432,6 +432,15 @@ class AdaptacionRegresionIT {
      * inyecta en la semana medida como si se hubiera generado ANTES de la
      * contencion, en lugar de un relleno de cintura de la misma clase de dosis
      * -asi V15, V16 y V24 no cambian-, y se pide la continuidad.
+     * <p>
+     * DOSIS DEL 1374 (orden de 14/11/2026 sobre las regresiones de V52.1). Si la semana
+     * medida no trae un relleno de zona pequena, el 1374 ocupa el puesto de un relleno de
+     * otra zona y NO puede heredar su dosis: el generador nunca habria prescrito al 1374
+     * (cintura) la dosis de un relleno de pecho o espalda. Recibe la dosis de su propia
+     * clase segun {@link MvpDosePolicy#dosisPara}, la misma politica que aplica V24. Antes
+     * heredaba la del relleno (2x10) y V24 la rechazaba con razon: la premisa de la prueba,
+     * no el backend, era la incorrecta. Con V52.1 la semilla del participante produce una
+     * semana sin relleno de cintura y ese camino, que antes no se recorria, fallo.
      */
     @Nested
     @DisplayName("0c · INC-CAT-1374: semanas que ya contienen el 1374")
@@ -447,15 +456,33 @@ class AdaptacionRegresionIT {
                     // De cintura si lo hay (la zona del 1374); si no, cualquier
                     // relleno: con 4D v3.1 la semana medida puede no traer uno de
                     // cintura, y en FULL_BODY V15 no rechaza otra zona.
-                    .sorted(Comparator.comparing((Ejercicio e) -> !"waist".equals(jdbc.queryForObject(
-                            "SELECT bp.code FROM exercises x JOIN body_parts bp"
-                            + " ON bp.body_part_id = x.body_part_id WHERE x.exercise_id = ?", String.class, e.id()))))
+                    .sorted(Comparator.comparing((Ejercicio e) -> !"waist".equals(zona(e.id()))))
                     .findFirst().orElseThrow(() -> new AssertionError("premisa: sin relleno"));
             assertFalse(p.ids().contains(1374L));
             jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1374 WHERE exercise_id = ?"
                     + " AND planned_workout_id IN (SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?)",
                     relleno.id(), p.planMedido());
+            // Mismo relleno de cintura: la dosis que trae es la de la clase del 1374 (la prescribio el
+            // generador para esa clase, incluida la serie adicional condicionada de 4D v3.2). Relleno de
+            // otra zona: dosis base de la clase del 1374, nunca la heredada.
+            if (!"waist".equals(zona(relleno.id()))) {
+                var dosis = dosis1374();
+                jdbc.update("UPDATE planned_workout_exercises SET planned_sets = ?, planned_reps = ?, rest_seconds = ?"
+                        + " WHERE exercise_id = 1374 AND planned_workout_id IN (SELECT planned_workout_id"
+                        + " FROM planned_workouts WHERE plan_id = ?)", dosis.series(), dosis.reps(),
+                        dosis.descansoSegundos(), p.planMedido());
+            }
             return new Participante(p.userId(), p.planMedido(), p.metrica(), semana(p.planMedido()));
+        }
+
+        /** La dosis de 4D para la clase del 1374 (relleno de cintura), de la misma politica que aplica V24. */
+        private MvpDosePolicy.Dosis dosis1374() {
+            return MvpDosePolicy.dosisPara(MandatorySlot.ofMovementPattern(patron(1374L)), zona(1374L)).orElseThrow();
+        }
+
+        private String zona(long ejercicio) {
+            return jdbc.queryForObject("SELECT bp.code FROM exercises x JOIN body_parts bp"
+                    + " ON bp.body_part_id = x.body_part_id WHERE x.exercise_id = ?", String.class, ejercicio);
         }
 
         @Test
@@ -500,6 +527,38 @@ class AdaptacionRegresionIT {
             assertTrue(semana(nuevo).stream().flatMap(s -> s.ejercicios().stream()).anyMatch(e -> e.id() == 1374L));
             assertEquals(1, intentosDeGeneracion(nuevo));
             assertEquals(0, llamadasIa(p));
+        }
+
+        /**
+         * NEGATIVA (orden de 14/11/2026): el mismo caso, con el 1374 a una dosis que su clase no admite
+         * (2x10; 4D exige 2x13, o 3x13 solo si V20 lo necesita). V24 la rechaza: no se publica nada, el
+         * motivo nombra al 1374 y la semana medida queda intacta. Es la violacion que fallo en CI.
+         */
+        @Test
+        @DisplayName("con barra y una dosis del 1374 que su clase no admite (2x10): V24 la rechaza y no se publica")
+        void conBarraDosisInadmisibleSeRechaza() {
+            var con = new ArrayList<>(EQUIPAMIENTO);
+            con.add("pull-up bar");
+            var p = con1374(participante(GoalType.GAIN_MUSCLE, true, con, true));
+            assertNotEquals((short) 10, dosis1374().reps(), "premisa: 2x10 no es la dosis de la clase del 1374");
+            jdbc.update("UPDATE planned_workout_exercises SET planned_sets = 2, planned_reps = 10 WHERE exercise_id = 1374"
+                    + " AND planned_workout_id IN (SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ?)",
+                    p.planMedido());
+            var medida = semana(p.planMedido());
+            int planes = jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
+                    Integer.class, p.userId());
+
+            var publicado = adaptar(p, AdaptationDecision.NO_CHANGE, List.of());
+            assertTrue(publicado.isEmpty(), "se publico una semana con el 1374 a una dosis inadmisible");
+            var evidencia = intento(p);
+            assertEquals("NO_FACTIBLE", evidencia.get("status"));
+            assertNull(evidencia.get("resulting_plan_id"));
+            assertTrue(String.valueOf(evidencia.get("rejection_reason")).contains("V24: el ejercicio 1374"),
+                    String.valueOf(evidencia.get("rejection_reason")));
+            assertEquals(0, llamadasIa(p));
+            assertEquals(medida, semana(p.planMedido()), "la semana medida no se toca");
+            assertEquals(planes, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
+                    Integer.class, p.userId()), "no se crea ninguna semana nueva");
         }
     }
 
