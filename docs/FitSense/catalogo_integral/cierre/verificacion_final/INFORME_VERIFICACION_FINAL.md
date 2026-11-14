@@ -150,7 +150,7 @@ El revisor necesita el conjunto de datos de medios (GIF).
 |---|---|---|
 | #65 (`55129f4`) | 1.484 / 0 fallos | 730 / 0 fallos / 0 errores / 53 omitidas (opt-in) |
 | Integración (`39d6cbe` = #62 + #61 + #63 + #65) | 1.484 / 0 fallos | **735 / 0 fallos / 0 errores** / 53 omitidas |
-| Integración + #64 + #66 (`239c542`, todo apagado) | 1.516 / 0 fallos | En curso al escribir este commit (se actualiza al terminar) |
+| Integración + #64 + #66 (`239c542`, todo apagado) | 1.516 / 0 fallos | **747 / 0 fallos / 0 errores** / 56 omitidas (opt-in). Incluye `Plan78ContencionReducidaIT` (4), `PermisoApoyoSuspendidoIT` (8) y `ApoyoSuspendidoInterruptorIT` (5) |
 | #66 (agente, en local) | 1.499 / 0 fallos | 79 seleccionadas / 0 fallos. Además CI en verde |
 
 Incluye todas las pruebas que pide la orden:
