@@ -549,7 +549,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 617	shoulders	delts	OTHER	2	SETS_REPS	false	1:dumbbell	FL	BAJO	false	---	2fcf37bcff69
 618	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	FL OH	BAJO	false	---	21afe9562b8e
 619	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	---	7ebb15eec387
-620	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	---	4543f08abef9
+620	shoulders	delts	SHOULDER_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	---	f747e3e572b9
 621	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell,2:bench	-	BAJO	false	---	04a72778718f
 622	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell	-	BAJO	false	---	65559fdac807
 623	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell	-	BAJO	false	---	611856027c2e

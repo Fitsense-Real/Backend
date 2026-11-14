@@ -17,6 +17,9 @@
 --  1182 El equipo "plyo box / step platform" no existe en el GIF: los pies estan en el suelo (lo que parecia un cajon
 --       son los propios pies vistos de frente, V3 con ampliacion de f1 y f13). Peso corporal; FL se conserva.
 --  1017 Prensa de piernas: en f1 y f7 se resaltan tambien los gemelos. Se anaden como secundarios.
+--  620  El GIF es una extension de hombro tumbado boca abajo: el brazo recto va de colgar hacia el suelo a quedar atras,
+--       a lo largo del cuerpo, con la mancuerna a la altura de la cadera; no se separa hacia el lado (no es una
+--       elevacion lateral). Nombre, patron SHOULDER_EXTENSION e instrucciones (V3 V07 + revision de esta orden).
 --  868  Pike colgado: en f5-f8 las piernas pasan por encima de la barra y la cadera queda por encima de la cabeza.
 --       Se ANADE requires_inversion (contencion conservadora; R2 lo habia propuesto). Solo restringe mas.
 --
@@ -95,6 +98,24 @@ DO $v521$ DECLARE n INT; BEGIN
   GET DIAGNOSTICS n = ROW_COUNT;
   IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 1017 AND 'calves' = ANY(secondary_muscles)) THEN
     RAISE EXCEPTION 'V52.1: ejercicio 1017 no esta en el estado anterior esperado';
+  END IF;
+END $v521$;
+
+-- 620 dumbbell lying one arm rear lateral raise
+DO $v521$ DECLARE n INT; BEGIN
+  UPDATE exercises SET name_es = 'Extensión de hombro a una mano tumbado boca abajo con mancuerna',
+         movement_pattern = 'SHOULDER_EXTENSION',
+         instructions_es = 'Túmbate boca abajo en un banco plano con una mancuerna en una mano y el brazo colgando hacia el suelo. Con el brazo recto, llévalo hacia atrás, a lo largo del cuerpo, hasta que la mancuerna quede a la altura de la cadera. Haz una pausa breve y baja la mancuerna despacio a la posición inicial. Completa las repeticiones y cambia de brazo. Repite el número de repeticiones indicado.',
+         instruction_steps_es = '["Túmbate boca abajo en un banco plano con una mancuerna en una mano y el brazo colgando hacia el suelo.", "Con el brazo recto, llévalo hacia atrás, a lo largo del cuerpo, hasta que la mancuerna quede a la altura de la cadera.", "Haz una pausa breve y baja la mancuerna despacio a la posición inicial.", "Completa las repeticiones y cambia de brazo.", "Repite el número de repeticiones indicado."]'::jsonb
+   WHERE exercise_id = 620 AND name_en = 'dumbbell lying one arm rear lateral raise'
+     AND name_es = 'Elevación lateral trasera a una mano acostado con mancuerna' AND movement_pattern = 'SHOULDER_RAISE'
+     AND instructions_es LIKE 'Túmbate boca abajo en un banco plano con una mancuerna en una mano, colgando hacia el suelo.%'
+     AND instructions_es LIKE '%hacia el lado%';
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n = 0 AND NOT EXISTS (SELECT 1 FROM exercises WHERE exercise_id = 620
+       AND name_es = 'Extensión de hombro a una mano tumbado boca abajo con mancuerna' AND movement_pattern = 'SHOULDER_EXTENSION'
+       AND instructions_es = 'Túmbate boca abajo en un banco plano con una mancuerna en una mano y el brazo colgando hacia el suelo. Con el brazo recto, llévalo hacia atrás, a lo largo del cuerpo, hasta que la mancuerna quede a la altura de la cadera. Haz una pausa breve y baja la mancuerna despacio a la posición inicial. Completa las repeticiones y cambia de brazo. Repite el número de repeticiones indicado.') THEN
+    RAISE EXCEPTION 'V52.1: ejercicio 620 no esta en el estado anterior esperado';
   END IF;
 END $v521$;
 
