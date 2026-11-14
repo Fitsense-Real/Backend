@@ -164,6 +164,17 @@ public class Exercise {
     @Column(name = "is_isolation", insertable = false, updatable = false)
     private Boolean isolation;
 
+    /**
+     * V51: impacto articular EXPLICITO (BAJO, MODERADO, ALTO), revisado contra el GIF. Sustituye la deduccion por el
+     * nombre que hacia ImpactoPolicy. {@code null} solo en inactivos (CHECK de V51).
+     */
+    @Column(name = "impact_level", insertable = false, updatable = false)
+    private String impactLevel;
+
+    /** V51: estiramiento EXPLICITO. Sustituye la palabra «estiramiento» en el nombre. {@code null} solo en inactivos. */
+    @Column(name = "is_stretch", insertable = false, updatable = false)
+    private Boolean stretch;
+
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private OffsetDateTime createdAt;
 
