@@ -1,13 +1,18 @@
 """Matriz de coherencia final del catalogo: reglas automaticas por ejercicio sobre el registro maestro
 final y resumen por regla. No decide nada: mide.
-Uso: python3 -I -B matriz_coherencia.py <registro_maestro_final.tsv> <REVISION_PROFESIONAL_LISTA.tsv> <salida.xlsx> <salida.tsv>"""
+Uso: python3 -I -B matriz_coherencia.py <registro_maestro_final.tsv> <REGISTRO_DECISIONES_PENDIENTES.tsv> <salida.xlsx> <salida.tsv>"""
 import csv, sys, re, collections
 reg, prof, out_x, out_t = sys.argv[1:5]
 rd = lambda f: list(csv.DictReader(open(f, encoding='utf-8'), delimiter='\t', quoting=csv.QUOTE_NONE))
 R = [r for r in rd(reg) if r['activo'] == 'SI']
 P = collections.defaultdict(list)
 for p in rd(prof):
-    P[p['id']].append(p['categoria'])
+    # Registro unico de decisiones (orden de desbloqueo): solo cuenta lo que sigue abierto o contenido.
+    if 'estado' in p:
+        if not p['id'] or p['estado'] == 'RESUELTA_TECNICA': continue
+        P[p['id']].append(p['origen'])
+    else:
+        P[p['id']].append(p['categoria'])
 low = lambda s: s.lower()
 
 def ultima(t):
@@ -41,7 +46,7 @@ REGLAS = [
      lambda r, b: r['r2_identidad'] == 'CLARA'),
     ('R12', 'Informativa: el nombre dice «estiramiento» y el atributo is_stretch coincide (el nombre ya no decide; las diferencias son decisiones V3)', 'is_stretch (V51) frente al nombre',
      lambda r, b: ('estiramiento' in low(r['nombre_es'])) == (r['estiramiento'] == 'SI')),
-    ('R13', 'Sin decision profesional pendiente', 'REVISION_PROFESIONAL_LISTA.tsv',
+    ('R13', 'Sin decision profesional pendiente', 'REGISTRO_DECISIONES_PENDIENTES.tsv',
      lambda r, b: r['id'] not in P),
 ]
 filas, resumen = [], []
