@@ -547,11 +547,35 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     @Transactional
     public int handle(ExpireOverdueWorkoutsCommand command) {
         var overdue = plannedWorkoutRepository.findOverdue(command.now());
+        // V54 (propuesta): antes de cerrar, la causa del bloqueo de seguridad vigente, si la hay. La sesion se
+        // cierra igual (SKIPPED, causa NULL): solo se deja constancia de que el sistema no la dejaba hacer.
+        if (publishedPlanSafety != null)
+            overdue.forEach(workout -> {
+                var conflictos = publishedPlanSafety.conflictos(workout.getPlan().getUserId(), workout);
+                if (conflictos.isEmpty()) return;
+                var porEjercicio = new java.util.TreeMap<Long, String>();
+                workout.exercisesView().forEach(e -> {
+                    var causa = conflictos.get(e.getId());
+                    if (causa != null) porEjercicio.put(e.getExerciseId(), causa);
+                });
+                workout.registrarBloqueoDeSistema(porEjercicio.entrySet().stream()
+                        .map(x -> x.getKey() + "=" + x.getValue())
+                        .collect(java.util.stream.Collectors.joining("; ")));
+            });
         overdue.forEach(workout -> workout.markOutcome(WorkoutStatus.SKIPPED, null));
         plannedWorkoutRepository.saveAll(overdue);
         if (!overdue.isEmpty())
             log.info("Marcados {} entrenamientos vencidos como SKIPPED", overdue.size());
         return overdue.size();
+    }
+
+    private main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService publishedPlanSafety;
+
+    /** V54 (propuesta). Opcional para no tocar las construcciones directas de las pruebas unitarias. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setPublishedPlanSafety(
+            main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService servicio) {
+        this.publishedPlanSafety = servicio;
     }
 
     // ------------------------------------------------------------------ helpers

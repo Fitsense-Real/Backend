@@ -28,6 +28,23 @@ public class PublishedPlanSafetyService {
 
     private final ExternalProfilingService profiling;
     private final SafetyConflictChecker checker;
+    /**
+     * P-DOLOR-PUB (cierre tecnico conservador, 15/11/2026). Un ejercicio que el participante reporto con dolor (P-02,
+     * exclusion ACTIVA) se excluye de las semanas NUEVAS, pero seguia visible y ejecutable en las sesiones YA
+     * publicadas y abiertas que lo repiten (otro dia de la misma semana, o una semana ya publicada cuando la
+     * adaptacion queda NO_FACTIBLE). Con esta proteccion se marca con la causa {@code dolor_registrado}: la sesion
+     * no se bloquea entera por el (PlannedWorkoutView.blockedForSafety), pero ese ejercicio solo puede registrarse
+     * como omitido. No anade sustitutos, dosis ni sesiones. Encendida por defecto en la version candidata;
+     * fitsense.seguridad.dolor-en-planes-publicados=false la apaga (comportamiento anterior).
+     */
+    private main.web.services.fitsense.planning.application.internal.commandservices.PainMemoryService painMemory;
+    @org.springframework.beans.factory.annotation.Value("${fitsense.seguridad.dolor-en-planes-publicados:true}")
+    private boolean dolorEnPlanesPublicados = true;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setPainMemory(main.web.services.fitsense.planning.application.internal.commandservices.PainMemoryService painMemory) {
+        this.painMemory = painMemory;
+    }
 
     public PublishedPlanSafetyService(ExternalProfilingService profiling, SafetyConflictChecker checker) {
         this.profiling = profiling;
@@ -70,7 +87,15 @@ public class PublishedPlanSafetyService {
         // Las mismas restricciones que aplica hoy el filtro del conjunto elegible.
         var seguridad = SafetyProfile.forAgeLevelAndDeclared(perfil.age(), perfil.fitnessLevel(), perfil.declaradas());
         var ejercicios = workouts.stream().flatMap(w -> w.exercisesView().stream()).toList();
-        var motivos = checker.motivos(ejercicios.stream().map(e -> e.getExerciseId()).toList(), perfil, seguridad);
+        var motivos = new LinkedHashMap<>(checker.motivos(ejercicios.stream().map(e -> e.getExerciseId()).toList(),
+                perfil, seguridad));
+        if (dolorEnPlanesPublicados && painMemory != null) {
+            var dolor = painMemory.excluidosActivos(userId);
+            for (var e : ejercicios)
+                if (dolor.contains(e.getExerciseId()))
+                    motivos.merge(e.getExerciseId(), main.web.services.fitsense.planning.domain.services
+                            .SafetyConflictPolicy.DOLOR_REGISTRADO, (a, b) -> a.contains(b) ? a : a + "+" + b);
+        }
         var porPrescripcion = new LinkedHashMap<Long, String>();
         for (var e : ejercicios)
             if (motivos.containsKey(e.getExerciseId())) porPrescripcion.put(e.getId(), motivos.get(e.getExerciseId()));

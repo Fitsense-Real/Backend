@@ -29,10 +29,17 @@ public record PlannedWorkoutView(
         safetyConflicts = safetyConflicts == null ? Map.of() : Map.copyOf(safetyConflicts);
     }
 
-    /** Si la sesion contiene algun ejercicio que hoy no se puede ejecutar con seguridad. */
+    /**
+     * Si la sesion contiene algun ejercicio que hoy no se puede ejecutar con seguridad. P-DOLOR-PUB: un ejercicio
+     * marcado SOLO por dolor registrado ({@code dolor_registrado}) no bloquea la sesion entera; ese ejercicio solo
+     * puede registrarse como omitido (la comprobacion por ejercicio de execution sigue usando todos los conflictos).
+     */
     public boolean blockedForSafety() {
-        return !safetyConflicts.isEmpty();
+        return safetyConflicts.values().stream().anyMatch(c -> !SOLO_DOLOR.equals(c));
     }
+
+    /** La causa de un conflicto que solo se debe al dolor registrado (SafetyConflictPolicy.DOLOR_REGISTRADO). */
+    public static final String SOLO_DOLOR = "dolor_registrado";
 
     public boolean isExpired(OffsetDateTime now) {
         return now.isAfter(expiresAt);

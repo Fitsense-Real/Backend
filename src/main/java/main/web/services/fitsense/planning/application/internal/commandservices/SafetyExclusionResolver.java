@@ -61,7 +61,8 @@ public class SafetyExclusionResolver {
                 .collect(Collectors.toCollection(TreeSet::new));
         if (heredadosFuera.isEmpty()) return ExclusionesDeSeguridad.ninguna();
 
-        var motivos = new LinkedHashMap<>(conflictos.motivos(heredadosFuera, context.profile(), context.safety()));
+        var motivos = new LinkedHashMap<>(conflictos.motivosParaPlanificar(heredadosFuera, context.profile(),
+                context.safety()));
         // P-02: un heredado que dolio y sigue excluido tiene una causa verificada (el evento registrado).
         // Con ella entra en la sustitucion obligatoria SUST-SEG-1 y en su excepcion de V8C; sin ella, V1.
         if (painMemory != null) {

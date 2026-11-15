@@ -32,17 +32,53 @@ public class CatalogContextFacade {
      * significa exactamente lo mismo que antes. Se activa con fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true.
      */
     private final boolean apoyoSuspendidoEnNoColgarse;
+    /**
+     * V53-B · PROPUESTA PENDIENTE DE APROBACION (opcion B de cierre/V53_DEFINITIVO.md §2): el apoyo suspendido lo decide
+     * un permiso PROPIO del perfil (user_profiles.allow_suspended_support, V55), sin cambiar el significado de «no
+     * colgarse». APAGADO por defecto: con false nada de esta clase cambia. Se activa con
+     * fitsense.seguridad.permiso-apoyo-suspendido=true; es excluyente con la opcion A (con las dos, no arranca).
+     */
+    private final boolean permisoApoyoSuspendido;
 
+    /** Compatibilidad: solo la opcion A (la opcion B queda apagada). */
+    public CatalogContextFacade(ExerciseQueryService exerciseQueryService,
+                                BodyPartRepository bodyPartRepository,
+                                EquipmentTypeRepository equipmentTypeRepository,
+                                boolean apoyoSuspendidoEnNoColgarse) {
+        this(exerciseQueryService, bodyPartRepository, equipmentTypeRepository, apoyoSuspendidoEnNoColgarse, false);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
     public CatalogContextFacade(ExerciseQueryService exerciseQueryService,
                                 BodyPartRepository bodyPartRepository,
                                 EquipmentTypeRepository equipmentTypeRepository,
                                 @org.springframework.beans.factory.annotation.Value(
                                         "${fitsense.seguridad.apoyo-suspendido-en-no-colgarse:false}")
-                                boolean apoyoSuspendidoEnNoColgarse) {
+                                boolean apoyoSuspendidoEnNoColgarse,
+                                @org.springframework.beans.factory.annotation.Value(
+                                        "${fitsense.seguridad.permiso-apoyo-suspendido:false}")
+                                boolean permisoApoyoSuspendido) {
+        // Las dos opciones dan a la misma restriccion significados distintos: no se arranca con una configuracion
+        // ambigua. Mismo criterio que planning (ModoApoyoSuspendido), sin depender de ese contexto.
+        if (apoyoSuspendidoEnNoColgarse && permisoApoyoSuspendido)
+            throw new IllegalStateException("Configuracion ambigua del apoyo suspendido: "
+                    + "fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true (opcion A, «no colgarse» lo excluye) y "
+                    + "fitsense.seguridad.permiso-apoyo-suspendido=true (opcion B, permiso propio) son excluyentes. "
+                    + "Enciende como mucho una de las dos.");
         this.exerciseQueryService = exerciseQueryService;
         this.bodyPartRepository = bodyPartRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
         this.apoyoSuspendidoEnNoColgarse = apoyoSuspendidoEnNoColgarse;
+        this.permisoApoyoSuspendido = permisoApoyoSuspendido;
+    }
+
+    /**
+     * Si la opcion B esta encendida. Planning lo consulta para llamar a la sobrecarga con
+     * {@code excludeSuspendedSupport} explicito; apagada (por defecto) sigue usando la de once argumentos, igual que
+     * antes de V53-B.
+     */
+    public boolean permisoApoyoSuspendidoActivo() {
+        return permisoApoyoSuspendido;
     }
 
     /**
@@ -66,6 +102,32 @@ public class CatalogContextFacade {
                                                              boolean excludeHanging,
                                                              boolean excludeOverhead,
                                                              boolean excludeInversion) {
+        // Igual que antes de V53-B: el apoyo suspendido solo sale con «no colgarse» y la opcion A encendida.
+        return fetchEligibleExercises(equipmentCodes, excludeGymOnly, maxDifficultyLevel, blockedExerciseIds,
+                excludeHighImpact, excludeFloorWork, excludeAxialLoad, excludeKneeling, excludeHanging,
+                excludeOverhead, excludeInversion, excludeHanging && apoyoSuspendidoEnNoColgarse);
+    }
+
+    /**
+     * V53-B · la misma consulta con la exclusion del apoyo suspendido EXPLICITA. Planning solo la usa con la opcion B
+     * encendida ({@link #permisoApoyoSuspendidoActivo()}), con el valor ya resuelto en su SafetyProfile.
+     *
+     * @param excludeSuspendedSupport fuera lo que exige sostenerse sobre un aparato sin soporte de pies
+     *                                ({@code requires_suspended_support}, V53)
+     */
+    @Transactional(readOnly = true)
+    public List<EligibleExerciseView> fetchEligibleExercises(List<String> equipmentCodes,
+                                                             boolean excludeGymOnly,
+                                                             int maxDifficultyLevel,
+                                                             List<Long> blockedExerciseIds,
+                                                             boolean excludeHighImpact,
+                                                             boolean excludeFloorWork,
+                                                             boolean excludeAxialLoad,
+                                                             boolean excludeKneeling,
+                                                             boolean excludeHanging,
+                                                             boolean excludeOverhead,
+                                                             boolean excludeInversion,
+                                                             boolean excludeSuspendedSupport) {
         var query = new GetEligibleExercisesQuery(equipmentCodes, excludeGymOnly,
                 maxDifficultyLevel, blockedExerciseIds,
                 excludeHighImpact, excludeFloorWork, excludeAxialLoad,
@@ -74,9 +136,8 @@ public class CatalogContextFacade {
         var bodyParts = indexBodyParts();
         var equipment = indexEquipment();
 
-        boolean sinApoyoSuspendido = excludeHanging && apoyoSuspendidoEnNoColgarse;
         return exerciseQueryService.handle(query).stream()
-                .filter(exercise -> !(sinApoyoSuspendido && exercise.isRequiresSuspendedSupport()))
+                .filter(exercise -> !(excludeSuspendedSupport && exercise.isRequiresSuspendedSupport()))
                 .map(exercise -> toView(exercise, bodyParts, equipment))
                 .toList();
     }
@@ -109,7 +170,10 @@ public class CatalogContextFacade {
                 .collect(Collectors.toMap(Exercise::getId, e -> new ExerciseSafetyFlagsView(e.getId(),
                         e.isActive(), e.isHighImpact(), e.isRequiresFloor(), e.isAxialLoad(),
                         e.isRequiresKneeling(), e.isRequiresHanging(), e.isRequiresOverhead(),
-                        e.isRequiresInversion(), apoyoSuspendidoEnNoColgarse && e.isRequiresSuspendedSupport()), (a, b) -> a));
+                        e.isRequiresInversion(),
+                        // V53 y V53-B: el hecho solo existe para los validadores con la opcion A o la B encendida.
+                        (apoyoSuspendidoEnNoColgarse || permisoApoyoSuspendido) && e.isRequiresSuspendedSupport()),
+                        (a, b) -> a));
     }
 
     @Transactional(readOnly = true)
