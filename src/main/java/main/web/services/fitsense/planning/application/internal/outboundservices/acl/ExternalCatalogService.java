@@ -8,6 +8,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPro
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
 import main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy;
+import main.web.services.fitsense.planning.domain.services.ContencionTextoBandera;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -117,6 +118,11 @@ public class ExternalCatalogService {
         return java.util.Objects.equals(exerciseId, CONTENIDO_INC_CAT_1374) && !admite1374(profile, safety);
     }
 
+    /** Si INC-CAT-C39 contiene este ejercicio para esta seguridad ({@link ContencionTextoBandera}). */
+    public static boolean contenidoIncCatC39(Long exerciseId, SafetyProfile safety) {
+        return ContencionTextoBandera.contiene(exerciseId, safety);
+    }
+
     private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
                                               SafetyProfile safety, boolean registrar) {
         var delCatalogo = catalogContextFacade.fetchEligibleExercises(
@@ -147,9 +153,18 @@ public class ExternalCatalogService {
         boolean contenido = contener1374 && delCatalogo.stream()
                 .anyMatch(view -> java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374));
 
+        // INC-CAT-C39: texto del catalogo contra bandera (auditoria del caso 39). Solo para los perfiles que
+        // declaran la restriccion que ese texto pide incumplir; los demas lo siguen recibiendo igual.
+        var contenidosC39 = delCatalogo.stream()
+                .map(EligibleExerciseView::exerciseId)
+                .filter(id -> ContencionTextoBandera.contiene(id, safety))
+                .sorted()
+                .toList();
+
         var seguros = delCatalogo.stream()
                 .filter(view -> !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
                 .filter(view -> !(contener1374 && java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374)))
+                .filter(view -> !ContencionTextoBandera.contiene(view.exerciseId(), safety))
                 .map(view -> new CandidateExercise(
                         view.exerciseId(),
                         view.nameEs(),
@@ -181,6 +196,12 @@ public class ExternalCatalogService {
             log.info("EJERCICIOS_CONTENIDOS user={} motivo=INC-CAT-1374 ids=[1374] (exige barra, colgarse y "
                             + "brazos arriba; el dato del catalogo no lo dice)",
                     profile.userId() == null ? "desconocido" : profile.userId());
+
+        if (!contenidosC39.isEmpty())
+            log.info("EJERCICIOS_CONTENIDOS user={} motivo={} ids={} (el nombre o las instrucciones piden una accion "
+                            + "que el perfil restringe; pendiente de revision profesional)",
+                    profile.userId() == null ? "desconocido" : profile.userId(), ContencionTextoBandera.CODIGO,
+                    contenidosC39);
 
         // Visible siempre, como EJERCICIOS_RETENIDOS: un filtro que no se ve
         // cuesta una medicion entera.

@@ -33,7 +33,8 @@ public class SafetyConflictChecker {
         for (var id : ids) {
             var causas = SafetyConflictPolicy.causas(hechos.get(id), s,
                     ExternalCatalogService.retenidoInc4C03(id),
-                    ExternalCatalogService.contenidoIncCat1374(id, perfil, s));
+                    ExternalCatalogService.contenidoIncCat1374(id, perfil, s),
+                    ExternalCatalogService.contenidoIncCatC39(id, s));
             if (!causas.isEmpty()) motivos.put(id, SafetyConflictPolicy.motivo(causas));
         }
         return motivos;
