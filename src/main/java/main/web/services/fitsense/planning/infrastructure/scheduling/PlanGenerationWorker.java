@@ -21,8 +21,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * un solo hilo por defecto, y una generacion de minutos lo bloquearia junto con
  * el cierre semanal y el vencimiento de entrenamientos.
  * <p>
- * Si el proceso se detiene con una operacion en curso, esta queda PROCESSING y
- * la recuperacion la vuelve a poner en cola al arrancar de nuevo.
+ * Mientras ejecuta, late cada {@code heartbeat-ms}: una generacion lenta pero
+ * viva nunca se toma por huerfana. Si el proceso se detiene con una operacion
+ * en curso, esta deja de latir y el barrido (de esta u otra instancia) la
+ * vuelve a poner en cola pasados {@code stale-seconds}.
+ * <p>
+ * Las pruebas lo apagan ({@code fitsense.plan-generation.worker.enabled=false}
+ * en surefire y failsafe): cada contexto en cache tendria su propio worker
+ * sondeando una base que ya no existe.
  */
 @Component
 @ConditionalOnProperty(name = "fitsense.plan-generation.worker.enabled", havingValue = "true", matchIfMissing = true)
@@ -34,6 +40,7 @@ public class PlanGenerationWorker {
     private final int maxConcurrent;
     private final ExecutorService pool;
     private final AtomicInteger inFlight = new AtomicInteger();
+    private final java.util.Set<java.util.UUID> running = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     public PlanGenerationWorker(PlanGenerationOperationService service,
                                 @Value("${fitsense.plan-generation.max-concurrent:2}") int maxConcurrent) {
@@ -57,10 +64,12 @@ public class PlanGenerationWorker {
                 if (next.isEmpty()) return;
                 inFlight.incrementAndGet();
                 var id = next.get();
+                running.add(id);
                 pool.execute(() -> {
                     try {
                         service.execute(id);
                     } finally {
+                        running.remove(id);
                         inFlight.decrementAndGet();
                     }
                 });
@@ -68,6 +77,16 @@ public class PlanGenerationWorker {
         } catch (RuntimeException e) {
             // Una tarea programada que revienta deja de ejecutarse en silencio.
             log.error("Fallo el ciclo del worker de generacion inicial: {}", e.getMessage(), e);
+        }
+    }
+
+    @Scheduled(initialDelayString = "${fitsense.plan-generation.heartbeat-ms:20000}",
+            fixedDelayString = "${fitsense.plan-generation.heartbeat-ms:20000}")
+    public void heartbeat() {
+        try {
+            service.heartbeat(java.util.List.copyOf(running));
+        } catch (RuntimeException e) {
+            log.error("Fallo el latido de la generacion inicial: {}", e.getMessage(), e);
         }
     }
 

@@ -56,6 +56,8 @@ public class PlanGenerationOperationService {
     private final TransactionTemplate tx;
     private final Clock clock;
     private final Duration staleAfter;
+    private final Duration maxProcessing;
+    private final Duration maxQueued;
     private final int maxExecutions;
 
     public PlanGenerationOperationService(PlanGenerationOperationRepository operations,
@@ -67,7 +69,9 @@ public class PlanGenerationOperationService {
                                           JdbcTemplate jdbc,
                                           PlatformTransactionManager transactionManager,
                                           org.springframework.beans.factory.ObjectProvider<Clock> clock,
-                                          @Value("${fitsense.plan-generation.stale-minutes:15}") long staleMinutes,
+                                          @Value("${fitsense.plan-generation.stale-seconds:180}") long staleSeconds,
+                                          @Value("${fitsense.plan-generation.max-processing-seconds:600}") long maxProcessingSeconds,
+                                          @Value("${fitsense.plan-generation.max-queued-seconds:1800}") long maxQueuedSeconds,
                                           @Value("${fitsense.plan-generation.max-executions:2}") int maxExecutions) {
         this.operations = operations;
         this.plans = plans;
@@ -78,7 +82,9 @@ public class PlanGenerationOperationService {
         this.jdbc = jdbc;
         this.tx = new TransactionTemplate(transactionManager);
         this.clock = clock.getIfAvailable(Clock::systemUTC);
-        this.staleAfter = Duration.ofMinutes(staleMinutes);
+        this.staleAfter = Duration.ofSeconds(staleSeconds);
+        this.maxProcessing = Duration.ofSeconds(maxProcessingSeconds);
+        this.maxQueued = Duration.ofSeconds(maxQueuedSeconds);
         this.maxExecutions = Math.max(1, maxExecutions);
     }
 
@@ -182,9 +188,12 @@ public class PlanGenerationOperationService {
         if (op == null || op.getStatus() != GenerationOperationStatus.PROCESSING) return;
         Long userId = op.getUserId();
         try {
-            var planId = runner.run(userId);
+            var planId = runner.run(userId, () -> ensureStillProcessing(operationId));
             finish(operationId, o -> o.complete(planId, now()));
             log.info("Generacion inicial {} completada: plan {} del usuario {}", operationId, planId, userId);
+        } catch (OperationAbandonedException abandoned) {
+            // El barrido la cerro (tiempo maximo): su resultado no se publica ni se registra.
+            log.warn("Generacion inicial {} descartada antes de publicar: {}", operationId, abandoned.getMessage());
         } catch (PlanAlreadyExistsException already) {
             // Otro camino (el endpoint sincrono, otra operacion) publico primero: es el mismo resultado.
             var plan = tx.execute(s -> activePlan(userId).orElse(null));
@@ -208,6 +217,25 @@ public class PlanGenerationOperationService {
         finish(operationId, o -> o.fail(outcome.status(), outcome.reasonCode(), outcome.message(), outcome.retryable(), now()));
     }
 
+    /** Antes de publicar: si la operacion ya no es PROCESSING, no se publica nada. */
+    void ensureStillProcessing(UUID operationId) {
+        var status = jdbc.queryForList(
+                "SELECT status FROM plan_generation_operations WHERE operation_id = ?", String.class, operationId);
+        if (status.isEmpty() || !GenerationOperationStatus.PROCESSING.name().equals(status.get(0)))
+            throw new OperationAbandonedException("la operacion ya no esta en curso (" + status + ")");
+    }
+
+    /**
+     * Latido de las operaciones que este proceso esta ejecutando: mientras
+     * llegue, la operacion no se considera huerfana aunque tarde minutos.
+     */
+    public int heartbeat(java.util.Collection<UUID> running) {
+        if (running.isEmpty()) return 0;
+        return jdbc.update("UPDATE plan_generation_operations SET updated_at = ? "
+                        + "WHERE status = 'PROCESSING' AND operation_id = ANY(?)",
+                now(), running.toArray(UUID[]::new));
+    }
+
     /** Aplica el cierre solo si la operacion sigue PROCESSING (la recuperacion pudo cerrarla). */
     private void finish(UUID operationId, java.util.function.Consumer<PlanGenerationOperation> change) {
         tx.executeWithoutResult(s -> operations.findById(operationId)
@@ -219,31 +247,49 @@ public class PlanGenerationOperationService {
     }
 
     /**
-     * Recuperacion tras un reinicio: una PROCESSING sin cerrar despues de
-     * {@code staleAfter} quedo huerfana. Se vuelve a poner en cola una sola
-     * vez (executions < maxExecutions); despues se cierra como FAILED
-     * reintentable, para que la app ofrezca reintentar y nunca espere para
-     * siempre.
+     * Barrido periodico del worker.
+     * <ul>
+     *   <li><b>Huerfanas</b>: PROCESSING sin latido desde hace {@code staleAfter}
+     *   (el proceso que la ejecutaba murio o se reinicio). Se vuelve a poner en
+     *   cola una sola vez (executions &lt; maxExecutions); despues se cierra como
+     *   FAILED EJECUCION_INTERRUMPIDA reintentable. Una generacion lenta pero
+     *   viva sigue latiendo y nunca se reencola.</li>
+     *   <li><b>Tiempo maximo</b>: PROCESSING desde hace mas de {@code maxProcessing},
+     *   o PENDING desde hace mas de {@code maxQueued}: FAILED TIEMPO_EXCEDIDO
+     *   reintentable. Si la generacion sigue viva, su resultado se descarta
+     *   antes de publicar ({@link #ensureStillProcessing}).</li>
+     * </ul>
+     * Asi la app nunca espera para siempre.
      *
-     * @return operaciones recuperadas
+     * @return operaciones recuperadas o cerradas
      */
     public int recoverStale() {
-        var limit = now().minus(staleAfter);
+        var now = now();
+        var timedOut = GenerationFailureClassifier.timedOut();
+        int expired = jdbc.update("""
+                UPDATE plan_generation_operations
+                   SET status = 'FAILED', reason_code = ?, message = ?, retryable = TRUE,
+                       finished_at = ?, updated_at = ?
+                 WHERE (status = 'PROCESSING' AND started_at < ?)
+                    OR (status = 'PENDING' AND created_at < ?)
+                """, timedOut.reasonCode(), timedOut.message(), now, now,
+                now.minus(maxProcessing), now.minus(maxQueued));
+        var stale = now.minus(staleAfter);
         int requeued = jdbc.update("""
                 UPDATE plan_generation_operations
                    SET status = 'PENDING', started_at = NULL, updated_at = ?
-                 WHERE status = 'PROCESSING' AND started_at < ? AND executions < ?
-                """, now(), limit, maxExecutions);
-        var outcome = GenerationFailureClassifier.interrupted();
+                 WHERE status = 'PROCESSING' AND updated_at < ? AND executions < ?
+                """, now, stale, maxExecutions);
+        var interrupted = GenerationFailureClassifier.interrupted();
         int failed = jdbc.update("""
                 UPDATE plan_generation_operations
                    SET status = 'FAILED', reason_code = ?, message = ?, retryable = TRUE,
                        finished_at = ?, updated_at = ?
-                 WHERE status = 'PROCESSING' AND started_at < ? AND executions >= ?
-                """, outcome.reasonCode(), outcome.message(), now(), now(), limit, maxExecutions);
-        if (requeued + failed > 0)
-            log.warn("Generacion inicial: {} operacion(es) huerfana(s) en cola de nuevo, {} cerrada(s) como interrumpidas",
-                    requeued, failed);
-        return requeued + failed;
+                 WHERE status = 'PROCESSING' AND updated_at < ? AND executions >= ?
+                """, interrupted.reasonCode(), interrupted.message(), now, now, stale, maxExecutions);
+        if (expired + requeued + failed > 0)
+            log.warn("Generacion inicial: {} por tiempo maximo, {} huerfana(s) en cola de nuevo, {} interrumpida(s)",
+                    expired, requeued, failed);
+        return expired + requeued + failed;
     }
 }

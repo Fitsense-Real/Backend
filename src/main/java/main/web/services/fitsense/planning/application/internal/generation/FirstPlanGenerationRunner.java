@@ -6,6 +6,11 @@ package main.web.services.fitsense.planning.application.internal.generation;
  */
 public interface FirstPlanGenerationRunner {
 
-    /** @return el id del plan publicado. */
-    Long run(Long userId);
+    /**
+     * @param beforePersist se invoca justo antes de publicar; lanza
+     *        {@link OperationAbandonedException} si la operacion ya se cerro
+     *        (tiempo maximo superado), y entonces no se publica nada.
+     * @return el id del plan publicado.
+     */
+    Long run(Long userId, Runnable beforePersist);
 }

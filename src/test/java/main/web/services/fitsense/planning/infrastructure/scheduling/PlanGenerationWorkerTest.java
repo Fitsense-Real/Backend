@@ -60,4 +60,30 @@ class PlanGenerationWorkerTest {
         verify(service, times(2)).recoverStale();
         worker.stop();
     }
+
+    @Test
+    void lateSoloPorLasOperacionesQueEstaEjecutando() throws Exception {
+        var service = mock(PlanGenerationOperationService.class);
+        var a = UUID.randomUUID();
+        when(service.claimNext()).thenReturn(Optional.of(a), Optional.empty());
+        var liberar = new CountDownLatch(1);
+        var enCurso = new CountDownLatch(1);
+        var terminada = new CountDownLatch(1);
+        doAnswer(inv -> { enCurso.countDown(); liberar.await(10, TimeUnit.SECONDS); return null; })
+                .when(service).execute(a);
+        var worker = new PlanGenerationWorker(service, 2);
+        worker.tick();
+        assertThat(enCurso.await(5, TimeUnit.SECONDS)).isTrue();
+
+        worker.heartbeat();
+        verify(service).heartbeat(java.util.List.of(a));
+
+        doAnswer(inv -> { terminada.countDown(); return 0; }).when(service).heartbeat(java.util.List.of());
+        liberar.countDown();
+        verify(service, timeout(5000)).execute(a);
+        Thread.sleep(200);
+        worker.heartbeat();
+        assertThat(terminada.await(5, TimeUnit.SECONDS)).as("ya no late por la que termino").isTrue();
+        worker.stop();
+    }
 }

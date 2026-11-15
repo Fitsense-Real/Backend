@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -159,7 +160,7 @@ class GeneracionAsincronaIT {
                 hecha.getPlanId())).isEqualTo("ACTIVE");
         assertThat(jdbc.queryForObject("SELECT count(*) FROM planned_workouts WHERE plan_id = ?", Integer.class,
                 hecha.getPlanId())).isPositive();
-        verify(runner, times(1)).run(u);
+        verify(runner, times(1)).run(eq(u), any());
     }
 
     // 8, 18 · pedir dos veces: misma operacion, una sola generacion; despues de terminar, la misma COMPLETED.
@@ -177,7 +178,7 @@ class GeneracionAsincronaIT {
         assertThat(tercera.operation().getId()).isEqualTo(primera.operation().getId());
         assertThat(tercera.operation().getStatus()).isEqualTo(GenerationOperationStatus.COMPLETED);
         assertThat(filas(u)).isEqualTo(1);
-        verify(runner, times(1)).run(u);
+        verify(runner, times(1)).run(eq(u), any());
     }
 
     @Test
@@ -200,7 +201,7 @@ class GeneracionAsincronaIT {
         long u = participante();
         var liberar = new CountDownLatch(1);
         var empezo = new CountDownLatch(1);
-        doAnswer(inv -> { empezo.countDown(); await(liberar); return inv.callRealMethod(); }).when(runner).run(u);
+        doAnswer(inv -> { empezo.countDown(); await(liberar); return inv.callRealMethod(); }).when(runner).run(eq(u), any());
 
         var id = service.request(u).operation().getId();
         var claimed = service.claimNext().orElseThrow();
@@ -215,14 +216,14 @@ class GeneracionAsincronaIT {
         liberar.countDown();
         ejecucion.get(120, TimeUnit.SECONDS);
         assertThat(service.find(u, id).getStatus()).isEqualTo(GenerationOperationStatus.COMPLETED);
-        verify(runner, times(1)).run(u);
+        verify(runner, times(1)).run(eq(u), any());
     }
 
     // 11 · NO_FACTIBLE: sin plan, con el codigo estable y el texto para el participante.
     @Test
     void sinSemanaGenerableTerminaNoFactible() {
         long u = participante();
-        doThrow(new EmptyEligibleSetException(u)).when(runner).run(u);
+        doThrow(new EmptyEligibleSetException(u)).when(runner).run(eq(u), any());
         var id = service.request(u).operation().getId();
         procesarSiguiente();
         var op = service.find(u, id);
@@ -239,7 +240,7 @@ class GeneracionAsincronaIT {
     @Test
     void unErrorTecnicoPermiteReintentarDeFormaSegura() {
         long u = participante();
-        doThrow(new IllegalStateException("proveedor caido")).doCallRealMethod().when(runner).run(u);
+        doThrow(new IllegalStateException("proveedor caido")).doCallRealMethod().when(runner).run(eq(u), any());
         var primera = service.request(u).operation().getId();
         procesarSiguiente();
         var fallida = service.find(u, primera);
@@ -273,7 +274,7 @@ class GeneracionAsincronaIT {
         assertThat(cerrada.getReasonCode()).isEqualTo(GenerationFailureClassifier.EJECUCION_INTERRUMPIDA);
         assertThat(cerrada.isRetryable()).isTrue();
         assertThat(cerrada.getExecutions()).isEqualTo((short) 2);
-        verify(runner, times(0)).run(anyLong());
+        verify(runner, times(0)).run(anyLong(), any());
     }
 
     @Test
@@ -306,8 +307,8 @@ class GeneracionAsincronaIT {
         assertThat(jdbc.queryForObject("SELECT user_id FROM weekly_training_plans WHERE plan_id = ?", Long.class,
                 hechaBeto.getPlanId())).isEqualTo(beto);
         assertThatThrownBy(() -> service.find(beto, opAna)).isInstanceOf(ResourceNotFoundException.class);
-        verify(runner, times(1)).run(eq(ana));
-        verify(runner, times(1)).run(eq(beto));
+        verify(runner, times(1)).run(eq(ana), any());
+        verify(runner, times(1)).run(eq(beto), any());
     }
 
     // Contrato HTTP: 202 y luego 200 con el mismo id, 404 a otro usuario, 401 sin sesion.
@@ -358,8 +359,77 @@ class GeneracionAsincronaIT {
         assertThat(filas(u)).isZero();
     }
 
+    // 3, 4, 5 · una generacion lenta pero viva sigue latiendo: el barrido no la reencola ni la cierra.
+    @Test
+    void unaGeneracionLentaQueLateNoSeTomaPorHuerfana() {
+        long u = participante();
+        var id = service.request(u).operation().getId();
+        assertThat(service.claimNext()).contains(id);
+        envejecer(id);
+        assertThat(service.heartbeat(List.of(id))).isEqualTo(1);
+        service.recoverStale();
+        var op = service.find(u, id);
+        assertThat(op.getStatus()).isEqualTo(GenerationOperationStatus.PROCESSING);
+        assertThat(op.getExecutions()).isEqualTo((short) 1);
+    }
+
+    // 14 · tiempo maximo superado en ejecucion: FAILED TIEMPO_EXCEDIDO y la rutina tardia NO se publica.
+    @Test
+    void superarElTiempoMaximoCierraLaOperacionSinPublicarTarde() throws Exception {
+        long u = participante();
+        var liberar = new CountDownLatch(1);
+        var empezo = new CountDownLatch(1);
+        doAnswer(inv -> { empezo.countDown(); await(liberar); return inv.callRealMethod(); })
+                .doCallRealMethod().when(runner).run(eq(u), any());
+
+        var id = service.request(u).operation().getId();
+        var claimed = service.claimNext().orElseThrow();
+        var ejecucion = CompletableFuture.runAsync(() -> service.execute(claimed));
+        assertThat(empezo.await(30, TimeUnit.SECONDS)).isTrue();
+
+        jdbc.update("UPDATE plan_generation_operations SET started_at = now() - interval '11 minutes' WHERE operation_id = ?", id);
+        service.heartbeat(List.of(id));                     // sigue viva: lo que la cierra es el tiempo maximo
+        service.recoverStale();
+        var vencida = service.find(u, id);
+        assertThat(vencida.getStatus()).isEqualTo(GenerationOperationStatus.FAILED);
+        assertThat(vencida.getReasonCode()).isEqualTo(GenerationFailureClassifier.TIEMPO_EXCEDIDO);
+        assertThat(vencida.isRetryable()).isTrue();
+        assertThat(vencida.getFinishedAt()).isNotNull();
+
+        liberar.countDown();
+        ejecucion.get(180, TimeUnit.SECONDS);
+        assertThat(service.find(u, id).getStatus()).as("el resultado tardio no la reabre")
+                .isEqualTo(GenerationOperationStatus.FAILED);
+        assertThat(service.find(u, id).getPlanId()).isNull();
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?", Integer.class, u))
+                .as("no se publico la rutina generada fuera de tiempo").isZero();
+
+        var reintento = service.request(u);
+        assertThat(reintento.created()).isTrue();
+        procesarSiguiente();
+        assertThat(service.find(u, reintento.operation().getId()).getStatus()).isEqualTo(GenerationOperationStatus.COMPLETED);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?", Integer.class, u))
+                .isEqualTo(1);
+    }
+
+    // 14 · una PENDING que ningun worker atiende tampoco espera para siempre.
+    @Test
+    void unaPendienteQueNadieAtiendeVence() {
+        long u = participante();
+        var id = service.request(u).operation().getId();
+        jdbc.update("UPDATE plan_generation_operations SET created_at = now() - interval '31 minutes' WHERE operation_id = ?", id);
+        service.recoverStale();
+        var op = service.find(u, id);
+        assertThat(op.getStatus()).isEqualTo(GenerationOperationStatus.FAILED);
+        assertThat(op.getReasonCode()).isEqualTo(GenerationFailureClassifier.TIEMPO_EXCEDIDO);
+        assertThat(op.isRetryable()).isTrue();
+        verify(runner, times(0)).run(anyLong(), any());
+    }
+
+    /** Sin latido desde hace 5 min (stale 3 min), pero dentro del tiempo maximo (10 min). */
     private void envejecer(UUID id) {
-        jdbc.update("UPDATE plan_generation_operations SET started_at = now() - interval '1 hour' WHERE operation_id = ?", id);
+        jdbc.update("UPDATE plan_generation_operations SET started_at = now() - interval '5 minutes',"
+                + " updated_at = now() - interval '5 minutes' WHERE operation_id = ?", id);
     }
 
     private static void await(CountDownLatch latch) {

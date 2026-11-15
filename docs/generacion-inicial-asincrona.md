@@ -39,7 +39,7 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
 | PROCESSING | Un worker la está generando | — | — |
 | COMPLETED | Plan publicado (`planId` siempre presente) | — | false |
 | NO_FACTIBLE | No existe una semana válida con las condiciones del participante. No se relajan restricciones | `SIN_SEMANA_GENERABLE`, `SEMANA_NO_VALIDA`, `DISPONIBILIDAD_NO_CUMPLIBLE` (`NoFactibleReason`) | false |
-| FAILED | Error técnico o regla que impide generar | `ERROR_TECNICO`, `EJECUCION_INTERRUMPIDA` (true); `PERFIL_INCOMPLETO`, `NO_GENERABLE` (false) | según código |
+| FAILED | Error técnico o regla que impide generar | `ERROR_TECNICO`, `EJECUCION_INTERRUMPIDA`, `TIEMPO_EXCEDIDO` (true); `PERFIL_INCOMPLETO`, `NO_GENERABLE` (false) | según código |
 
 `message` es texto para el participante; el detalle técnico solo va al log.
 
@@ -54,9 +54,13 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
 - **Sin planes a medias:** el plan se publica en la transacción corta de `persist`, como siempre;
   ninguna transacción queda abierta durante la llamada a la IA.
 - **Reinicios:** el worker (`PlanGenerationWorker`, pool propio, por defecto 2 en paralelo) reclama
-  con `FOR UPDATE SKIP LOCKED`. Una PROCESSING sin cerrar tras 15 min se vuelve a poner en cola una
-  vez; la segunda vez se cierra como `FAILED/EJECUCION_INTERRUMPIDA` reintentable. La app nunca
-  espera para siempre.
+  con `FOR UPDATE SKIP LOCKED` y, mientras ejecuta, **late** cada 20 s (`updated_at`). Una
+  PROCESSING sin latido durante 3 min quedó huérfana (el proceso murió o se reinició): se vuelve a
+  poner en cola una vez; la segunda vez se cierra como `FAILED/EJECUCION_INTERRUMPIDA`
+  reintentable. Una generación lenta pero viva sigue latiendo y nunca se reencola ni se duplica.
+- **Tiempo máximo:** una PROCESSING de más de 10 min, o una PENDING de más de 30 min, se cierra como
+  `FAILED/TIEMPO_EXCEDIDO` reintentable. Si la generación seguía viva, antes de publicar comprueba
+  que la operación siga PROCESSING y descarta su resultado. La app nunca espera para siempre.
 
 ## Configuración
 
@@ -65,8 +69,14 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
 | `fitsense.plan-generation.worker.enabled` | `true` |
 | `fitsense.plan-generation.poll-ms` | `2000` |
 | `fitsense.plan-generation.max-concurrent` | `2` |
-| `fitsense.plan-generation.stale-minutes` | `15` (mayor que el peor caso del pipeline con IA) |
+| `fitsense.plan-generation.heartbeat-ms` | `20000` |
+| `fitsense.plan-generation.stale-seconds` | `180` (sin latido durante este tiempo = huérfana) |
+| `fitsense.plan-generation.max-processing-seconds` | `600` (mayor que el peor caso del pipeline con IA, 150 s por intento) |
+| `fitsense.plan-generation.max-queued-seconds` | `1800` |
 | `fitsense.plan-generation.max-executions` | `2` |
+
+Las pruebas (surefire y failsafe) apagan el worker: cada contexto de Spring en caché tendría el suyo
+sondeando cada 2 s una base inexistente o ya detenida (eso agotaba el CI a los 45 min).
 
 ## Pruebas
 

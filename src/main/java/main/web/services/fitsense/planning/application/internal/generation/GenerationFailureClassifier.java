@@ -26,11 +26,14 @@ public final class GenerationFailureClassifier {
     public static final String EJECUCION_INTERRUMPIDA = "EJECUCION_INTERRUMPIDA";
     public static final String PERFIL_INCOMPLETO = "PERFIL_INCOMPLETO";
     public static final String NO_GENERABLE = "NO_GENERABLE";
+    public static final String TIEMPO_EXCEDIDO = "TIEMPO_EXCEDIDO";
 
     public static final String TEXTO_ERROR_TECNICO =
             "No pudimos preparar tu rutina por un problema técnico. Puedes intentarlo de nuevo.";
     public static final String TEXTO_INTERRUMPIDA =
             "La preparación de tu rutina se interrumpió. Puedes intentarlo de nuevo.";
+    public static final String TEXTO_TIEMPO_EXCEDIDO =
+            "La preparación de tu rutina tardó más de lo permitido. Puedes intentarlo de nuevo.";
     public static final String TEXTO_PERFIL_INCOMPLETO =
             "Completa tu perfil antes de preparar tu primera rutina.";
     public static final String TEXTO_NO_GENERABLE =
@@ -58,6 +61,11 @@ public final class GenerationFailureClassifier {
 
     public static Outcome interrupted() {
         return new Outcome(GenerationOperationStatus.FAILED, EJECUCION_INTERRUMPIDA, TEXTO_INTERRUMPIDA, true);
+    }
+
+    /** Supero el tiempo maximo (en cola o en ejecucion): nunca se publica tarde. */
+    public static Outcome timedOut() {
+        return new Outcome(GenerationOperationStatus.FAILED, TIEMPO_EXCEDIDO, TEXTO_TIEMPO_EXCEDIDO, true);
     }
 
     private static Outcome noFactible(NoFactibleReason reason) {

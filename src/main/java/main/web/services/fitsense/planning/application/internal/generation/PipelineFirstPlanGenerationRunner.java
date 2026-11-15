@@ -22,11 +22,12 @@ public class PipelineFirstPlanGenerationRunner implements FirstPlanGenerationRun
     }
 
     @Override
-    public Long run(Long userId) {
+    public Long run(Long userId, Runnable beforePersist) {
         var monday = commandService.firstPlanWeekStart(userId);
         var command = GenerateWeeklyPlanCommand.firstPlan(userId, monday);
         var prepared = commandService.prepare(command);
         var generated = commandService.generate(prepared);
+        beforePersist.run();
         return commandService.persist(prepared, generated)
                 .map(WeeklyTrainingPlan::getId)
                 .orElseThrow(() -> new IllegalStateException(
