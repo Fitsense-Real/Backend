@@ -45,7 +45,7 @@ import java.util.List;
 public class PlanGenerationPipeline {
 
     private static final Logger log = LoggerFactory.getLogger(PlanGenerationPipeline.class);
-    private static final int AI_ATTEMPTS = 3;
+    public static final int AI_ATTEMPTS = 3;
 
     private final ReplicateTrainingPlanGenerator aiGenerator;
     private final TrainingPlanGenerator ruleGenerator;

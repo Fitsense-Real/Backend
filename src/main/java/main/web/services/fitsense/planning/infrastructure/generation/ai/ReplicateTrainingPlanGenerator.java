@@ -235,10 +235,245 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 Long userId, short weekNumber, int attempt, java.time.Instant plazo) {
         var medicion = new Medicion();
         try {
+            // V59: dentro de una operacion asincrona, cada prediccion pasa por el libro (reanudar sin pedir otra).
+            var ambito = DiarioDePredicciones.actual();
+            if (diario != null && ambito.isPresent())
+                return callConDiario(prompt, peticion, medicion, plazo, ambito.get(), attempt);
             return callMedido(prompt, peticion, medicion, plazo);
         } finally {
             log.info("{}", medicion.timing(userId, weekNumber, attempt).describe());
         }
+    }
+
+    // =====================================================================================================
+    // V59 · LIBRO DE PREDICCIONES (solo dentro de DiarioDePredicciones.durante: la generacion asincrona)
+    // =====================================================================================================
+
+    private DiarioDePredicciones diario;
+    private Duration ventanaReutilizacion = Duration.ofHours(24);
+
+    /** Opcional: sin libro (pruebas unitarias del cliente), todo sigue como antes. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setDiario(DiarioDePredicciones diario) {
+        this.diario = diario;
+    }
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.plan-generation.reuse-window-hours:24}")
+    void setVentanaReutilizacionHoras(long horas) {
+        this.ventanaReutilizacion = Duration.ofHours(Math.max(0, horas));
+    }
+
+    /** Huella estable entre arranques: claves ordenadas (Map.of no garantiza el orden entre JVM). */
+    private static final com.fasterxml.jackson.databind.ObjectMapper HUELLA = new com.fasterxml.jackson.databind.ObjectMapper()
+            .configure(com.fasterxml.jackson.databind.SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+
+    static String huella(Map<String, Object> input) {
+        try {
+            var bytes = HUELLA.writeValueAsBytes(new java.util.TreeMap<>(input));
+            var digest = java.security.MessageDigest.getInstance("SHA-256").digest(bytes);
+            return java.util.HexFormat.of().formatHex(digest);
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo calcular la huella de la peticion", e);
+        }
+    }
+
+    /** Para pruebas: la huella de la peticion de una semana de {@code workoutCount} sesiones con este prompt. */
+    String huellaDe(String prompt, int workoutCount) {
+        return huella(entrada(prompt, Peticion.deSemana(workoutCount)));
+    }
+
+    private Map<String, Object> entrada(String prompt, Peticion peticion) {
+        var input = new LinkedHashMap<String, Object>();
+        input.put("model", properties.model());
+        input.put("prompt", prompt);
+        input.put("reasoning_effort", properties.reasoningEffort());
+        input.put("json_schema", peticion.jsonSchema());
+        return input;
+    }
+
+    private String callConDiario(String prompt, Peticion peticion, Medicion medicion, java.time.Instant plazo,
+                                 DiarioDePredicciones.Ambito ambito, int attempt) {
+        var input = entrada(prompt, peticion);
+        String hash = huella(input);
+        var propia = diario.deIntento(ambito.operationId(), attempt);
+        DiarioDePredicciones.Entrada previa = null;
+        if (propia.isPresent() && propia.get().requestHash().equals(hash)) {
+            previa = propia.get();
+        } else if (propia.isEmpty()) {
+            var otra = diario.reutilizable(ambito.userId(), hash, ambito.operationId(),
+                    reloj.instant().minus(ventanaReutilizacion));
+            if (otra.isPresent()) {
+                previa = diario.adoptar(otra.get(), ambito.operationId(), attempt, reloj.instant());
+                log.info("REPLICATE_ADOPTADA operacion={} intento={} prediction_id={} de_operacion={} estado={}",
+                        ambito.operationId(), attempt, otra.get().predictionId(), otra.get().operationId(),
+                        otra.get().estado());
+            }
+        }
+        if (previa != null) return reanudar(previa, peticion, prompt, medicion, plazo, ambito);
+
+        // Fencing: si este worker ya no es el propietario de la operacion, no se paga otra prediccion.
+        ambito.antesDeEnviar().run();
+        // Nueva: se anota ANTES de enviar. Si el proceso muere entre el envio y la confirmacion, la fila queda en
+        // SOLICITANDO y la reanudacion NO reenvia (Replicate pudo aceptarla).
+        long fila = diario.solicitar(ambito.operationId(), ambito.userId(), attempt, hash, reloj.instant());
+        String rawBody;
+        try {
+            rawBody = postSinEspera(input);
+        } catch (EnvioNoAceptado e) {
+            medicion.postFallo();
+            diario.terminada(fila, DiarioDePredicciones.Estado.ERROR_ENVIO, null, e.getMessage(), reloj.instant());
+            throw new AiProviderUnavailableException(e.getMessage());
+        } catch (EnvioIncierto e) {
+            medicion.postFallo();
+            return noConfirmada(fila, ambito, attempt, e.getMessage());
+        }
+        medicion.postTerminado();
+
+        ReplicateResponse response;
+        try {
+            response = jsonSupport.read(rawBody, ReplicateResponse.class);
+        } catch (RuntimeException e) {
+            response = null;
+        }
+        if (response == null || response.id() == null || !ID_VALIDO.matcher(response.id()).matches()) {
+            // Un 2xx sin identificador legible: Replicate pudo crearla. Mismo trato conservador.
+            medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
+            return noConfirmada(fila, ambito, attempt, "respuesta 2xx sin identificador de prediccion legible");
+        }
+        diario.enviada(fila, response.id(), reloj.instant());
+        medicion.predictionId(response.id());
+        return seguir(fila, response, peticion, prompt, medicion, plazo);
+    }
+
+    private String noConfirmada(long fila, DiarioDePredicciones.Ambito ambito, int attempt, String motivo) {
+        diario.terminada(fila, DiarioDePredicciones.Estado.NO_CONFIRMADA, null, motivo, reloj.instant());
+        log.warn("REPLICATE_NO_CONFIRMADA operacion={} intento={} motivo={}: Replicate pudo aceptar la prediccion sin"
+                + " que se guardara su id; NO se reenvia (posible prediccion facturada sin aprovechar)",
+                ambito.operationId(), attempt, motivo);
+        throw new AiProviderUnavailableException("PREDICCION_NO_CONFIRMADA: " + motivo);
+    }
+
+    /** Reanuda un intento ya anotado sin crear otra prediccion. */
+    private String reanudar(DiarioDePredicciones.Entrada e, Peticion peticion, String prompt, Medicion medicion,
+                            java.time.Instant plazo, DiarioDePredicciones.Ambito ambito) {
+        medicion.predictionId(e.predictionId());
+        switch (e.estado()) {
+            case SUCCEEDED -> {
+                medicion.postTerminado();
+                medicion.resultado(ReplicateTiming.Resultado.SUCCEEDED);
+                log.info("REPLICATE_REUTILIZADA operacion={} intento={} prediction_id={}: salida ya recibida, sin"
+                        + " llamar a Replicate", ambito.operationId(), e.attempt(), e.predictionId());
+                return e.output();
+            }
+            case ENVIADA -> {
+                medicion.postTerminado();
+                log.info("REPLICATE_REANUDADA operacion={} intento={} prediction_id={}: se sigue la misma prediccion",
+                        ambito.operationId(), e.attempt(), e.predictionId());
+                var url = urlDeConsulta(e.predictionId());
+                var enCurso = new ReplicateResponse(e.predictionId(), "processing", null, null, null,
+                        new ReplicateResponse.Urls(url, null, null));
+                return seguir(e.id(), enCurso, peticion, prompt, medicion, plazo);
+            }
+            case SOLICITANDO -> {
+                return noConfirmada(e.id(), ambito, e.attempt(), "envio sin confirmar al reanudar");
+            }
+            default -> {
+                log.info("REPLICATE_REPETIDA operacion={} intento={} estado={}: se repite el desenlace registrado sin"
+                        + " otra prediccion", ambito.operationId(), e.attempt(), e.estado());
+                throw new AiProviderUnavailableException("desenlace registrado de la prediccion: " + e.estado()
+                        + (e.error() == null ? "" : " (" + e.error() + ")"));
+            }
+        }
+    }
+
+    /** Sondeo, cancelacion y registro del final: lo mismo que callMedido, anotado en el libro. */
+    private String seguir(long fila, ReplicateResponse response, Peticion peticion, String prompt,
+                          Medicion medicion, java.time.Instant plazo) {
+        var desenlace = Sondeo.Desenlace.RESPONDIO;
+        if (response.pending()) {
+            final var enCurso = response;
+            var sondeo = medicion.sondeando(() -> awaitCompletion(enCurso, plazo));
+            desenlace = sondeo.desenlace();
+            diario.consultada(fila, sondeo.requests(), reloj.instant());
+            if (sondeo.response() != null) response = sondeo.response();
+        }
+        if (response.pending()) {
+            var trasCancelar = cancelar(response, desenlace);
+            if (trasCancelar != null && trasCancelar.succeeded()) {
+                response = trasCancelar;
+                desenlace = Sondeo.Desenlace.RESPONDIO;
+            } else if (trasCancelar != null && "canceled".equals(trasCancelar.status())) {
+                response = trasCancelar;
+            }
+        }
+        if (!response.succeeded()) {
+            String detail = response.status() + " " + response.error();
+            var estado = "canceled".equals(response.status()) ? DiarioDePredicciones.Estado.CANCELED
+                    : response.pending() ? DiarioDePredicciones.Estado.TIMEOUT : DiarioDePredicciones.Estado.FAILED;
+            diario.terminada(fila, estado, null, detail, reloj.instant());
+            medicion.resultado(clasificar(response, desenlace));
+            log.warn("Replicate devolvio un estado no exitoso: {}", detail);
+            throw new AiProviderUnavailableException(detail);
+        }
+        String output = response.joinedOutput();
+        diario.terminada(fila, DiarioDePredicciones.Estado.SUCCEEDED, output, null, reloj.instant());
+        medicion.resultado(ReplicateTiming.Resultado.SUCCEEDED);
+        log.info("Salida de la IA (prediccion {}, prompt {}, {} caracteres de prompt): {}",
+                response.id(), peticion.promptVersion(), prompt.length(), output);
+        return output;
+    }
+
+    /** GET /v1/predictions/{id} en el mismo servidor que la base. Solo ids alfanumericos. */
+    String urlDeConsulta(String id) {
+        if (id == null || !ID_VALIDO.matcher(id).matches()) return null;
+        var base = URI.create(properties.baseUrl());
+        return base.getScheme() + "://" + base.getRawAuthority() + "/v1/predictions/" + id;
+    }
+
+    /** El envio NO llego a Replicate o Replicate lo rechazo: no hay prediccion. */
+    static final class EnvioNoAceptado extends RuntimeException {
+        EnvioNoAceptado(String m) { super(m); }
+    }
+
+    /** El envio pudo llegar y aceptarse sin que conozcamos su id (corte de lectura, 5xx, conexion reiniciada). */
+    static final class EnvioIncierto extends RuntimeException {
+        EnvioIncierto(String m) { super(m); }
+    }
+
+    /**
+     * POST SIN {@code Prefer: wait}: Replicate devuelve el identificador en cuanto crea la prediccion, y se guarda
+     * antes de esperar. Asi la ventana sin identificador es la de una peticion corta, no los 60 s de la espera.
+     */
+    private String postSinEspera(Map<String, Object> input) {
+        try {
+            return restClient.post()
+                    .uri(properties.baseUrl())
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("input", input))
+                    .retrieve()
+                    .body(String.class);
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            int codigo = e.getStatusCode().value();
+            if (codigo >= 400 && codigo < 500)
+                throw new EnvioNoAceptado("Replicate rechazo la peticion (http " + codigo + ")");
+            throw new EnvioIncierto("Replicate respondio http " + codigo);
+        } catch (org.springframework.web.client.ResourceAccessException e) {
+            if (noLlegoAEnviarse(e)) throw new EnvioNoAceptado("no se pudo conectar con Replicate: " + e.getMessage());
+            throw new EnvioIncierto("se corto la respuesta de Replicate: " + e.getMessage());
+        } catch (RuntimeException e) {
+            throw new EnvioIncierto(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+    }
+
+    /** Solo un fallo de CONEXION (antes de enviar el cuerpo) garantiza que no hay prediccion. */
+    static boolean noLlegoAEnviarse(Throwable e) {
+        for (var c = e; c != null; c = c.getCause())
+            if (c instanceof java.net.ConnectException || c instanceof java.net.UnknownHostException
+                    || c instanceof java.net.http.HttpConnectTimeoutException
+                    || c instanceof java.net.NoRouteToHostException)
+                return true;
+        return false;
     }
 
     private String callMedido(String prompt, Peticion peticion, Medicion medicion, java.time.Instant plazo) {

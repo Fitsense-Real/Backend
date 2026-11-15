@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
@@ -23,8 +22,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * Mientras ejecuta, late cada {@code heartbeat-ms}: una generacion lenta pero
  * viva nunca se toma por huerfana. Si el proceso se detiene con una operacion
- * en curso, esta deja de latir y el barrido (de esta u otra instancia) la
- * vuelve a poner en cola pasados {@code stale-seconds}.
+ * en curso, esta deja de latir, su lease vence ({@code lease-seconds}) y el barrido
+ * (de esta u otra instancia) la vuelve a poner en cola.
+ * <p>
+ * V59: el latido y el ciclo corren en hilos PROPIOS ({@code generacion-inicial-latido} y
+ * {@code generacion-inicial-ciclo}), no en el planificador de Spring. Ese planificador tiene
+ * un solo hilo y lo comparte con el cierre semanal, que llama a la IA usuario por usuario
+ * durante minutos: con el latido alli, una generacion viva dejaba de latir, se tomaba por
+ * huerfana, se reencolaba y se ejecutaba dos veces (predicciones duplicadas).
  * <p>
  * Las pruebas lo apagan ({@code fitsense.plan-generation.worker.enabled=false}
  * en surefire y failsafe): cada contexto en cache tendria su propio worker
@@ -42,10 +47,30 @@ public class PlanGenerationWorker {
     private final AtomicInteger inFlight = new AtomicInteger();
     private final java.util.concurrent.atomic.AtomicBoolean stopping = new java.util.concurrent.atomic.AtomicBoolean();
     private final java.util.Set<java.util.UUID> running = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    /** V59: un hilo para el ciclo y otro para el latido; el latido nunca espera al ciclo ni al cierre semanal. */
+    private final java.util.concurrent.ScheduledExecutorService ciclo;
+    private final java.util.concurrent.ScheduledExecutorService latido;
+    private final long initialDelayMs;
+    private final long pollMs;
+    private final long heartbeatMs;
 
+    /** Para pruebas: sin programar nada; las pruebas llaman a tick() y heartbeat() a mano. */
+    public PlanGenerationWorker(PlanGenerationOperationService service, int maxConcurrent) {
+        this(service, maxConcurrent, -1, -1, -1);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
     public PlanGenerationWorker(PlanGenerationOperationService service,
-                                @Value("${fitsense.plan-generation.max-concurrent:2}") int maxConcurrent) {
+                                @Value("${fitsense.plan-generation.max-concurrent:2}") int maxConcurrent,
+                                @Value("${fitsense.plan-generation.initial-delay-ms:5000}") long initialDelayMs,
+                                @Value("${fitsense.plan-generation.poll-ms:2000}") long pollMs,
+                                @Value("${fitsense.plan-generation.heartbeat-ms:20000}") long heartbeatMs) {
         this.service = service;
+        this.initialDelayMs = initialDelayMs;
+        this.pollMs = pollMs;
+        this.heartbeatMs = heartbeatMs;
+        this.ciclo = hilo("generacion-inicial-ciclo");
+        this.latido = hilo("generacion-inicial-latido");
         this.maxConcurrent = Math.max(1, maxConcurrent);
         var counter = new AtomicInteger();
         this.pool = Executors.newFixedThreadPool(this.maxConcurrent, r -> {
@@ -55,8 +80,26 @@ public class PlanGenerationWorker {
         });
     }
 
-    @Scheduled(initialDelayString = "${fitsense.plan-generation.initial-delay-ms:5000}",
-            fixedDelayString = "${fitsense.plan-generation.poll-ms:2000}")
+    private static java.util.concurrent.ScheduledExecutorService hilo(String nombre) {
+        return Executors.newSingleThreadScheduledExecutor(r -> {
+            var thread = new Thread(r, nombre);
+            thread.setDaemon(true);
+            return thread;
+        });
+    }
+
+    /** V59: programa el ciclo y el latido en sus hilos propios (no en el planificador compartido de Spring). */
+    @jakarta.annotation.PostConstruct
+    void start() {
+        if (pollMs <= 0 || heartbeatMs <= 0) return;
+        ciclo.scheduleWithFixedDelay(this::tick, Math.max(0, initialDelayMs), pollMs,
+                java.util.concurrent.TimeUnit.MILLISECONDS);
+        latido.scheduleWithFixedDelay(this::heartbeat, heartbeatMs, heartbeatMs,
+                java.util.concurrent.TimeUnit.MILLISECONDS);
+        log.info("Generacion inicial: worker {} con ciclo cada {} ms y latido cada {} ms en hilos propios",
+                service.owner(), pollMs, heartbeatMs);
+    }
+
     public void tick() {
         try {
             if (stopping.get()) return;
@@ -82,8 +125,6 @@ public class PlanGenerationWorker {
         }
     }
 
-    @Scheduled(initialDelayString = "${fitsense.plan-generation.heartbeat-ms:20000}",
-            fixedDelayString = "${fitsense.plan-generation.heartbeat-ms:20000}")
     public void heartbeat() {
         try {
             service.heartbeat(java.util.List.copyOf(running));
@@ -101,6 +142,8 @@ public class PlanGenerationWorker {
     @PreDestroy
     void stop() {
         stopping.set(true);
+        ciclo.shutdownNow();
+        latido.shutdownNow();
         var interrupted = java.util.List.copyOf(running);
         pool.shutdownNow();
         try {

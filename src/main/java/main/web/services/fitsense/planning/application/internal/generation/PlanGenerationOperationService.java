@@ -55,7 +55,12 @@ public class PlanGenerationOperationService {
     private final JdbcTemplate jdbc;
     private final TransactionTemplate tx;
     private final Clock clock;
-    private final Duration staleAfter;
+    /** V59: lease del propietario; el latido lo renueva. Vencido = proceso muerto. */
+    private final Duration lease;
+    /** V59: identidad de ESTE proceso como propietario de las operaciones que ejecuta (fencing). */
+    private final String owner;
+    /** V59: libro de predicciones (opcional para no romper construcciones directas). */
+    private main.web.services.fitsense.planning.infrastructure.generation.ai.DiarioDePredicciones diario;
     private final Duration maxProcessing;
     private final Duration maxQueued;
     private final int maxExecutions;
@@ -69,10 +74,10 @@ public class PlanGenerationOperationService {
                                           JdbcTemplate jdbc,
                                           PlatformTransactionManager transactionManager,
                                           org.springframework.beans.factory.ObjectProvider<Clock> clock,
-                                          @Value("${fitsense.plan-generation.stale-seconds:180}") long staleSeconds,
-                                          @Value("${fitsense.plan-generation.max-processing-seconds:600}") long maxProcessingSeconds,
+                                          @Value("${fitsense.plan-generation.max-processing-seconds:1800}") long maxProcessingSeconds,
                                           @Value("${fitsense.plan-generation.max-queued-seconds:1800}") long maxQueuedSeconds,
-                                          @Value("${fitsense.plan-generation.max-executions:2}") int maxExecutions) {
+                                          @Value("${fitsense.plan-generation.max-executions:3}") int maxExecutions,
+                                          @Value("${fitsense.plan-generation.lease-seconds:90}") long leaseSeconds) {
         this.operations = operations;
         this.plans = plans;
         this.commandService = commandService;
@@ -82,10 +87,40 @@ public class PlanGenerationOperationService {
         this.jdbc = jdbc;
         this.tx = new TransactionTemplate(transactionManager);
         this.clock = clock.getIfAvailable(Clock::systemUTC);
-        this.staleAfter = Duration.ofSeconds(staleSeconds);
         this.maxProcessing = Duration.ofSeconds(maxProcessingSeconds);
         this.maxQueued = Duration.ofSeconds(maxQueuedSeconds);
         this.maxExecutions = Math.max(1, maxExecutions);
+        this.lease = Duration.ofSeconds(Math.max(1, leaseSeconds));
+        this.owner = propietario();
+    }
+
+    /** Nombre del host (Railway: el contenedor) y un sufijo aleatorio: dos procesos nunca comparten propietario. */
+    private static String propietario() {
+        String host;
+        try {
+            host = java.net.InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            host = "desconocido";
+        }
+        if (host.length() > 40) host = host.substring(0, 40);
+        return host + "-" + UUID.randomUUID().toString().substring(0, 8);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    public void setDiario(main.web.services.fitsense.planning.infrastructure.generation.ai.DiarioDePredicciones diario) {
+        this.diario = diario;
+    }
+
+    public String owner() {
+        return owner;
+    }
+
+    public Duration lease() {
+        return lease;
+    }
+
+    public Duration maxProcessing() {
+        return maxProcessing;
     }
 
     private OffsetDateTime now() {
@@ -166,16 +201,19 @@ public class PlanGenerationOperationService {
      * misma operacion.
      */
     public Optional<UUID> claimNext() {
+        var ahora = now();
+        // V59: el reclamo fija el propietario y su lease en la misma sentencia; first_started_at solo la primera vez.
         var ids = jdbc.queryForList("""
                 UPDATE plan_generation_operations
-                   SET status = 'PROCESSING', started_at = ?, updated_at = ?, executions = executions + 1
+                   SET status = 'PROCESSING', started_at = ?, updated_at = ?, executions = executions + 1,
+                       lease_owner = ?, lease_expires_at = ?, first_started_at = coalesce(first_started_at, ?)
                  WHERE operation_id = (SELECT operation_id FROM plan_generation_operations
                                         WHERE status = 'PENDING'
                                         ORDER BY created_at
                                         FOR UPDATE SKIP LOCKED
                                         LIMIT 1)
                 RETURNING operation_id
-                """, UUID.class, now(), now());
+                """, UUID.class, ahora, ahora, owner, ahora.plus(lease), ahora);
         return ids.stream().findFirst();
     }
 
@@ -198,7 +236,11 @@ public class PlanGenerationOperationService {
         if (op == null || op.getStatus() != GenerationOperationStatus.PROCESSING) return;
         Long userId = op.getUserId();
         try {
-            var planId = runner.run(userId, () -> ensureStillProcessing(operationId));
+            // V59: el pipeline corre con el libro de predicciones de ESTA operacion. Si es una reanudacion, cada
+            // intento consulta primero lo ya pedido a Replicate en lugar de pedirlo otra vez.
+            var planId = main.web.services.fitsense.planning.infrastructure.generation.ai.DiarioDePredicciones
+                    .durante(operationId, userId, () -> ensureStillProcessing(operationId),
+                            () -> runner.run(userId, () -> ensureStillProcessing(operationId)));
             finish(operationId, o -> o.complete(planId, now()));
             log.info("Generacion inicial {} completada: plan {} del usuario {}", operationId, planId, userId);
         } catch (OperationAbandonedException abandoned) {
@@ -218,6 +260,22 @@ public class PlanGenerationOperationService {
                 return;
             }
             record(operationId, userId, GenerationFailureClassifier.classify(error), error);
+        } finally {
+            registrarPredicciones(operationId);
+        }
+    }
+
+    /** V59: recuento de predicciones de la operacion (coste potencial), en una linea por ejecucion. */
+    private void registrarPredicciones(UUID operationId) {
+        if (diario == null) return;
+        try {
+            var r = diario.recuento(operationId);
+            log.info("GENERACION_ASINCRONA_PREDICCIONES operacion={} iniciadas={} reutilizadas={} completadas={}"
+                            + " fallidas={} canceladas={} vencidas={} no_confirmadas={} descartadas={}", operationId,
+                    r.iniciadas(), r.reutilizadas(), r.completadas(), r.fallidas(), r.canceladas(), r.vencidas(),
+                    r.noConfirmadas(), r.descartadas());
+        } catch (RuntimeException e) {
+            log.warn("No se pudo contar las predicciones de la operacion {}: {}", operationId, e.getMessage());
         }
     }
 
@@ -240,19 +298,23 @@ public class PlanGenerationOperationService {
         if (interrupted.isEmpty()) return 0;
         int n = jdbc.update("""
                 UPDATE plan_generation_operations
-                   SET status = 'PENDING', started_at = NULL, updated_at = ?, executions = GREATEST(executions - 1, 0)
-                 WHERE status = 'PROCESSING' AND operation_id = ANY(?)
-                """, now(), interrupted.toArray(UUID[]::new));
+                   SET status = 'PENDING', started_at = NULL, updated_at = ?, executions = GREATEST(executions - 1, 0),
+                       lease_owner = NULL, lease_expires_at = NULL
+                 WHERE status = 'PROCESSING' AND operation_id = ANY(?) AND lease_owner = ?
+                """, now(), interrupted.toArray(UUID[]::new), owner);
         if (n > 0) log.warn("Generacion inicial: {} operacion(es) devuelta(s) a la cola por el apagado", n);
         return n;
     }
 
     /** Antes de publicar: si la operacion ya no es PROCESSING, no se publica nada. */
     void ensureStillProcessing(UUID operationId) {
-        var status = jdbc.queryForList(
-                "SELECT status FROM plan_generation_operations WHERE operation_id = ?", String.class, operationId);
-        if (status.isEmpty() || !GenerationOperationStatus.PROCESSING.name().equals(status.get(0)))
-            throw new OperationAbandonedException("la operacion ya no esta en curso (" + status + ")");
+        // V59 (fencing): no basta con PROCESSING; tiene que seguir siendo NUESTRA. Si el lease vencio y otro worker la
+        // reclamo, este no publica: lo hara el propietario actual (con las mismas predicciones, por el libro).
+        var fila = jdbc.queryForList(
+                "SELECT status, lease_owner FROM plan_generation_operations WHERE operation_id = ?", operationId);
+        if (fila.isEmpty() || !GenerationOperationStatus.PROCESSING.name().equals(fila.get(0).get("status"))
+                || !owner.equals(fila.get(0).get("lease_owner")))
+            throw new OperationAbandonedException("la operacion ya no esta en curso para este worker (" + fila + ")");
     }
 
     /**
@@ -261,15 +323,19 @@ public class PlanGenerationOperationService {
      */
     public int heartbeat(java.util.Collection<UUID> running) {
         if (running.isEmpty()) return 0;
-        return jdbc.update("UPDATE plan_generation_operations SET updated_at = ? "
-                        + "WHERE status = 'PROCESSING' AND operation_id = ANY(?)",
-                now(), running.toArray(UUID[]::new));
+        var ahora = now();
+        // V59: solo se renueva el lease de las operaciones de las que este proceso sigue siendo propietario.
+        return jdbc.update("UPDATE plan_generation_operations SET updated_at = ?, lease_expires_at = ? "
+                        + "WHERE status = 'PROCESSING' AND operation_id = ANY(?) AND lease_owner = ?",
+                ahora, ahora.plus(lease), running.toArray(UUID[]::new), owner);
     }
 
     /** Aplica el cierre solo si la operacion sigue PROCESSING (la recuperacion pudo cerrarla). */
     private void finish(UUID operationId, java.util.function.Consumer<PlanGenerationOperation> change) {
         tx.executeWithoutResult(s -> operations.findById(operationId)
                 .filter(o -> o.getStatus() == GenerationOperationStatus.PROCESSING)
+                // V59 (fencing): solo el propietario cierra; otro worker con un lease vencido no pisa el resultado.
+                .filter(o -> owner.equals(o.getLeaseOwner()))
                 .ifPresent(o -> {
                     change.accept(o);
                     operations.save(o);
@@ -279,15 +345,19 @@ public class PlanGenerationOperationService {
     /**
      * Barrido periodico del worker.
      * <ul>
-     *   <li><b>Huerfanas</b>: PROCESSING sin latido desde hace {@code staleAfter}
-     *   (el proceso que la ejecutaba murio o se reinicio). Se vuelve a poner en
-     *   cola una sola vez (executions &lt; maxExecutions); despues se cierra como
-     *   FAILED EJECUCION_INTERRUMPIDA reintentable. Una generacion lenta pero
-     *   viva sigue latiendo y nunca se reencola.</li>
-     *   <li><b>Tiempo maximo</b>: PROCESSING desde hace mas de {@code maxProcessing},
-     *   o PENDING desde hace mas de {@code maxQueued}: FAILED TIEMPO_EXCEDIDO
-     *   reintentable. Si la generacion sigue viva, su resultado se descarta
-     *   antes de publicar ({@link #ensureStillProcessing}).</li>
+     *   <li><b>Huerfanas</b> (V59): PROCESSING con el lease VENCIDO, es decir, sin latido de su propietario desde hace
+     *   {@code lease-seconds}
+     *   (el proceso que la ejecutaba murio o se reinicio). Vuelve a la cola mientras
+     *   executions &lt; maxExecutions; la reanudacion repite el pipeline con el libro de
+     *   predicciones, asi que no paga otra vez lo ya pedido. Despues se cierra como
+     *   FAILED EJECUCION_INTERRUMPIDA reintentable. Una generacion lenta pero viva
+     *   late en su propio hilo (no en el del planificador) y nunca se reencola.</li>
+     *   <li><b>Tiempo maximo de la OPERACION</b>: PROCESSING desde hace mas de
+     *   {@code maxProcessing} contados desde la PRIMERA ejecucion, o PENDING desde hace mas
+     *   de {@code maxQueued}: FAILED TIEMPO_EXCEDIDO reintentable. Es una red de seguridad
+     *   por encima del peor caso del pipeline (lo comprueba PoliticaTiemposGeneracion al
+     *   arrancar). Si aun asi la generacion seguia viva, no publica (fencing), pero sus
+     *   predicciones quedan en el libro y la nueva peticion del usuario las reutiliza.</li>
      * </ul>
      * Asi la app nunca espera para siempre.
      *
@@ -299,24 +369,24 @@ public class PlanGenerationOperationService {
         int expired = jdbc.update("""
                 UPDATE plan_generation_operations
                    SET status = 'FAILED', reason_code = ?, message = ?, retryable = TRUE,
-                       finished_at = ?, updated_at = ?
-                 WHERE (status = 'PROCESSING' AND started_at < ?)
+                       finished_at = ?, updated_at = ?, lease_owner = NULL, lease_expires_at = NULL
+                 WHERE (status = 'PROCESSING' AND coalesce(first_started_at, started_at) < ?)
                     OR (status = 'PENDING' AND created_at < ?)
                 """, timedOut.reasonCode(), timedOut.message(), now, now,
                 now.minus(maxProcessing), now.minus(maxQueued));
-        var stale = now.minus(staleAfter);
+        // V59: huerfana = lease VENCIDO (su propietario dejo de latir), no "updated_at antiguo".
         int requeued = jdbc.update("""
                 UPDATE plan_generation_operations
-                   SET status = 'PENDING', started_at = NULL, updated_at = ?
-                 WHERE status = 'PROCESSING' AND updated_at < ? AND executions < ?
-                """, now, stale, maxExecutions);
+                   SET status = 'PENDING', started_at = NULL, updated_at = ?, lease_owner = NULL, lease_expires_at = NULL
+                 WHERE status = 'PROCESSING' AND lease_expires_at < ? AND executions < ?
+                """, now, now, maxExecutions);
         var interrupted = GenerationFailureClassifier.interrupted();
         int failed = jdbc.update("""
                 UPDATE plan_generation_operations
                    SET status = 'FAILED', reason_code = ?, message = ?, retryable = TRUE,
-                       finished_at = ?, updated_at = ?
-                 WHERE status = 'PROCESSING' AND updated_at < ? AND executions >= ?
-                """, interrupted.reasonCode(), interrupted.message(), now, now, stale, maxExecutions);
+                       finished_at = ?, updated_at = ?, lease_owner = NULL, lease_expires_at = NULL
+                 WHERE status = 'PROCESSING' AND lease_expires_at < ? AND executions >= ?
+                """, interrupted.reasonCode(), interrupted.message(), now, now, now, maxExecutions);
         if (expired + requeued + failed > 0)
             log.warn("Generacion inicial: {} por tiempo maximo, {} huerfana(s) en cola de nuevo, {} interrumpida(s)",
                     expired, requeued, failed);
