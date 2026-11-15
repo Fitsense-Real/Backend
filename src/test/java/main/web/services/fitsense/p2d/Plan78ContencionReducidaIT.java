@@ -24,6 +24,7 @@ import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -303,6 +304,57 @@ class Plan78ContencionReducidaIT {
                 + " WHERE plan_id = ? ORDER BY scheduled_date", Long.class, v2))).isEmpty(), "la version 2 no bloquea nada");
     }
 
+    @Autowired main.web.services.fitsense.planning.application.internal.commandservices.PublishedPlanSafetyRepairService reparacion;
+
+    /**
+     * PROPUESTA (orden de cierre de pendientes, 14/11/2026), con el interruptor encendido solo en esta prueba
+     * ({@code fitsense.reparacion.tolerar-dificultad-de-publicacion}, apagado por defecto): la reparacion tolera los
+     * ejercicios ya publicados cuya dificultad subio despues de publicarse (916 por V48, 910 por V52) y sustituye solo
+     * el 1303, que hoy es inseguro para el perfil. La seguridad actual se sigue aplicando entera; la tolerancia queda en
+     * el snapshot de la version nueva.
+     */
+    @Test
+    @DisplayName("propuesta (interruptor encendido): tolera la dificultad subida tras publicar (916, 910) y sustituye solo el 1303")
+    void propuestaDificultadDePublicacion() throws IOException {
+        var c = copiaDelPlan78();
+        var antes = contenido(c.planId());
+        ReflectionTestUtils.setField(reparacion, "tolerarDificultadDePublicacion", true);
+        try {
+            var r = planning.repairPublishedPlanForSafety(c.userId(), SEMANA, HOY);
+            assertEquals(Estado.REPARADA, r.estado(), r.toString());
+            assertEquals(antes, contenido(c.planId()), "la version 1 no se toca");
+            long v2 = jdbc.queryForObject("SELECT plan_id FROM weekly_training_plans WHERE user_id = ? AND status = 'ACTIVE'",
+                    Long.class, c.userId());
+            var despues = contenido(v2);
+            assertEquals(antes.size(), despues.size());
+            int cambios = 0;
+            for (int i = 0; i < antes.size(); i++) {
+                var a = antes.get(i);
+                var d = despues.get(i);
+                if (Objects.equals(a, d)) continue;
+                cambios++;
+                assertEquals(1303L, ((Number) a.get("exercise_id")).longValue(), "solo cambia la fila del 1303: " + a);
+                long sustituto = ((Number) d.get("exercise_id")).longValue();
+                assertFalse(ContencionTextoBandera.contiene(sustituto, SEGURIDAD_39), "sustituto contenido: " + sustituto);
+                assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM exercises WHERE exercise_id = ? AND"
+                        + " (requires_hanging OR requires_overhead)", Integer.class, sustituto),
+                        "sustituto restringido");
+                assertTrue(num(d.get("planned_sets")) <= num(a.get("planned_sets")), "sin mas series: " + a + " -> " + d);
+                if (a.get("planned_reps") != null && d.get("planned_reps") != null)
+                    assertTrue(num(d.get("planned_reps")) <= num(a.get("planned_reps")), "sin mas repeticiones: " + a + " -> " + d);
+            }
+            assertEquals(1, cambios, "una sola sustitucion localizada");
+            var snapshot = jdbc.queryForObject("SELECT output_snapshot::text FROM weekly_training_plans WHERE plan_id = ?",
+                    String.class, v2);
+            assertTrue(snapshot.contains("\"tolerated_publication_difficulty\": [910, 916]")
+                    || snapshot.contains("\"tolerated_publication_difficulty\":[910,916]"), snapshot);
+            assertTrue(bloqueos(new Copia(c.userId(), v2, jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts"
+                    + " WHERE plan_id = ? ORDER BY scheduled_date", Long.class, v2))).isEmpty(), "la version 2 no bloquea nada");
+        } finally {
+            ReflectionTestUtils.setField(reparacion, "tolerarDificultadDePublicacion", false);
+        }
+    }
+
     /**
      * LIMITACION ACTUAL, documentada (no es el comportamiento deseado): con una sesion ya terminada la reparacion no
      * versiona la semana (SEMANA_EMPEZADA). La sesion del jueves sigue bloqueada, no se puede iniciar y, al vencer,
@@ -330,5 +382,12 @@ class Plan78ContencionReducidaIT {
                 c.sesiones().get(1));
         assertEquals("SKIPPED", fila.get("status"));
         assertNull(fila.get("skip_reason"), "no existe un motivo de seguridad: se cuenta como no hecha");
+        // V54 (propuesta, fase 9): la tarea de vencimiento deja constancia de la causa del bloqueo vigente. Solo
+        // constancia: el estado y la causa de omision (NULL) no cambian, y ningun calculo la lee.
+        assertEquals("1303=" + CAUSA_1303, jdbc.queryForObject("SELECT system_block_cause FROM planned_workouts"
+                + " WHERE planned_workout_id = ?", String.class, c.sesiones().get(1)));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workouts WHERE plan_id = ?"
+                + " AND planned_workout_id <> ? AND system_block_cause IS NOT NULL", Integer.class, c.planId(),
+                c.sesiones().get(1)), "las sesiones no bloqueadas no llevan causa");
     }
 }
