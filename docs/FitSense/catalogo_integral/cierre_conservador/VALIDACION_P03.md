@@ -43,7 +43,7 @@ El riesgo está **demostrado como posible** (contraejemplo construido), pero **n
 
 ## 4. Efecto en la factibilidad
 
-Medido sobre el commit candidato con la regla por colocación encendida (`-Dfitsense.regeneracion.p03-por-colocacion=true`) en los 40 escenarios HALL-GM-01: **resultado idéntico, columna por columna**, al de la candidata con la regla apagada.
+Medido con el código de producción de la candidata (commit `eccff00`, idéntico en `src/main` a `836a1f5`), con la regla por colocación encendida (`-Dfitsense.regeneracion.p03-por-colocacion=true`) en los 40 escenarios HALL-GM-01: **resultado idéntico, columna por columna**, al de la candidata con la regla apagada.
 
 - 35 publicadas y 5 NO_FACTIBLE.
 - Ningún NO_FACTIBLE nuevo.

@@ -15,7 +15,7 @@ Se comparan dos modos con el mismo código:
 - **Apagadas:** `fitsense.catalogo.contencion-conservadora=false` y `fitsense.seguridad.dolor-en-planes-publicados=false`. Equivale a la PR #65.
 - **Encendidas:** los valores por defecto de la candidata.
 
-Evidencia: `evidencia/hall_gm_01/hall_gm_01_40_protecciones_{apagadas,encendidas}.csv`.
+Evidencia: `evidencia/hall_gm_01/hall_gm_01_40_protecciones_{apagadas,encendidas}.csv`. Las dos ejecuciones se repitieron sobre el commit definitivo `836a1f5` con un resultado idéntico, columna por columna.
 
 ## 2. Resultados
 

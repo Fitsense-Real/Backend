@@ -1,0 +1,60 @@
+version	description	type	script	checksum	success
+1	users and profiles	SQL	V1__users_and_profiles.sql	-678966405	true
+2	catalog	SQL	V2__catalog.sql	651578135	true
+3	catalog data	SQL	V3__catalog_data.sql	1680758998	true
+4	planning	SQL	V4__planning.sql	-1152190055	true
+5	execution	SQL	V5__execution.sql	929158503	true
+6	metrics and config	SQL	V6__metrics_and_config.sql	204928614	true
+7	config data	SQL	V7__config_data.sql	1980706201	true
+8	catalog seed minimal	SQL	V8__catalog_seed_minimal.sql	-1271547332	true
+9	catalog full	SQL	V9__catalog_full.sql	1152946875	true
+10	exercise safety flags	SQL	V10__exercise_safety_flags.sql	-1904518747	true
+11	catalog translations and activation	SQL	V11__catalog_translations_and_activation.sql	-1518291972	true
+12	prescription ranges	SQL	V12__prescription_ranges.sql	1708888069	true
+13	study design	SQL	V13__study_design.sql	1743904853	true
+14	duration estimation	SQL	V14__duration_estimation.sql	-1546661447	true
+15	progression limits	SQL	V15__progression_limits.sql	1533528815	true
+16	retroactive report limit	SQL	V16__retroactive_report_limit.sql	-2051754892	true
+17	volume components	SQL	V17__volume_components.sql	-218904124	true
+18	prescription principles	SQL	V18__prescription_principles.sql	20200680	true
+19	rebuild config from mvp14	SQL	V19__rebuild_config_from_mvp14.sql	1554409127	true
+20	prescription coherence	SQL	V20__prescription_coherence.sql	1768651817	true
+21	catalog difficulty sync neon	SQL	V21__catalog_difficulty_sync_neon.sql	1711657821	true
+22	equipment types for missing implements	SQL	V22__equipment_types_for_missing_implements.sql	362149561	true
+23	exercise equipment requirements	SQL	V23__exercise_equipment_requirements.sql	-1944369015	true
+24	catalog review fixes	SQL	V24__catalog_review_fixes.sql	294325208	true
+25	movement flags	SQL	V25__movement_flags.sql	2056790089	true
+26	movement pattern	SQL	V26__movement_pattern.sql	1227099085	true
+27	exercise difficulty review	SQL	V27__exercise_difficulty_review.sql	-194571502	true
+28	approve lower hip difficulty	SQL	V28__approve_lower_hip_difficulty.sql	1697904350	true
+29	exercise equipment requirements fixes	SQL	V29__exercise_equipment_requirements_fixes.sql	1120156040	true
+30	registration coverage	SQL	V30__registration_coverage.sql	-1909631081	true
+31	workout derivation	SQL	V31__workout_derivation.sql	771469784	true
+32	adaptation evidence	SQL	V32__adaptation_evidence.sql	144068871	true
+33	aplicada exige sesiones	SQL	V33__aplicada_exige_sesiones.sql	-203171488	true
+34	progresion de sesiones	SQL	V34__progresion_de_sesiones.sql	1002673606	true
+35	user roles	SQL	V35__user_roles.sql	-960399539	true
+36	catalog review gif corrections	SQL	V36__catalog_review_gif_corrections.sql	-51841380	true
+37	catalog safety corrections	SQL	V37__catalog_safety_corrections.sql	947077141	true
+38	catalog classification equipment	SQL	V38__catalog_classification_equipment.sql	2029678383	true
+39	catalog functional equipment	SQL	V39__catalog_functional_equipment.sql	-1189624467	true
+40	catalog c4 c6	SQL	V40__catalog_c4_c6.sql	1416139223	true
+41	catalog c4 c6 fase2	SQL	V41__catalog_c4_c6_fase2.sql	-1448470956	true
+42	adaptation lack of time context	SQL	V42__adaptation_lack_of_time_context.sql	1124753346	true
+43	pain memory and safe regeneration	SQL	V43__pain_memory_and_safe_regeneration.sql	1353889575	true
+44	planning policy version	SQL	V44__planning_policy_version.sql	-1030707221	true
+44.1	adaptation reason codes	SQL	V44_1__adaptation_reason_codes.sql	1932191075	true
+44.2	password reset tokens	SQL	V44_2__password_reset_tokens.sql	285867526	true
+44.3	planning policy rediseno	SQL	V44_3__planning_policy_rediseno.sql	715117576	true
+46	catalogo traducciones objetivas	SQL	V46__catalogo_traducciones_objetivas.sql	788686407	true
+47	catalogo integral banderas seguridad	SQL	V47__catalogo_integral_banderas_seguridad.sql	1413171677	true
+48	catalogo integral dificultad conservadora	SQL	V48__catalogo_integral_dificultad_conservadora.sql	2099270468	true
+49	catalogo integral textos	SQL	V49__catalogo_integral_textos.sql	-990868514	true
+50	catalogo integral clasificacion equipamiento	SQL	V50__catalogo_integral_clasificacion_equipamiento.sql	1632526631	true
+51	catalogo impacto y estiramiento explicitos	SQL	V51__catalogo_impacto_y_estiramiento_explicitos.sql	-754051759	true
+52	catalogo cierre correcciones verificadas	SQL	V52__catalogo_cierre_correcciones_verificadas.sql	1507850440	true
+52.1	catalogo cierre pendientes tecnicos	SQL	V52_1__catalogo_cierre_pendientes_tecnicos.sql	-928331236	true
+53	catalogo apoyo suspendido	SQL	V53__catalogo_apoyo_suspendido.sql	-1334546411	true
+54	vencimiento con bloqueo de sistema	SQL	V54__vencimiento_con_bloqueo_de_sistema.sql	-31937158	true
+55	perfil permiso apoyo suspendido	SQL	V55__perfil_permiso_apoyo_suspendido.sql	616177105	true
+56	catalogo 853 texto segun gif	SQL	V56__catalogo_853_texto_segun_gif.sql	1764760187	true
