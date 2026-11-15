@@ -7,6 +7,8 @@ import main.web.services.fitsense.iam.infrastructure.authorization.sfs.model.Use
 import main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import main.web.services.fitsense.planning.application.internal.commandservices.PublishedPlanSafetyRepairService.Estado;
 import main.web.services.fitsense.planning.domain.model.commands.ExpireOverdueWorkoutsCommand;
+import main.web.services.fitsense.planning.domain.model.commands.SkipPlannedWorkoutCommand;
+import main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
 import main.web.services.fitsense.planning.domain.services.ContencionConservadora;
@@ -403,5 +405,34 @@ class Plan78ContencionReducidaIT {
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM planned_workouts WHERE plan_id = ?"
                 + " AND planned_workout_id <> ? AND system_block_cause IS NOT NULL", Integer.class, c.planId(),
                 c.sesiones().get(1)), "las sesiones no bloqueadas no llevan causa");
+    }
+
+    /**
+     * V57 (con V54): omitir A MANO una sesion bloqueada por seguridad deja la misma constancia que el vencimiento.
+     * El motivo declarado por el participante se conserva tal cual (OTHER), y la causa sigue guardada aunque la
+     * restriccion desaparezca despues. Omitir una sesion no bloqueada no deja causa.
+     */
+    @Test
+    @DisplayName("V57: omitir a mano una sesion bloqueada guarda la causa vigente; omitir una libre no")
+    void omisionManualDeSesionBloqueada() throws IOException {
+        var c = copiaDelPlan78();
+        assertEquals(Map.of(1, Map.of(1303L, CAUSA_1303)), bloqueos(c), "premisa: solo el jueves esta bloqueado");
+
+        planComandos.handle(new SkipPlannedWorkoutCommand(c.userId(), c.sesiones().get(1), SkipReason.OTHER));
+        planComandos.handle(new SkipPlannedWorkoutCommand(c.userId(), c.sesiones().get(2), SkipReason.OTHER));
+
+        var bloqueada = jdbc.queryForMap("SELECT status, skip_reason, system_block_cause FROM planned_workouts"
+                + " WHERE planned_workout_id = ?", c.sesiones().get(1));
+        assertEquals("SKIPPED", bloqueada.get("status"));
+        assertEquals("OTHER", bloqueada.get("skip_reason"), "el motivo declarado no se toca");
+        assertEquals("1303=" + CAUSA_1303, bloqueada.get("system_block_cause"));
+        assertNull(jdbc.queryForObject("SELECT system_block_cause FROM planned_workouts WHERE planned_workout_id = ?",
+                String.class, c.sesiones().get(2)), "una sesion libre omitida es una omision voluntaria");
+
+        // La restriccion desaparece despues: la constancia historica no cambia.
+        jdbc.update("UPDATE user_profiles SET allow_hanging_exercises = true, allow_overhead_exercises = true"
+                + " WHERE user_id = ?", c.userId());
+        assertEquals("1303=" + CAUSA_1303, jdbc.queryForObject("SELECT system_block_cause FROM planned_workouts"
+                + " WHERE planned_workout_id = ?", String.class, c.sesiones().get(1)));
     }
 }

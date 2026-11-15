@@ -356,6 +356,12 @@ class RegeneracionPorColocacionRev2IT {
         assertEquals(Map.of(), terminada.safetyConflicts());
         assertEquals(Map.of("status", "SKIPPED", "skip_reason", "OTHER"), jdbc.queryForMap("SELECT status, skip_reason"
                 + " FROM workout_session_exercises WHERE session_id = ? AND planned_exercise_id = ?", s, omitidoEnCurso));
+        // V57 (propuesta): la fila deja constancia de que la omision la impuso el sistema, y las demas no.
+        assertEquals("dolor_registrado", jdbc.queryForObject("SELECT system_block_cause FROM workout_session_exercises"
+                + " WHERE session_id = ? AND planned_exercise_id = ?", String.class, s, omitidoEnCurso));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM workout_session_exercises WHERE session_id = ? AND"
+                + " planned_exercise_id <> ? AND system_block_cause IS NOT NULL", Integer.class, s, omitidoEnCurso),
+                "las prescripciones sin marca no llevan causa del sistema");
         // Trazabilidad con OTHER: mientras la exclusion esta ACTIVA el ejercicio solo admite el registro como omitido,
         // asi que toda omision suya posterior a la exclusion la impuso el sistema. Se reconstruye sin ambiguedad.
         assertEquals(List.of(omitidoEnCurso), jdbc.queryForList("SELECT wse.planned_exercise_id FROM"

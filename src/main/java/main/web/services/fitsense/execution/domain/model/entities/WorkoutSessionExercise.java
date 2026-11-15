@@ -63,6 +63,13 @@ public class WorkoutSessionExercise {
     @Column(name = "skip_reason", length = 40)
     private SkipReason skipReason;
 
+    /**
+     * V57 (propuesta): la causa de seguridad vigente cuando se registro el ejercicio (solo podia omitirse). Constancia
+     * para el analisis: no entra en ningun calculo.
+     */
+    @Column(name = "system_block_cause", length = 200)
+    private String systemBlockCause;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -80,6 +87,11 @@ public class WorkoutSessionExercise {
         this.plannedExerciseId = plannedExerciseId;
         this.completionPercentage = BigDecimal.ZERO;
         this.status = ExerciseOutcome.SKIPPED;
+    }
+
+    /** V57: deja constancia de la causa de seguridad que obligaba a omitir este ejercicio (null si no la habia). */
+    public void anotarBloqueoDelSistema(String causa) {
+        this.systemBlockCause = causa == null ? null : causa.substring(0, Math.min(200, causa.length()));
     }
 
     /**
