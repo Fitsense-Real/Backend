@@ -202,6 +202,7 @@ class RegeneracionPorColocacionRev2IT {
     }
 
     @Autowired main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService publicados;
+    @Autowired org.springframework.transaction.PlatformTransactionManager transacciones;
 
     /**
      * P-DOLOR-PUB (cierre tecnico conservador). El lunes se omite por dolor (P-02 excluye sus ejercicios). Los que se
@@ -254,6 +255,15 @@ class RegeneracionPorColocacionRev2IT {
         var vista = planning.fetchPlannedWorkout(abierta).orElseThrow();
         assertEquals("dolor_registrado", vista.safetyConflicts().get(marcado), vista.safetyConflicts().toString());
         assertFalse(vista.blockedForSafety(), "solo por dolor la sesion no se bloquea entera");
+        // La API del plan: la sesion no aparece bloqueada, lleva el aviso de dolor y el ejercicio su causa.
+        final long sesionAbierta = abierta, planId = plan;
+        var recurso = new org.springframework.transaction.support.TransactionTemplate(transacciones).execute(tx ->
+                planes.byId(principal, planId).getBody());
+        var sesionApi = recurso.workouts().stream().filter(w -> w.plannedWorkoutId() == sesionAbierta).findFirst()
+                .orElseThrow();
+        assertFalse(sesionApi.safetyBlocked(), "la app no debe mostrarla bloqueada");
+        assertEquals(main.web.services.fitsense.planning.interfaces.rest.transform
+                .WeeklyTrainingPlanResourceFromEntityAssembler.AVISO_DOLOR, sesionApi.safetyBlockMessage());
         long s = sesiones.handle(new StartWorkoutSessionCommand(u, abierta)).orElseThrow().getId();
         final long pe = marcado;
         var error = assertThrows(main.web.services.fitsense.execution.domain.exceptions.WorkoutNotAvailableException.class,
