@@ -58,7 +58,11 @@ public final class SafetyConflictPolicy {
     /** Todas las causas admitidas. Un motivo fuera de esta lista no autoriza nada. */
     public static final Set<String> CAUSAS = Set.of(RETENIDO_INC_4C_03, CONTENIDO_INC_CAT_1374, CONTENIDO_INC_CAT_C39,
             ALTO_IMPACTO,
-            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, APOYO_SUSPENDIDO, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO);
+            SUELO, CARGA_AXIAL, RODILLAS, SUSPENSION, APOYO_SUSPENDIDO, BRAZOS_ARRIBA, INVERSION, DOLOR_REGISTRADO,
+            // INC-CAT-CONS-v1 (cierre tecnico conservador): solo para planificaciones nuevas, nunca en la lectura de un
+            // plan publicado (ver ContencionConservadora y SafetyConflictChecker.motivosParaPlanificar).
+            ContencionConservadora.CAUSA_IDENTIDAD, ContencionConservadora.CAUSA_APOYO_SUSPENDIDO,
+            ContencionConservadora.CAUSA_DIFICULTAD);
 
     private SafetyConflictPolicy() {}
 

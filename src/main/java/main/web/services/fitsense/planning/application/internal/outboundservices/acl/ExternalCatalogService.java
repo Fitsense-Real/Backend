@@ -96,6 +96,24 @@ public class ExternalCatalogService {
     }
 
     /**
+     * INC-CAT-CONS-v1 ({@link main.web.services.fitsense.planning.domain.services.ContencionConservadora}): encendida en
+     * la version tecnica conservadora; {@code false} devuelve el conjunto elegible anterior. Solo afecta a las
+     * planificaciones nuevas.
+     */
+    private boolean contencionConservadora = true;
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.catalogo.contencion-conservadora:true}")
+    void setContencionConservadora(boolean activa) {
+        this.contencionConservadora = activa;
+    }
+
+    /** La causa INC-CAT-CONS-v1 de este ejercicio para este perfil, si la contencion esta encendida. */
+    public java.util.Optional<String> contencionConservadora(Long exerciseId, PlanningProfile profile) {
+        if (!contencionConservadora) return java.util.Optional.empty();
+        return main.web.services.fitsense.planning.domain.services.ContencionConservadora.causa(exerciseId, profile);
+    }
+
+    /**
      * Las restricciones de seguridad se aplican EN LA CONSULTA, no en el prompt.
      * La IA no llega a ver los ejercicios que no le corresponden al participante,
      * asi que no puede proponerlos aunque ignore las instrucciones.
@@ -190,6 +208,7 @@ public class ExternalCatalogService {
                 .filter(view -> !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
                 .filter(view -> !(contener1374 && java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374)))
                 .filter(view -> !ContencionTextoBandera.contiene(view.exerciseId(), safety))
+                .filter(view -> contencionConservadora(view.exerciseId(), profile).isEmpty())
                 .map(view -> new CandidateExercise(
                         view.exerciseId(),
                         view.nameEs(),
