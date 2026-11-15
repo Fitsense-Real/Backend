@@ -69,6 +69,21 @@ public class SafeRegenerationService {
         this.tx = tx;
     }
 
+    /**
+     * PROPUESTA P-03-COLOCACION (cierre tecnico conservador, 15/11/2026), APAGADA por defecto: ademas del trabajo total,
+     * ninguna colocacion de la semana regenerada (mismo dia de la semana y mismo ejercicio que una de la semana medida,
+     * emparejadas por orden de aparicion) puede tener mas series, repeticiones, segundos o trabajo que su colocacion
+     * medida. Sin ella, la politica vigente de P-03 nivel 2 compara SOLO el total: una semana regenerada con dosis base
+     * puede devolver a la base una colocacion reducida (fatiga, mantenimiento) si el total no sube. Activarla es un cambio
+     * de politica de P-03 y necesita la aprobacion del propietario: fitsense.regeneracion.p03-por-colocacion=true.
+     */
+    @org.springframework.beans.factory.annotation.Value("${fitsense.regeneracion.p03-por-colocacion:false}")
+    private boolean porColocacion = false;
+
+    void setPorColocacion(boolean porColocacion) {
+        this.porColocacion = porColocacion;
+    }
+
     /** Idempotencia: si esta medicion ya se resolvio por P-03, su desenlace. */
     public Optional<SafeRegenerationAttempt> yaResuelta(Long weeklyMetricId) {
         return regeneraciones.findByWeeklyMetricId(weeklyMetricId);
@@ -166,10 +181,40 @@ public class SafeRegenerationService {
                 r += (long) series * (e.plannedReps() == null ? 0 : e.plannedReps());
                 sg += (long) series * (e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds());
             }
-        if (r <= medidaPlan[0] && sg <= medidaPlan[1]) return null;
+        if (r <= medidaPlan[0] && sg <= medidaPlan[1]) return porColocacion ? subidaPorColocacion(planMedido, regenerada) : null;
         return ("P-03 nivel 2: la semana regenerada con dosis base sube el trabajo de la semana medida (repeticiones %d"
                 + " -> %d, segundos %d -> %d); ante dolor no se anade trabajo y no hay otra alternativa determinista.")
                 .formatted(medidaPlan[0], r, medidaPlan[1], sg);
+    }
+
+    /** La primera colocacion que sube respecto de su colocacion medida (dia de la semana + ejercicio), o null. */
+    String subidaPorColocacion(Long planMedido, PlanDraft regenerada) {
+        var medidas = tx.execute(status -> planes.findById(planMedido).map(p -> {
+            var porClave = new java.util.HashMap<String, java.util.ArrayDeque<long[]>>();
+            p.workoutsView().stream().sorted(java.util.Comparator.comparing(w -> w.getScheduledDate()))
+                    .forEach(w -> w.exercisesView().forEach(e -> porClave.computeIfAbsent(
+                            w.getScheduledDate().getDayOfWeek() + "|" + e.getExerciseId(),
+                            k -> new java.util.ArrayDeque<>()).add(new long[]{
+                            e.getPlannedSets() == null ? 1 : e.getPlannedSets(),
+                            e.getPlannedReps() == null ? 0 : e.getPlannedReps(),
+                            e.getPlannedDurationSeconds() == null ? 0 : e.getPlannedDurationSeconds()})));
+            return porClave;
+        }).orElse(null));
+        if (medidas == null) return SIN_SEMANA_MEDIDA;
+        for (var w : regenerada.workouts())
+            for (var e : w.exercises()) {
+                var cola = medidas.get(w.scheduledDate().getDayOfWeek() + "|" + e.exerciseId());
+                if (cola == null || cola.isEmpty()) continue;
+                long[] m = cola.poll();
+                long s = e.plannedSets() == null ? 1 : e.plannedSets();
+                long rr = e.plannedReps() == null ? 0 : e.plannedReps();
+                long sg = e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds();
+                if (s > m[0] || rr > m[1] || sg > m[2] || s * rr > m[0] * m[1] || s * sg > m[0] * m[2])
+                    return ("P-03 nivel 2 (por colocacion): el ejercicio %d del %s sube de %dx%d/%ds a %dx%d/%ds en la"
+                            + " semana regenerada; ante dolor ninguna colocacion recupera dosis sin autorizacion.")
+                            .formatted(e.exerciseId(), w.scheduledDate().getDayOfWeek(), m[0], m[1], m[2], s, rr, sg);
+            }
+        return null;
     }
 
     private static boolean porDolor(PlanAdaptationAttempt a) {
