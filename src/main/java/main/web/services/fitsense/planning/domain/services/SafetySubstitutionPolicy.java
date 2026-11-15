@@ -283,9 +283,62 @@ public final class SafetySubstitutionPolicy {
         return !c.targetMuscle().toLowerCase(Locale.ROOT).contains(prohibido);
     }
 
-    /** La dosis del sustituto, recalculada para sus caracteristicas. */
+    /**
+     * La dosis del sustituto, recalculada para sus caracteristicas.
+     * <p>
+     * HALL-PROG-01: en los objetivos que se prescriben por capacidades (4D v4, todos menos GAIN_MUSCLE) el sustituto
+     * es un ejercicio NUEVO en esa colocacion, sin la autorizacion de progresion o reduccion que pudiera tener el
+     * quitado. Si se copiaran series, repeticiones y descanso del quitado, una dosis progresada (por ejemplo 3x19 tras
+     * subir desde 3x18) pasaria al sustituto y V24 la rechazaria con razon: no es la dosis de ninguna capacidad. Por
+     * eso la dosis heredada solo se conserva si ya es exactamente la de una capacidad admisible del sustituto; si no,
+     * se usa la dosis de capacidad admisible (la misma fuente que V24) que NO supera el trabajo del quitado (series x
+     * repeticiones o series x segundos), prefiriendo la del mismo descanso (la misma capacidad) y, entre ellas, la de
+     * mas trabajo. Ante dolor nunca se anade trabajo. Si ninguna cabe, se deja la heredada y la semana la rechazan
+     * los validadores: no se publica un plan invalido ni se inventa una dosis.
+     */
     static PlanDraft.DraftExercise dosis(CandidateExercise c, PlanDraft.DraftExercise original,
                                          PlanGenerationContext context) {
+        var heredada = dosisHeredada(c, original, context);
+        var perfil = context == null ? null : context.profile();
+        if (perfil == null || !CapabilityPrescriptionPolicy.gobiernaGeneracion(perfil.goalType())) return heredada;
+        var limites = context.prescription() == null ? null : context.prescription().repLimits();
+        String objetivo = perfil.goalType();
+        String nivel = perfil.fitnessLevel();
+        if (CapabilityPrescriptionPolicy.acreditada(heredada, c, objetivo, nivel, limites).isPresent()) return heredada;
+        long tope = trabajo(original);
+        PlanDraft.DraftExercise mejor = null;
+        boolean mejorMismoDescanso = false;
+        long mejorTrabajo = -1;
+        for (var capacidad : CapabilityPrescriptionPolicy.admisibles(c, objetivo, nivel)) {
+            var d = CapabilityPrescriptionPolicy.dosis(capacidad, c, objetivo, nivel, limites);
+            if (d.isEmpty() || d.get().tipo() != heredada.prescriptionType()) continue;
+            var base = d.get();
+            short series = original.plannedSets() == null ? base.series() : original.plannedSets();
+            var candidata = base.conSeries(series).orElse(base).prescribir(c.exerciseId(), null);
+            long t = trabajo(candidata);
+            if (t < 0 || t > tope) continue;
+            boolean mismoDescanso = Objects.equals(candidata.restSeconds(), original.restSeconds());
+            if (mejor == null || (mismoDescanso && !mejorMismoDescanso)
+                    || (mismoDescanso == mejorMismoDescanso && t > mejorTrabajo)) {
+                mejor = candidata;
+                mejorMismoDescanso = mismoDescanso;
+                mejorTrabajo = t;
+            }
+        }
+        return mejor != null ? mejor : heredada;
+    }
+
+    /** Trabajo de una colocacion: series x repeticiones (o x segundos). -1 si falta un dato. */
+    static long trabajo(PlanDraft.DraftExercise e) {
+        if (e == null || e.plannedSets() == null) return -1;
+        Integer valor = e.prescriptionType() == PrescriptionType.DURATION ? e.plannedDurationSeconds()
+                : (e.plannedReps() == null ? null : e.plannedReps().intValue());
+        return valor == null ? -1 : (long) e.plannedSets() * valor;
+    }
+
+    /** La dosis heredada del quitado: series y descanso del original, repeticiones en el rango de V16. */
+    private static PlanDraft.DraftExercise dosisHeredada(CandidateExercise c, PlanDraft.DraftExercise original,
+                                                         PlanGenerationContext context) {
         if (c.defaultPrescription() == PrescriptionType.DURATION)
             return new PlanDraft.DraftExercise(c.exerciseId(), PrescriptionType.DURATION, original.plannedSets(),
                     null, original.plannedDurationSeconds(), null, original.restSeconds(), null);
