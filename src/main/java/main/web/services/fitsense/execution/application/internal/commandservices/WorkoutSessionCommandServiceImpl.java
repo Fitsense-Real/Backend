@@ -85,6 +85,7 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
         session.recordExercise(target, command.actualSets(), command.actualRepsTotal(),
                 command.actualDurationSeconds(), command.actualLoadKg(), command.skipReason(),
                 externalConfigurationService.thresholds());
+        anotarBloqueo(session, workout, command.plannedExerciseId());
 
         return Optional.of(sessionRepository.save(session));
     }
@@ -157,6 +158,7 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
             session.recordExercise(target, reported.actualSets(), reported.actualRepsTotal(),
                     reported.actualDurationSeconds(), reported.actualLoadKg(),
                     reported.skipReason(), thresholds);
+            anotarBloqueo(session, workout, reported.plannedExerciseId());
         }
 
         session.finish(command.sessionRpe(), command.satisfaction(), command.activeMinutes(),
@@ -166,6 +168,14 @@ public class WorkoutSessionCommandServiceImpl implements WorkoutSessionCommandSe
     }
 
     // ------------------------------------------------------------------ helpers
+
+    /**
+     * V57 (propuesta): la causa de seguridad que obligaba a omitir el ejercicio queda en su fila. No cambia nada mas.
+     */
+    private static void anotarBloqueo(WorkoutSession session, PlannedWorkoutView workout, Long plannedExerciseId) {
+        var causa = workout.safetyConflicts().get(plannedExerciseId);
+        session.findExercise(plannedExerciseId).ifPresent(e -> e.anotarBloqueoDelSistema(causa));
+    }
 
     /**
      * Un ejercicio inseguro solo se registra como omitido: con causa y sin
