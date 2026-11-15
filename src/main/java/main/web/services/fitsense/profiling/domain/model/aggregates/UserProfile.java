@@ -91,6 +91,20 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
     @Embedded
     private MovementAllowances allowances;
 
+    /**
+     * V53-B (propuesta, apagada por defecto: fitsense.seguridad.permiso-apoyo-suspendido=false). Permiso PROPIO para el
+     * apoyo suspendido sobre un aparato sin soporte de pies (V55). {@code null} = sin responder: con la opcion B
+     * encendida hereda «no colgarse» al leerse (herencia calculada, sin copiarla a la columna). Crear y actualizar el
+     * perfil NO lo tocan: solo {@link #confirmarApoyoSuspendido}. Sin cambio en la API REST (la pregunta de la app es
+     * futura).
+     */
+    @Column(name = "allow_suspended_support")
+    private Boolean allowSuspendedSupport;
+
+    /** V53-B: cuando la persona confirmo el permiso. {@code null} = pendiente de confirmacion explicita. */
+    @Column(name = "suspended_support_confirmed_at")
+    private java.time.OffsetDateTime suspendedSupportConfirmedAt;
+
     protected UserProfile() {
         // JPA
     }
@@ -137,6 +151,21 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
                 command.allowHighImpact(), command.allowFloorExercises(),
                 command.allowKneelingExercises(), command.allowHangingExercises(),
                 command.allowOverheadExercises());
+    }
+
+    /**
+     * V53-B · la CONFIRMACION EXPLICITA del permiso «apoyo suspendido»: fija el valor y la fecha de confirmacion. Es el
+     * unico camino que escribe las columnas de V55; hoy solo lo usan las pruebas (la pregunta en la app es futura).
+     * No toca «no colgarse» ni ningun otro permiso.
+     */
+    public void confirmarApoyoSuspendido(boolean permite) {
+        this.allowSuspendedSupport = permite;
+        this.suspendedSupportConfirmedAt = java.time.OffsetDateTime.now();
+    }
+
+    /** V53-B: si el permiso «apoyo suspendido» sigue pendiente de confirmacion explicita. */
+    public boolean apoyoSuspendidoPendienteDeConfirmar() {
+        return suspendedSupportConfirmedAt == null;
     }
 
     // ---------------------------------------------------------------- consultas
