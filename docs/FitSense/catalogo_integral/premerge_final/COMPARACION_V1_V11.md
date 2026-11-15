@@ -10,8 +10,10 @@
 | Huella del catálogo (`huella_catalogo.tsv`) | `76ad282c…` | **Idéntica**: el archivo no cambia |
 | P-03 nivel 2 | Solo el trabajo total; la regla por colocación existía, apagada | Comparación por colocación (`ComparacionDosisPorColocacion`): **encendida en la candidata y sus pruebas**, apagada en producción |
 | Otros interruptores | Contención y P-DOLOR-PUB encendidas; V53 A, V53-B y #64 apagadas | **Iguales** |
-| Generación inicial (168, 72, 312) | 168/168, 72/72, 298/312 | Ver `REGRESION_INTEGRADA_FINAL.md`. La generación no pasa por P-03, así que se espera idéntica |
+| Generación inicial (168, 72, 312) | 168/168, 72/72, 298/312 | **Idéntica**: las rejillas de 168 (con y sin contención) y de 312 coinciden fila a fila con v1, y la referencia de 72 pasa |
 | HALL-GM-01 (40) | 35 publicadas + 5 NO_FACTIBLE, 0 aumentos | **Idéntico** (0 escenarios cambian) |
+| Regeneraciones de P-03 nivel 2 en la regresión completa | 10 publicadas (7 escenarios), 15 NO_FACTIBLE | 8 publicadas (6 escenarios), 17 NO_FACTIBLE: **cambia 1 escenario** (usuario 17, `p03Nivel2TrasProgresion`), de PUBLICADO a NO_FACTIBLE (`VALIDACION_P03_POR_COLOCACION.md` §3) |
+| Regresión completa | 1530 unitarias + 753 IT, 0 fallos | 1540 unitarias + 754 IT, 0 fallos (10 unitarias y 1 IT nuevas) |
 | Planes publicados, dolor y plan 78 | P-DOLOR-PUB; el plan 78 sustituye 1303 y 494 | **Iguales**; el criterio del plan 78 queda aprobado por el propietario |
 | Omisiones impuestas | Limitación documentada | Igual. Se añade la propuesta V57 en una PR aparte, no integrada |
 
@@ -26,4 +28,4 @@
 | `src/test/.../ComparacionDosisPorColocacionTest.java` | Nuevo; los 10 casos y uno más |
 | `src/test/.../P03ComparacionPorColocacionIT.java` | Comprueba la configuración, restaura el valor y añade `cambioDeDia` |
 
-**Por qué hay un identificador nuevo:** P-03 por colocación es un cambio de comportamiento de la regeneración ante dolor. Aunque en los escenarios medidos no cambia ningún resultado, la versión anterior ya no describe el comportamiento probado. v1 se conserva como referencia válida anterior.
+**Por qué hay un identificador nuevo:** P-03 por colocación es un cambio de comportamiento de la regeneración ante dolor. Cambia el resultado de un escenario de la regresión (y de ninguno de los 40 HALL-GM-01), y la versión anterior ya no describe el comportamiento probado. v1 se conserva como referencia válida anterior.

@@ -40,6 +40,12 @@ Se **autoriza** incorporar y **habilitar** la protección P-03 por colocación e
 
 ## 5. Estado
 
-**Aprobada para la candidata.** Las pruebas obligatorias y los 40 escenarios pasan, y no hay ninguna regresión (`VALIDACION_P03_POR_COLOCACION.md`).
+**Validada para la candidata** (`VALIDACION_P03_POR_COLOCACION.md`):
+
+- Las 10 pruebas obligatorias, la regresión completa y los 40 escenarios pasan.
+- **Un único cambio de resultado:** un escenario de P-03 nivel 2 tras una progresión (usuario 17) pasa de PUBLICADO a NO_FACTIBLE.
+  - Causa: el sustituto que ocupa el puesto del retirado tiene más series (2 → 3) y es de otra modalidad.
+  - Es el comportamiento conservador documentado para una colocación que no se puede comparar de forma fiable.
+  - No es un defecto de seguridad.
 
 **Activarla en producción requiere una autorización posterior** y la variable `FITSENSE_P03_POR_COLOCACION=true`.

@@ -17,7 +17,7 @@ Las **312 decisiones** que requieren revisión profesional siguen **abiertas**. 
 1. **P-03 por colocación.**
    - En la candidata y sus pruebas está encendida. En producción está apagada hasta una autorización.
    - Si la evaluación se hace con el sistema desplegado, hay que declarar el valor de `FITSENSE_P03_POR_COLOCACION` que se usó.
-   - En los 40 escenarios medidos no cambia ningún resultado.
+   - En los 40 escenarios HALL-GM-01 no cambia ningún resultado. En la regresión completa cambia uno: una regeneración tras una progresión pasa de publicarse a NO_FACTIBLE. Es conservador y explicado.
 2. **Adherencia y omisiones impuestas por el sistema.**
    - El indicador oficial no cambia y cuenta como no hechas las omisiones que impone FitSense.
    - La causa no se guarda en la fila de la omisión: la de dolor se puede reconstruir, pero las demás no.

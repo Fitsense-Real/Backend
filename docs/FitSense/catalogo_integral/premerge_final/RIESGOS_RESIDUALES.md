@@ -23,6 +23,7 @@ Parten de los 12 de v1 (`../cierre_conservador/RIESGOS_RESIDUALES.md`). Aquí so
 | R10 | Interruptores mal configurados al desplegar | Valores por defecto conservadores; V53 A y B a la vez impiden arrancar (`ModoApoyoSuspendido`) | Revisar la configuración en el despliegue |
 | R11 | Todo medido con perfiles sintéticos | Escenarios deterministas y validador real | Evaluación con participantes |
 | R12 | La contención reduce las alternativas al sustituir o reparar (NO_FACTIBLE o NO_VALIDA conservadores) | No se publica nada | Ampliar las alternativas seguras |
+| R14 (nuevo) | P-03 por colocación declara NO_FACTIBLE algunas regeneraciones seguras: cuando el puesto del retirado lo ocupa otro ejercicio con más series, aunque sea de otra modalidad (1 escenario medido: usuario 17) | No se publica nada; la exclusión y P-DOLOR-PUB siguen; en producción está apagada | Decidir al activarla: aceptar el coste, o emparejar las sustituciones solo por modalidad o patrón (relaja la protección) |
 | R13 (nuevo) | `generation` puede avanzar antes del merge | La simulación se hizo sobre `623c4fa` | Repetir la simulación y comparar árboles (`ORDEN_MERGE_CONTROLADO.md` §3) |
 
 No queda ningún **defecto técnico conocido** de seguridad sin corregir. Los riesgos vigentes son limitaciones de medición, de validación o de cobertura, documentadas.
