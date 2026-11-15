@@ -77,10 +77,27 @@ class CatalogoIntegralTextosIT {
         return out;
     }
 
+    /**
+     * Ids cuyo nombre o instrucciones vuelve a reescribir V52 (cierre del catalogo: segunda revision, verificacion
+     * independiente y adjudicacion; detalle en docs/FitSense/catalogo_integral/cierre/adjudicacion/decisiones_v52.tsv).
+     * Para ellos el texto final es el de V52, cuya exactitud fija la huella de CatalogoCalidadIT; aqui solo se comprueba
+     * que V49 ya no es el ultimo texto. Para el resto, V49 sigue siendo el texto final y se exige exacto.
+     */
+    static java.util.Set<Long> reescritosPorV52(String campo) throws Exception {
+        var sql = java.nio.file.Files.readString(java.nio.file.Path.of(
+                "src/main/resources/db/migration/V52__catalogo_cierre_correcciones_verificadas.sql"));
+        var ids = new java.util.TreeSet<Long>();
+        var m = java.util.regex.Pattern.compile("(?m)^-- (\\d+) [^\\n]*?(?:: | \\| )" + campo + ":").matcher(sql);
+        while (m.find()) ids.add(Long.parseLong(m.group(1)));
+        return ids;
+    }
+
     @Test
-    @DisplayName("las 408 filas se aplican y dejan exactamente el texto nuevo")
+    @DisplayName("las 408 filas se aplican y dejan exactamente el texto nuevo (salvo lo que V52 reescribe despues)")
     void seAplicanTodas() throws Exception {
         var filas = filas();
+        var nombresV52 = reescritosPorV52("name_es");
+        var instruccionesV52 = reescritosPorV52("instructions_es");
         assertEquals(408, filas.size());
         int nombres = 0, instrucciones = 0;
         for (var f : filas) {
@@ -88,9 +105,13 @@ class CatalogoIntegralTextosIT {
                     + " FROM exercises WHERE exercise_id = ?", f.id());
             if (f.nombreNuevo() != null) {
                 nombres++;
-                assertEquals(f.nombreNuevo(), actual.get("name_es"), "nombre de " + f.id());
+                if (nombresV52.contains(f.id())) assertNotEquals(f.nombreNuevo(), actual.get("name_es"), "V52 reescribe " + f.id());
+                else assertEquals(f.nombreNuevo(), actual.get("name_es"), "nombre de " + f.id());
             }
-            if (f.instrucciones() != null) {
+            if (f.instrucciones() != null && instruccionesV52.contains(f.id())) {
+                instrucciones++;
+                assertNotEquals(f.instrucciones(), actual.get("instructions_es"), "V52 reescribe " + f.id());
+            } else if (f.instrucciones() != null) {
                 instrucciones++;
                 // V50 cambia el ultimo paso del 1254 al pasar a estiramiento por tiempo (DURATION).
                 String esperado = f.id() == 1254L ? f.instrucciones().replace("Repite el número de repeticiones indicado.",

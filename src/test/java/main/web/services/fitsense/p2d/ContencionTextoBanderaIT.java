@@ -181,7 +181,9 @@ class ContencionTextoBanderaIT {
         @Test
         @DisplayName("B · sin brazos arriba: ni bandera ni texto; colgarse sigue permitido para lo que no pide brazos arriba")
         void b_sinBrazosArriba() {
-            long u = usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, SIN_CABEZA);
+            // INTERMEDIATE: V52 sube 1301, 1303, 1304 y 1306 a nivel 2 (apoyo suspendido sobre antebrazos o correas, no
+            // de principiante; segunda revision y verificacion independiente). La contencion se prueba donde el nivel los admite.
+            long u = usuario(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, TrainingLocation.GYM, GIMNASIO, SIN_CABEZA);
             var e = elegibles(u);
             assertTrue(conBandera(e, "requires_overhead").isEmpty());
             assertTrue(interseccion(e, ContencionTextoBandera.contenidos(SIN_CABEZA.seguridad())).isEmpty(), e.toString());
@@ -202,7 +204,8 @@ class ContencionTextoBanderaIT {
         @Test
         @DisplayName("sin restricciones: los contenidos siguen elegibles (no se excluye de mas)")
         void libre() {
-            long u = usuario(GoalType.GENERAL_FITNESS, FitnessLevel.BEGINNER, TrainingLocation.GYM, GIMNASIO, LIBRE);
+            // INTERMEDIATE: 1301, 1303 y 1306 son de nivel 2 desde V52 (ver b_sinBrazosArriba).
+            long u = usuario(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, TrainingLocation.GYM, GIMNASIO, LIBRE);
             var e = elegibles(u);
             assertTrue(e.containsAll(List.of(316L, 1301L, 1303L, 1306L, 1152L, 1309L, 1322L, 448L, 1093L)), e.toString());
         }

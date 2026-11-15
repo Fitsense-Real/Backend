@@ -48,7 +48,7 @@ class CatalogoIntegralSeguridadIT {
     @ParameterizedTest(name = "{0} {1} = true")
     @CsvSource({
             "66, requires_overhead", "206, requires_overhead", "474, requires_overhead", "497, requires_overhead",
-            "503, requires_overhead", "594, requires_overhead", "1300, requires_overhead",
+            "594, requires_overhead", "1300, requires_overhead",
             "149, axial_load", "220, axial_load", "227, axial_load", "276, axial_load", "819, axial_load",
             "889, axial_load", "999, axial_load", "1000, axial_load", "1213, axial_load", "1214, axial_load",
             "275, requires_floor", "685, requires_floor", "805, requires_floor", "895, requires_floor",
@@ -57,6 +57,20 @@ class CatalogoIntegralSeguridadIT {
             "1005, requires_kneeling"})
     void v47BanderaQueElGifExige(long id, String columna) {
         assertTrue(bandera(id, columna), id + " " + columna);
+    }
+
+    /**
+     * 503 (dead bug): V47 le anadio requires_overhead y V52 se lo quita. Conflicto resuelto con cuatro miradas al GIF
+     * completo: segunda revision (lote L14), verificacion independiente (W03, ALTA) y el coordinador. Tumbado boca arriba,
+     * los brazos apuntan al techo, unos 90 grados, en los 12 fotogramas y nunca pasan de la cabeza
+     * (docs/FitSense/catalogo_integral/VALIDACION_SEGURIDAD.md). V47 se aplico, como prueba soloEndurecen.
+     */
+    @Test
+    @DisplayName("503: la bandera OH de V47 la retira V52 con verificacion independiente")
+    void v47Superado503() throws Exception {
+        assertFalse(bandera(503, "requires_overhead"));
+        assertTrue(Files.readString(Path.of(MIG + "V52__catalogo_cierre_correcciones_verificadas.sql"))
+                .contains("-- 503 dead bug: requires_overhead:"));
     }
 
     @ParameterizedTest(name = "{0} -> d{1}")
@@ -99,7 +113,8 @@ class CatalogoIntegralSeguridadIT {
         // Recuentos de banderas activas tras V46 (linea base de la auditoria) + las que suma V47.
         assertEquals(Integer.valueOf(0), jdbc.queryForObject("""
                 SELECT count(*) FROM exercises
-                 WHERE exercise_id IN (66, 206, 474, 497, 503, 594, 1300) AND NOT requires_overhead""", Integer.class));
+                 WHERE exercise_id IN (66, 206, 474, 497, 594, 1300) AND NOT requires_overhead""", Integer.class));
+        // 503: V52 retira la OH de V47 con verificacion independiente (v47Superado503).
         assertEquals(Integer.valueOf(1219), jdbc.queryForObject(
                 "SELECT count(*) FROM exercises WHERE is_active", Integer.class), "V47/V48 no activan ni desactivan");
     }

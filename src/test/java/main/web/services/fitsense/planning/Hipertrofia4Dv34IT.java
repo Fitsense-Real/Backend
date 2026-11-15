@@ -263,11 +263,25 @@ class Hipertrofia4Dv34IT {
         assertTrue(violaciones.isEmpty(), violaciones.size() + " violaciones: "
                 + violaciones.subList(0, Math.min(20, violaciones.size())));
         // 3: ningun fallo es el de 4D v3.1.
-        var deV31 = fallos.entrySet().stream().filter(f -> f.getValue().contains("V20")
+        // Orden de desbloqueo (14/11/2026): el 775 exige banco (R2 y V3: los codos van sobre dos apoyos elevados) y ya no
+        // se clasifica como solo peso corporal para conservar factibilidad. Sin el, estos 14 perfiles de casa SOLO con
+        // peso corporal no tienen semana valida: su techo de contenido queda por debajo del piso de V20 y no hay otra
+        // solucion con el catalogo verdadero. Se exige que fallen EXACTAMENTE estos y SOLO por V20; cualquier otro fallo
+        // (otro perfil, otro equipamiento u otro motivo) sigue rompiendo la prueba. Cambio de comportamiento pendiente de
+        // aprobacion: docs/FitSense/catalogo_integral/IMPACTO_GENERACION_ADAPTACION.md.
+        var sinPlanPor775 = new java.util.TreeSet<String>();
+        for (String d : List.of("3d", "4d"))
+            for (int m : List.of(58, 59, 60, 74, 75)) sinPlanPor775.add("GM-I-CASA_PESO_CORPORAL-" + d + "-" + m);
+        for (String n : List.of("B", "A"))
+            for (int m : List.of(60, 75)) sinPlanPor775.add("GM-" + n + "-CASA_PESO_CORPORAL-3d-" + m);
+        assertEquals(sinPlanPor775, new java.util.TreeSet<>(fallos.keySet()),
+                "solo los 14 perfiles de peso corporal que dependian del 775 se quedan sin plan");
+        assertTrue(fallos.values().stream().allMatch(m -> m.contains("V20")), "esos 14 fallan solo por V20: " + fallos);
+        var deV31 = fallos.entrySet().stream().filter(f -> !sinPlanPor775.contains(f.getKey()) && f.getValue().contains("V20")
                 && Integer.parseInt(f.getKey().substring(f.getKey().lastIndexOf('-') + 1)) > 60).toList();
         assertTrue(deV31.isEmpty(), "fallos de V20 por encima de 60 min: " + deV31);
-        // 2: los 312 perfiles generan (gimnasio, casa con material y peso corporal; 30-75 minutos; 3 y 4 dias).
-        assertEquals(Map.of(), fallos, "ningun perfil sin plan valido (C-8)");
+        // 2: los demas 298 perfiles generan (gimnasio y casa con material en todos los minutos; peso corporal salvo esos 14).
+        assertEquals(312 - sinPlanPor775.size(), 312 - fallos.size());
         // 4: los motivos quedan en planes.csv.
     }
 }

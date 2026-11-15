@@ -244,7 +244,7 @@ class CatalogoElegibleIT {
                  where e.is_active
                    and e.difficulty_level <= :maxDificultad
                    and e.exercise_id not in (:excluidos)
-                   and (not :sinImpacto or not e.high_impact)
+                   and (not :sinImpacto or (not e.high_impact and coalesce(e.impact_level, '') <> 'ALTO'))
                    and (not :sinSuelo or not e.requires_floor)
                    and (not :sinAxial or not e.axial_load)
                    and (not :sinRodillas or not e.requires_kneeling)
@@ -263,7 +263,8 @@ class CatalogoElegibleIT {
                                      and t.code in (:disponibles)
                                      and not (:enCasa and t.requires_gym)))
                    and (   (bp.code not in ('neck', 'lower arms', 'cardio')
-                            and lower(e.name_es) not like '%estiramiento%')
+                            -- V51: estiramiento explicito (is_stretch); la regla por nombre solo si faltara el dato
+                            and not coalesce(e.is_stretch, lower(e.name_es) like '%estiramiento%'))
                         or (:cardio and e.movement_pattern = 'LOCOMOTION_CARDIO')
                         or (:movilidad and e.movement_pattern = 'MOBILITY'))
                 """;

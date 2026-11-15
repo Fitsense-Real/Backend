@@ -18,7 +18,13 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+// ESCENARIO CONGELADO sobre el catalogo V50: los perfiles y planes de esta prueba se eligieron con ese catalogo (el
+// plan lleva el 135, el viernes acortado...). Lo que se prueba es el mecanismo de orquestacion, no el catalogo; con
+// V52 el motor elige otros ejercicios y la premisa del escenario deja de darse. El esquema es el vigente (columnas de
+// V51-V53 sin datos: regla por nombre del catalogo fijado).
+@org.springframework.context.annotation.Import(main.web.services.fitsense.EsquemaVigenteSobreCatalogoAnterior.class)
 @SpringBootTest(properties = {
+        "spring.flyway.target=50",
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         // Valores historicos fijados explicitamente al activar la configuracion evaluada (11/11/2026): esta
         // prueba se escribio sobre los valores por defecto anteriores y comprueba ese comportamiento.
