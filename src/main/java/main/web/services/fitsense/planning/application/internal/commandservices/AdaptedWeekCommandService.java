@@ -63,10 +63,6 @@ import java.util.Optional;
 @Service
 public class AdaptedWeekCommandService {
 
-    /** H2 (contrato prompt–V15): la misma bandera que PlanPromptBuilder; apagada, la instantanea de PR-1.7. */
-    @org.springframework.beans.factory.annotation.Value("${fitsense.ai.generacion.contrato-v15:false}")
-    private boolean contratoV15 = false;
-
     private static final Logger log = LoggerFactory.getLogger(AdaptedWeekCommandService.class);
 
     /** Lo mismo que la generacion inicial: ver 19.4. */
@@ -407,7 +403,7 @@ public class AdaptedWeekCommandService {
                     respaldo.llamadas());
         }
 
-        var full = PlanInputSnapshot.of(context, contratoV15);
+        var full = PlanInputSnapshot.of(context);
         var acumulados = new LinkedHashSet<String>();
         String ultimaPropuesta = null;
         List<String> ultimosMotivos = List.of();
@@ -540,7 +536,7 @@ public class AdaptedWeekCommandService {
         // generacion: es lo que describe sobre que se decidio conservar.
         String snapshot = intento.snapshotJson() != null
                 ? intento.snapshotJson()
-                : jsonSupport.write(PlanInputSnapshot.of(prepared.context(), contratoV15));
+                : jsonSupport.write(PlanInputSnapshot.of(prepared.context()));
 
         var publicacion = new AdaptedPublication(resultado, decision,
                 medida.measuredPlanId(), medida.weeklyMetricId(), snapshot, modelo,

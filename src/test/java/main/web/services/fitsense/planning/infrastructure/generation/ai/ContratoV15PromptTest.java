@@ -94,6 +94,24 @@ class ContratoV15PromptTest {
     }
 
     @Test
+    @DisplayName("la adaptacion no depende del interruptor: AdaptedWeekCommandService no lo lee (V2.1 intacta)")
+    void adaptacionNoLeeElInterruptor() {
+        // H2 solo corrige la generacion (PR-1.7 -> PR-1.9). La adaptacion proyecta la instantanea historica
+        // (min_exercises_per_session incluido) en SessionFixInputSnapshot; si leyera la bandera, encenderla cambiaria
+        // en silencio lo que recibe la IA en V2.1, que no se ha evaluado.
+        for (var campo : main.web.services.fitsense.planning.application.internal.commandservices
+                .AdaptedWeekCommandService.class.getDeclaredFields()) {
+            var valor = campo.getAnnotation(org.springframework.beans.factory.annotation.Value.class);
+            assertFalse(valor != null && valor.value().contains("contrato-v15"), campo.getName());
+        }
+        for (var objetivo : new String[]{"LOSE_WEIGHT", "GENERAL_FITNESS", "INCREASE_STRENGTH", "GAIN_MUSCLE"}) {
+            var ctx = PromptCapacidadesTest.contexto(objetivo);
+            assertEquals(JSON.write(SessionFixInputSnapshot.of(PlanInputSnapshot.of(ctx), "v2.1")),
+                    JSON.write(SessionFixInputSnapshot.of(PlanInputSnapshot.of(ctx, false), "v2.1")), objetivo);
+        }
+    }
+
+    @Test
     @DisplayName("si el texto historico cambia, la variante falla en vez de quedarse a medias")
     void falloRapido() {
         assertThrows(IllegalStateException.class, () -> PlanPromptBuilder.aplicarContratoV15("sin la regla", false));

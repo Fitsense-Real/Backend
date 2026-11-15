@@ -126,6 +126,139 @@ class ContratoPromptV15IT {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+    static final List<String> EQUIPO_CASA = List.of("body weight", "dumbbell", "band", "bench", "pull-up bar");
+
+    /**
+     * H2 · IA SIMULADA (sin Replicate) en los cuatro objetivos. Para 16 perfiles (4 objetivos x principiante /
+     * intermedio x gimnasio / casa), sobre el contexto real y la semana del motor de reglas, una IA simulada OBEDIENTE
+     * compone cada sesion de 3+ grupos con 4+ ejercicios de trabajo concentrando en un grupo exactamente lo que le
+     * permite cada contrato:
+     * <ul>
+     *   <li>PR-1.7 (interruptor apagado): {@code max_per_body_part} de la sesion o, si llega null (la regla no se
+     *   comunica), los n ejercicios;</li>
+     *   <li>PR-1.9 (encendido): {@code max_per_body_part_por_n_trabajo[n]};</li>
+     *   <li>PR-1.9 + 1: uno mas de lo permitido (control negativo).</li>
+     * </ul>
+     * El VALIDADOR REAL decide. Con PR-1.9 obedecer nunca provoca un rechazo V15 por la mitad y pasarse siempre lo
+     * provoca; con PR-1.7 obedecer puede provocarlo: es H2. Solo se miran los rechazos V15 «dedica» de esa sesion (la
+     * dosis 3x10 de la composicion puede disparar otros validadores, que no son objeto de esta prueba).
+     */
+    @Test
+    @DisplayName("H2: IA simulada obediente, 4 objetivos x 2 niveles x 2 lugares: PR-1.9 nunca contradice a V15; PR-1.7 si")
+    void iaSimuladaCuatroObjetivos() throws Exception {
+        var sb = new StringBuilder("objetivo;nivel;lugar;fecha;enfoque;n_trabajo;tope_pr17;tope_pr19;"
+                + "pr17_rechaza;pr19_rechaza;pr19_mas1_rechaza\n");
+        int evaluadas = 0, contradiccionesPr17 = 0, contradiccionesPr19 = 0, negativosNoDetectados = 0, negativos = 0;
+        for (var objetivo : GoalType.values())
+            for (var nivel : List.of(FitnessLevel.BEGINNER, FitnessLevel.INTERMEDIATE))
+                for (var lugar : List.of(TrainingLocation.GYM, TrainingLocation.HOME)) {
+                    long u = usuario(null, objetivo, nivel, lugar,
+                            lugar == TrainingLocation.GYM ? EQUIPO_39 : EQUIPO_CASA,
+                            (short) 4, List.of((short) 1, (short) 2, (short) 4, (short) 5), (short) 60);
+                    var ctx = planComandos.prepare(GenerateWeeklyPlanCommand.firstPlan(u, SEMANA)).context();
+                    var base = reglas.generate(ctx, List.of());
+                    var on = main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot
+                            .of(ctx, true);
+                    var off = main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot
+                            .of(ctx, false);
+                    var compl = CatalogEligibilityPolicy.complementos(ctx.availableExercises(), ctx.profile().goalType());
+                    var porGrupo = ctx.availableExercises().stream().filter(c -> !compl.contains(c.exerciseId()))
+                            .filter(c -> c.defaultPrescription() == PrescriptionType.SETS_REPS)
+                            .collect(Collectors.groupingBy(CandidateExercise::bodyPartCode, TreeMap::new,
+                                    Collectors.toList()));
+                    for (int idx = 0; idx < base.workouts().size(); idx++) {
+                        var w = base.workouts().get(idx);
+                        var grupos = w.focus().bodyPartCodes();
+                        int n = (int) w.exercises().stream().filter(e -> !compl.contains(e.exerciseId())).count();
+                        if (grupos.size() < 3 || n < 4) continue;
+                        var sOn = sesion(on, w.scheduledDate());
+                        var sOff = sesion(off, w.scheduledDate());
+                        Integer topeOn = sOn == null || sOn.maxPerBodyPartPorNTrabajo() == null ? null
+                                : sOn.maxPerBodyPartPorNTrabajo().get(String.valueOf(n));
+                        Integer topeOff = sOff == null ? null : sOff.maxPerBodyPart();
+                        assertEquals(RepartoV15.topeMismoGrupo(w.focus(), n), topeOn,
+                                "la tabla PR-1.9 es la de V15: " + objetivo + " " + w.focus() + " n=" + n);
+                        // El grupo con mas material es el que una IA concentraria.
+                        String dominante = grupos.stream().max(Comparator.comparingInt(
+                                g -> porGrupo.getOrDefault(g, List.of()).size())).orElseThrow();
+                        var complementosSesion = w.exercises().stream()
+                                .filter(e -> compl.contains(e.exerciseId())).toList();
+                        // PR-1.7 sin tope comunicado (null) no limita nada: la IA obediente puede concentrar los n.
+                        int permitidoPr17 = topeOff == null ? n : Math.min(topeOff, n);
+                        Boolean r17 = rechazaMitad(base, idx, componer(w, n, permitidoPr17, dominante, porGrupo,
+                                complementosSesion), ctx);
+                        Boolean r19 = rechazaMitad(base, idx, componer(w, n, topeOn, dominante, porGrupo,
+                                complementosSesion), ctx);
+                        Boolean r19mas1 = topeOn + 1 > n ? null : rechazaMitad(base, idx, componer(w, n, topeOn + 1,
+                                dominante, porGrupo, complementosSesion), ctx);
+                        if (r19 == null) continue; // sin material para concentrar: no se puede componer
+                        evaluadas++;
+                        if (Boolean.TRUE.equals(r19)) contradiccionesPr19++;
+                        if (Boolean.TRUE.equals(r17)) contradiccionesPr17++;
+                        if (r19mas1 != null) {
+                            negativos++;
+                            if (!r19mas1) negativosNoDetectados++;
+                        }
+                        sb.append(objetivo).append(';').append(nivel).append(';').append(lugar).append(';')
+                                .append(w.scheduledDate()).append(';').append(w.focus()).append(';').append(n)
+                                .append(';').append(topeOff).append(';').append(topeOn).append(';').append(r17)
+                                .append(';').append(r19).append(';').append(r19mas1).append('\n');
+                    }
+                }
+        var salida = java.nio.file.Path.of("target", "h2");
+        java.nio.file.Files.createDirectories(salida);
+        java.nio.file.Files.writeString(salida.resolve("ia_simulada_cuatro_objetivos.csv"), sb.toString());
+        System.out.printf("H2_SIMULADA evaluadas=%d contradicciones_pr17=%d contradicciones_pr19=%d"
+                + " negativos=%d negativos_no_detectados=%d%n", evaluadas, contradiccionesPr17, contradiccionesPr19,
+                negativos, negativosNoDetectados);
+        assertTrue(evaluadas >= 16, "la rejilla tiene sesiones donde aplica la regla de la mitad: " + evaluadas);
+        assertEquals(0, contradiccionesPr19, "obedecer PR-1.9 nunca debe provocar un rechazo V15 por la mitad");
+        assertTrue(negativos > 0, "hay controles negativos");
+        assertEquals(0, negativosNoDetectados, "V15 sigue rechazando una sesion que se pasa del tope");
+        assertTrue(contradiccionesPr17 > 0, "la configuracion historica PR-1.7 reproduce H2");
+    }
+
+    private static main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot.SuggestedSession
+    sesion(main.web.services.fitsense.planning.infrastructure.generation.ai.PlanInputSnapshot s, LocalDate fecha) {
+        var split = s.constraints().suggestedSplit();
+        return split == null ? null : split.stream().filter(x -> fecha.equals(x.scheduledDate())).findFirst()
+                .orElse(null);
+    }
+
+    /** n ejercicios de trabajo con k del grupo dominante y el resto repartido entre los demas grupos del enfoque. */
+    private static List<PlanDraft.DraftExercise> componer(PlanDraft.DraftWorkout w, int n, int k, String dominante,
+                                                          Map<String, List<CandidateExercise>> porGrupo,
+                                                          List<PlanDraft.DraftExercise> complementos) {
+        var ej = new ArrayList<PlanDraft.DraftExercise>();
+        var usados = new HashSet<Long>();
+        for (int i = 0; i < k; i++) {
+            var c = siguienteOpcional(porGrupo.getOrDefault(dominante, List.of()), usados);
+            if (c == null) return null;
+            ej.add(serie(c));
+        }
+        var otros = w.focus().bodyPartCodes().stream().filter(g -> !g.equals(dominante)).toList();
+        int vueltas = 0;
+        while (ej.size() < n && vueltas < 50) {
+            var c = siguienteOpcional(porGrupo.getOrDefault(otros.get(vueltas % otros.size()), List.of()), usados);
+            vueltas++;
+            if (c != null) ej.add(serie(c));
+        }
+        if (ej.size() < n) return null;
+        ej.addAll(complementos);
+        return ej;
+    }
+
+    /** null si no se pudo componer; si no, si V15 rechaza esa sesion por la regla de la mitad. */
+    private Boolean rechazaMitad(PlanDraft base, int idx, List<PlanDraft.DraftExercise> ej, PlanGenerationContext ctx) {
+        if (ej == null) return null;
+        var w = base.workouts().get(idx);
+        var semana = new ArrayList<>(base.workouts());
+        semana.set(idx, new PlanDraft.DraftWorkout(w.scheduledDate(), w.focus(), w.name(), w.expectedDurationMinutes(),
+                ej));
+        return problemas(new PlanDraft(base.source(), null, base.planName(), null, base.rationale(), semana), ctx)
+                .stream().anyMatch(p -> p.startsWith("V15: el entrenamiento del " + w.scheduledDate())
+                        && p.contains(" dedica "));
+    }
 
     private long usuario(Long id, GoalType objetivo, FitnessLevel nivel, TrainingLocation lugar, List<String> equipo,
                          short dias, List<Short> disponibles, short minutos) {
