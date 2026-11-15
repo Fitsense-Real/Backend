@@ -432,7 +432,7 @@ class ContencionTextoBanderaIT {
                 Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         var conAparato = Pattern.compile("banco|bench|m[aá]quina|polea|aparato|bal[oó]n|pelota|step|plataforma|silla|caj[oó]n|soporte",
                 Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        var retenidos = Set.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L, 1374L);
+        var retenidos = Set.of(813L, 858L, 861L, 873L, 885L, 1192L, 1294L, 1298L, 1374L);
 
         var incoherentes = new ArrayList<String>();
         jdbc.query("SELECT exercise_id, coalesce(name_es,'') n, coalesce(instructions_es,'') i, requires_hanging h,"

@@ -1,0 +1,51 @@
+TRAZA1374 user=19 fecha=2026-11-02 enfoque=FULL_BODY ej=1195 zona=upper legs patron=KNEE_DOMINANT slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-02 enfoque=FULL_BODY ej=591 zona=chest patron=HIP_HINGE slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-02 enfoque=FULL_BODY ej=775 zona=back patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-02 enfoque=FULL_BODY ej=781 zona=shoulders patron=HORIZONTAL_PULL slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-02 enfoque=FULL_BODY ej=989 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-04 enfoque=FULL_BODY ej=108 zona=waist patron=TRUNK_FLEXION slot=false dosis=2x13 <== ELEGIDO
+TRAZA1374 user=19 fecha=2026-11-04 enfoque=FULL_BODY ej=1094 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-04 enfoque=FULL_BODY ej=336 zona=shoulders patron=HORIZONTAL_PULL slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-04 enfoque=FULL_BODY ej=481 zona=back patron=SHOULDER_EXTENSION slot=false dosis=2x10
+TRAZA1374 user=19 fecha=2026-11-04 enfoque=FULL_BODY ej=624 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-04 enfoque=FULL_BODY ej=878 zona=upper legs patron=HIP_EXTENSION slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-06 enfoque=FULL_BODY ej=239 zona=upper legs patron=HIP_HINGE slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-06 enfoque=FULL_BODY ej=338 zona=chest patron=HORIZONTAL_ADDUCTION slot=false dosis=2x10
+TRAZA1374 user=19 fecha=2026-11-06 enfoque=FULL_BODY ej=549 zona=back patron=SCAPULAR_ELEVATION slot=false dosis=2x10
+TRAZA1374 user=19 fecha=2026-11-06 enfoque=FULL_BODY ej=56 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-06 enfoque=FULL_BODY ej=696 zona=shoulders patron=HORIZONTAL_PULL slot=true dosis=3x10
+TRAZA1374 user=19 fecha=2026-11-06 enfoque=FULL_BODY ej=711 zona=back patron=HORIZONTAL_PULL slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-02 enfoque=FULL_BODY ej=1010 zona=upper legs patron=KNEE_DOMINANT slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-02 enfoque=FULL_BODY ej=1113 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-02 enfoque=FULL_BODY ej=472 zona=shoulders patron=HORIZONTAL_PULL slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-02 enfoque=FULL_BODY ej=591 zona=chest patron=HIP_HINGE slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-02 enfoque=FULL_BODY ej=775 zona=back patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-04 enfoque=FULL_BODY ej=1106 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-04 enfoque=FULL_BODY ej=1195 zona=upper legs patron=KNEE_DOMINANT slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-04 enfoque=FULL_BODY ej=375 zona=shoulders patron=HORIZONTAL_PULL slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-04 enfoque=FULL_BODY ej=502 zona=waist patron=TRUNK_FLEXION slot=false dosis=2x13 <== ELEGIDO
+TRAZA1374 user=20 fecha=2026-11-04 enfoque=FULL_BODY ej=76 zona=back patron=VERTICAL_PULL slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-04 enfoque=FULL_BODY ej=784 zona=chest patron=SHOULDER_EXTENSION slot=false dosis=2x10
+TRAZA1374 user=20 fecha=2026-11-06 enfoque=FULL_BODY ej=1026 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-06 enfoque=FULL_BODY ej=144 zona=upper legs patron=KNEE_DOMINANT slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-06 enfoque=FULL_BODY ej=358 zona=back patron=SHOULDER_EXTENSION slot=false dosis=2x10
+TRAZA1374 user=20 fecha=2026-11-06 enfoque=FULL_BODY ej=429 zona=waist patron=TRUNK_FLEXION slot=false dosis=2x13
+TRAZA1374 user=20 fecha=2026-11-06 enfoque=FULL_BODY ej=583 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=20 fecha=2026-11-06 enfoque=FULL_BODY ej=739 zona=shoulders patron=VERTICAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-02 enfoque=FULL_BODY ej=472 zona=shoulders patron=HORIZONTAL_PULL slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-02 enfoque=FULL_BODY ej=507 zona=upper legs patron=KNEE_DOMINANT slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-02 enfoque=FULL_BODY ej=547 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-02 enfoque=FULL_BODY ej=591 zona=chest patron=HIP_HINGE slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-02 enfoque=FULL_BODY ej=775 zona=back patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-04 enfoque=FULL_BODY ej=1000 zona=back patron=SCAPULAR_ELEVATION slot=false dosis=2x10
+TRAZA1374 user=21 fecha=2026-11-04 enfoque=FULL_BODY ej=1266 zona=upper legs patron=KNEE_DOMINANT slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-04 enfoque=FULL_BODY ej=223 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-04 enfoque=FULL_BODY ej=512 zona=shoulders patron=VERTICAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-04 enfoque=FULL_BODY ej=584 zona=chest patron=HORIZONTAL_ADDUCTION slot=false dosis=2x10
+TRAZA1374 user=21 fecha=2026-11-04 enfoque=FULL_BODY ej=71 zona=back patron=VERTICAL_PULL slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-06 enfoque=FULL_BODY ej=114 zona=back patron=VERTICAL_PULL slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-06 enfoque=FULL_BODY ej=324 zona=chest patron=HORIZONTAL_ADDUCTION slot=false dosis=2x10
+TRAZA1374 user=21 fecha=2026-11-06 enfoque=FULL_BODY ej=495 zona=chest patron=HORIZONTAL_PUSH slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-06 enfoque=FULL_BODY ej=501 zona=waist patron=TRUNK_FLEXION slot=false dosis=2x13 <== ELEGIDO
+TRAZA1374 user=21 fecha=2026-11-06 enfoque=FULL_BODY ej=552 zona=upper legs patron=KNEE_DOMINANT slot=true dosis=3x10
+TRAZA1374 user=21 fecha=2026-11-06 enfoque=FULL_BODY ej=704 zona=shoulders patron=VERTICAL_PUSH slot=true dosis=3x10
