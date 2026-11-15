@@ -58,6 +58,10 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
   PROCESSING sin latido durante 3 min quedó huérfana (el proceso murió o se reinició): se vuelve a
   poner en cola una vez; la segunda vez se cierra como `FAILED/EJECUCION_INTERRUMPIDA`
   reintentable. Una generación lenta pero viva sigue latiendo y nunca se reencola ni se duplica.
+- **Apagado ordenado (despliegue, SIGTERM):** el worker deja de reclamar, interrumpe sus
+  generaciones sin registrarlas como fallidas y las devuelve a PENDING sin gastar un intento; la
+  siguiente instancia las retoma al arrancar. Si el proceso muere sin apagado ordenado (SIGKILL,
+  caída), la operación deja de latir y el barrido la recupera.
 - **Tiempo máximo:** una PROCESSING de más de 10 min, o una PENDING de más de 30 min, se cierra como
   `FAILED/TIEMPO_EXCEDIDO` reintentable. Si la generación seguía viva, antes de publicar comprueba
   que la operación siga PROCESSING y descarta su resultado. La app nunca espera para siempre.

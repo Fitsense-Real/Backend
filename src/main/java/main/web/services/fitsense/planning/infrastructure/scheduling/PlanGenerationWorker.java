@@ -40,6 +40,7 @@ public class PlanGenerationWorker {
     private final int maxConcurrent;
     private final ExecutorService pool;
     private final AtomicInteger inFlight = new AtomicInteger();
+    private final java.util.concurrent.atomic.AtomicBoolean stopping = new java.util.concurrent.atomic.AtomicBoolean();
     private final java.util.Set<java.util.UUID> running = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     public PlanGenerationWorker(PlanGenerationOperationService service,
@@ -58,8 +59,9 @@ public class PlanGenerationWorker {
             fixedDelayString = "${fitsense.plan-generation.poll-ms:2000}")
     public void tick() {
         try {
+            if (stopping.get()) return;
             service.recoverStale();
-            while (inFlight.get() < maxConcurrent) {
+            while (inFlight.get() < maxConcurrent && !stopping.get()) {
                 var next = service.claimNext();
                 if (next.isEmpty()) return;
                 inFlight.incrementAndGet();
@@ -67,7 +69,7 @@ public class PlanGenerationWorker {
                 running.add(id);
                 pool.execute(() -> {
                     try {
-                        service.execute(id);
+                        service.execute(id, stopping::get);
                     } finally {
                         running.remove(id);
                         inFlight.decrementAndGet();
@@ -90,8 +92,26 @@ public class PlanGenerationWorker {
         }
     }
 
+    /**
+     * Apagado ordenado (despliegue, SIGTERM): no reclama mas, interrumpe las
+     * generaciones en curso sin registrarlas como fallidas y las devuelve a la
+     * cola para que la siguiente instancia las retome. Si el proceso muere sin
+     * llegar aqui, el barrido las recupera por falta de latido.
+     */
     @PreDestroy
     void stop() {
+        stopping.set(true);
+        var interrupted = java.util.List.copyOf(running);
         pool.shutdownNow();
+        try {
+            pool.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        try {
+            service.requeueOnShutdown(interrupted);
+        } catch (RuntimeException e) {
+            log.error("No se pudieron devolver a la cola las generaciones interrumpidas: {}", e.getMessage());
+        }
     }
 }

@@ -184,6 +184,16 @@ public class PlanGenerationOperationService {
      * registrado en la operacion.
      */
     public void execute(UUID operationId) {
+        execute(operationId, () -> false);
+    }
+
+    /**
+     * @param stopping verdadero si el proceso se esta apagando (despliegue):
+     *        un fallo en ese momento es la interrupcion del apagado, no un
+     *        resultado de la generacion, y no se registra. El worker la
+     *        devuelve a la cola ({@link #requeueOnShutdown}).
+     */
+    public void execute(UUID operationId, java.util.function.BooleanSupplier stopping) {
         var op = tx.execute(s -> operations.findById(operationId).orElse(null));
         if (op == null || op.getStatus() != GenerationOperationStatus.PROCESSING) return;
         Long userId = op.getUserId();
@@ -203,6 +213,10 @@ public class PlanGenerationOperationService {
                 record(operationId, userId, GenerationFailureClassifier.classify(already), already);
             }
         } catch (RuntimeException error) {
+            if (stopping.getAsBoolean()) {
+                log.warn("Generacion inicial {} interrumpida por el apagado: se reanudara ({})", operationId, error.getMessage());
+                return;
+            }
             record(operationId, userId, GenerationFailureClassifier.classify(error), error);
         }
     }
@@ -215,6 +229,22 @@ public class PlanGenerationOperationService {
             log.error("Generacion inicial {} FAILED para el usuario {}: {}", operationId, userId, error.getMessage(), error);
         }
         finish(operationId, o -> o.fail(outcome.status(), outcome.reasonCode(), outcome.message(), outcome.retryable(), now()));
+    }
+
+    /**
+     * Apagado ordenado: las operaciones que este proceso no pudo terminar
+     * vuelven a PENDING sin gastar un intento (la interrupcion no fue suya) y
+     * la siguiente instancia las reclama al arrancar.
+     */
+    public int requeueOnShutdown(java.util.Collection<UUID> interrupted) {
+        if (interrupted.isEmpty()) return 0;
+        int n = jdbc.update("""
+                UPDATE plan_generation_operations
+                   SET status = 'PENDING', started_at = NULL, updated_at = ?, executions = GREATEST(executions - 1, 0)
+                 WHERE status = 'PROCESSING' AND operation_id = ANY(?)
+                """, now(), interrupted.toArray(UUID[]::new));
+        if (n > 0) log.warn("Generacion inicial: {} operacion(es) devuelta(s) a la cola por el apagado", n);
+        return n;
     }
 
     /** Antes de publicar: si la operacion ya no es PROCESSING, no se publica nada. */

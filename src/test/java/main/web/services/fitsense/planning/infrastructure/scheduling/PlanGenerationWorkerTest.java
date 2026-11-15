@@ -31,7 +31,7 @@ class PlanGenerationWorkerTest {
         var liberar = new CountDownLatch(1);
         var enCurso = new CountDownLatch(2);
         doAnswer(inv -> { enCurso.countDown(); liberar.await(10, TimeUnit.SECONDS); return null; })
-                .when(service).execute(org.mockito.ArgumentMatchers.any());
+                .when(service).execute(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
 
         var worker = new PlanGenerationWorker(service, 2);
         worker.tick();
@@ -41,11 +41,11 @@ class PlanGenerationWorkerTest {
         verify(service).recoverStale();
 
         liberar.countDown();
-        verify(service, timeout(5000)).execute(a);
-        verify(service, timeout(5000)).execute(b);
+        verify(service, timeout(5000)).execute(org.mockito.ArgumentMatchers.eq(a), org.mockito.ArgumentMatchers.any());
+        verify(service, timeout(5000)).execute(org.mockito.ArgumentMatchers.eq(b), org.mockito.ArgumentMatchers.any());
         Thread.sleep(200);
         worker.tick();
-        verify(service, timeout(5000)).execute(c);
+        verify(service, timeout(5000)).execute(org.mockito.ArgumentMatchers.eq(c), org.mockito.ArgumentMatchers.any());
         verify(service, atLeastOnce()).recoverStale();
         worker.stop();
     }
@@ -70,7 +70,7 @@ class PlanGenerationWorkerTest {
         var enCurso = new CountDownLatch(1);
         var terminada = new CountDownLatch(1);
         doAnswer(inv -> { enCurso.countDown(); liberar.await(10, TimeUnit.SECONDS); return null; })
-                .when(service).execute(a);
+                .when(service).execute(org.mockito.ArgumentMatchers.eq(a), org.mockito.ArgumentMatchers.any());
         var worker = new PlanGenerationWorker(service, 2);
         worker.tick();
         assertThat(enCurso.await(5, TimeUnit.SECONDS)).isTrue();
@@ -80,10 +80,34 @@ class PlanGenerationWorkerTest {
 
         doAnswer(inv -> { terminada.countDown(); return 0; }).when(service).heartbeat(java.util.List.of());
         liberar.countDown();
-        verify(service, timeout(5000)).execute(a);
+        verify(service, timeout(5000)).execute(org.mockito.ArgumentMatchers.eq(a), org.mockito.ArgumentMatchers.any());
         Thread.sleep(200);
         worker.heartbeat();
         assertThat(terminada.await(5, TimeUnit.SECONDS)).as("ya no late por la que termino").isTrue();
         worker.stop();
+    }
+
+    @Test
+    void alApagarseNoRegistraLaInterrupcionYDevuelveLaOperacionALaCola() throws Exception {
+        var service = mock(PlanGenerationOperationService.class);
+        var a = UUID.randomUUID();
+        when(service.claimNext()).thenReturn(Optional.of(a), Optional.empty());
+        var enCurso = new CountDownLatch(1);
+        var vistoAlApagar = new java.util.concurrent.atomic.AtomicBoolean();
+        doAnswer(inv -> {
+            java.util.function.BooleanSupplier stopping = inv.getArgument(1);
+            enCurso.countDown();
+            try { Thread.sleep(10_000); } catch (InterruptedException e) { vistoAlApagar.set(stopping.getAsBoolean()); }
+            return null;
+        }).when(service).execute(org.mockito.ArgumentMatchers.eq(a), org.mockito.ArgumentMatchers.any());
+        var worker = new PlanGenerationWorker(service, 1);
+        worker.tick();
+        assertThat(enCurso.await(5, TimeUnit.SECONDS)).isTrue();
+
+        worker.stop();
+        assertThat(vistoAlApagar).as("la ejecucion sabe que es el apagado").isTrue();
+        verify(service).requeueOnShutdown(java.util.List.of(a));
+        worker.tick();                                       // ya apagado: no reclama mas
+        verify(service, times(1)).claimNext();
     }
 }

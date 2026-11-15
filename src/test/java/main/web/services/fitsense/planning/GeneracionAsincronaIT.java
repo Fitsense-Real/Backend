@@ -277,6 +277,39 @@ class GeneracionAsincronaIT {
         verify(runner, times(0)).run(anyLong(), any());
     }
 
+    // 13 · apagado ordenado (despliegue): la generacion interrumpida NO se registra como fallo y vuelve a la cola.
+    @Test
+    void unApagadoOrdenadoDevuelveLaOperacionALaColaYSeRetoma() throws Exception {
+        long u = participante();
+        var empezo = new CountDownLatch(1);
+        var apagar = new CountDownLatch(1);
+        doAnswer(inv -> { empezo.countDown(); await(apagar); throw new IllegalStateException("I/O interrumpida por el apagado"); })
+                .doCallRealMethod().when(runner).run(eq(u), any());
+        var id = service.request(u).operation().getId();
+        var claimed = service.claimNext().orElseThrow();
+        var detenido = new java.util.concurrent.atomic.AtomicBoolean();
+        var ejecucion = CompletableFuture.runAsync(() -> service.execute(claimed, detenido::get));
+        assertThat(empezo.await(30, TimeUnit.SECONDS)).isTrue();
+
+        detenido.set(true);
+        apagar.countDown();
+        ejecucion.get(30, TimeUnit.SECONDS);
+        assertThat(service.find(u, id).getStatus()).as("no es un fallo de la generacion")
+                .isEqualTo(GenerationOperationStatus.PROCESSING);
+
+        assertThat(service.requeueOnShutdown(List.of(id))).isEqualTo(1);
+        var enCola = service.find(u, id);
+        assertThat(enCola.getStatus()).isEqualTo(GenerationOperationStatus.PENDING);
+        assertThat(enCola.getExecutions()).as("el apagado no gasta un intento").isEqualTo((short) 0);
+
+        procesarSiguiente();                                 // la siguiente instancia la retoma
+        var hecha = service.find(u, id);
+        assertThat(hecha.getStatus()).isEqualTo(GenerationOperationStatus.COMPLETED);
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?", Integer.class, u))
+                .isEqualTo(1);
+        assertThat(filas(u)).isEqualTo(1);
+    }
+
     @Test
     void unaRecuperacionNoPisaUnaOperacionQueTermino() {
         long u = participante();
