@@ -1,0 +1,15 @@
+#62 1da115a OK 907e582
+#56 d8ffe4c OK 147a01a
+#57 10b6ad6 OK 23e8c87
+#58 ea5ebef OK ce87205
+#59 2e7c55c OK 763ff16
+#55 57075e7 OK d4cdb29
+#60 e34e892 OK f93575a
+#63 4a728b4 OK 92374d2
+#65 55129f4 OK 165bbbe
+#61 81b5f41 OK 8bd016f
+#64 7d7109a CONFLICTO: src/test/java/main/web/services/fitsense/EsquemaVigenteSobreCatalogoAnterior.java 
+#64 7d7109a OK tras resolver SOLO_ESQUEMA 0abb0cb
+#66 fce4fdc OK tras resolver SOLO_ESQUEMA 5e2e991
+candidata 12c6897 OK 7db872f
+arbol simulacion 7db872f = arbol candidata 12c6897 = 475703a028ea316b116ae6fed3fab107d3c024bd

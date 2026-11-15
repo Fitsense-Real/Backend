@@ -1,0 +1,5 @@
+20d6a79531c733124f744c12b94746dee412f58b54f296542ef062e9c49b220e  exercises.tsv  filas=1376  sin=created_at
+a23c68431d02052053c346687c322d79ee078a8c01881a8fb35c6cb393cd9ad0  exercise_equipment_requirements.tsv  filas=1522  sin=-
+f79df277101533bfcb26f051bea665e9f99c1ac79f03c81c26405f30177f3606  exercise_difficulty_approvals.tsv  filas=4  sin=recorded_at
+57c239d333486f659fc82c25999d162f25c2a75379f3d13bf6427f5aac085025  flyway.tsv  filas=59  sin=-
+REPRODUCIBLE
