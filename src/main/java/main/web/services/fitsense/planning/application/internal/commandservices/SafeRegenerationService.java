@@ -77,6 +77,8 @@ public class SafeRegenerationService {
      * puede devolver a la base una colocacion reducida (fatiga, mantenimiento) si el total no sube. Activarla es un cambio
      * de politica de P-03 y necesita la aprobacion del propietario: fitsense.regeneracion.p03-por-colocacion=true.
      */
+    // Cierre premerge (15/11/2026): aprobada para la candidata y sus pruebas (src/test/resources/config/application.properties
+    // la enciende); en produccion sigue apagada hasta una autorizacion expresa (FITSENSE_P03_POR_COLOCACION).
     @org.springframework.beans.factory.annotation.Value("${fitsense.regeneracion.p03-por-colocacion:false}")
     private boolean porColocacion = false;
 
@@ -187,34 +189,51 @@ public class SafeRegenerationService {
                 .formatted(medidaPlan[0], r, medidaPlan[1], sg);
     }
 
-    /** La primera colocacion que sube respecto de su colocacion medida (dia de la semana + ejercicio), o null. */
+    /**
+     * La primera colocacion de la semana regenerada que sube respecto de su colocacion medida, o null
+     * ({@link main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion}: mantenidas por dia y
+     * ejercicio, sustituciones por el puesto de un retirado, sin correspondencia contra la menor dosis medida del
+     * ejercicio, nuevas solo en el total). Los retirados son las exclusiones activas del participante (dolor).
+     */
     String subidaPorColocacion(Long planMedido, PlanDraft regenerada) {
-        var medidas = tx.execute(status -> planes.findById(planMedido).map(p -> {
-            var porClave = new java.util.HashMap<String, java.util.ArrayDeque<long[]>>();
-            p.workoutsView().stream().sorted(java.util.Comparator.comparing(w -> w.getScheduledDate()))
-                    .forEach(w -> w.exercisesView().forEach(e -> porClave.computeIfAbsent(
-                            w.getScheduledDate().getDayOfWeek() + "|" + e.getExerciseId(),
-                            k -> new java.util.ArrayDeque<>()).add(new long[]{
+        record Medida(java.util.List<main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion
+                .Colocacion> colocaciones, Long usuario) {}
+        var medida = tx.execute(status -> planes.findById(planMedido).map(p -> {
+            var lista = new java.util.ArrayList<main.web.services.fitsense.planning.domain.services
+                    .ComparacionDosisPorColocacion.Colocacion>();
+            p.workoutsView().stream().sorted(java.util.Comparator.comparing(w -> w.getScheduledDate())).forEach(w -> {
+                var ejercicios = w.exercisesView().stream().sorted(java.util.Comparator.comparing(
+                        e -> e.getExerciseOrder() == null ? Short.MAX_VALUE : e.getExerciseOrder())).toList();
+                for (int i = 0; i < ejercicios.size(); i++) {
+                    var e = ejercicios.get(i);
+                    lista.add(new main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion
+                            .Colocacion(w.getScheduledDate().getDayOfWeek(), i, e.getExerciseId(),
                             e.getPlannedSets() == null ? 1 : e.getPlannedSets(),
                             e.getPlannedReps() == null ? 0 : e.getPlannedReps(),
-                            e.getPlannedDurationSeconds() == null ? 0 : e.getPlannedDurationSeconds()})));
-            return porClave;
+                            e.getPlannedDurationSeconds() == null ? 0 : e.getPlannedDurationSeconds()));
+                }
+            });
+            return new Medida(lista, p.getUserId());
         }).orElse(null));
-        if (medidas == null) return SIN_SEMANA_MEDIDA;
-        for (var w : regenerada.workouts())
-            for (var e : w.exercises()) {
-                var cola = medidas.get(w.scheduledDate().getDayOfWeek() + "|" + e.exerciseId());
-                if (cola == null || cola.isEmpty()) continue;
-                long[] m = cola.poll();
-                long s = e.plannedSets() == null ? 1 : e.plannedSets();
-                long rr = e.plannedReps() == null ? 0 : e.plannedReps();
-                long sg = e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds();
-                if (s > m[0] || rr > m[1] || sg > m[2] || s * rr > m[0] * m[1] || s * sg > m[0] * m[2])
-                    return ("P-03 nivel 2 (por colocacion): el ejercicio %d del %s sube de %dx%d/%ds a %dx%d/%ds en la"
-                            + " semana regenerada; ante dolor ninguna colocacion recupera dosis sin autorizacion.")
-                            .formatted(e.exerciseId(), w.scheduledDate().getDayOfWeek(), m[0], m[1], m[2], s, rr, sg);
+        if (medida == null) return SIN_SEMANA_MEDIDA;
+        var regeneradas = new java.util.ArrayList<main.web.services.fitsense.planning.domain.services
+                .ComparacionDosisPorColocacion.Colocacion>();
+        regenerada.workouts().stream().sorted(java.util.Comparator.comparing(w -> w.scheduledDate())).forEach(w -> {
+            for (int i = 0; i < w.exercises().size(); i++) {
+                var e = w.exercises().get(i);
+                regeneradas.add(new main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion
+                        .Colocacion(w.scheduledDate().getDayOfWeek(), i, e.exerciseId(),
+                        e.plannedSets() == null ? 1 : e.plannedSets(), e.plannedReps() == null ? 0 : e.plannedReps(),
+                        e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds()));
             }
-        return null;
+        });
+        var retirados = dolor == null || medida.usuario() == null ? java.util.Set.<Long>of()
+                : dolor.excluidosActivos(medida.usuario());
+        var r = main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion.comparar(
+                medida.colocaciones(), regeneradas, retirados);
+        log.info("P03_POR_COLOCACION plan_medido={} por_tipo={} retiradas={} aumentos={}", planMedido, r.porTipo(),
+                r.retiradas(), r.aumentos().size());
+        return r.sinAumentos() ? null : r.aumentos().get(0).describir();
     }
 
     private static boolean porDolor(PlanAdaptationAttempt a) {
