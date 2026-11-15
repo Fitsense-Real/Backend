@@ -30,7 +30,7 @@ En local:
 - pruebas de prompt y de configuración;
 - ensayo del arnés.
 
-El CI de GitHub ejecuta la suite completa en cada cabeza (`ESTADO_PR69.md` se actualiza con el resultado).
+**CI de GitHub en verde** en `76fb6ac`: suite completa (unitarias e integración, PostgreSQL efímero), run 43765195178, de 21:43 a 21:59 UTC del 15/11/2026. Este commit solo añade la anotación.
 
 ## ¿Lista para revisión?
 
