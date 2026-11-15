@@ -39,4 +39,18 @@ public class SafetyConflictChecker {
         }
         return motivos;
     }
+
+    /**
+     * Para PLANIFICAR (la semana derivada de la adaptacion y su sustitucion obligatoria SUST-SEG-1): los mismos motivos
+     * y, ademas, la contencion conservadora INC-CAT-CONS-v1. La lectura y la ejecucion de un plan YA publicado usan
+     * {@link #motivos}, sin ella: la contencion no altera lo publicado.
+     */
+    public Map<Long, String> motivosParaPlanificar(Collection<Long> exerciseIds, PlanningProfile perfil,
+                                                   SafetyProfile seguridad) {
+        var motivos = new LinkedHashMap<>(motivos(exerciseIds, perfil, seguridad));
+        if (exerciseIds == null) return motivos;
+        for (var id : new TreeSet<>(exerciseIds.stream().filter(Objects::nonNull).toList()))
+            catalog.contencionConservadora(id, perfil).ifPresent(c -> motivos.merge(id, c, (a, b) -> a + "+" + b));
+        return motivos;
+    }
 }

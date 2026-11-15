@@ -52,7 +52,8 @@ public class ProfilingContextFacade {
                 profile.equipmentCodesAsList(),
                 profile.blockedExerciseIdsAsList(),
                 profile.getHealthNotes(),
-                profile.allowancesOrDefault()
+                profile.allowancesOrDefault(),
+                profile.getAllowSuspendedSupport()
         );
     }
 }

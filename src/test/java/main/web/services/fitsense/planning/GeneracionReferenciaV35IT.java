@@ -33,6 +33,9 @@ import java.nio.file.Path;
         "fitsense.adaptation.pain-localized-removal=off",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
+        // La contencion INC-CAT-CONS-v1 (15/11/2026) se definio sobre el catalogo vigente; esta prueba reproduce un
+        // catalogo anterior con su referencia historica, que no la tenia.
+        "fitsense.catalogo.contencion-conservadora=false",
         "spring.flyway.target=35"
 })
 class GeneracionReferenciaV35IT extends GeneracionReferenciaBase {

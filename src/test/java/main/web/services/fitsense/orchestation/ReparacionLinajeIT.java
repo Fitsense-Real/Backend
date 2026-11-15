@@ -92,6 +92,23 @@ class ReparacionLinajeIT {
     @Test
     @DisplayName("semana progresada + 1374 inseguro: se repara (P-P2) y la siguiente hereda el paso por la version reparada (H6)")
     void repararYHeredar() {
+        // La premisa (que sustituto recibe el relleno 1374 y que la reparacion valide) se construyo con el conjunto
+        // elegible anterior a INC-CAT-CONS-v1. Con la contencion, el sustituto elegido es un relleno de zona pequena
+        // (104) cuya dosis de capacidad (2x13) supera la del quitado (2x10): V8C no deja subirla y la reparacion queda
+        // NO_VALIDA, sin publicar nada (IMPACTO_FACTIBILIDAD.md). El mecanismo P-P2/H6 que se prueba no depende del
+        // catalogo: se ejecuta con la contencion apagada.
+        Object destino = org.springframework.test.util.AopTestUtils.getUltimateTargetObject(catalogo);
+        org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", false);
+        try {
+            repararYHeredarSinContencion();
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", true);
+        }
+    }
+
+    @Autowired main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService catalogo;
+
+    private void repararYHeredarSinContencion() {
         long u = participante();
         long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(u, w1);

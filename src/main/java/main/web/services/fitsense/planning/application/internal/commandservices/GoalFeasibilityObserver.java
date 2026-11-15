@@ -100,8 +100,12 @@ public class GoalFeasibilityObserver {
             if (!f[i]) continue;
             var g = f.clone();
             g[i] = false;
+            // V53-B: el apoyo suspendido se conserva tal cual salvo cuando sigue a «no colgarse» y se levanta esa
+            // restriccion. Con la opcion A o apagado siempre sigue a «no colgarse»: identico al constructor de siete.
+            boolean apoyo = i == 4 && s.excludeSuspendedSupport() == s.excludeHanging() ? g[4]
+                    : s.excludeSuspendedSupport();
             lista.add(new Hipotesis(nombres[i], p, dif,
-                    new SafetyProfile(g[0], g[1], g[2], g[3], g[4], g[5], g[6])));
+                    new SafetyProfile(g[0], g[1], g[2], g[3], g[4], g[5], g[6], apoyo)));
         }
         if (dif < 3) lista.add(new Hipotesis("nivel_" + (dif + 1), p, dif + 1, s));
         if (p.blockedExerciseIds() != null && !p.blockedExerciseIds().isEmpty())

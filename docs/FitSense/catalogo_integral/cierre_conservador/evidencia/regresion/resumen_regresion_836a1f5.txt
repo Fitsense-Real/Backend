@@ -1,0 +1,6 @@
+[INFO] Tests run: 1530, Failures: 0, Errors: 0, Skipped: 1
+[INFO] Tests run: 753, Failures: 0, Errors: 0, Skipped: 57
+[INFO] BUILD SUCCESS
+[INFO] Total time:  30:59 min
+commit 836a1f5aded805ec4c696e2bd411c97d4ee02f8d inicio 2026-11-15T02:56:53Z
+EXIT=0 fin 2026-11-15T03:27:54Z

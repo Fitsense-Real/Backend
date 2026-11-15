@@ -234,6 +234,12 @@ class CatalogoElegibleIT {
         excluidos.addAll(bloqueados);
         if (sinSuspension) excluidos.addAll(C39_COLGARSE);
         if (sinOverhead) excluidos.addAll(C39_CABEZA);
+        // INC-CAT-CONS-v1 (cierre tecnico conservador): identidad no determinada para todos; 1113 no para principiantes.
+        // El apoyo suspendido se comprueba en el SQL con el dato del catalogo (requires_suspended_support, V53), no con la
+        // lista del codigo: asi el oraculo verifica tambien que las dos coinciden.
+        excluidos.addAll(main.web.services.fitsense.planning.domain.services.ContencionConservadora.IDENTIDAD_NO_DETERMINADA);
+        if ("BEGINNER".equals(nivel)) excluidos.add(1113L);
+        boolean apoyoConfirmado = Boolean.TRUE.equals(d.allowSuspendedSupport());
 
         boolean cardio = !filtroAnterior && Set.of("LOSE_WEIGHT", "GENERAL_FITNESS").contains(objetivo);
         boolean movilidad = !filtroAnterior && "GENERAL_FITNESS".equals(objetivo);
@@ -251,6 +257,8 @@ class CatalogoElegibleIT {
                    and (not :sinSuspension or not e.requires_hanging)
                    and (not :sinOverhead or not e.requires_overhead)
                    and (not :sinInversion or not e.requires_inversion)
+                   -- INC-CAT-CONS-v1: apoyo suspendido solo con el permiso propio confirmado (TRUE explicito)
+                   and (:apoyoConfirmado or not e.requires_suspended_support)
                    -- INC-CAT-1374: solo con barra declarada y sin restringir colgarse ni brazos arriba
                    and (e.exercise_id <> 1374 or (:barra and not :sinSuspension and not :sinOverhead))
                    and not exists (
@@ -276,6 +284,7 @@ class CatalogoElegibleIT {
                 .addValue("sinInversion", sinInversion).addValue("disponibles", disponibles)
                 .addValue("enCasa", "HOME".equals(entorno.lugar()))
                 .addValue("cardio", cardio).addValue("movilidad", movilidad)
+                .addValue("apoyoConfirmado", apoyoConfirmado)
                 .addValue("barra", entorno.equipamiento().contains("pull-up bar"));
         return new HashSet<>(jdbc.queryForList(sql, params, Long.class));
     }

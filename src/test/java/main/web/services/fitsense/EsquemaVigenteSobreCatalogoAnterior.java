@@ -40,7 +40,13 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V51 y V53 (cierre del catalogo) anaden columnas Y datos del catalogo: aqui solo sus columnas, sin datos
             // (script de prueba). Con impact_level e is_stretch NULL el motor usa la regla por nombre del catalogo
             // fijado, y requires_suspended_support FALSE es el estado anterior a V53.
-            "51:catalogo/esquema_V51_V53_sin_datos.sql");
+            "51:catalogo/esquema_V51_V53_sin_datos.sql",
+            // V54 (propuesta: constancia del bloqueo de seguridad al vencer): una columna nullable, sin datos.
+            "54:db/migration/V54__vencimiento_con_bloqueo_de_sistema.sql",
+            // V55 (propuesta V53-B, permiso «apoyo suspendido»): dos columnas NULL en user_profiles, sin datos.
+            "55:db/migration/V55__perfil_permiso_apoyo_suspendido.sql",
+            // V57 (propuesta: constancia de la omision impuesta por el sistema): una columna nullable, sin datos.
+            "57:db/migration/V57__omision_impuesta_por_el_sistema.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {

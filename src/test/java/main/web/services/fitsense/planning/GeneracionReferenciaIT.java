@@ -42,7 +42,12 @@ import java.nio.file.Path;
         "fitsense.adaptation.difficulty-guard=off",
         "fitsense.adaptation.pain-localized-removal=off",
         "fitsense.ai.enabled=false",
-        "fitsense.ai.api-token="
+        "fitsense.ai.api-token=",
+        // Cierre tecnico conservador (15/11/2026): esta referencia es la HISTORICA (catalogo hasta V52.1/V55 sin la
+        // contencion INC-CAT-CONS-v1) y no se sobrescribe. Con la contencion apagada la generacion debe ser identica a
+        // ella: demuestra que la contencion es la unica causa de los cambios (y que V56 solo cambia textos). La
+        // referencia de la version conservadora es GeneracionReferenciaConservadoraIT.
+        "fitsense.catalogo.contencion-conservadora=false"
 })
 class GeneracionReferenciaIT extends GeneracionReferenciaBase {
 

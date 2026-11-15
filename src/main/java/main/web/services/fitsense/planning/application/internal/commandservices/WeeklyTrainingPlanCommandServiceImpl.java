@@ -525,6 +525,10 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
             throw new DomainRuleViolationException(
                     "Tienes una sesion abierta de este entrenamiento. Terminala o abandonala antes de omitirlo.");
 
+        // V57 (con V54): si el usuario omite a mano una sesion que el sistema tenia bloqueada o marcada por
+        // seguridad, se guarda la causa vigente igual que al vencer. Antes de marcarla: la causa solo se calcula
+        // sobre sesiones abiertas. No cambia el motivo declarado, el estado ni ningun calculo.
+        anotarBloqueoDeSistema(workout);
         workout.markSkipped(command.reason(), command.lackOfTimeContext(), command.availableMinutes());
         plannedWorkoutRepository.save(workout);
         // P-02: omitir por dolor sin decir que ejercicio excluye ya, en esta transaccion, los de la sesion.
@@ -551,11 +555,41 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     @Transactional
     public int handle(ExpireOverdueWorkoutsCommand command) {
         var overdue = plannedWorkoutRepository.findOverdue(command.now());
+        // V54 (propuesta): antes de cerrar, la causa del bloqueo de seguridad vigente, si la hay. La sesion se
+        // cierra igual (SKIPPED, causa NULL): solo se deja constancia de que el sistema no la dejaba hacer.
+        overdue.forEach(this::anotarBloqueoDeSistema);
         overdue.forEach(workout -> workout.markOutcome(WorkoutStatus.SKIPPED, null));
         plannedWorkoutRepository.saveAll(overdue);
         if (!overdue.isEmpty())
             log.info("Marcados {} entrenamientos vencidos como SKIPPED", overdue.size());
         return overdue.size();
+    }
+
+    /**
+     * V54/V57: deja en planned_workouts.system_block_cause la causa de seguridad vigente de una sesion abierta
+     * (ejercicio=causa; ...), si la hay. Se usa al vencer (V54) y al omitirla a mano (V57). Solo constancia.
+     */
+    private void anotarBloqueoDeSistema(main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout workout) {
+        if (publishedPlanSafety == null) return;
+        var conflictos = publishedPlanSafety.conflictos(workout.getPlan().getUserId(), workout);
+        if (conflictos.isEmpty()) return;
+        var porEjercicio = new java.util.TreeMap<Long, String>();
+        workout.exercisesView().forEach(e -> {
+            var causa = conflictos.get(e.getId());
+            if (causa != null) porEjercicio.put(e.getExerciseId(), causa);
+        });
+        workout.registrarBloqueoDeSistema(porEjercicio.entrySet().stream()
+                .map(x -> x.getKey() + "=" + x.getValue())
+                .collect(java.util.stream.Collectors.joining("; ")));
+    }
+
+    private main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService publishedPlanSafety;
+
+    /** V54 (propuesta). Opcional para no tocar las construcciones directas de las pruebas unitarias. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setPublishedPlanSafety(
+            main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService servicio) {
+        this.publishedPlanSafety = servicio;
     }
 
     // ------------------------------------------------------------------ helpers
