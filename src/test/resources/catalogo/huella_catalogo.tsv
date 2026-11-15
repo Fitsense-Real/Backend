@@ -1,0 +1,1220 @@
+id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	firma_nombre
+53	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	MA-
+54	cardio	cardiovascular system	KNEE_DOMINANT	1	DURATION	false	-	-	---
+55	lower legs	calves	MOBILITY	1	SETS_REPS	false	-	-	---
+56	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	FL	---
+57	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+58	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:body weight,2:hyperextension bench	-	---
+59	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+60	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+61	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:pull-up bar,2:other	HG OH	---
+62	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:pull-up bar,2:other	HG OH	---
+63	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL OH	---
+64	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:pull-up bar	HG OH	---
+65	back	upper back	CORE_STABILITY	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+66	back	lats	MOBILITY	1	DURATION	false	1:bench	OH	--E
+67	upper legs	quads	MOBILITY	1	DURATION	false	-	FL KN	--E
+68	upper legs	glutes	TRUNK_FLEXION	1	SETS_REPS	false	-	OH	---
+69	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	1:stability ball	-	---
+70	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:medicine ball	FL	---
+71	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+72	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	KN	---
+73	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	KN	---
+74	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	KN HG OH	---
+75	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	KN HG OH	---
+76	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	HG OH	---
+77	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	HG OH	---
+78	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	KN	---
+93	upper legs	quads	LOCOMOTION_CARDIO	2	SETS_REPS	false	-	HI	-A-
+94	upper legs	quads	BALANCE_CONTROL	1	DURATION	false	1:balance board	-	---
+95	lower arms	forearms	WRIST_FOREARM	1	SETS_REPS	true	1:band	-	---
+96	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:band,2:step platform	-	---
+97	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:band,2:step platform	-	---
+98	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:band	-	---
+99	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:band	-	---
+100	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:band	-	---
+101	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:band	OH	---
+102	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:band,2:bench	-	---
+103	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:band	FL	---
+104	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:band	FL OH	---
+105	waist	abs	CORE_STABILITY	1	SETS_REPS	false	1:band,2:ab wheel	FL KN	---
+106	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:band	FL	---
+107	waist	abs	CORE_STABILITY	1	SETS_REPS	false	1:band	-	---
+108	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:band	FL OH	---
+109	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:band	FL KN	---
+110	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:band	FL	---
+111	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:band	FL	---
+112	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:band	FL	---
+113	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:band,2:pull-up bar	HG OH	---
+114	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:band	OH	---
+115	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:band	OH	---
+116	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:band	OH	---
+117	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:band	FL KN OH	---
+118	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:band	-	---
+119	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:band	FL	---
+120	back	traps	SCAPULAR_ELEVATION	1	SETS_REPS	true	1:band	-	---
+121	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:band	-	---
+122	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:band	FL	---
+123	upper legs	glutes	OTHER	1	SETS_REPS	false	1:band	FL	---
+124	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:band,2:bench,2:plyo box	-	---
+125	upper legs	glutes	HIP_HINGE	1	SETS_REPS	false	1:band	-	---
+126	upper legs	glutes	OTHER	1	SETS_REPS	false	1:band	-	---
+127	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:band,2:bench,2:plyo box	-	---
+128	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:band	-	---
+129	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:band	FL	---
+130	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:band	-	---
+131	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:band	-	---
+132	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:band	-	---
+133	lower arms	forearms	WRIST_FOREARM	1	SETS_REPS	true	1:band	-	---
+134	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:band	-	---
+135	shoulders	delts	HORIZONTAL_PULL	1	SETS_REPS	false	1:band	-	---
+136	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:band	OH	---
+137	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:band	OH	---
+138	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:band	-	---
+139	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:band	-	---
+140	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:band	FL OH	---
+141	waist	abs	CORE_STABILITY	1	SETS_REPS	false	1:band	OH	---
+142	upper legs	hamstrings	HIP_HINGE	1	SETS_REPS	false	1:band	AX	---
+143	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:band	OH	---
+144	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	1:band	-	---
+145	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	1:band	-	---
+146	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	1:band,2:plyo box,2:step platform	-	---
+147	upper legs	glutes	HIP_HINGE	1	SETS_REPS	false	1:band	AX	---
+148	upper legs	glutes	HIP_HINGE	1	SETS_REPS	false	1:band	AX	---
+149	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:barbell	AX	---
+150	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:barbell	-	---
+151	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+152	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	INV	---
+153	chest	pectorals	SHOULDER_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH INV	---
+154	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	INV	---
+155	chest	pectorals	SHOULDER_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH	---
+156	back	lats	SHOULDER_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH	---
+157	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+158	back	lats	SHOULDER_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH INV	---
+159	back	lats	SHOULDER_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH INV	---
+160	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell,2:bench	AX	---
+161	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell,2:bench	AX	---
+162	upper legs	quads	VERTICAL_PUSH	3	SETS_REPS	false	1:barbell	HI AX OH	---
+163	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+164	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+165	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+166	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+167	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+168	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+169	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+170	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+171	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	INV	---
+172	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+173	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell,2:bench	FL KN	---
+174	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell,2:bench	FL KN	---
+175	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell	HI AX OH	---
+176	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+177	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:barbell,2:bench	-	---
+178	chest	serratus anterior	SHOULDER_RAISE	2	SETS_REPS	true	1:barbell,2:bench	OH	---
+179	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:barbell,2:bench	-	---
+180	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+181	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+182	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+183	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+184	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+185	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+186	upper legs	glutes	HIP_EXTENSION	3	SETS_REPS	false	1:barbell	FL	---
+187	upper legs	glutes	HIP_EXTENSION	3	SETS_REPS	false	1:barbell,2:bench	FL	---
+188	upper legs	hamstrings	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+189	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+190	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+191	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+192	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	HI AX	-A-
+193	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+194	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+195	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+196	upper legs	glutes	HIP_EXTENSION	3	SETS_REPS	false	1:barbell,2:bench	-	---
+197	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+198	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+199	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell,2:bench	AX	---
+200	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX OH	---
+201	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:barbell,2:bench	-	---
+202	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:barbell,2:bench	-	---
+203	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+204	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH	---
+205	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+206	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH	---
+207	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	-	---
+208	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell,2:bench	-	---
+209	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	-	---
+210	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	-	---
+211	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell	FL	---
+212	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench,3:squat rack	-	---
+213	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell	-	---
+214	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell,2:bench	-	---
+215	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:barbell	-	---
+216	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:barbell	-	---
+217	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:barbell	-	---
+218	shoulders	delts	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+219	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:barbell	AX OH	---
+220	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:barbell	AX OH	---
+221	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:barbell	AX OH	---
+222	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	INV	---
+223	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:barbell,2:bench	-	---
+224	waist	abs	TRUNK_FLEXION	3	SETS_REPS	false	1:barbell,2:bench	OH	---
+225	waist	abs	CORE_STABILITY	3	SETS_REPS	false	1:barbell	FL KN OH	---
+226	waist	abs	CORE_STABILITY	3	SETS_REPS	false	1:barbell,2:bench	FL KN OH	---
+227	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:barbell	AX	---
+228	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:barbell	-	---
+229	waist	abs	TRUNK_FLEXION	3	SETS_REPS	false	1:barbell	FL OH	---
+230	back	lats	SHOULDER_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	OH	---
+231	back	lats	VERTICAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	OH	---
+232	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+233	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:barbell,2:bench	-	---
+234	back	traps	SCAPULAR_ELEVATION	3	SETS_REPS	true	1:barbell	AX	---
+235	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell,2:squat rack	AX	---
+236	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+237	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell,2:step platform	AX	---
+238	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+239	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:barbell	AX	---
+240	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+241	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+242	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+243	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell,2:bench	AX	---
+244	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell,2:preacher bench	-	---
+245	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:barbell,2:bench	-	---
+246	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+247	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+248	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell,2:bench	-	---
+249	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell,2:preacher bench	-	---
+250	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:barbell	OH	---
+251	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:barbell	-	---
+252	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:barbell	OH	---
+253	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	FL KN	---
+254	upper legs	glutes	TRUNK_FLEXION	1	SETS_REPS	false	-	OH	---
+256	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell	-	---
+257	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell,2:bench	-	---
+258	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell	-	---
+259	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:barbell	AX	---
+260	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:barbell,2:step platform	AX	---
+261	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:barbell	AX	---
+262	shoulders	delts	SHOULDER_EXTENSION	3	SETS_REPS	false	1:barbell	HI	---
+263	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:barbell	AX OH	---
+264	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:barbell	AX OH	---
+265	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:barbell	OH	---
+266	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:barbell	AX OH	---
+267	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	HI AX OH	---
+268	shoulders	delts	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+269	shoulders	delts	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	OH	---
+270	shoulders	delts	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	OH	---
+271	shoulders	delts	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+272	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+273	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:barbell,2:bench	-	---
+274	waist	abs	TRUNK_FLEXION	3	SETS_REPS	false	1:barbell	FL OH	---
+275	waist	abs	CORE_STABILITY	3	SETS_REPS	false	1:barbell	FL OH	---
+276	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:barbell	AX	---
+277	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+278	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+279	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	FL AX KN	---
+280	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell,2:step platform	HI AX	-A-
+281	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell,2:bench,2:plyo box,2:step platform	AX	---
+282	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+283	upper legs	hamstrings	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+284	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:barbell	AX	---
+285	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+286	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+287	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+288	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+289	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:barbell	OH	---
+290	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+291	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+292	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:barbell	-	---
+293	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI FL OH	-A-
+294	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	-	-	---
+295	lower legs	calves	BALANCE_CONTROL	2	SETS_REPS	false	1:bench	HI	-A-
+296	waist	abs	CORE_STABILITY	1	DURATION	false	1:bench	FL	---
+297	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+298	waist	abs	LOCOMOTION_CARDIO	1	DURATION	false	-	FL	---
+299	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+300	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:bench,1:pull-up bar	HG OH	---
+301	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:body weight,2:wall bars	-	---
+302	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:body weight,2:wall bars	-	---
+303	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:body weight,2:wall bars	-	---
+304	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:body weight,2:wall bars	-	---
+305	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:body weight,2:wall bars	-	---
+306	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:body weight,2:wall bars	-	---
+307	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:body weight,2:wall bars	-	---
+308	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:body weight,2:wall bars	-	---
+309	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:bench	KN	---
+310	upper legs	glutes	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+311	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	-	HI	-A-
+312	upper legs	adductors	MOBILITY	1	DURATION	false	-	FL	---
+313	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	-	---
+314	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	-	---
+315	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	-	-	---
+316	upper arms	biceps	HORIZONTAL_PULL	1	SETS_REPS	false	1:pull-up bar,1:smith machine	FL	---
+317	upper arms	biceps	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+318	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+319	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	-	FL KN	---
+320	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	-	FL	---
+321	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:cable	OH	---
+322	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:cable	-	---
+323	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:cable,2:bench	-	---
+324	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable	-	---
+325	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+326	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+327	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	true	1:cable	KN	---
+328	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	OH	---
+329	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+330	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+331	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	FL KN	---
+333	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:cable	-	---
+334	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:cable	-	---
+335	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:cable	-	---
+336	shoulders	delts	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	FL KN	---
+337	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:cable	-	---
+338	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable,2:bench	-	---
+339	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:cable,2:bench	-	---
+340	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:cable,2:bench	INV	---
+341	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:cable,2:bench	-	---
+342	chest	pectorals	HORIZONTAL_ADDUCTION	1	SETS_REPS	true	1:cable,2:bench	-	---
+343	chest	pectorals	HORIZONTAL_ADDUCTION	1	SETS_REPS	true	1:cable,2:stability ball	-	---
+344	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable	-	---
+345	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable,2:bench	-	---
+346	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable	-	---
+347	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable	-	---
+348	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:cable	FL KN	---
+349	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+350	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	FL	---
+351	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	FL KN OH	---
+352	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable,2:bench	-	---
+353	back	lats	SHOULDER_EXTENSION	1	SETS_REPS	true	1:cable,2:bench	OH	---
+354	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+355	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+356	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+357	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+358	back	lats	SHOULDER_EXTENSION	2	SETS_REPS	true	1:cable,2:bench	OH	---
+359	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:cable	-	---
+360	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:cable	AX	---
+361	upper legs	adductors	HIP_ABDUCTION_ADDUCTION	2	SETS_REPS	true	1:cable	-	---
+362	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+363	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+364	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+365	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	OH	---
+366	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:cable,2:bench	OH	---
+367	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+368	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:cable,2:bench	FL KN	---
+369	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:bench	-	---
+370	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:bench	-	---
+371	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	FL	---
+372	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:cable	-	---
+373	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:cable	-	---
+374	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:cable	-	---
+375	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+376	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+377	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:cable,2:bench	INV	---
+378	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:cable,2:stability ball	-	---
+379	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable,2:stability ball	-	---
+380	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:cable,2:bench	-	---
+381	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:cable,2:stability ball	-	---
+382	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	false	1:cable	-	---
+383	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:cable,2:stability ball	-	---
+384	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:cable,2:stability ball	-	---
+385	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:cable	FL	---
+386	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:cable	OH	---
+387	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	FL KN OH	---
+388	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+389	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+390	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+391	back	lats	SHOULDER_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+392	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+393	back	upper back	VERTICAL_PULL	1	SETS_REPS	false	1:cable	OH	---
+394	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+395	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+396	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:cable	-	---
+397	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:cable,2:preacher bench	-	---
+398	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:cable,2:preacher bench	-	---
+399	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:cable	-	---
+400	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+401	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:stability ball	OH	---
+402	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	OH	---
+403	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:preacher bench	-	---
+404	upper arms	biceps	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+405	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+406	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+407	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+408	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+409	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+410	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:cable	-	---
+411	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:preacher bench	-	---
+412	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+413	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:cable	-	---
+414	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:cable	-	---
+415	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:cable	-	---
+416	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:cable	-	---
+417	shoulders	delts	OTHER	1	SETS_REPS	false	1:cable	FL	---
+418	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:cable	OH	---
+419	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:cable	-	---
+420	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+421	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:cable	-	---
+422	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable	-	---
+423	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable,2:stability ball	-	---
+424	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:cable	-	---
+425	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:cable	-	---
+426	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable	-	---
+427	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable,2:bosu ball	FL	---
+428	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable	-	---
+429	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:cable	-	---
+430	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:cable	-	---
+431	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable	OH	---
+432	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable,2:bench	-	---
+433	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+434	back	lats	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	OH	---
+435	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+436	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+437	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+438	back	traps	SCAPULAR_ELEVATION	2	SETS_REPS	true	1:cable	-	---
+439	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:cable	-	---
+440	upper legs	glutes	HIP_EXTENSION	2	SETS_REPS	false	1:cable	-	---
+441	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable,2:preacher bench	-	---
+442	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	OH	---
+443	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:cable,2:bench	OH	---
+444	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	FL	---
+445	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:cable,2:preacher bench	-	---
+446	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:cable	-	---
+447	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+448	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:cable	-	---
+449	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	false	1:cable	-	---
+450	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:cable	-	---
+451	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:cable	-	---
+452	upper arms	biceps	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+453	lower legs	calves	MOBILITY	1	DURATION	false	-	-	--E
+454	lower legs	calves	MOBILITY	1	DURATION	false	-	-	--E
+455	lower legs	calves	MOBILITY	1	DURATION	false	-	-	--E
+456	chest	pectorals	MOBILITY	1	DURATION	false	-	OH	--E
+457	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:parallel bars	-	---
+458	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:parallel bars	-	---
+459	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:parallel bars	-	---
+460	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	HI FL	---
+461	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	HI FL	---
+462	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:captains chair	-	---
+463	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+464	back	upper back	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+465	upper legs	quads	MOBILITY	1	DURATION	false	-	-	---
+466	chest	pectorals	MOBILITY	1	DURATION	false	1:stability ball	FL KN	--E
+468	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell,2:bench	-	---
+469	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:cable	-	---
+470	shoulders	delts	OTHER	2	SETS_REPS	false	1:cable	-	---
+471	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:cable,2:bench	-	---
+472	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+473	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable	-	---
+474	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:cable	OH	---
+475	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:cable	FL	---
+476	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable	-	---
+477	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:cable	OH	---
+478	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+479	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+480	back	lats	SHOULDER_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+481	back	lats	SHOULDER_EXTENSION	2	SETS_REPS	true	1:cable	OH	---
+482	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:cable	-	---
+483	back	lats	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+484	back	lats	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+485	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+486	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:cable	-	---
+487	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+488	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:cable	OH	---
+489	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+490	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+491	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:cable,2:bench	-	---
+492	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:cable	-	---
+493	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:bench,2:step platform	-	---
+494	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+495	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	FL INV	---
+496	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	HI FL KN	---
+497	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL OH	---
+498	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+499	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+500	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL OH	---
+501	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+502	waist	abs	TRUNK_FLEXION	1	SETS_REPS	true	-	FL	---
+503	waist	abs	CORE_STABILITY	1	SETS_REPS	false	-	FL OH	---
+504	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:body weight,2:bench	INV	---
+505	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:body weight,2:bench	INV	---
+506	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+507	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+508	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+509	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL KN	---
+510	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+511	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	OH	---
+512	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+513	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+514	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:bench	OH	---
+515	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell	FL	---
+516	chest	pectorals	SHOULDER_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+517	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+518	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell	-	---
+519	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+520	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+521	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+522	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+523	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+524	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell	-	---
+525	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+526	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+527	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	-	---
+528	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+529	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+530	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:stability ball	-	---
+531	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:stability ball	-	---
+532	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	1:stationary bike	-	---
+533	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	1:dumbbell	HI FL OH	-A-
+534	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell	-	---
+535	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+536	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+537	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+538	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+539	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+540	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	INV	---
+541	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:dumbbell,2:bench	INV	---
+542	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	INV	---
+543	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:dumbbell,2:bench	INV	---
+544	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:dumbbell,2:bench	INV	---
+545	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+546	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+547	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+548	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+549	back	traps	SCAPULAR_ELEVATION	2	SETS_REPS	true	1:dumbbell,2:bench	INV	---
+550	back	traps	SCAPULAR_ELEVATION	2	SETS_REPS	true	1:dumbbell,2:bench	INV	---
+551	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:dumbbell	HI AX	---
+552	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	-	---
+553	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:dumbbell	AX	---
+554	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	-	---
+555	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+556	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+557	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+558	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	-	---
+559	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bosu ball	-	---
+560	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+561	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+562	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+563	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+564	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+565	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:dumbbell,2:bench	INV	---
+566	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	INV	---
+567	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	OH	---
+568	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+569	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+570	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+571	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+572	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+573	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+574	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	false	1:dumbbell,2:bench	OH	---
+575	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+576	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+577	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+578	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+579	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+580	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+581	chest	pectorals	HORIZONTAL_ADDUCTION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+582	chest	pectorals	HORIZONTAL_ADDUCTION	1	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+583	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+584	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+585	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+586	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+587	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+588	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+589	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+590	chest	serratus anterior	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+591	chest	pectorals	HORIZONTAL_ADDUCTION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+592	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+593	back	traps	SCAPULAR_ELEVATION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+594	back	upper back	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+595	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	-	---
+596	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+597	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+598	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+599	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+600	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+601	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+602	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+603	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+604	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+605	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+606	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	KN	---
+607	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:stability ball	FL KN	---
+608	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:stability ball	FL KN	---
+609	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	AX	---
+610	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+611	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+612	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+613	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+614	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell	FL OH	---
+615	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+616	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell	FL	---
+617	shoulders	delts	OTHER	2	SETS_REPS	false	1:dumbbell	FL	---
+618	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	FL OH	---
+619	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+620	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+621	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+622	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell	-	---
+623	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell	-	---
+624	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+625	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:dumbbell,2:bench	-	---
+626	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:dumbbell,2:bench	-	---
+627	chest	pectorals	SHOULDER_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:stability ball	OH	---
+628	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+629	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+630	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:dumbbell,2:bench	INV	---
+631	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+632	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+633	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+634	chest	pectorals	SHOULDER_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:stability ball	OH	---
+635	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+636	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:dumbbell,2:bench	-	---
+637	upper legs	hamstrings	KNEE_DOMINANT	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+638	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+639	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+640	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+641	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+642	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+643	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+644	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+645	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+646	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+647	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:stability ball	OH	---
+648	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+649	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+650	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell	-	---
+651	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+652	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+653	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:dumbbell	-	---
+654	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell	-	---
+655	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:dumbbell	-	---
+656	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:dumbbell,2:bench	FL KN	---
+657	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:dumbbell,2:bench	FL KN	---
+658	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell,2:bench	FL KN	---
+659	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell,2:bench	FL KN	---
+660	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell	-	---
+661	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:dumbbell	AX OH	---
+662	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:dumbbell	AX OH	---
+663	shoulders	delts	HORIZONTAL_PULL	3	SETS_REPS	false	1:dumbbell	-	---
+664	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+665	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+666	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+667	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:dumbbell,2:bench	-	---
+668	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+669	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:stability ball	-	---
+670	chest	pectorals	SHOULDER_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+671	chest	pectorals	SHOULDER_EXTENSION	2	SETS_REPS	false	1:dumbbell,2:stability ball	OH	---
+672	chest	pectorals	SHOULDER_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:stability ball	OH	---
+673	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell	-	---
+674	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:dumbbell	HI AX OH	---
+675	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:dumbbell	HI	---
+676	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+677	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+678	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+679	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+680	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell	-	---
+681	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell	-	---
+682	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+683	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+684	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell,2:bench	FL KN	---
+685	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:dumbbell,2:bench	FL KN	---
+686	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+687	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+688	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+689	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:stability ball	FL KN	---
+690	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+691	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+692	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+693	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell	-	---
+694	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:dumbbell	-	---
+695	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:dumbbell	-	---
+696	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell,2:bench	KN	---
+697	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+698	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+699	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+700	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+701	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+702	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+703	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell	-	---
+704	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:dumbbell	AX OH	---
+705	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:dumbbell	OH	---
+706	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell	-	---
+707	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell	-	---
+708	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell	-	---
+709	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:dumbbell	-	---
+710	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+711	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell,2:bench	KN	---
+712	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:dumbbell,2:bench	-	---
+713	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell	-	---
+714	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	AX	---
+715	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:dumbbell	AX	---
+716	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+717	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+718	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+719	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+720	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+721	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell	-	---
+722	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell	-	---
+723	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell	-	---
+724	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+725	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:dumbbell	AX OH	---
+726	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell	-	---
+727	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell	-	---
+728	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell	-	---
+729	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell	-	---
+730	lower arms	forearms	WRIST_FOREARM	1	SETS_REPS	true	1:dumbbell	-	---
+731	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:stability ball	-	---
+732	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell	-	---
+733	lower arms	forearms	WRIST_FOREARM	1	SETS_REPS	true	1:dumbbell	-	---
+734	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+735	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+736	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+737	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:dumbbell	-	---
+738	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:dumbbell,2:step platform	-	---
+739	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:dumbbell	AX OH	---
+740	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:dumbbell	AX OH	---
+741	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:dumbbell,2:bench	-	---
+742	shoulders	delts	OTHER	3	SETS_REPS	false	1:dumbbell	OH	---
+743	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+744	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	-	---
+745	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	OH	---
+746	shoulders	delts	SHOULDER_RAISE	2	SETS_REPS	true	1:dumbbell	OH	---
+747	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:dumbbell	AX OH	---
+748	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:dumbbell	-	---
+749	back	traps	SCAPULAR_ELEVATION	2	SETS_REPS	true	1:dumbbell	-	---
+750	back	upper back	SHOULDER_RAISE	2	DURATION	true	1:dumbbell	FL	---
+751	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:dumbbell	AX	---
+752	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:dumbbell,2:bench,2:plyo box,2:step platform	AX	---
+753	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:dumbbell,2:bench	-	---
+754	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:dumbbell	-	---
+755	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell	AX	---
+756	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell,2:bench	-	---
+757	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:dumbbell	-	---
+758	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell	OH	---
+759	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell	OH	---
+760	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+761	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell	-	---
+762	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell	-	---
+763	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell	-	---
+764	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+765	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+766	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+767	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell	-	---
+768	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell	-	---
+769	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+770	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+771	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:dumbbell	OH	---
+772	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:dumbbell	-	---
+773	chest	pectorals	MOBILITY	1	DURATION	false	-	-	--E
+774	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+775	back	upper back	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+777	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:parallel bars	-	---
+778	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+779	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	OH	---
+780	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell	-	---
+781	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:dumbbell	-	---
+782	shoulders	delts	OTHER	2	SETS_REPS	false	1:dumbbell	OH	---
+783	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:dumbbell	AX OH	---
+784	chest	pectorals	SHOULDER_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+785	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell,2:bench,2:plyo box,2:step platform	-	---
+786	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell,2:bench,2:plyo box,2:step platform	-	---
+787	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:dumbbell,2:bench,2:plyo box,2:step platform	-	---
+788	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:dumbbell	AX	---
+789	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:dumbbell	AX	---
+790	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:dumbbell	-	---
+791	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	1:dumbbell,2:bench,2:plyo box	AX	---
+792	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+793	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+794	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell	OH	---
+795	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+796	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:dumbbell,2:plyo box,2:step platform	-	---
+797	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell,2:bench	OH	---
+798	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:dumbbell	-	---
+799	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell,2:bench	-	---
+800	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+801	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell	-	---
+802	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:dumbbell,2:preacher bench	-	---
+803	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:dumbbell	OH	---
+804	back	lats	SHOULDER_RAISE	1	SETS_REPS	true	1:stability ball	FL	---
+805	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	1:stability ball	FL KN OH	---
+806	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	1:stability ball	OH	---
+807	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	1:stability ball	-	---
+808	back	spine	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:stability ball	-	---
+809	back	spine	MOBILITY	1	SETS_REPS	false	1:stability ball	FL	---
+810	back	lats	MOBILITY	1	DURATION	false	1:stability ball	FL KN OH	--E
+811	upper legs	glutes	MOBILITY	1	DURATION	false	1:stability ball	KN	--E
+812	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:stability ball	FL	---
+813	waist	abs	CORE_STABILITY	3	SETS_REPS	false	1:body weight,2:vertical pole	HG OH	---
+814	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+815	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL OH	---
+816	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:stability ball,2:dumbbell	-	---
+817	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:stability ball,2:dumbbell	-	---
+818	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:stability ball,2:dumbbell	-	---
+819	upper legs	quads	OTHER	2	DURATION	false	1:dumbbell	AX	---
+820	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:stability ball,2:dumbbell	-	---
+821	chest	pectorals	VERTICAL_PUSH	2	SETS_REPS	false	1:stability ball	FL OH INV	---
+822	back	lats	MOBILITY	1	DURATION	false	1:stability ball	FL KN	--E
+823	back	lats	MOBILITY	1	DURATION	false	1:stability ball	FL OH	--E
+824	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:stability ball	FL	---
+825	upper legs	glutes	OTHER	2	SETS_REPS	false	1:stability ball	FL	---
+826	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:stability ball	FL	---
+827	upper legs	hamstrings	MOBILITY	1	DURATION	false	1:stability ball	-	--E
+828	upper arms	triceps	MOBILITY	1	DURATION	false	1:stability ball	OH	--E
+829	lower arms	forearms	WRIST_FOREARM	3	SETS_REPS	true	1:barbell	-	---
+830	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:ez barbell,2:bench	AX OH	---
+831	back	lats	SHOULDER_EXTENSION	3	SETS_REPS	true	1:ez barbell,2:bench	OH	---
+832	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:ez barbell	-	---
+833	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:ez barbell,2:stability ball	OH	---
+834	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:ez barbell,2:bench	OH	---
+835	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:ez barbell	-	---
+836	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:ez barbell	OH	---
+837	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell,2:preacher bench	-	---
+838	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	---
+839	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	---
+840	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:ez barbell,2:bench	INV	---
+841	upper arms	triceps	ELBOW_EXTENSION	3	SETS_REPS	true	1:ez barbell,2:bench	INV	---
+842	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:ez barbell,2:bench	OH	---
+843	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:ez barbell,2:bench	-	---
+844	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	---
+845	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell,2:preacher bench	-	---
+846	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:ez barbell	-	---
+847	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:ez barbell	OH	---
+848	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell,2:bench	-	---
+849	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell,2:preacher bench	-	---
+850	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	---
+851	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:ez barbell,2:bench	-	---
+852	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	---
+853	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	---
+854	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	M--
+855	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	FL	---
+856	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+857	waist	abs	CORE_STABILITY	3	SETS_REPS	false	-	FL	---
+858	waist	abs	CORE_STABILITY	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+859	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	DURATION	false	-	FL	---
+860	waist	abs	CORE_STABILITY	3	SETS_REPS	false	-	FL	---
+861	waist	abs	CORE_STABILITY	3	SETS_REPS	false	-	FL	---
+862	waist	abs	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+863	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+864	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+865	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:pull-up bar	HG OH	---
+866	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:pull-up bar	HG OH	---
+867	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:pull-up bar	HG OH	---
+868	waist	abs	TRUNK_FLEXION	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+869	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:pull-up bar	HG OH	---
+870	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:pull-up bar	HG OH	---
+871	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:pull-up bar,2:other	HG OH	---
+872	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+873	back	upper back	CORE_STABILITY	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+874	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+875	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:bench	-	---
+876	upper legs	quads	LOCOMOTION_CARDIO	2	SETS_REPS	false	-	HI	-A-
+877	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+878	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	-	FL	---
+879	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:bench	FL	---
+880	upper legs	hamstrings	KNEE_DOMINANT	3	SETS_REPS	false	1:body weight,2:ghd bench	KN	---
+881	upper legs	hamstrings	MOBILITY	1	DURATION	false	-	FL	--E
+882	upper legs	glutes	TRUNK_FLEXION	1	SETS_REPS	false	-	OH	---
+883	upper legs	glutes	TRUNK_FLEXION	1	SETS_REPS	false	-	OH	---
+884	upper legs	glutes	MOBILITY	1	SETS_REPS	false	-	FL	---
+885	upper arms	triceps	BALANCE_CONTROL	3	SETS_REPS	false	-	FL OH INV	---
+886	upper arms	triceps	VERTICAL_PUSH	3	SETS_REPS	false	-	FL OH INV	---
+887	chest	pectorals	HORIZONTAL_ADDUCTION	2	SETS_REPS	true	1:dumbbell,2:bench	-	---
+888	chest	pectorals	HORIZONTAL_ADDUCTION	3	SETS_REPS	true	1:barbell	FL KN	---
+889	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	AX	---
+893	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI FL OH	-A-
+894	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	-	HI OH	-A-
+895	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench,2:step platform	HI FL	---
+896	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:step platform	-	---
+897	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:plyo box,1:step platform	-	---
+898	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:smith machine	-	---
+899	chest	serratus anterior	HORIZONTAL_PUSH	1	SETS_REPS	false	1:body weight,2:bench	-	---
+900	chest	pectorals	HORIZONTAL_ADDUCTION	1	DURATION	true	-	-	---
+901	chest	pectorals	TRUNK_ROTATION_LATERAL_FLEXION	1	DURATION	false	-	FL	---
+902	waist	abs	LOCOMOTION_CARDIO	1	SETS_REPS	false	-	FL	---
+903	waist	abs	LOCOMOTION_CARDIO	1	SETS_REPS	false	-	FL	---
+904	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:body weight,2:bench	-	---
+905	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:body weight,2:bench	-	---
+906	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL OH	---
+907	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+908	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	1:hyperextension bench	-	---
+909	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	1:bench	-	---
+910	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:pull-up bar,1:smith machine,1:suspension straps	FL	---
+911	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:pull-up bar,1:smith machine	FL	---
+912	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:bench,2:pull-up bar,2:smith machine	FL	---
+913	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH INV	---
+914	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:suspension straps	FL	---
+915	upper legs	hamstrings	KNEE_DOMINANT	3	SETS_REPS	true	1:bench	KN	---
+916	upper legs	hamstrings	KNEE_DOMINANT	3	SETS_REPS	true	1:cable	KN	---
+917	upper legs	glutes	MOBILITY	1	DURATION	false	-	FL	--E
+918	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	-	HI	-A-
+919	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	-	HI	-A-
+920	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:parallel bars	-	---
+921	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:smith machine	-	---
+922	lower arms	forearms	ELBOW_FLEXION	3	SETS_REPS	false	1:kettlebell	HI AX	---
+923	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	OH	---
+924	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	AX OH	---
+925	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:kettlebell	FL	---
+926	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:kettlebell	AX OH	---
+927	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:kettlebell	OH	---
+928	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:kettlebell	FL	---
+929	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:kettlebell	-	---
+930	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	false	1:kettlebell	HI AX	---
+933	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL KN	---
+934	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:parallel bars	-	---
+935	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+936	waist	abs	CORE_STABILITY	1	DURATION	false	-	FL KN	---
+937	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:gymnastic rings	HI HG OH	---
+938	back	lats	MOBILITY	1	DURATION	false	-	FL KN OH	--E
+939	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+940	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	HI AX OH	---
+941	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	AX OH	---
+942	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:kettlebell	HI AX OH	---
+943	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	HI AX OH	---
+944	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	HI AX OH	---
+945	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	AX OH	---
+946	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	AX OH	---
+947	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:kettlebell	HI AX OH	---
+948	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	OH	---
+949	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:kettlebell	FL AX OH	---
+950	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:kettlebell	AX OH	---
+951	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	AX OH	---
+952	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:kettlebell	HI AX OH	---
+953	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:kettlebell	HI AX	---
+954	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:kettlebell	AX OH	---
+955	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:kettlebell	FL	---
+956	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:kettlebell	FL	---
+957	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:kettlebell	HI FL	---
+958	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:kettlebell	AX OH	---
+959	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:kettlebell	-	---
+960	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:kettlebell	AX OH	---
+961	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:kettlebell	-	---
+962	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:kettlebell	AX	---
+963	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:kettlebell	-	---
+964	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:kettlebell	AX	---
+965	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:kettlebell	-	---
+966	upper legs	hamstrings	HIP_HINGE	3	SETS_REPS	false	1:kettlebell	HI AX	---
+967	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:kettlebell	-	---
+968	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:kettlebell	-	---
+969	upper legs	glutes	HIP_HINGE	3	SETS_REPS	false	1:kettlebell	-	---
+970	upper legs	glutes	OTHER	3	SETS_REPS	false	1:kettlebell	FL AX KN OH	---
+971	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	false	1:kettlebell	HI AX	---
+972	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	HI FL AX KN	-A-
+973	shoulders	delts	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	-	---
+974	waist	abs	CORE_STABILITY	3	DURATION	false	-	FL	---
+975	waist	abs	CORE_STABILITY	3	SETS_REPS	false	-	FL	---
+976	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:bench	-	---
+977	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:captains chair,1:pull-up bar	HG OH	---
+978	upper legs	hamstrings	MOBILITY	1	DURATION	false	-	FL	--E
+979	shoulders	delts	SHOULDER_RAISE	3	SETS_REPS	true	1:barbell,2:landmine	OH	---
+980	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	3	SETS_REPS	false	1:barbell,2:landmine	-	---
+981	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:barbell,2:landmine	-	---
+982	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:barbell	-	---
+983	lower arms	forearms	WRIST_FOREARM	1	SETS_REPS	true	1:leverage machine	-	---
+984	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+985	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+986	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:leverage machine	-	---
+987	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:leverage machine	AX OH	---
+988	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+989	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+990	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+991	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+992	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+993	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:leverage machine	KN	---
+994	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+995	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	KN HG OH	---
+996	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	1:leverage machine	-	---
+997	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:landmine,2:barbell	-	---
+998	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	OH	---
+999	back	traps	SCAPULAR_ELEVATION	1	SETS_REPS	true	1:leverage machine	AX	---
+1000	back	traps	SCAPULAR_ELEVATION	1	SETS_REPS	true	1:leverage machine	AX	---
+1001	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+1002	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+1003	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	1:leverage machine	-	---
+1004	upper legs	glutes	HIP_HINGE	1	SETS_REPS	false	1:leverage machine	AX	---
+1005	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:leverage machine	KN	---
+1006	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:leverage machine	-	---
+1007	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	true	1:leverage machine	KN	---
+1008	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	true	1:leverage machine	-	---
+1009	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	true	1:leverage machine	-	---
+1010	upper legs	hamstrings	KNEE_DOMINANT	2	SETS_REPS	true	1:leverage machine	-	---
+1011	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1012	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1014	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1015	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1016	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1017	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1018	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:leverage machine	AX	---
+1019	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:barbell,2:landmine	AX OH	---
+1020	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:leverage machine	-	---
+1021	shoulders	delts	SHOULDER_RAISE	1	SETS_REPS	true	1:leverage machine	-	---
+1022	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:barbell,2:landmine	AX OH	---
+1023	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:leverage machine	AX OH	---
+1024	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:leverage machine	AX OH	---
+1025	chest	pectorals	HORIZONTAL_ADDUCTION	1	SETS_REPS	true	1:leverage machine	-	---
+1026	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+1027	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:leverage machine	-	---
+1028	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:leverage machine	-	---
+1029	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:leverage machine	-	---
+1030	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:leverage machine	-	---
+1031	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:leverage machine	-	---
+1032	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:leverage machine	OH	---
+1033	back	lats	SHOULDER_EXTENSION	1	SETS_REPS	true	1:leverage machine	OH	---
+1034	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	OH	---
+1035	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+1036	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+1037	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+1038	back	traps	SCAPULAR_ELEVATION	1	SETS_REPS	true	1:leverage machine	-	---
+1039	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+1040	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	-	---
+1041	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:leverage machine	KN	---
+1042	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:leverage machine	-	---
+1043	upper legs	glutes	HIP_HINGE	1	SETS_REPS	false	1:leverage machine	AX	---
+1044	upper legs	abductors	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	1:leverage machine	-	---
+1045	upper legs	adductors	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	1:leverage machine	-	---
+1046	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	true	1:leverage machine	-	---
+1047	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+1048	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1049	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1050	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:leverage machine	-	---
+1051	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+1052	upper arms	triceps	ELBOW_EXTENSION	1	SETS_REPS	true	1:leverage machine	-	---
+1053	neck	levator scapulae	MOBILITY	1	DURATION	false	-	-	--E
+1054	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	FL	---
+1055	lower arms	forearms	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL KN	---
+1056	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:bench	-	---
+1057	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	-	-	---
+1058	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL INV	---
+1059	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+1060	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+1061	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:bench	-	---
+1062	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:bench	-	---
+1063	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:bench	-	---
+1064	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:bench	FL	---
+1065	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+1066	back	spine	TRUNK_EXTENSION	1	SETS_REPS	false	-	FL	---
+1067	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1068	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:gymnastic rings	HI HG OH	---
+1069	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HI HG OH	---
+1070	back	lats	MOBILITY	1	SETS_REPS	false	-	OH	---
+1071	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1072	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:body weight,2:anchor point	-	---
+1073	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	-	FL	---
+1074	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	-	HI	-A-
+1075	upper legs	quads	MOBILITY	1	DURATION	false	-	FL	--E
+1076	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+1077	upper legs	glutes	HIP_ABDUCTION_ADDUCTION	1	DURATION	true	-	-	---
+1078	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:bench	-	---
+1079	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:stability ball	FL	---
+1080	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	-	---
+1081	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	-	---
+1082	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	FL KN	---
+1083	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:medicine ball	FL KN	---
+1084	chest	pectorals	HORIZONTAL_PUSH	1	DURATION	false	1:medicine ball	HI	M--
+1085	waist	abs	SHOULDER_EXTENSION	2	SETS_REPS	true	1:medicine ball	HI OH	---
+1086	back	lats	KNEE_DOMINANT	1	SETS_REPS	false	1:medicine ball	OH	---
+1087	back	upper back	SHOULDER_EXTENSION	1	SETS_REPS	true	1:medicine ball	HI OH	---
+1088	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	FL	---
+1089	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	FL	---
+1092	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:leverage machine	-	---
+1093	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	---
+1094	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	HI FL	---
+1095	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	-	---
+1096	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1097	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	-	---
+1098	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	-	---
+1099	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1100	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	FL	---
+1101	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1102	waist	abs	MOBILITY	1	SETS_REPS	false	-	OH	---
+1103	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+1104	waist	abs	CORE_STABILITY	1	DURATION	false	-	FL	---
+1105	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1106	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	FL	---
+1107	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1108	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1109	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1110	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:bench,1:plyo box	-	---
+1111	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1112	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	-	FL	---
+1113	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL INV	---
+1114	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+1115	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1117	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	---
+1118	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	-	FL	---
+1119	upper arms	triceps	MOBILITY	1	DURATION	false	-	OH	--E
+1120	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1121	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:dumbbell	FL	---
+1122	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:stability ball	-	---
+1123	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:stability ball	FL	---
+1124	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:stability ball	FL	---
+1125	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:stability ball	FL	---
+1126	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:medicine ball	FL	---
+1129	upper legs	hamstrings	HIP_HINGE	3	SETS_REPS	false	1:barbell	HI AX	---
+1133	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	M--
+1134	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	1:treadmill	HI	M--
+1135	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	-A-
+1136	lower legs	calves	MOBILITY	1	DURATION	false	-	FL	--E
+1137	shoulders	delts	MOBILITY	1	DURATION	false	-	-	--E
+1138	chest	serratus anterior	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1139	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1140	waist	abs	CORE_STABILITY	1	DURATION	false	-	FL	---
+1141	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+1142	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:bench	-	---
+1143	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1144	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1145	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1146	back	traps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	-	---
+1147	back	traps	VERTICAL_PULL	1	SETS_REPS	false	1:pull-up bar	HG OH	---
+1148	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:bench	-	---
+1149	upper legs	glutes	MOBILITY	1	DURATION	false	-	FL KN	--E
+1150	upper legs	hamstrings	MOBILITY	1	DURATION	false	-	-	--E
+1151	upper legs	glutes	MOBILITY	1	DURATION	false	-	FL	--E
+1152	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1153	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:gymnastic rings	-	---
+1154	shoulders	delts	VERTICAL_PUSH	1	SETS_REPS	false	1:band	OH	---
+1155	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:band	-	---
+1156	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:band	-	---
+1157	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:band	FL KN	---
+1158	upper legs	quads	OTHER	1	SETS_REPS	false	1:band	-	---
+1159	upper legs	abductors	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	1:band	-	---
+1160	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:band	-	---
+1161	upper legs	glutes	HIP_EXTENSION	1	SETS_REPS	false	1:stability ball	FL	---
+1164	back	lats	VERTICAL_PULL	1	SETS_REPS	false	1:leverage machine	OH	---
+1173	neck	levator scapulae	MOBILITY	1	DURATION	false	-	-	--E
+1174	cardio	cardiovascular system	KNEE_DOMINANT	2	SETS_REPS	false	-	HI	-A-
+1175	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	M--
+1176	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	-A-
+1177	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	---
+1178	lower arms	forearms	MOBILITY	1	DURATION	false	-	-	--E
+1179	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1180	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	-	FL	---
+1181	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	-	---
+1182	waist	abs	CORE_STABILITY	1	SETS_REPS	false	1:plyo box,1:step platform	FL	---
+1183	waist	abs	CORE_STABILITY	1	SETS_REPS	false	-	FL	---
+1184	waist	abs	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	1:parallel bars	-	---
+1185	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	OH	---
+1186	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1187	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1188	back	lats	MOBILITY	1	DURATION	false	-	OH	--E
+1189	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1190	back	lats	MOBILITY	1	DURATION	false	-	FL OH	--E
+1191	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1192	back	upper back	MOBILITY	3	SETS_REPS	false	1:gymnastic rings	HG OH	---
+1193	upper legs	glutes	MOBILITY	1	DURATION	false	-	-	--E
+1194	upper legs	hamstrings	MOBILITY	1	DURATION	false	-	FL	---
+1195	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	true	1:ghd bench,1:leverage machine	FL KN	---
+1196	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	true	1:bench	FL KN	---
+1197	upper legs	hamstrings	KNEE_DOMINANT	1	SETS_REPS	true	1:step platform	FL KN	---
+1198	upper legs	abductors	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	-	FL	---
+1199	upper legs	abductors	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	-	FL	---
+1200	upper legs	adductors	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	-	FL	---
+1201	upper legs	adductors	HIP_ABDUCTION_ADDUCTION	2	DURATION	true	1:bench	FL	---
+1202	upper legs	glutes	HIP_EXTENSION	2	SETS_REPS	false	-	FL	---
+1204	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	-	-	---
+1205	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+1206	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1207	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:dumbbell	-	---
+1213	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:smith machine	AX	---
+1214	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:smith machine,2:step platform	AX	---
+1215	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:smith machine	-	---
+1216	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:smith machine	AX OH	---
+1217	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:smith machine	-	---
+1218	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	-	---
+1219	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	INV	---
+1220	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	INV	---
+1221	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	-	---
+1222	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	-	---
+1223	chest	serratus anterior	SHOULDER_RAISE	2	SETS_REPS	false	1:smith machine,2:bench	-	---
+1224	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	INV	---
+1225	waist	abs	TRUNK_FLEXION	2	SETS_REPS	false	1:smith machine	FL	---
+1226	back	traps	SCAPULAR_ELEVATION	2	SETS_REPS	true	1:smith machine	-	---
+1227	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:smith machine	-	---
+1228	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:smith machine	-	---
+1229	back	upper back	HORIZONTAL_PULL	3	SETS_REPS	false	1:smith machine	-	---
+1230	back	upper back	HORIZONTAL_PULL	2	SETS_REPS	false	1:smith machine	-	---
+1231	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:smith machine	AX	---
+1232	upper legs	quads	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	---
+1233	upper legs	glutes	HIP_HINGE	2	SETS_REPS	false	1:smith machine	AX	---
+1234	upper legs	glutes	KNEE_DOMINANT	3	SETS_REPS	false	1:smith machine	AX	---
+1235	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	---
+1236	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	---
+1237	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	FL	---
+1238	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	---
+1239	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	-	---
+1240	upper arms	biceps	ELBOW_FLEXION	2	SETS_REPS	true	1:smith machine	-	---
+1241	upper arms	triceps	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	INV	---
+1242	upper arms	triceps	ELBOW_EXTENSION	2	SETS_REPS	true	1:smith machine,2:bench	-	---
+1253	lower legs	calves	ANKLE_PLANTAR_FLEXION	1	SETS_REPS	true	1:body weight,2:step platform	-	---
+1254	lower legs	calves	MOBILITY	1	DURATION	true	-	-	--E
+1255	lower legs	calves	MOBILITY	1	DURATION	false	1:bench	-	--E
+1256	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+1257	back	spine	MOBILITY	1	SETS_REPS	false	-	FL	---
+1258	back	spine	MOBILITY	1	DURATION	false	-	FL	--E
+1259	back	upper back	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	-	-	---
+1260	back	lats	MOBILITY	1	DURATION	false	-	-	--E
+1261	back	spine	TRUNK_FLEXION	1	SETS_REPS	false	-	-	---
+1262	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1263	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+1264	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	-	OH	---
+1265	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	-	OH	---
+1266	upper legs	hamstrings	KNEE_DOMINANT	2	SETS_REPS	true	-	-	---
+1268	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	2	SETS_REPS	false	1:dumbbell	-	---
+1269	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:stability ball	-	---
+1271	shoulders	delts	VERTICAL_PUSH	3	SETS_REPS	false	1:barbell	AX OH	---
+1272	upper legs	quads	HIP_HINGE	3	SETS_REPS	false	1:barbell	HI AX	---
+1273	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:barbell	HI AX OH	---
+1274	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:smith machine	-	---
+1275	lower arms	forearms	WRIST_FOREARM	2	SETS_REPS	true	1:smith machine	-	---
+1276	lower legs	calves	ANKLE_PLANTAR_FLEXION	3	SETS_REPS	true	1:smith machine	-	---
+1277	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:smith machine	AX	---
+1278	lower legs	calves	ANKLE_PLANTAR_FLEXION	2	SETS_REPS	true	1:smith machine	-	---
+1279	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:smith machine	AX OH	---
+1280	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:smith machine	AX OH	---
+1281	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:smith machine	AX OH	---
+1282	shoulders	delts	VERTICAL_PUSH	2	SETS_REPS	false	1:smith machine	AX OH	---
+1283	shoulders	delts	HORIZONTAL_PULL	2	SETS_REPS	false	1:smith machine	-	---
+1284	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	-	---
+1285	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	-	---
+1286	chest	pectorals	HORIZONTAL_PUSH	2	SETS_REPS	false	1:smith machine,2:bench	INV	---
+1287	back	traps	SCAPULAR_ELEVATION	2	SETS_REPS	true	1:smith machine	-	---
+1288	upper legs	quads	KNEE_DOMINANT	3	SETS_REPS	false	1:smith machine,2:bench	AX	---
+1289	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	---
+1290	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	---
+1291	upper legs	glutes	KNEE_DOMINANT	2	SETS_REPS	false	1:smith machine	AX	---
+1293	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	-	HI OH	-A-
+1294	cardio	cardiovascular system	TRUNK_ROTATION_LATERAL_FLEXION	3	DURATION	false	1:pull-up bar	HG OH	---
+1295	cardio	cardiovascular system	KNEE_DOMINANT	1	SETS_REPS	false	-	-	M--
+1296	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	FL OH	---
+1297	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	1:suspension straps	FL	---
+1298	waist	abs	CORE_STABILITY	3	SETS_REPS	false	-	FL	---
+1299	waist	abs	CORE_STABILITY	3	SETS_REPS	false	-	FL	---
+1300	waist	abs	CORE_STABILITY	1	SETS_REPS	false	1:suspension straps	OH	---
+1301	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:suspension straps	FL	---
+1302	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1303	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:captains chair,1:parallel bars	-	---
+1304	waist	abs	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	1:captains chair,1:parallel bars	-	---
+1305	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	---
+1306	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:captains chair,1:parallel bars	-	---
+1307	back	upper back	HORIZONTAL_PULL	1	SETS_REPS	false	1:gymnastic rings,1:suspension straps	-	---
+1308	back	spine	TRUNK_FLEXION	1	SETS_REPS	false	-	OH	---
+1309	back	upper back	MOBILITY	1	DURATION	false	-	-	--E
+1310	back	spine	MOBILITY	1	SETS_REPS	false	-	FL	---
+1311	upper legs	abductors	HIP_ABDUCTION_ADDUCTION	1	SETS_REPS	true	-	-	---
+1312	upper legs	quads	KNEE_DOMINANT	1	SETS_REPS	false	1:suspension straps	-	---
+1313	upper legs	glutes	CORE_STABILITY	1	SETS_REPS	false	-	FL OH	---
+1314	upper legs	glutes	TRUNK_ROTATION_LATERAL_FLEXION	1	SETS_REPS	false	-	FL	---
+1315	upper legs	glutes	KNEE_DOMINANT	1	SETS_REPS	false	-	-	---
+1317	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:parallel bars	-	---
+1318	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:bench	-	---
+1320	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1321	upper arms	triceps	HORIZONTAL_PUSH	1	SETS_REPS	false	1:smith machine	-	---
+1322	upper arms	triceps	MOBILITY	1	DURATION	false	-	-	--E
+1323	back	lats	VERTICAL_PULL	2	SETS_REPS	false	1:cable	OH	---
+1324	cardio	cardiovascular system	LOCOMOTION_CARDIO	2	DURATION	false	1:stationary bike	-	---
+1325	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	1:treadmill	-	---
+1333	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	M--
+1334	chest	pectorals	HORIZONTAL_PUSH	1	SETS_REPS	false	-	FL	---
+1335	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	1:parallel bars	-	---
+1336	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1337	back	lats	VERTICAL_PULL	3	SETS_REPS	false	1:pull-up bar	HG OH	---
+1338	upper arms	biceps	ELBOW_FLEXION	1	SETS_REPS	true	1:medicine ball,2:stability ball	-	---
+1373	lower arms	forearms	MOBILITY	1	SETS_REPS	false	-	-	---
+1374	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	1:pull-up bar	HG OH	---
+1375	upper legs	hamstrings	MOBILITY	1	DURATION	false	-	FL KN	--E
