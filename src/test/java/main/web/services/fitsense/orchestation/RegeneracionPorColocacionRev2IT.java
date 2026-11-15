@@ -201,6 +201,70 @@ class RegeneracionPorColocacionRev2IT {
                 "la semana medida no se toca");
     }
 
+    @Autowired main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService publicados;
+
+    /**
+     * P-DOLOR-PUB (cierre tecnico conservador). El lunes se omite por dolor (P-02 excluye sus ejercicios). Los que se
+     * repiten en las sesiones todavia ABIERTAS de la misma semana quedan marcados con {@code dolor_registrado}: la
+     * sesion se puede empezar (no se bloquea entera), pero ese ejercicio solo se registra como omitido. No se anade
+     * ningun sustituto ni ninguna dosis: el plan publicado no cambia.
+     */
+    @Test
+    @DisplayName("P-DOLOR-PUB: el ejercicio que dolio queda marcado en las sesiones abiertas y solo se registra como omitido")
+    void dolorMarcadoEnSesionesAbiertas() {
+        long u = -1, plan = -1;
+        for (long id = 9_750; id < 9_770 && plan < 0; id++) {
+            long candidato = participante(id);
+            long p = planning.generateWeeklyPlan(candidato, S1, PlanAdjustment.none(), null, null).orElseThrow();
+            // Premisa: algun ejercicio del lunes se repite en otra sesion de la semana.
+            int repetidos = jdbc.queryForObject("SELECT count(*) FROM planned_workout_exercises a JOIN planned_workouts wa"
+                    + " ON wa.planned_workout_id = a.planned_workout_id JOIN planned_workout_exercises b ON b.exercise_id ="
+                    + " a.exercise_id JOIN planned_workouts wb ON wb.planned_workout_id = b.planned_workout_id WHERE"
+                    + " wa.plan_id = ? AND wb.plan_id = ? AND wb.scheduled_date > wa.scheduled_date AND wa.scheduled_date ="
+                    + " (SELECT min(scheduled_date) FROM planned_workouts WHERE plan_id = ?)", Integer.class, p, p, p);
+            if (repetidos > 0) {
+                u = candidato;
+                plan = p;
+            }
+        }
+        assertTrue(plan > 0, "premisa: algun participante 9750-9769 repite un ejercicio del lunes");
+        final long usuario = u;
+        var antes = colocaciones(plan);
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
+        var principal = UserDetailsImpl.build(usuarios.findById(u).orElseThrow());
+        var ids = jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts WHERE plan_id = ? ORDER BY"
+                + " scheduled_date", Long.class, plan);
+        planes.skip(principal, ids.get(0), new SkipWorkoutResource(SkipReason.PAIN_OR_DISCOMFORT));
+        var excluidos = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND status ="
+                + " 'ACTIVA'", Long.class, u);
+        assertFalse(excluidos.isEmpty(), "premisa: P-02 registra la exclusion");
+        long abierta = -1;
+        Long marcado = null;
+        for (long w : ids.subList(1, ids.size())) {
+            var repetidos = jdbc.queryForList("SELECT planned_exercise_id FROM planned_workout_exercises WHERE"
+                    + " planned_workout_id = ? AND exercise_id = ANY(?::bigint[])", Long.class, w,
+                    "{" + String.join(",", excluidos.stream().map(String::valueOf).toList()) + "}");
+            if (!repetidos.isEmpty()) {
+                abierta = w;
+                marcado = repetidos.get(0);
+                break;
+            }
+        }
+        assertNotNull(marcado, "premisa: algun ejercicio del lunes se repite en otra sesion abierta");
+        var vista = planning.fetchPlannedWorkout(abierta).orElseThrow();
+        assertEquals("dolor_registrado", vista.safetyConflicts().get(marcado), vista.safetyConflicts().toString());
+        assertFalse(vista.blockedForSafety(), "solo por dolor la sesion no se bloquea entera");
+        long s = sesiones.handle(new StartWorkoutSessionCommand(u, abierta)).orElseThrow().getId();
+        final long pe = marcado;
+        var error = assertThrows(main.web.services.fitsense.execution.domain.exceptions.WorkoutNotAvailableException.class,
+                () -> sesiones.handle(new RecordSessionExerciseCommand(usuario, s, pe, (short) 2, 20, null, null, null)));
+        assertTrue(error.getMessage().contains("dolor_registrado"), error.getMessage());
+        assertTrue(sesiones.handle(new RecordSessionExerciseCommand(u, s, pe, (short) 0, 0, null, null,
+                SkipReason.PAIN_OR_DISCOMFORT)).isPresent(), "se puede registrar como omitido");
+        assertEquals(antes, colocaciones(plan), "el plan publicado no cambia: sin sustitutos ni dosis nuevas");
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?", Long.class, u));
+    }
+
     private Recorrido comprobar(Recorrido r) {
         assertEquals("APLICADA", r.fatiga(), "premisa: el mantenimiento se aplico");
         assertEquals("SIN_ORDEN", r.copia(), "premisa: la copia lo hereda");
@@ -318,9 +382,18 @@ class RegeneracionPorColocacionRev2IT {
             switch (dias[i]) {
                 case HECHO -> {
                     long s = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+                    // P-DOLOR-PUB: lo que la sesion marca por dolor registrado solo se registra como omitido.
+                    var marcados = planning.fetchPlannedWorkout(w).map(v -> v.safetyConflicts().keySet())
+                            .orElse(Set.of());
                     for (var f : jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets,"
                             + " planned_reps, planned_duration_seconds FROM planned_workout_exercises"
                             + " WHERE planned_workout_id = ?", w)) {
+                        if (marcados.contains(((Number) f.get("planned_exercise_id")).longValue())) {
+                            sesiones.handle(new RecordSessionExerciseCommand(u, s,
+                                    ((Number) f.get("planned_exercise_id")).longValue(), (short) 0, 0, null, null,
+                                    SkipReason.OTHER));
+                            continue;
+                        }
                         boolean duracion = "DURATION".equals(f.get("prescription_type"));
                         int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
                         int total = series * ((Number) f.get(duracion ? "planned_duration_seconds" : "planned_reps")).intValue();
