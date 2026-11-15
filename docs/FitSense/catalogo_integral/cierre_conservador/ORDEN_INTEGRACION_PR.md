@@ -4,7 +4,7 @@
 
 ## 1. Composición verificada (HEAD, base y dependencias)
 
-Estado de GitHub del 15/11/2026, comprobado de nuevo en la fase 1 de la orden de finalización: las 12 PR siguen abiertas, sin fusionar y con el mismo HEAD. Todas son ancestros del commit candidato `eccff00` (`git merge-base --is-ancestor`).
+Estado de GitHub del 15/11/2026, comprobado de nuevo en la fase 1 de la orden de finalización: las 12 PR siguen abiertas, sin fusionar y con el mismo HEAD. Todas son ancestros del commit candidato `836a1f5` (`git merge-base --is-ancestor`).
 
 | PR | Rama (head) | Base | Contenido | En la candidata |
 |---|---|---|---|---|
@@ -35,7 +35,9 @@ Estado de GitHub del 15/11/2026, comprobado de nuevo en la fase 1 de la orden de
 | `ee780a5` | API del plan alineada con P-DOLOR-PUB; volcado congelado (`CatalogoCongeladoIT`) |
 | `c6aeced`, `b018d9f` | Clasificación A/B/C/D, orden de integración y limitaciones (solo documentos) |
 | `3493194` | **V56**: nombre e instrucciones del 853 según el GIF completo; sale de INC-CAT-CONS-v1; huella recapturada |
-| `eccff00` | **Commit candidato.** Pruebas: referencia de 72 conservadora aparte (la histórica intacta), los 10 casos de dolor publicado, HALL-GM-01 con contención |
+| `eccff00` | Pruebas: referencia de 72 conservadora aparte (la histórica intacta), los 10 casos de dolor publicado, HALL-GM-01 con contención. Su regresión completa dio 13 fallos y 1 error (ver `REGRESION_FINAL.md`) |
+| `70b50b4` | Documentos del cierre (sin código) |
+| `836a1f5` | **Commit candidato definitivo.** Pruebas que no contemplaban la contención ni P-DOLOR-PUB. Regresión completa: 1530 + 753, 0 fallos |
 | siguientes | Solo documentos y evidencias del cierre (resultados de la regresión, congelación). No tocan código ni pruebas: ver `VERSION_CONGELADA.md` |
 
 ## 3. Orden propuesto (todo sujeto a aprobación)
