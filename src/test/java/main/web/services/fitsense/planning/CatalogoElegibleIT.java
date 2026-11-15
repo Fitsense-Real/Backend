@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * {@link ExternalCatalogService#fetchEligibleFor} se compara, id por id, con un
  * ORACULO SQL escrito aparte desde las reglas -seguridad por edad, nivel y
  * declaradas; dificultad; equipamiento N:M de V23; bloqueos; retenidos
- * INC-4C-03; filtro funcional por objetivo- sin llamar al codigo de produccion
+ * INC-4C-03; contenidos INC-CAT-C39; filtro funcional por objetivo- sin llamar al codigo de produccion
  * que las implementa. Igualdad exacta: nada permitido se pierde y nada
  * incompatible entra.
  * <p>
@@ -86,6 +86,15 @@ class CatalogoElegibleIT {
             new Restricciones("TODAS", new SafetyProfile.Declaradas(false, false, false, false, false)));
 
     static final List<Long> RETENIDOS = List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1298L);
+
+    /*
+     * INC-CAT-C39 reducida a 8 sobre el catalogo integral (CORRECCIONES_SEGURIDAD.md §9), escrito aqui sin leer
+     * ContencionTextoBandera: apoyo suspendido (colgarse) y curl alto (brazos sobre la cabeza), pendientes de decision
+     * profesional. Solo salen para quien declara (o recibe por edad) esa restriccion. Suelo: ninguno (V49 corrigio
+     * todos los textos de suelo que la PR #55 original contenia).
+     */
+    static final List<Long> C39_COLGARSE = List.of(1153L, 1301L, 1303L, 1304L, 1306L);
+    static final List<Long> C39_CABEZA = List.of(131L, 400L, 448L);
 
     static final List<String> FILAS = new ArrayList<>();
 
@@ -223,6 +232,8 @@ class CatalogoElegibleIT {
         disponibles.add("body weight");
         var excluidos = new ArrayList<Long>(RETENIDOS);
         excluidos.addAll(bloqueados);
+        if (sinSuspension) excluidos.addAll(C39_COLGARSE);
+        if (sinOverhead) excluidos.addAll(C39_CABEZA);
 
         boolean cardio = !filtroAnterior && Set.of("LOSE_WEIGHT", "GENERAL_FITNESS").contains(objetivo);
         boolean movilidad = !filtroAnterior && "GENERAL_FITNESS".equals(objetivo);
