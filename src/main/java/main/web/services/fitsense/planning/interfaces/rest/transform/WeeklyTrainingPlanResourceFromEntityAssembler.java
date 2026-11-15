@@ -24,6 +24,9 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
 
     public static final String AVISO_BLOQUEO = "Esta sesion tiene un ejercicio que ya no es seguro para ti. "
             + "No la inicies: necesita una correccion.";
+    /** P-DOLOR-PUB: la sesion se puede hacer, pero el ejercicio marcado te causo dolor y solo se registra como omitido. */
+    public static final String AVISO_DOLOR = "Esta sesion incluye un ejercicio que reportaste con dolor. "
+            + "Omitelo: no lo hagas hasta que tu plan se ajuste.";
 
     public static WeeklyTrainingPlanResource toResourceFromEntity(
             WeeklyTrainingPlan entity, Map<Long, EligibleExerciseView> catalogo,
@@ -118,7 +121,12 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
                 })
                 .toList();
 
-        boolean bloqueada = workout.exercisesView().stream().anyMatch(e -> conflictos.containsKey(e.getId()));
+        // P-DOLOR-PUB: un ejercicio marcado SOLO por dolor registrado no bloquea la sesion (igual que execution); el
+        // ejercicio lleva su causa y la sesion el aviso de dolor.
+        boolean bloqueada = workout.exercisesView().stream().anyMatch(e -> conflictos.containsKey(e.getId())
+                && !main.web.services.fitsense.planning.interfaces.acl.PlannedWorkoutView.SOLO_DOLOR
+                .equals(conflictos.get(e.getId())));
+        boolean conDolor = !bloqueada && workout.exercisesView().stream().anyMatch(e -> conflictos.containsKey(e.getId()));
         return new PlannedWorkoutResource(
                 workout.getId(),
                 workout.getScheduledDate(),
@@ -131,6 +139,6 @@ public class WeeklyTrainingPlanResourceFromEntityAssembler {
                 workout.getExpiresAt(),
                 exercises,
                 bloqueada,
-                bloqueada ? AVISO_BLOQUEO : null);
+                bloqueada ? AVISO_BLOQUEO : (conDolor ? AVISO_DOLOR : null));
     }
 }

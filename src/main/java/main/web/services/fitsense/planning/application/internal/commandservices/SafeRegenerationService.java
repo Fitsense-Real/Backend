@@ -69,6 +69,23 @@ public class SafeRegenerationService {
         this.tx = tx;
     }
 
+    /**
+     * PROPUESTA P-03-COLOCACION (cierre tecnico conservador, 15/11/2026), APAGADA por defecto: ademas del trabajo total,
+     * ninguna colocacion de la semana regenerada (mismo dia de la semana y mismo ejercicio que una de la semana medida,
+     * emparejadas por orden de aparicion) puede tener mas series, repeticiones, segundos o trabajo que su colocacion
+     * medida. Sin ella, la politica vigente de P-03 nivel 2 compara SOLO el total: una semana regenerada con dosis base
+     * puede devolver a la base una colocacion reducida (fatiga, mantenimiento) si el total no sube. Activarla es un cambio
+     * de politica de P-03 y necesita la aprobacion del propietario: fitsense.regeneracion.p03-por-colocacion=true.
+     */
+    // Cierre premerge (15/11/2026): aprobada para la candidata y sus pruebas (src/test/resources/config/application.properties
+    // la enciende); en produccion sigue apagada hasta una autorizacion expresa (FITSENSE_P03_POR_COLOCACION).
+    @org.springframework.beans.factory.annotation.Value("${fitsense.regeneracion.p03-por-colocacion:false}")
+    private boolean porColocacion = false;
+
+    void setPorColocacion(boolean porColocacion) {
+        this.porColocacion = porColocacion;
+    }
+
     /** Idempotencia: si esta medicion ya se resolvio por P-03, su desenlace. */
     public Optional<SafeRegenerationAttempt> yaResuelta(Long weeklyMetricId) {
         return regeneraciones.findByWeeklyMetricId(weeklyMetricId);
@@ -166,10 +183,57 @@ public class SafeRegenerationService {
                 r += (long) series * (e.plannedReps() == null ? 0 : e.plannedReps());
                 sg += (long) series * (e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds());
             }
-        if (r <= medidaPlan[0] && sg <= medidaPlan[1]) return null;
+        if (r <= medidaPlan[0] && sg <= medidaPlan[1]) return porColocacion ? subidaPorColocacion(planMedido, regenerada) : null;
         return ("P-03 nivel 2: la semana regenerada con dosis base sube el trabajo de la semana medida (repeticiones %d"
                 + " -> %d, segundos %d -> %d); ante dolor no se anade trabajo y no hay otra alternativa determinista.")
                 .formatted(medidaPlan[0], r, medidaPlan[1], sg);
+    }
+
+    /**
+     * La primera colocacion de la semana regenerada que sube respecto de su colocacion medida, o null
+     * ({@link main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion}: mantenidas por dia y
+     * ejercicio, sustituciones por el puesto de un retirado, sin correspondencia contra la menor dosis medida del
+     * ejercicio, nuevas solo en el total). Los retirados son las exclusiones activas del participante (dolor).
+     */
+    String subidaPorColocacion(Long planMedido, PlanDraft regenerada) {
+        record Medida(java.util.List<main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion
+                .Colocacion> colocaciones, Long usuario) {}
+        var medida = tx.execute(status -> planes.findById(planMedido).map(p -> {
+            var lista = new java.util.ArrayList<main.web.services.fitsense.planning.domain.services
+                    .ComparacionDosisPorColocacion.Colocacion>();
+            p.workoutsView().stream().sorted(java.util.Comparator.comparing(w -> w.getScheduledDate())).forEach(w -> {
+                var ejercicios = w.exercisesView().stream().sorted(java.util.Comparator.comparing(
+                        e -> e.getExerciseOrder() == null ? Short.MAX_VALUE : e.getExerciseOrder())).toList();
+                for (int i = 0; i < ejercicios.size(); i++) {
+                    var e = ejercicios.get(i);
+                    lista.add(new main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion
+                            .Colocacion(w.getScheduledDate().getDayOfWeek(), i, e.getExerciseId(),
+                            e.getPlannedSets() == null ? 1 : e.getPlannedSets(),
+                            e.getPlannedReps() == null ? 0 : e.getPlannedReps(),
+                            e.getPlannedDurationSeconds() == null ? 0 : e.getPlannedDurationSeconds()));
+                }
+            });
+            return new Medida(lista, p.getUserId());
+        }).orElse(null));
+        if (medida == null) return SIN_SEMANA_MEDIDA;
+        var regeneradas = new java.util.ArrayList<main.web.services.fitsense.planning.domain.services
+                .ComparacionDosisPorColocacion.Colocacion>();
+        regenerada.workouts().stream().sorted(java.util.Comparator.comparing(w -> w.scheduledDate())).forEach(w -> {
+            for (int i = 0; i < w.exercises().size(); i++) {
+                var e = w.exercises().get(i);
+                regeneradas.add(new main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion
+                        .Colocacion(w.scheduledDate().getDayOfWeek(), i, e.exerciseId(),
+                        e.plannedSets() == null ? 1 : e.plannedSets(), e.plannedReps() == null ? 0 : e.plannedReps(),
+                        e.plannedDurationSeconds() == null ? 0 : e.plannedDurationSeconds()));
+            }
+        });
+        var retirados = dolor == null || medida.usuario() == null ? java.util.Set.<Long>of()
+                : dolor.excluidosActivos(medida.usuario());
+        var r = main.web.services.fitsense.planning.domain.services.ComparacionDosisPorColocacion.comparar(
+                medida.colocaciones(), regeneradas, retirados);
+        log.info("P03_POR_COLOCACION plan_medido={} por_tipo={} retiradas={} aumentos={}", planMedido, r.porTipo(),
+                r.retiradas(), r.aumentos().size());
+        return r.sinAumentos() ? null : r.aumentos().get(0).describir();
     }
 
     private static boolean porDolor(PlanAdaptationAttempt a) {

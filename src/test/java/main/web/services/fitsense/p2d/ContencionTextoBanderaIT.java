@@ -188,7 +188,11 @@ class ContencionTextoBanderaIT {
             assertTrue(conBandera(e, "requires_overhead").isEmpty());
             assertTrue(interseccion(e, ContencionTextoBandera.contenidos(SIN_CABEZA.seguridad())).isEmpty(), e.toString());
             assertTrue(interseccion(e, Set.of(131L, 400L, 448L)).isEmpty(), e.toString());
-            assertTrue(e.contains(1306L), "1306 solo se contiene por colgarse");
+            // 1306 no se contiene por brazos arriba (INC-CAT-C39 solo lo contiene por colgarse). Desde INC-CAT-CONS-v1 no
+            // es elegible por otra causa, el apoyo suspendido sin permiso confirmado (V53-B), igual para todos.
+            assertFalse(ContencionTextoBandera.contenidos(SIN_CABEZA.seguridad()).contains(1306L),
+                    "1306 solo se contiene por colgarse");
+            assertFalse(e.contains(1306L), "INC-CAT-CONS-v1: apoyo suspendido sin permiso confirmado");
             assertTrue(e.contains(1301L), "1301 ya no se contiene por brazos arriba: V49 corrigio su texto");
         }
 
@@ -207,7 +211,11 @@ class ContencionTextoBanderaIT {
             // INTERMEDIATE: 1301, 1303 y 1306 son de nivel 2 desde V52 (ver b_sinBrazosArriba).
             long u = usuario(GoalType.GENERAL_FITNESS, FitnessLevel.INTERMEDIATE, TrainingLocation.GYM, GIMNASIO, LIBRE);
             var e = elegibles(u);
-            assertTrue(e.containsAll(List.of(316L, 1301L, 1303L, 1306L, 1152L, 1309L, 1322L, 448L, 1093L)), e.toString());
+            assertTrue(e.containsAll(List.of(316L, 1301L, 1152L, 1309L, 1322L, 448L, 1093L)), e.toString());
+            // 1303 y 1306 no los excluye INC-CAT-C39 sino INC-CAT-CONS-v1 (apoyo suspendido sin permiso confirmado).
+            assertTrue(ContencionTextoBandera.contenidos(LIBRE.seguridad()).stream().noneMatch(Set.of(1303L, 1306L)::contains));
+            assertTrue(e.stream().noneMatch(main.web.services.fitsense.planning.domain.services.ContencionConservadora
+                    .APOYO_SUSPENDIDO::contains), "ningun apoyo suspendido sin permiso confirmado: " + e);
         }
 
         @Test

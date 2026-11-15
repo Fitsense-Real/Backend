@@ -176,6 +176,20 @@ class HerenciaD8IT {
     @Test
     @DisplayName("el dolor no aprovecha D8: si P-03 regenera, la semana nueva no trae lo que dolio ni mas trabajo, y valida sin exenciones")
     void dolorConRegeneracionSegura() throws Exception {
+        // La premisa (que P-03 publique para 9004) se construyo con el conjunto elegible anterior a INC-CAT-CONS-v1; el
+        // mecanismo que se comprueba no depende del catalogo, asi que se ejecuta con la contencion apagada.
+        Object destino = org.springframework.test.util.AopTestUtils.getUltimateTargetObject(catalogo);
+        org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", false);
+        try {
+            dolorConRegeneracionSeguraSinContencion();
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", true);
+        }
+    }
+
+    @Autowired main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService catalogo;
+
+    private void dolorConRegeneracionSeguraSinContencion() throws Exception {
         modo = Modo.IGUAL;
         var a = acortado(9_004);
         long u = a.u();

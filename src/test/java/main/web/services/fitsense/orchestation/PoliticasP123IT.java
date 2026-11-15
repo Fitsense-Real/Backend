@@ -739,11 +739,20 @@ class PoliticasP123IT {
         var filas = jdbc.queryForList("SELECT planned_exercise_id, exercise_id, prescription_type, planned_sets,"
                 + " planned_reps, planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
                 + " ORDER BY exercise_order", plannedWorkoutId);
+        // P-DOLOR-PUB: lo que la sesion marca por dolor registrado (un ejercicio que dolio y se repite) solo se registra
+        // como omitido, como haria la persona con el aviso de la app.
+        var marcados = planning.fetchPlannedWorkout(plannedWorkoutId).map(v -> v.safetyConflicts().keySet())
+                .orElse(java.util.Set.of());
         for (var f : filas) {
             long pe = ((Number) f.get("planned_exercise_id")).longValue();
             long ex = ((Number) f.get("exercise_id")).longValue();
             int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
             boolean duracion = "DURATION".equals(f.get("prescription_type"));
+            if (marcados.contains(pe)) {
+                sesiones.handle(new RecordSessionExerciseCommand(u, sesion, pe, (short) 0, duracion ? null : 0,
+                        duracion ? 0 : null, null, SkipReason.OTHER));
+                continue;
+            }
             if (conDolor != null && conDolor == ex) {
                 sesiones.handle(new RecordSessionExerciseCommand(u, sesion, pe, (short) 0, duracion ? null : 0,
                         duracion ? 0 : null, null, SkipReason.PAIN_OR_DISCOMFORT));
