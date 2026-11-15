@@ -20,7 +20,7 @@ Cada paso es una fusión `--no-ff` de la cabeza indicada sobre el resultado del 
 | 10 | #61 V53 (apagada) | `81b5f41` | Sin conflicto |
 | 11 | #64 V54 + reparación tolerante (apagada) | `7d7109a` | **Conflicto** en `EsquemaVigenteSobreCatalogoAnterior.SOLO_ESQUEMA` |
 | 12 | #66 V53-B + V55 (apagada) | `fce4fdc` | **Conflicto** en el mismo punto |
-| 13 | PR final `cierre/catalogo-premerge-final` | `12c6897` (más los commits de documentos) | Sin conflicto |
+| 13 | #67 final `cierre/catalogo-premerge-final` | `12c6897` (más los commits de documentos) | Sin conflicto |
 
 **Resultado:** el árbol simulado (`7db872f`) es **idéntico** al de la candidata probada: `tree 475703a028ea316b116ae6fed3fab107d3c024bd` en los dos. Registro: `evidencia/simulacion_merge.txt`.
 
@@ -54,4 +54,4 @@ No hay que suponer que la fusión anterior sigue siendo aplicable.
 
 - **No desplegar** con P-03 por colocación encendida sin una autorización expresa: en producción queda apagada (`FITSENSE_P03_POR_COLOCACION` sin definir).
 - Mantener apagadas V53 A, V53-B y #64.
-- La PR de la propuesta V57 (`propuesta/traza-omision-sistema`) solo se integra si se aprueba, después de la final.
+- La PR de la propuesta V57 (#68, `propuesta/traza-omision-sistema`) solo se integra si se aprueba, después de #67.
