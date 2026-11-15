@@ -24,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 // V51-V53 sin datos: regla por nombre del catalogo fijado).
 @org.springframework.context.annotation.Import(main.web.services.fitsense.EsquemaVigenteSobreCatalogoAnterior.class)
 @SpringBootTest(properties = {
+        // La contencion INC-CAT-CONS-v1 (15/11/2026) se definio sobre el catalogo vigente; esta prueba reproduce un
+        // catalogo anterior (Flyway hasta la 50), que no la tenia.
+        "fitsense.catalogo.contencion-conservadora=false",
         "spring.flyway.target=50",
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         // Valores historicos fijados explicitamente al activar la configuracion evaluada (11/11/2026): esta

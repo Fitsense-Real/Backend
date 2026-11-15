@@ -9,6 +9,7 @@ import main.web.services.fitsense.planning.application.internal.commandservices.
 import main.web.services.fitsense.planning.domain.model.commands.ExpireOverdueWorkoutsCommand;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
+import main.web.services.fitsense.planning.domain.services.ContencionConservadora;
 import main.web.services.fitsense.planning.domain.services.ContencionTextoBandera;
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService;
 import main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade;
@@ -286,9 +287,11 @@ class Plan78ContencionReducidaIT {
             var d = despues.get(i);
             if (Objects.equals(a, d)) continue;
             cambios++;
-            assertEquals(1303L, ((Number) a.get("exercise_id")).longValue(), "solo cambia la fila del 1303: " + a);
+            assertTrue(SUSTITUIDOS.contains(((Number) a.get("exercise_id")).longValue()),
+                    "solo cambian las filas del 1303 (inseguro) y del 494 (INC-CAT-CONS-v1): " + a);
             long sustituto = ((Number) d.get("exercise_id")).longValue();
             assertFalse(ContencionTextoBandera.contiene(sustituto, SEGURIDAD_39), "sustituto contenido: " + sustituto);
+            assertTrue(ContencionConservadora.causa(sustituto, null).isEmpty(), "sustituto en INC-CAT-CONS-v1: " + sustituto);
             assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM exercises WHERE exercise_id = ? AND"
                     + " (requires_hanging OR requires_overhead)", Integer.class, sustituto), "sustituto restringido");
             assertEquals(a.get("scheduled_date"), d.get("scheduled_date"));
@@ -299,12 +302,21 @@ class Plan78ContencionReducidaIT {
                 assertTrue(num(d.get("planned_duration_seconds")) <= num(a.get("planned_duration_seconds")),
                         "sin mas duracion: " + a + " -> " + d);
         }
-        assertEquals(1, cambios, "una sola sustitucion localizada");
+        assertEquals(SUSTITUIDOS.size(), cambios, "solo las sustituciones con causa al planificar");
         assertTrue(bloqueos(new Copia(c.userId(), v2, jdbc.queryForList("SELECT planned_workout_id FROM planned_workouts"
                 + " WHERE plan_id = ? ORDER BY scheduled_date", Long.class, v2))).isEmpty(), "la version 2 no bloquea nada");
     }
 
     @Autowired main.web.services.fitsense.planning.application.internal.commandservices.PublishedPlanSafetyRepairService reparacion;
+
+    /**
+     * Lo que la version reparada sustituye: el 1303, inseguro para el perfil (INC-CAT-C39), y, desde la contencion
+     * INC-CAT-CONS-v1 (15/11/2026), el 494 (identidad no determinada). La reparacion crea una version NUEVA del plan, que
+     * es una planificacion nueva: no puede publicar un ejercicio contenido (fuera del conjunto elegible, V1 lo
+     * rechazaria), asi que lo sustituye por la misma via obligatoria SUST-SEG-1, sin mas dosis. La version 1 publicada
+     * no se toca y en ella el 494 no bloquea nada (la contencion no altera lo publicado).
+     */
+    static final Set<Long> SUSTITUIDOS = Set.of(1303L, 494L);
 
     /**
      * PROPUESTA (orden de cierre de pendientes, 14/11/2026), con el interruptor encendido solo en esta prueba
@@ -333,9 +345,11 @@ class Plan78ContencionReducidaIT {
                 var d = despues.get(i);
                 if (Objects.equals(a, d)) continue;
                 cambios++;
-                assertEquals(1303L, ((Number) a.get("exercise_id")).longValue(), "solo cambia la fila del 1303: " + a);
+                assertTrue(SUSTITUIDOS.contains(((Number) a.get("exercise_id")).longValue()),
+                        "solo cambian las filas del 1303 (inseguro) y del 494 (INC-CAT-CONS-v1): " + a);
                 long sustituto = ((Number) d.get("exercise_id")).longValue();
                 assertFalse(ContencionTextoBandera.contiene(sustituto, SEGURIDAD_39), "sustituto contenido: " + sustituto);
+                assertTrue(ContencionConservadora.causa(sustituto, null).isEmpty(), "sustituto en INC-CAT-CONS-v1: " + sustituto);
                 assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM exercises WHERE exercise_id = ? AND"
                         + " (requires_hanging OR requires_overhead)", Integer.class, sustituto),
                         "sustituto restringido");
@@ -343,7 +357,7 @@ class Plan78ContencionReducidaIT {
                 if (a.get("planned_reps") != null && d.get("planned_reps") != null)
                     assertTrue(num(d.get("planned_reps")) <= num(a.get("planned_reps")), "sin mas repeticiones: " + a + " -> " + d);
             }
-            assertEquals(1, cambios, "una sola sustitucion localizada");
+            assertEquals(SUSTITUIDOS.size(), cambios, "solo las sustituciones con causa al planificar");
             var snapshot = jdbc.queryForObject("SELECT output_snapshot::text FROM weekly_training_plans WHERE plan_id = ?",
                     String.class, v2);
             assertTrue(snapshot.contains("\"tolerated_publication_difficulty\": [910, 916]")

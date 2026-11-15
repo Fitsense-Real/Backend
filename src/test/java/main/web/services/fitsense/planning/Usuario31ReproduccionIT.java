@@ -38,6 +38,9 @@ import static org.junit.jupiter.api.Assertions.*;
         "fitsense.adaptation.pain-localized-removal=off",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
+        // La contencion INC-CAT-CONS-v1 (15/11/2026) se definio sobre el catalogo vigente; esta prueba reproduce un
+        // catalogo anterior (Flyway hasta la 36), que no la tenia.
+        "fitsense.catalogo.contencion-conservadora=false",
         "spring.flyway.target=36"
 })
 class Usuario31ReproduccionIT extends Usuario31Base {

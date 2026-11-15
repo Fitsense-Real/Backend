@@ -56,7 +56,11 @@ import static org.junit.jupiter.api.Assertions.*;
         "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
-        "fitsense.seguridad.permiso-apoyo-suspendido=true"
+        "fitsense.seguridad.permiso-apoyo-suspendido=true",
+        // V53-B se mide frente al catalogo SIN la contencion INC-CAT-CONS-v1 (15/11/2026), que es una capa aparte: con
+        // ella, nadie recibe los 15 de apoyo suspendido salvo con el permiso confirmado. La combinacion se comprueba en
+        // conContencionConservadora().
+        "fitsense.catalogo.contencion-conservadora=false"
 })
 @DisplayName("V53-B · permiso propio «apoyo suspendido» (opcion B encendida en este contexto)")
 class PermisoApoyoSuspendidoIT {
@@ -92,14 +96,20 @@ class PermisoApoyoSuspendidoIT {
     /** Una combinacion de los tres interruptores de planning (fachada, ACL de catalogo, ACL de perfil). */
     record Modo(ExternalProfilingService perfil, ExternalCatalogService catalogo, SafetyConflictChecker comprobador) {}
 
+    /** Los ACL construidos a mano tambien sin INC-CAT-CONS-v1 (su valor por defecto es encendida). */
+    private static ExternalCatalogService sinContencion(ExternalCatalogService catalogo) {
+        org.springframework.test.util.ReflectionTestUtils.setField(catalogo, "contencionConservadora", false);
+        return catalogo;
+    }
+
     private Modo apagado() {
-        var catalogo = new ExternalCatalogService(new CatalogContextFacade(consultas, zonas, equipos, false, false));
+        var catalogo = sinContencion(new ExternalCatalogService(new CatalogContextFacade(consultas, zonas, equipos, false, false)));
         return new Modo(new ExternalProfilingService(profiling, false, false), catalogo,
                 new SafetyConflictChecker(catalogo));
     }
 
     private Modo opcionA() {
-        var catalogo = new ExternalCatalogService(new CatalogContextFacade(consultas, zonas, equipos, true));
+        var catalogo = sinContencion(new ExternalCatalogService(new CatalogContextFacade(consultas, zonas, equipos, true)));
         return new Modo(new ExternalProfilingService(profiling, true, false), catalogo,
                 new SafetyConflictChecker(catalogo));
     }
@@ -178,11 +188,28 @@ class PermisoApoyoSuspendidoIT {
     }
 
     @Test
+    @DisplayName("con INC-CAT-CONS-v1 encendida: sin el permiso confirmado ninguno de los 15; confirmado, vuelven los 10")
+    void conContencionConservadora() {
+        Object destino = org.springframework.test.util.AopTestUtils.getUltimateTargetObject(catalogoB);
+        org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", true);
+        try {
+            for (boolean colgarse : new boolean[]{true, false})
+                for (Boolean apoyo : new Boolean[]{null, false})
+                    assertEquals(Set.of(), deApoyo(leer(opcionB(), usuario(colgarse, apoyo)).elegibles()),
+                            "sin permiso confirmado, ninguno de apoyo suspendido: colgarse=" + colgarse + " permiso=" + apoyo);
+            assertEquals(new TreeSet<>(DIEZ), deApoyo(leer(opcionB(), usuario(false, true)).elegibles()),
+                    "confirmado con «no colgarse»: los 10, ni 1069 ni los C39");
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", false);
+        }
+    }
+
+    @Test
     @DisplayName("apagado: el conjunto elegible es el de hoy y el permiso guardado se ignora")
     void apagadoIdenticoAHoy() {
         var off = apagado();
         // «Hoy»: la fachada con el constructor anterior a V53-B y el ACL de perfil de un argumento.
-        var hoyCatalogo = new ExternalCatalogService(new CatalogContextFacade(consultas, zonas, equipos, false));
+        var hoyCatalogo = sinContencion(new ExternalCatalogService(new CatalogContextFacade(consultas, zonas, equipos, false)));
         var hoy = new Modo(new ExternalProfilingService(profiling), hoyCatalogo, new SafetyConflictChecker(hoyCatalogo));
         for (boolean colgarse : new boolean[]{true, false}) {
             var referencia = leer(hoy, usuario(colgarse, null)).elegibles();
