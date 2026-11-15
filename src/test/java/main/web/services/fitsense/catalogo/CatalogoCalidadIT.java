@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>valores validos de patron, prescripcion, dificultad y equipamiento;</li>
  *   <li>referencias a GIF e imagen y atribucion;</li>
  *   <li>HUELLA del catalogo: clasificacion, dificultad, prescripcion, equipamiento, banderas de seguridad, impacto y
- *       estiramiento explicitos (V51), la firma de las antiguas reglas por nombre y una firma md5 del nombre y las
+ *       estiramiento explicitos (V51), apoyo suspendido (V53), la firma de las antiguas reglas por nombre y una firma md5 del nombre y las
  *       instrucciones en espanol de cada activo. Cualquier cambio (bandera, patron, equipo...) hace fallar la prueba hasta que se
  *       actualiza {@code src/test/resources/catalogo/huella_catalogo.tsv} EN EL MISMO COMMIT que la migracion: el diff de
  *       ese archivo es la traza revisable del cambio;</li>
@@ -146,10 +146,10 @@ class CatalogoCalidadIT {
         var alto = (Pattern) campo("ALTO_POR_NOMBRE");
         var lineas = new ArrayList<String>();
         lineas.add("id\tzona\tobjetivo\tpatron\tdificultad\tprescripcion\tisolation\trequisitos\tbanderas\timpacto\testiramiento"
-                + "\tfirma_nombre\ttextos");
+                + "\tapoyo_suspendido\tfirma_nombre\ttextos");
         for (var r : jdbc.queryForList("""
                 SELECT e.exercise_id, bp.code AS zona, e.target_muscle, e.movement_pattern, e.difficulty_level,
-                       e.default_prescription, e.is_isolation, e.name_es, e.impact_level, e.is_stretch,
+                       e.default_prescription, e.is_isolation, e.name_es, e.impact_level, e.is_stretch, e.requires_suspended_support,
                        left(md5(e.name_es || '|' || regexp_replace(e.instructions_es, '[\\t\\r\\n]+', ' ', 'g')), 12) AS textos,
                        coalesce((SELECT string_agg(rq.group_no || ':' || t.code, ',' ORDER BY rq.group_no, t.code)
                                    FROM exercise_equipment_requirements rq
@@ -170,7 +170,7 @@ class CatalogoCalidadIT {
                     String.valueOf(r.get("difficulty_level")), (String) r.get("default_prescription"),
                     String.valueOf(r.get("is_isolation")), (String) r.get("requisitos"),
                     banderas.isEmpty() ? "-" : banderas, (String) r.get("impact_level"),
-                    String.valueOf(r.get("is_stretch")), firma, (String) r.get("textos")));
+                    String.valueOf(r.get("is_stretch")), String.valueOf(r.get("requires_suspended_support")), firma, (String) r.get("textos")));
         }
         String actual = String.join("\n", lineas) + "\n";
         if (Boolean.getBoolean("fitsense.catalogo.huella.capturar")) {
