@@ -781,7 +781,7 @@ id	zona	objetivo	patron	dificultad	prescripcion	isolation	requisitos	banderas	im
 850	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	BAJO	false	false	---	abcb2722756e
 851	upper arms	triceps	HORIZONTAL_PUSH	3	SETS_REPS	false	1:ez barbell,2:bench	-	BAJO	false	false	---	d099b96e2869
 852	upper arms	biceps	ELBOW_FLEXION	3	SETS_REPS	true	1:ez barbell	-	BAJO	false	false	---	327ef58aeb27
-853	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	BAJO	false	false	---	8d47cacf1192
+853	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	-	BAJO	false	false	---	3544a0d48a1d
 854	cardio	cardiovascular system	LOCOMOTION_CARDIO	1	DURATION	false	-	HI	MODERADO	false	false	M--	6997e8aac926
 855	chest	pectorals	HORIZONTAL_PUSH	3	SETS_REPS	false	-	FL	BAJO	false	false	---	ceea6e804e85
 856	waist	abs	TRUNK_FLEXION	1	SETS_REPS	false	-	FL	BAJO	false	false	---	8912c1452e0b

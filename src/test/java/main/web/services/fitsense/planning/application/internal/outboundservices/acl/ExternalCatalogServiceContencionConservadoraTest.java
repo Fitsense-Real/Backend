@@ -76,9 +76,10 @@ class ExternalCatalogServiceContencionConservadoraTest {
     }
 
     @Test
-    @DisplayName("listas: 20 de identidad, 15 de apoyo suspendido, 1113; sin solapes con INC-4C-03")
+    @DisplayName("listas: 19 de identidad, 15 de apoyo suspendido, 1113; sin solapes con INC-4C-03")
     void listas() {
-        assertEquals(20, ContencionConservadora.IDENTIDAD_NO_DETERMINADA.size());
+        assertEquals(19, ContencionConservadora.IDENTIDAD_NO_DETERMINADA.size());
+        assertFalse(ContencionConservadora.IDENTIDAD_NO_DETERMINADA.contains(853L), "853 recuperado por V56");
         assertEquals(15, ContencionConservadora.APOYO_SUSPENDIDO.size());
         assertEquals(java.util.Set.of(1113L), ContencionConservadora.DIFICULTAD_EN_DUDA);
         for (long retenido : List.of(813L, 858L, 861L, 873L, 885L, 1192L, 1294L, 1298L))

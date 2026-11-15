@@ -97,6 +97,11 @@ class CatalogoIntegralTextosIT {
             var id = java.util.regex.Pattern.compile("WHERE exercise_id = (\\d+)").matcher(bloque);
             if (id.find() && bloque.contains(campo + " = ")) ids.add(Long.parseLong(id.group(1)));
         }
+        // V56 (cierre tecnico conservador, 15/11/2026) reescribe el nombre y las instrucciones del 853 segun el GIF
+        // completo (REVISION_853.md). Misma regla: el texto final lo fija la huella de CatalogoCalidadIT.
+        var v56 = java.nio.file.Files.readString(java.nio.file.Path.of(
+                "src/main/resources/db/migration/V56__catalogo_853_texto_segun_gif.sql"));
+        if (v56.contains(campo + " = ")) ids.add(853L);
         return ids;
     }
 

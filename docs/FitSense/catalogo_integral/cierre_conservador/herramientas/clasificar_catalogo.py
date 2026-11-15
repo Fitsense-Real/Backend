@@ -31,6 +31,12 @@ RETEN = {int(x) for x in re.findall(r'(\d+)L', re.search(r'RETENIDOS_INC_4C_03\s
 C1374 = {1374}
 
 maestro = list(csv.DictReader(open(os.path.join(cat, 'registro_maestro_final.tsv')), delimiter='\t'))
+# Migraciones posteriores al registro maestro que cambian lo que se muestra (no la seguridad): V56 corrige el nombre del
+# 853 segun el GIF completo (REVISION_853.md). Se lee de la propia migracion para no copiarlo a mano.
+v56 = java('src/main/resources/db/migration/V56__catalogo_853_texto_segun_gif.sql')
+POSTERIORES = {853: {'nombre_es': re.search(r"name_es = '([^']*)'", v56).group(1)}}
+for x in maestro:
+    x.update(POSTERIORES.get(int(x['id']), {}))
 registro = list(csv.DictReader(open(os.path.join(cat, 'REGISTRO_DECISIONES_PENDIENTES.tsv')), delimiter='\t'))
 pend = collections.defaultdict(list)
 for r in registro:
@@ -80,6 +86,11 @@ for x in maestro:
             mot.append('Se conserva la bandera de seguridad vigente (conservadora) pendiente de confirmacion profesional')
         restriccion = 'Dificultad y banderas vigentes (las mas restrictivas)'
         motivo = '; '.join(mot)
+    elif i in POSTERIORES:
+        estado = 'A'
+        motivo = ('Identidad determinada con la animacion completa y nombre e instrucciones corregidos (V56, '
+                  'REVISION_853.md); sale de INC-CAT-CONS-v1. La decision profesional sigue abierta: '
+                  + ', '.join(bloques))
     else:
         estado = 'A'
         motivo = 'Sin incertidumbre material conocida' + (' (decision pendiente no material: ' + ', '.join(bloques) + ')' if bloques else '')

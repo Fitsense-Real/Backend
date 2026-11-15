@@ -34,9 +34,11 @@ public final class ContencionConservadora {
     public static final String CAUSA_APOYO_SUSPENDIDO = "INC-CAT-CONS-v1:apoyo_suspendido";
     public static final String CAUSA_DIFICULTAD = "INC-CAT-CONS-v1:dificultad";
 
-    /** R2 identidad AMBIGUA con instrucciones o nombre que no describen el GIF (registro P277-P302, abiertas). */
-    public static final Set<Long> IDENTIDAD_NO_DETERMINADA = Set.of(257L, 261L, 310L, 320L, 427L, 494L, 535L, 853L,
+    /** R2 identidad AMBIGUA con instrucciones o nombre que no describen el GIF (registro P277-P302, abiertas), salvo 853 (V56). */
+    public static final Set<Long> IDENTIDAD_NO_DETERMINADA = Set.of(257L, 261L, 310L, 320L, 427L, 494L, 535L,
             902L, 922L, 930L, 937L, 944L, 994L, 1068L, 1086L, 1124L, 1176L, 1177L, 1311L);
+    // 853 sale de la lista: V56 corrige su nombre e instrucciones segun el GIF completo (REVISION_853.md). Su movimiento
+    // queda determinado (elevacion alterna de rodilla y media sentadilla, siempre con un pie apoyado).
 
     /** V53: requires_suspended_support (situacion 2 de V53_DEFINITIVO.md). */
     public static final Set<Long> APOYO_SUSPENDIDO = Set.of(457L, 458L, 459L, 462L, 777L, 920L, 934L, 1069L, 1153L,
