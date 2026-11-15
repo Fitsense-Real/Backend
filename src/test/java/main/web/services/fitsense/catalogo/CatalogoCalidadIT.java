@@ -27,8 +27,9 @@ import static org.junit.jupiter.api.Assertions.*;
  *   <li>integridad y valores obligatorios de los ejercicios activos;</li>
  *   <li>valores validos de patron, prescripcion, dificultad y equipamiento;</li>
  *   <li>referencias a GIF e imagen y atribucion;</li>
- *   <li>HUELLA del catalogo: clasificacion, dificultad, prescripcion, equipamiento, banderas de seguridad y la firma de las
- *       reglas por nombre de cada activo. Cualquier cambio (bandera, patron, equipo...) hace fallar la prueba hasta que se
+ *   <li>HUELLA del catalogo: clasificacion, dificultad, prescripcion, equipamiento, banderas de seguridad, impacto y
+ *       estiramiento explicitos (V51), la firma de las antiguas reglas por nombre y una firma md5 del nombre y las
+ *       instrucciones en espanol de cada activo. Cualquier cambio (bandera, patron, equipo...) hace fallar la prueba hasta que se
  *       actualiza {@code src/test/resources/catalogo/huella_catalogo.tsv} EN EL MISMO COMMIT que la migracion: el diff de
  *       ese archivo es la traza revisable del cambio;</li>
  *   <li>coherencia texto/bandera: el nombre y las instrucciones no piden colgarse, suelo, brazos por encima de la cabeza
@@ -144,10 +145,12 @@ class CatalogoCalidadIT {
         var moderado = (Pattern) campo("MODERADO");
         var alto = (Pattern) campo("ALTO_POR_NOMBRE");
         var lineas = new ArrayList<String>();
-        lineas.add("id\tzona\tobjetivo\tpatron\tdificultad\tprescripcion\tisolation\trequisitos\tbanderas\tfirma_nombre");
+        lineas.add("id\tzona\tobjetivo\tpatron\tdificultad\tprescripcion\tisolation\trequisitos\tbanderas\timpacto\testiramiento"
+                + "\tfirma_nombre\ttextos");
         for (var r : jdbc.queryForList("""
                 SELECT e.exercise_id, bp.code AS zona, e.target_muscle, e.movement_pattern, e.difficulty_level,
-                       e.default_prescription, e.is_isolation, e.name_es,
+                       e.default_prescription, e.is_isolation, e.name_es, e.impact_level, e.is_stretch,
+                       left(md5(e.name_es || '|' || regexp_replace(e.instructions_es, '[\\t\\r\\n]+', ' ', 'g')), 12) AS textos,
                        coalesce((SELECT string_agg(rq.group_no || ':' || t.code, ',' ORDER BY rq.group_no, t.code)
                                    FROM exercise_equipment_requirements rq
                                    JOIN equipment_types t ON t.equipment_id = rq.equipment_id
@@ -166,7 +169,8 @@ class CatalogoCalidadIT {
                     (String) r.get("target_muscle"), (String) r.get("movement_pattern"),
                     String.valueOf(r.get("difficulty_level")), (String) r.get("default_prescription"),
                     String.valueOf(r.get("is_isolation")), (String) r.get("requisitos"),
-                    banderas.isEmpty() ? "-" : banderas, firma));
+                    banderas.isEmpty() ? "-" : banderas, (String) r.get("impact_level"),
+                    String.valueOf(r.get("is_stretch")), firma, (String) r.get("textos")));
         }
         String actual = String.join("\n", lineas) + "\n";
         if (Boolean.getBoolean("fitsense.catalogo.huella.capturar")) {

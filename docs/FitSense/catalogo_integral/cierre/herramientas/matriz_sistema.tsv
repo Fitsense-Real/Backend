@@ -1,0 +1,22 @@
+area	comprobacion	resultado	evidencia
+Catalogo	Huella de la base frente a las decisiones: cambian exactamente los ejercicios decididos	442 de 442 (con y sin V53)	CatalogoCalidadIT.huella; huella_catalogo.tsv
+Catalogo	Registro maestro frente a la huella real (textos md5 y dificultad)	0 discrepancias en 1.219 activos	registro_maestro_final.py
+Catalogo	Paridad de V51 con la regla por nombre, salvo las correcciones de V52 enumeradas	Correcta	CatalogoAtributosExplicitosIT
+Catalogo	CHECK de V51 (activo con impacto y estiramiento; HI no BAJO) y HG implica OH	0 incumplimientos	Reglas R01, R02 y R04
+Catalogo	Impacto ALTO coherente con HI	1 incumplimiento: 1083 (DEC-HI-LANZAMIENTOS)	Regla R03
+Catalogo	Texto coherente con la prescripcion	0 incumplimientos tras la norma de texto (6 corregidos)	Reglas R07 a R09
+Catalogo	Dificultad nunca bajada	0 bajadas; 63 subidas; 1113 vetada (V39)	Regla R10; gen_v52.py
+Elegibilidad	Oraculo independiente (atributos explicitos) igual al motor en las 7 restricciones	Correcto	CatalogoElegibleIT
+Elegibilidad	Perfiles con plan en la rejilla de 168	168 -> 168	cierre/impacto/resumen_168.tsv
+Elegibilidad	Semanas finales con algun ejercicio no elegible para su perfil	0 (la base tenia 58)	IMPACTO_ELEGIBILIDAD.md §1
+Elegibilidad	LOSE_WEIGHT principiante casa sin suelo / sin las tres	PLAN / PLAN	IMPACTO_ELEGIBILIDAD.md §4
+Generacion	Referencia de 72 planes	70 cambian; 72 VALIDA; identica con y sin V53	GeneracionReferenciaIT; generacion_referencia.txt
+Generacion	Hipertrofia de 30 a 75 minutos (V20)	Como con V50 (775 aplazado: DEC-FACTIBILIDAD-775)	Hipertrofia4Dv34IT
+Adaptacion	Retirada localizada, linaje y texto de respaldo	Mecanismo correcto; escenarios fijados a V50	RetiradaLocalizada*IT; LinajeIntegridadIT; TextoRespaldoSustitucionIT
+Progresion	P-02 + progresion (ProgresionIT y ProgresionRev2IT p02)	FALLA en la CI de #60 y #61 (la base #55 pasa en CI; en local falla ya desde #56): HALL-PROG-01	IMPACTO_GENERACION_ADAPTACION.md §3
+Contencion	Contenciones vigentes	16 (8 C39, 7 INC-4C-03, 1 INC-CAT-1374); ninguna retirada	ContencionTextoBanderaIT; CONTENCIONES_DEFINITIVAS.md
+Planes publicados	Plan 78: bloqueo del jueves por 1303	Correcto (INC-CAT-C39+apoyo_suspendido con V53)	Plan78ContencionReducidaIT
+Planes publicados	Plan 78: reparacion	No publica (916 y 910 subieron de nivel); no se relaja	Plan78ContencionReducidaIT
+Validadores	V15, V24, V8C, P-03 y progresion sin cambios de codigo	Sin cambios	git diff del cierre
+Regresion	Regresion completa en las dos ramas	1.454 unitarias OK; 722 IT con 2 errores (HALL-PROG-01); la CI de GitHub de #60 y #61 da lo mismo	REGRESION_FINAL.md
+Migraciones	V1-V53 desde una base nueva, una a una	V52 = 442 decididos; V53 = 16	cierre/auditoria_final/

@@ -64,6 +64,9 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
      * (26), cajon pliometrico (6), step (6), barra fija, BOSU y rueda abdominal.
      * En la otra direccion, cero: la columna nunca era mas estricta.
      */
+    // CONTENCION (orden de desbloqueo, 14/11/2026): «sin alto impacto» excluye tambien lo que el catalogo etiqueta con
+    // impacto explicito ALTO aunque le falte high_impact (caso 1083). Defensa en profundidad: V52 corrige el dato y su
+    // CHECK lo hace imposible en un activo; esta condicion solo actuaria ante una incoherencia futura.
     @Query("""
            SELECT e FROM Exercise e
            WHERE e.active = true
@@ -77,7 +80,8 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
                              AND alternativa.equipmentId IN :equipmentIds))
              AND e.difficultyLevel <= :maxDifficulty
              AND e.id NOT IN :blockedIds
-             AND (:excludeHighImpact = false OR e.highImpact = false)
+             AND (:excludeHighImpact = false OR (e.highImpact = false
+                  AND (e.impactLevel IS NULL OR e.impactLevel <> 'ALTO')))
              AND (:excludeFloorWork  = false OR e.requiresFloor = false)
              AND (:excludeAxialLoad  = false OR e.axialLoad = false)
              AND (:excludeKneeling   = false OR e.requiresKneeling = false)
