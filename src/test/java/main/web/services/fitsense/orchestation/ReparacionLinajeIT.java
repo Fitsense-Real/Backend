@@ -15,7 +15,6 @@ import main.web.services.fitsense.profiling.domain.model.valueobjects.FitnessLev
 import main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType;
 import main.web.services.fitsense.profiling.domain.model.valueobjects.TrainingLocation;
 import main.web.services.fitsense.profiling.domain.services.UserProfileCommandService;
-import main.web.services.fitsense.shared.domain.model.valueobjects.TrainingWeek;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +48,15 @@ import static org.mockito.Mockito.*;
  *       linaje por el plan padre (la sesion gemela es identica) y la copia hereda la dosis progresada. Antes el
  *       linaje se cortaba y V24 rechazaba la copia (NO_FACTIBLE).</li>
  * </ul>
+ * <b>Determinista (16/11/2026).</b> La semana salia de {@code LocalDate.now()} y el motor de reglas siembra con
+ * {@code userId x 1.000.003 + inicio de semana}: cada lunes cambiaba que relleno se convertia en el 1374. Si era un
+ * relleno de zona pequena (2x13/90, la misma capacidad 4D que su sustituto seguro 104) la reparacion se publicaba; si
+ * era uno de 2x10/90, el 104 no puede recibir menos de 2x13 (V24) ni mas que los 2x10 del quitado (V8C) y la
+ * reparacion queda NO_VALIDA sin publicar nada, la perdida de factibilidad conservadora ya documentada
+ * (IMPACTO_FACTIBILIDAD.md). Barrido de 16 semanas: 7 publicadas y 9 NO_VALIDA, siempre por esa dosis; nunca por la
+ * fecha en si (cambio de mes y de ano incluidos). Ahora la semana es fija ({@link RelojPruebas}), la premisa de P-P2
+ * se elige explicita (un relleno con la capacidad de su sustituto) y el caso NO_VALIDA tiene su propia prueba.
+ * Docs: docs/FitSense/correccion_ci_linaje/DIAGNOSTICO_REPARACION_LINAJE.md.
  */
 @Testcontainers
 @SpringBootTest(properties = {
@@ -73,7 +81,8 @@ class ReparacionLinajeIT {
     @Autowired JdbcTemplate jdbc;
 
     static final AtomicInteger SECUENCIA = new AtomicInteger();
-    static final LocalDate S1 = TrainingWeek.containing(LocalDate.now()).startDate().plusWeeks(1);
+    /** Semana fija de las referencias (2026-11-02). Las sesiones se abren con RelojPruebas.abrirVentanaDeEjecucion. */
+    static final LocalDate S1 = main.web.services.fitsense.RelojPruebas.SEMANA_REFERENCIA;
     static final List<String> EQUIPAMIENTO = List.of("dumbbell", "barbell", "cable", "leverage machine", "bench", "band");
     /** Solo rellenos: ningun patron que cuente como slot 4C. */
     static final String SIN_SLOT = " AND x.movement_pattern NOT IN ('KNEE_DOMINANT','HIP_HINGE','HIP_EXTENSION',"
@@ -89,51 +98,99 @@ class ReparacionLinajeIT {
         when(ia.interpretar(anyString(), any())).thenAnswer(inv -> List.of());
     }
 
+    /** Relleno de zona pequena: la dosis 4D (HYPERTROPHY) de su capacidad es 2x13/90, la misma que la del sustituto. */
+    static final String MISMA_CAPACIDAD_QUE_EL_SUSTITUTO = " AND pwe.planned_sets = 2 AND pwe.planned_reps = 13"
+            + " AND pwe.rest_seconds = 90";
+    /** Relleno de 2x10/90: su sustituto seguro (zona pequena, 2x13) no puede recibir su dosis. */
+    static final String OTRA_CAPACIDAD = " AND pwe.planned_sets = 2 AND pwe.planned_reps = 10 AND pwe.rest_seconds = 90";
+
     @Test
     @DisplayName("semana progresada + 1374 inseguro: se repara (P-P2) y la siguiente hereda el paso por la version reparada (H6)")
     void repararYHeredar() {
-        // La premisa (que sustituto recibe el relleno 1374 y que la reparacion valide) se construyo con el conjunto
-        // elegible anterior a INC-CAT-CONS-v1. Con la contencion, el sustituto elegido es un relleno de zona pequena
-        // (104) cuya dosis de capacidad (2x13) supera la del quitado (2x10): V8C no deja subirla y la reparacion queda
-        // NO_VALIDA, sin publicar nada (IMPACTO_FACTIBILIDAD.md). El mecanismo P-P2/H6 que se prueba no depende del
-        // catalogo: se ejecuta con la contencion apagada.
-        Object destino = org.springframework.test.util.AopTestUtils.getUltimateTargetObject(catalogo);
-        org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", false);
-        try {
-            repararYHeredarSinContencion();
-        } finally {
-            org.springframework.test.util.ReflectionTestUtils.setField(destino, "contencionConservadora", true);
-        }
+        repararYHeredar(S1);
+    }
+
+    @Test
+    @DisplayName("semanas con cambio de mes (30/11-06/12) y de ano (21/12-03/01): la misma reparacion y la misma herencia")
+    void repararYHeredarEnCambiosDeMesYAno() {
+        // S1, S1+1 y S1+2: la semana reparada (S1+2) y la copia (S1+3) cruzan el cambio de mes o de ano.
+        repararYHeredar(LocalDate.of(2026, 11, 16));   // S1+2 = 30/11-06/12 (noviembre -> diciembre)
+        repararYHeredar(LocalDate.of(2026, 12, 14));   // S1+2 = 28/12-03/01 (2026 -> 2027)
+    }
+
+    @Test
+    @DisplayName("sin sustituto con la misma dosis: la reparacion queda NO_VALIDA y no publica nada; la semana y su paso de"
+            + " progresion siguen intactos (perdida de factibilidad conservadora)")
+    void sinSustitutoConLaMismaDosisNoPublicaNada() {
+        var s = semanaProgresada(S1);
+        long pe = relleno(s, OTRA_CAPACIDAD);
+        int planes = planesDe(s.usuario());
+        assertEquals(1, jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1374 WHERE planned_exercise_id = ?",
+                pe));
+
+        var r = planning.repairPublishedPlanForSafety(s.usuario(), s.s1().plusWeeks(2), hoy(s.s1()));
+        System.out.println("P-P2 sin sustituto " + r);
+        assertEquals(PublishedPlanSafetyRepairService.Estado.NO_VALIDA, r.estado(), r.toString());
+        assertTrue(r.problemas().stream().anyMatch(p -> p.startsWith("V24")), "el motivo es la dosis de V24: " + r);
+        assertNull(r.planNuevo());
+        assertEquals(planes, planesDe(s.usuario()), "no se publica nada");
+        assertEquals(s.w3(), jdbc.queryForObject("SELECT plan_id FROM weekly_training_plans WHERE user_id = ?"
+                + " AND week_start_date = ? AND status = 'ACTIVE'", Long.class, s.usuario(), s.s1().plusWeeks(2)),
+                "la semana publicada sigue siendo la misma");
+        assertEquals(s.dosisProgresada(), dosis(s.w3()).get(s.i()), "el paso de progresion no se toca");
     }
 
     @Autowired main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService catalogo;
 
-    private void repararYHeredarSinContencion() {
+    /** Tres semanas con el ciclo real hasta un paso de progresion publicado en la tercera (S1+2). */
+    record SemanaProgresada(LocalDate s1, long usuario, long w3, int i, long progresada, List<Map<String, Object>> dosisProgresada) {}
+
+    SemanaProgresada semanaProgresada(LocalDate s1) {
         long u = participante();
-        long w1 = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        long w1 = planning.generateWeeklyPlan(u, s1, PlanAdjustment.none(), null, null).orElseThrow();
         ejecutar(u, w1);
-        long w2 = ciclo(u, 0);
+        long w2 = ciclo(u, s1, 0);
         ejecutar(u, w2);
-        long w3 = ciclo(u, 1);
+        long w3 = ciclo(u, s1, 1);
         var medida = dosis(w2);
         var conPaso = dosis(w3);
         int i = -1;
         for (int k = 0; k < conPaso.size(); k++)
             if (!medida.get(k).equals(conPaso.get(k))) i = k;
         assertTrue(i >= 0, "premisa: un paso de progresion en la semana 3: " + ultimoIntento(u));
-        long progresada = sesiones(w3).get(i);
-        var dosisProgresada = conPaso.get(i);
+        return new SemanaProgresada(s1, u, w3, i, sesiones(w3).get(i), conPaso.get(i));
+    }
 
-        // Un relleno de OTRA sesion pasa a ser el 1374 (exige barra, que no tiene): la semana queda insegura.
-        long pe = jdbc.queryForObject("SELECT pwe.planned_exercise_id FROM planned_workout_exercises pwe"
+    /** Un relleno (ningun patron de slot 4C) de OTRA sesion que la progresada, con la capacidad indicada. */
+    long relleno(SemanaProgresada s, String capacidad) {
+        var ids = jdbc.queryForList("SELECT pwe.planned_exercise_id FROM planned_workout_exercises pwe"
                 + " JOIN planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id"
                 + " JOIN exercises x ON x.exercise_id = pwe.exercise_id"
                 + " WHERE pw.plan_id = ? AND pw.planned_workout_id <> ? AND pwe.prescription_type = 'SETS_REPS'"
-                + SIN_SLOT + " ORDER BY pw.scheduled_date, pwe.exercise_order LIMIT 1", Long.class, w3, progresada);
+                + SIN_SLOT + capacidad + " ORDER BY pw.scheduled_date, pwe.exercise_order LIMIT 1", Long.class,
+                s.w3(), s.progresada());
+        assertFalse(ids.isEmpty(), "premisa: la semana " + s.s1().plusWeeks(2) + " tiene un relleno" + capacidad);
+        return ids.get(0);
+    }
+
+    /** El dia anterior a la semana que se repara: toda ella es futura, como cuando la prueba usaba la semana siguiente. */
+    static LocalDate hoy(LocalDate s1) {
+        return s1.plusWeeks(2).minusDays(1);
+    }
+
+    private void repararYHeredar(LocalDate s1) {
+        var s = semanaProgresada(s1);
+        long u = s.usuario();
+        int i = s.i();
+        var dosisProgresada = s.dosisProgresada();
+
+        // Un relleno de OTRA sesion pasa a ser el 1374 (exige barra, que no tiene): la semana queda insegura. Se elige
+        // uno con la capacidad de su sustituto seguro, la premisa de P-P2: reparar sin cambiar ninguna dosis.
+        long pe = relleno(s, MISMA_CAPACIDAD_QUE_EL_SUSTITUTO);
         assertEquals(1, jdbc.update("UPDATE planned_workout_exercises SET exercise_id = 1374 WHERE planned_exercise_id = ?",
                 pe));
 
-        var r = planning.repairPublishedPlanForSafety(u, S1.plusWeeks(2), LocalDate.now());
+        var r = planning.repairPublishedPlanForSafety(u, s1.plusWeeks(2), hoy(s1));
         System.out.println("P-P2 " + r);
         assertEquals(PublishedPlanSafetyRepairService.Estado.REPARADA, r.estado(),
                 "P-P2: la semana con la dosis progresada se puede reparar: " + r);
@@ -144,17 +201,21 @@ class ReparacionLinajeIT {
 
         // H6: la semana siguiente (copia) sigue el linaje por el plan padre y hereda la dosis progresada.
         ejecutar(u, reparada);
-        var w4 = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
+        var w4 = ciclo.runFor(u, s1.plusWeeks(2), s1.plusWeeks(3));
         var ev4 = ultimoIntento(u);
         System.out.println("H6 " + ev4.get("status") + " " + ev4.get("rejection_reason"));
         assertTrue(w4.isPresent(), "H6: la copia tras la reparacion se publica: " + ev4);
         assertEquals(dosisProgresada, dosis(w4.get()).get(i), "la dosis progresada se hereda por la version reparada");
     }
 
+    int planesDe(long u) {
+        return jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?", Integer.class, u);
+    }
+
     // =======================================================================
 
-    long ciclo(long u, int k) {
-        var r = ciclo.runFor(u, S1.plusWeeks(k), S1.plusWeeks(k + 1));
+    long ciclo(long u, LocalDate s1, int k) {
+        var r = ciclo.runFor(u, s1.plusWeeks(k), s1.plusWeeks(k + 1));
         assertTrue(r.isPresent(), "sin semana publicada en la " + (k + 2) + ": " + ultimoIntento(u));
         return r.get();
     }
@@ -185,6 +246,7 @@ class ReparacionLinajeIT {
     }
 
     void ejecutar(long u, long planId) {
+        main.web.services.fitsense.RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         for (long w : sesiones(planId)) {
             long sesion = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
             for (var f : jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets,"
