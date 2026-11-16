@@ -92,6 +92,61 @@ public class PlanPromptBuilder {
      */
     public static final String VERSION = "PR-1.7";
 
+    /**
+     * H2 (contrato prompt–V15). Solo con {@code fitsense.ai.generacion.contrato-v15=true}; apagado, el prompt y la
+     * instantanea son exactamente los de {@link #VERSION}. Cambia dos frases (regla 15 y la comprobacion final) para
+     * decir la regla de la mitad tal como la verifica V15: sin contar los complementos, ningun body_part pasa de la
+     * mitad de los ejercicios de trabajo de la sesion, con la tabla max_per_body_part_por_n_trabajo. Requiere una
+     * evaluacion con la IA real antes de activarse (docs/FitSense/continuacion_desarrollo/CORRECCION_H2.md).
+     */
+    public static final String VERSION_CONTRATO_V15 = "PR-1.9";
+
+    /** Regla 15 de PR-1.7: un solo tope, que no puede decir una regla que depende del numero de ejercicios. */
+    static final java.util.regex.Pattern REGLA15_HISTORICA = java.util.regex.Pattern.compile(
+            "cubre al menos min_body_parts de ellos y no pongas mas de\\s+max_per_body_part ejercicios del mismo"
+                    + " body_part\\.");
+    static final String REGLA15_V15 = "cubre al menos min_body_parts de ellos. Sin contar los ejercicios de"
+            + " constraints.complementos_no_cuentan (cardio y movilidad), ningun body_part puede tener mas de la mitad"
+            + " (division entera) de los ejercicios de trabajo de la sesion: con n ejercicios de trabajo, el tope es el"
+            + " valor de n en max_per_body_part_por_n_trabajo de esa sesion. Si la sesion no trae esa tabla, la regla de"
+            + " la mitad no aplica.";
+    /** La misma regla en la comprobacion final. */
+    static final java.util.regex.Pattern COMPROBACION_HISTORICA = java.util.regex.Pattern.compile(
+            "ningun body_part pasa del max_per_body_part de su\\s+sesion en constraints\\.suggested_split\\.");
+    static final String COMPROBACION_V15 = "sin contar constraints.complementos_no_cuentan, ningun body_part pasa del"
+            + " valor de max_per_body_part_por_n_trabajo para el numero de ejercicios de trabajo de esa sesion.";
+
+    private boolean contratoV15 = false;
+
+    /** H2: apagado por defecto (configuracion evaluada PR-1.7). */
+    @org.springframework.beans.factory.annotation.Value("${fitsense.ai.generacion.contrato-v15:false}")
+    void setContratoV15(boolean contratoV15) {
+        this.contratoV15 = contratoV15;
+    }
+
+    public boolean contratoV15() {
+        return contratoV15;
+    }
+
+    /** La version efectiva del texto de reglas. */
+    public String version() {
+        return contratoV15 ? VERSION_CONTRATO_V15 : VERSION;
+    }
+
+    /**
+     * H2: las dos frases de PR-1.7 sustituidas. Falla si no las encuentra: si alguien cambia el texto historico, la
+     * variante no puede quedarse a medias en silencio.
+     */
+    static String aplicarContratoV15(String prompt, boolean conComprobacion) {
+        var m = REGLA15_HISTORICA.matcher(prompt);
+        if (!m.find()) throw new IllegalStateException("H2: no esta la regla 15 de PR-1.7");
+        var salida = m.replaceFirst(java.util.regex.Matcher.quoteReplacement(REGLA15_V15));
+        if (!conComprobacion) return salida;
+        var c = COMPROBACION_HISTORICA.matcher(salida);
+        if (!c.find()) throw new IllegalStateException("H2: no esta la comprobacion final de PR-1.7");
+        return c.replaceFirst(java.util.regex.Matcher.quoteReplacement(COMPROBACION_V15));
+    }
+
     /** El bloque de capacidades. Publico para poder probar que solo aparece donde toca. */
     public static final String BLOQUE_CAPACIDADES = """
 
@@ -123,7 +178,7 @@ public class PlanPromptBuilder {
         var prompt = new StringBuilder();
         boolean porCapacidades = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
                 .gobiernaGeneracion(context.profile().goalType());
-        var capacidades = porCapacidades ? PlanInputSnapshot.of(context).constraints().capacidades() : null;
+        var capacidades = porCapacidades ? PlanInputSnapshot.of(context, contratoV15).constraints().capacidades() : null;
 
         prompt.append("""
                 Eres un entrenador que diseña planes semanales de entrenamiento.
@@ -275,7 +330,7 @@ public class PlanPromptBuilder {
         // lee el modelo y lo unico que distingue este intento del anterior.
         if (feedback != null && !feedback.isEmpty()) appendRetry(prompt, feedback);
 
-        return prompt.toString();
+        return contratoV15 ? aplicarContratoV15(prompt.toString(), capacidades != null) : prompt.toString();
     }
 
     /**
