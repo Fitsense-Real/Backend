@@ -36,7 +36,7 @@ reales.
 | PR #73, GitHub Actions | — | — | 0 (verde) |
 | `CicloCompletoHttpIT` | — | 9 | 0 |
 | `ReparacionLinajeIT` con 3 semanas de referencia más | — | 3 × 3 | 0 |
-| #72 + #73, local | ver `CORRECCION_CI.md` | ver `CORRECCION_CI.md` | ver `CORRECCION_CI.md` |
+| #72 + #73, local (rama temporal, no subida) | 1576 (1 omitida) | 809 (72 omitidas: las 57 de antes y las 15 de `GeneracionAsincronaIT`, opt-in) | 0 |
 
 ## 4. Estado por módulo
 
