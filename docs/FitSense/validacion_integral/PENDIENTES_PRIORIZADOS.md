@@ -51,36 +51,59 @@ proveedor, un participante que olvide la contraseña depende del equipo.
 
 **Decide:** el usuario o el equipo de despliegue.
 
-### PD-07. Un slot vacío no da 422 (decisión por confirmar)
+### PD-07. Un slot vacío no da 422 (decidido: se conserva OBSERVE de forma provisional)
 
 `fitsense.coverage.pregeneration=OBSERVE`: un perfil que vacía un slot obligatorio recibe un plan parcial, explicado en
-`/plan/limitations`, en vez de un NO_FACTIBLE. Es la configuración entregada a propósito.
+`/plan/limitations`, en vez de un NO_FACTIBLE.
 
-Hay que confirmarla para el estudio. Las opciones son:
+**Decisión del 16/11/2026:**
 
-- dejarla en OBSERVE;
-- pasar a `ENFORCE_*`, que da 422 y no genera.
+- Se conserva OBSERVE de forma provisional.
+- No se cambia a `ENFORCE_*` (422) durante la integración, ni de forma automática.
 
-No se cambia sin decisión expresa.
+**Pendiente antes de usarlo con participantes reales:** una evaluación separada de los casos de cobertura parcial.
+Debe cubrir:
 
-**Decide:** el estudio.
+- qué perfiles la producen;
+- qué slots quedan vacíos;
+- cómo lo explica `/plan/limitations`;
+- qué implica para el objetivo y para la adherencia.
 
 ## Prioridad media
 
-### PD-04. Sesión `safetyBlocked` tras una reparación NO_VALIDA (limitación conocida)
+### PD-04. Reparación NO_VALIDA: la sesión sigue bloqueada (decidido: se mantiene la conducta conservadora)
 
-Si el único sustituto seguro del 1374 necesita más dosis que el ejercicio quitado, la semana se queda como estaba. La
-sesión afectada no se puede iniciar hasta el ciclo siguiente: V24 y V8C, sin subir trabajo. El barrido de
-`DIAGNOSTICO_REPARACION_LINAJE.md` lo da en 9 de 16 semanas para ese escenario concreto.
+**El caso.** El único sustituto seguro del ejercicio inseguro necesita más dosis que el ejercicio quitado. Por eso la
+reparación de seguridad queda NO_VALIDA y no publica nada. Así lo exigen V24 (dosis exacta de capacidad) y V8C (no
+subir el trabajo). El barrido de `DIAGNOSTICO_REPARACION_LINAJE.md` lo da en 9 de 16 semanas para ese escenario.
 
-**Propuesta:** decisión profesional. Las opciones son:
+**Decisión del 16/11/2026:**
 
-- aceptarlo (la decisión vigente);
-- revisar la capacidad del 104 para que admita 2x10.
+- Se mantiene la conducta conservadora.
+- No se fuerza una reparación inválida.
+- No se relajan V24 ni V8C.
+- La sesión afectada sigue bloqueada hasta un ciclo posterior.
 
-No se cambian ni las políticas ni el catálogo sin decisión.
+**Consecuencias para el usuario:**
 
-**Decide:** la revisión profesional.
+- El plan muestra la sesión con `safetyBlocked = true` y su aviso (`safetyBlockMessage`).
+- `POST /workouts/{id}/start` la rechaza (`WorkoutNotAvailableException.unsafe`).
+- El resto de la semana se puede entrenar con normalidad.
+- La semana siguiente la genera el ciclo semanal con las restricciones vigentes, así que el ejercicio inseguro no vuelve.
+
+**Consecuencias para la adherencia (sin cambiar la fórmula oficial):**
+
+- La sesión bloqueada sigue siendo un entrenamiento **previsto** (cuenta en m).
+- Si no se hace, su A_s es 0, igual que una sesión omitida.
+- Con 3 sesiones previstas y las otras 2 cumplidas, la semana da 66,67 % y no 100 %.
+- La causa no queda en `skip_reason` (lo elige la persona). V57 (`system_block_cause`) deja constancia de la causa de
+  seguridad cuando un ejercicio marcado se registra como omitido. Para el análisis, una semana así se identifica por
+  sus sesiones `safetyBlocked`.
+- Es un efecto conocido y acotado, que debe tenerse en cuenta al interpretar la adherencia de esas semanas.
+- No se corrige cambiando la fórmula.
+
+**Pendiente:** ninguno técnico. La revisión profesional puede reconsiderar la capacidad del sustituto (104) sin tocar
+los validadores.
 
 ### PD-05. Panel: vista por participante (falta para el panel)
 
@@ -127,6 +150,32 @@ Cambiar un rol exige acceso a la base (`cambiar_rol.sql`). Es suficiente para un
 
 **Decide:** el usuario.
 
+## Registradas para fases posteriores (no se desarrollan en esta orden)
+
+### PD-13. Evaluación de H2 (validación)
+
+La PR #69 sigue sin fusionar y H2 sigue apagado. Evaluarlo exige el arnés pareado A/B ya preparado y un presupuesto.
+
+**Decide:** el usuario.
+
+### PD-14. Preparación de Railway (despliegue)
+
+Incluye:
+
+- las variables (`JWT_SECRET`, `FITSENSE_*`);
+- una sola instancia mientras el interruptor de la IA esté en memoria (PD-08);
+- las migraciones V58 y V59 sobre la base real;
+- `FITSENSE_MANUAL_CYCLE_ENABLED=false`.
+
+**Decide:** el usuario.
+
+### PD-15. Mobile en un Android físico (cliente)
+
+Hay que probar la PR #2 de MobileApp contra el backend integrado: la generación asíncrona, la recuperación tras cerrar
+la app y la red móvil.
+
+**Decide:** el equipo móvil.
+
 ## Antes de usar la IA real
 
 ### PD-11. Prueba con Replicate real (validación)
@@ -143,7 +192,8 @@ La resiliencia está probada con Replicate simulado (#72). Falta la ronda real c
 | Integración | PD-02 |
 | Pruebas | PD-01 |
 | Funciones que faltan | PD-03, PD-05, PD-06, PD-10 |
-| Decisiones por confirmar | PD-04, PD-07 |
+| Decisiones (tomadas el 16/11/2026; PD-07 con evaluación pendiente) | PD-04, PD-07 |
 | Despliegue y operación | PD-08, PD-12 |
 | Cliente | PD-09 |
-| Validación con IA real | PD-11 |
+| Validación con IA real | PD-11, PD-13 |
+| Despliegue y cliente posteriores | PD-14, PD-15 |
