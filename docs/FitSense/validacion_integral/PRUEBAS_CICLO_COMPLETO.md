@@ -126,7 +126,7 @@ slot obligatorio **no** recibe 422:
 - `/plan/limitations` lo explica al usuario: *«no hay ejercicios de cadera… El plan trabaja el resto del cuerpo»*.
 
 No es un defecto. Es una decisión documentada que conviene **confirmar** antes del estudio
-(`PENDIENTES_PRIORIZADOS.md`, P-07). Los caminos que sí terminan en NO_FACTIBLE están probados en otras pruebas:
+(`PENDIENTES_PRIORIZADOS.md`, PD-07). Los caminos que sí terminan en NO_FACTIBLE están probados en otras pruebas:
 
 - 422 con `ENFORCE_*`: `SlotCoverage4CTest` lanza `InsufficientSlotCoverageException`, una `DomainRuleViolationException` que da 422;
 - perfil fuera de la duración del objetivo: `PoliticasP123IT`, `PoliticaP01DuracionMinimaTest`;
