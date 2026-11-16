@@ -106,5 +106,7 @@ SUST-SEG-1, ni progresión ni reincorporación.
 
 **Limitación conocida, no nueva.** Cuando el único sustituto seguro necesita más dosis que el ejercicio quitado, la
 semana se queda con el ejercicio inseguro. La sesión afectada queda bloqueada para iniciarla (`safetyBlocked`, con su
-aviso) hasta el siguiente ciclo. Es la decisión conservadora aprobada: no subir el trabajo. Está en
-`PENDIENTES_PRIORIZADOS.md`.
+aviso) hasta el siguiente ciclo. Es la decisión conservadora aprobada: no subir el trabajo. Queda registrada como pendiente en
+`docs/FitSense/validacion_integral/PENDIENTES_PRIORIZADOS.md` (rama `validacion/backend-integral`).
+
+Corrección aplicada y resultados: `CORRECCION_CI.md`. Políticas protegidas: `REGRESION_PROGRESION.md`.
