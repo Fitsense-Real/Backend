@@ -83,6 +83,7 @@ class GeneracionAsincronaResilienciaIT {
     @Autowired JdbcTemplate jdbc;
     @Autowired JdbcDiarioDePredicciones libro;
     @Autowired WebApplicationContext contexto;
+    @Autowired org.springframework.scheduling.TaskScheduler planificadorDeSpring;
     @MockitoSpyBean FirstPlanGenerationRunner runner;
     MockMvc mvc;
 
@@ -481,5 +482,148 @@ class GeneracionAsincronaResilienciaIT {
         assertThat(libro.deIntento(nueva, 1).orElseThrow().output()).isEqualTo("{\"ana\":1}");
         assertThat(libro.recuento(nueva).reutilizadas()).isEqualTo(1);
         assertThat(libro.recuento(nueva).iniciadas()).isZero();
+    }
+
+    // ===================================================================================== worker real (R02, R15, R20)
+
+    private Instant leaseDe(UUID id) {
+        return jdbc.queryForObject("SELECT lease_expires_at FROM plan_generation_operations WHERE operation_id = ?",
+                java.sql.Timestamp.class, id).toInstant();
+    }
+
+    private static void dormir(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void esperarTerminal(java.util.Collection<UUID> ids, int segundos) {
+        long limite = System.nanoTime() + TimeUnit.SECONDS.toNanos(segundos);
+        while (ids.stream().anyMatch(id -> List.of("PENDING", "PROCESSING").contains(estado(id)))) {
+            if (System.nanoTime() > limite) throw new AssertionError("operaciones sin terminar: " + ids);
+            dormir(50);
+        }
+    }
+
+    @Test
+    @DisplayName("R02 · el cierre semanal ocupa el UNICO hilo del planificador de Spring: el latido del worker (hilo"
+            + " propio) sigue renovando el lease; uno en ese planificador, como en #71, no correria")
+    void elCierreSemanalNoBloqueaElLatido() throws Exception {
+        long u = participante();
+        var id = service.request(u).operation().getId();
+        var liberar = new CountDownLatch(1);
+        var empezo = new CountDownLatch(1);
+        doAnswer(inv -> { empezo.countDown(); esperar(liberar); return inv.callRealMethod(); })
+                .when(runner).run(eq(u), any());
+        // Ciclo cada 50 ms, latido cada 100 ms (en produccion 2 s y 20 s): todo escalado, la misma logica.
+        var worker = new main.web.services.fitsense.planning.infrastructure.scheduling.PlanGenerationWorker(
+                service, 2, 0, 50, 100, 60_000);
+        worker.start();
+        try {
+            assertThat(empezo.await(30, TimeUnit.SECONDS)).as("el worker reclamo y ejecuta").isTrue();
+            if (planificadorDeSpring instanceof org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler p)
+                assertThat(p.getPoolSize()).as("Spring comparte un solo hilo entre todas las @Scheduled").isEqualTo(1);
+
+            // El «cierre semanal» (WeeklyCycleScheduler, llamadas a la IA usuario por usuario): 3 s aqui, minutos alli.
+            var cierreEmpezo = new CountDownLatch(1);
+            var cierreTermino = new CountDownLatch(1);
+            planificadorDeSpring.schedule(() -> { cierreEmpezo.countDown(); dormir(3000); cierreTermino.countDown(); },
+                    Instant.now());
+            assertThat(cierreEmpezo.await(10, TimeUnit.SECONDS)).isTrue();
+            var latidoComoEn71 = new java.util.concurrent.atomic.AtomicBoolean();
+            planificadorDeSpring.schedule(() -> latidoComoEn71.set(true), Instant.now());
+
+            var antes = leaseDe(id);
+            dormir(1500);
+            var despues = leaseDe(id);
+            assertThat(despues).as("el latido propio siguio renovando durante el cierre").isAfter(antes);
+            assertThat(latidoComoEn71.get()).as("un latido en el planificador de Spring seguiria esperando")
+                    .isFalse();
+            assertThat(cierreTermino.await(10, TimeUnit.SECONDS)).isTrue();
+            service.recoverStale();
+            assertThat(estado(id)).as("viva durante el cierre: nunca se reencola").isEqualTo("PROCESSING");
+        } finally {
+            liberar.countDown();
+            esperarTerminal(List.of(id), 60);
+            worker.stop();
+        }
+        assertThat(estado(id)).isEqualTo("COMPLETED");
+        assertThat(planes(u)).isEqualTo(1);
+        assertThat(service.find(u, id).getExecutions()).isEqualTo((short) 1);
+    }
+
+    @Test
+    @DisplayName("R15/R20 · diez usuarios a la vez (con doble toque) y el worker real: 10 operaciones aisladas, 10 planes,"
+            + " una ejecucion cada una y nunca mas de max-concurrent (2) en paralelo")
+    void variosUsuariosConElWorkerReal() throws Exception {
+        int n = 10;
+        var usuarios = new ArrayList<Long>();
+        for (int i = 0; i < n; i++) usuarios.add(participante());
+        var enCurso = new AtomicInteger();
+        var maximo = new AtomicInteger();
+        var llamadas = new AtomicInteger();
+        doAnswer(inv -> {
+            llamadas.incrementAndGet();
+            maximo.accumulateAndGet(enCurso.incrementAndGet(), Math::max);
+            try {
+                dormir(150);
+                return inv.callRealMethod();
+            } finally {
+                enCurso.decrementAndGet();
+            }
+        }).when(runner).run(any(), any());
+
+        var hilos = Executors.newFixedThreadPool(n);
+        var ids = new java.util.concurrent.ConcurrentHashMap<Long, java.util.Set<UUID>>();
+        var tareas = new ArrayList<Future<?>>();
+        for (long u : usuarios)
+            for (int toque = 0; toque < 2; toque++)
+                tareas.add(hilos.submit(() -> ids.computeIfAbsent(u, k -> ConcurrentHashMap.newKeySet())
+                        .add(service.request(u).operation().getId())));
+        for (var f : tareas) f.get(60, TimeUnit.SECONDS);
+        hilos.shutdown();
+
+        var worker = new main.web.services.fitsense.planning.infrastructure.scheduling.PlanGenerationWorker(
+                service, 2, 0, 50, 100, 60_000);
+        long t0 = System.nanoTime();
+        worker.start();
+        try {
+            esperarTerminal(ids.values().stream().flatMap(java.util.Set::stream).toList(), 120);
+        } finally {
+            worker.stop();
+        }
+        long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t0);
+
+        for (long u : usuarios) {
+            assertThat(ids.get(u)).as("doble toque: la misma operacion").hasSize(1);
+            var id = ids.get(u).iterator().next();
+            assertThat(estado(id)).isEqualTo("COMPLETED");
+            assertThat(planes(u)).isEqualTo(1);
+            assertThat(service.find(u, id).getExecutions()).isEqualTo((short) 1);
+            assertThat(jdbc.queryForObject("SELECT count(*) FROM plan_generation_operations WHERE user_id = ?",
+                    Integer.class, u)).isEqualTo(1);
+        }
+        assertThat(llamadas.get()).as("una ejecucion del pipeline por usuario").isEqualTo(n);
+        assertThat(maximo.get()).as("nunca mas de max-concurrent a la vez").isBetween(1, 2);
+        System.out.printf("R20 · %d operaciones terminadas en %d ms con 2 en paralelo (maximo observado %d)%n",
+                n, ms, maximo.get());
+    }
+
+    @Test
+    @DisplayName("R17 · libro JDBC: dos ejecuciones anotan el MISMO intento con la MISMA peticion: la segunda no puede"
+            + " (ux_pgp_intento_vigente) y no se descarta la primera")
+    void libroNoAdmiteDosVigentesDeLaMismaPeticion() {
+        long u = participante();
+        var op = service.request(u).operation().getId();
+        String hash = "f".repeat(64);
+        long f1 = libro.solicitar(op, u, 1, hash, Instant.now());
+        assertThatThrownBy(() -> libro.solicitar(op, u, 1, hash, Instant.now()))
+                .isInstanceOf(org.springframework.dao.DuplicateKeyException.class);
+        var vigente = libro.deIntento(op, 1).orElseThrow();
+        assertThat(vigente.id()).isEqualTo(f1);
+        assertThat(vigente.estado()).isEqualTo(DiarioDePredicciones.Estado.SOLICITANDO);
+        assertThat(libro.recuento(op).iniciadas()).isEqualTo(1);
     }
 }

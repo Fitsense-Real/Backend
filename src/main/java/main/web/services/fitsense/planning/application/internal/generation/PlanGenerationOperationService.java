@@ -310,8 +310,11 @@ public class PlanGenerationOperationService {
     void ensureStillProcessing(UUID operationId) {
         // V59 (fencing): no basta con PROCESSING; tiene que seguir siendo NUESTRA. Si el lease vencio y otro worker la
         // reclamo, este no publica: lo hara el propietario actual (con las mismas predicciones, por el libro).
-        var fila = jdbc.queryForList(
-                "SELECT status, lease_owner FROM plan_generation_operations WHERE operation_id = ?", operationId);
+        // FOR UPDATE: dentro de la transaccion de persist (PipelineFirstPlanGenerationRunner), la fila queda bloqueada
+        // hasta el commit, asi que nadie puede quitarle el lease a este worker entre la comprobacion y la publicacion.
+        // Fuera de una transaccion (guarda antes de cada prediccion) es una lectura puntual.
+        var fila = jdbc.queryForList("SELECT status, lease_owner FROM plan_generation_operations"
+                + " WHERE operation_id = ? FOR UPDATE", operationId);
         if (fila.isEmpty() || !GenerationOperationStatus.PROCESSING.name().equals(fila.get(0).get("status"))
                 || !owner.equals(fila.get(0).get("lease_owner")))
             throw new OperationAbandonedException("la operacion ya no esta en curso para este worker (" + fila + ")");
@@ -374,18 +377,21 @@ public class PlanGenerationOperationService {
                     OR (status = 'PENDING' AND created_at < ?)
                 """, timedOut.reasonCode(), timedOut.message(), now, now,
                 now.minus(maxProcessing), now.minus(maxQueued));
-        // V59: huerfana = lease VENCIDO (su propietario dejo de latir), no "updated_at antiguo".
+        // V59: huerfana = lease VENCIDO (su propietario dejo de latir), no "updated_at antiguo". Un lease NULO solo
+        // puede ser una PROCESSING anterior a V59 (ck_pgo_lease lo impide en toda escritura nueva): su proceso ya no
+        // existe tras el despliegue, asi que tambien es huerfana.
+
         int requeued = jdbc.update("""
                 UPDATE plan_generation_operations
                    SET status = 'PENDING', started_at = NULL, updated_at = ?, lease_owner = NULL, lease_expires_at = NULL
-                 WHERE status = 'PROCESSING' AND lease_expires_at < ? AND executions < ?
+                 WHERE status = 'PROCESSING' AND (lease_expires_at IS NULL OR lease_expires_at < ?) AND executions < ?
                 """, now, now, maxExecutions);
         var interrupted = GenerationFailureClassifier.interrupted();
         int failed = jdbc.update("""
                 UPDATE plan_generation_operations
                    SET status = 'FAILED', reason_code = ?, message = ?, retryable = TRUE,
                        finished_at = ?, updated_at = ?, lease_owner = NULL, lease_expires_at = NULL
-                 WHERE status = 'PROCESSING' AND lease_expires_at < ? AND executions >= ?
+                 WHERE status = 'PROCESSING' AND (lease_expires_at IS NULL OR lease_expires_at < ?) AND executions >= ?
                 """, interrupted.reasonCode(), interrupted.message(), now, now, now, maxExecutions);
         if (expired + requeued + failed > 0)
             log.warn("Generacion inicial: {} por tiempo maximo, {} huerfana(s) en cola de nuevo, {} interrumpida(s)",

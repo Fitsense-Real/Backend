@@ -58,7 +58,8 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
   `lease_expires_at`, 90 s). Mientras ejecuta, renueva su lease cada 20 s desde un hilo propio (no el
   planificador compartido de Spring). Una PROCESSING con el **lease vencido** quedó huérfana: vuelve a
   la cola hasta `max-executions` (3) y después se cierra como `FAILED/EJECUCION_INTERRUMPIDA`
-  reintentable. Publicar, cerrar y latir exigen ser el propietario. Al reanudarse, el pipeline lee
+  reintentable. Publicar (en la misma transacción que la comprobación de propiedad, con `FOR UPDATE`), cerrar,
+  latir y empezar cada intento de IA exigen ser el propietario. El barrido corre cada `recover-ms` (30 s). Al reanudarse, el pipeline lee
   las predicciones de Replicate ya pedidas en `plan_generation_predictions` en lugar de pagarlas otra
   vez. Detalle en `docs/FitSense/generacion_asincrona/`.
 - **Apagado ordenado (despliegue, SIGTERM):** el worker deja de reclamar, interrumpe sus
@@ -84,6 +85,7 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
 | `fitsense.plan-generation.max-queued-seconds` | `1800` |
 | `fitsense.plan-generation.max-executions` | `3` (V59; antes 2) |
 | `fitsense.plan-generation.reuse-window-hours` | `24` (V59; reutilizar una predicción de otra operación del mismo usuario y la misma petición) |
+| `fitsense.plan-generation.recover-ms` | `30000` (V59; barrido de huérfanas y vencidas; el reclamo sigue cada `poll-ms`) |
 
 Las pruebas (surefire y failsafe) apagan el worker: cada contexto de Spring en caché tendría el suyo
 sondeando cada 2 s una base inexistente o ya detenida (eso agotaba el CI a los 45 min).

@@ -8,7 +8,7 @@ reproducibles sin Replicate. La corrección está en la rama dependiente `fix/as
 | Elemento | En #71 |
 |---|---|
 | Propiedad | `fitsense.plan-generation.max-processing-seconds=600` |
-| Dónde se aplica | `PlanGenerationOperationService.recoverStale()`, con el barrido del worker cada 60 s |
+| Dónde se aplica | `PlanGenerationOperationService.recoverStale()`, que el worker de #71 ejecutaba en cada ciclo (cada 2 s) |
 | Desde cuándo se mide | `started_at` de la ejecución **actual**, que se reinicia en cada reencolado |
 | Qué hace | `PROCESSING` con `started_at < now - 600 s` pasa a `FAILED / TIEMPO_EXCEDIDO` (reintentable) |
 | Qué pretendía | Una red de seguridad para que la app no esperase para siempre |
@@ -107,7 +107,7 @@ facturan. La nueva ejecución pide todas otra vez. Con dos interrupciones, la op
 
 Subir el límite a 1.200 s no corrige nada de lo anterior. El latido sin hilo y el reinicio seguirían duplicando
 predicciones, y una configuración distinta de la IA volvería a dejar el límite por debajo del peor caso. La
-corrección (ver `POLITICA_TIMEOUTS.md`, `RECUPERACION_OPERACIONES.md` e `IDEMPOTENCIA_PREDICCIONES.md`):
+corrección (ver `VALIDACION_TIMEOUTS.md`, `VALIDACION_LEASE_HEARTBEAT.md` y `RECUPERACION_PREDICCIONES.md`):
 
 - separa los tiempos;
 - da al worker hilos propios y un lease con propietario;

@@ -293,6 +293,9 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
     private String callConDiario(String prompt, Peticion peticion, Medicion medicion, java.time.Instant plazo,
                                  DiarioDePredicciones.Ambito ambito, int attempt) {
+        // Fencing ANTES de todo: un worker que ya no es el propietario de la operacion no envia, no consulta y no toca
+        // el libro (no puede, por ejemplo, dar por NO_CONFIRMADA la prediccion que el propietario esta enviando).
+        ambito.antesDeEnviar().run();
         var input = entrada(prompt, peticion);
         String hash = huella(input);
         var propia = diario.deIntento(ambito.operationId(), attempt);
@@ -311,11 +314,18 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         }
         if (previa != null) return reanudar(previa, peticion, prompt, medicion, plazo, ambito);
 
-        // Fencing: si este worker ya no es el propietario de la operacion, no se paga otra prediccion.
-        ambito.antesDeEnviar().run();
         // Nueva: se anota ANTES de enviar. Si el proceso muere entre el envio y la confirmacion, la fila queda en
         // SOLICITANDO y la reanudacion NO reenvia (Replicate pudo aceptarla).
-        long fila = diario.solicitar(ambito.operationId(), ambito.userId(), attempt, hash, reloj.instant());
+        long fila;
+        try {
+            fila = diario.solicitar(ambito.operationId(), ambito.userId(), attempt, hash, reloj.instant());
+        } catch (org.springframework.dao.DuplicateKeyException carrera) {
+            // Otra ejecucion de esta operacion anoto este intento entre la consulta y la anotacion: se sigue la suya.
+            var suya = diario.deIntento(ambito.operationId(), attempt).orElseThrow(() -> carrera);
+            log.warn("REPLICATE_CARRERA operacion={} intento={}: otra ejecucion ya lo anoto; se reanuda la suya",
+                    ambito.operationId(), attempt);
+            return reanudar(suya, peticion, prompt, medicion, plazo, ambito);
+        }
         String rawBody;
         try {
             rawBody = postSinEspera(input);

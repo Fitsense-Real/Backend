@@ -51,6 +51,19 @@ class PlanGenerationWorkerTest {
     }
 
     @Test
+    @DisplayName("R20 · V59: el barrido corre cada recover-ms, no en cada ciclo (en #71, 3 UPDATE cada 2 s por instancia)")
+    void elBarridoNoCorreEnCadaCiclo() {
+        var service = mock(PlanGenerationOperationService.class);
+        when(service.claimNext()).thenReturn(Optional.empty());
+        // poll y latido sin programar (-1): las pruebas conducen el ciclo a mano.
+        var worker = new PlanGenerationWorker(service, 2, -1, -1, -1, 60_000);
+        for (int i = 0; i < 20; i++) worker.tick();
+        verify(service, times(1)).recoverStale();
+        verify(service, times(20)).claimNext();
+        worker.stop();
+    }
+
+    @Test
     void unFalloDelCicloNoDetieneElWorker() {
         var service = mock(PlanGenerationOperationService.class);
         when(service.recoverStale()).thenThrow(new IllegalStateException("base caida"));

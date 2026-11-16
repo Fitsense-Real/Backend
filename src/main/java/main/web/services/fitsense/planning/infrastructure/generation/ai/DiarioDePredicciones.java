@@ -54,7 +54,11 @@ public interface DiarioDePredicciones {
     /** Copia una prediccion de otra operacion como intento de esta (sin llamar a Replicate). */
     Entrada adoptar(Entrada origen, UUID operationId, int attempt, Instant ahora);
 
-    /** Anota la prediccion ANTES de enviarla. Devuelve el id de la fila. */
+    /**
+     * Anota la prediccion ANTES de enviarla. Devuelve el id de la fila. Descarta una fila vigente de este intento con
+     * OTRA peticion; si ya hay una con la MISMA (otra ejecucion se adelanto), lanza
+     * {@link org.springframework.dao.DuplicateKeyException} y no anota nada.
+     */
     long solicitar(UUID operationId, long userId, int attempt, String requestHash, Instant ahora);
 
     /** Replicate devolvio el identificador. */
@@ -78,8 +82,9 @@ public interface DiarioDePredicciones {
     // ------------------------------------------------------------------ ambito
 
     /**
-     * La operacion en curso en este hilo. {@code antesDeEnviar} se ejecuta justo antes de cada prediccion NUEVA y lanza
-     * si este worker ya no es el propietario de la operacion (fencing): un worker que perdio su lease no paga otra.
+     * La operacion en curso en este hilo. {@code antesDeEnviar} se ejecuta al empezar CADA intento (antes de leer el
+     * libro, reanudar o enviar) y lanza si este worker ya no es el propietario de la operacion (fencing): un worker que
+     * perdio su lease no paga otra prediccion, no sondea y no modifica el libro.
      */
     record Ambito(UUID operationId, long userId, Runnable antesDeEnviar) {}
 

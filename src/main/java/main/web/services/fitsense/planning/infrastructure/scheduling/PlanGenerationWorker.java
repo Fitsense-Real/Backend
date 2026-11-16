@@ -53,10 +53,13 @@ public class PlanGenerationWorker {
     private final long initialDelayMs;
     private final long pollMs;
     private final long heartbeatMs;
+    /** V59: cada cuanto se barre (recoverStale). El reclamo sigue cada poll-ms; el barrido no necesita tanto. */
+    private final long recoverMs;
+    private volatile long ultimoBarrido = Long.MIN_VALUE;
 
     /** Para pruebas: sin programar nada; las pruebas llaman a tick() y heartbeat() a mano. */
     public PlanGenerationWorker(PlanGenerationOperationService service, int maxConcurrent) {
-        this(service, maxConcurrent, -1, -1, -1);
+        this(service, maxConcurrent, -1, -1, -1, 0);
     }
 
     @org.springframework.beans.factory.annotation.Autowired
@@ -64,8 +67,10 @@ public class PlanGenerationWorker {
                                 @Value("${fitsense.plan-generation.max-concurrent:2}") int maxConcurrent,
                                 @Value("${fitsense.plan-generation.initial-delay-ms:5000}") long initialDelayMs,
                                 @Value("${fitsense.plan-generation.poll-ms:2000}") long pollMs,
-                                @Value("${fitsense.plan-generation.heartbeat-ms:20000}") long heartbeatMs) {
+                                @Value("${fitsense.plan-generation.heartbeat-ms:20000}") long heartbeatMs,
+                                @Value("${fitsense.plan-generation.recover-ms:30000}") long recoverMs) {
         this.service = service;
+        this.recoverMs = Math.max(0, recoverMs);
         this.initialDelayMs = initialDelayMs;
         this.pollMs = pollMs;
         this.heartbeatMs = heartbeatMs;
@@ -90,20 +95,26 @@ public class PlanGenerationWorker {
 
     /** V59: programa el ciclo y el latido en sus hilos propios (no en el planificador compartido de Spring). */
     @jakarta.annotation.PostConstruct
-    void start() {
+    public void start() {
         if (pollMs <= 0 || heartbeatMs <= 0) return;
         ciclo.scheduleWithFixedDelay(this::tick, Math.max(0, initialDelayMs), pollMs,
                 java.util.concurrent.TimeUnit.MILLISECONDS);
         latido.scheduleWithFixedDelay(this::heartbeat, heartbeatMs, heartbeatMs,
                 java.util.concurrent.TimeUnit.MILLISECONDS);
-        log.info("Generacion inicial: worker {} con ciclo cada {} ms y latido cada {} ms en hilos propios",
-                service.owner(), pollMs, heartbeatMs);
+        log.info("Generacion inicial: worker {} con ciclo cada {} ms, barrido cada {} ms y latido cada {} ms en hilos"
+                + " propios", service.owner(), pollMs, recoverMs, heartbeatMs);
     }
 
     public void tick() {
         try {
             if (stopping.get()) return;
-            service.recoverStale();
+            // V59: el barrido son tres UPDATE indexados; cada recover-ms basta (el lease dura 90 s). Con #71 corria en
+            // cada ciclo (cada 2 s) en cada instancia.
+            long ahora = System.nanoTime() / 1_000_000;
+            if (ultimoBarrido == Long.MIN_VALUE || ahora - ultimoBarrido >= recoverMs) {
+                ultimoBarrido = ahora;
+                service.recoverStale();
+            }
             while (inFlight.get() < maxConcurrent && !stopping.get()) {
                 var next = service.claimNext();
                 if (next.isEmpty()) return;
@@ -140,7 +151,7 @@ public class PlanGenerationWorker {
      * llegar aqui, el barrido las recupera por falta de latido.
      */
     @PreDestroy
-    void stop() {
+    public void stop() {
         stopping.set(true);
         ciclo.shutdownNow();
         latido.shutdownNow();

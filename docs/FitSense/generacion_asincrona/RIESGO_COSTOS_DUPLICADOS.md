@@ -13,6 +13,10 @@ que son las predicciones que se facturarían.
 | Falso huérfano por latido sin hilo (D2) | 6 | 3 (no hay falso huérfano: hilo propio y lease) | `latidoAtrasadoConLeaseVigenteNoReencola` (E9) |
 | Vence por tiempo con la generación viva y el usuario reintenta | 6 | **3** (adopción, ventana de 24 h) | `reintentoManualAdopta`, E8 |
 | Replicate acepta y el id no llega, y luego se reinicia | hasta 4 (1 sin seguimiento más hasta 3 al reanudar) | **1** (`NO_CONFIRMADA`, sin reenvío) | `aceptadaSinIdNoSeReenvia`, E17 |
+| Dos instancias: A pierde el lease con la predicción en curso y B reclama | hasta 6 | **3** (B sigue p1 por su id) | `dosInstanciasNoDuplicanElTrabajo` |
+| El proceso muere dentro de la transacción de publicación | hasta 6 | **3** | `muereDuranteLaPublicacion` |
+| Vence de verdad con la predicción en curso y el usuario reintenta | hasta 6 | **3** (1 adoptada y 2 nuevas) | `venceDeVerdadDuranteUnaPrediccion` |
+| Error definitivo del proveedor (4xx) | 0 creadas | 0 creadas, sin reintento automático | `errorDefinitivoDelProveedor` |
 
 ## Contabilidad por operación
 

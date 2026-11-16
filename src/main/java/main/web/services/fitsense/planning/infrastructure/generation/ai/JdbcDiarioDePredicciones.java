@@ -72,10 +72,13 @@ public class JdbcDiarioDePredicciones implements DiarioDePredicciones {
 
     @Override
     public long solicitar(UUID operationId, long userId, int attempt, String requestHash, Instant ahora) {
-        // Si habia una fila vigente para este intento con OTRA peticion, queda como historial.
+        // Si habia una fila vigente para este intento con OTRA peticion, queda como historial. Una con la MISMA
+        // peticion no se toca: si otra ejecucion la anoto entre medias, ux_pgp_intento_vigente rechaza este INSERT
+        // (DuplicateKeyException) y el llamador la reanuda en vez de enviar otra.
         jdbc.update("UPDATE plan_generation_predictions SET status = 'DESCARTADA', finished_at = coalesce(finished_at, ?),"
                         + " error = coalesce(error, 'la peticion cambio') WHERE operation_id = ? AND attempt = ?"
-                        + " AND status <> 'DESCARTADA'", Timestamp.from(ahora), operationId, attempt);
+                        + " AND status <> 'DESCARTADA' AND request_hash <> ?", Timestamp.from(ahora), operationId, attempt,
+                requestHash);
         return jdbc.queryForObject("INSERT INTO plan_generation_predictions (operation_id, user_id, attempt,"
                         + " request_hash, status, requested_at) VALUES (?, ?, ?, ?, 'SOLICITANDO', ?)"
                         + " RETURNING prediction_row_id", Long.class,

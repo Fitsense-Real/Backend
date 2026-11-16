@@ -87,8 +87,18 @@ class DiarioDePrediccionesReplicateTest {
             return e;
         }
 
+        /** Para simular otra ejecucion que anota el mismo intento justo antes que esta (carrera). */
+        Runnable antesDeSolicitar = () -> { };
+
         @Override public long solicitar(UUID op, long u, int intento, String hash, Instant ahora) {
-            deIntento(op, intento).ifPresent(f -> reemplazar(new Entrada(f.id(), f.operationId(), f.userId(),
+            antesDeSolicitar.run();
+            antesDeSolicitar = () -> { };
+            // Mismas reglas que JdbcDiarioDePredicciones: solo se descarta la fila de OTRA peticion; la misma peticion
+            // ya anotada viola ux_pgp_intento_vigente.
+            var vigente = deIntento(op, intento);
+            if (vigente.isPresent() && vigente.get().requestHash().equals(hash))
+                throw new org.springframework.dao.DuplicateKeyException("ux_pgp_intento_vigente");
+            vigente.ifPresent(f -> reemplazar(new Entrada(f.id(), f.operationId(), f.userId(),
                     f.attempt(), f.requestHash(), Estado.DESCARTADA, f.predictionId(), f.output(), f.error(),
                     f.reusedFrom())));
             eventos.add("solicitar " + intento);
@@ -345,6 +355,37 @@ class DiarioDePrediccionesReplicateTest {
     }
 
     @Test
+    @DisplayName("R17 · carrera: otra ejecucion anota el intento (ya ENVIADA) justo antes: se sigue la suya, CERO POST")
+    void carreraConOtraEjecucionEnviada() {
+        var libro = new LibroEnMemoria();
+        var g = generador(libro);
+        var op = UUID.randomUUID();
+        libro.antesDeSolicitar = () -> libro.anadir(op, 1, g.huellaDe(PROMPT, 1),
+                DiarioDePredicciones.Estado.ENVIADA, "p1", null);
+        server.expect(ExpectedCount.once(), requestTo(GET)).andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(prediccion("succeeded"), MediaType.APPLICATION_JSON));
+        assertEquals("{\"ok\":1}", llamar(g, op, 1));
+        server.verify();
+        assertEquals(1, libro.filas.size(), "no se anoto una segunda prediccion");
+        assertEquals(DiarioDePredicciones.Estado.SUCCEEDED, libro.fila(1).estado());
+    }
+
+    @Test
+    @DisplayName("R07/R17 · carrera: la otra ejecucion esta a mitad de su POST (SOLICITANDO): NO se envia otra; NO_CONFIRMADA")
+    void carreraConOtraEjecucionSinConfirmar() {
+        var libro = new LibroEnMemoria();
+        var g = generador(libro);
+        var op = UUID.randomUUID();
+        libro.antesDeSolicitar = () -> libro.anadir(op, 1, g.huellaDe(PROMPT, 1),
+                DiarioDePredicciones.Estado.SOLICITANDO, null, null);
+        var e = assertThrows(AiProviderUnavailableException.class, () -> llamar(g, op, 1));
+        assertTrue(e.getMessage().contains("PREDICCION_NO_CONFIRMADA"), e.getMessage());
+        server.verify();
+        assertEquals(1, libro.filas.size());
+        assertEquals(DiarioDePredicciones.Estado.NO_CONFIRMADA, libro.fila(1).estado());
+    }
+
+    @Test
     @DisplayName("fencing: si el worker ya no es propietario, no se envia nada")
     void sinPropiedadNoSeEnvia() {
         var libro = new LibroEnMemoria();
@@ -355,6 +396,20 @@ class DiarioDePrediccionesReplicateTest {
                 () -> g.call(PROMPT, 1, USUARIO, (short) 1, 1)));
         server.verify();
         assertTrue(libro.filas.isEmpty());
+    }
+
+    @Test
+    @DisplayName("R04 · sin propiedad tampoco se reanuda: la fila SOLICITANDO del propietario NO se marca NO_CONFIRMADA")
+    void sinPropiedadNoSeTocaElLibro() {
+        var libro = new LibroEnMemoria();
+        var g = generador(libro);
+        var op = UUID.randomUUID();
+        libro.anadir(op, 1, g.huellaDe(PROMPT, 1), DiarioDePredicciones.Estado.SOLICITANDO, null, null);
+        assertThrows(IllegalStateException.class, () -> DiarioDePredicciones.durante(op, USUARIO,
+                () -> { throw new IllegalStateException("ya no es tuya"); },
+                () -> g.call(PROMPT, 1, USUARIO, (short) 1, 1)));
+        server.verify();
+        assertEquals(DiarioDePredicciones.Estado.SOLICITANDO, libro.fila(1).estado());
     }
 
     @Test
