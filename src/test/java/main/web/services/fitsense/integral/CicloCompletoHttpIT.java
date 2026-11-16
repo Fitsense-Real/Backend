@@ -381,8 +381,9 @@ class CicloCompletoHttpIT {
     void coberturaParcialExplicada() throws Exception {
         var c = cuenta();
         // El bloqueo individual es un dato del perfil (blockedExerciseIds). Sin ninguna cadera, el slot LOWER_HIP queda
-        // vacio. Con el motor de reglas, 4C v4 §6 no bloquea (el corte solo bloquea la IA): se publica el resto del
-        // cuerpo y se explica lo que falta. Nunca se cuela un ejercicio bloqueado.
+        // vacio (4C v4 §6 NO FACTIBLE). La comprobacion previa esta en fitsense.coverage.pregeneration=OBSERVE por
+        // decision del estudio (application.properties): registra y sigue, sin 422. Se publica el resto del cuerpo y
+        // /plan/limitations explica lo que falta. Nunca se cuela un ejercicio bloqueado.
         var cadera = jdbc.queryForList("SELECT exercise_id FROM exercises WHERE movement_pattern IN ('HIP_HINGE',"
                 + " 'HIP_EXTENSION')", Long.class);
         assertFalse(cadera.isEmpty());
