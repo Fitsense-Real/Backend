@@ -4,7 +4,7 @@ Fecha: 16/11/2026. Rama `validacion/backend-integral`, que contiene `generation`
 
 Prueba: `src/test/java/main/web/services/fitsense/integral/CicloCompletoHttpIT.java`.
 
-Resultado: **9 pruebas, 0 fallos, 0 errores, 0 omitidas** (8 en 26 s; la 9.ª en 21 s, ejecutada aparte).
+Resultado: **9 pruebas, 0 fallos, 0 errores, 0 omitidas, 35 s**.
 
 ## 1. Cómo se ejecuta
 
@@ -57,13 +57,14 @@ Con el motor de reglas no hace falta IA simulada. La IA simulada ya está cubier
 **5. Cumplimiento parcial.**
 
 - Se registra la mitad de cada ejercicio.
-- La adherencia queda estrictamente entre 0 y 100.
+- La adherencia queda estrictamente entre 0 y 100 y coincide, al centésimo, con la fórmula oficial de
+  `docs/FitSense/ADHERENCIA.md`: A_w = media de A_s, con A_s = ⌈n/2⌉ / n.
 - Queda registrada una decisión de adaptación y la semana nueva es publicable.
 
 **6. Baja adherencia y omisiones.**
 
 - El usuario omite 2 sesiones (LACK_OF_TIME, FATIGUE) y entrena 1.
-- Adherencia < 50 y `skippedWorkouts` = 2.
+- Adherencia = 33,33 (fórmula oficial: (0 + 0 + 1) / 3) y `skippedWorkouts` = 2.
 - Las causas se conservan en el historial de la semana medida.
 - La decisión es ADAPT_* o NO_CHANGE, y la semana nueva es publicable.
 
@@ -88,7 +89,8 @@ Con el motor de reglas no hace falta IA simulada. La IA simulada ya está cubier
 - Catálogo: grupos, equipamiento, búsqueda con `maxDifficulty=1` (el filtro se respeta) y ficha.
 - Abandono: la sesión queda ABANDONED, no cuenta para la adherencia y el entrenamiento se puede hacer después.
 - Reporte retroactivo («ya lo hice») de una sesión completa: cuenta para la adherencia.
-- Tras el ciclo: `completedWorkouts` = 2 (la entrenada tras abandonar y la reportada) y `skippedWorkouts` = 1.
+- Tras el ciclo: `completedWorkouts` = 2 (la entrenada tras abandonar y la reportada), `skippedWorkouts` = 1 y
+  adherencia = 66,67 (el intento abandonado no cuenta y el reporte sí, como dice la fórmula oficial).
 - `/users/me/interventions` devuelve exactamente las intervenciones registradas en la base.
 - Retiro voluntario: `withdrawnAt` queda fijado (también en `/users/me`) y no se borra ningún plan.
 

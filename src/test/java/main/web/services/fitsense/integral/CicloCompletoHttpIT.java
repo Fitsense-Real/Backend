@@ -307,6 +307,12 @@ class CicloCompletoHttpIT {
         long nuevo = cerrar(c, semana(p1));
         double a = adherencia(metricas(c, semana(p1)));
         assertTrue(a > 0 && a < 100, "parcial: " + a);
+        // Formula oficial (ADHERENCIA.md): A_s = ejercicios hechos / indicados; A_w = media de A_s sobre los previstos.
+        double esperado = sesiones(p1).stream().mapToDouble(w -> {
+            int n = w.get("exercises").size();
+            return Math.ceil(n * 0.5) / n;
+        }).average().orElseThrow() * 100;
+        assertEquals(esperado, a, 0.01, "A_w oficial");
         assertFalse(ultimoIntento(c).equals("sin intento"));
         verificarPublicable(ok(c, get("/api/v1/users/me/plan/{id}", nuevo)));
     }
@@ -324,7 +330,7 @@ class CicloCompletoHttpIT {
         entrenar(c, s.get(2), 1.0);
         long nuevo = cerrar(c, semana(p1));
         var m = metricas(c, semana(p1));
-        assertTrue(adherencia(m) < 50, "baja: " + m);
+        assertEquals(100.0 / 3, adherencia(m), 0.01, "A_w oficial: (0 + 0 + 1) / 3: " + m);
         assertEquals(2, m.get("skippedWorkouts").asInt(), m.toString());
         // Las causas quedan en el historico de la semana medida.
         var medida = ok(c, get("/api/v1/users/me/plan/{id}", p1.get("planId").asLong()));
@@ -452,6 +458,7 @@ class CicloCompletoHttpIT {
         var m = metricas(c, semana(p1));
         assertEquals(2, m.get("completedWorkouts").asInt(), "entrenada tras abandonar + reportada: " + m);
         assertEquals(1, m.get("skippedWorkouts").asInt(), m.toString());
+        assertEquals(200.0 / 3, adherencia(m), 0.01, "A_w oficial: el abandono no cuenta, el reporte si: " + m);
 
         // Intervenciones: la API devuelve exactamente las registradas para el usuario.
         assertEquals(jdbc.queryForObject("SELECT count(*) FROM user_interventions WHERE user_id = ?", Integer.class,
