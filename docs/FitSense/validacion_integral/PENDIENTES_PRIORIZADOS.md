@@ -69,6 +69,15 @@ Debe cubrir:
 - cómo lo explica `/plan/limitations`;
 - qué implica para el objetivo y para la adherencia.
 
+### PD-16. Carrera en la reparación de seguridad concurrente (defecto menor, preexistente)
+
+`ProteccionPlanesPublicadosIT.reparacionesSimultaneas` falló 1 vez en la regresión de #72 actualizada y pasó en las
+otras 16 ejecuciones. Si dos reparaciones se cruzan entre sus fases 1 y 2, la perdedora informa NO_VALIDA en vez de
+CAMBIO_CONCURRENTE. No publica nada y no hay riesgo, y el servicio no tiene llamadores en producción. Detalle y
+corrección propuesta en `FALLO_INTERMITENTE_REPARACION_CONCURRENTE.md`.
+
+**Decide:** el usuario (continuar o corregir antes).
+
 ## Prioridad media
 
 ### PD-04. Reparación NO_VALIDA: la sesión sigue bloqueada (decidido: se mantiene la conducta conservadora)
