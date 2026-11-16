@@ -84,8 +84,8 @@ NO_VALIDA:
 progresada intacta y H6 cumplido. Con la contención del catálogo **encendida**, que es la configuración real, también
 salió REPARADA con H6 en las 5 semanas probadas.
 
-Las demás variables no influyen: cambio de domingo a lunes, de mes y de año, zona horaria (la de la JVM; el usuario no
-tiene ninguna configurada), las fechas de los registros y la recuperación de semanas anteriores. Su lógica ya la
+Las demás variables no influyen: cambio de domingo a lunes, de mes y de año, zona horaria (las semanas
+son fijas y el servicio recibe fechas explícitas; el usuario tiene la zona por defecto, America/Lima), las fechas de los registros y la recuperación de semanas anteriores. Su lógica ya la
 cubre `TrainingWeekTest`: cada día de la semana, domingo y lunes, cambio de mes y de año, años que empiezan en lunes y
 bisiestos.
 
