@@ -19,6 +19,7 @@ Esto es lo que la corrección **no** elimina, con su cota y su mitigación. No s
 | R13 | Sin prueba con Replicate real | Latencias, formatos y retención reales | — | Prueba controlada propuesta en `DECISION_PREPARACION_IA_REAL.md` |
 | R14 | La app Flutter no se ejecutó en esta sesión | Las PR del cliente están en otro repositorio | — | El código de MobileApp#2 se leyó y es compatible. El contrato no cambia (`COMPATIBILIDAD_FLUTTER.md`). |
 | R15 | Número de réplicas en Railway desconocido | — | — | El diseño admite varias instancias (R17). No se ha tocado Railway. |
+| R16 | **Fuera de alcance:** `ReparacionLinajeIT` y `ReparacionLinajeRev2IT` (P-P2/H6) fallan desde el 16/11/2026, también en `generation` sin #71 ni #72 | Prueba con fechas relativas a `LocalDate.now()`. Con la semana del 16/11, la reparación de una semana progresada sale `NO_VALIDA` por V24 (ejercicio 104: 2x10 frente a 2x13) | Pone el CI en rojo en cualquier rama mientras dure | No se ha tocado (progresión, fuera de alcance). Requiere una investigación aparte: puede ser un defecto real de la reparación según la semana, o una prueba frágil. |
 
 ## Defectos encontrados en esta validación y corregidos en #72
 
