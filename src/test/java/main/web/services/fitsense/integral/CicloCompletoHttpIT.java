@@ -402,4 +402,68 @@ class CicloCompletoHttpIT {
         assertEquals(cadera.size(), jdbc.queryForObject("SELECT cardinality(blocked_exercise_ids) FROM user_profiles"
                 + " WHERE user_id = ?", Integer.class, c.userId()), "el perfil conserva el bloqueo");
     }
+
+    @Test
+    @DisplayName("resto de la API que usa Flutter: catalogo, abandono, reporte, intervenciones y retiro del estudio")
+    void restoDeLaApi() throws Exception {
+        var c = cuenta();
+        perfil(c, "GENERAL_FITNESS", "GYM", GYM, true);
+
+        // Catalogo (lectura): grupos, equipamiento, busqueda con filtro y ficha.
+        assertTrue(ok(c, get("/api/v1/catalog/body-parts")).size() > 0);
+        assertTrue(ok(c, get("/api/v1/catalog/equipment-types")).size() > 0);
+        var faciles = ok(c, get("/api/v1/catalog/exercises").param("maxDifficulty", "1"));
+        assertTrue(faciles.size() > 0);
+        faciles.forEach(e -> assertTrue(e.get("difficultyLevel").asInt() <= 1, "el filtro se respeta: " + e));
+        long ejercicio = faciles.get(0).get("exerciseId").asLong();
+        assertEquals(ejercicio, ok(c, get("/api/v1/catalog/exercises/{id}", ejercicio)).get("exerciseId").asLong());
+
+        var p1 = generar(c);
+        var s = sesiones(p1);
+        RelojPruebas.abrirVentanaDeEjecucion(jdbc, c.userId());
+
+        // Abandono: no cuenta como intento y el entrenamiento sigue exigible.
+        long w0 = s.get(0).get("plannedWorkoutId").asLong();
+        long sid = ok(c, post("/api/v1/workouts/{id}/start", w0)).get("sessionId").asLong();
+        var abandonada = ok(c, post("/api/v1/sessions/{s}/abandon", sid));
+        assertEquals("ABANDONED", abandonada.get("status").asText(), abandonada.toString());
+        assertFalse(abandonada.get("countsTowardAdherence").asBoolean());
+        entrenar(c, s.get(0), 1.0);
+
+        // Reporte retroactivo («ya lo hice») de la segunda sesion, con todos sus ejercicios.
+        var w1 = s.get(1);
+        var ejercicios = new ArrayList<String>();
+        w1.get("exercises").forEach(e -> {
+            int series = e.get("plannedSets").isNull() ? 1 : e.get("plannedSets").asInt();
+            ejercicios.add("DURATION".equals(e.get("prescriptionType").asText())
+                    ? "{\"plannedExerciseId\":%d,\"actualSets\":%d,\"actualDurationSeconds\":%d}".formatted(
+                    e.get("plannedExerciseId").asLong(), series, series * e.get("plannedDurationSeconds").asInt())
+                    : "{\"plannedExerciseId\":%d,\"actualSets\":%d,\"actualRepsTotal\":%d}".formatted(
+                    e.get("plannedExerciseId").asLong(), series, series * e.get("plannedReps").asInt()));
+        });
+        var reportada = ok(c, post("/api/v1/workouts/{id}/report", w1.get("plannedWorkoutId").asLong())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"performedAt\":\"%s\",\"sessionRpe\":6,\"satisfaction\":4,\"activeMinutes\":40,\"exercises\":[%s]}"
+                        .formatted(java.time.OffsetDateTime.now(), String.join(",", ejercicios))));
+        assertTrue(reportada.get("countsTowardAdherence").asBoolean(), reportada.toString());
+        omitir(c, s.get(2), "LACK_OF_TIME");
+
+        cerrar(c, semana(p1));
+        var m = metricas(c, semana(p1));
+        assertEquals(2, m.get("completedWorkouts").asInt(), "entrenada tras abandonar + reportada: " + m);
+        assertEquals(1, m.get("skippedWorkouts").asInt(), m.toString());
+
+        // Intervenciones: la API devuelve exactamente las registradas para el usuario.
+        assertEquals(jdbc.queryForObject("SELECT count(*) FROM user_interventions WHERE user_id = ?", Integer.class,
+                c.userId()), ok(c, get("/api/v1/users/me/interventions")).size());
+
+        // Retiro voluntario: queda registrado y no borra nada de lo recolectado.
+        int planes = ok(c, get("/api/v1/users/me/plans")).size();
+        var retirado = ok(c, post("/api/v1/users/me/withdraw"));
+        assertFalse(retirado.get("withdrawnAt").isNull(), retirado.toString());
+        assertFalse(ok(c, get("/api/v1/users/me")).get("withdrawnAt").isNull());
+        assertEquals(planes, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ?",
+                Integer.class, c.userId()), "el retiro no borra los planes");
+        System.out.println("INTEGRAL retiro " + retirado + " metricas " + m);
+    }
 }
