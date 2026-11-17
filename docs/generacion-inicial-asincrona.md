@@ -53,16 +53,22 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
 - **Propiedad:** toda consulta filtra por el usuario del JWT.
 - **Sin planes a medias:** el plan se publica en la transacción corta de `persist`, como siempre;
   ninguna transacción queda abierta durante la llamada a la IA.
-- **Reinicios:** el worker (`PlanGenerationWorker`, pool propio, por defecto 2 en paralelo) reclama
-  con `FOR UPDATE SKIP LOCKED` y, mientras ejecuta, **late** cada 20 s (`updated_at`). Una
-  PROCESSING sin latido durante 3 min quedó huérfana (el proceso murió o se reinició): se vuelve a
-  poner en cola una vez; la segunda vez se cierra como `FAILED/EJECUCION_INTERRUMPIDA`
-  reintentable. Una generación lenta pero viva sigue latiendo y nunca se reencola ni se duplica.
+- **Reinicios (V59):** el worker (`PlanGenerationWorker`, hilos propios, por defecto 2 en paralelo)
+  reclama con `FOR UPDATE SKIP LOCKED` y toma un **lease con propietario** (`lease_owner`,
+  `lease_expires_at`, 90 s). Mientras ejecuta, renueva su lease cada 20 s desde un hilo propio (no el
+  planificador compartido de Spring). Una PROCESSING con el **lease vencido** quedó huérfana: vuelve a
+  la cola hasta `max-executions` (3) y después se cierra como `FAILED/EJECUCION_INTERRUMPIDA`
+  reintentable. Publicar (en la misma transacción que la comprobación de propiedad, con `FOR UPDATE`), cerrar,
+  latir y empezar cada intento de IA exigen ser el propietario. El barrido corre cada `recover-ms` (30 s). Al reanudarse, el pipeline lee
+  las predicciones de Replicate ya pedidas en `plan_generation_predictions` en lugar de pagarlas otra
+  vez. Detalle en `docs/FitSense/generacion_asincrona/`.
 - **Apagado ordenado (despliegue, SIGTERM):** el worker deja de reclamar, interrumpe sus
   generaciones sin registrarlas como fallidas y las devuelve a PENDING sin gastar un intento; la
   siguiente instancia las retoma al arrancar. Si el proceso muere sin apagado ordenado (SIGKILL,
   caída), la operación deja de latir y el barrido la recupera.
-- **Tiempo máximo:** una PROCESSING de más de 10 min, o una PENDING de más de 30 min, se cierra como
+- **Tiempo máximo (V59):** una PROCESSING de más de 30 min desde su **primera** ejecución
+  (`max-processing-seconds`, comprobado al arrancar contra el peor caso del pipeline, ~1.113 s), o una
+  PENDING de más de 30 min, se cierra como
   `FAILED/TIEMPO_EXCEDIDO` reintentable. Si la generación seguía viva, antes de publicar comprueba
   que la operación siga PROCESSING y descarta su resultado. La app nunca espera para siempre.
 
@@ -74,10 +80,12 @@ Todas las rutas requieren JWT de usuario. Respuesta común (`PlanGenerationOpera
 | `fitsense.plan-generation.poll-ms` | `2000` |
 | `fitsense.plan-generation.max-concurrent` | `2` |
 | `fitsense.plan-generation.heartbeat-ms` | `20000` |
-| `fitsense.plan-generation.stale-seconds` | `180` (sin latido durante este tiempo = huérfana) |
-| `fitsense.plan-generation.max-processing-seconds` | `600` (mayor que el peor caso del pipeline con IA, 150 s por intento) |
+| `fitsense.plan-generation.lease-seconds` | `90` (V59; sin renovar durante este tiempo = huérfana; sustituye a `stale-seconds`) |
+| `fitsense.plan-generation.max-processing-seconds` | `1800` (V59; antes 600, menor que el peor caso con IA de ~1.113 s) |
 | `fitsense.plan-generation.max-queued-seconds` | `1800` |
-| `fitsense.plan-generation.max-executions` | `2` |
+| `fitsense.plan-generation.max-executions` | `3` (V59; antes 2) |
+| `fitsense.plan-generation.reuse-window-hours` | `24` (V59; reutilizar una predicción de otra operación del mismo usuario y la misma petición) |
+| `fitsense.plan-generation.recover-ms` | `30000` (V59; barrido de huérfanas y vencidas; el reclamo sigue cada `poll-ms`) |
 
 Las pruebas (surefire y failsafe) apagan el worker: cada contexto de Spring en caché tendría el suyo
 sondeando cada 2 s una base inexistente o ya detenida (eso agotaba el CI a los 45 min).
@@ -85,7 +93,8 @@ sondeando cada 2 s una base inexistente o ya detenida (eso agotaba el CI a los 4
 ## Pruebas
 
 - Unitarias: `GenerationFailureClassifierTest`, `PlanGenerationOperationTest`, `PlanGenerationWorkerTest`.
-- Integración (`GeneracionAsincronaIT`, IA apagada, base migrada V1..V58):
+- Integración (`GeneracionAsincronaIT`, IA apagada, base migrada V1..V59). V59 añade
+  `GeneracionAsincronaResilienciaIT` y `ReanudacionConReplicateSimuladoIT` (Testcontainers, corren en el CI):
 
 ```
 ./mvnw -Pintegration verify -Dit.test=GeneracionAsincronaIT \

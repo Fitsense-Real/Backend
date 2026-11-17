@@ -70,6 +70,18 @@ public class PlanGenerationOperation {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
+    /** V59: worker propietario mientras esta PROCESSING (fencing). */
+    @Column(name = "lease_owner", length = 80)
+    private String leaseOwner;
+
+    /** V59: vence si el propietario deja de latir (proceso muerto); entonces se recupera. */
+    @Column(name = "lease_expires_at")
+    private OffsetDateTime leaseExpiresAt;
+
+    /** V59: inicio de la primera ejecucion; el tiempo maximo de la operacion se mide desde aqui. */
+    @Column(name = "first_started_at")
+    private OffsetDateTime firstStartedAt;
+
     protected PlanGenerationOperation() {
         // JPA
     }
@@ -126,6 +138,9 @@ public class PlanGenerationOperation {
     private void finish(OffsetDateTime now) {
         this.finishedAt = now;
         this.updatedAt = now;
+        // V59: una operacion terminada no pertenece a ningun worker.
+        this.leaseOwner = null;
+        this.leaseExpiresAt = null;
     }
 
     private void requireNotTerminal() {
@@ -147,4 +162,7 @@ public class PlanGenerationOperation {
     public OffsetDateTime getStartedAt() { return startedAt; }
     public OffsetDateTime getFinishedAt() { return finishedAt; }
     public OffsetDateTime getUpdatedAt() { return updatedAt; }
+    public String getLeaseOwner() { return leaseOwner; }
+    public OffsetDateTime getLeaseExpiresAt() { return leaseExpiresAt; }
+    public OffsetDateTime getFirstStartedAt() { return firstStartedAt; }
 }
