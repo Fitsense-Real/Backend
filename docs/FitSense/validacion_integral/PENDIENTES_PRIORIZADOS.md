@@ -8,23 +8,17 @@ Los identificadores PD-xx no tienen relación con las políticas P-01, P-02 y P-
 
 ## Prioridad alta: antes de integrar o de abrir el estudio
 
-### PD-02. Integrar #73, #71 y #72, en ese orden (integración)
+### PD-02. Integrar #73, #71 y #72 (resuelto el 17/11/2026)
 
-Sin #73, el CI de cualquier rama está rojo. Sin #72, #71 tiene los defectos conocidos (600 s, latido, predicciones
-repetidas).
+Se integraron en orden, cada una con su CI en verde y sin conflictos:
 
-Orden propuesto:
+| PR | Merge en `generation` |
+|---|---|
+| #73 | `41934d6` |
+| #71 | `d2f784a` |
+| #72 | `b9c51ef` |
 
-1. #73 → `generation`.
-2. Actualizar #71 con `generation`.
-3. #71 → `generation`, sin desplegar.
-4. Actualizar #72.
-5. #72 → `generation`.
-6. Desplegar solo con las tres dentro.
-
-`CORRECCION_CI.md` muestra la combinación #72 + #73 en verde.
-
-**Decide:** el usuario. Aquí no se fusiona nada.
+No se desplegó ninguna versión intermedia.
 
 ### PD-01. Pruebas con fecha relativa (pruebas)
 
@@ -76,7 +70,14 @@ otras 16 ejecuciones. Si dos reparaciones se cruzan entre sus fases 1 y 2, la pe
 CAMBIO_CONCURRENTE. No publica nada y no hay riesgo, y el servicio no tiene llamadores en producción. Detalle y
 corrección propuesta en `FALLO_INTERMITENTE_REPARACION_CONCURRENTE.md`.
 
-**Decide:** el usuario (continuar o corregir antes).
+**Estado (17/11/2026).**
+
+- Se registró como defecto preexistente y se continuó con la integración de #71 y #72, como se decidió.
+- La corrección está en Fitsense-Real/Backend#74: si la versión activa cambia entre fases, devuelve CAMBIO_CONCURRENTE.
+- Incluye la prueba determinista `ReparacionConcurrenteEntreFasesIT`, que reproduce el NO_VALIDA sin la corrección.
+- El CI de #74 está en verde. Queda pendiente de revisión.
+
+**Decide:** el usuario (fusionar #74).
 
 ## Prioridad media
 
@@ -147,7 +148,8 @@ instancia. No se prepara Railway todavía.
 
 ### PD-09. Flutter (cliente)
 
-- **PR #2.** Llama a `/users/me/plan/generation`, así que solo debe desplegarse después de #71 + #72.
+- **PR #2.** Llama a `/users/me/plan/generation`. #71 y #72 ya están en `generation`; al desplegar, primero el
+  backend y después Flutter.
 - **`runCycle()`.** Es código muerto: en producción da 403. Conviene quitarlo o dejarlo detrás de una opción de
   desarrollo.
 
@@ -198,7 +200,7 @@ La resiliencia está probada con Replicate simulado (#72). Falta la ronda real c
 
 | Tipo | Pendientes |
 |---|---|
-| Integración | PD-02 |
+| Integración | PD-02 (resuelto) |
 | Pruebas | PD-01 |
 | Funciones que faltan | PD-03, PD-05, PD-06, PD-10 |
 | Decisiones (tomadas el 16/11/2026; PD-07 con evaluación pendiente) | PD-04, PD-07 |

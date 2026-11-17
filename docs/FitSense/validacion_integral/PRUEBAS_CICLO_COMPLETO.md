@@ -6,6 +6,8 @@ Prueba: `src/test/java/main/web/services/fitsense/integral/CicloCompletoHttpIT.j
 
 Resultado: **9 pruebas, 0 fallos, 0 errores, 0 omitidas, 35 s**.
 
+> **Actualización 17/11/2026.** #73, #71 y #72 ya están en `generation` (`b9c51ef`): la generación asíncrona (V58 y V59) es parte de la base. Las referencias a #71/#72 de este documento describen dónde se probó cada cosa antes de integrarla.
+
 ## 1. Cómo se ejecuta
 
 - **Base de datos.** PostgreSQL 16 en Testcontainers, con todas las migraciones de Flyway y el catálogo vigente. No toca
@@ -138,7 +140,7 @@ La prueba no se ha forzado para que dé 422: comprueba el comportamiento real.
 ## 5. Qué no cubre
 
 - **IA real.** Está fuera de alcance: no se usa Replicate.
-- **La generación asíncrona (V58 y V59).** Vive en #71 y #72 y se prueba allí. Estas pruebas usan el POST síncrono, que
+- **La generación asíncrona (V58 y V59).** Tiene sus propias pruebas (`GeneracionAsincronaIT`, `GeneracionAsincronaResilienciaIT`, `ReanudacionConReplicateSimuladoIT`). Estas pruebas usan el POST síncrono, que
   sigue existiendo.
 - **Semanas con más de 3 días.** Están cubiertas por `GeneracionPorObjetivoIT` y `Respaldo*` (5 y 6 días).
 - **Que el planificador deje de generar planes a un retirado.** Lo garantiza la consulta de participantes activos

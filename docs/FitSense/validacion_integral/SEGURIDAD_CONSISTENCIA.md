@@ -4,6 +4,8 @@ Fecha: 16/11/2026. Base revisada: `generation` (`2578719`) con #73. Lo asíncron
 (`8658089`). No se ha tocado ninguna base real: todo se ha hecho con Testcontainers. `BaseDeProduccionBloqueada`
 impide que una prueba apunte a otra base.
 
+> **Actualización 17/11/2026.** #73, #71 y #72 ya están en `generation` (`b9c51ef`): la generación asíncrona (V58 y V59) es parte de la base. Las referencias a #71/#72 de este documento describen dónde se probó cada cosa antes de integrarla.
+
 **Leyenda:** **OK** = garantizado y probado. **Riesgo** = funciona, con una condición que hay que conocer. **Falta** = no
 existe.
 
@@ -31,7 +33,7 @@ existe.
 | Una métrica por usuario y semana; una intervención por métrica | `uq_wum_user_week`; `uq_ui_metric` | `CicloConcurrenteIT`, `AdherenciaIT` | OK |
 | Un evento de dolor por ejercicio y sesión | `ux_use_evento` | `PoliticasP123IT` | OK |
 | Una configuración de cálculo activa | `ux_config_active` | `ConfiguracionEvaluadaTest` | OK |
-| Una generación asíncrona activa por usuario (#71/#72) | `ux_pgo_una_activa_por_usuario`; libro con `ux_pgp_intento_vigente` | `GeneracionAsincronaIT`, `GeneracionAsincronaResilienciaIT` (20 escenarios) | OK en #72 (sin fusionar) |
+| Una generación asíncrona activa por usuario (#71/#72) | `ux_pgo_una_activa_por_usuario`; libro con `ux_pgp_intento_vigente` | `GeneracionAsincronaIT`, `GeneracionAsincronaResilienciaIT` (20 escenarios) | OK (en `generation`) |
 | Límite de generaciones y gasto | `DemasiadasGeneraciones` → 429; presupuesto total | `LimiteDeGeneracionesTest`, `PresupuestoGeneracionTest` | OK |
 
 ## 3. Referencias e historial
@@ -50,7 +52,7 @@ existe.
 |---|---|---|---|
 | Sesión planificada / intento | `planned_workouts`: COMPLETED, PARTIAL, SKIPPED, REPLACED. Un intento abandonado no cuenta para la adherencia. | `EjecucionEntrenamientosIT`, `AbandonoIT`, `EjecucionReglasTest` | OK |
 | Adaptación | APLICADA, SIN_EFECTO, RECHAZADA, RESPALDO, NO_FACTIBLE, SIN_ORDEN | `EstadoAdaptacionSinIaTest`, `AdaptationOutcomeTest` | OK |
-| Generación asíncrona | COMPLETED / FAILED / NO_FACTIBLE, con lease, fencing y recuperación por lease vencido | #72: `GeneracionAsincronaResilienciaIT`, `ReanudacionConReplicateSimuladoIT`, `MigracionV58aV59IT` | OK en #72 |
+| Generación asíncrona | COMPLETED / FAILED / NO_FACTIBLE, con lease, fencing y recuperación por lease vencido | #72: `GeneracionAsincronaResilienciaIT`, `ReanudacionConReplicateSimuladoIT`, `MigracionV58aV59IT` | OK (en `generation`) |
 | Ciclo semanal | Idempotente por semana (`uq_wum_user_week`). Reejecutarlo no duplica nada. El planificador corre cada hora y usa la zona horaria de cada usuario (`users.timezone`, por defecto America/Lima). | `CicloConcurrenteIT` | OK |
 
 ## 5. Transacciones
@@ -64,7 +66,7 @@ existe.
 
 ## 6. Migraciones y PostgreSQL
 
-- **Migraciones.** 60 en `generation` (hasta V57, con las puntuales V44_1, V44_2, etc.); V58 en #71 y V59 en #72.
+- **Migraciones.** 60 en `generation` (hasta V57, con las puntuales V44_1, V44_2, etc.); V58 (#71) y V59 (#72), integradas el 17/11/2026.
 - **Pruebas de migración.** Todas se aplican desde una base vacía en cada IT. Las de actualización con datos son:
   - `MigracionV43IT`;
   - `MigracionV44IT`, `MigracionV44_1IT` y `MigracionV44_2IT`;

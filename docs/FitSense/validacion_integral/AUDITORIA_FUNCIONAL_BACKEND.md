@@ -3,6 +3,8 @@
 Fecha: 16/11/2026. Base: `generation` (`2578719`) con #73 (rama `validacion/backend-integral`). Lo asíncrono se revisa
 sobre #72 (`8658089`). El catálogo no se reaudita: se usa el congelado (v1.1, V57).
 
+> **Actualización 17/11/2026.** #73, #71 y #72 ya están en `generation` (`b9c51ef`): la generación asíncrona (V58 y V59) es parte de la base. Las referencias a #71/#72 de este documento describen dónde se probó cada cosa antes de integrarla.
+
 **Criterio:** un módulo se considera **validado** solo si hay una prueba que lo ejecuta y pasa. Las pruebas deben estar
 en la regresión completa (1540 unitarias y 759 de integración en verde) o en `CicloCompletoHttpIT` (9/9). Las
 afirmaciones sin prueba se marcan como tales.
@@ -35,7 +37,7 @@ Clasificación:
 | Respaldo del motor de reglas cuando falla la IA | `Respaldo*IT` (5 y 6 días), `R-1` (14), cortocircuito | Validado |
 | Limitaciones explicadas antes de generar | `CicloCompletoHttpIT.coberturaParcialExplicada` | Validado |
 | NO_FACTIBLE | Con `ENFORCE_*`: 422 (`SlotCoverage4CTest`). Con la configuración entregada (`pregeneration=OBSERVE`): se publica una cobertura parcial explicada. | Validado, con una **decisión por confirmar** (PD-07) |
-| Generación asíncrona (V58/V59) | #71/#72: `GeneracionAsincronaIT` y los 20 escenarios de resiliencia | **Pendiente de fusionar** (#71 + #72). En #72, el CI se pone en verde al incorporar #73 (`CORRECCION_CI.md`). |
+| Generación asíncrona (V58/V59) | #71/#72: `GeneracionAsincronaIT` y los 20 escenarios de resiliencia | **Integrada** en `generation` el 17/11/2026, con el CI en verde. |
 | IA real (Replicate) | No se ejecuta en esta orden | Fuera de alcance |
 
 ## C. Ejecución — Completo

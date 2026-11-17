@@ -6,6 +6,8 @@ Fecha: 16/11/2026. Ramas comparadas:
 - **Flutter MVP:** `mobileapp` `feature/mvp-integracion-api` (`fdc9439`).
 - **Flutter PR #2:** de MobileApp, cabeza `f26c7ce`.
 
+> **Actualización 17/11/2026.** #73, #71 y #72 ya están en `generation` (`b9c51ef`): la generación asíncrona (V58 y V59) es parte de la base. Las referencias a #71/#72 de este documento describen dónde se probó cada cosa antes de integrarla.
+
 Las rutas usadas por Flutter se han extraído de `lib/` (`ApiConstants` y repositorios). Todas llevan el prefijo
 `/api/v1`. No se ha construido nada nuevo.
 
@@ -32,7 +34,7 @@ Las rutas usadas por Flutter se han extraído de `lib/` (`ApiConstants` y reposi
 | Endpoint | Flutter MVP | Flutter PR #2 | Estado | Pruebas |
 |---|---|---|---|---|
 | POST `/users/me/plan/generate` (síncrono, 201) | Sí | Sí (respaldo) | Disponible | `CicloCompletoHttpIT`, `GeneracionInicialConcurrenteIT` |
-| POST `/users/me/plan/generation` (202/200), GET `/{id}`, GET `/latest` | No | Sí | Disponible **solo en #71/#72** (sin fusionar) | `GeneracionAsincronaIT`, `GeneracionAsincronaResilienciaIT` |
+| POST `/users/me/plan/generation` (202/200), GET `/{id}`, GET `/latest` | No | Sí | Disponible (en `generation` desde el 17/11/2026) | `GeneracionAsincronaIT`, `GeneracionAsincronaResilienciaIT` |
 | GET `/users/me/plan/current`, `/plan/{id}`, `/plans`, `/plan/adaptations` | Sí | Sí | Disponible | `CicloCompletoHttpIT` |
 | GET `/users/me/plan/limitations` | No | Sí | Disponible | `CicloCompletoHttpIT.coberturaParcialExplicada` |
 
@@ -64,15 +66,15 @@ Las rutas usadas por Flutter se han extraído de `lib/` (`ApiConstants` y reposi
 **Resultado:** ningún endpoint que Flutter llame es incompatible.
 
 - Todas las rutas que usa el MVP existen con el mismo método.
-- Las de PR #2 también, salvo la generación asíncrona, que llega con #71 y #72.
+- Las de PR #2 también, incluida la generación asíncrona, integrada con #71 y #72.
 - La compatibilidad del contrato asíncrono (202/200, estados, 404 ajeno) está revisada en
   `docs/FitSense/generacion_asincrona/COMPATIBILIDAD_FLUTTER.md` (#72).
 
 ### Observaciones
 
-1. **PR #2 de Flutter y #71/#72.** PR #2 llama a `/users/me/plan/generation`. Desplegar PR #2 contra un backend sin
-   #71/#72 da 404 en el arranque de la generación. PR #2 tiene el POST síncrono como respaldo, pero la secuencia de
-   despliegue debe ser: primero el backend (#71 + #72), después Flutter.
+1. **PR #2 de Flutter y #71/#72.** PR #2 llama a `/users/me/plan/generation`. Con #71/#72 ya en `generation`, la
+   secuencia de despliegue sigue siendo: primero el backend, después Flutter. Un backend anterior daría 404 en el
+   arranque de la generación.
 2. **`runCycle()`** existe en `dashboard_repository.dart` y nadie lo llama. Si se conectara a un botón, en producción
    daría 403. Conviene quitarlo o dejarlo detrás de una opción de desarrollo. No es un defecto del backend.
 3. **Errores.** Flutter recibe siempre `ApiErrorResource` (`ContratoErroresApiIT`):
