@@ -183,6 +183,15 @@ public class PublishedPlanSafetyRepairService {
             return registrar(userId, week, Resultado.de(Estado.NO_VALIDA, leido.planId(), leido.conflictos(),
                     List.of("No se pudo preparar el contexto de hoy: " + e.getMessage())));
         }
+        // PD-16: la semana publicada de referencia se lee en otra transaccion que la fase 1. Si entretanto se
+        // publico otra version (otra reparacion simultanea), la semana leida y la referencia ya no son la misma
+        // version, y validarlas juntas daria un NO_VALIDA falso. Comprobar DESPUES de leer la referencia basta: las
+        // versiones solo avanzan, asi que si la leida sigue activa ahora, tambien lo era al leer la referencia.
+        // Lo que cambie despues lo detecta la fase 4, que solo publica sobre la misma version.
+        if (!sigueActiva(userId, week, leido))
+            return registrar(userId, week, Resultado.de(Estado.CAMBIO_CONCURRENTE, leido.planId(),
+                    leido.conflictos(), List.of("La version %d dejo de ser la activa mientras se preparaba la reparacion."
+                            .formatted(leido.version()))));
 
         var elegibles = contexto.availableExercises().stream()
                 .collect(Collectors.toMap(CandidateExercise::exerciseId, Function.identity(), (a, b) -> a,
@@ -302,6 +311,14 @@ public class PublishedPlanSafetyRepairService {
         if (fuera.isEmpty()) return List.of();
         var sinTopeDeDificultad = catalogo.fetchEligibleForExplanation(contexto.profile(), 3, contexto.safety());
         return sinTopeDeDificultad.stream().filter(c -> fuera.contains(c.exerciseId())).toList();
+    }
+
+    /** Si la version leida en la fase 1 sigue siendo la activa de la semana. */
+    private boolean sigueActiva(Long userId, TrainingWeek week, Leido leido) {
+        return Boolean.TRUE.equals(lectura.execute(tx -> planRepository
+                .findByUserIdAndWeekStartDateAndStatus(userId, week.startDate(), PlanStatus.ACTIVE)
+                .map(activa -> activa.getId().equals(leido.planId()) && activa.getPlanVersion() == leido.version())
+                .orElse(false)));
     }
 
     private Long publicar(Long userId, TrainingWeek week, Leido leido, List<DerivedWorkout> semana,
