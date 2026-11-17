@@ -238,9 +238,16 @@ public class PlanGenerationOperationService {
         try {
             // V59: el pipeline corre con el libro de predicciones de ESTA operacion. Si es una reanudacion, cada
             // intento consulta primero lo ya pedido a Replicate en lugar de pedirlo otra vez.
+            // Antes de cada prediccion y antes de publicar: la operacion sigue siendo de este worker y el proceso no se
+            // esta apagando. Un proceso que se apaga no envia ni publica (tampoco el respaldo del motor de reglas): la
+            // operacion vuelve a la cola y la reanuda la instancia siguiente con el libro.
+            Runnable guarda = () -> {
+                if (stopping.getAsBoolean())
+                    throw new OperationAbandonedException("el proceso se esta apagando: no se envia ni se publica");
+                ensureStillProcessing(operationId);
+            };
             var planId = main.web.services.fitsense.planning.infrastructure.generation.ai.DiarioDePredicciones
-                    .durante(operationId, userId, () -> ensureStillProcessing(operationId),
-                            () -> runner.run(userId, () -> ensureStillProcessing(operationId)));
+                    .durante(operationId, userId, guarda, () -> runner.run(userId, guarda));
             finish(operationId, o -> o.complete(planId, now()));
             log.info("Generacion inicial {} completada: plan {} del usuario {}", operationId, planId, userId);
         } catch (OperationAbandonedException abandoned) {
