@@ -56,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * V58 · generacion inicial asincrona contra una base PostgreSQL de pruebas
- * migrada desde cero (V1..V58), con la IA APAGADA: el pipeline real corre con
+ * migrada desde cero (V1..V59), con la IA APAGADA: el pipeline real corre con
  * el motor de reglas y todos los validadores, sin llamar a Replicate.
  * <p>
  * Como las IT de P2-D, solo corre si se le da una base explicita:
@@ -108,7 +108,9 @@ class GeneracionAsincronaIT {
         // claimNext toma la PENDING mas antigua de CUALQUIER usuario (es lo correcto en produccion):
         // se cierran las que dejaron pruebas anteriores para que cada prueba reclame la suya.
         jdbc.update("UPDATE plan_generation_operations SET status = 'FAILED', reason_code = 'LIMPIEZA_DE_PRUEBA',"
-                + " finished_at = now(), updated_at = now() WHERE status IN ('PENDING', 'PROCESSING')");
+                // V59: ck_pgo_lease exige soltar el lease al salir de PROCESSING.
+                + " finished_at = now(), updated_at = now(), lease_owner = NULL, lease_expires_at = NULL"
+                + " WHERE status IN ('PENDING', 'PROCESSING')");
     }
 
     long participante() {
@@ -269,11 +271,17 @@ class GeneracionAsincronaIT {
         assertThat(service.claimNext()).contains(id);          // segunda ejecucion, que tambien "muere"
         envejecer(id);
         service.recoverStale();
+        assertThat(service.find(u, id).getStatus()).isEqualTo(GenerationOperationStatus.PENDING);
+
+        // V59: max-executions pasa de 2 a 3 (una reanudacion ya no repaga las predicciones: las lee del libro).
+        assertThat(service.claimNext()).contains(id);          // tercera ejecucion, que tambien "muere"
+        envejecer(id);
+        service.recoverStale();
         var cerrada = service.find(u, id);
         assertThat(cerrada.getStatus()).isEqualTo(GenerationOperationStatus.FAILED);
         assertThat(cerrada.getReasonCode()).isEqualTo(GenerationFailureClassifier.EJECUCION_INTERRUMPIDA);
         assertThat(cerrada.isRetryable()).isTrue();
-        assertThat(cerrada.getExecutions()).isEqualTo((short) 2);
+        assertThat(cerrada.getExecutions()).isEqualTo((short) 3);
         verify(runner, times(0)).run(anyLong(), any());
     }
 
@@ -420,7 +428,9 @@ class GeneracionAsincronaIT {
         var ejecucion = CompletableFuture.runAsync(() -> service.execute(claimed));
         assertThat(empezo.await(30, TimeUnit.SECONDS)).isTrue();
 
-        jdbc.update("UPDATE plan_generation_operations SET started_at = now() - interval '11 minutes' WHERE operation_id = ?", id);
+        // V59: el tiempo maximo es 1800 s desde la PRIMERA ejecucion (antes 600 s desde started_at).
+        jdbc.update("UPDATE plan_generation_operations SET started_at = now() - interval '31 minutes',"
+                + " first_started_at = now() - interval '31 minutes' WHERE operation_id = ?", id);
         service.heartbeat(List.of(id));                     // sigue viva: lo que la cierra es el tiempo maximo
         service.recoverStale();
         var vencida = service.find(u, id);
@@ -459,10 +469,14 @@ class GeneracionAsincronaIT {
         verify(runner, times(0)).run(anyLong(), any());
     }
 
-    /** Sin latido desde hace 5 min (stale 3 min), pero dentro del tiempo maximo (10 min). */
+    /**
+     * El proceso murio: sin latido desde hace 5 min y, desde V59, con el LEASE VENCIDO (lo unico que indica un
+     * proceso muerto; un latido atrasado con lease vigente ya no basta), dentro del tiempo maximo (30 min).
+     */
     private void envejecer(UUID id) {
         jdbc.update("UPDATE plan_generation_operations SET started_at = now() - interval '5 minutes',"
-                + " updated_at = now() - interval '5 minutes' WHERE operation_id = ?", id);
+                + " updated_at = now() - interval '5 minutes', lease_expires_at = now() - interval '1 second'"
+                + " WHERE operation_id = ?", id);
     }
 
     private static void await(CountDownLatch latch) {
