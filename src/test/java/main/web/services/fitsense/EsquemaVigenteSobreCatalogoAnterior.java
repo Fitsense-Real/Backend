@@ -46,7 +46,11 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V55 (propuesta V53-B, permiso «apoyo suspendido»): dos columnas NULL en user_profiles, sin datos.
             "55:db/migration/V55__perfil_permiso_apoyo_suspendido.sql",
             // V57 (propuesta: constancia de la omision impuesta por el sistema): una columna nullable, sin datos.
-            "57:db/migration/V57__omision_impuesta_por_el_sistema.sql");
+            "57:db/migration/V57__omision_impuesta_por_el_sistema.sql",
+            // V58 (generacion inicial asincrona): una tabla nueva y sus indices, sin datos.
+            "58:db/migration/V58__plan_generation_operations.sql",
+            // V59 (generacion resiliente: lease y libro de predicciones): solo esquema, sin datos.
+            "59:db/migration/V59__generacion_resiliente_lease_y_predicciones.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {
