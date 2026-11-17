@@ -59,7 +59,7 @@ durante la suite completa.
 - **Lo que sí es incorrecto** es el estado que se registra: NO_VALIDA («requiere intervención») cuando el motivo real
   es un cambio concurrente.
 
-## 4. Corrección propuesta (no aplicada)
+## 4. Corrección (aplicada en #74, fusionada el 17/11/2026 como `f8ffb61`)
 
 Es mínima y está en el servicio de reparación. No toca validadores, catálogo, políticas ni adherencia.
 

@@ -13,8 +13,8 @@ Fecha: 17/11/2026. Integración controlada de #73, #71 y #72 terminada.
 | #73: `ReparacionLinajeIT` determinista | `8313919` | verde | No | **Fusionada** (`41934d6`) |
 | #71: generación asíncrona (V58) | `3e83b6f` (con `generation` + #73) | verde | No | **Fusionada** (`d2f784a`) |
 | #72: generación asíncrona resiliente (V59) | `c608462` (con `generation` + #71) | verde | No | **Fusionada** (`b9c51ef`) |
-| #74: PD-16, reparación concurrente entre fases | `b9f8299` | verde | No | **Abierta, borrador.** Pendiente de revisión |
-| Auditoría integral (`validacion/backend-integral`) | ver la PR | ver la PR | No | **Abierta.** Pendiente de revisión; no se fusiona sin autorización |
+| #74: PD-16, reparación concurrente entre fases | `b9f8299` | verde | No | **Fusionada** (`f8ffb61`) |
+| #75: auditoría integral (`validacion/backend-integral`) | ver la PR | ver la PR | No | Se fusiona al cerrar la etapa |
 
 `generation` = `b9c51ef`. Su CI está en verde tras cada merge: `41934d6`, `d2f784a` y `b9c51ef`, tanto en push como en PR.
 
@@ -82,8 +82,8 @@ Todo está cubierto por R01–R20, `ReanudacionConReplicateSimuladoIT` y `Genera
 
 Detalle en `PENDIENTES_PRIORIZADOS.md`.
 
-1. **Revisar y fusionar #74 (PD-16).** Corrige la carrera de la reparación concurrente con una prueba determinista. Defecto preexistente, sin llamadores en producción.
-2. **Revisar y fusionar la PR de auditoría integral.** Contiene `CicloCompletoHttpIT` y la documentación.
+1. PD-16 está resuelto: #74 está fusionada, con su prueba determinista.
+2. La auditoría integral (#75) se fusiona al cerrar la etapa.
 3. **Antes de la IA real:**
    - la ronda con Replicate real y presupuesto (PD-11);
    - desplegar con una sola instancia mientras el interruptor de la IA esté en memoria (PD-08).

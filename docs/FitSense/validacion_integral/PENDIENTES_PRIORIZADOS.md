@@ -63,7 +63,7 @@ Debe cubrir:
 - cómo lo explica `/plan/limitations`;
 - qué implica para el objetivo y para la adherencia.
 
-### PD-16. Carrera en la reparación de seguridad concurrente (defecto menor, preexistente)
+### PD-16. Carrera en la reparación de seguridad concurrente (resuelto en #74)
 
 `ProteccionPlanesPublicadosIT.reparacionesSimultaneas` falló 1 vez en la regresión de #72 actualizada y pasó en las
 otras 16 ejecuciones. Si dos reparaciones se cruzan entre sus fases 1 y 2, la perdedora informa NO_VALIDA en vez de
@@ -75,9 +75,7 @@ corrección propuesta en `FALLO_INTERMITENTE_REPARACION_CONCURRENTE.md`.
 - Se registró como defecto preexistente y se continuó con la integración de #71 y #72, como se decidió.
 - La corrección está en Fitsense-Real/Backend#74: si la versión activa cambia entre fases, devuelve CAMBIO_CONCURRENTE.
 - Incluye la prueba determinista `ReparacionConcurrenteEntreFasesIT`, que reproduce el NO_VALIDA sin la corrección.
-- El CI de #74 está en verde. Queda pendiente de revisión.
-
-**Decide:** el usuario (fusionar #74).
+- #74 se fusionó el 17/11/2026 (`f8ffb61`), con el CI en verde. **Resuelto.**
 
 ## Prioridad media
 
