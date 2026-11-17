@@ -6,7 +6,7 @@ Fuentes:
   que inyecta el proxy;
 - **FitSense:** `plan_generation_predictions` (libro V59) y `plan_generation_operations` de la base de pruebas
   `fitsense_vr`;
-- **sondas manuales:** registradas aparte en `PREDICCIONES_Y_COSTOS.csv`.
+- **sondas manuales:** se registran aparte en `PREDICCIONES_Y_COSTOS.csv`.
 
 ## 1. Punto de partida
 
@@ -16,8 +16,43 @@ campaña, y se comprobó que todas lo son.
 
 ## 2. Conciliación por predicción
 
-PENDIENTE_TABLA
+| # | Id en Replicate | Creada (UTC) | Replicate | Libro V59 | Origen | Operación |
+|---|---|---|---|---|---|---|
+| 1 | `7dxtdb57znrmy0d1x9kvp0dppc` | 16:47:04 | failed E002 | intento 1, FAILED, mismo id | backend | `d13991ff…` (G1) |
+| 2 | `1chmxnn085rmy0d1x9mbgxdhrg` | 16:48:07 | failed E002 | intento 1, FAILED, mismo id | backend | `05b47d64…` (G1, repetición) |
+| 3 | `cc8tx5wdsxrmr0d1x9mrkr9kqg` | 16:49:08 | failed E002 | — (no es del backend) | sonda manual de diagnóstico | — |
+| 4 | `ydpzjayh7xrmr0d1xa2rtkz8gr` | 17:20:00 | failed E002 | — (no es del backend) | sonda manual de diagnóstico | — |
 
 ## 3. Comprobaciones
 
-PENDIENTE_COMPROBACIONES
+| Comprobación | Resultado |
+|---|---|
+| Predicciones nuevas en Replicate | **4** |
+| Filas del libro (backend) + sondas registradas | 2 + 2 = **4**. Coinciden una a una por id. |
+| Predicciones sin identificar | 0 |
+| NO_CONFIRMADA | 0 |
+| Predicciones duplicadas (dos POST para el mismo intento) | 0 |
+| Cancelaciones | 0 |
+| Tokens facturables (`metrics`) | 0 de entrada y 0 de salida en las 4. Solo hay `predict_time` (0,22–0,28 s). |
+| Coste estimado | **USD 0,00**: tokens × tarifa (0,25 / 2,00 USD por millón) = 0 |
+| Cargo real | **No verificable desde aquí.** La API pública no expone la facturación y `replicate.com` no está en la red permitida. Hay que confirmarlo en el panel de facturación de Replicate. Al ser un modelo oficial que se factura por tokens y no haber ninguno, lo esperado es USD 0,00. |
+| Configuración de facturación | No se consultó ni se modificó: no hay API para ello. No se activaron recargas. |
+
+## 4. El error
+
+Las 4 predicciones fallaron igual:
+
+- error `An error occurred while processing your request (E002) (1cah9wlWR9)`, con **la misma referencia** en las 4;
+- log `No sid`;
+- de 0,22 a 0,28 s de ejecución y 0 tokens.
+
+Falló igual el prompt real de FitSense (177.198 caracteres, ~50.000 tokens) que una sonda de una línea con un esquema
+de una propiedad, con `gpt-5-mini` en los dos casos. Y siguió fallando 31 minutos después.
+
+Así que **no depende de la entrada de FitSense**. Es un fallo persistente del modelo `openai/gpt-5-structured` en
+Replicate o de la cuenta del lado de Replicate. Desde esta sesión no se puede distinguir entre los dos:
+
+- Una sonda con otra variante (`gpt-5-nano`) habría ayudado a separarlos, pero el control de permisos de la sesión la
+  bloqueó y no se intentó por otra vía.
+- El esquema de entrada publicado por el modelo (`GET /v1/models/openai/gpt-5-structured`, versión `81cb6179…`) admite
+  exactamente los campos que envía FitSense: `model`, `prompt`, `reasoning_effort` y `json_schema`.

@@ -1,0 +1,11 @@
+# Riesgos residuales
+
+| Id | Riesgo | Estado | Mitigación o siguiente paso |
+|---|---|---|---|
+| RR-1 | **El proveedor real no responde** (`openai/gpt-5-structured` en Replicate devuelve E002 en todas las peticiones de la cuenta desde el 17/11 16:47 UTC). Mientras dure, ningún plan es de la IA. | Abierto, externo | Revisar el panel de Replicate (estado del modelo y facturación de la cuenta). Si es la cuenta, resolverlo allí. Si es el modelo, esperar o contactar con soporte con los ids de `CONCILIACION_REPLICATE.md`. El backend degrada bien: respaldo en ~3 s y cortacircuitos tras 3 fallos. |
+| RR-2 | **HR-1: un despliegue con una generación en curso cancelaba la predicción pagada y publicaba el respaldo.** | **Corregido** en `d1ac33f` (rama `validacion/replicate-real`, **sin fusionar**) | Integrar la corrección en `generation` **antes de desplegar** (decide el usuario). Sin ella, cada redeploy durante una generación desperdicia una predicción y entrega el plan de respaldo. |
+| RR-3 | Un SIGTERM que llega **justo durante el POST** deja la fila NO_CONFIRMADA (Replicate pudo aceptarla). No se reenvía y se paga una predicción sin aprovecharla. | Aceptado (conservador, R-2) | La ventana es de < 1 s por predicción. Se registra en el log y en el recuento. |
+| RR-4 | El fallo del proveedor **no reintenta**: el respaldo se publica a la primera. Ante un fallo transitorio aislado, el participante recibe el plan del motor de reglas, aunque una segunda predicción habría servido. | Decisión de diseño previa (R-1), sin cambios | Valorar con datos reales cuando el proveedor funcione. No se toca en esta orden. |
+| RR-5 | G1, G2 y G3 **no se han validado con IA real**: falta medir la latencia real, los rechazos de validadores con propuestas reales y la reanudación de una predicción real tras un reinicio. | Pendiente | Repetir G1→G3 con este mismo protocolo cuando el proveedor responda. Coste previsto: < USD 0,30. |
+| RR-6 | **Facturación no verificada.** Se desconoce si la cuenta tiene un límite de gasto, y el cargo real de las 4 predicciones fallidas (esperado USD 0,00) no se ha podido leer. | Abierto | Comprobarlo en el panel de Replicate. El tope operativo propio (12 predicciones o USD 1,50) sigue siendo necesario. |
+| RR-7 | El cortacircuitos vive en memoria por instancia (PD-08). | Sin cambios | Una sola instancia en el despliegue. |
