@@ -152,3 +152,8 @@ anteriores. El desenlace fue el mismo, con la misma referencia de error.
 - La campaña se detiene y no se hacen más sondas.
 
 **Siguiente paso:** el panel de la cuenta y la solicitud a soporte, ya actualizada con los 6 ids.
+
+## 9. Sonda del 18/11/2026 a las 14:00 UTC (a petición del usuario)
+
+La sonda `y27xr1snzdrmt0d1xvtsmsqepw` arrancó al instante y terminó en `failed`: `E002 (1cah9wlWR9)`, `No sid`,
+0,28 s y 0 tokens. El fallo es el mismo **21 horas después del primero**. La campaña sigue detenida.
