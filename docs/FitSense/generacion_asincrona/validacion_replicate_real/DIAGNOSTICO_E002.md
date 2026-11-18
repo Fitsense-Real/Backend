@@ -118,3 +118,37 @@ Es el mismo error y la misma referencia que las cuatro anteriores. **La campaña
 | H3: entrada de FitSense | Descartada |
 
 No hay ninguna hipótesis comprobada.
+
+## 8. Actualización del 18/11/2026 a las 03:56 UTC (incidencia del 17/11 dada por resuelta)
+
+**Contexto:**
+- El usuario comprobó que la incidencia oficial del 17/11 figura como resuelta.
+- Un agregador de terceros la da por resuelta el 18/11 de madrugada; otros todavía la mostraban abierta.
+- No pude leer la página oficial desde la sesión.
+
+**Comprobaciones previas sin coste:**
+- `generation` = `a1ccf53`;
+- `GET /v1/account` responde 200;
+- el modelo sigue en la versión `81cb6179…`;
+- no había ninguna predicción nueva de la cuenta.
+
+**Sonda única** `6cb86gw095rmy0d1xk69hkra7g`, con el mismo modelo, esquema y prompt mínimo:
+
+| Momento (UTC) | Estado |
+|---|---|
+| 03:56:27 | creada (201), `starting` |
+| ~03:57 | `processing` |
+| 03:58:21 | empieza a ejecutarse |
+| 03:58:22 | **`failed`**: `E002 (1cah9wlWR9)`, `No sid`, `predict_time` 0,65 s, 0 tokens |
+
+Esta vez se comportó distinto: hubo ~114 s de cola antes de ejecutarse, frente al arranque inmediato de las cinco
+anteriores. El desenlace fue el mismo, con la misma referencia de error.
+
+**Conclusión:**
+- El problema **persiste después de que se diera por resuelta la incidencia del 17/11**. Esa incidencia no explica,
+  al menos sola, el E002 de esta cuenta.
+- Gana peso H1 (cuenta) o un fallo específico de `openai/gpt-5-structured` distinto de la incidencia general. Ninguna
+  de las dos está comprobada.
+- La campaña se detiene y no se hacen más sondas.
+
+**Siguiente paso:** el panel de la cuenta y la solicitud a soporte, ya actualizada con los 6 ids.

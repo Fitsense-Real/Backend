@@ -9,7 +9,7 @@ Antes de enviarlo, completa `<usuario de la cuenta>` y no añadas tokens ni clav
 
 Hello,
 
-Since 2026-11-17 16:47 UTC (and still on 2026-11-18 01:23 UTC), every prediction I create on the official model `openai/gpt-5-structured` fails within
+Since 2026-11-17 16:47 UTC (and still on 2026-11-18 03:58 UTC, after the 2026-11-17 incident was reported as resolved), every prediction I create on the official model `openai/gpt-5-structured` fails within
 about 0.3 s. The error is always the same, the logs read `No sid`, and no tokens are counted. The same account and
 model worked normally on 2026-11-12. The last successful prediction was `jhxmsrkj61rmr0d1t5trg6znj4`
 (gpt-5-mini, 33,985 input tokens and 11,421 output tokens).
@@ -34,6 +34,7 @@ Affected predictions (all created via the API, `POST /v1/models/openai/gpt-5-str
 | `cc8tx5wdsxrmr0d1x9mrkr9kqg` | 2026-11-17 16:49:08 | minimal test: model `gpt-5-mini`, reasoning_effort `minimal`, one-line prompt, one-property `json_schema` |
 | `ydpzjayh7xrmr0d1xa2rtkz8gr` | 2026-11-17 17:20:00 | same minimal test, 31 minutes later |
 | `e23edtt1h9rmr0d1xh09hsd94c` | 2026-11-18 01:23:16 | same minimal test, about 8.5 hours later: still failing |
+| `6cb86gw095rmy0d1xk69hkra7g` | 2026-11-18 03:56:27 | same minimal test after the status page reported the 2026-11-17 incident as resolved: queued ~114 s (starting/processing), then failed with the same error |
 
 Because a trivial one-line request fails with the same reference code, I don't believe the input is the cause.
 
@@ -44,7 +45,7 @@ Could you please tell us:
    models) that blocks these predictions?
 3. Is the incident posted on the status page on 2026-11-17 ("Errors and stalled predictions on some models") related, and is there an ongoing incident with the OpenAI integration for `openai/gpt-5-structured` (or the `gpt-5-mini`
    variant)?
-4. Were these five failed predictions billed? We expect no charge, since no tokens were processed.
+4. Were these six failed predictions billed? We expect no charge, since no tokens were processed.
 
 Thank you.
 

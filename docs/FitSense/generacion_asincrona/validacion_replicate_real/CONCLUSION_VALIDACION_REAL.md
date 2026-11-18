@@ -9,7 +9,8 @@ Actualizada el 18/11/2026, tras la reanudación. Base: `generation` = `a1ccf53` 
 comprobado:
 
 - desde el 17/11 a las 16:47 UTC;
-- de nuevo el 18/11 a las 01:23 UTC, con la única sonda autorizada para la reanudación.
+- de nuevo el 18/11 a las 01:23 UTC, con la única sonda autorizada para la reanudación;
+- y otra vez el 18/11 a las 03:58 UTC, **después** de que se diera por resuelta la incidencia del 17/11. Esa sonda quedó 114 s en cola y luego falló con el mismo E002.
 
 Su causa **no está comprobada**. Puede ser la cuenta, el proveedor (los agregadores registran una incidencia de
 Replicate abierta desde el 17/11) o ambas cosas. La entrada de FitSense está descartada.
@@ -38,7 +39,8 @@ Replicate abierta desde el 17/11) o ambas cosas. La entrada de FitSense está de
 | G2 | No ejecutado | 0 | USD 0 | Bloqueado por la sonda |
 | G3 | No ejecutado | 0 | USD 0 | Bloqueado por la sonda |
 | **Total de la reanudación** | | **1** | **estimado USD 0,00** | Cargo real pendiente de confirmar en el panel |
-| *Acumulado de la campaña (17 + 18/11)* | | *5 (2 del backend + 3 sondas)* | *estimado USD 0,00* | *Las 5 `failed`, 0 tokens* |
+| Sonda tras la incidencia resuelta (18/11 03:56) | **FAIL** | 1 | estimado USD 0,00 (0 tokens) | E002 tras 114 s en cola. Campaña detenida. |
+| *Acumulado de la campaña (17 + 18/11)* | | *6 (2 del backend + 4 sondas)* | *estimado USD 0,00; real pendiente* | *Las 6 `failed`, 0 tokens* |
 
 **Presupuesto:**
 - tope operativo de la reanudación: USD 1,50 o 12 predicciones. Usado: 1 predicción, sin coste estimado;
