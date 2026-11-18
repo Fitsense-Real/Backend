@@ -161,3 +161,41 @@ La sonda `y27xr1snzdrmt0d1xvtsmsqepw` arrancó al instante y terminó en `failed
 ## 10. Sonda del 18/11/2026 a las 14:40 UTC
 
 `eta2a81ek5rmr0d1xwd98ngd48`: `failed`, `E002 (1cah9wlWR9)`, `No sid`, 0,09 s, 0 tokens. Sin cambios.
+
+## 11. Prueba del usuario en el Playground de Replicate (18/11/2026)
+
+El titular ejecutó `openai/gpt-5-structured` desde el Playground web, con su sesión iniciada:
+- variante `gpt-5-mini`;
+- prompt de ejemplo del propio Playground;
+- sin FitSense, sin el token del entorno y sin el proxy.
+
+Resultado, según la captura de pantalla:
+- «Prediction failed. An error occurred while processing your request (E002) (1cah9wlWR9)»;
+- «Generated in 0.1 seconds»;
+- logs: `No sid`.
+
+El modelo aparece como «Warm», «Official», con 1,1 M de ejecuciones.
+
+**Conclusiones comprobadas:**
+
+1. **FitSense queda descartado por completo:** código, prompt, esquema, token del entorno y proxy. El fallo se
+   reproduce fuera de todo ello, desde la interfaz de Replicate.
+2. El fallo está **en Replicate**, para esta cuenta, con `openai/gpt-5-structured` y la variante `gpt-5-mini` como
+   mínimo.
+
+**Lo que sigue sin distinguirse:**
+
+| Posibilidad | Situación |
+|---|---|
+| (a) Restricción o problema de la **cuenta** (facturación, crédito, acceso a modelos de OpenAI) | Abierta |
+| (b) Fallo del **modelo o la variante** en Replicate que afecta a esta cuenta | Abierta |
+
+**Para separarlas,** el titular puede hacer desde el Playground, con su cuenta y su coste, dos pruebas mínimas:
+- el mismo modelo con otra variante (`gpt-5` o `gpt-5-nano`);
+- otro modelo oficial que no sea de OpenAI.
+
+Si solo falla `openai/*`, el problema es de la integración o del acceso a OpenAI. Si falla todo, es de la cuenta. No
+forma parte del protocolo de FitSense y no cambia el modelo de producción.
+
+**Ya se puede pedir a soporte con evidencia completa.** El fallo se reproduce en su propio Playground.
+

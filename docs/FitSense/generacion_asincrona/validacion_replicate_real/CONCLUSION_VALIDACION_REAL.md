@@ -12,7 +12,7 @@ comprobado:
 - de nuevo el 18/11 a las 01:23 UTC, con la única sonda autorizada para la reanudación;
 - y otra vez el 18/11 a las 03:58 UTC, **después** de que se diera por resuelta la incidencia del 17/11. Esa sonda quedó 114 s en cola y luego falló con el mismo E002.
 
-Su causa **no está comprobada**. Puede ser la cuenta, el proveedor (los agregadores registran una incidencia de
+**Comprobado el 18/11:** el mismo error se reproduce en el Playground web de Replicate con la sesión del titular. Queda probado que no lo causa FitSense, ni su token ni su proxy. El fallo está en Replicate, para esta cuenta y este modelo. Su causa concreta (la cuenta o el modelo) **no está comprobada**. Puede ser la cuenta, el proveedor (los agregadores registran una incidencia de
 Replicate abierta desde el 17/11) o ambas cosas. La entrada de FitSense está descartada.
 
 **Lo que sí queda cerrado:**

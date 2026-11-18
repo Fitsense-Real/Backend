@@ -40,6 +40,8 @@ Affected predictions (all created via the API, `POST /v1/models/openai/gpt-5-str
 
 Because a trivial one-line request fails with the same reference code, I don't believe the input is the cause.
 
+**The same error also happens in your web Playground** with my logged-in account (model `gpt-5-mini`, the default example prompt): "Prediction failed. An error occurred while processing your request (E002) (1cah9wlWR9)", generated in 0.1 s, logs `No sid`. So it is not caused by our client, token or input.
+
 Could you please tell us:
 
 1. What does E002 / reference `1cah9wlWR9` / "No sid" mean for this model?
