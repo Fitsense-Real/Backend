@@ -157,3 +157,7 @@ anteriores. El desenlace fue el mismo, con la misma referencia de error.
 
 La sonda `y27xr1snzdrmt0d1xvtsmsqepw` arrancó al instante y terminó en `failed`: `E002 (1cah9wlWR9)`, `No sid`,
 0,28 s y 0 tokens. El fallo es el mismo **21 horas después del primero**. La campaña sigue detenida.
+
+## 10. Sonda del 18/11/2026 a las 14:40 UTC
+
+`eta2a81ek5rmr0d1xwd98ngd48`: `failed`, `E002 (1cah9wlWR9)`, `No sid`, 0,09 s, 0 tokens. Sin cambios.

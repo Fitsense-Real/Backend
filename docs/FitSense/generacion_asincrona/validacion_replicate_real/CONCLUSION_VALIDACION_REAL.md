@@ -40,11 +40,12 @@ Replicate abierta desde el 17/11) o ambas cosas. La entrada de FitSense está de
 | G3 | No ejecutado | 0 | USD 0 | Bloqueado por la sonda |
 | Sonda tras la incidencia resuelta (18/11 03:56) | **FAIL** | 1 | estimado USD 0,00 (0 tokens) | E002 tras 114 s en cola. Campaña detenida. |
 | Sonda a petición del usuario (18/11 14:00) | **FAIL** | 1 | estimado USD 0,00 (0 tokens) | E002. Campaña detenida. |
-| **Total del 18/11** | | **3** | **estimado USD 0,00** | Cargo real pendiente de confirmar en el panel |
-| *Acumulado de la campaña (17 + 18/11)* | | *7 (2 del backend + 5 sondas)* | *estimado USD 0,00; real pendiente* | *Las 7 `failed`, 0 tokens* |
+| Sonda a petición del usuario (18/11 14:40) | **FAIL** | 1 | estimado USD 0,00 (0 tokens) | E002. |
+| **Total del 18/11** | | **4** | **estimado USD 0,00** | Cargo real pendiente de confirmar en el panel |
+| *Acumulado de la campaña (17 + 18/11)* | | *8 (2 del backend + 6 sondas)* | *estimado USD 0,00; real pendiente* | *Las 8 `failed`, 0 tokens* |
 
 **Presupuesto:**
-- tope operativo de la reanudación: USD 1,50 o 12 predicciones. Usado: 3 predicciones (sondas), sin coste estimado;
+- tope operativo de la reanudación: USD 1,50 o 12 predicciones. Usado: 4 predicciones (sondas), sin coste estimado;
 - techo absoluto: USD 10. Disponible: prácticamente todo, pendiente del cargo real.
 
 ## 3. Para continuar
