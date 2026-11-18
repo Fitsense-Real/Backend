@@ -9,7 +9,7 @@ Antes de enviarlo, completa `<usuario de la cuenta>` y no añadas tokens ni clav
 
 Hello,
 
-Since 2026-11-17 16:47 UTC, every prediction I create on the official model `openai/gpt-5-structured` fails within
+Since 2026-11-17 16:47 UTC (and still on 2026-11-18 01:23 UTC), every prediction I create on the official model `openai/gpt-5-structured` fails within
 about 0.3 s. The error is always the same, the logs read `No sid`, and no tokens are counted. The same account and
 model worked normally on 2026-11-12. The last successful prediction was `jhxmsrkj61rmr0d1t5trg6znj4`
 (gpt-5-mini, 33,985 input tokens and 11,421 output tokens).
@@ -33,6 +33,7 @@ Affected predictions (all created via the API, `POST /v1/models/openai/gpt-5-str
 | `1chmxnn085rmy0d1x9mbgxdhrg` | 2026-11-17 16:48:07 | same as above |
 | `cc8tx5wdsxrmr0d1x9mrkr9kqg` | 2026-11-17 16:49:08 | minimal test: model `gpt-5-mini`, reasoning_effort `minimal`, one-line prompt, one-property `json_schema` |
 | `ydpzjayh7xrmr0d1xa2rtkz8gr` | 2026-11-17 17:20:00 | same minimal test, 31 minutes later |
+| `e23edtt1h9rmr0d1xh09hsd94c` | 2026-11-18 01:23:16 | same minimal test, about 8.5 hours later: still failing |
 
 Because a trivial one-line request fails with the same reference code, I don't believe the input is the cause.
 
@@ -41,9 +42,9 @@ Could you please tell us:
 1. What does E002 / reference `1cah9wlWR9` / "No sid" mean for this model?
 2. Is there an issue on our account (billing, credit, spend limit, payment method, or access to OpenAI-backed official
    models) that blocks these predictions?
-3. Is there an ongoing incident with the OpenAI integration for `openai/gpt-5-structured` (or the `gpt-5-mini`
+3. Is the incident posted on the status page on 2026-11-17 ("Errors and stalled predictions on some models") related, and is there an ongoing incident with the OpenAI integration for `openai/gpt-5-structured` (or the `gpt-5-mini`
    variant)?
-4. Were these four failed predictions billed? We expect no charge, since no tokens were processed.
+4. Were these five failed predictions billed? We expect no charge, since no tokens were processed.
 
 Thank you.
 

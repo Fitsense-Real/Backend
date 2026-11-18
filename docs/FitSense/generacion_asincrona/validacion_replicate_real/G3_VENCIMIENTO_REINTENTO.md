@@ -33,3 +33,9 @@ Con una salida real válida en el intento 1, el reintento habría publicado **si
 
 Ejecutarlo con Replicate real cuando el proveedor responda. Coste esperado: 1 predicción, más 0 en el reintento si la
 salida es válida.
+
+## Reanudación del 18/11/2026
+
+**No ejecutado.** Se fusionó Fitsense-Real/Backend#76 (`a1ccf53`, CI verde) y el ensayo sin coste se repitió con
+éxito sobre ese commit. Después, la sonda mínima de la fase 5 (`e23edtt1h9rmr0d1xh09hsd94c`) volvió a fallar con E002.
+Como manda la orden, la campaña se detuvo antes de este escenario. 0 predicciones de este escenario.

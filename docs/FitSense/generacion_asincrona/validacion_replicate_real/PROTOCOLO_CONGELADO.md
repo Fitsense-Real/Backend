@@ -6,6 +6,7 @@ Fecha de congelación: 17/11/2026, antes de la primera llamada pagada. Nada de e
 
 | Elemento | Valor |
 |---|---|
+| Reanudación del 18/11 | `generation` = **`a1ccf53`** (merge de Fitsense-Real/Backend#76, con HR-1; CI verde en los runs 375 y 376). El resto del protocolo, sin cambios. |
 | Base | `generation` = `65e1b7e` (V58, V59, latido y lease, fencing, recuperación tras reinicio, publicación única, PD-16, CI verde: ejecuciones 372 y 373) |
 | Código ejecutado | rama `validacion/replicate-real` = `d1ac33f` (`65e1b7e` + **una corrección**) encontrada en el ensayo sin coste (`ENSAYO_SIN_COSTO.md` §3, hallazgo HR-1) |
 | Justificación del cambio | La orden manda corregir antes de gastar. Sin la corrección, G2 (reinicio controlado) cancelaría en Replicate la predicción pagada y publicaría el respaldo del motor de reglas. |

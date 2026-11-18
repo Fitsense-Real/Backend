@@ -70,3 +70,51 @@ Para confirmarlo hay que ir al panel, en Account → Billing / Usage, y buscar l
   (`application.properties` no se ha modificado).
 - No se repitió ninguna predicción. Las dos sondas del 17/11 son las únicas llamadas fuera del backend.
 - No se consultó ni se modificó la configuración de facturación, por falta de acceso.
+
+## 7. Actualización del 18/11/2026 (reanudación tras fusionar #76)
+
+**Comprobado, sin consumir predicciones:**
+
+| Comprobación | Resultado |
+|---|---|
+| `GET /v1/account` | 200: el token es válido y la cuenta es la autorizada |
+| `GET /v1/models/openai/gpt-5-structured` | Misma versión `81cb6179…` (10/11). `run_count` 1.139.109 (18/11 00:55), +1.922 desde el 17/11 ~16:45 |
+| Predicciones de la cuenta desde el 12/11 20:35 UTC | Solo las de esta campaña. Ninguna con éxito. |
+
+**No se pudo verificar:**
+
+- **Estado oficial e historial de incidencias.** La página de estado de Replicate está ahora en el sitio de estado de
+  Cloudflare. Se añadieron `www.cloudflarestatus.com` y `community.cloudflare.com` a la red de la sesión, pero:
+  - la consulta directa la denegó el control de permisos de la sesión, y no se intentó por otra vía;
+  - la herramienta de lectura web no resolvía esos hosts.
+- **Facturación y cargo real.** No existe API pública para ello; solo se ve en el panel.
+
+**Información de terceros (no oficial, no verificada).** Varios agregadores de estado que replican el sitio de
+Cloudflare muestran:
+
+| Fecha | Incidencia | Estado según los agregadores |
+|---|---|---|
+| 10/11 | Fallos 401 en modelos oficiales de OpenAI vía Replicate | resuelta el mismo día |
+| 16/11 | «Errors creating predictions for some models» | resuelta |
+| 17/11 | «Errors and stalled predictions on some models»: errores 500, predicciones atascadas y errores de validación por falta de versión | abierta según el último dato disponible |
+
+Su inicio es compatible con el primer E002 (17/11 16:47 UTC), pero **no consta que afecte a `openai/gpt-5-structured`
+ni que produzca E002**. Los síntomas descritos (500 y predicciones atascadas) no coinciden del todo con los observados
+(201 y `failed` en 0,2 s).
+
+**Sonda mínima autorizada** (18/11 01:23 UTC, una sola):
+- id `e23edtt1h9rmr0d1xh09hsd94c`;
+- `failed`, `An error occurred while processing your request (E002) (1cah9wlWR9)`, log `No sid`;
+- 0,14 s y 0 tokens.
+
+Es el mismo error y la misma referencia que las cuatro anteriores. **La campaña se detiene, como manda la orden.**
+
+**Lo que sigue sin conocerse:** la causa.
+
+| Hipótesis | Situación |
+|---|---|
+| H1: problema de la cuenta en Replicate | Abierta |
+| H2: incidencia del proveedor con este modelo | Abierta; la incidencia del 17/11 de los agregadores la hace plausible, pero no la prueba |
+| H3: entrada de FitSense | Descartada |
+
+No hay ninguna hipótesis comprobada.

@@ -113,3 +113,22 @@ incierto.
 
 Con HR-1 corregido, verificado y subido (`d1ac33f`), el ensayo cumple. Se autoriza internamente pasar a G1 con el
 protocolo congelado.
+
+## 5. Repetición sobre `generation` = `a1ccf53` (18/11/2026, tras fusionar #76)
+
+El mismo procedimiento, con el jar construido desde el commit fusionado:
+- base nueva `fitsense_ensayo3`;
+- usuarios sintéticos nuevos;
+- Replicate simulado con predicciones de 40 s.
+
+| Ensayo | Resultado |
+|---|---|
+| E1 · normal | COMPLETED (respaldo por RECHAZOS, como se esperaba). 3 POST = 3 filas. |
+| E2 · **SIGTERM con dos predicciones en curso** (E1 y E2, intento 1 ENVIADA con id) | Las dos operaciones quedan PENDING (`executions` 0), las filas siguen ENVIADA, **0 cancelaciones** y 0 planes. Log `REPLICATE_INTERRUMPIDA` ×2 y «2 operaciones devueltas a la cola». Tras arrancar: `REPLICATE_REANUDADA` con el mismo id en las dos; ambas COMPLETED. |
+| E3 · vencimiento + reintento | Vencimiento forzado: FAILED `TIEMPO_EXCEDIDO` a los 12 s, sin plan. La salida tardía queda SUCCEEDED. El reintento hace `REPLICATE_ADOPTADA` + `REPLICATE_REUTILIZADA` del intento 1 (`reused_from_row_id`) y COMPLETED. |
+| Totales | 9 POST = 9 ids distintos en el libro (+1 fila adoptada con el id repetido), 0 cancelaciones, 1 plan por usuario (3) |
+
+**La corrección de #76 funciona en el commit integrado:**
+- el apagado ordenado no cancela la predicción;
+- no publica el respaldo;
+- la operación se recupera por el mismo id.

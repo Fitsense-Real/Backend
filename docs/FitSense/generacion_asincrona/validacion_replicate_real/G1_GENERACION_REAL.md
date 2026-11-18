@@ -63,3 +63,9 @@ Se hizo con consultas gratuitas y una sonda trivial.
 - el número de rechazos de validadores con propuestas reales.
 
 Queda **pendiente** hasta que el proveedor responda.
+
+## Reanudación del 18/11/2026
+
+**No ejecutado.** Se fusionó Fitsense-Real/Backend#76 (`a1ccf53`, CI verde) y el ensayo sin coste se repitió con
+éxito sobre ese commit. Después, la sonda mínima de la fase 5 (`e23edtt1h9rmr0d1xh09hsd94c`) volvió a fallar con E002.
+Como manda la orden, la campaña se detuvo antes de este escenario. 0 predicciones de este escenario.
