@@ -98,6 +98,8 @@ class ReanudacionConReplicateSimuladoIT {
     static final AtomicInteger RECHAZADOS = new AtomicInteger();
     static final AtomicInteger GETS = new AtomicInteger();
     static final AtomicInteger GET_ESPERANDO = new AtomicInteger();
+    /** POST /cancel recibidos: predicciones que el backend pidio cancelar. */
+    static final AtomicInteger CANCELACIONES = new AtomicInteger();
     /** Acepta la prediccion (la «cobra») y corta la conexion sin responder: el id nunca llega al backend. */
     static final AtomicBoolean CORTAR_TRAS_ACEPTAR = new AtomicBoolean();
     static final AtomicBoolean RECHAZAR_POST = new AtomicBoolean();
@@ -153,6 +155,7 @@ class ReanudacionConReplicateSimuladoIT {
         GETS.incrementAndGet();
         String id = x.getRequestURI().getPath().substring("/v1/predictions/".length());
         if (id.endsWith("/cancel")) {
+            CANCELACIONES.incrementAndGet();
             responder(x, 200, prediccion(id.substring(0, id.length() - "/cancel".length()), "canceled", null));
             return;
         }
@@ -224,6 +227,8 @@ class ReanudacionConReplicateSimuladoIT {
     final AtomicInteger morirAntesDePublicar = new AtomicInteger();
     /** La siguiente ejecucion «muere» DENTRO de la transaccion de publicacion, despues de escribir el plan. */
     final AtomicBoolean morirDentroDeLaPublicacion = new AtomicBoolean();
+    /** El proceso ya murio (R16): solo es verdadero desde la muerte, no antes (antes envia y publica con normalidad). */
+    final AtomicBoolean procesoMuerto = new AtomicBoolean();
     final AtomicInteger ejecucionesDelPipeline = new AtomicInteger();
 
     @BeforeEach
@@ -232,6 +237,7 @@ class ReanudacionConReplicateSimuladoIT {
         RECHAZADOS.set(0);
         GETS.set(0);
         GET_ESPERANDO.set(0);
+        CANCELACIONES.set(0);
         CORTAR_TRAS_ACEPTAR.set(false);
         RECHAZAR_POST.set(false);
         GET_FALLA.set(false);
@@ -240,6 +246,7 @@ class ReanudacionConReplicateSimuladoIT {
         SALIDA = "\"{}\"";
         morirAntesDePublicar.set(0);
         morirDentroDeLaPublicacion.set(false);
+        procesoMuerto.set(false);
         ejecucionesDelPipeline.set(0);
         // El corte del proveedor (R-1, en memoria) se abre tras 3 fallos seguidos: las pruebas de errores del
         // proveedor lo abririan para las siguientes. Cada prueba empieza con el proveedor disponible.
@@ -275,6 +282,7 @@ class ReanudacionConReplicateSimuladoIT {
         return new TransactionTemplate(transacciones).execute(s -> {
             antesDePublicar.run();
             planes.persist(prepared, generated);
+            procesoMuerto.set(true);
             throw new IllegalStateException("el proceso muere a mitad del commit de la publicacion");
         });
     }
@@ -403,8 +411,8 @@ class ReanudacionConReplicateSimuladoIT {
         var id = service.request(u).operation().getId();
         morirDentroDeLaPublicacion.set(true);
         assertThat(service.claimNext()).contains(id);
-        // stopping = true: la excepcion es la muerte del proceso, no un resultado (nadie la registra).
-        service.execute(id, () -> true);
+        // stopping = true desde la muerte: la excepcion es la muerte del proceso, no un resultado (nadie la registra).
+        service.execute(id, procesoMuerto::get);
 
         assertThat(planesDe(u)).as("rollback: ni plan ni sesiones a medias").isZero();
         assertThat(jdbc.queryForObject("SELECT count(*) FROM planned_workouts w JOIN weekly_training_plans p"
@@ -417,6 +425,46 @@ class ReanudacionConReplicateSimuladoIT {
         assertThat(estado(id)).isEqualTo("COMPLETED");
         assertThat(planesDe(u)).isEqualTo(1);
         assertThat(POSTS.get()).as("lo pagado se lee del libro").isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("R21 · apagado ordenado (SIGTERM) con la prediccion en curso: no la cancela, no publica el respaldo y"
+            + " vuelve a la cola; la reanudacion sigue la misma prediccion por su id (3 POST, no 4)")
+    void apagadoOrdenadoConPrediccionEnCurso() throws Exception {
+        long u = participante();
+        var id = service.request(u).operation().getId();
+        EN_CURSO_RESTANTES.set(1_000_000);         // la prediccion 1 sigue "processing" en Replicate
+        assertThat(service.claimNext()).contains(id);
+        var parando = new AtomicBoolean();
+        var hilo = new Thread(() -> service.execute(id, parando::get), "generacion-que-se-apaga");
+        hilo.start();
+        esperarHasta(() -> GETS.get() >= 2, "la prediccion 1 se esta sondeando");
+        assertThat(POSTS.get()).isEqualTo(1);
+
+        // Lo que hace PlanGenerationWorker.stop() al recibir SIGTERM: marca el apagado e interrumpe el hilo.
+        parando.set(true);
+        hilo.interrupt();
+        hilo.join(TimeUnit.SECONDS.toMillis(30));
+        assertThat(hilo.isAlive()).isFalse();
+
+        assertThat(CANCELACIONES.get()).as("la prediccion pagada no se cancela por el apagado").isZero();
+        assertThat(POSTS.get()).as("ni se envia otra").isEqualTo(1);
+        assertThat(planesDe(u)).as("el apagado no publica el respaldo del motor de reglas").isZero();
+        assertThat(estado(id)).isEqualTo("PROCESSING");
+        assertThat(jdbc.queryForObject("SELECT status FROM plan_generation_predictions WHERE operation_id = ?"
+                + " AND attempt = 1", String.class, id)).as("su id queda en el libro para reanudarla").isEqualTo("ENVIADA");
+        assertThat(service.requeueOnShutdown(List.of(id))).isEqualTo(1);
+        assertThat(estado(id)).isEqualTo("PENDING");
+
+        // La instancia siguiente la reclama y sigue la MISMA prediccion por su id.
+        EN_CURSO_RESTANTES.set(0);
+        assertThat(service.claimNext()).contains(id);
+        service.execute(id);
+        assertThat(estado(id)).isEqualTo("COMPLETED");
+        assertThat(planesDe(u)).isEqualTo(1);
+        assertThat(POSTS.get()).as("intento 1 reanudado por su id + intentos 2 y 3").isEqualTo(3);
+        assertThat(libro.recuento(id).iniciadas()).isEqualTo(3);
+        assertThat(libro.recuento(id).canceladas()).isZero();
     }
 
     // ================================================================ dos instancias (R03, R04, R17)

@@ -407,6 +407,14 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             diario.consultada(fila, sondeo.requests(), reloj.instant());
             if (sondeo.response() != null) response = sondeo.response();
         }
+        if (response.pending() && (desenlace == Sondeo.Desenlace.INTERRUMPIDO || Thread.currentThread().isInterrupted())) {
+            // Apagado (SIGTERM): la prediccion sigue viva en Replicate y su id ya esta en el libro. No se cancela ni se
+            // cierra la fila (queda ENVIADA): la instancia siguiente la reanuda por su id sin pagar otra.
+            medicion.resultado(ReplicateTiming.Resultado.INTERRUPTED);
+            log.warn("REPLICATE_INTERRUMPIDA prediction_id={}: el proceso se esta apagando; se deja ENVIADA para"
+                    + " reanudarla por su id (no se cancela)", response.id());
+            throw new GeneracionInterrumpidaException("apagado con la prediccion " + response.id() + " en curso");
+        }
         if (response.pending()) {
             var trasCancelar = cancelar(response, desenlace);
             if (trasCancelar != null && trasCancelar.succeeded()) {
