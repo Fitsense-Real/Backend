@@ -43,9 +43,15 @@ Los resultados completos y los números están en [REGRESION_FINAL](REGRESION_FI
 
 ## Hallazgos que no se corrigen en esta orden
 
+> **Logs detallados (S-1).** Por instrucción expresa, los registros detallados de generación, adaptación y respuestas de la IA **se conservan sin cambios** para las próximas pruebas.
+>
+> - Esas pruebas usan solo datos sintéticos.
+> - Esos registros no se publican ni se incluyen en ningún entregable. Este documento solo nombra el formato de las líneas, nunca su contenido.
+> - Mientras S-1 no esté resuelto, **no se activa esta configuración en producción ni se prueba con participantes reales.**
+
 | # | Hallazgo | Riesgo | Por qué no se corrige aquí | Propuesta |
 |---|---|---|---|---|
-| S-1 | `ReplicateTrainingPlanGenerator` registra en INFO la **salida completa de la IA** de cada intento, es decir, el plan de una persona identificada por su id interno. Lo añadieron como evidencia para la tesis | Datos de entrenamiento personales en los logs de Railway | Está en el código de generación, que la orden pide no tocar | En `prod`, registrar solo la longitud y el hash, y conservar la salida en `plan_generation_predictions`, que ya se borra al eliminar la cuenta. Requiere aprobación |
+| S-1 | `ReplicateTrainingPlanGenerator` registra en INFO la **salida completa de la IA** de cada intento: el plan de una persona, identificada por su id interno. Se añadió como evidencia para la tesis. Los registros detallados de generación y adaptación tienen el mismo carácter | Datos de entrenamiento personales en los logs de Railway | **Se mantiene a propósito (19/11/2026).** Hacen falta para las próximas pruebas, que solo usan datos sintéticos. No se eliminan logs, no se reduce su detalle y no se sanitiza nada | **Pendiente de seguridad y privacidad: bloquea la producción.** Antes de usar el backend con participantes reales, registrar en `prod` solo la longitud y el hash, y conservar la salida en `plan_generation_predictions`, que ya se borra al eliminar la cuenta. Hasta entonces, nada de participantes reales ni de configuración de producción con estos logs. Requiere aprobación |
 | S-2 | El JWT lleva el claim `email` | El token, que se guarda en el dispositivo, revela el correo | Quitarlo podría romper la app si lo lee | Comprobar en Flutter y quitarlo |
 | S-3 | La URL y el usuario de Neon están como valores por omisión en `application.properties` | Información de infraestructura en el repositorio | Cambiar la configuración base afecta a los entornos locales | Quitarlos (en `prod` ya no se usan) y valorar rotar el usuario |
 | S-4 | Límites en memoria | Con más de una instancia se multiplican | Hoy se despliega una sola instancia, a propósito | Mantener una réplica, o pasar a límites en la base si se escala |

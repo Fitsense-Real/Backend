@@ -18,7 +18,7 @@ Estas decisiones son del equipo responsable del estudio y, cuando corresponda, d
 | P-12 | URL pública de la página de eliminación y de la política de privacidad | — | No existen, no se ha inventado ninguna | SOLICITUD_ELIMINACION_WEB |
 | P-13 | Datos enviados a Replicate: base legal, información a las personas, plazo de conservación en Replicate y si se reduce el texto libre (`goal_text`, `health_notes`) | Mantener y declarar; reducir; desactivar la IA | Se mantiene sin cambios (no se tocó la generación) y se declara como compartido | INVENTARIO_PRIVACIDAD_GOOGLE_PLAY |
 | P-14 | Plazos de copias de la base, logs de Railway y registros del proveedor de correo | — | **Sin verificar.** Hay que consultarlos en cada consola | PREPARACION_HTTPS_RAILWAY |
-| P-15 | Hallazgo S-1: la salida de la IA va a los logs | Cambiar el log en `prod` | Sin cambios (está en el código de generación) | PRUEBAS_SEGURIDAD |
+| P-15 | Hallazgo S-1: la salida de la IA y el detalle de generación y adaptación van a los logs | Antes de producción, registrar solo la longitud y el hash en `prod` | **Sin cambios a propósito**: hacen falta para las pruebas con datos sintéticos. **Bloquea la producción y las pruebas con participantes reales** hasta resolverlo | PRUEBAS_SEGURIDAD |
 | P-16 | Hallazgos S-2 (el JWT lleva el correo) y S-3 (URL de Neon en el repositorio) | Quitar los dos | Sin cambios | PRUEBAS_SEGURIDAD |
 | P-17 | Orden de merge y despliegue | A → C → B → D → E, con una copia de la base antes de V60–V63 | No se ha fusionado ni desplegado nada | REGRESION_FINAL |
 | P-18 | Contenido de Seguridad de los datos (*Data safety*) en Play Console | Usar el inventario como base | Play Console no se ha modificado | INVENTARIO_PRIVACIDAD_GOOGLE_PLAY |

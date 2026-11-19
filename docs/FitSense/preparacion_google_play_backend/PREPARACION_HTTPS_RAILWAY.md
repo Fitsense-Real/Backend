@@ -66,6 +66,11 @@ Todos los secretos se guardan como variables de Railway, nunca en el repositorio
 
 ## 4. Pasos (los ejecuta quien tenga acceso a Railway)
 
+0. **Bloqueo previo: S-1** ([PRUEBAS_SEGURIDAD](PRUEBAS_SEGURIDAD.md)).
+   - Los logs detallados de generación, adaptación y respuestas de la IA se mantienen sin cambios para las pruebas.
+   - Esas pruebas usan solo datos sintéticos.
+   - **No desplegar para participantes reales ni activar esta configuración en producción** hasta resolver S-1 con aprobación.
+   - Un entorno de pruebas en Railway con datos sintéticos sí es compatible, siempre que sus logs no se compartan ni se publiquen.
 1. Fusionar las PR en orden **A → C → B → D → E** ([REGRESION_FINAL](REGRESION_FINAL.md)).
 2. Configurar el servicio en Railway:
    - **Settings → Deploy:**

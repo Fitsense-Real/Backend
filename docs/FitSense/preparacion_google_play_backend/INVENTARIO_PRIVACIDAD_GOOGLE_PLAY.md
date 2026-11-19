@@ -53,7 +53,7 @@ Esta lista se limita al backend. **Los SDK que incluya la app Flutter (analític
 | Dónde | Qué se elimina cuando la persona elimina su cuenta | Qué no |
 |---|---|---|
 | PostgreSQL | **Todo** (alternativa A): las 13 tablas con datos de la persona y sus dependientes | Una fila mínima en `account_deletions` (id aleatorio, origen, fechas y recuentos), sin datos personales |
-| Logs | Nunca han tenido correo ni contraseña. Los de eliminación solo llevan ids | Los ids internos en logs ya emitidos, hasta que caduquen según el plan de Railway (**plazo sin verificar**) |
+| Logs | No contienen correo ni contraseña. Los de eliminación solo llevan ids | <ul><li>Los ids internos en logs ya emitidos, hasta que caduquen según el plan de Railway (**plazo sin verificar**).</li><li>**S-1:** los logs detallados de generación y adaptación incluyen la salida de la IA, es decir, el plan de la persona. Se mantienen solo para pruebas con datos sintéticos. **Hay que resolverlo antes de recoger datos de participantes reales**, y entonces esta fila debe actualizarse.</li></ul> |
 | Copias de la base | — | Lo copiado antes de la eliminación, hasta que caduque la copia (**plazo sin verificar**) |
 | Replicate | — | Las predicciones ya enviadas, según la política de Replicate (**sin verificar**) |
 | Proveedor de correo | — | Sus registros de envío, según su política |
