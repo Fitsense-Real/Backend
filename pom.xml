@@ -61,6 +61,12 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<!-- Correo transaccional (recuperacion de contrasena, eliminacion web). Solo se usa con
+			     fitsense.mail.transport=smtp; resend y brevo van por HTTPS con el cliente del JDK. -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-flyway</artifactId>
 		</dependency>
@@ -185,6 +191,25 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers-postgresql</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<!-- Servidor SMTP simulado para las pruebas de correo (nunca un proveedor real). -->
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail</artifactId>
+			<version>2.1.5</version>
+			<scope>test</scope>
+			<!-- La implementacion de Jakarta Mail ya la trae spring-boot-starter-mail (angus-mail): sin
+			     duplicarla. GreenMail declara JUnit 4 en compile y no hace falta. -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.eclipse.angus</groupId>
+					<artifactId>jakarta.mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

@@ -19,6 +19,8 @@ import java.time.OffsetDateTime;
  *       punta sin proveedor de correo. Nunca en un entorno con usuarios: el log no es un canal seguro. Por eso
  *       solo se acepta con el perfil {@code local} o {@code local-dev}: fuera de ellos la aplicacion NO ARRANCA
  *       (fallar visible es mejor que caer en silencio a {@code none} o, peor, escribir codigos en un log remoto).</li>
+ *   <li>{@code email}: correo real por el transporte de {@code fitsense.mail.transport} (smtp, resend, brevo), tras el
+ *       commit y fuera del hilo de la peticion. Exige un transporte distinto de {@code none}.</li>
  * </ul>
  * Ninguno registra el correo ni, en {@code none}, el codigo.
  */
@@ -47,6 +49,30 @@ public class PasswordResetNotifiers {
             @Override
             public boolean entregaReal() {
                 return false;
+            }
+        };
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "fitsense.password-reset.delivery", havingValue = "email")
+    PasswordResetNotifier porCorreo(main.web.services.fitsense.shared.infrastructure.mail.EnvioDeCorreo envio,
+                                    @org.springframework.beans.factory.annotation.Value(
+                                            "${fitsense.password-reset.link-template:}") String plantilla,
+                                    @org.springframework.beans.factory.annotation.Value(
+                                            "${fitsense.mail.from-name:Kora}") String app) {
+        if (!envio.correo().entregaReal())
+            throw new IllegalStateException("fitsense.password-reset.delivery=email requiere fitsense.mail.transport"
+                    + " distinto de none (smtp, resend o brevo).");
+        var enlace = MensajeDeRecuperacion.validarPlantilla(plantilla);
+        return new PasswordResetNotifier() {
+            @Override
+            public void enviar(String email, String token, OffsetDateTime caduca) {
+                envio.trasConfirmar(MensajeDeRecuperacion.crear(email, token, caduca, enlace, app));
+            }
+
+            @Override
+            public boolean entregaReal() {
+                return true;
             }
         };
     }

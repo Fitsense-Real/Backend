@@ -34,4 +34,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.enrollment.studyParticipant = true")
     long countStudyParticipants();
+
+    /** V60: siguiente numero de participante; nunca se reutiliza, aunque se eliminen cuentas. */
+    @Query(value = "SELECT nextval('participant_code_seq')", nativeQuery = true)
+    long nextParticipantSequence();
 }

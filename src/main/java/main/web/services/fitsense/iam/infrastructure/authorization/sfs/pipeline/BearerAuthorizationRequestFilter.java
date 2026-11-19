@@ -56,7 +56,11 @@ public class BearerAuthorizationRequestFilter extends OncePerRequestFilter {
                 // Solo una cuenta ACTIVE se autentica. Un token aun vigente de una
                 // cuenta INACTIVE o DELETED deja la peticion sin autenticar y
                 // termina en 401: desactivar la cuenta revoca sus tokens al momento.
-                userRepository.findById(userId).filter(User::canSignIn).ifPresent(user -> {
+                // V61: y solo si el token es de la version de credenciales vigente. Cambiar la contrasena la sube:
+                // los tokens emitidos antes (otro dispositivo, uno robado) dejan de servir.
+                int version = tokenService.extractTokenVersion(token);
+                userRepository.findById(userId).filter(User::canSignIn)
+                        .filter(u -> u.getTokenVersion() == version).ifPresent(user -> {
                     // El principal debe ser UserDetailsImpl, no el User del
                     // dominio: es el tipo que los controladores reciben con
                     // @AuthenticationPrincipal. Con el agregado directo, Spring

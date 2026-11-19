@@ -50,7 +50,15 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V58 (generacion inicial asincrona): una tabla nueva y sus indices, sin datos.
             "58:db/migration/V58__plan_generation_operations.sql",
             // V59 (generacion resiliente: lease y libro de predicciones): solo esquema, sin datos.
-            "59:db/migration/V59__generacion_resiliente_lease_y_predicciones.sql");
+            "59:db/migration/V59__generacion_resiliente_lease_y_predicciones.sql",
+            // V60 (eliminacion de cuentas): una tabla nueva y la secuencia de P-xxx, sin datos del catalogo.
+            "60:db/migration/V60__eliminacion_de_cuentas.sql",
+            // V61 (version de credenciales): una columna con valor por omision en users, sin datos.
+            "61:db/migration/V61__version_de_token.sql",
+            // V62 (solicitud web de eliminacion): una tabla nueva, sin datos.
+            "62:db/migration/V62__solicitud_eliminacion_web.sql",
+            // V63 (consentimientos): una tabla nueva y la copia de los consentimientos de users; nada del catalogo.
+            "63:db/migration/V63__consentimientos.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {

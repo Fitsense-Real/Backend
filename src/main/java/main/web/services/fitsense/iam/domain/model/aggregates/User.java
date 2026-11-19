@@ -16,6 +16,10 @@ import java.time.OffsetDateTime;
 @Getter
 @Entity
 @Table(name = "users")
+// Solo se escriben las columnas que cambian. Sin esto, guardar la entidad (p. ej. registrar un inicio de sesion
+// leido antes) reescribia la fila entera y podia deshacer un cambio concurrente: el estado DELETED de una
+// eliminacion en curso o, con V61, el cambio de contrasena y de token_version.
+@org.hibernate.annotations.DynamicUpdate
 public class User extends AuditableAbstractAggregateRoot<User> {
 
     @Id
@@ -49,6 +53,10 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Column(name = "last_login_at")
     private OffsetDateTime lastLoginAt;
 
+    /** V61: version de las credenciales. Cambia con la contrasena y revoca los JWT emitidos antes. */
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion;
+
     protected User() {
         // JPA
     }
@@ -74,6 +82,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         if (newPasswordHash == null || newPasswordHash.isBlank())
             throw new DomainRuleViolationException("El hash de la contrasena no puede estar vacio.");
         this.passwordHash = newPasswordHash;
+        this.tokenVersion++;
     }
 
     public void registerLogin() {
