@@ -47,6 +47,40 @@ public class GlobalExceptionHandler {
                 .body(ApiErrorResource.of(status.value(), status.getReasonPhrase(), ex.getMessage(), List.of()));
     }
 
+    /** Eliminacion de cuenta: falta confirm=true. */
+    @ExceptionHandler(main.web.services.fitsense.iam.domain.exceptions.ConfirmationRequiredException.class)
+    public ResponseEntity<ApiErrorResource> handleConfirmationRequired(RuntimeException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), List.of("CONFIRMACION_REQUERIDA"));
+    }
+
+    /** Eliminacion de cuenta: la contrasena de reautenticacion no es la de la cuenta. */
+    @ExceptionHandler(main.web.services.fitsense.iam.domain.exceptions.ReauthenticationFailedException.class)
+    public ResponseEntity<ApiErrorResource> handleReauthenticationFailed(RuntimeException ex) {
+        return build(HttpStatus.FORBIDDEN, ex.getMessage(), List.of("REAUTENTICACION_FALLIDA"));
+    }
+
+    @ExceptionHandler(main.web.services.fitsense.iam.domain.exceptions.TooManyReauthenticationAttemptsException.class)
+    public ResponseEntity<ApiErrorResource> handleTooManyReauthentication(
+            main.web.services.fitsense.iam.domain.exceptions.TooManyReauthenticationAttemptsException ex) {
+        var status = HttpStatus.TOO_MANY_REQUESTS;
+        return ResponseEntity.status(status)
+                .header(org.springframework.http.HttpHeaders.RETRY_AFTER, String.valueOf(ex.retryAfterSeconds()))
+                .body(ApiErrorResource.of(status.value(), status.getReasonPhrase(), ex.getMessage(),
+                        List.of("DEMASIADOS_INTENTOS")));
+    }
+
+    /** Solo en una carrera (dos solicitudes a la vez): la cuenta ya no existe. Lo normal es un 401 del filtro. */
+    @ExceptionHandler(main.web.services.fitsense.iam.application.internal.deletion.EliminacionDeCuentaService.CuentaInexistenteException.class)
+    public ResponseEntity<ApiErrorResource> handleCuentaInexistente(RuntimeException ex) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage(), List.of("CUENTA_INEXISTENTE"));
+    }
+
+    /** La fase de registro de la eliminacion fallo: no se cambio nada. */
+    @ExceptionHandler(main.web.services.fitsense.iam.application.internal.deletion.EliminacionDeCuentaService.EliminacionNoRegistradaException.class)
+    public ResponseEntity<ApiErrorResource> handleEliminacionNoRegistrada(RuntimeException ex) {
+        return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), List.of("ELIMINACION_NO_REGISTRADA"));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());

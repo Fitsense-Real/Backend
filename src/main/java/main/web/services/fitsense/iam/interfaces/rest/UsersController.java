@@ -1,5 +1,13 @@
 package main.web.services.fitsense.iam.interfaces.rest;
 
+import main.web.services.fitsense.iam.application.internal.deletion.EliminarMiCuenta;
+import main.web.services.fitsense.iam.interfaces.rest.resources.AccountDeletionResource;
+import main.web.services.fitsense.iam.interfaces.rest.resources.DeleteAccountResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import main.web.services.fitsense.iam.domain.model.commands.WithdrawFromStudyCommand;
@@ -21,10 +29,13 @@ public class UsersController {
 
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
+    private final EliminarMiCuenta eliminarMiCuenta;
 
-    public UsersController(UserQueryService userQueryService, UserCommandService userCommandService) {
+    public UsersController(UserQueryService userQueryService, UserCommandService userCommandService,
+                           EliminarMiCuenta eliminarMiCuenta) {
         this.userQueryService = userQueryService;
         this.userCommandService = userCommandService;
+        this.eliminarMiCuenta = eliminarMiCuenta;
     }
 
     @GetMapping("/me")
@@ -43,5 +54,21 @@ public class UsersController {
                 .map(UserResourceFromEntityAssembler::toResourceFromEntity)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", principal.getUserId()));
+    }
+
+    /**
+     * Elimina la cuenta y todos sus datos (CONTRATO_ELIMINAR_CUENTA.md). 200 si el borrado ya termino; 202 si la cuenta
+     * ya quedo desactivada y el borrado se completa automaticamente. En ambos casos el token deja de servir.
+     */
+    @DeleteMapping("/me")
+    @Operation(summary = "Elimina la cuenta del usuario del JWT y todos sus datos (irreversible)")
+    public ResponseEntity<AccountDeletionResource> delete(@AuthenticationPrincipal UserDetailsImpl principal,
+                                                          @RequestBody DeleteAccountResource body) {
+        var e = eliminarMiCuenta.ejecutar(principal.getUserId(), body.password(), body.confirm());
+        var recurso = new AccountDeletionResource(e.completada() ? "DELETED" : "PENDING", e.deletionId(),
+                e.solicitadaEn(), e.completadaEn(), e.yaRegistrada() ? Boolean.TRUE : null);
+        return ResponseEntity.status(e.completada() ? HttpStatus.OK : HttpStatus.ACCEPTED)
+                .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                .body(recurso);
     }
 }

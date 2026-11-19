@@ -78,11 +78,11 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     /**
-     * Codigo anonimizado del analisis (P-001, P-002...). El contador puede
-     * colisionar bajo concurrencia; el UNIQUE de la base es la garantia real.
-     * Con el volumen del estudio (decenas de participantes) es suficiente.
+     * Codigo seudonimo del analisis (P-001, P-002...). V60: sale de participant_code_seq, que nunca reutiliza un
+     * valor; con count(*)+1, eliminar una cuenta hacia que el siguiente registro chocara con un codigo existente o
+     * heredara el de una persona eliminada.
      */
     private String nextParticipantCode() {
-        return "P-%03d".formatted(userRepository.countStudyParticipants() + 1);
+        return "P-%03d".formatted(userRepository.nextParticipantSequence());
     }
 }
