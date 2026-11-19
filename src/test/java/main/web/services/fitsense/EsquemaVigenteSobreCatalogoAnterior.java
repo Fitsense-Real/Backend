@@ -54,7 +54,9 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V60 (eliminacion de cuentas): una tabla nueva y la secuencia de P-xxx, sin datos del catalogo.
             "60:db/migration/V60__eliminacion_de_cuentas.sql",
             // V61 (version de credenciales): una columna con valor por omision en users, sin datos.
-            "61:db/migration/V61__version_de_token.sql");
+            "61:db/migration/V61__version_de_token.sql",
+            // V62 (solicitud web de eliminacion): una tabla nueva, sin datos.
+            "62:db/migration/V62__solicitud_eliminacion_web.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {
