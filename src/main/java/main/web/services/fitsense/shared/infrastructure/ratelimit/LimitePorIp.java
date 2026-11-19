@@ -70,6 +70,11 @@ public class LimitePorIp {
         while (!l.isEmpty() && !l.peekFirst().plus(ventana).isAfter(ahora)) l.removeFirst();
     }
 
+    /**
+     * Quita las claves sin marcas vigentes. Si aun asi quedan mas de {@link #MAXIMO_DE_CLAVES} (rotacion masiva de
+     * IP), vacia el mapa: la memoria queda acotada y el recorrido completo no se repite en cada peticion. Quien rota
+     * IP ya esquiva un limite por IP; el limite por cuenta (3 por hora) sigue en la base.
+     */
     private void purgarTodo(Instant ahora) {
         marcas.entrySet().removeIf(e -> {
             synchronized (e.getValue()) {
@@ -77,5 +82,6 @@ public class LimitePorIp {
                 return e.getValue().isEmpty();
             }
         });
+        if (marcas.size() > MAXIMO_DE_CLAVES) marcas.clear();
     }
 }
