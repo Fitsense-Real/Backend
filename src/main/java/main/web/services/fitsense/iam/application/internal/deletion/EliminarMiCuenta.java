@@ -32,15 +32,15 @@ public class EliminarMiCuenta {
         if (!Boolean.TRUE.equals(confirm))
             throw new ConfirmationRequiredException(
                     "Falta la confirmacion: envia confirm=true para eliminar la cuenta de forma irreversible.");
-        long espera = limite.bloqueadoDurante(userId);
+        // El intento cuenta como fallo desde antes de comprobar la contrasena (reserva atomica): peticiones en
+        // paralelo con contrasenas distintas no pueden probar mas de max-failed-reauth en la ventana.
+        long espera = limite.reservar(userId);
         if (espera > 0) throw new TooManyReauthenticationAttemptsException(espera);
 
         var usuario = usuarios.findById(userId)
                 .orElseThrow(EliminacionDeCuentaService.CuentaInexistenteException::new);
-        if (password == null || password.isEmpty() || !hashing.matches(password, usuario.getPasswordHash())) {
-            limite.registrarFallo(userId);
+        if (password == null || password.isEmpty() || !hashing.matches(password, usuario.getPasswordHash()))
             throw new ReauthenticationFailedException();
-        }
         limite.limpiar(userId);
         return eliminacion.eliminar(userId, EliminacionDeCuentaService.Origen.APP);
     }

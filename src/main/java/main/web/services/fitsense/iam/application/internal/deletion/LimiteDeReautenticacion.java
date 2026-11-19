@@ -44,6 +44,23 @@ public class LimiteDeReautenticacion {
         }
     }
 
+    /**
+     * Reserva un intento ANTES de comprobar la contrasena, de forma atomica: con N peticiones simultaneas solo
+     * {@code maximo} llegan a comprobarla en la ventana. Devuelve los segundos de espera si no quedan intentos (y no
+     * reserva), o 0 si se reservo. Si la contrasena resulta correcta, {@link #limpiar} libera las reservas.
+     */
+    public long reservar(long userId) {
+        var ahora = clock.instant();
+        var l = fallos.computeIfAbsent(userId, k -> new ArrayDeque<>());
+        synchronized (l) {
+            purgar(l, ahora);
+            if (l.size() >= maximo)
+                return Math.max(1, Duration.between(ahora, l.peekFirst().plus(ventana)).toSeconds());
+            l.addLast(ahora);
+            return 0;
+        }
+    }
+
     public void registrarFallo(long userId) {
         var ahora = clock.instant();
         var l = fallos.computeIfAbsent(userId, k -> new ArrayDeque<>());
