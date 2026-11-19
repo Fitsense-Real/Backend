@@ -64,7 +64,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         user.registerLogin();
         userRepository.save(user);
 
-        var token = tokenService.generateToken(user.getId(), user.emailAddress());
+        var token = tokenService.generateToken(user.getId(), user.emailAddress(), user.getTokenVersion());
         return Optional.of(new AuthenticatedUser(user, token));
     }
 

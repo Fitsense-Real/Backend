@@ -49,6 +49,10 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Column(name = "last_login_at")
     private OffsetDateTime lastLoginAt;
 
+    /** V61: version de las credenciales. Cambia con la contrasena y revoca los JWT emitidos antes. */
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion;
+
     protected User() {
         // JPA
     }
@@ -74,6 +78,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         if (newPasswordHash == null || newPasswordHash.isBlank())
             throw new DomainRuleViolationException("El hash de la contrasena no puede estar vacio.");
         this.passwordHash = newPasswordHash;
+        this.tokenVersion++;
     }
 
     public void registerLogin() {
