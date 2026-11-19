@@ -72,6 +72,7 @@ public class WebSecurityConfiguration {
     private final List<String> corsOrigins;
     private final boolean apiDocsEnabled;
     private final boolean manualCycleEnabled;
+    private final boolean requireHttps;
 
     public WebSecurityConfiguration(UserRepository userRepository,
                                     TokenService tokenService,
@@ -80,7 +81,8 @@ public class WebSecurityConfiguration {
                                     ForbiddenRequestHandler forbiddenRequestHandler,
                                     @Value("${fitsense.cors.allowed-origins:}") String corsOrigins,
                                     @Value("${fitsense.api-docs.enabled:false}") boolean apiDocsEnabled,
-                                    @Value("${fitsense.cycle.manual-run.enabled:false}") boolean manualCycleEnabled) {
+                                    @Value("${fitsense.cycle.manual-run.enabled:false}") boolean manualCycleEnabled,
+                                    @Value("${fitsense.security.require-https:false}") boolean requireHttps) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.hashingService = hashingService;
@@ -89,6 +91,7 @@ public class WebSecurityConfiguration {
         this.corsOrigins = CorsOrigins.parse(corsOrigins);
         this.apiDocsEnabled = apiDocsEnabled;
         this.manualCycleEnabled = manualCycleEnabled;
+        this.requireHttps = requireHttps;
     }
 
     @Bean
@@ -114,6 +117,19 @@ public class WebSecurityConfiguration {
                         .accessDeniedHandler(forbiddenRequestHandler))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Cabeceras de seguridad (PREPARACION_HTTPS_RAILWAY.md). Ademas de las de Spring Security por omision
+                // (nosniff, X-Frame-Options DENY, Cache-Control no-store): HSTS de un ano, que solo se envia en
+                // peticiones HTTPS (detras del proxy de Railway, con server.forward-headers-strategy=native); sin
+                // Referer hacia terceros; y una CSP que prohibe todo contenido activo, porque la API solo devuelve
+                // JSON (con Swagger UI activado no se aplica, porque la bloquearia).
+                .headers(headers -> {
+                    headers.httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true)
+                            .maxAgeInSeconds(31_536_000));
+                    headers.referrerPolicy(referrer -> referrer.policy(
+                            org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER));
+                    if (!apiDocsEnabled)
+                        headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'none'; frame-ancestors 'none'"));
+                })
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(PUBLIC_PATHS).permitAll();
                     if (apiDocsEnabled) auth.requestMatchers(API_DOCS_PATHS).permitAll();
@@ -130,6 +146,10 @@ public class WebSecurityConfiguration {
         http.addFilterBefore(
                 new BearerAuthorizationRequestFilter(tokenService, userRepository),
                 UsernamePasswordAuthenticationFilter.class);
+        // En produccion, ninguna peticion de la API por HTTP en claro (el token viajaria sin cifrar). El health check
+        // de Railway llega al contenedor por la red interna, sin TLS: queda exento.
+        if (requireHttps)
+            http.addFilterBefore(new HttpsRequeridoFilter(), BearerAuthorizationRequestFilter.class);
         return http.build();
     }
 
