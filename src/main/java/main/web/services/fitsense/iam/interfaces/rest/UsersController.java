@@ -30,12 +30,15 @@ public class UsersController {
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final EliminarMiCuenta eliminarMiCuenta;
+    private final main.web.services.fitsense.iam.application.internal.consent.ConsentimientoService consentimientos;
 
     public UsersController(UserQueryService userQueryService, UserCommandService userCommandService,
-                           EliminarMiCuenta eliminarMiCuenta) {
+                           EliminarMiCuenta eliminarMiCuenta,
+                           main.web.services.fitsense.iam.application.internal.consent.ConsentimientoService consentimientos) {
         this.userQueryService = userQueryService;
         this.userCommandService = userCommandService;
         this.eliminarMiCuenta = eliminarMiCuenta;
+        this.consentimientos = consentimientos;
     }
 
     @GetMapping("/me")
@@ -50,7 +53,10 @@ public class UsersController {
     @PostMapping("/me/withdraw")
     @Operation(summary = "Retiro voluntario del estudio. No borra los datos ya recolectados.")
     public ResponseEntity<UserResource> withdraw(@AuthenticationPrincipal UserDetailsImpl principal) {
-        return userCommandService.handle(new WithdrawFromStudyCommand(principal.getUserId()))
+        // V63: la retirada queda tambien en el historial de consentimientos (withdrawn_at).
+        consentimientos.retirar(principal.getUserId(),
+                main.web.services.fitsense.iam.application.internal.consent.ConsentimientoService.Tipo.STUDY_PARTICIPATION);
+        return userQueryService.handle(new GetUserByIdQuery(principal.getUserId()))
                 .map(UserResourceFromEntityAssembler::toResourceFromEntity)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", principal.getUserId()));

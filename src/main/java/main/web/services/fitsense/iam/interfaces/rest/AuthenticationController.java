@@ -24,16 +24,19 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     private final UserCommandService userCommandService;
+    private final main.web.services.fitsense.iam.application.internal.consent.RegistroConConsentimientos registro;
 
-    public AuthenticationController(UserCommandService userCommandService) {
+    public AuthenticationController(UserCommandService userCommandService,
+                                    main.web.services.fitsense.iam.application.internal.consent.RegistroConConsentimientos registro) {
         this.userCommandService = userCommandService;
+        this.registro = registro;
     }
 
     @PostMapping("/register")
     @Operation(summary = "Registra una cuenta y, si corresponde, la inscribe en el estudio")
     public ResponseEntity<UserResource> register(@Valid @RequestBody SignUpResource resource) {
         var command = SignUpCommandFromResourceAssembler.toCommandFromResource(resource);
-        return userCommandService.handle(command)
+        return registro.registrar(command, resource.acceptedTermsVersion(), resource.acceptedPrivacyVersion())
                 .map(UserResourceFromEntityAssembler::toResourceFromEntity)
                 .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
