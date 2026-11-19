@@ -210,3 +210,7 @@ del primer fallo.
 |---|---|---|---|
 | 1/3 | 01:32 | `afrn5j7ab9rmy0d1ya0rperk4g` | `failed`, E002 `1cah9wlWR9`, `No sid`, 0,15 s, 0 tokens |
 | 2/3 | 04:32 | `k2hevnyq3nrmw0d1yck8sd8gj4` | `failed`, E002 `1cah9wlWR9`, `No sid`, 47 s en cola y 0,60 s de ejecución, 0 tokens |
+| 3/3 | 07:33 | `7bt2dqqn25rmr0d1yf5sv2m330` | `failed`, E002 `1cah9wlWR9`, `No sid`, 0,06 s, 0 tokens |
+
+Los tres intentos de la noche fallaron igual. El error persiste unas 44 h después del primero. No se programan más
+intentos: depende de soporte o de que el Playground vuelva a funcionar.
