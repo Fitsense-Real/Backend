@@ -16,6 +16,10 @@ import java.time.OffsetDateTime;
 @Getter
 @Entity
 @Table(name = "users")
+// Solo se escriben las columnas que cambian. Sin esto, guardar la entidad (p. ej. registrar un inicio de sesion
+// leido antes) reescribia la fila entera y podia deshacer un cambio concurrente: el estado DELETED de una
+// eliminacion en curso o, con V61, el cambio de contrasena y de token_version.
+@org.hibernate.annotations.DynamicUpdate
 public class User extends AuditableAbstractAggregateRoot<User> {
 
     @Id
