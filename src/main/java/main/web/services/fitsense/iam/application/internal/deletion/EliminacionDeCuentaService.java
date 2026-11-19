@@ -64,6 +64,7 @@ public class EliminacionDeCuentaService {
             "weekly_training_plans",
             "password_reset_tokens",
             "account_deletion_tokens",
+            "user_consents",
             "users");
 
     /** Tablas con user_id que NO son datos de la persona y no se borran (el propio registro de eliminaciones). */

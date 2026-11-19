@@ -23,12 +23,19 @@ public class UserProfileCommandServiceImpl implements UserProfileCommandService 
     private final ExternalIamService externalIamService;
     private final ExternalPlanningService externalPlanningService;
 
+    private final int edadMinima;
+
     public UserProfileCommandServiceImpl(UserProfileRepository userProfileRepository,
                                          ExternalIamService externalIamService,
-                                         ExternalPlanningService externalPlanningService) {
+                                         ExternalPlanningService externalPlanningService,
+                                         @org.springframework.beans.factory.annotation.Value(
+                                                 "${fitsense.profile.minimum-age:18}") int edadMinima) {
+        if (edadMinima < 18)
+            throw new IllegalStateException("fitsense.profile.minimum-age no puede ser menor que 18 (CONSENTIMIENTO_Y_EDAD.md).");
         this.userProfileRepository = userProfileRepository;
         this.externalIamService = externalIamService;
         this.externalPlanningService = externalPlanningService;
+        this.edadMinima = edadMinima;
     }
 
     @Override
@@ -38,6 +45,13 @@ public class UserProfileCommandServiceImpl implements UserProfileCommandService 
             throw new ResourceNotFoundException("Usuario", command.userId());
         if (userProfileRepository.existsById(command.userId()))
             throw new UserProfileAlreadyExistsException(command.userId());
+
+        // Kora es solo para mayores de edad: la fecha se comprueba aqui, en el backend, no solo en la app. La fecha
+        // de nacimiento no se puede cambiar despues (update no la toca), asi que basta con validarla al crear.
+        if (command.birthDate() != null && command.birthDate().isBefore(java.time.LocalDate.now())
+                && java.time.Period.between(command.birthDate(), java.time.LocalDate.now()).getYears() < edadMinima)
+            throw new main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException(
+                    "Debes tener al menos %d anos para usar la aplicacion.".formatted(edadMinima));
 
         var profile = new UserProfile(command.userId(), command);
         return Optional.of(userProfileRepository.save(profile));
