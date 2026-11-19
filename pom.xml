@@ -47,6 +47,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+		<dependency>
+			<!-- Solo /actuator/health (sin detalles) para el health check de Railway. El resto de
+			     endpoints de actuator no se exponen y la cadena de seguridad los deniega. -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 
 		<!-- ============ Persistencia ============ -->
 		<dependency>
