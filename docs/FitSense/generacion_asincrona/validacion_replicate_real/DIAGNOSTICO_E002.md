@@ -199,3 +199,7 @@ forma parte del protocolo de FitSense y no cambia el modelo de producción.
 
 **Ya se puede pedir a soporte con evidencia completa.** El fallo se reproduce en su propio Playground.
 
+## 12. Sonda del 19/11/2026 a las 03:28 UTC
+
+`11y682362nrmw0d1y7csf1q86w`: `failed`, `E002 (1cah9wlWR9)`, `No sid`, 0,23 s, 0 tokens. Sigue igual unas 35 h después
+del primer fallo.
