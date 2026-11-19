@@ -203,3 +203,9 @@ forma parte del protocolo de FitSense y no cambia el modelo de producción.
 
 `11y682362nrmw0d1y7csf1q86w`: `failed`, `E002 (1cah9wlWR9)`, `No sid`, 0,23 s, 0 tokens. Sigue igual unas 35 h después
 del primer fallo.
+
+## 13. Intentos programados del 19/11/2026 (cada 3 h hasta las 9:00 hora Perú)
+
+| Intento | Hora Perú | Id | Resultado |
+|---|---|---|---|
+| 1/3 | 01:32 | `afrn5j7ab9rmy0d1ya0rperk4g` | `failed`, E002 `1cah9wlWR9`, `No sid`, 0,15 s, 0 tokens |

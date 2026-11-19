@@ -43,10 +43,11 @@ Replicate abierta desde el 17/11) o ambas cosas. La entrada de FitSense está de
 | Sonda a petición del usuario (18/11 14:40) | **FAIL** | 1 | estimado USD 0,00 (0 tokens) | E002. |
 | **Total del 18/11** | | **4** | **estimado USD 0,00** | Cargo real pendiente de confirmar en el panel |
 | Sonda a petición del usuario (19/11 03:28) | **FAIL** | 1 | estimado USD 0,00 (0 tokens) | E002. |
-| *Acumulado de la campaña (17–19/11)* | | *9 (2 del backend + 7 sondas)* | *estimado USD 0,00; real pendiente* | *Las 9 `failed`, 0 tokens* |
+| Intento programado 1/3 (19/11 01:30 Perú) | **FAIL** | 1 | estimado USD 0,00 (0 tokens) | E002. |
+| *Acumulado de la campaña (17–19/11)* | | *10 (2 del backend + 8 sondas)* | *estimado USD 0,00; real pendiente* | *Las 10 `failed`, 0 tokens* |
 
 **Presupuesto:**
-- tope operativo de la reanudación: USD 1,50 o 12 predicciones. Usado: 5 predicciones (sondas), sin coste estimado;
+- tope operativo de la reanudación: USD 1,50 o 12 predicciones. Usado: 6 predicciones (sondas), sin coste estimado;
 - techo absoluto: USD 10. Disponible: prácticamente todo, pendiente del cargo real.
 
 ## 3. Para continuar
