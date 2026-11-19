@@ -81,6 +81,17 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), List.of("ELIMINACION_NO_REGISTRADA"));
     }
 
+    /** Endpoints publicos: limite por IP superado (no depende de si el correo existe). */
+    @ExceptionHandler(main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp.DemasiadasSolicitudesException.class)
+    public ResponseEntity<ApiErrorResource> handleDemasiadasSolicitudes(
+            main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp.DemasiadasSolicitudesException ex) {
+        var status = HttpStatus.TOO_MANY_REQUESTS;
+        return ResponseEntity.status(status)
+                .header(org.springframework.http.HttpHeaders.RETRY_AFTER, String.valueOf(ex.reintentarEnSegundos()))
+                .body(ApiErrorResource.of(status.value(), status.getReasonPhrase(), ex.getMessage(),
+                        List.of("DEMASIADAS_SOLICITUDES")));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());

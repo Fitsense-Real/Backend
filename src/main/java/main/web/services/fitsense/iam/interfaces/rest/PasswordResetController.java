@@ -28,21 +28,28 @@ public class PasswordResetController {
             + " tu contrasena.";
 
     private final PasswordResetService servicio;
+    private final main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp limite;
 
-    public PasswordResetController(PasswordResetService servicio) {
+    public PasswordResetController(PasswordResetService servicio,
+                                   main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp limite) {
         this.servicio = servicio;
+        this.limite = limite;
     }
 
     @PostMapping("/request")
     @Operation(summary = "Solicita un codigo de recuperacion (misma respuesta exista o no el correo)")
-    public ResponseEntity<Map<String, String>> solicitar(@Valid @RequestBody PasswordResetRequestResource r) {
+    public ResponseEntity<Map<String, String>> solicitar(@Valid @RequestBody PasswordResetRequestResource r,
+                                                         jakarta.servlet.http.HttpServletRequest peticion) {
+        limite.comprobar("password-reset-request", peticion);
         servicio.solicitar(r.email());
         return ResponseEntity.accepted().body(Map.of("message", RESPUESTA));
     }
 
     @PostMapping("/confirm")
     @Operation(summary = "Cambia la contrasena con el codigo recibido (un solo uso)")
-    public ResponseEntity<Void> confirmar(@Valid @RequestBody PasswordResetConfirmResource r) {
+    public ResponseEntity<Void> confirmar(@Valid @RequestBody PasswordResetConfirmResource r,
+                                          jakarta.servlet.http.HttpServletRequest peticion) {
+        limite.comprobar("password-reset-confirm", peticion);
         servicio.confirmar(r.token(), r.newPassword());
         return ResponseEntity.noContent().build();
     }
