@@ -15,6 +15,9 @@ Ninguna toca Neon, Replicate ni un proveedor de correo real.
 | Eliminación con un token robado | Sin la contraseña actual: 403. Al quinto fallo: 429, aunque la contraseña sea correcta | `EliminacionDeCuentaIT.confirmacionYReautenticacion` | PASA |
 | Eliminación accidental | Sin `confirm=true`: 400. En la web, un GET del enlace no borra | `confirmacionYReautenticacion`, `EliminacionWebIT.flujoCompleto` | PASA |
 | Doble eliminación o eliminaciones concurrentes | 4 solicitudes a la vez: una sola eliminación | `EliminacionDeCuentaIT.concurrentes` | PASA |
+| Fuerza bruta en paralelo contra la reautenticación | 50 intentos simultáneos: solo 5 llegan a comprobar la contraseña | `LimiteDeReautenticacionTest` | PASA |
+| Escritura concurrente que deshace un cambio | `@DynamicUpdate` en `User`: un inicio de sesión no reescribe `status`, el hash ni `token_version` | Regresión completa | PASA |
+| Reintento tras 503 en la eliminación web | El enlace vuelve a servir | `EliminacionWebIT.registroFallidoDevuelveElEnlace` | PASA |
 | Acceso tras la eliminación | El JWT y el login dan 401, también la sesión de la app tras una eliminación web | `eliminacionCompleta`, `EliminacionWebIT.flujoCompleto` | PASA |
 | Datos residuales | 0 filas en todas las tablas con `user_id` (leídas del esquema) y en sus dependientes. Hay una guarda contra tablas nuevas | `eliminacionCompleta`, `ningunaTablaSinCubrir` | PASA |
 | Publicación después de eliminar | La generación en curso queda en FAILED/`CUENTA_ELIMINADA` y `execute` no publica nada | `interrumpidaYReanudada` | PASA |
