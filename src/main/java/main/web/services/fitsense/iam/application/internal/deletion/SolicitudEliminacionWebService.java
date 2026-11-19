@@ -120,8 +120,8 @@ public class SolicitudEliminacionWebService {
      */
     public EliminacionDeCuentaService.Eliminacion confirmar(String token) {
         if (token == null || token.isBlank() || token.length() > 200) throw new IllegalArgumentException(TOKEN_NO_VALIDO);
+        var ahora = Timestamp.from(clock.instant());
         Long userId = tx.execute(s -> {
-            var ahora = Timestamp.from(clock.instant());
             var filas = jdbc.queryForList("SELECT t.user_id, t.expires_at, t.used_at, u.status FROM"
                     + " account_deletion_tokens t JOIN users u ON u.user_id = t.user_id WHERE t.token_hash = ?"
                     + " FOR UPDATE OF t", sha256(token.trim()));
@@ -136,7 +136,15 @@ public class SolicitudEliminacionWebService {
             return id;
         });
         if (userId == null) throw new IllegalArgumentException(TOKEN_NO_VALIDO);
-        return eliminacion.eliminar(userId, EliminacionDeCuentaService.Origen.WEB);
+        try {
+            return eliminacion.eliminar(userId, EliminacionDeCuentaService.Origen.WEB);
+        } catch (EliminacionDeCuentaService.EliminacionNoRegistradaException e) {
+            // La eliminacion no llego a registrarse (nada cambio): se devuelven los tokens gastados en este intento
+            // para que el mismo enlace sirva al reintentar, como promete la respuesta 503.
+            jdbc.update("UPDATE account_deletion_tokens SET used_at = NULL WHERE user_id = ? AND used_at = ?"
+                    + " AND expires_at > ?", userId, ahora, ahora);
+            throw e;
+        }
     }
 
     private CorreoSaliente.Mensaje mensaje(String para, String token, Instant caduca) {

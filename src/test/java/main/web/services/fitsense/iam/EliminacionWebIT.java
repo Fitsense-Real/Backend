@@ -263,4 +263,27 @@ class EliminacionWebIT {
         for (int i = 0; i < 6; i++) assertEquals(400, confirmar("B".repeat(43), true).getResponse().getStatus());
         assertEquals(429, confirmar("B".repeat(43), true).getResponse().getStatus(), "frena la fuerza bruta");
     }
+
+    @Test
+    @DisplayName("si el registro de la eliminacion falla (503), el enlace sigue sirviendo para reintentar")
+    void registroFallidoDevuelveElEnlace() throws Exception {
+        String email = cuenta();
+        solicitar(email);
+        String token = token(correos(1)[0]);
+        jdbc.execute("""
+                CREATE OR REPLACE FUNCTION pruebas_impide_registro() RETURNS trigger AS $$
+                BEGIN RAISE EXCEPTION 'registro interrumpido (prueba)'; END $$ LANGUAGE plpgsql""");
+        jdbc.execute("CREATE TRIGGER pruebas_impide_registro BEFORE INSERT ON account_deletions"
+                + " FOR EACH ROW EXECUTE FUNCTION pruebas_impide_registro()");
+        try {
+            var r = confirmar(token, true);
+            assertEquals(503, r.getResponse().getStatus(), r.getResponse().getContentAsString());
+            assertTrue(r.getResponse().getContentAsString().contains("ELIMINACION_NO_REGISTRADA"));
+            assertEquals(1, existe(email), "nada cambio");
+        } finally {
+            jdbc.execute("DROP TRIGGER IF EXISTS pruebas_impide_registro ON account_deletions");
+        }
+        assertEquals(200, confirmar(token, true).getResponse().getStatus(), "el mismo enlace sirve al reintentar");
+        assertEquals(0, existe(email));
+    }
 }
