@@ -10,5 +10,9 @@ public record SignUpResource(
         @NotBlank @Size(max = 100) String firstName,
         @Size(max = 150) String lastName,
         @Size(max = 64) String timezone,
-        boolean acceptsStudyParticipation
+        boolean acceptsStudyParticipation,
+        /** V63: version de las condiciones de uso aceptadas (opcional hasta encender la exigencia). */
+        @Size(max = 40) String acceptedTermsVersion,
+        /** V63: version de la politica de privacidad aceptada (opcional hasta encender la exigencia). */
+        @Size(max = 40) String acceptedPrivacyVersion
 ) {}

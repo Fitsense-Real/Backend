@@ -3,13 +3,17 @@ package main.web.services.fitsense.planning.application.internal.outboundservice
 import main.web.services.fitsense.catalog.interfaces.acl.CatalogContextFacade;
 import main.web.services.fitsense.catalog.interfaces.acl.EligibleExerciseView;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
+import main.web.services.fitsense.planning.domain.model.valueobjects.ExerciseSafetyFacts;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanningProfile;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PrescriptionType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
+import main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy;
+import main.web.services.fitsense.planning.domain.services.ContencionTextoBandera;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,17 +21,96 @@ import java.util.Set;
 @Service
 public class ExternalCatalogService {
 
+    private static final Logger log = LoggerFactory.getLogger(ExternalCatalogService.class);
+
     /**
-     * Grupos que ningun enfoque admite (WorkoutFocus). Solo entraban por la
-     * exencion de FULL_BODY y engordaban el prompt: 26 ejercicios de cuello,
-     * antebrazo y cardio que la IA no podia usar con sentido.
+     * RETENIDOS POR INC-4C-03. Fuera de la seleccion automatica hasta revisar
+     * su dificultad, sus requisitos de equipamiento y su unidad.
+     * <p>
+     * TRES, de la auditoria del bloque 7 del 15/10. Elegibles para una
+     * principiante de 72 anos, los tres con {@code difficulty_level = 1},
+     * declarados peso corporal y con unidad SETS_REPS pese a describir
+     * posiciones sostenidas:
+     * <ul>
+     *   <li>813 Bandera: sujetarse a un poste vertical y sostener el cuerpo.</li>
+     *   <li>1192 Skin the cat: colgarse de una barra y pasar las piernas por
+     *       encima de la cabeza.</li>
+     *   <li>1298 Maltes en apertura: sostenerse sobre un par de anillas.</li>
+     * </ul>
+     * CUATRO MAS, que 4D v2 §4 ya daba por fuera del primer perfil «hasta
+     * revisar su ejecucion» y que seguian entrando porque nada implementaba esa
+     * decision: 858 front lever, 861 full planche, 873 front lever reps y
+     * 885 handstand. Con 813 son los cinco casos de instruccion contradictoria
+     * de esa seccion.
+     * <p>
+     * NO LLEVA INTERRUPTOR, y es deliberado. Un filtro de seguridad con
+     * propiedad para apagarlo se queda apagado; los modos configurables de este
+     * proyecto (4C, aprobaciones) son para MEDIR, no para retener. Quitar un id
+     * de aqui es una decision revisada, no un cambio de configuracion.
+     * <p>
+     * TEMPORAL. Sale cuando la revision controlada devuelva nivel, requisitos y
+     * unidad verificados para cada uno. No sustituye a corregir el dato.
+     * <p>
+     * UNO MAS (cierre de pendientes, 14/11/2026): 1294 «Balanceo 360». Su texto
+     * describe circulos de brazos de pie y el GIF un balanceo acrobatico de 360
+     * grados colgado de una barra (f1 colgado, f7 piernas recogidas, f13 cuerpo
+     * horizontal, f19 tronco sobre la barra). Instruccion contradictoria e
+     * identidad no confirmable: se retiene para todos hasta que una revision
+     * profesional fije texto e identidad. Hoy no era elegible en ninguno de los
+     * 168 perfiles de la rejilla; la retencion lo garantiza tambien en planes
+     * publicados y en la IA.
      */
-    private static final Set<String> BODY_PARTS_OUTSIDE_FOCUS = Set.of("neck", "lower arms", "cardio");
+    private static final Set<Long> RETENIDOS_INC_4C_03 =
+            Set.of(813L, 858L, 861L, 873L, 885L, 1192L, 1294L, 1298L);
+
+    /**
+     * CONTENCION INC-CAT-1374 (23/10/2026). El 1374 «wind sprints» es, segun su
+     * GIF, una elevacion alterna de rodillas COLGADO de una barra, pero su
+     * registro dice que no exige colgarse, ni brazos arriba, ni barra
+     * (docs/FitSense/REVISION_CATALOGO_CARDIO.md). Con ese dato los filtros de
+     * seguridad no lo ven y llega a quien declaro no poder colgarse o no tiene
+     * barra.
+     * <p>
+     * Mientras el dato no se corrija con su migracion, solo llega a quien cumple
+     * los requisitos REALES del ejercicio: barra de dominadas declarada y ni
+     * colgarse ni brazos arriba restringidos. La exclusion por alto impacto del
+     * dato actual se mantiene: es mas conservadora que la corregida.
+     * <p>
+     * Igual que INC-4C-03, SIN INTERRUPTOR: es seguridad, no medicion. Sale
+     * cuando la migracion correctiva este aplicada.
+     */
+    static final long CONTENIDO_INC_CAT_1374 = 1374L;
+    static final String BARRA_DE_DOMINADAS = "pull-up bar";
+
+    /** Si el perfil cumple los requisitos reales del 1374. */
+    static boolean admite1374(PlanningProfile profile, SafetyProfile safety) {
+        boolean barra = profile.equipmentCodes() != null && profile.equipmentCodes().stream()
+                .anyMatch(code -> code != null && BARRA_DE_DOMINADAS.equals(code.trim().toLowerCase(java.util.Locale.ROOT)));
+        return barra && !safety.excludeHanging() && !safety.excludeOverhead();
+    }
 
     private final CatalogContextFacade catalogContextFacade;
 
     public ExternalCatalogService(CatalogContextFacade catalogContextFacade) {
         this.catalogContextFacade = catalogContextFacade;
+    }
+
+    /**
+     * INC-CAT-CONS-v1 ({@link main.web.services.fitsense.planning.domain.services.ContencionConservadora}): encendida en
+     * la version tecnica conservadora; {@code false} devuelve el conjunto elegible anterior. Solo afecta a las
+     * planificaciones nuevas.
+     */
+    private boolean contencionConservadora = true;
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.catalogo.contencion-conservadora:true}")
+    void setContencionConservadora(boolean activa) {
+        this.contencionConservadora = activa;
+    }
+
+    /** La causa INC-CAT-CONS-v1 de este ejercicio para este perfil, si la contencion esta encendida. */
+    public java.util.Optional<String> contencionConservadora(Long exerciseId, PlanningProfile profile) {
+        if (!contencionConservadora) return java.util.Optional.empty();
+        return main.web.services.fitsense.planning.domain.services.ContencionConservadora.causa(exerciseId, profile);
     }
 
     /**
@@ -38,21 +121,94 @@ public class ExternalCatalogService {
     public List<CandidateExercise> fetchEligibleFor(PlanningProfile profile,
                                                     int maxDifficultyLevel,
                                                     SafetyProfile safety) {
-        return catalogContextFacade.fetchEligibleExercises(
-                        profile.equipmentCodes(),
-                        profile.excludesGymOnlyEquipment(),
-                        maxDifficultyLevel,
-                        profile.blockedExerciseIds(),
-                        safety.excludeHighImpact(),
-                        safety.excludeFloorWork(),
-                        safety.excludeAxialLoad())
-                .stream()
-                .filter(view -> !BODY_PARTS_OUTSIDE_FOCUS.contains(view.bodyPartCode()))
-                // Estiramientos fuera del trabajo principal (hallazgo M): son
-                // movilidad, no entrenamiento de fuerza. Quedan en el catalogo
-                // para cuando exista calentamiento y vuelta a la calma.
-                .filter(view -> view.nameEs() == null
-                        || !view.nameEs().toLowerCase(Locale.ROOT).contains("estiramiento"))
+        return elegibles(profile, maxDifficultyLevel, safety, true);
+    }
+
+    /**
+     * Paso 3 · el mismo conjunto, SIN escribir en el log. Solo para recuentos
+     * contrafactuales que explican una escasez («con esta restriccion levantada
+     * habria N»): su resultado nunca llega a un generador ni a un plan.
+     */
+    public List<CandidateExercise> fetchEligibleForExplanation(PlanningProfile profile,
+                                                               int maxDifficultyLevel,
+                                                               SafetyProfile safety) {
+        return elegibles(profile, maxDifficultyLevel, safety, false);
+    }
+
+    /** Los ejercicios que retiene INC-4C-03. */
+    public static boolean retenidoInc4C03(Long exerciseId) {
+        return exerciseId != null && RETENIDOS_INC_4C_03.contains(exerciseId);
+    }
+
+    /** Si INC-CAT-1374 contiene este ejercicio para este perfil. */
+    public static boolean contenidoIncCat1374(Long exerciseId, PlanningProfile profile, SafetyProfile safety) {
+        return java.util.Objects.equals(exerciseId, CONTENIDO_INC_CAT_1374) && !admite1374(profile, safety);
+    }
+
+    /** Si INC-CAT-C39 contiene este ejercicio para esta seguridad ({@link ContencionTextoBandera}). */
+    public static boolean contenidoIncCatC39(Long exerciseId, SafetyProfile safety) {
+        return ContencionTextoBandera.contiene(exerciseId, safety);
+    }
+
+    private List<CandidateExercise> elegibles(PlanningProfile profile, int maxDifficultyLevel,
+                                              SafetyProfile safety, boolean registrar) {
+        // V53-B: con la opcion B encendida, la exclusion del apoyo suspendido va EXPLICITA (la resolvio
+        // SafetyProfile con el permiso propio). Apagada -por defecto- se llama exactamente como antes de V53-B.
+        var delCatalogo = catalogContextFacade.permisoApoyoSuspendidoActivo()
+                ? catalogContextFacade.fetchEligibleExercises(
+                profile.equipmentCodes(),
+                profile.excludesGymOnlyEquipment(),
+                maxDifficultyLevel,
+                profile.blockedExerciseIds(),
+                safety.excludeHighImpact(),
+                safety.excludeFloorWork(),
+                safety.excludeAxialLoad(),
+                safety.excludeKneeling(),
+                safety.excludeHanging(),
+                safety.excludeOverhead(),
+                safety.excludeInversion(),
+                safety.excludeSuspendedSupport())
+                : catalogContextFacade.fetchEligibleExercises(
+                profile.equipmentCodes(),
+                profile.excludesGymOnlyEquipment(),
+                maxDifficultyLevel,
+                profile.blockedExerciseIds(),
+                safety.excludeHighImpact(),
+                safety.excludeFloorWork(),
+                safety.excludeAxialLoad(),
+                safety.excludeKneeling(),
+                safety.excludeHanging(),
+                safety.excludeOverhead(),
+                safety.excludeInversion());
+
+        // INC-4C-03, antes de cualquier otra cosa: un ejercicio retenido no
+        // llega al generador ni al prompt, pase lo que pase aguas abajo.
+        // Se cuenta aparte en vez de dentro del filtro para que el flujo de
+        // abajo siga sin efectos colaterales.
+        var retenidos = delCatalogo.stream()
+                .map(EligibleExerciseView::exerciseId)
+                .filter(RETENIDOS_INC_4C_03::contains)
+                .sorted()
+                .toList();
+
+        // INC-CAT-1374: contencion de seguridad, tambien antes de todo lo demas.
+        boolean contener1374 = !admite1374(profile, safety);
+        boolean contenido = contener1374 && delCatalogo.stream()
+                .anyMatch(view -> java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374));
+
+        // INC-CAT-C39: texto del catalogo contra bandera (auditoria del caso 39). Solo para los perfiles que
+        // declaran la restriccion que ese texto pide incumplir; los demas lo siguen recibiendo igual.
+        var contenidosC39 = delCatalogo.stream()
+                .map(EligibleExerciseView::exerciseId)
+                .filter(id -> ContencionTextoBandera.contiene(id, safety))
+                .sorted()
+                .toList();
+
+        var seguros = delCatalogo.stream()
+                .filter(view -> !RETENIDOS_INC_4C_03.contains(view.exerciseId()))
+                .filter(view -> !(contener1374 && java.util.Objects.equals(view.exerciseId(), CONTENIDO_INC_CAT_1374)))
+                .filter(view -> !ContencionTextoBandera.contiene(view.exerciseId(), safety))
+                .filter(view -> contencionConservadora(view.exerciseId(), profile).isEmpty())
                 .map(view -> new CandidateExercise(
                         view.exerciseId(),
                         view.nameEs(),
@@ -60,12 +216,83 @@ public class ExternalCatalogService {
                         view.equipmentCode(),
                         view.difficultyLevel(),
                         view.isDurationBased() ? PrescriptionType.DURATION : PrescriptionType.SETS_REPS,
-                        view.targetMuscle()))
+                        view.targetMuscle(),
+                        // V26, para la cobertura de los cuatro slots de 4C. Se
+                        // pasa tal cual: la traduccion a slots es de planning.
+                        view.movementPattern(),
+                        view.highImpact(),
+                        view.isolation(),
+                        // V51: impacto y estiramiento explicitos del catalogo.
+                        view.impactLevel(),
+                        view.stretch()))
                 .toList();
+
+        // Paso 2: filtro FUNCIONAL, despues de seguridad, dificultad,
+        // equipamiento, bloqueos y retenidos. Zonas fuera de enfoque y
+        // estiramientos (hallazgo M) siguen fuera, salvo que su patron sea la
+        // ruta de una capacidad del objetivo (4A v6): cardio para LOSE_WEIGHT y
+        // GENERAL_FITNESS, movilidad para GENERAL_FITNESS. La decision es de
+        // CatalogEligibilityPolicy, la misma que leen el motor de reglas y V15.
+        var candidatos = seguros.stream()
+                .filter(c -> CatalogEligibilityPolicy.decidir(c, profile.goalType()).admite())
+                .toList();
+
+        if (!registrar) return candidatos;
+
+        if (contenido)
+            log.info("EJERCICIOS_CONTENIDOS user={} motivo=INC-CAT-1374 ids=[1374] (exige barra, colgarse y "
+                            + "brazos arriba; el dato del catalogo no lo dice)",
+                    profile.userId() == null ? "desconocido" : profile.userId());
+
+        if (!contenidosC39.isEmpty())
+            log.info("EJERCICIOS_CONTENIDOS user={} motivo={} ids={} (el nombre o las instrucciones piden una accion "
+                            + "que el perfil restringe; pendiente de revision profesional)",
+                    profile.userId() == null ? "desconocido" : profile.userId(), ContencionTextoBandera.CODIGO,
+                    contenidosC39);
+
+        // Visible siempre, como EJERCICIOS_RETENIDOS: un filtro que no se ve
+        // cuesta una medicion entera.
+        log.info("CATALOGO_FUNCIONAL user={} objetivo={} seguros={} elegibles={} {}",
+                profile.userId() == null ? "desconocido" : profile.userId(), profile.goalType(),
+                seguros.size(), candidatos.size(),
+                CatalogEligibilityPolicy.informe(seguros, profile.goalType()).describe());
+
+        // Visible a proposito. INC-4C-03 existe porque un filtro invisible
+        // -el del cortacircuitos- costo una medicion entera.
+        if (!retenidos.isEmpty())
+            log.info("EJERCICIOS_RETENIDOS user={} motivo=INC-4C-03 ids={} elegibles_restantes={}",
+                    profile.userId() == null ? "desconocido" : profile.userId(),
+                    retenidos, candidatos.size());
+
+        return candidatos;
     }
 
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return catalogContextFacade.fetchNames(exerciseIds);
+    }
+
+    /** Las banderas de seguridad de cada ejercicio pedido, activo o no. */
+    public Map<Long, ExerciseSafetyFacts> fetchSafetyFacts(Set<Long> exerciseIds) {
+        var facts = new java.util.HashMap<Long, ExerciseSafetyFacts>();
+        catalogContextFacade.fetchSafetyFlags(exerciseIds).forEach((id, f) -> facts.put(id, new ExerciseSafetyFacts(
+                f.exerciseId(), f.active(), f.highImpact(), f.requiresFloor(), f.axialLoad(), f.requiresKneeling(),
+                f.requiresHanging(), f.requiresOverhead(), f.requiresInversion(), f.requiresSuspendedSupport())));
+        return facts;
+    }
+
+    /**
+     * Los ejercicios pedidos como candidatos, esten o no en el conjunto
+     * elegible. Solo para describir un ejercicio YA PRESCRITO (su slot, zona y
+     * tipo) al buscarle sustituto; nunca para ofrecerlo.
+     */
+    public Map<Long, CandidateExercise> fetchAsCandidates(Set<Long> exerciseIds) {
+        var candidatos = new java.util.HashMap<Long, CandidateExercise>();
+        catalogContextFacade.fetchDetails(exerciseIds).forEach((id, view) -> candidatos.put(id, new CandidateExercise(
+                view.exerciseId(), view.nameEs(), view.bodyPartCode(), view.equipmentCode(), view.difficultyLevel(),
+                view.isDurationBased() ? PrescriptionType.DURATION : PrescriptionType.SETS_REPS,
+                view.targetMuscle(), view.movementPattern(), view.highImpact(), view.isolation(), view.impactLevel(),
+                view.stretch())));
+        return candidatos;
     }
 
     /** Detalle con media, para pintar el plan en la app. */

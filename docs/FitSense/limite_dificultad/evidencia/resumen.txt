@@ -1,0 +1,28 @@
+colocaciones 19562 perfiles 960
+
+== SUST-SEG-1 sin limite -> con limite (total)
+('IGUAL', 'IGUAL') 13438
+('MAYOR', 'IGUAL') 2443
+('MAYOR', 'MENOR') 2
+('MAYOR', 'SIN_SUSTITUTO') 24
+('MENOR', 'MENOR') 3264
+('SIN_SUSTITUTO', 'SIN_SUSTITUTO') 391
+
+== por nivel
+ADVANCED colocaciones 6600 | sin limite elige MAYOR 1167 (17.7 %) | con limite se queda SIN sustituto (antes lo tenia) 11 (0.2 %)
+BEGINNER colocaciones 6366 | sin limite elige MAYOR 0 (0.0 %) | con limite se queda SIN sustituto (antes lo tenia) 0 (0.0 %)
+INTERMEDIATE colocaciones 6596 | sin limite elige MAYOR 1302 (19.7 %) | con limite se queda SIN sustituto (antes lo tenia) 13 (0.2 %)
+
+== por objetivo (sin limite)
+GAIN_MUSCLE 4930 {'IGUAL': 3183, 'MAYOR': 763, 'MENOR': 936, 'SIN_SUSTITUTO': 48} MAYOR 15.5 %
+GENERAL_FITNESS 5509 {'IGUAL': 3945, 'MAYOR': 609, 'MENOR': 878, 'SIN_SUSTITUTO': 77} MAYOR 11.1 %
+INCREASE_STRENGTH 5080 {'IGUAL': 3440, 'MAYOR': 706, 'MENOR': 886, 'SIN_SUSTITUTO': 48} MAYOR 13.9 %
+LOSE_WEIGHT 4043 {'IGUAL': 2870, 'MENOR': 564, 'MAYOR': 391, 'SIN_SUSTITUTO': 218} MAYOR 9.7 %
+
+== exposicion VARIANTE: colocaciones con al menos una alternativa del mismo patron MAYOR / con alguna MENOR / solo MAYOR (ninguna menor ni igual)
+ADVANCED 6600 con_mayor 4735 con_menor 2599 solo_mayor 7
+BEGINNER 6366 con_mayor 0 con_menor 0 solo_mayor 0
+INTERMEDIATE 6596 con_mayor 3703 con_menor 2124 solo_mayor 9
+
+== perfiles afectados (al menos una colocacion que sin limite sube / que con limite pierde sustituto)
+sube 573 pierde 22

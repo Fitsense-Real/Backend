@@ -1,0 +1,792 @@
+[
+ {
+  "id": "K01",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    4
+   ],
+   "conserved": [
+    1,
+    2,
+    3
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K02",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    15
+   ],
+   "conserved": [
+    13,
+    14
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K03",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    25
+   ],
+   "conserved": [
+    22,
+    23,
+    24
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K04",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    36
+   ],
+   "conserved": [
+    34,
+    35
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K05",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    46
+   ],
+   "conserved": [
+    43,
+    44,
+    45
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K06",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    57
+   ],
+   "conserved": [
+    55,
+    56
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K07",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    67
+   ],
+   "conserved": [
+    64,
+    65,
+    66
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K08",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    78
+   ],
+   "conserved": [
+    76,
+    77
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K09",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    88
+   ],
+   "conserved": [
+    85,
+    86,
+    87
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K10",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    99
+   ],
+   "conserved": [
+    97,
+    98
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K11",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    109
+   ],
+   "conserved": [
+    106,
+    107,
+    108
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K12",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    120
+   ],
+   "conserved": [
+    118,
+    119
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K13",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "25.00",
+   "Aobs": "25.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO",
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    128,
+    129,
+    130
+   ],
+   "conserved": [
+    127
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 3 sesiones no aplicamos cambios esta semana: se mantienen como estaban. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K14",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    140,
+    141
+   ],
+   "conserved": [
+    139
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 2 sesiones no aplicamos cambios esta semana: se mantienen como estaban. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K15",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "25.00",
+   "Aobs": "25.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO",
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    149,
+    150,
+    151
+   ],
+   "conserved": [
+    148
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 3 sesiones no aplicamos cambios esta semana: se mantienen como estaban. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "K16",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "RESPALDO",
+   "source": "CONSERVED",
+   "ai_calls": "0",
+   "applied": [],
+   "no_effect": [
+    161,
+    162
+   ],
+   "conserved": [
+    160
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 2 sesiones no aplicamos cambios esta semana: se mantienen como estaban. Si te sigue resultando difícil, indícalo de nuevo al registrar la sesión.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ }
+]

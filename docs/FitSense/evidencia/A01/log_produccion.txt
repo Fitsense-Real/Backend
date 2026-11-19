@@ -1,0 +1,27 @@
+m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=1 objetivo=GAIN_MUSCLE seguros=745 elegibles=674 decisiones={ADMITIDO=674, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=44, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 1: LOWER_KNEE=57 LOWER_HIP=30 UPPER_PUSH=122 UPPER_PULL=92 fuera_de_slot=373 veredicto=ROBUSTO (674 elegibles, modo OBSERVE)
+? posiciones 17 ? modo ENFORCE_AI_ONLY
+m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 1 (3 dias: [2026-11-02, 2026-11-04, 2026-11-06])
++3 reps ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+colocaciones={HYPERTROPHY=17} slots_sin_cubrir=[]
+m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=1 objetivo=GAIN_MUSCLE seguros=745 elegibles=674 decisiones={ADMITIDO=674, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=44, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 1: LOWER_KNEE=57 LOWER_HIP=30 UPPER_PUSH=122 UPPER_PULL=92 fuera_de_slot=373 veredicto=ROBUSTO (674 elegibles, modo OBSERVE)
+? posiciones 16 ? modo ENFORCE_AI_ONLY
+m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
++3 reps ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+colocaciones={HYPERTROPHY=16} slots_sin_cubrir=[]
+m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=1 objetivo=GAIN_MUSCLE seguros=745 elegibles=674 decisiones={ADMITIDO=674, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=44, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 1: LOWER_KNEE=57 LOWER_HIP=30 UPPER_PUSH=122 UPPER_PULL=92 fuera_de_slot=373 veredicto=ROBUSTO (674 elegibles, modo OBSERVE)
+f.p.i.g.a.ReplicateTrainingPlanGenerator : Salida de la IA (prediccion 3nqnh6tffdrmy0d1fb7tqhh294, prompt FIX-PR-1.3 FIX-1.0, 197859 caracteres de prompt): {"rationale":"Recort? una colocaci?n de relleno para ajustar la sesi?n por falta de tiempo y mantuve las dosis de los ejercicios que se quedan.","schema_version":"FIX-1.0","sessions":[{"change_reason":"Quit? una colocaci?n de relleno (Giro de columna) para acortar la sesi?n manteniendo el resto igual.","exercises":[{"exercise_id":1026,"notes":null,"planned_duration_seconds":null,"planned_reps":10,"planned_sets":3,"prescription_type":"SETS_REPS","rest_seconds":90,"target_load_kg":null},{"exercise_id":394,"notes":null,"planned_duration_seconds":null,"planned_reps":10,"planned_sets":3,"prescription_type":"SETS_REPS","rest_seconds":90,"target_load_kg":null},{"exercise_id":1148,"notes":null,"planned_duration_seconds":null,"planned_reps":10,"planned_sets":3,"prescription_type":"SETS_REPS","rest_seconds":90,"target_load_kg":null},{"exercise_id":986,"notes":null,"planned_duration_seconds":null,"planned_reps":10,"planned_sets":2,"prescription_type":"SETS_REPS","rest_seconds":90,"target_load_kg":null},{"exercise_id":1097,"notes":null,"planned_duration_seconds":null,"planned_reps":10,"planned_sets":3,"prescription_type":"SETS_REPS","rest_seconds":90,"target_load_kg":null}],"expected_duration_minutes":28,"scheduled_date":"2026-11-13","source_planned_workout_id":3}]}
+f.p.i.g.a.ReplicateTrainingPlanGenerator : REPLICATE_TIMING user=1 week=2 attempt=1 prediction_id=3nqnh6tffdrmy0d1fb7tqhh294 post_ms=23248 polling_ms=0 polling_requests=0 total_ms=23248 resultado=SUCCEEDED
+? posiciones 16 ? modo ENFORCE_AI_ONLY
+m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
++3 reps ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+i.c.WeeklyTrainingPlanCommandServiceImpl : Semana adaptada 2 publicada para el usuario 1 ? origen AI ? motivo CORRECCION_IA ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas
+.w.s.f.p.a.i.c.AdaptedWeekCommandService : Adaptacion del usuario 1 ? decision ADAPT_LOCALIZED ? resultado CORRECCION_IA ? la IA propuso cambios ? V8C: 1 aplicadas, 0 sin efecto, 2 conservadas, 0 problemas
+m.w.s.f.p.a.i.o.a.ExternalCatalogService : CATALOGO_FUNCIONAL user=1 objetivo=GAIN_MUSCLE seguros=745 elegibles=674 decisiones={ADMITIDO=674, ADMITIDO_POR_CAPACIDAD=0, EXCLUIDO_FUERA_DE_ENFOQUE=44, EXCLUIDO_ESTIRAMIENTO=27} complementos_por_capacidad={}
+m.w.s.f.p.d.services.SlotCoverageGate    : Cobertura 4C previa del usuario 1: LOWER_KNEE=57 LOWER_HIP=30 UPPER_PUSH=122 UPPER_PULL=92 fuera_de_slot=373 veredicto=ROBUSTO (674 elegibles, modo OBSERVE)
+? posiciones 16 ? modo ENFORCE_AI_ONLY
+m.w.s.f.p.d.services.PlanDraftValidator  : Usuario 1 ? Cobertura 4C posterior - semana 2 (3 dias: [2026-11-09, 2026-11-11, 2026-11-13])
++3 reps ? maximo 6 colocaciones/dia ? util 85 % del tiempo de sesion
+colocaciones={HYPERTROPHY=16} slots_sin_cubrir=[]

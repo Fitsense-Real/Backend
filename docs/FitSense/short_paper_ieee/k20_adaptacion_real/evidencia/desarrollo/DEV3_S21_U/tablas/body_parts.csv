@@ -1,0 +1,11 @@
+body_part_id,code,name_es,display_order
+1,upper arms,Brazos,1
+10,neck,Cuello,10
+2,upper legs,Piernas,2
+3,back,Espalda,3
+4,waist,Core,4
+5,chest,Pecho,5
+6,shoulders,Hombros,6
+7,lower legs,Pantorrillas,7
+8,lower arms,Antebrazos,8
+9,cardio,Cardio,9

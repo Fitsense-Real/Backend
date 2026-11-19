@@ -1,0 +1,99 @@
+package main.web.services.fitsense.orchestation;
+
+import org.junit.jupiter.api.*;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+
+import static main.web.services.fitsense.profiling.domain.model.valueobjects.FitnessLevel.*;
+import static main.web.services.fitsense.profiling.domain.model.valueobjects.GoalType.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * RETIRADA LOCALIZADA ANTE DOLOR con el limite B ({@code on}) y la retirada encendida (configuracion D sobre B), solo
+ * en esta prueba. Cuatro perfiles congelados, en orden de id: la retirada valida (R0521), la que V20 rechaza y P-03
+ * resuelve (R0487), la que V20 rechaza y P-03 tampoco (R0524) y la del 135 tambien en una sesion no senalada (R0545).
+ */
+@Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+// ESCENARIO CONGELADO sobre el catalogo V50: los perfiles y planes de esta prueba se eligieron con ese catalogo (el
+// plan lleva el 135, el viernes acortado...). Lo que se prueba es el mecanismo de orquestacion, no el catalogo; con
+// V52 el motor elige otros ejercicios y la premisa del escenario deja de darse. El esquema es el vigente (columnas de
+// V51-V53 sin datos: regla por nombre del catalogo fijado).
+@org.springframework.context.annotation.Import(main.web.services.fitsense.EsquemaVigenteSobreCatalogoAnterior.class)
+@SpringBootTest(properties = {
+        // La contencion INC-CAT-CONS-v1 (15/11/2026) se definio sobre el catalogo vigente; esta prueba reproduce un
+        // catalogo anterior (Flyway hasta la 50), que no la tenia.
+        "fitsense.catalogo.contencion-conservadora=false",
+        "spring.flyway.target=50",
+        "authorization.jwt.secret=clave-solo-para-pruebas-de-integracion-0123456789abcdef",
+        // Valores historicos fijados explicitamente al activar la configuracion evaluada (11/11/2026): esta
+        // prueba se escribio sobre los valores por defecto anteriores y comprueba ese comportamiento.
+        "fitsense.planning.policy=PLAN-HIST-1",
+        "fitsense.ai.adaptation.prompt-version=v1",
+        "fitsense.adaptation.progression.enabled=false",
+        "fitsense.ai.enabled=false",
+        "fitsense.ai.api-token=",
+        "fitsense.adaptation.difficulty-guard=on",
+        "fitsense.adaptation.pain-localized-removal=on"
+})
+@DisplayName("Retirada localizada ante dolor (limite on + retirada on): valida, rechazada por V20, por P-03 y por sesion no senalada")
+class RetiradaLocalizadaLimiteIT extends RetiradaLocalizadaBase {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
+
+    @Test
+    @Order(1)
+    @DisplayName("R0487: retirar el 135 deja la sesion por debajo de V20 -> se rechaza y P-03 publica la regeneracion")
+    void v20RechazaYP03Publica() {
+        assertTrue(producer.retiradaLocalizada());
+        var e = escenario("R0487", LOSE_WEIGHT, INTERMEDIATE, 6, 60);
+        assertRetiradaRechazada(e, "V20");
+        assertEquals("PUBLICADO", e.p03().get(0).get("outcome"));
+        assertTrue(e.plan().isPresent());
+        assertEquals("REGENERACION_SEGURA_REGLAS", resultadoApi(e.usuario()));
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("R0521: la retirada pasa V8C y la validacion estricta -> se publica, solo sin el 135; idempotente; semana siguiente")
+    void retiradaValida() {
+        var e = escenario("R0521", GENERAL_FITNESS, INTERMEDIATE, 6, 30);
+        assertRetiradaPublicada(e);
+        long plan = e.plan().get();
+        // Idempotencia: volver a correr el ciclo de esa semana no publica otro plan.
+        ciclo.runFor(e.usuario(), MED, NUE);
+        assertEquals(1, activos(e.usuario(), NUE));
+        assertEquals(plan, planActivo(e.usuario(), NUE).orElseThrow());
+        assertSemanaSiguiente(e);
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("R0524: la retirada no pasa V20; con el catalogo corregido (V50) P-03 publica una semana segura sin el 135")
+    void v20RechazaYP03NoFactible() {
+        var e = escenario("R0524", GENERAL_FITNESS, INTERMEDIATE, 6, 75);
+        assertRetiradaRechazada(e, "V20");
+        // Antes de V50 P-03 tampoco podia publicar (NO_FACTIBLE). La auditoria integral del catalogo corrige
+        // clasificacion y equipamiento (V50) y la regeneracion segura recupera la factibilidad: publica una semana valida
+        // que no contiene el 135, con un solo plan activo. El camino NO_FACTIBLE sigue cubierto por RespaldoConDolorIT y
+        // PoliticasP123IT. Ver docs/FitSense/catalogo_integral/IMPACTO_ELEGIBILIDAD.md.
+        assertEquals("PUBLICADO", e.p03().get(0).get("outcome"), e.p03()::toString);
+        assertTrue(e.plan().isPresent(), "P-03 publica");
+        assertFalse(ejerciciosDe(e.plan().get()).contains(EJ), "el 135 no vuelve");
+        assertEquals(1, activos(e.usuario(), NUE));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("R0545: el 135 esta tambien en una sesion no senalada -> no se retira (no se toca lo no senalado)")
+    void tambienEnNoSenalada() {
+        var e = escenario("R0545", GAIN_MUSCLE, INTERMEDIATE, 7, 30);
+        assertEquals(2, e.sesiones135().size());
+        assertRetiradaRechazada(e, "no se senalo por dolor");
+    }
+}

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.analytics.AbandonoIT
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.974 s -- in main.web.services.fitsense.analytics.AbandonoIT

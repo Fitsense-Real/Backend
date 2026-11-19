@@ -1,0 +1,870 @@
+id,nombre,grupo,patron,clase,dificultad,tipo,capacidad,series,series_max,reps,segundos,descanso,coste_s
+78,Fondos de tríceps asistidos (de rodillas),upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+78,Fondos de tríceps asistidos (de rodillas),upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+78,Fondos de tríceps asistidos (de rodillas),upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+128,Curl de bíceps alterno con banda,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+128,Curl de bíceps alterno con banda,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+129,Flexión con agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+129,Flexión con agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+129,Flexión con agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+130,Curl de concentración con banda,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+130,Curl de concentración con banda,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+132,Extensión de tríceps lateral con banda,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+132,Extensión de tríceps lateral con banda,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+313,Fondos en banco con rodillas flexionadas,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+313,Fondos en banco con rodillas flexionadas,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+313,Fondos en banco con rodillas flexionadas,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+314,Fondos en banco en el piso,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+314,Fondos en banco en el piso,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+314,Fondos en banco en el piso,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+315,Curl de concentración de bíceps con pierna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+315,Curl de concentración de bíceps con pierna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+318,Levantamiento de cuerpo,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+318,Levantamiento de cuerpo,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+318,Levantamiento de cuerpo,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+319,Extensión de tríceps en rodillas con peso corporal,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+319,Extensión de tríceps en rodillas con peso corporal,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+320,Curl de bíceps acostado de lado con peso corporal,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+320,Curl de bíceps acostado de lado con peso corporal,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+366,Extensión de tríceps en banco inclinado,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+366,Extensión de tríceps en banco inclinado,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+368,Extensión de tríceps de rodillas con cable,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+368,Extensión de tríceps de rodillas con cable,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+443,Extensión de tríceps con cuerda en banco inclinado,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+443,Extensión de tríceps con cuerda en banco inclinado,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+446,Curl sentado en cable,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+446,Curl sentado en cable,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+448,Curl por encima de la cabeza sentado en cable,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+448,Curl por encima de la cabeza sentado en cable,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+491,Curl con cable de dos brazos en banco inclinado,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+491,Curl con cable de dos brazos en banco inclinado,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+508,Flexión de agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+508,Flexión de agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+508,Flexión de agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+509,Flexión cerrada con rodillas,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+509,Flexión cerrada con rodillas,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+509,Flexión cerrada con rodillas,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+510,Flexión diamante,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+510,Flexión diamante,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+510,Flexión diamante,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+524,Curl martillo sentado alterno con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+524,Curl martillo sentado alterno con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+596,Curl de bíceps en banco inclinado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+596,Curl de bíceps en banco inclinado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+597,Curl inclinado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+597,Curl inclinado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+598,Curl inclinado con mancuerna v. 2,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+598,Curl inclinado con mancuerna v. 2,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+599,Curl martillo inclinado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+599,Curl martillo inclinado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+601,Curl de bíceps interior inclinada con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+601,Curl de bíceps interior inclinada con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+604,Extensión de tríceps inclinada con mancuerna,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+604,Extensión de tríceps inclinada con mancuerna,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+605,"Extensión de tríceps con mancuerna en banco inclinado, dos brazos",upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+605,"Extensión de tríceps con mancuerna en banco inclinado, dos brazos",upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+686,Press inclinado con mancuerna palma hacia adentro,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+686,Press inclinado con mancuerna palma hacia adentro,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+686,Press inclinado con mancuerna palma hacia adentro,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+691,Curl inclinado prono con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+691,Curl inclinado prono con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+692,Curl martillo inclinado prono con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+692,Curl martillo inclinado prono con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+720,Extensión de tríceps sentado con mancuerna en banco,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+720,Extensión de tríceps sentado con mancuerna en banco,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+721,"Patada de tríceps alterna sentada con mancuerna, tronco inclinado",upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+721,"Patada de tríceps alterna sentada con mancuerna, tronco inclinado",upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+722,"Extensión de tríceps sentado con mancuerna, tronco inclinado",upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+722,"Extensión de tríceps sentado con mancuerna, tronco inclinado",upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+723,Curl de bíceps sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+723,Curl de bíceps sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+726,Curl sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+726,Curl sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+727,Curl martillo sentado,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+727,Curl martillo sentado,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+728,Curl de bíceps interior sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+728,Curl de bíceps interior sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+729,Extensión de tríceps sentado con mancuerna,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+729,Extensión de tríceps sentado con mancuerna,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+756,Curl predicador sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+756,Curl predicador sentado con mancuerna,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+757,Curl de concentración a una mano con agarre inverso sentado,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+757,Curl de concentración a una mano con agarre inverso sentado,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+759,Extensión de tríceps sentado con mancuerna,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+759,Extensión de tríceps sentado con mancuerna,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+803,Extensión de tríceps sentado con mancuerna (dúo),upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+803,Extensión de tríceps sentado con mancuerna (dúo),upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+921,Flexión en inclinada con agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+921,Flexión en inclinada con agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+921,Flexión en inclinada con agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1011,Curl de bíceps con palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1011,Curl de bíceps con palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1012,Curl predicador con agarre martillo en palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1012,Curl predicador con agarre martillo en palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1047,Dips de tríceps con palanca,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1047,Dips de tríceps con palanca,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1047,Dips de tríceps con palanca,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1048,Curl de predicador con palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1048,Curl de predicador con palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1049,Curl de bíceps predicador en palanca v.2,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1049,Curl de bíceps predicador en palanca v.2,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1050,Curl predicador con agarre invertido en palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1050,Curl predicador con agarre invertido en palanca,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1051,Dips sentado en palanca,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1051,Dips sentado en palanca,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1051,Dips sentado en palanca,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1052,Extensión de tríceps con palanca,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1052,Extensión de tríceps con palanca,upper arms,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1119,Estiramiento de tríceps por encima de la cabeza,upper arms,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1120,Flexión en antebrazos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1120,Flexión en antebrazos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1120,Flexión en antebrazos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1152,Fondos invertidos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1152,Fondos invertidos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1152,Fondos invertidos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1160,Curl de bíceps sentado con banda,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1160,Curl de bíceps sentado con banda,upper arms,ELBOW_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1206,Flexión lateral,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1206,Flexión lateral,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1206,Flexión lateral,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1318,Dip de tríceps (pierna banco),upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1318,Dip de tríceps (pierna banco),upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1318,Dip de tríceps (pierna banco),upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1320,Dip de tríceps en piso,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1320,Dip de tríceps en piso,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1320,Dip de tríceps en piso,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1321,Prensa de tríceps,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1321,Prensa de tríceps,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1321,Prensa de tríceps,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1322,Estiramiento de tríceps,upper arms,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+67,Estiramiento de cuadriceps en cuatro apoyos,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+68,Toque de dedos circular con brazos abiertos,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+68,Toque de dedos circular con brazos abiertos,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+121,Extensión de cadera inclinada con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+121,Extensión de cadera inclinada con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+121,Extensión de cadera inclinada con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+122,Elevacion de cadera con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+122,Elevacion de cadera con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+122,Elevacion de cadera con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+125,Pase de banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+125,Pase de banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+125,Pase de banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+142,Peso muerto con piernas rectas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+142,Peso muerto con piernas rectas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+142,Peso muerto con piernas rectas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+144,Sentadilla con banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+144,Sentadilla con banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+144,Sentadilla con banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+145,Sentadilla con remo en banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+145,Sentadilla con remo en banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+145,Sentadilla con remo en banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+147,Peso muerto con piernas rígidas y banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+147,Peso muerto con piernas rígidas y banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+147,Peso muerto con piernas rígidas y banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+148,Peso muerto de piernas rígidas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+148,Peso muerto de piernas rígidas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+148,Peso muerto de piernas rígidas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+254,Toque de dedos básico,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+254,Toque de dedos básico,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+309,Extensión de cadera en banco,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+309,Extensión de cadera en banco,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+309,Extensión de cadera en banco,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+310,Giro acostado con rodillas flexionadas,upper legs,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+310,Giro acostado con rodillas flexionadas,upper legs,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+327,Curl de piernas inverso asistido por cable,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+327,Curl de piernas inverso asistido por cable,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+327,Curl de piernas inverso asistido por cable,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+507,Sentadilla curtsy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+507,Sentadilla curtsy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+507,Sentadilla curtsy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+791,Sentadilla con apoyo de mancuerna,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+791,Sentadilla con apoyo de mancuerna,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+791,Sentadilla con apoyo de mancuerna,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+875,Patadas flutter,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+875,Patadas flutter,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+877,Zancada hacia adelante (hombre),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+877,Zancada hacia adelante (hombre),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+877,Zancada hacia adelante (hombre),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+878,Marcha en puente de glúteos,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+878,Marcha en puente de glúteos,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+878,Marcha en puente de glúteos,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+879,Puente de glúteos con dos piernas sobre banco (hombre),upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+879,Puente de glúteos con dos piernas sobre banco (hombre),upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+879,Puente de glúteos con dos piernas sobre banco (hombre),upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+881,Estiramiento de isquiotibiales,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+882,Toque de dedos circular con manos entrelazadas,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+882,Toque de dedos circular con manos entrelazadas,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+883,Toque circular con manos entrelazadas,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+883,Toque circular con manos entrelazadas,upper legs,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+884,Abrazar rodillas al pecho,upper legs,MOBILITY,MOVILIDAD,1,SETS_REPS,MOBILITY,2,2,10,null,30,90
+915,Curl femoral invertido con banco,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+915,Curl femoral invertido con banco,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+915,Curl femoral invertido con banco,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+916,Curl de piernas invertido en polea,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+916,Curl de piernas invertido en polea,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+916,Curl de piernas invertido en polea,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+917,Estiramiento en cruz,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+939,Abdominal patada,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+939,Abdominal patada,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+939,Abdominal patada,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+978,Estiramiento de isquiotibiales con pierna elevada,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1003,Prensa alterna de piernas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1003,Prensa alterna de piernas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1003,Prensa alterna de piernas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1004,Peso muerto con palanca,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1004,Peso muerto con palanca,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1004,Peso muerto con palanca,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1005,Extensión de cadera con palanca v. 2,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1005,Extensión de cadera con palanca v. 2,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1005,Extensión de cadera con palanca v. 2,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1007,Curl de piernas de rodillas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1007,Curl de piernas de rodillas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1007,Curl de piernas de rodillas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1008,Extensión de piernas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1008,Extensión de piernas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1008,Extensión de piernas con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1009,Curl de piernas acostado con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1009,Curl de piernas acostado con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1009,Curl de piernas acostado con palanca,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1042,Hiperextensión inversa con palanca,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1042,Hiperextensión inversa con palanca,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1042,Hiperextensión inversa con palanca,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1043,Buenos días sentado en palanca,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1043,Buenos días sentado en palanca,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1043,Buenos días sentado en palanca,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1044,Abducción de cadera sentado,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1044,Abducción de cadera sentado,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1045,Aducción de cadera sentado,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1045,Aducción de cadera sentado,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1046,Curl de piernas sentado,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1046,Curl de piernas sentado,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1046,Curl de piernas sentado,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1059,Zancada con giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1059,Zancada con giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1059,Zancada con giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1073,Puente de glúteos bajo en el suelo,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1073,Puente de glúteos bajo en el suelo,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1073,Puente de glúteos bajo en el suelo,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1075,Estiramiento de cuádriceps acostado de lado,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1076,Sentadilla marcha (contra la pared),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1076,Sentadilla marcha (contra la pared),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1076,Sentadilla marcha (contra la pared),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1077,Camino monstruo,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+1103,Sentadilla de baño,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1103,Sentadilla de baño,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1103,Sentadilla de baño,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1112,Inclinación pélvica hacia puente,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1112,Inclinación pélvica hacia puente,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1112,Inclinación pélvica hacia puente,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1114,Sentadilla de baño con apoyo,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1114,Sentadilla de baño con apoyo,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1114,Sentadilla de baño con apoyo,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1118,Puente trasero declinado,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1118,Puente trasero declinado,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1118,Puente trasero declinado,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1148,Hiperextensión invertida en banco plano,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1148,Hiperextensión invertida en banco plano,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1148,Hiperextensión invertida en banco plano,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1149,Estiramiento rana oscilante,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1150,Estiramiento para corredores,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1151,Estiramiento de glúteos sentado,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1157,Puente de cadera con banda en rodillas,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1157,Puente de cadera con banda en rodillas,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1157,Puente de cadera con banda en rodillas,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1159,Abducción de cadera sentada con banda,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1159,Abducción de cadera sentada con banda,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1193,Estiramiento sentado del piriforme,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1195,Curl invertido de piernas asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1195,Curl invertido de piernas asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1195,Curl invertido de piernas asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1196,Curl de piernas invertido asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1196,Curl de piernas invertido asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1196,Curl de piernas invertido asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1198,Abducción de cadera en puente lateral,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1198,Abducción de cadera en puente lateral,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1199,Abducción de cadera lateral,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1199,Abducción de cadera lateral,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1200,Adducción de cadera lateral (hombre),upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1200,Adducción de cadera lateral (hombre),upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1201,Aductores de cadera en puente lateral,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+1205,Sentadilla sissy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1205,Sentadilla sissy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1205,Sentadilla sissy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1263,Sentadillas búlgaras,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1263,Sentadillas búlgaras,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1263,Sentadillas búlgaras,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1264,Sentadilla con alcance por encima,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1264,Sentadilla con alcance por encima,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1264,Sentadilla con alcance por encima,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1265,Sentadilla con alcance por encima y giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1265,Sentadilla con alcance por encima y giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1265,Sentadilla con alcance por encima y giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1311,Abductor de cadera externo con pierna recta,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1311,Abductor de cadera externo con pierna recta,upper legs,HIP_ABDUCTION_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1313,Patadas de nadador v. 2 (hombre),upper legs,CORE_STABILITY,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1313,Patadas de nadador v. 2 (hombre),upper legs,CORE_STABILITY,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1314,Elevación de cadera con giro,upper legs,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1314,Elevación de cadera con giro,upper legs,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1315,Zancada caminando,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1315,Zancada caminando,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1315,Zancada caminando,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1375,El mejor estiramiento del mundo,upper legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+66,Estiramiento de espalda y pectorales,back,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+74,Dominada paralela con agarre estrecho asistida,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+74,Dominada paralela con agarre estrecho asistida,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+74,Dominada paralela con agarre estrecho asistida,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+75,Dominada asistida,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+75,Dominada asistida,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+75,Dominada asistida,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+76,Dominada asistida de pie,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+76,Dominada asistida de pie,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+76,Dominada asistida de pie,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+77,Dominada asistida de pie,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+77,Dominada asistida de pie,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+77,Dominada asistida de pie,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+114,Jalón con agarre cerrado,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+114,Jalón con agarre cerrado,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+114,Jalón con agarre cerrado,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+115,Jalón cercano con banda y agarre estrecho,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+115,Jalón cercano con banda y agarre estrecho,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+115,Jalón cercano con banda y agarre estrecho,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+116,Jalón bajo con banda y agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+116,Jalón bajo con banda y agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+116,Jalón bajo con banda y agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+117,Jalón a una mano de rodillas con banda,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+117,Jalón a una mano de rodillas con banda,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+117,Jalón a una mano de rodillas con banda,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+119,Remo sentado a una mano con giro,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+119,Remo sentado a una mano con giro,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+119,Remo sentado a una mano con giro,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+120,Encogimiento de hombros con banda,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+120,Encogimiento de hombros con banda,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+143,Jalón con agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+143,Jalón con agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+143,Jalón con agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+300,Dominadas en banco,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+300,Dominadas en banco,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+300,Dominadas en banco,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+349,Remo sentado en declinado con agarre amplio,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+349,Remo sentado en declinado con agarre amplio,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+349,Remo sentado en declinado con agarre amplio,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+350,Remo sentado en piso con agarre amplio,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+350,Remo sentado en piso con agarre amplio,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+350,Remo sentado en piso con agarre amplio,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+351,Remo alto en rodillas con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+351,Remo alto en rodillas con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+351,Remo alto en rodillas con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+352,Remo en banco inclinado con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+352,Remo en banco inclinado con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+352,Remo en banco inclinado con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+353,Extensión en banco inclinado con cable,back,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+353,Extensión en banco inclinado con cable,back,ELBOW_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+357,Remo sentado bajo con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+357,Remo sentado bajo con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+357,Remo sentado bajo con cable,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+393,Remo alto sentado con agarre inverso en polea,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+393,Remo alto sentado con agarre inverso en polea,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+393,Remo alto sentado con agarre inverso en polea,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+394,Remo sentado con cuerda cruzada,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+394,Remo sentado con cuerda cruzada,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+394,Remo sentado con cuerda cruzada,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+395,Remo sentado con cuerda elevada,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+395,Remo sentado con cuerda elevada,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+395,Remo sentado con cuerda elevada,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+432,Remo en banco inclinado con cuerda,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+432,Remo en banco inclinado con cuerda,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+432,Remo en banco inclinado con cuerda,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+433,Remo sentado con cuerda,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+433,Remo sentado con cuerda,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+433,Remo sentado con cuerda,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+434,Remo alto sentado con barra en V en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+434,Remo alto sentado con barra en V en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+434,Remo alto sentado con barra en V en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+436,Remo sentado en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+436,Remo sentado en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+436,Remo sentado en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+437,Remo amplio sentado en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+437,Remo amplio sentado en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+437,Remo amplio sentado en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+482,Remo sentado con espalda recta en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+482,Remo sentado con espalda recta en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+482,Remo sentado con espalda recta en polea,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+592,Remo inclinado con mancuerna,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+592,Remo inclinado con mancuerna,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+592,Remo inclinado con mancuerna,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+593,Encogimiento inclinado con mancuerna,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+593,Encogimiento inclinado con mancuerna,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+594,Elevación Y con mancuerna en banco inclinado,back,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+594,Elevación Y con mancuerna en banco inclinado,back,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+712,"Remo en banco inclinado con mancuerna, agarre invertido, dos brazos",back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+712,"Remo en banco inclinado con mancuerna, agarre invertido, dos brazos",back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+712,"Remo en banco inclinado con mancuerna, agarre invertido, dos brazos",back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+775,Elevación de codo y push-up invertido,back,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+775,Elevación de codo y push-up invertido,back,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+775,Elevación de codo y push-up invertido,back,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+908,Hiperextensión,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+908,Hiperextensión,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+909,Hiperextensión en banco,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+909,Hiperextensión en banco,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+910,Remo invertido,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+910,Remo invertido,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+910,Remo invertido,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+911,Remo invertido con rodillas flexionadas,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+911,Remo invertido con rodillas flexionadas,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+911,Remo invertido con rodillas flexionadas,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+912,Remo invertido en banco,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+912,Remo invertido en banco,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+912,Remo invertido en banco,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+938,Estiramiento de espalda alta de rodillas,back,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+994,"Remo en palanca, agarre estrecho alterno",back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+994,"Remo en palanca, agarre estrecho alterno",back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+994,"Remo en palanca, agarre estrecho alterno",back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+995,Dominada asistida con palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+995,Dominada asistida con palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+995,Dominada asistida con palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+996,Extensión de espalda con palanca,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+996,Extensión de espalda con palanca,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+997,Remo a palanca inclinada con barra en V,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+997,Remo a palanca inclinada con barra en V,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+997,Remo a palanca inclinada con barra en V,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+998,Jalón al frente con palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+998,Jalón al frente con palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+998,Jalón al frente con palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+999,Encogimiento de hombros sin agarre con palanca,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+999,Encogimiento de hombros sin agarre con palanca,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1000,Encogimiento de hombros en palanca sin agarre v.2,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1000,Encogimiento de hombros en palanca sin agarre v.2,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1001,Remo alto con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1001,Remo alto con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1001,Remo alto con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1002,Remo sentado con agarre estrecho y palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1002,Remo sentado con agarre estrecho y palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1002,Remo sentado con agarre estrecho y palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1033,Polea tirón,back,SHOULDER_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1033,Polea tirón,back,SHOULDER_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1034,Jalón lateral con agarre inverso en palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1034,Jalón lateral con agarre inverso en palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1034,Jalón lateral con agarre inverso en palanca,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1035,Remo vertical con agarre invertido en palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1035,Remo vertical con agarre invertido en palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1035,Remo vertical con agarre invertido en palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1036,Remo en T-bar con palanca invertida,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1036,Remo en T-bar con palanca invertida,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1036,Remo en T-bar con palanca invertida,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1037,Remo sentado con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1037,Remo sentado con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1037,Remo sentado con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1038,Encogimiento de hombros con palanca,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1038,Encogimiento de hombros con palanca,back,SCAPULAR_ELEVATION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1039,Remo T-bar con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1039,Remo T-bar con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1039,Remo T-bar con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1040,Remo en T-bar con agarre invertido,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1040,Remo en T-bar con agarre invertido,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1040,Remo en T-bar con agarre invertido,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1041,Remo unilateral con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1041,Remo unilateral con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1041,Remo unilateral con palanca,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1066,Curl de espalda baja,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1066,Curl de espalda baja,back,TRUNK_EXTENSION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1146,Fondos de escápula,back,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1146,Fondos de escápula,back,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1146,Fondos de escápula,back,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1156,Remo sentado con banda de espalda recta,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1156,Remo sentado con banda de espalda recta,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1156,Remo sentado con banda de espalda recta,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1164,Pulldown en máquina con agarre invertido,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1164,Pulldown en máquina con agarre invertido,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1164,Pulldown en máquina con agarre invertido,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1188,Estiramiento lumbar sentado,back,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1190,Estiramiento lateral de suelo de lado,back,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1258,Estiramiento de columna,back,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1260,Estiramiento lateral de pie,back,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1261,Inclinación pélvica de pie,back,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1261,Inclinación pélvica de pie,back,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1308,Toque de dos dedos de los pies,back,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1308,Toque de dos dedos de los pies,back,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1309,Estiramiento de espalda alta,back,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+57,Abdominal 3/4,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+57,Abdominal 3/4,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+60,Toques de talón alternos,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+60,Toques de talón alternos,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+63,Sit-up completo con brazos elevados,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+63,Sit-up completo con brazos elevados,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+104,V-up alterno con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+104,V-up alterno con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+106,Crunch de bicicleta con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+106,Crunch de bicicleta con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+107,Prensa Pallof horizontal con banda,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+107,Prensa Pallof horizontal con banda,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+108,Sit-up tipo Jackknife con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+108,Sit-up tipo Jackknife con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+109,Crunch giratorio de rodillas con banda,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+109,Crunch giratorio de rodillas con banda,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+110,Elevación de piernas rectas acostado con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+110,Elevación de piernas rectas acostado con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+111,Crunch con empuje y banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+111,Crunch con empuje y banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+112,Giro sentado con banda,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+112,Giro sentado con banda,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+138,Crunch de pie con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+138,Crunch de pie con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+139,Crunch giratorio de pie con banda,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+139,Crunch giratorio de pie con banda,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+140,V-up con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+140,V-up con banda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+141,Prensa Pallof vertical con banda,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+141,Prensa Pallof vertical con banda,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+296,Plancha lateral inclinada,waist,CORE_STABILITY,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+297,Empuje de extremos inferiores,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+297,Empuje de extremos inferiores,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+299,Puentes de glúteos,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+299,Puentes de glúteos,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+348,Crunch de rodillas con cable,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+348,Crunch de rodillas con cable,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+424,Crunch sentado en polea,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+424,Crunch sentado en polea,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+425,Giro sentado con cable,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+425,Giro sentado con cable,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+497,Cocoons,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+497,Cocoons,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+498,Giro de cangrejo y toque de pies,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+498,Giro de cangrejo y toque de pies,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+499,Crunch cruzado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+499,Crunch cruzado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+500,Crunch con manos sobre la cabeza,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+500,Crunch con manos sobre la cabeza,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+501,Crunch en el suelo,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+501,Crunch en el suelo,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+502,Curl abdominal,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+502,Curl abdominal,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+503,Dead bug,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+503,Dead bug,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+504,Crunch declinado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+504,Crunch declinado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+505,Abdominal sit-up declinado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+505,Abdominal sit-up declinado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+774,Rodilla al codo,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+774,Rodilla al codo,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+814,Elevacion de tronco con piernas flexionadas,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+814,Elevacion de tronco con piernas flexionadas,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+815,Elevacion de tronco con piernas flexionadas y brazos rectos,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+815,Elevacion de tronco con piernas flexionadas y brazos rectos,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+856,Crunch rana,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+856,Crunch rana,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+859,Plancha frontal con giro,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+863,Crunch de ingle,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+863,Crunch de ingle,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+864,Abdominal medio,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+864,Abdominal medio,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+872,Encogimiento invertido,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+872,Encogimiento invertido,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+904,Elevación de cadera inclinada con pierna recta,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+904,Elevación de cadera inclinada con pierna recta,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+905,Crunch con giro en inclinada,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+905,Crunch con giro en inclinada,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+906,Sit-up tijera,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+906,Sit-up tijera,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+907,Sit-up Janda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+907,Sit-up Janda,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+935,Crunch tocando rodilla,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+935,Crunch tocando rodilla,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+936,Plancha desde rodillas con toque de hombro,waist,CORE_STABILITY,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+976,Elevación de piernas en banco plano,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+976,Elevación de piernas en banco plano,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+993,Giro en posición de rodillas con palanca,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+993,Giro en posición de rodillas con palanca,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1027,Crunch sentado en palanca,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1027,Crunch sentado en palanca,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1028,Aperturas sentado con palanca,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1028,Aperturas sentado con palanca,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1029,Crunch sentado en palanca v. 2,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1029,Crunch sentado en palanca v. 2,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1030,Crunch elevación de piernas sentado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1030,Crunch elevación de piernas sentado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1060,Rodilla al codo acostado,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1060,Rodilla al codo acostado,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1061,Elevación de piernas acostado en banco plano,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1061,Elevación de piernas acostado en banco plano,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1062,Elevación de cadera acostado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1062,Elevación de cadera acostado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1063,Crunch negativo,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1063,Crunch negativo,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1064,Crunch oblicuo v.2,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1064,Crunch oblicuo v.2,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1065,Crunch oblicuos en suelo,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1065,Crunch oblicuos en suelo,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1101,Inclinación pélvica,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1101,Inclinación pélvica,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1102,Paso posterior al alcance superior,waist,MOBILITY,MOVILIDAD,1,SETS_REPS,MOBILITY,2,2,10,null,30,90
+1104,Plancha de potencia,waist,CORE_STABILITY,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+1105,Abdominal medio estilo prisionero,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1105,Abdominal medio estilo prisionero,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1107,Abdominal corto,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1107,Abdominal corto,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1139,Crunch inverso,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1139,Crunch inverso,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1140,Plancha inversa con elevación de piernas,waist,CORE_STABILITY,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+1141,Giros rusos,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1141,Giros rusos,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1142,Elevación de piernas sentado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1142,Elevación de piernas sentado,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1181,Crunch lateral sentado contra pared,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1181,Crunch lateral sentado contra pared,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1183,Puente lateral versión 2,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1183,Puente lateral versión 2,waist,CORE_STABILITY,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1185,Toque de dedos de lado a lado,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1185,Toque de dedos de lado a lado,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1186,Elevación de tronco versión 2,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1186,Elevación de tronco versión 2,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1187,Abdominal con brazos en el pecho,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1187,Abdominal con brazos en el pecho,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1256,Giro de columna,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1256,Giro de columna,waist,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1302,Crunch con rodillas recogidas,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1302,Crunch con rodillas recogidas,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1305,V-sit en el suelo,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1305,V-sit en el suelo,waist,TRUNK_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+72,Fondos de pecho asistidos (de rodillas),chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+72,Fondos de pecho asistidos (de rodillas),chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+72,Fondos de pecho asistidos (de rodillas),chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+73,Dip de pecho con agarre ancho asistido (rodillas),chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+73,Dip de pecho con agarre ancho asistido (rodillas),chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+73,Dip de pecho con agarre ancho asistido (rodillas),chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+102,Press de banca con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+102,Press de banca con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+102,Press de banca con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+341,Press inclinado con cable,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+341,Press inclinado con cable,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+341,Press inclinado con cable,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+342,Aleteo inclinado con cable,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+342,Aleteo inclinado con cable,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+421,Cuerda con polea press de pecho sentado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+421,Cuerda con polea press de pecho sentado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+421,Cuerda con polea press de pecho sentado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+456,Estiramiento de pecho y hombro delantero,chest,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+460,Flexión con toques de pecho,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+460,Flexión con toques de pecho,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+460,Flexión con toques de pecho,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+494,Flexión en reloj,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+494,Flexión en reloj,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+494,Flexión en reloj,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+495,Flexión declinada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+495,Flexión declinada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+495,Flexión declinada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+496,Flexión con caída controlada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+496,Flexión con caída controlada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+496,Flexión con caída controlada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+547,Press alterno con mancuerna en banco inclinado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+547,Press alterno con mancuerna en banco inclinado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+547,Press alterno con mancuerna en banco inclinado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+548,Press de banca inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+548,Press de banca inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+548,Press de banca inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+580,Curl inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+580,Curl inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+580,Curl inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+581,Ala inclinada con Mancuerna,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+581,Ala inclinada con Mancuerna,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+583,Press martillo inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+583,Press martillo inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+583,Press martillo inclinado con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+588,Press con palma hacia abajo inclinada con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+588,Press con palma hacia abajo inclinada con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+588,Press con palma hacia abajo inclinada con mancuerna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+590,Elevación de hombros inclinada con mancuerna,chest,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+590,Elevación de hombros inclinada con mancuerna,chest,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+591,Ala girada inclinada con mancuerna,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+591,Ala girada inclinada con mancuerna,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+773,Estiramiento dinámico de pecho,chest,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+898,Flexión invertida en inclinada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+898,Flexión invertida en inclinada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+898,Flexión invertida en inclinada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+899,Flexión de escápula en banco inclinado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+899,Flexión de escápula en banco inclinado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+899,Flexión de escápula en banco inclinado,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+900,Compresión isométrica de pecho,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+901,Limpias isométricas,chest,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,DURATION,MUSCULAR_ENDURANCE,3,3,null,40,45,210
+933,Flexión de rodillas en apoyo,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+933,Flexión de rodillas en apoyo,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+933,Flexión de rodillas en apoyo,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+988,Press de pecho con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+988,Press de pecho con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+988,Press de pecho con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+989,Press de pecho con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+989,Press de pecho con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+989,Press de pecho con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+990,Press de pecho declinado con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+990,Press de pecho declinado con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+990,Press de pecho declinado con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+991,Press de pecho inclinado con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+991,Press de pecho inclinado con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+991,Press de pecho inclinado con palanca,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+992,Press de pecho inclinado en palanca v.2,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+992,Press de pecho inclinado en palanca v.2,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+992,Press de pecho inclinado en palanca v.2,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1025,Aperturas de pecho sentado con palanca,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1025,Aperturas de pecho sentado con palanca,chest,HORIZONTAL_ADDUCTION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1026,Press de pecho en palanca de pie,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1026,Press de pecho en palanca de pie,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1026,Press de pecho en palanca de pie,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1058,Flexión hindú modificada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1058,Flexión hindú modificada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1058,Flexión hindú modificada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1092,Press de pecho interno en máquina,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1092,Press de pecho interno en máquina,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1092,Press de pecho interno en máquina,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1095,Empuje y tracción con peso corporal,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1095,Empuje y tracción con peso corporal,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1095,Empuje y tracción con peso corporal,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1096,Flexión,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1096,Flexión,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1096,Flexión,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1097,Flexión en pared,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1097,Flexión en pared,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1097,Flexión en pared,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1098,Flexión en pared versión 2,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1098,Flexión en pared versión 2,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1098,Flexión en pared versión 2,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1099,Flexión de brazos con extensión de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1099,Flexión de brazos con extensión de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1099,Flexión de brazos con extensión de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1111,Flexión con patada de pierna externa,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1111,Flexión con patada de pierna externa,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1111,Flexión con patada de pierna externa,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1113,Flexión pike a cobra,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1113,Flexión pike a cobra,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1113,Flexión pike a cobra,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1115,Flexión con patada interna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1115,Flexión con patada interna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1115,Flexión con patada interna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1138,Flexión de escápula,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1138,Flexión de escápula,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1138,Flexión de escápula,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1155,Press de pecho sentado con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1155,Press de pecho sentado con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1155,Press de pecho sentado con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1179,Flexión con toques de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1179,Flexión con toques de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1179,Flexión con toques de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1262,Flexión con desplazamiento de araña,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1262,Flexión con desplazamiento de araña,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1262,Flexión con desplazamiento de araña,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1334,Flexión con manos anchas,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1334,Flexión con manos anchas,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1334,Flexión con manos anchas,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+98,Elevación frontal con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+98,Elevación frontal con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+99,Elevación frontal con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+99,Elevación frontal con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+100,Vuelos invertidos con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+100,Vuelos invertidos con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+101,Press de hombros con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+101,Press de hombros con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+101,Press de hombros con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+135,"Remo de deltoides traseros con banda, de pie",shoulders,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+135,"Remo de deltoides traseros con banda, de pie",shoulders,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+135,"Remo de deltoides traseros con banda, de pie",shoulders,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+136,Press por encima de la cabeza con giro y banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+136,Press por encima de la cabeza con giro y banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+136,Press por encima de la cabeza con giro y banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+137,Elevación en Y con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+137,Elevación en Y con banda,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+336,Remo espalda posterior en polea sentado con cuerda,shoulders,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+336,Remo espalda posterior en polea sentado con cuerda,shoulders,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+336,Remo espalda posterior en polea sentado con cuerda,shoulders,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+416,Elevación lateral trasera sentado en polea,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+416,Elevación lateral trasera sentado en polea,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+514,Press sentado de banca con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+514,Press sentado de banca con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+514,Press sentado de banca con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+574,Elevación inclinada con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+574,Elevación inclinada con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+574,Elevación inclinada con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+575,Elevación lateral trasera inclinada con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+575,Elevación lateral trasera inclinada con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+576,Elevación T con mancuerna en banco inclinado,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+576,Elevación T con mancuerna en banco inclinado,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+703,Elevación frontal alterna sentada con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+703,Elevación frontal alterna sentada con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+704,Press alterno sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+704,Press alterno sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+704,Press alterno sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+705,Press de hombro alterno sentado,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+705,Press de hombro alterno sentado,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+705,Press de hombro alterno sentado,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+706,Elevación lateral de brazo con mancuerna sentado,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+706,Elevación lateral de brazo con mancuerna sentado,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+707,Elevación frontal sentado con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+707,Elevación frontal sentado con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+708,Elevación lateral sentado con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+708,Elevación lateral sentado con mancuerna,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+709,"Elevación lateral sentado con mancuerna, versión 2",shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+709,"Elevación lateral sentado con mancuerna, versión 2",shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+725,Curl de bíceps sentado con press de hombro,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+725,Curl de bíceps sentado con press de hombro,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+725,Curl de bíceps sentado con press de hombro,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+739,Press de hombro sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+739,Press de hombro sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+739,Press de hombro sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+740,"Press de hombro sentado con mancuerna, agarre paralelo",shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+740,"Press de hombro sentado con mancuerna, agarre paralelo",shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+740,"Press de hombro sentado con mancuerna, agarre paralelo",shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+973,Giro izquierdo. boxeo,shoulders,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+973,Giro izquierdo. boxeo,shoulders,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+986,Elevación lateral con palanca,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+986,Elevación lateral con palanca,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+987,Press militar con palanca,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+987,Press militar con palanca,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+987,Press militar con palanca,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1020,Aperturas traseras sentado,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1020,Aperturas traseras sentado,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1021,Aperturas traseras sentado con agarre paralelo,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1021,Aperturas traseras sentado con agarre paralelo,shoulders,SHOULDER_RAISE,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1023,Press de hombros con palanca v.2,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1023,Press de hombros con palanca v.2,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1023,Press de hombros con palanca v.2,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1024,Prensa de hombro con palanca v. 3,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1024,Prensa de hombro con palanca v. 3,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1024,Prensa de hombro con palanca v. 3,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1137,Estiramiento deltoides posterior,shoulders,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1154,Press de hombro sentado con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1154,Press de hombro sentado con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,HYPERTROPHY,2,3,10,null,90,270
+1154,Press de hombro sentado con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+134,"Elevación de pantorrillas con banda, versión 2",lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+134,"Elevación de pantorrillas con banda, versión 2",lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+294,Elevacion de talones de peso corporal de pie,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+294,Elevacion de talones de peso corporal de pie,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+453,Estiramiento de gemelos empujando con las manos en la pared,lower legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+454,Estiramiento de gemelos con manos contra la pared,lower legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+455,Estiramientos de rodilla en círculos,lower legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+695,Elevacion de talones sentado con mancuerna,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+695,Elevacion de talones sentado con mancuerna,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+984,Prensa de pantorrilla con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+984,Prensa de pantorrilla con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+985,Elevación de gemelos con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+985,Elevación de gemelos con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1014,Prensa de pantorrilla rotatoria con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1014,Prensa de pantorrilla rotatoria con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1015,Prensa de pantorrilla sentado con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1015,Prensa de pantorrilla sentado con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1016,Crunch sentado con almohadilla para pecho,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1016,Crunch sentado con almohadilla para pecho,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1017,Elevacion de talones sentado sobre prensa de piernas,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1017,Elevacion de talones sentado sobre prensa de piernas,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1018,Elevación de talones de pie con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1018,Elevación de talones de pie con palanca,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1136,Estiramiento de gemelos sentado (hombre),lower legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1254,Gemelos de pie,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,HYPERTROPHY,2,3,13,null,90,297
+1254,Gemelos de pie,lower legs,ANKLE_PLANTAR_FLEXION,RESISTIDO,1,SETS_REPS,MUSCULAR_ENDURANCE,2,3,15,null,45,225
+1255,Estiramiento de gemelos de pie,lower legs,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1178,Estiramiento de muñeca lateral,lower arms,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1373,Círculos de muñeca,lower arms,MOBILITY,MOVILIDAD,1,SETS_REPS,MOBILITY,2,2,10,null,30,90
+253,Gateo de oso,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+853,Media sentadilla,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1054,Escalador,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1093,Empujar para correr,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1117,Pies rápidos v. 2,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1325,Caminata en cinta inclinada,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1053,Estiramiento lateral de cuello,neck,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75
+1173,Estiramiento lateral de cuello en empuje,neck,MOBILITY,MOVILIDAD,1,DURATION,MOBILITY,2,2,null,30,15,75

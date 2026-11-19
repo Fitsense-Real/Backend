@@ -1,0 +1,12 @@
+Regresion completa (mvnw clean verify -Pintegration), commit entregado 5df34f6
+[INFO] Tests run: 1445, Failures: 0, Errors: 0, Skipped: 1
+[INFO] Tests run: 717, Failures: 0, Errors: 0, Skipped: 49
+[INFO] BUILD SUCCESS
+[INFO] Total time:  23:27 min
+
+Comparacion por clase con la pila #56-#59:
+clases: referencia 339, variante 346; comunes con el mismo resultado: 339
+solo en la referencia: []
+solo en la variante: ['A-E ? elegibilidad, catalogo de la IA y motor de reglas', 'F-G ? planes ya publicados (copias controladas en la base aislada)', 'INC-CAT-C39 ? comparacion antes/despues sobre una rejilla de perfiles (opt-in)', 'INC-CAT-C39 ? contencion por texto contra bandera', 'INC-CAT-C39 ? contencion por texto del catalogo contra bandera (catalogo real)', 'INC-CAT-C39 ? filtro en el conjunto elegible', 'INC-CAT-C39 reducida ? plan 78 del usuario 39 (copia controlada)']
+comunes con recuento distinto (tests, fallos, errores, omitidas):
+clases con fallos o errores en la variante: []

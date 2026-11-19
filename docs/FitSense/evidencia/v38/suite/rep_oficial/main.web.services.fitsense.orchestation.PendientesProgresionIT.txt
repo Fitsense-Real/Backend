@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.orchestation.PendientesProgresionIT
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.96 s -- in main.web.services.fitsense.orchestation.PendientesProgresionIT

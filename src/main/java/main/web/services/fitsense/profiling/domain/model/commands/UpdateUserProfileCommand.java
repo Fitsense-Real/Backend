@@ -23,5 +23,10 @@ public record UpdateUserProfileCommand(
         Short sessionMinutes,
         List<String> equipmentCodes,
         List<Long> blockedExerciseIds,
-        String healthNotes
+        String healthNotes,
+        Boolean allowHighImpact,
+        Boolean allowFloorExercises,
+        Boolean allowKneelingExercises,
+        Boolean allowHangingExercises,
+        Boolean allowOverheadExercises
 ) {}

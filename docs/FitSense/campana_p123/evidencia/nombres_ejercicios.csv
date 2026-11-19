@@ -1,0 +1,132 @@
+exercise_id;name_en;name_es;movement_pattern
+53;astride jumps (male);Saltos con las piernas separadas;LOCOMOTION_CARDIO
+56;archer push up;Flexión arquero;HORIZONTAL_PUSH
+72;assisted chest dip (kneeling);Fondos de pecho asistidos (de rodillas);HORIZONTAL_PUSH
+78;assisted triceps dip (kneeling);Fondos de tríceps asistidos (de rodillas);HORIZONTAL_PUSH
+102;band bench press;Press de banca con banda;HORIZONTAL_PUSH
+116;band fixed back underhand pulldown;Jalón bajo con banda y agarre supino;VERTICAL_PULL
+117;band kneeling one arm pulldown;Jalón a una mano de rodillas con banda;VERTICAL_PULL
+119;band one arm twisting seated row;Remo sentado a una mano con giro;HORIZONTAL_PULL
+120;band shrug;Encogimiento de hombros con banda;SCAPULAR_ELEVATION
+122;band hip lift;Elevacion de cadera con banda;HIP_EXTENSION
+124;band one arm single leg split squat;Sentadilla dividida a una pierna con banda y una mano;KNEE_DOMINANT
+125;band pull through;Pase de banda;HIP_HINGE
+127;band single leg split squat;Sentadilla con banda a una pierna;KNEE_DOMINANT
+129;band close-grip push-up;Flexión con agarre cerrado;HORIZONTAL_PUSH
+135;band standing rear delt row;Remo de deltoides traseros con banda, de pie;HORIZONTAL_PULL
+136;band twisting overhead press;Press por encima de la cabeza con giro y banda;VERTICAL_PUSH
+138;band standing crunch;Crunch de pie con banda;TRUNK_FLEXION
+148;band straight back stiff leg deadlift;Peso muerto de piernas rígidas con banda;HIP_HINGE
+165;barbell front chest squat;Sentadilla frontal con barra;KNEE_DOMINANT
+187;barbell glute bridge two legs on bench (male);Puente de glúteos con barra en banco (hombre);HIP_EXTENSION
+216;barbell seated calf raise;Elevacion de talones sentado con barra;ANKLE_PLANTAR_FLEXION
+233;barbell reverse grip incline bench row;Remo en banco inclinado con barra y agarre invertido;HORIZONTAL_PULL
+239;barbell seated good morning;Buenos días sentado con barra;HIP_HINGE
+253;bear crawl;Gateo de oso;LOCOMOTION_CARDIO
+283;barbell straight leg deadlift;Peso muerto con piernas rectas con barra;HIP_HINGE
+285;barbell wide squat;Sentadilla ancha con barra;KNEE_DOMINANT
+294;bodyweight standing calf raise;Elevacion de talones de peso corporal de pie;ANKLE_PLANTAR_FLEXION
+295;box jump down with one leg stabilization;Salto a caja con una pierna estabilización;BALANCE_CONTROL
+318;body-up;Levantamiento de cuerpo;HORIZONTAL_PUSH
+326;cable cross-over lateral pulldown;Jalón lateral cruzado con cable;VERTICAL_PULL
+349;cable decline seated wide-grip row;Remo sentado en declinado con agarre amplio;HORIZONTAL_PULL
+350;cable floor seated wide-grip row;Remo sentado en piso con agarre amplio;HORIZONTAL_PULL
+375;cable rear delt row (stirrups);Remo de deltoides traseros con estribos;HORIZONTAL_PULL
+376;cable rear delt row (with rope);Remo de deltoides traseros con cuerda;HORIZONTAL_PULL
+414;cable standing calf raise;Elevacion de talones de pie con cable;ANKLE_PLANTAR_FLEXION
+416;cable seated rear lateral raise;Elevación lateral trasera sentado en polea;SHOULDER_RAISE
+420;cable standing rear delt row (with rope);Remo posterior de hombro de pie con cuerda;HORIZONTAL_PULL
+425;cable seated twist;Giro sentado con cable;TRUNK_ROTATION_LATERAL_FLEXION
+437;cable seated wide-grip row;Remo amplio sentado en polea;HORIZONTAL_PULL
+452;cable standing pulldown (with rope);Jalón de polea de pie con cuerda;VERTICAL_PULL
+454;calf stretch with hands against wall;Estiramiento de gemelos con manos contra la pared;MOBILITY
+478;cable standing row (v-bar);Remo de pie en polea con barra en V;HORIZONTAL_PULL
+494;clock push-up;Flexión en reloj;HORIZONTAL_PUSH
+495;decline push-up;Flexión declinada;HORIZONTAL_PUSH
+496;drop push up;Flexión con caída controlada;HORIZONTAL_PUSH
+507;curtsey squat;Sentadilla curtsy;KNEE_DOMINANT
+508;close-grip push-up;Flexión de agarre cerrado;HORIZONTAL_PUSH
+509;close-grip push-up (on knees);Flexión cerrada con rodillas;HORIZONTAL_PUSH
+515;deep push up;Flexión profunda;HORIZONTAL_PUSH
+517;dumbbell bench press;Press de banca con mancuerna;HORIZONTAL_PUSH
+518;dumbbell bent over row;Remo inclinado con mancuerna;HORIZONTAL_PULL
+527;dumbbell bicep curl lunge with bowling motion;Curl de bíceps con zancada y lanzamiento;KNEE_DOMINANT
+532;cycle cross trainer;Ciclo cross trainer;LOCOMOTION_CARDIO
+533;dumbbell burpee;Burpee con mancuernas;LOCOMOTION_CARDIO
+551;dumbbell clean;Limpieza con mancuerna;HIP_HINGE
+553;dumbbell deadlift;Peso muerto con mancuerna;HIP_HINGE
+554;dumbbell goblet squat;Sentadilla con mancuerna tipo copa;KNEE_DOMINANT
+595;dumbbell lunge;Zancada con mancuerna;KNEE_DOMINANT
+609;dumbbell lunge with bicep curl;Curl de bíceps en zancada con mancuerna;KNEE_DOMINANT
+637;dumbbell lying femoral;Femorales acostado con mancuerna;KNEE_DOMINANT
+664;dumbbell push press;Push press con mancuerna;VERTICAL_PUSH
+670;dumbbell pullover;Pullover con mancuerna;SHOULDER_EXTENSION
+673;dumbbell palm rotational bent over row;Remo con giro de palma y mancuerna;HORIZONTAL_PULL
+679;dumbbell one arm seated hammer curl;Curl martillo sentado a una mano;ELBOW_FLEXION
+695;dumbbell seated calf raise;Elevacion de talones sentado con mancuerna;ANKLE_PLANTAR_FLEXION
+700;dumbbell reverse fly;Aleteo inverso con mancuerna;SHOULDER_RAISE
+704;dumbbell seated alternate press;Press alterno sentado con mancuerna;VERTICAL_PUSH
+713;dumbbell reverse grip row (female);Remo con agarre inverso (mujer);HORIZONTAL_PULL
+714;dumbbell rear lunge;Zancada hacia atrás con mancuerna;KNEE_DOMINANT
+734;dumbbell seated one leg calf raise;Elevación de talones sentado con mancuerna, una pierna;ANKLE_PLANTAR_FLEXION
+739;dumbbell seated shoulder press;Press de hombro sentado con mancuerna;VERTICAL_PUSH
+760;dumbbell standing alternate hammer curl and press;Curl martillo alterno de pie y press;VERTICAL_PUSH
+774;elbow-to-knee;Rodilla al codo;TRUNK_ROTATION_LATERAL_FLEXION
+775;elbow lift - reverse push-up;Elevación de codo y push-up invertido;HORIZONTAL_PUSH
+780;dumbbell upright row;Remo vertical con mancuerna;HORIZONTAL_PULL
+785;dumbbell step-up;Subida a banco con mancuerna;KNEE_DOMINANT
+788;dumbbell stiff leg deadlift;Peso muerto con piernas rígidas y mancuerna;HIP_HINGE
+790;dumbbell sumo pull through;Paso pasante sumo con mancuerna;HIP_HINGE
+791;dumbbell supported squat;Sentadilla con apoyo de mancuerna;KNEE_DOMINANT
+853;half knee bends (male);Media sentadilla;LOCOMOTION_CARDIO
+854;high knee against wall;Rodillas altas contra la pared;LOCOMOTION_CARDIO
+893;jack burpee;Burpee con salto;LOCOMOTION_CARDIO
+894;jack jump (male);Salto jack;LOCOMOTION_CARDIO
+905;incline twisting sit-up;Crunch con giro en inclinada;TRUNK_ROTATION_LATERAL_FLEXION
+919;jump squat v. 2;Sentadilla con salto versión 2;KNEE_DOMINANT
+933;kneeling push-up (male);Flexión de rodillas en apoyo;HORIZONTAL_PUSH
+939;kick out sit;Abdominal patada;KNEE_DOMINANT
+993;lever kneeling twist;Giro en posición de rodillas con palanca;TRUNK_ROTATION_LATERAL_FLEXION
+997;lever bent-over row with v-bar;Remo a palanca inclinada con barra en V;HORIZONTAL_PULL
+1008;lever leg extension;Extensión de piernas con palanca;KNEE_DOMINANT
+1026;lever standing chest press;Press de pecho en palanca de pie;HORIZONTAL_PUSH
+1036;lever reverse t-bar row;Remo en T-bar con palanca invertida;HORIZONTAL_PULL
+1038;lever shrug;Encogimiento de hombros con palanca;SCAPULAR_ELEVATION
+1040;lever t-bar reverse grip row;Remo en T-bar con agarre invertido;HORIZONTAL_PULL
+1041;lever unilateral row;Remo unilateral con palanca;HORIZONTAL_PULL
+1054;mountain climber;Escalador;LOCOMOTION_CARDIO
+1073;low glute bridge on floor;Puente de glúteos bajo en el suelo;HIP_EXTENSION
+1075;lying (side) quads stretch;Estiramiento de cuádriceps acostado de lado;MOBILITY
+1093;push to run;Empujar para correr;LOCOMOTION_CARDIO
+1094;plyo push up;Flexión pliométrica;HORIZONTAL_PUSH
+1095;push and pull bodyweight;Empuje y tracción con peso corporal;HORIZONTAL_PUSH
+1099;push-up plus;Flexión de brazos con extensión de hombro;HORIZONTAL_PUSH
+1106;push-up to side plank;Flexión a plancha lateral;HORIZONTAL_PUSH
+1111;outside leg kick push-up;Flexión con patada de pierna externa;HORIZONTAL_PUSH
+1112;pelvic tilt into bridge;Inclinación pélvica hacia puente;HIP_EXTENSION
+1114;potty squat with support;Sentadilla de baño con apoyo;KNEE_DOMINANT
+1115;push-up inside leg kick;Flexión con patada interna;HORIZONTAL_PUSH
+1117;quick feet v. 2;Pies rápidos v. 2;LOCOMOTION_CARDIO
+1121;push-up close-grip off dumbbell;Flexión con mancuerna de agarre cerrado;HORIZONTAL_PUSH
+1133;run;Correr;LOCOMOTION_CARDIO
+1135;scissor jumps (male);Saltos tijera;LOCOMOTION_CARDIO
+1138;scapula push-up;Flexión de escápula;HORIZONTAL_PUSH
+1141;russian twist;Giros rusos;TRUNK_ROTATION_LATERAL_FLEXION
+1152;reverse dip;Fondos invertidos;HORIZONTAL_PUSH
+1156;resistance band seated straight back row;Remo sentado con banda de espalda recta;HORIZONTAL_PULL
+1164;reverse grip machine lat pulldown;Pulldown en máquina con agarre invertido;VERTICAL_PULL
+1173;side push neck stretch;Estiramiento lateral de cuello en empuje;MOBILITY
+1175;short stride run;Carrera de zancada corta;LOCOMOTION_CARDIO
+1176;skater hops;Saltos estilo patinador;LOCOMOTION_CARDIO
+1177;ski step;Paso de esquí;LOCOMOTION_CARDIO
+1179;shoulder tap push-up;Flexión con toques de hombro;HORIZONTAL_PUSH
+1193;seated piriformis stretch;Estiramiento sentado del piriforme;MOBILITY
+1195;self assisted inverse leg curl;Curl invertido de piernas asistido;KNEE_DOMINANT
+1202;single leg bridge with outstretched leg;Puente a una pierna con pierna extendida;HIP_EXTENSION
+1205;sissy squat;Sentadilla sissy;KNEE_DOMINANT
+1206;side push-up;Flexión lateral;HORIZONTAL_PUSH
+1207;single leg calf raise (on a dumbbell);Elevación de talones a una pierna con mancuerna;ANKLE_PLANTAR_FLEXION
+1256;spine twist;Giro de columna;TRUNK_ROTATION_LATERAL_FLEXION
+1272;snatch pull;Tracción snatch;HIP_HINGE
+1293;star jump (male);Salto estrella;LOCOMOTION_CARDIO
+1296;superman push-up;Push-up de Superman;HORIZONTAL_PUSH

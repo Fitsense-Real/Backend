@@ -1,0 +1,101 @@
+usuario,semana,lunes,evento_programado,registro_real,comportamiento_esperado
+N01,1,2026-11-02,"Sesion 1 parcial (35 %) por falta de tiempo, sin M",PARCIAL_TIEMPO|HECHO,"ACORTAR si hay relleno; si no, sin efecto"
+N02,1,2026-11-02,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,1,2026-11-02,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N04,1,2026-11-02,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,1,2026-11-02,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,1,2026-11-02,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,1,2026-11-02,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,1,2026-11-02,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,1,2026-11-02,"Sesion 1 parcial (35 %) por falta de tiempo, sin M",PARCIAL_TIEMPO|HECHO,"ACORTAR si hay relleno; si no, sin efecto"
+N10,1,2026-11-02,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N01,2,2026-11-09,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,2,2026-11-09,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,2,2026-11-09,"Todas completas con dificultad excesiva (primer ejercicio a la mitad, RPE 9)",DIFICIL|DIFICIL|DIFICIL|DIFICIL,Sin aumentos; dificultad registrada
+N04,2,2026-11-09,Sesiones 1 y 2 omitidas por cambio de horario,OMITE_HORARIO|OMITE_HORARIO|HECHO|HECHO|HECHO|HECHO,REPROGRAMACION_IMPOSIBLE si no hay fecha libre (6 de 6 dias)
+N05,2,2026-11-09,Sesion completa con dificultad excesiva,DIFICIL,Sin progresion antes de cumplir condiciones
+N06,2,2026-11-09,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,2,2026-11-09,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,2,2026-11-09,Sesion 1 con DOLOR en el primer ejercicio (identificado),CON_DOLOR|HECHO|HECHO,Sustitucion segura; exclusion persistente
+N09,2,2026-11-09,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,2,2026-11-09,Sesion 1 parcial (35 %) por falta de tiempo,PARCIAL_TIEMPO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N01,3,2026-11-16,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,3,2026-11-16,Sesion 1 completa con fatiga en el primer ejercicio; sesion 2 parcial (35 %) por fatiga,CON_FATIGA|PARCIAL_FATIGA|HECHO|HECHO|HECHO,Vuelta atras del paso si la sesion fatigada lo llevaba
+N03,3,2026-11-16,Sesiones 1 y 2 parciales (35 %) por falta de tiempo,PARCIAL_TIEMPO|PARCIAL_TIEMPO|HECHO|HECHO,ACORTAR localizado
+N04,3,2026-11-16,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,3,2026-11-16,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,3,2026-11-16,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,3,2026-11-16,Semana sin registros,NADA,INSUFFICIENT_DATA (sin datos no es 0 %)
+N08,3,2026-11-16,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,3,2026-11-16,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,3,2026-11-16,Sesiones 1-3 omitidas por falta de motivacion,OMITE_MOTIVACION|OMITE_MOTIVACION|OMITE_MOTIVACION|HECHO|HECHO|HECHO,Adaptacion localizada
+N01,4,2026-11-23,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,4,2026-11-23,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,4,2026-11-23,Sesiones 1 y 2 omitidas por falta de motivacion,OMITE_MOTIVACION|OMITE_MOTIVACION|HECHO|HECHO,Adaptacion o respaldo; nunca mas de 4 sesiones
+N04,4,2026-11-23,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,4,2026-11-23,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,4,2026-11-23,"Sesion 1 completa con DOLOR en el primer ejercicio (identificado, 0 hecho)",CON_DOLOR|HECHO|HECHO|HECHO,P-02 + P-03 en el mismo ciclo; no reaparece
+N07,4,2026-11-23,Sesion parcial (35 %) por falta de tiempo,PARCIAL_TIEMPO,ACORTAR si cabe
+N08,4,2026-11-23,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,4,2026-11-23,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,4,2026-11-23,Sesion 1 omitida por falta de tiempo con contexto MENOS_TIEMPO_HABITUAL,OMITE_TIEMPO_CTX|HECHO|HECHO|HECHO|HECHO|HECHO,Segun adherencia
+N01,5,2026-11-30,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,5,2026-11-30,Sesion 1 omitida (OTHER),OMITE_OTRO|HECHO|HECHO|HECHO|HECHO,Sin aumento indebido
+N03,5,2026-11-30,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N04,5,2026-11-30,Sesion 1 parcial (35 %) por falta de tiempo,PARCIAL_TIEMPO|HECHO|HECHO|HECHO|HECHO|HECHO,Segun adherencia
+N05,5,2026-11-30,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,5,2026-11-30,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,5,2026-11-30,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,5,2026-11-30,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,5,2026-11-30,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,5,2026-11-30,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N01,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N04,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,6,2026-12-07,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,6,2026-12-07,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,6,2026-12-07,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N01,7,2026-12-14,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,7,2026-12-14,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,7,2026-12-14,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N04,7,2026-12-14,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,7,2026-12-14,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,7,2026-12-14,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,7,2026-12-14,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,7,2026-12-14,Antes de ejecutar: reactivacion explicita de lo excluido,HECHO|HECHO|HECHO,Reactivada; no vuelve automaticamente
+N09,7,2026-12-14,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,7,2026-12-14,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N01,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N04,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,8,2026-12-21,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,8,2026-12-21,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,8,2026-12-21,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N01,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N04,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,9,2026-12-28,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,9,2026-12-28,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,9,2026-12-28,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N01,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N02,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N03,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N04,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N05,10,2027-01-04,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N06,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N07,10,2027-01-04,Todas las sesiones completas,HECHO,Conservar o progresar segun reglas
+N08,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO|HECHO,Conservar o progresar segun reglas
+N09,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO,Conservar o progresar segun reglas
+N10,10,2027-01-04,Todas las sesiones completas,HECHO|HECHO|HECHO|HECHO|HECHO|HECHO,Conservar o progresar segun reglas

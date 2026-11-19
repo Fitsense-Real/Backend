@@ -1,0 +1,388 @@
+{
+  "id" : "f7yxn9hqpdrmr0d1j1gbcz1rec",
+  "model" : "openai/gpt-5-structured",
+  "version" : "hidden",
+  "input" : {
+    "json_schema" : {
+      "format" : {
+        "name" : "weekly_training_plan",
+        "schema" : {
+          "additionalProperties" : false,
+          "properties" : {
+            "plan_name" : {
+              "type" : "string"
+            },
+            "rationale" : {
+              "type" : "string"
+            },
+            "schema_version" : {
+              "type" : "string"
+            },
+            "total_volume" : {
+              "type" : "integer"
+            },
+            "workouts" : {
+              "description" : "Exactamente 4 entrenamientos, uno por cada fecha de constraints.suggested_split. No repitas un entrenamiento ya escrito.",
+              "items" : {
+                "additionalProperties" : false,
+                "properties" : {
+                  "exercises" : {
+                    "description" : "Los ejercicios de esa sesion, sin repetir exercise_id dentro de la misma sesion.",
+                    "items" : {
+                      "additionalProperties" : false,
+                      "properties" : {
+                        "exercise_id" : {
+                          "type" : "integer"
+                        },
+                        "exercise_order" : {
+                          "type" : "integer"
+                        },
+                        "notes" : {
+                          "type" : [ "string", "null" ]
+                        },
+                        "planned_duration_seconds" : {
+                          "type" : [ "integer", "null" ]
+                        },
+                        "planned_reps" : {
+                          "type" : [ "integer", "null" ]
+                        },
+                        "planned_sets" : {
+                          "type" : [ "integer", "null" ]
+                        },
+                        "prescription_type" : {
+                          "enum" : [ "SETS_REPS", "DURATION" ],
+                          "type" : "string"
+                        },
+                        "rest_seconds" : {
+                          "type" : [ "integer", "null" ]
+                        },
+                        "target_load_kg" : {
+                          "type" : [ "number", "null" ]
+                        }
+                      },
+                      "required" : [ "exercise_id", "exercise_order", "prescription_type", "planned_sets", "planned_reps", "planned_duration_seconds", "target_load_kg", "rest_seconds", "notes" ],
+                      "type" : "object"
+                    },
+                    "type" : "array"
+                  },
+                  "expected_duration_minutes" : {
+                    "type" : "integer"
+                  },
+                  "focus_code" : {
+                    "enum" : [ "FULL_BODY", "UPPER_BODY", "LOWER_BODY", "PUSH", "PULL", "LEGS", "CORE" ],
+                    "type" : "string"
+                  },
+                  "scheduled_date" : {
+                    "type" : "string"
+                  },
+                  "workout_name" : {
+                    "type" : "string"
+                  }
+                },
+                "required" : [ "scheduled_date", "focus_code", "workout_name", "expected_duration_minutes", "exercises" ],
+                "type" : "object"
+              },
+              "type" : "array"
+            }
+          },
+          "required" : [ "schema_version", "plan_name", "total_volume", "rationale", "workouts" ],
+          "type" : "object"
+        },
+        "type" : "json_schema"
+      }
+    },
+    "model" : "gpt-5-mini",
+    "prompt" : "Eres un entrenador que diseña planes semanales de entrenamiento.\nDevuelve UNICAMENTE el objeto JSON del esquema, sin texto adicional.\n\nREGLA PRIORITARIA DE ESTA SEMANA\nCapacidades principales factibles para esta persona: CARDIO.\nLas principales son el eje de CADA sesion, no un ejercicio suelto de la semana.\nConstruye cada sesion en este orden:\n1. Pon primero, en ESA sesion, al menos una colocacion de cada principal\n   factible, con una dosis de esa capacidad (un codigo de \"dosis\" que empiece\n   por ella).\n   Con CARDIO como unica principal, pon dos bloques de CARDIO por sesion si\n   hay ejercicios para ello.\n2. Solo despues completa el tiempo con las secundarias (STRENGTH), sin pasar de\n   constraints.max_colocaciones_dia ejercicios por sesion.\n3. Si no cabe todo, quita secundarias, nunca la principal de esa sesion.\nUn mismo ejercicio puede repetirse en dias que no sean consecutivos.\nUna semana que omite una principal factible se rechaza entera.\nEstas principales tienen pocos ejercicios posibles; elige entre estos exercise_id:\n  CARDIO: [253, 853, 1054, 1093, 1117]\n\nReglas que el backend verifica y que invalidan tu propuesta si no se cumplen:\n1.  Usa solo exercise_id presentes en available_exercises. No inventes ninguno.\n2.  Genera exactamente tantos entrenamientos como days_per_week,\n    uno por cada fecha de constraints.suggested_split. Ni uno mas:\n    no repitas un entrenamiento ya escrito.\n3.  Programa solo en fechas cuyo dia de la semana este en available_days,\n    dentro del rango week_start_date a week_end_date, formato AAAA-MM-DD.\n4.  expected_duration_minutes no puede superar session_minutes mas 15 %.\n5.  Cada entrenamiento lleva al menos 2 ejercicios.\n6.  Ningun ejercicio puede superar max_difficulty_level.\n7.  Usa el prescription_type que trae cada ejercicio en\n    available_exercises; el backend rechaza otro distinto.\n    SETS_REPS exige planned_sets y planned_reps.\n    DURATION exige planned_duration_seconds.\n8.  Si adjustment.target_volume no es null, la suma de volumen debe caer entre target_volume_min\n    y target_volume_max. Volumen = planned_sets x planned_reps, o\n    planned_duration_seconds x planned_sets / 30 para los de duracion.\n    La carga NO cuenta como volumen.\n9.  Minimo 2 series por ejercicio SETS_REPS. Las repeticiones, en la regla 16.\n10. Minimo 20 segundos en los ejercicios de duracion.\n11. target_load_kg sigue el principio 8. Sin peso anotado la semana\n    anterior va en null; nunca sube mas de un 10 % sobre el peso\n    usado, y solo si hizo todas las repeticiones.\n12. No pongas dos entrenamientos el mismo dia.\n13. No repitas el mismo focus_code en dias consecutivos. Usa las\n    fechas y enfoques de constraints.suggested_split: ya cumplen\n    esta regla y la 18. Si propones otra division, debe cumplirlas.\n14. Si safety_notes no es null, respetalo al prescribir.\n    available_exercises YA excluye lo prohibido, pero de los que\n    quedan elige y pauta las variantes mas conservadoras: rango de\n    movimiento comodo y sin dolor, menos series, mas descanso.\n15. Cada entrenamiento debe CUBRIR su enfoque, no repetir zona.\n    Un FULL_BODY con seis ejercicios de biceps no es cuerpo\n    completo. Cada sesion de constraints.suggested_split trae sus\n    cuotas ya calculadas: usa body_parts (los grupos que admite),\n    cubre al menos min_body_parts de ellos y no pongas mas de\n    max_per_body_part ejercicios del mismo body_part. Reparte\n    entre los grupos hasta completar los ejercicios de la sesion:\n    si un grupo llega a su tope, sigue por otro.\n16. Las repeticiones las decides tu, ejercicio por ejercicio,\n    con los PRINCIPIOS DE PRESCRIPCION de mas abajo. Cada ejercicio\n    de available_exercises trae su min_reps: planned_reps nunca\n    baja de ese numero ni supera constraints.max_reps. min_reps ya\n    tiene en cuenta la zona y el nivel de la persona: usalo tal\n    cual, no lo recalcules. Ese limite NO es un objetivo: es solo\n    el borde de lo absurdo, y NO es el valor por defecto.\n    Parte de constraints.target_reps y target_sets, la prescripcion\n    del objetivo de esta persona, y apartate de ahi ejercicio por\n    ejercicio segun los principios. No pongas la misma prescripcion\n    a todos los ejercicios.\n    Cuando clase_dosis tenga un valor no nulo, la dosis de esa clase\n    manda sobre target_reps y target_sets: no te apartes de ella. Los demas\n    siguen partiendo de target_reps y target_sets.\n17. La duracion de cada sesion la calcula el backend con el\n    contenido que prescribes y fija expected_duration_minutes con\n    ese valor; no hace falta que la calcules tu. La formula es:\n      minutos = 5 de calentamiento\n              + por ejercicio: series x repeticiones x 3 s\n                               (o series x segundos si es DURATION)\n              + por ejercicio: (series - 1) x descanso\n              + 1 minuto de transicion entre ejercicios\n    Usala para comprobar que cada sesion llega a su minimo: el\n    bloque DURACION CALCULADA de abajo da ese minimo en segundos y\n    lo que cuesta cada dosis.\n    Si constraints.min_session_minutes no es null, cada sesion\n    debe durar al menos eso: la persona reservo ese tiempo. Llega\n    con ejercicios o series, no con descanso: rest_seconds nunca\n    supera constraints.max_rest_seconds.\n    constraints.min_exercises_per_session dice cuantos ejercicios\n    hacen falta para llegar a ese minimo. Se calcula con la dosis\n    de la tabla cuando hay clase_dosis, y con target_sets x\n    target_reps cuando no. Usalo como referencia al armar cada\n    sesion: con menos ejercicios solo llegas subiendo series o\n    repeticiones, y eso solo es posible si clase_dosis es null.\n18. Recuperacion entre dias consecutivos: el mismo exercise_id\n    no se repite en dos dias seguidos, y chest, back, shoulders y\n    upper legs no se trabajan dos dias seguidos. Con dias\n    seguidos alterna tren superior e inferior (o empuje y\n    traccion). waist, upper arms y lower legs si pueden repetirse.\n19. Si adjustment.types incluye REDUCE_VOLUME, cada ejercicio de\n    constraints.reduce_volume_caps no puede superar su max_sets ni\n    su max_reps. reason HOLD: la persona no lo completo o le costo;\n    no lo subas. reason COMPLETED: lo hizo bien; puede progresar\n    un poco, hasta el tope. El volumen total igual debe bajar: si\n    te falta volumen, anade ejercicios nuevos del enfoque en vez de\n    subir los repetidos. Antes de responder, revisa uno por uno los\n    exercise_id de esa lista que uses.\n20. En PUSH, de upper arms solo ejercicios de triceps; en PULL, solo\n    de biceps. Mira target_muscle de cada ejercicio.\navailable_exercises viene agrupado por body_part y mezclado dentro\nde cada grupo: NO tomes los primeros de la lista. Lee el body_part\nde cada uno y elige a proposito.\n\nY elige pensando en el objetivo del participante (user.goal_type y\nuser.goal_text), no solo en lo que cabe: no es lo mismo preparar a\nalguien que quiere perder peso que a quien busca fuerza maxima.\n\nUn plan que el participante no puede hacer no es solo un plan\nmalo: produce un dato falso. Si no encaja con el, su adherencia\nbajara y el sistema lo interpretara como falta de compromiso.\n\nGrupos que admite cada focus_code. Elige el foco ANTES de elegir\nlos ejercicios, y no metas grupos que ese foco no admite:\n  FULL_BODY   chest, back, upper legs, shoulders, waist\n  UPPER_BODY  chest, back, shoulders, upper arms\n  LOWER_BODY  upper legs, lower legs, waist\n  PUSH        chest, shoulders, upper arms\n  PULL        back, upper arms\n  LEGS        upper legs, lower legs\n  CORE        waist\n\ntotal_volume debe ser la suma real de tus prescripciones: el backend la\nrecalcula y rechaza la propuesta si no coincide.\n\nrationale se le muestra al usuario: escribelo en espanol, en segunda persona,\nbreve y concreto. Si adjustment.target_volume no es null, di con\nclaridad si el volumen sube, baja o se mantiene y por que (usa\nadjustment.reason). Nunca digas que se mantiene si baja o sube.\n\nPRINCIPIOS DE PRESCRIPCION (version P-1.3). Aplicalos a CADA ejercicio.\n\n1. ESFUERZO. No hace falta llegar al fallo. Elige las repeticiones para\n   que la persona termine cada serie con unas 2-3 repeticiones en reserva.\n\n2. LAS REPETICIONES DEPENDEN DEL EJERCICIO, no de un numero fijo. Un\n   ejercicio pequeno o facil (gemelos, abdominales) necesita mas\n   repeticiones para ser exigente que uno grande o dificil (dominadas,\n   sentadilla bulgara). No repitas la misma prescripcion en todo el plan\n   por comodidad.\n\n3. OBJETIVO (user.goal_type).\n   - INCREASE_STRENGTH: 2-3 series, ejercicio prioritario al inicio de la\n     sesion. Repeticiones bajas solo si la persona puede ajustar la carga.\n   - GAIN_MUSCLE: sirven rangos amplios si el esfuerzo es suficiente.\n     Orientacion: unas 10 series por grupo muscular a la semana, si la\n     sesion lo permite.\n   - LOSE_WEIGHT o GENERAL_FITNESS: rangos moderados; prioriza que la\n     persona pueda sostener el plan.\n\n4. EJECUCION. Rango de movimiento completo cuando el ejercicio lo permita,\n   movimiento controlado.\n\n5. NIVEL (user.fitness_level).\n   - BEGINNER: ejercicios simples, 2 series (salvo que el ejercicio\n     tenga clase_dosis no nula, que manda), repeticiones moderadas o altas,\n     unas 3 en reserva, prioridad a la tecnica.\n   - INTERMEDIATE: 2-3 series, 2-3 en reserva.\n   - ADVANCED: 2-3 o mas series segun el volumen semanal.\n\n6. ENTORNO Y HERRAMIENTAS (constraints.training_location y\n   user.equipment_codes).\n   - GYM: prescribe repeticiones; la persona elige el peso con el que\n     llegue a ellas dejando 2-3 en reserva.\n   - Casa con peso corporal: si la variante es facil, elige una mas\n     dificil (unilateral, mas palanca) o sube repeticiones. Nunca bajes\n     repeticiones para \"hacerla de fuerza\".\n   - Ligas (band): la tension se regula con la liga; repeticiones medias.\n   - Mancuernas o pesas rusas en casa: asume peso fijo. Si queda facil,\n     sube repeticiones o usa una variante unilateral.\n\n7. TIPO DE PRESCRIPCION. Usa el prescription_type que trae cada ejercicio\n   en available_exercises: DURATION va por segundos, SETS_REPS por\n   repeticiones. No lo cambies.\n\n8. PESO SUGERIDO (target_load_kg). Es solo una sugerencia para la persona\n   y solo en ejercicios SETS_REPS. Nunca inventes kilos.\n   - Si ese ejercicio no tiene actual_load_kg en previous_week, dejalo en\n     null.\n   - Puedes repetir el peso que uso o sugerir menos.\n   - Sugiere mas peso solo si hizo todas las repeticiones pedidas, como\n     maximo un 10 % sobre el peso que uso, y sin subir series ni\n     repeticiones de ese ejercicio.\n   - Si la siguiente pesa sube mas de un 10 % (por ejemplo de 8 a 10 kg),\n     manten el peso y sube repeticiones.\n   - Si ese dia tuvo session_rpe de 8 o mas, no subas el peso.\n   - Si adjustment.types incluye LOWER_LOAD, no subas ningun peso.\n\n9. DESEMPENO DE LA SEMANA ANTERIOR (previous_week.workouts). Usalo para\n   decidir DONDE y COMO ajustar cada ejercicio. CUANTO cambia el volumen\n   total lo fija adjustment; no lo cambies por tu cuenta.\n   - exercise_status COMPLETED: puedes mantenerlo o progresarlo.\n   - PARTIAL: baja repeticiones o usa una variante mas facil del mismo\n     grupo muscular.\n   - SKIPPED con PAIN_OR_DISCOMFORT: no lo repitas; elige otro de la\n     misma zona, mas conservador.\n   - SKIPPED con TOO_DIFFICULT o FATIGUE: variante mas facil.\n   - SKIPPED con LACK_OF_TIME, SCHEDULE_CHANGE o LACK_OF_MOTIVATION: no\n     bajes la dificultad por eso.\n   - NOT_RECORDED o recorded false: no hay datos. No lo interpretes como\n     fracaso ni como exito.\n   - session_rpe es el esfuerzo de TODO el dia (1-10) y es una senal\n     secundaria: el cumplimiento manda. Con 8 o mas, no progreses los\n     ejercicios de ese dia aunque se completaran. Con 5 o menos y todo\n     completo, puedes progresarlos.\n   - actual_load_kg es el peso que uso la persona: base del peso\n     sugerido (principio 8).\n\nCAPACIDADES DEL OBJETIVO (constraints.capacidades no es null):\n- Cada ejercicio de available_exercises trae en \"dosis\" los codigos que\n  admite; cada codigo esta definido en constraints.capacidades.dosis. Cada\n  ejercicio que pongas debe llevar EXACTAMENTE una de esas dosis: series\n  (entre series y series_max), reps o segundos y descanso_segundos tal\n  cual. Esa dosis es la que decide que capacidad trabaja: el codigo empieza\n  por la capacidad (CARDIO_1 trabaja CARDIO). Una dosis distinta se rechaza.\n- Primero incluye todas las capacidades de principales_factibles: cada una\n  al menos una vez en la semana. Despues completa el tiempo con las\n  secundarias. Una secundaria nunca puede ocupar el lugar de una principal\n  factible.\n- Las de no_factibles no se exigen: el participante no las puede hacer con\n  sus condiciones. No las sustituyas por algo inseguro ni por un circuito.\n- Solo puedes usar los ejercicios de available_exercises: los que no\n  aportan nada al objetivo ya no estan en la lista.\n\nDURACION CALCULADA (backend): cada sesion debe sumar al menos 1260 s; el calentamiento cuenta 300 s y cada ejercicio despues del primero 60 s de transicion.\n\nDatos de entrada:\n{\"schema_version\":\"GEN-IN-1.13\",\"principles_version\":\"P-1.3\",\"prompt_version\":\"PR-1.7\",\"user\":{\"age\":41,\"biological_sex\":\"FEMALE\",\"height_cm\":160.00,\"weight_kg\":88.00,\"target_weight_kg\":null,\"fitness_level\":\"BEGINNER\",\"goal_type\":\"LOSE_WEIGHT\",\"goal_text\":\"campana MVP U03\",\"health_notes\":\"Ninguna\",\"equipment_codes\":[\"body weight\",\"band\"]},\"constraints\":{\"week_number\":1,\"week_start_date\":\"2026-11-02\",\"week_end_date\":\"2026-11-08\",\"days_per_week\":4,\"available_days\":[1,2,3,4,5,6,7],\"session_minutes\":30,\"training_location\":\"HOME\",\"max_difficulty_level\":1,\"max_reps\":30,\"target_reps\":15,\"target_sets\":2,\"min_session_minutes\":21,\"min_exercises_per_session\":6,\"max_rest_seconds\":180,\"suggested_split\":[{\"scheduled_date\":\"2026-11-02\",\"focus_code\":\"UPPER_BODY\",\"body_parts\":[\"chest\",\"back\",\"shoulders\",\"upper arms\"],\"min_body_parts\":2,\"max_per_body_part\":3},{\"scheduled_date\":\"2026-11-04\",\"focus_code\":\"LOWER_BODY\",\"body_parts\":[\"upper legs\",\"lower legs\",\"waist\"],\"min_body_parts\":2,\"max_per_body_part\":3},{\"scheduled_date\":\"2026-11-06\",\"focus_code\":\"UPPER_BODY\",\"body_parts\":[\"chest\",\"back\",\"shoulders\",\"upper arms\"],\"min_body_parts\":2,\"max_per_body_part\":3},{\"scheduled_date\":\"2026-11-07\",\"focus_code\":\"LOWER_BODY\",\"body_parts\":[\"upper legs\",\"lower legs\",\"waist\"],\"min_body_parts\":2,\"max_per_body_part\":3}],\"reduce_volume_caps\":null,\"dosis_por_clase\":null,\"max_colocaciones_dia\":8,\"minutos_utiles_dia\":null,\"slots_exigibles\":null,\"capacidades\":{\"version\":\"4D-v4\",\"principales\":[\"CARDIO\"],\"secundarias\":[\"STRENGTH\"],\"principales_factibles\":[\"CARDIO\"],\"no_factibles\":{},\"dosis\":[{\"codigo\":\"CARDIO_1\",\"capacidad\":\"CARDIO\",\"series\":3,\"series_max\":3,\"segundos\":90,\"descanso_segundos\":60},{\"codigo\":\"STRENGTH_1\",\"capacidad\":\"STRENGTH\",\"series\":2,\"series_max\":3,\"reps\":8,\"descanso_segundos\":120}],\"candidatos_escasos\":{\"CARDIO\":[253,853,1054,1093,1117]}}},\"adjustment\":{\"types\":[\"NONE\"],\"target_volume\":null,\"target_volume_min\":null,\"target_volume_max\":null,\"target_volume_change_pct\":0.0,\"load_change_pct\":0.0,\"max_difficulty_level\":null,\"reason\":null,\"dominant_skip_reason\":null,\"distribution_hint\":null},\"previous_week\":null,\"available_exercises\":[{\"exercise_id\":853,\"name\":\"Media sentadilla\",\"body_part\":\"cardio\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"DURATION\",\"target_muscle\":\"cardiovascular system\",\"movement_pattern\":\"LOCOMOTION_CARDIO\",\"dosis\":[\"CARDIO_1\"]},{\"exercise_id\":253,\"name\":\"Gateo de oso\",\"body_part\":\"cardio\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"DURATION\",\"target_muscle\":\"cardiovascular system\",\"movement_pattern\":\"LOCOMOTION_CARDIO\",\"dosis\":[\"CARDIO_1\"]},{\"exercise_id\":1117,\"name\":\"Pies rápidos v. 2\",\"body_part\":\"cardio\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"DURATION\",\"target_muscle\":\"cardiovascular system\",\"movement_pattern\":\"LOCOMOTION_CARDIO\",\"dosis\":[\"CARDIO_1\"]},{\"exercise_id\":1093,\"name\":\"Empujar para correr\",\"body_part\":\"cardio\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"DURATION\",\"target_muscle\":\"cardiovascular system\",\"movement_pattern\":\"LOCOMOTION_CARDIO\",\"dosis\":[\"CARDIO_1\"]},{\"exercise_id\":1054,\"name\":\"Escalador\",\"body_part\":\"cardio\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"DURATION\",\"target_muscle\":\"cardiovascular system\",\"movement_pattern\":\"LOCOMOTION_CARDIO\",\"dosis\":[\"CARDIO_1\"]},{\"exercise_id\":1138,\"name\":\"Flexión de escápula\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"serratus anterior\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1334,\"name\":\"Flexión con manos anchas\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1097,\"name\":\"Flexión en pared\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1099,\"name\":\"Flexión de brazos con extensión de hombro\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1111,\"name\":\"Flexión con patada de pierna externa\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1262,\"name\":\"Flexión con desplazamiento de araña\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":494,\"name\":\"Flexión en reloj\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1095,\"name\":\"Empuje y tracción con peso corporal\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1098,\"name\":\"Flexión en pared versión 2\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1058,\"name\":\"Flexión hindú modificada\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1115,\"name\":\"Flexión con patada interna\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":933,\"name\":\"Flexión de rodillas en apoyo\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1113,\"name\":\"Flexión pike a cobra\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1096,\"name\":\"Flexión\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1155,\"name\":\"Press de pecho sentado con banda\",\"body_part\":\"chest\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1179,\"name\":\"Flexión con toques de hombro\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":460,\"name\":\"Flexión con toques de pecho\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":496,\"name\":\"Flexión con caída controlada\",\"body_part\":\"chest\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"pectorals\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1206,\"name\":\"Flexión lateral\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":508,\"name\":\"Flexión de agarre cerrado\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":318,\"name\":\"Levantamiento de cuerpo\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1320,\"name\":\"Dip de tríceps en piso\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":129,\"name\":\"Flexión con agarre cerrado\",\"body_part\":\"upper arms\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1120,\"name\":\"Flexión en antebrazos\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":509,\"name\":\"Flexión cerrada con rodillas\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1152,\"name\":\"Fondos invertidos\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":510,\"name\":\"Flexión diamante\",\"body_part\":\"upper arms\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"triceps\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1154,\"name\":\"Press de hombro sentado con banda\",\"body_part\":\"shoulders\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"delts\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":101,\"name\":\"Press de hombros con banda\",\"body_part\":\"shoulders\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"delts\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":136,\"name\":\"Press por encima de la cabeza con giro y banda\",\"body_part\":\"shoulders\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"delts\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":135,\"name\":\"Remo de deltoides traseros con banda, de pie\",\"body_part\":\"shoulders\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"delts\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PULL\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":144,\"name\":\"Sentadilla con banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":148,\"name\":\"Peso muerto de piernas rígidas con banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_HINGE\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":939,\"name\":\"Abdominal patada\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"hamstrings\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":877,\"name\":\"Zancada hacia adelante (hombre)\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1114,\"name\":\"Sentadilla de baño con apoyo\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1264,\"name\":\"Sentadilla con alcance por encima\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"quads\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1195,\"name\":\"Curl invertido de piernas asistido\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"hamstrings\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":142,\"name\":\"Peso muerto con piernas rectas con banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"hamstrings\",\"min_reps\":8,\"movement_pattern\":\"HIP_HINGE\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1076,\"name\":\"Sentadilla marcha (contra la pared)\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":122,\"name\":\"Elevacion de cadera con banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_EXTENSION\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":145,\"name\":\"Sentadilla con remo en banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1265,\"name\":\"Sentadilla con alcance por encima y giro\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"quads\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1315,\"name\":\"Zancada caminando\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1205,\"name\":\"Sentadilla sissy\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"quads\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1118,\"name\":\"Puente trasero declinado\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_EXTENSION\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1157,\"name\":\"Puente de cadera con banda en rodillas\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_EXTENSION\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1059,\"name\":\"Zancada con giro\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"quads\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":507,\"name\":\"Sentadilla curtsy\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":147,\"name\":\"Peso muerto con piernas rígidas y banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_HINGE\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1112,\"name\":\"Inclinación pélvica hacia puente\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_EXTENSION\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1103,\"name\":\"Sentadilla de baño\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"quads\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1073,\"name\":\"Puente de glúteos bajo en el suelo\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_EXTENSION\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":125,\"name\":\"Pase de banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_HINGE\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1263,\"name\":\"Sentadillas búlgaras\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"quads\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1196,\"name\":\"Curl de piernas invertido asistido\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"hamstrings\",\"min_reps\":8,\"movement_pattern\":\"KNEE_DOMINANT\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":878,\"name\":\"Marcha en puente de glúteos\",\"body_part\":\"upper legs\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_EXTENSION\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":121,\"name\":\"Extensión de cadera inclinada con banda\",\"body_part\":\"upper legs\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"glutes\",\"min_reps\":8,\"movement_pattern\":\"HIP_EXTENSION\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":775,\"name\":\"Elevación de codo y push-up invertido\",\"body_part\":\"back\",\"equipment\":\"body weight\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"upper back\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PUSH\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":116,\"name\":\"Jalón bajo con banda y agarre supino\",\"body_part\":\"back\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"lats\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PULL\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":114,\"name\":\"Jalón con agarre cerrado\",\"body_part\":\"back\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"lats\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PULL\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":117,\"name\":\"Jalón a una mano de rodillas con banda\",\"body_part\":\"back\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"lats\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PULL\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":119,\"name\":\"Remo sentado a una mano con giro\",\"body_part\":\"back\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"upper back\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PULL\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":143,\"name\":\"Jalón con agarre supino\",\"body_part\":\"back\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"lats\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PULL\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":1156,\"name\":\"Remo sentado con banda de espalda recta\",\"body_part\":\"back\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"upper back\",\"min_reps\":8,\"movement_pattern\":\"HORIZONTAL_PULL\",\"dosis\":[\"STRENGTH_1\"]},{\"exercise_id\":115,\"name\":\"Jalón cercano con banda y agarre estrecho\",\"body_part\":\"back\",\"equipment\":\"band\",\"difficulty\":1,\"prescription_type\":\"SETS_REPS\",\"target_muscle\":\"lats\",\"min_reps\":8,\"movement_pattern\":\"VERTICAL_PULL\",\"dosis\":[\"STRENGTH_1\"]}],\"safety_notes\":\"El participante tiene restricciones de seguridad. Evita cualquier movimiento explosivo o de impacto, aunque el ejercicio lo permita. Evita suspenderse de una barra. Prefiere rangos de movimiento moderados y progresion conservadora.\"}\n\nANTES DE ESCRIBIR EL JSON, COMPRUEBA:\n- Cada sesion tiene al menos una colocacion de cada una de CARDIO, con una dosis\n  de esa capacidad copiada tal cual de constraints.capacidades.dosis.\n- Ninguna secundaria ocupa el lugar de una principal factible.\n- Cada ejercicio lleva una dosis que su lista \"dosis\" admite.\n- Ninguna sesion pasa de constraints.max_colocaciones_dia ejercicios.\n- En cada sesion, ningun body_part pasa del max_per_body_part de su\n  sesion en constraints.suggested_split.\nSi algo falla, corrige la semana antes de responder.\n\nINTENTO ANTERIOR RECHAZADO\nEsta fue tu propuesta anterior:\n{\"plan_name\":\"Semana CARDIO + fuerza ligera (inicio)\",\"rationale\":\"Tendrás 4 sesiones enfocadas en CARDIO (2 bloques por sesión) para favorecer la pérdida de peso; añadí fuerza como secundaria para mantener masa y hábito, con variantes conservadoras y rango cómodo para tu nivel principiante.\",\"schema_version\":\"GEN-IN-1.13\",\"total_volume\":328,\"workouts\":[{\"exercises\":[{\"exercise_id\":253,\"exercise_order\":1,\"notes\":\"Ritmo moderado, rango cómodo. Evita impacto.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":853,\"exercise_order\":2,\"notes\":\"Mantén control y respiración, sin impacto.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":1097,\"exercise_order\":3,\"notes\":\"Rango de movimiento cómodo; prioriza técnica.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":116,\"exercise_order\":4,\"notes\":\"Tira con control, evita tirones. Banda ligera si es necesario.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":101,\"exercise_order\":5,\"notes\":\"Presiona controlado, rango cómodo.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":129,\"exercise_order\":6,\"notes\":\"Evita dolor en codo; rango cómodo.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null}],\"expected_duration_minutes\":34,\"focus_code\":\"UPPER_BODY\",\"scheduled_date\":\"2026-11-02\",\"workout_name\":\"Upper body + CARDIO\"},{\"exercises\":[{\"exercise_id\":1054,\"exercise_order\":1,\"notes\":\"Ritmo moderado, sin saltos bruscos.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":1117,\"exercise_order\":2,\"notes\":\"Mantén postura neutra, evita impacto.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":144,\"exercise_order\":3,\"notes\":\"Sentadilla con banda, rango cómodo, controla descenso.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":148,\"exercise_order\":4,\"notes\":\"Peso muerto con banda, espalda neutra, movimiento controlado.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":122,\"exercise_order\":5,\"notes\":\"Elevación de cadera con banda: control y sin dolor lumbar.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":1112,\"exercise_order\":6,\"notes\":\"Inclinación pélvica a puente: movimiento cómodo, sin rebotes.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null}],\"expected_duration_minutes\":34,\"focus_code\":\"LOWER_BODY\",\"scheduled_date\":\"2026-11-04\",\"workout_name\":\"Lower body + CARDIO\"},{\"exercises\":[{\"exercise_id\":1093,\"exercise_order\":1,\"notes\":\"Ritmo moderado, evita impacto y cambios bruscos.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":253,\"exercise_order\":2,\"notes\":\"Gateo controlado, respiración regular.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":1099,\"exercise_order\":3,\"notes\":\"Flexión con extensión de hombro: rango cómodo y control.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":1156,\"exercise_order\":4,\"notes\":\"Remo sentado con banda: espalda recta, tira con control.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":1154,\"exercise_order\":5,\"notes\":\"Press de hombro sentado con banda: movimiento controlado.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":1206,\"exercise_order\":6,\"notes\":\"Flexión lateral: evita dolor, rango cómodo.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null}],\"expected_duration_minutes\":34,\"focus_code\":\"UPPER_BODY\",\"scheduled_date\":\"2026-11-06\",\"workout_name\":\"Upper body + CARDIO\"},{\"exercises\":[{\"exercise_id\":1054,\"exercise_order\":1,\"notes\":\"Ritmo constante, sin saltos bruscos.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":1117,\"exercise_order\":2,\"notes\":\"Pies rápidos a ritmo controlado.\",\"planned_duration_seconds\":90,\"planned_reps\":null,\"planned_sets\":3,\"prescription_type\":\"DURATION\",\"rest_seconds\":60,\"target_load_kg\":null},{\"exercise_id\":1315,\"exercise_order\":3,\"notes\":\"Zancada caminando: paso controlado, evita impacto.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":1103,\"exercise_order\":4,\"notes\":\"Sentadilla de baño: rango cómodo y controlado.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":1076,\"exercise_order\":5,\"notes\":\"Sentadilla marcha contra la pared: control y postura.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null},{\"exercise_id\":122,\"exercise_order\":6,\"notes\":\"Elevación de cadera con banda: sin dolor lumbar.\",\"planned_duration_seconds\":null,\"planned_reps\":8,\"planned_sets\":2,\"prescription_type\":\"SETS_REPS\",\"rest_seconds\":120,\"target_load_kg\":null}],\"expected_duration_minutes\":34,\"focus_code\":\"LOWER_BODY\",\"scheduled_date\":\"2026-11-07\",\"workout_name\":\"Lower body + CARDIO\"}]}\n\nEl backend la rechazo por estos motivos:\n- V15: el entrenamiento del 2026-11-04 dedica 4 de 4 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY.\n- V15: el entrenamiento del 2026-11-07 dedica 4 de 4 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY.\n\nDevuelve la propuesta COMPLETA corregida, partiendo de la anterior:\ncambia solo lo necesario para resolver cada motivo y conserva lo que\nya estaba bien. Si un motivo nombra un exercise_id, corrige ese\nejercicio. Si una sesion no llega al minimo de minutos, anadele un\nejercicio en vez de rehacerla; anade series solo si clase_dosis\nes null y el ejercicio es SETS_REPS.\nNO quites ejercicios ni sesiones para corregir, SALVO que un motivo\ndel rechazo exija bajar el numero de ejercicios o las series: en ese\ncaso quitalos y conserva lo demas. Fuera de ese caso, cada sesion\nconserva al menos los ejercicios que ya tenia. Si sobran de un grupo muscular,\nREEMPLAZALOS por otros del enfoque, nunca los elimines sin reponerlos.\nLa lista de motivos solo nombra lo que fallo esta vez: TODAS las\nreglas siguen valiendo. Antes de responder, repasa tu nueva propuesta\ncontra las reglas 1 a 20 completas, no solo contra los motivos.\nplan_name y rationale no mencionan el rechazo ni la correccion: el\nparticipante solo ve el plan final.\n",
+    "reasoning_effort" : "medium"
+  },
+  "logs" : "No sid\nResponse completed: resp_03038666df41a15f006ae578e35b1087d2bef177efa23f76b8\nModel variant: gpt-5-mini\nInput token count: 11457\nOutput token count: 9395\n - Reasoning tokens: 6784\nTotal token count: 20852\nTTFT: 0.27s\n",
+  "output" : {
+    "json_output" : {
+      "plan_name" : "Semana CARDIO + fuerza ligera (inicio)",
+      "rationale" : "Tendrás 4 sesiones con foco principal en CARDIO (bloques al inicio de cada sesión) para favorecer la pérdida de peso; añadí fuerza ligera como secundaria para mantener masa y hábito, con variantes conservadoras y rango cómodo para tu nivel principiante.",
+      "schema_version" : "GEN-IN-1.13",
+      "total_volume" : 314,
+      "workouts" : [ {
+        "exercises" : [ {
+          "exercise_id" : 253,
+          "exercise_order" : 1,
+          "notes" : "Ritmo moderado, rango cómodo. Evita impacto.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 853,
+          "exercise_order" : 2,
+          "notes" : "Mantén control y respiración, sin impacto.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1097,
+          "exercise_order" : 3,
+          "notes" : "Flexión en pared: rango cómodo y control, prioridad a técnica.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 116,
+          "exercise_order" : 4,
+          "notes" : "Jalón con banda: tira con control, evita tirones y rangos bruscos.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 101,
+          "exercise_order" : 5,
+          "notes" : "Press de hombros con banda: movimiento controlado y cómodo.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 129,
+          "exercise_order" : 6,
+          "notes" : "Flexión con agarre cerrado (banda): evita dolor en codo; rango cómodo.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        } ],
+        "expected_duration_minutes" : 34,
+        "focus_code" : "UPPER_BODY",
+        "scheduled_date" : "2026-11-02",
+        "workout_name" : "Upper body + CARDIO"
+      }, {
+        "exercises" : [ {
+          "exercise_id" : 1054,
+          "exercise_order" : 1,
+          "notes" : "Escalador a ritmo moderado, sin saltos bruscos, rango cómodo.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1117,
+          "exercise_order" : 2,
+          "notes" : "Pies rápidos v.2: postura neutra, evita impacto.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1093,
+          "exercise_order" : 3,
+          "notes" : "Empujar para correr: ritmo controlado, sin impactos explosivos.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 144,
+          "exercise_order" : 4,
+          "notes" : "Sentadilla con banda: controla descenso y evita dolor.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 148,
+          "exercise_order" : 5,
+          "notes" : "Peso muerto de piernas rígidas con banda: espalda neutra, movimiento controlado.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 122,
+          "exercise_order" : 6,
+          "notes" : "Elevación de cadera con banda: sin dolor lumbar, movimiento controlado.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        } ],
+        "expected_duration_minutes" : 34,
+        "focus_code" : "LOWER_BODY",
+        "scheduled_date" : "2026-11-04",
+        "workout_name" : "Lower body + CARDIO"
+      }, {
+        "exercises" : [ {
+          "exercise_id" : 1093,
+          "exercise_order" : 1,
+          "notes" : "Empujar para correr: ritmo moderado, evita impacto y cambios bruscos.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 253,
+          "exercise_order" : 2,
+          "notes" : "Gateo de oso: controlado, respiración regular, sin dolor.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1099,
+          "exercise_order" : 3,
+          "notes" : "Flexión de brazos con extensión de hombro: rango cómodo y control.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1156,
+          "exercise_order" : 4,
+          "notes" : "Remo sentado con banda: espalda recta, tira con control.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1154,
+          "exercise_order" : 5,
+          "notes" : "Press de hombro sentado con banda: movimiento controlado, rango cómodo.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1206,
+          "exercise_order" : 6,
+          "notes" : "Flexión lateral: evita dolor, rango cómodo.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        } ],
+        "expected_duration_minutes" : 34,
+        "focus_code" : "UPPER_BODY",
+        "scheduled_date" : "2026-11-06",
+        "workout_name" : "Upper body + CARDIO"
+      }, {
+        "exercises" : [ {
+          "exercise_id" : 1054,
+          "exercise_order" : 1,
+          "notes" : "Escalador: ritmo constante, sin saltos bruscos.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1117,
+          "exercise_order" : 2,
+          "notes" : "Pies rápidos v.2: ritmo controlado, evita impacto.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 853,
+          "exercise_order" : 3,
+          "notes" : "Media sentadilla (cardio): control y sin impacto.",
+          "planned_duration_seconds" : 90,
+          "planned_reps" : null,
+          "planned_sets" : 3,
+          "prescription_type" : "DURATION",
+          "rest_seconds" : 60,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1315,
+          "exercise_order" : 4,
+          "notes" : "Zancada caminando: paso controlado, evita impacto.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1103,
+          "exercise_order" : 5,
+          "notes" : "Sentadilla de baño: rango cómodo y controlado.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        }, {
+          "exercise_id" : 1076,
+          "exercise_order" : 6,
+          "notes" : "Sentadilla marcha (contra la pared): control y postura, evita rebotes.",
+          "planned_duration_seconds" : null,
+          "planned_reps" : 8,
+          "planned_sets" : 2,
+          "prescription_type" : "SETS_REPS",
+          "rest_seconds" : 120,
+          "target_load_kg" : null
+        } ],
+        "expected_duration_minutes" : 34,
+        "focus_code" : "LOWER_BODY",
+        "scheduled_date" : "2026-11-07",
+        "workout_name" : "Lower body + CARDIO"
+      } ]
+    },
+    "response_id" : "resp_03038666df41a15f006ae578e35b1087d2bef177efa23f76b8",
+    "text" : "{\n  \"plan_name\": \"Semana CARDIO + fuerza ligera (inicio)\",\n  \"rationale\": \"Tendrás 4 sesiones con foco principal en CARDIO (bloques al inicio de cada sesión) para favorecer la pérdida de peso; añadí fuerza ligera como secundaria para mantener masa y hábito, con variantes conservadoras y rango cómodo para tu nivel principiante.\",\n  \"schema_version\": \"GEN-IN-1.13\",\n  \"total_volume\": 314,\n  \"workouts\": [\n    {\n      \"exercises\": [\n        {\n          \"exercise_id\": 253,\n          \"exercise_order\": 1,\n          \"notes\": \"Ritmo moderado, rango cómodo. Evita impacto.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 853,\n          \"exercise_order\": 2,\n          \"notes\": \"Mantén control y respiración, sin impacto.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1097,\n          \"exercise_order\": 3,\n          \"notes\": \"Flexión en pared: rango cómodo y control, prioridad a técnica.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 116,\n          \"exercise_order\": 4,\n          \"notes\": \"Jalón con banda: tira con control, evita tirones y rangos bruscos.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 101,\n          \"exercise_order\": 5,\n          \"notes\": \"Press de hombros con banda: movimiento controlado y cómodo.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 129,\n          \"exercise_order\": 6,\n          \"notes\": \"Flexión con agarre cerrado (banda): evita dolor en codo; rango cómodo.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        }\n      ],\n      \"expected_duration_minutes\": 34,\n      \"focus_code\": \"UPPER_BODY\",\n      \"scheduled_date\": \"2026-11-02\",\n      \"workout_name\": \"Upper body + CARDIO\"\n    },\n    {\n      \"exercises\": [\n        {\n          \"exercise_id\": 1054,\n          \"exercise_order\": 1,\n          \"notes\": \"Escalador a ritmo moderado, sin saltos bruscos, rango cómodo.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1117,\n          \"exercise_order\": 2,\n          \"notes\": \"Pies rápidos v.2: postura neutra, evita impacto.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1093,\n          \"exercise_order\": 3,\n          \"notes\": \"Empujar para correr: ritmo controlado, sin impactos explosivos.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 144,\n          \"exercise_order\": 4,\n          \"notes\": \"Sentadilla con banda: controla descenso y evita dolor.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 148,\n          \"exercise_order\": 5,\n          \"notes\": \"Peso muerto de piernas rígidas con banda: espalda neutra, movimiento controlado.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 122,\n          \"exercise_order\": 6,\n          \"notes\": \"Elevación de cadera con banda: sin dolor lumbar, movimiento controlado.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        }\n      ],\n      \"expected_duration_minutes\": 34,\n      \"focus_code\": \"LOWER_BODY\",\n      \"scheduled_date\": \"2026-11-04\",\n      \"workout_name\": \"Lower body + CARDIO\"\n    },\n    {\n      \"exercises\": [\n        {\n          \"exercise_id\": 1093,\n          \"exercise_order\": 1,\n          \"notes\": \"Empujar para correr: ritmo moderado, evita impacto y cambios bruscos.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 253,\n          \"exercise_order\": 2,\n          \"notes\": \"Gateo de oso: controlado, respiración regular, sin dolor.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1099,\n          \"exercise_order\": 3,\n          \"notes\": \"Flexión de brazos con extensión de hombro: rango cómodo y control.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1156,\n          \"exercise_order\": 4,\n          \"notes\": \"Remo sentado con banda: espalda recta, tira con control.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1154,\n          \"exercise_order\": 5,\n          \"notes\": \"Press de hombro sentado con banda: movimiento controlado, rango cómodo.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1206,\n          \"exercise_order\": 6,\n          \"notes\": \"Flexión lateral: evita dolor, rango cómodo.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        }\n      ],\n      \"expected_duration_minutes\": 34,\n      \"focus_code\": \"UPPER_BODY\",\n      \"scheduled_date\": \"2026-11-06\",\n      \"workout_name\": \"Upper body + CARDIO\"\n    },\n    {\n      \"exercises\": [\n        {\n          \"exercise_id\": 1054,\n          \"exercise_order\": 1,\n          \"notes\": \"Escalador: ritmo constante, sin saltos bruscos.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1117,\n          \"exercise_order\": 2,\n          \"notes\": \"Pies rápidos v.2: ritmo controlado, evita impacto.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 853,\n          \"exercise_order\": 3,\n          \"notes\": \"Media sentadilla (cardio): control y sin impacto.\",\n          \"planned_duration_seconds\": 90,\n          \"planned_reps\": null,\n          \"planned_sets\": 3,\n          \"prescription_type\": \"DURATION\",\n          \"rest_seconds\": 60,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1315,\n          \"exercise_order\": 4,\n          \"notes\": \"Zancada caminando: paso controlado, evita impacto.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1103,\n          \"exercise_order\": 5,\n          \"notes\": \"Sentadilla de baño: rango cómodo y controlado.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        },\n        {\n          \"exercise_id\": 1076,\n          \"exercise_order\": 6,\n          \"notes\": \"Sentadilla marcha (contra la pared): control y postura, evita rebotes.\",\n          \"planned_duration_seconds\": null,\n          \"planned_reps\": 8,\n          \"planned_sets\": 2,\n          \"prescription_type\": \"SETS_REPS\",\n          \"rest_seconds\": 120,\n          \"target_load_kg\": null\n        }\n      ],\n      \"expected_duration_minutes\": 34,\n      \"focus_code\": \"LOWER_BODY\",\n      \"scheduled_date\": \"2026-11-07\",\n      \"workout_name\": \"Lower body + CARDIO\"\n    }\n  ]\n}"
+  },
+  "data_removed" : false,
+  "error" : null,
+  "source" : "api",
+  "status" : "succeeded",
+  "created_at" : "2026-10-31T05:13:07.251Z",
+  "started_at" : "2026-10-31T05:13:07.261805682Z",
+  "completed_at" : "2026-10-31T05:14:24.222153188Z",
+  "metrics" : {
+    "model_variant" : "gpt-5-mini",
+    "predict_time" : 76.960347506,
+    "token_input_count" : 11457,
+    "token_output_count" : 9395,
+    "total_time" : 76.971153188
+  }
+}

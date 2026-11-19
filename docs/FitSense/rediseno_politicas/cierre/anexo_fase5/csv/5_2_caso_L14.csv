@@ -1,0 +1,17 @@
+caso,fecha,enfoque,orden,exercise_id,source_code,name_en,name_es,grupo,target,patron,clase,aislamiento,dificultad,high_impact,tipo,series,reps,segundos,descanso,estado
+L14,2026-11-02,UPPER_BODY,1,318,0137,body-up,Levantamiento de cuerpo,upper arms,triceps,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+L14,2026-11-02,UPPER_BODY,2,496,1275,drop push up,Flexión con caída controlada,chest,pectorals,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+L14,2026-11-02,UPPER_BODY,3,775,1772,elbow lift - reverse push-up,Elevación de codo y push-up invertido,back,upper back,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,COMPLETED
+L14,2026-11-02,UPPER_BODY,4,973,2271,left hook. boxing,Giro izquierdo. boxeo,shoulders,delts,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,false,1,false,SETS_REPS,2,10,,90,COMPLETED
+L14,2026-11-03,LOWER_BODY,1,1196,1766,self assisted inverse leg curl,Curl de piernas invertido asistido,upper legs,hamstrings,KNEE_DOMINANT,ESTRUCTURAL,true,1,false,SETS_REPS,2,8,,120,SKIPPED
+L14,2026-11-03,LOWER_BODY,2,1112,1422,pelvic tilt into bridge,Inclinación pélvica hacia puente,upper legs,glutes,HIP_EXTENSION,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,SKIPPED
+L14,2026-11-03,LOWER_BODY,3,294,1373,bodyweight standing calf raise,Elevacion de talones de peso corporal de pie,lower legs,calves,ANKLE_PLANTAR_FLEXION,RESISTIDO,true,1,false,SETS_REPS,2,13,,90,SKIPPED
+L14,2026-11-03,LOWER_BODY,4,1185,3213,side-to-side toe touch (male),Toque de dedos de lado a lado,waist,abs,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,false,1,false,SETS_REPS,2,13,,90,SKIPPED
+L14,2026-11-05,UPPER_BODY,1,1115,0661,push-up inside leg kick,Flexión con patada interna,chest,pectorals,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,SKIPPED
+L14,2026-11-05,UPPER_BODY,2,775,1772,elbow lift - reverse push-up,Elevación de codo y push-up invertido,back,upper back,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,SKIPPED
+L14,2026-11-05,UPPER_BODY,3,509,2398,close-grip push-up (on knees),Flexión cerrada con rodillas,upper arms,triceps,HORIZONTAL_PUSH,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,SKIPPED
+L14,2026-11-05,UPPER_BODY,4,973,2271,left hook. boxing,Giro izquierdo. boxeo,shoulders,delts,TRUNK_ROTATION_LATERAL_FLEXION,RESISTIDO,false,1,false,SETS_REPS,2,10,,90,SKIPPED
+L14,2026-11-06,LOWER_BODY,1,1103,3119,potty squat,Sentadilla de baño,upper legs,quads,KNEE_DOMINANT,ESTRUCTURAL,false,1,false,SETS_REPS,2,8,,120,SKIPPED
+L14,2026-11-06,LOWER_BODY,2,1195,0697,self assisted inverse leg curl,Curl invertido de piernas asistido,upper legs,hamstrings,KNEE_DOMINANT,ESTRUCTURAL,true,1,false,SETS_REPS,2,8,,120,SKIPPED
+L14,2026-11-06,LOWER_BODY,3,1254,1397,standing calves,Gemelos de pie,lower legs,calves,ANKLE_PLANTAR_FLEXION,RESISTIDO,true,1,false,SETS_REPS,2,13,,90,SKIPPED
+L14,2026-11-06,LOWER_BODY,4,57,0001,3/4 sit-up,Abdominal 3/4,waist,abs,TRUNK_FLEXION,RESISTIDO,false,1,false,SETS_REPS,2,13,,90,SKIPPED

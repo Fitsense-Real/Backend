@@ -1,0 +1,3 @@
+103|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo con piernas extendidas
+888|CONFIRMADO|ALTA|requires_kneeling|false|true|Rueda la barra desde de rodillas en el suelo
+1083|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo; cae sobre las manos

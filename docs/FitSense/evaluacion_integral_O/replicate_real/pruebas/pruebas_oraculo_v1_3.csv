@@ -1,0 +1,9 @@
+prueba,esperado,obtenido,resultado
+19 negativas de v1.1 ejecutadas con v1.3,todas PASA,todas PASA,PASA
+identidad + R-1 de v1.2 ejecutadas con v1.3,todas PASA,todas PASA,PASA
+CONTROL O12 R'_O sin mutar,"A5 APROBADO (v1.3), FALLO (v1.2)",v1.3 APROBADO · v1.2 FALLO,PASA
+D1 mas anadidos que retirados ante dolor,O12 FALLO en A5_adaptacion_ia,"{'A5_adaptacion_ia': 'FALLO'} [C1 sesion 182: ante dolor anade 9 [352, 992, 715, 755, 936, 253, 1000, 1002, 1003] retirando 8 [575, 591, 395, 1233, 1117, 532, 853, 455]]",PASA
+D2 trabajo que sube ante dolor,O12 FALLO en A5_adaptacion_ia,{'A5_adaptacion_ia': 'FALLO'} [C1 sesion 182: mas trabajo ante dolor: aumentos [] trabajo 1686->6372],PASA
+D3 anadido mas dificil que lo retirado,O12 FALLO en A5_adaptacion_ia,{'A5_adaptacion_ia': 'FALLO'} [C1 sesion 182: anadido 1067 mas dificil (3) que lo retirado (max 2)],PASA
+D4 el ejercicio que dolio vuelve,O12 FALLO en A5_adaptacion_ia/A10_seguridad_integridad,"{'A5_adaptacion_ia': 'FALLO', 'A10_seguridad_integridad': 'APROBADO'} [C1 sesion 182: dolor de sesion: siguen ejercicios de la sesion medida [575]]",PASA
+D5 fuera del dolor: sustituto de otro patron (O04),O04 FALLO en A5_adaptacion_ia,{'A5_adaptacion_ia': 'FALLO'} [C1 sesion 47: sustituto de otro patron o grupo 529->1000],PASA

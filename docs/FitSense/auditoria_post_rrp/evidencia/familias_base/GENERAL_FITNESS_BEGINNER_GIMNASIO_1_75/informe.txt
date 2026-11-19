@@ -1,0 +1,9 @@
+perfil: GENERAL_FITNESS BEGINNER GIMNASIO 1 dias 75 min
+elegibles: 393 · piso V20: 3150 s · techo V4: 5175 s
+borrador del motor de reglas: 1 problemas
+  - V20: el entrenamiento del 2026-11-02 dura unos 2928 s y el minimo es 3150 s (70 % de 75 minutos): le faltan 222 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.
+sesion 0 2026-11-02 FULL_BODY: 8 ejercicios, 2928 s
+sesion 0 (2026-11-02): 1660 modificaciones de un paso, 0 dejan la sesion sin problemas
+alguna sesion no tiene arreglo de un paso: se prueban pares
+  (pares no implementados aun para la sesion 0)
+redistribucion entre dias consecutivos: 0 de 1 sesiones arregladas; plan completo: [V20: el entrenamiento del 2026-11-02 dura unos 2928 s y el minimo es 3150 s (70 % de 75 minutos): le faltan 222 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]

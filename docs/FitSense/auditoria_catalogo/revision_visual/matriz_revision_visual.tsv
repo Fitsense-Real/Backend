@@ -1,0 +1,165 @@
+exercise_id	lote	veredicto	gravedad	atributo	actual	segun_gif	discrepancia_previa	usuario_31	evidencia
+1320	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false	plan 63	Sentado en el suelo, manos en el suelo detras de la cadera
+1320	prioridad	CONFIRMADO	BAJA	instructions	silla o banco	suelo		plan 63	Las instrucciones describen fondos en silla; el GIF no tiene silla
+776	prioridad	CONFIRMADO	ALTA	requires_hanging / requires_overhead / requires_inversion	false / false / false	true / true / true	V28 aprobo nivel 1 y HIP_HINGE con material de texto	plan 63	Suspension invertida en anillas, cabeza abajo
+776	prioridad	CONFIRMADO	ALTA	difficulty_level	1	3	V28 (nivel 1 aprobado)	plan 63	Habilidad gimnastica en anillas
+776	prioridad	CONFIRMADO	MEDIA	equipment	body weight	gymnastic rings		plan 63	Anillas visibles en todos los fotogramas
+776	prioridad	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HIP_HINGE	no es bisagra de pie (OTHER o VERTICAL_PULL)	V28	plan 63	Cuenta hoy como LOWER_HIP en el slot 4C
+1103	prioridad	CONFIRMADO	MEDIA	body_part / target	waist / abs	upper legs / quads		plan 63	Sentadilla con brazos al frente
+301	prioridad	PROBABLE	MEDIA	movement_pattern	KNEE_DOMINANT	HORIZONTAL_PULL		plan 63	Mantiene la sentadilla y rema el cuerpo hacia la espaldera; cuenta como LOWER_KNEE
+301	prioridad	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)		plan 63	Agarra una espaldera fija
+1185	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true		intento 1	De pie, brazos por encima de la cabeza; no es de suelo
+309	prioridad	CONFIRMADO	ALTA	requires_kneeling	false	true		intento 3	Una rodilla y las manos en el banco, patada de gluteo
+309	prioridad	CONFIRMADO	MEDIA	instructions	hip thrust en banco	patada de gluteo con rodilla en banco		intento 3	Las instrucciones describen otro ejercicio
+791	prioridad	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + cajon o banco		intentos 1-2	Se sienta en un cajon en cada repeticion
+1077	prioridad	CONFIRMADO	BAJA	instructions	con banda	sin banda		plan 63	El GIF no muestra banda; el implemento (peso corporal) coincide
+94	prioridad	SIN_ERROR		-				intentos 1-2	De pie con los dos pies sobre la tabla (las instrucciones dicen un pie)
+505	prioridad	SIN_ERROR		-				intento 3	Banco declinado; inversion=true coherente
+1004	prioridad	SIN_ERROR		-				intentos 2-3	Peso muerto en maquina
+1003	prioridad	SIN_ERROR		-				intentos 1-3	
+144	prioridad	SIN_ERROR		-				plan 63	
+139	prioridad	SIN_ERROR		-				plan 63	
+985	prioridad	SIN_ERROR		-				plan 63	
+1254	prioridad	SIN_ERROR		-				intentos 1-3	
+314	prioridad	CONFIRMADO	MEDIA	equipment	body weight	bench			Manos en un banco, pies en el suelo
+56	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	2	3 (probable)			Flexion arquero
+64	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	2	3 (probable)			Dominada arquero
+68	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba; no es de suelo
+68	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			Flexion y extension de tronco
+108	prioridad	SIN_ERROR		-					Falso positivo de impacto ("jack knife")
+117	prioridad	SIN_ERROR		-					Falso positivo de habilidad
+149	prioridad	PROBABLE	MEDIA	axial_load	false	true			Barra sobre la espalda, de pie (no es de suelo)
+254	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba
+254	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			
+400	prioridad	SIN_ERROR		-					Brazos a la altura del hombro
+448	prioridad	SIN_ERROR		-					Brazos a la altura del hombro; asiento sin exigir (convencion de los sentados)
+458	prioridad	SIN_ERROR		-					Fondos en paralelas: apoyo, no suspension
+461	prioridad	CONFIRMADO	MEDIA	difficulty_level	1	3			Flexion con palmada; ya la excluye el alto impacto para principiantes
+514	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			Press sentado por encima de la cabeza
+664	prioridad	SIN_ERROR		-					Push press sin fase de vuelo
+825	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Manos en el suelo, piernas sobre el balon
+882	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba
+882	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			
+883	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			
+916	prioridad	CONFIRMADO	ALTA	requires_kneeling	false	true			Rodillas sobre la almohadilla (curl nordico)
+916	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Curl nordico
+937	prioridad	CONFIRMADO	MEDIA	difficulty_level	1	3			Muscle-up con impulso; el alto impacto ya lo excluye para principiantes
+937	prioridad	CONFIRMADO	MEDIA	equipment	pull-up bar	gymnastic rings			
+941	prioridad	SIN_ERROR		-					
+962	prioridad	PROBABLE	MEDIA	body_part	back	upper legs			Peso muerto sumo con remo alto
+974	prioridad	CONFIRMADO	ALTA	difficulty_level	1	3			L-sit; un principiante con suelo permitido puede recibirlo
+1057	prioridad	SIN_ERROR		-					De pie; falso positivo de suelo
+1058	prioridad	CONFIRMADO	ALTA	requires_inversion	false	true			Posicion de pica, cabeza bajo la cadera con peso en brazos
+1068	prioridad	CONFIRMADO	MEDIA	difficulty_level	1	3			Muscle-up; el alto impacto ya lo excluye para principiantes
+1068	prioridad	CONFIRMADO	MEDIA	equipment	pull-up bar	gymnastic rings			
+1086	prioridad	PROBABLE	MEDIA	movement_pattern	KNEE_DOMINANT	HIP_HINGE + elevacion			Cuenta como LOWER_KNEE sin flexion de rodilla dominante
+1089	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Tumbado boca arriba en el suelo
+1100	prioridad	SIN_ERROR		-					Flexion con giro a plancha lateral
+1135	prioridad	SIN_ERROR		-					De pie; falso positivo de suelo
+1161	prioridad	CONFIRMADO	ALTA	requires_floor	false	true			Manos en el suelo sobre el balon
+1180	prioridad	SIN_ERROR		-					El GIF no es una flexion a una mano real
+1192	prioridad	CONFIRMADO	MEDIA	equipment	body weight	gymnastic rings			Exige anillas y no las exige
+1192	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			
+1272	prioridad	SIN_ERROR		-					Brazos no pasan de la cabeza
+1289	prioridad	SIN_ERROR		-					Sin fase de vuelo
+1297	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Pies en el suelo, posicion de flexion
+1301	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Manos en el suelo, pies en las correas
+1301	prioridad	CONFIRMADO	BAJA	requires_hanging / requires_overhead	true / true	false / false	V25 los fijo en true		No cuelga (restriccion de mas)
+1301	prioridad	CONFIRMADO	MEDIA	equipment	pull-up bar	suspension straps			
+1305	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2 (probable)			V-sit con apoyo de manos
+1306	prioridad	SIN_ERROR		-					Silla romana: apoyo en antebrazos
+1308	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba
+1308	prioridad	PROBABLE	MEDIA	body_part	back	waist			
+54	grupo	PENDIENTE_CRITERIO	MEDIA	movement_pattern	KNEE_DOMINANT	LOCOMOTION_CARDIO (probable)			Pasos de agilidad
+142	grupo	CONFIRMADO	MEDIA	body_part / target	back / spine	upper legs / hamstrings			Peso muerto piernas rectas
+145	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper legs	sentadilla + remo			Precedente V36: domina el tren inferior
+302	grupo	PROBABLE	MEDIA	movement_pattern	KNEE_DOMINANT	HORIZONTAL_PULL			Igual que 301; espaldera no modelada
+439	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	back / KNEE_DOMINANT	sentadilla + remo			
+449	grupo	CONFIRMADO	MEDIA	movement_pattern	KNEE_DOMINANT	ELBOW_FLEXION			Sentadilla isometrica; cuenta como LOWER_KNEE
+558	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper arms	sentadilla + curl			Precedente V36 (527, 609): upper legs
+567	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper arms	zancada + extension			Precedente V36: upper legs
+671	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	chest / HIP_EXTENSION	pullover + puente en balon			
+775	grupo	SIN_ERROR		-					
+796	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper arms	subida al banco + curl			Precedente V36: upper legs
+824	grupo	PROBABLE	MEDIA	body_part	back	upper legs			Extension de cadera sobre balon
+853	grupo	CONFIRMADO	MEDIA	movement_pattern	KNEE_DOMINANT	LOCOMOTION_CARDIO			Marcha con rodillas altas; cuenta como LOWER_KNEE
+1102	grupo	PENDIENTE_CRITERIO	MEDIA	movement_pattern	KNEE_DOMINANT	MOBILITY (probable)			Paso atras con brazos arriba
+1106	grupo	PROBABLE	MEDIA	body_part	waist	chest			
+1111	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			Flexion con patada
+1113	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			
+1115	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			
+1262	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			
+1146	grupo	CONFIRMADO	MEDIA	equipment	body weight	bench			
+1174	grupo	PENDIENTE_CRITERIO	BAJA	body_part	cardio	upper legs			
+1184	grupo	PROBABLE	MEDIA	movement_pattern	HIP_ABDUCTION_ADDUCTION	TRUNK_ROTATION_LATERAL_FLEXION			Elevacion de rodillas con giro en silla romana
+1201	grupo	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Plancha Copenhague
+1225	grupo	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado en el suelo
+1295	grupo	PROBABLE	MEDIA	body_part	cardio	upper legs			Zancadas caminando
+862	grupo	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Dominada con rodillas
+1055	grupo	CONFIRMADO	ALTA	requires_kneeling	false	true			De rodillas en el suelo
+59	grupo	CONFIRMADO	MEDIA	movement_pattern	LOCOMOTION_CARDIO	TRUNK_ROTATION_LATERAL_FLEXION			Abdominal bicicleta en el suelo; cuenta como CARDIO
+902	grupo	PENDIENTE_CRITERIO	MEDIA	movement_pattern	LOCOMOTION_CARDIO	MOBILITY o CORE (probable)			
+1374	grupo	CONFIRMADO	ALTA	requires_hanging / requires_overhead	false / false	true / true			Colgado de la barra elevando rodillas
+1374	grupo	CONFIRMADO	MEDIA	equipment	body weight	pull-up bar			
+1374	grupo	CONFIRMADO	MEDIA	movement_pattern	LOCOMOTION_CARDIO	TRUNK_FLEXION			Cuenta como CARDIO
+1374	grupo	CONFIRMADO	BAJA	high_impact	true	false			Sin fase de vuelo (restriccion de mas)
+243	muestra	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Pie trasero sobre el banco
+606	muestra	CONFIRMADO	ALTA	requires_kneeling	false	true			Rodilla y mano en el banco
+606	muestra	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			
+606	muestra	CONFIRMADO	BAJA	instructions	de pie inclinado	rodilla en el banco			
+718	muestra	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Banco inclinado
+1082	muestra	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true	V25 los fijo en false		De rodillas en el suelo, cae sobre las manos
+1125	muestra	CONFIRMADO	ALTA	requires_floor	false	true			Manos en el suelo, pies en el balon
+1199	muestra	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado de lado en el suelo
+622	muestra	PENDIENTE_CRITERIO	BAJA	difficulty_level	3	1-2 (probable)			Elevacion lateral a una mano (nivel de mas)
+198	muestra	SIN_ERROR		-					
+201	muestra	SIN_ERROR		-					
+277	muestra	SIN_ERROR		-					
+290	muestra	SIN_ERROR		-					
+311	muestra	SIN_ERROR		-					
+364	muestra	SIN_ERROR		-					
+388	muestra	SIN_ERROR		-					
+392	muestra	SIN_ERROR		-					
+395	muestra	SIN_ERROR		-					
+428	muestra	SIN_ERROR		-					
+433	muestra	SIN_ERROR		-					
+455	muestra	SIN_ERROR		-					
+474	muestra	SIN_ERROR		-					
+480	muestra	SIN_ERROR		-					
+492	muestra	SIN_ERROR		-					
+506	muestra	SIN_ERROR		-					
+510	muestra	SIN_ERROR		-					
+553	muestra	SIN_ERROR		-					
+672	muestra	SIN_ERROR		-					
+717	muestra	SIN_ERROR		-					
+752	muestra	SIN_ERROR		-					
+756	muestra	SIN_ERROR		-					
+781	muestra	SIN_ERROR		-					
+785	muestra	SIN_ERROR		-					
+859	muestra	SIN_ERROR		-					
+878	muestra	SIN_ERROR		-					
+909	muestra	SIN_ERROR		-					
+928	muestra	SIN_ERROR		-					
+1008	muestra	SIN_ERROR		-					
+1187	muestra	SIN_ERROR		-					
+1204	muestra	SIN_ERROR		-					
+1240	muestra	SIN_ERROR		-					
+1338	muestra	SIN_ERROR		-					
+393	usuario31	CONFIRMADO	ALTA	requires_overhead	false	true		intentos 1-3	Jalon desde polea alta: manos por encima de la cabeza al inicio
+393	usuario31	CONFIRMADO	MEDIA	movement_pattern	HORIZONTAL_PULL	VERTICAL_PULL		intentos 1-3	Sigue contando para UPPER_PULL
+456	usuario31	CONFIRMADO	ALTA	requires_overhead	false	true		plan 63	Palo o banda por encima de la cabeza
+1255	usuario31	CONFIRMADO	MEDIA	equipment	body weight	bench		intento 3	Pie apoyado en un banco
+548	usuario31	SIN_ERROR		-				intentos 1-3	
+436	usuario31	SIN_ERROR		-				intentos 1-3	
+1325	usuario31	SIN_ERROR		-				intentos 1-3, plan 63	
+1137	usuario31	SIN_ERROR		-				intentos 1-3	
+341	usuario31	SIN_ERROR		-				intentos 1-3	
+1052	usuario31	SIN_ERROR		-				intentos 1-3	
+727	usuario31	SIN_ERROR		-				intentos 1-3	Sentado en banco (convencion de los sentados)
+1150	usuario31	SIN_ERROR		-				intentos 1-3	
+1015	usuario31	SIN_ERROR		-				intentos 1-2	
+136	usuario31	SIN_ERROR		-				intentos 2-3	
+992	usuario31	SIN_ERROR		-				plan 63	
+135	usuario31	SIN_ERROR		-				plan 63	
+294	usuario31	SIN_ERROR		-				plan 63	
+1178	usuario31	SIN_ERROR		-				plan 63	

@@ -33,5 +33,9 @@ public record WeeklyMetricsResource(
         String riskLevel,
         boolean dropout,
         String calculationVersion,
-        OffsetDateTime calculatedAt
+        OffsetDateTime calculatedAt,
+        // V30. NULL en las semanas calculadas antes de V30.
+        Short recordedWorkouts,
+        BigDecimal observedAdherencePct,
+        BigDecimal registrationCoveragePct
 ) {}

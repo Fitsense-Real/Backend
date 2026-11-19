@@ -1,0 +1,20 @@
+1322|CONFIRMADO|BAJA|requires_overhead|true|false|Brazo cruzado ante el pecho (restriccion de mas)
+1311|CONFIRMADO|BAJA|requires_floor|true|false|De pie (restriccion de mas)
+879|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado en el suelo con los pies sobre el banco
+1159|PENDIENTE_CRITERIO|BAJA|equipment|band|band + bench (convencion de los sentados)|Sentado en un banco
+327|CONFIRMADO|ALTA|requires_kneeling|false|true|Rodillas en la almohadilla (curl nordico asistido)
+327|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|2-3 (probable)|Curl nordico asistido
+880|CONFIRMADO|ALTA|requires_kneeling|false|true|Rodillas en la almohadilla del GHD
+880|CONFIRMADO|MEDIA|equipment|body weight|banco GHD (no modelado)|
+880|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|3 (probable)|Glute-ham raise
+884|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado boca arriba en el suelo
+884|CONFIRMADO|MEDIA|movement_pattern|KNEE_DOMINANT|MOBILITY|Abraza las rodillas: estiramiento; hoy cuenta como LOWER_KNEE
+915|CONFIRMADO|ALTA|requires_kneeling|false|true|Rodillas en el banco (curl nordico)
+915|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|3 (probable)|Curl nordico
+1114|PROBABLE|MEDIA|equipment|body weight|bench|Se sujeta a un banco inclinado
+1195|CONFIRMADO|ALTA|requires_kneeling|false|true|Rodillas en la almohadilla, cae hasta las manos
+1196|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo, cae hasta apoyar las manos
+1196|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|2-3 (probable)|Curl nordico con caida
+1197|CONFIRMADO|ALTA|requires_kneeling|false|true|De rodillas sobre un step
+1197|CONFIRMADO|MEDIA|equipment|body weight|step platform|
+1205|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|2-3 (probable)|Sentadilla sissy

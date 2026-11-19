@@ -14,6 +14,8 @@ import java.util.Optional;
 @Repository
 public interface WeeklyTrainingPlanRepository extends JpaRepository<WeeklyTrainingPlan, Long> {
 
+    boolean existsByUserId(Long userId);
+
     Optional<WeeklyTrainingPlan> findByUserIdAndWeekStartDateAndStatus(
             Long userId, LocalDate weekStartDate, PlanStatus status);
 
@@ -53,4 +55,8 @@ public interface WeeklyTrainingPlanRepository extends JpaRepository<WeeklyTraini
 
     /** Ultima semana generada, sin importar el estado: define el week_number siguiente. */
     Optional<WeeklyTrainingPlan> findFirstByUserIdOrderByWeekNumberDescPlanVersionDesc(Long userId);
+
+    /** Ejercicios del plan (todas sus sesiones), solo lectura: aviso E2-a de /plan/limitations (auditoria v46). */
+    @Query("select e.exerciseId from PlannedWorkoutExercise e where e.plannedWorkout.plan.id = :planId")
+    List<Long> exerciseIdsOfPlan(@Param("planId") Long planId);
 }

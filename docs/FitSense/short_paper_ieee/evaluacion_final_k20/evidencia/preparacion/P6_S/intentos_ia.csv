@@ -1,0 +1,49 @@
+etiqueta,intento,publicable,motivo,source,efecto,aplicadas,problemas
+U01/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U01/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U02/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U02/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U03/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 21 sube la dosis del ejercicio 380 (3x10r/90 -> 4x10r/90). La IA no puede subir dosis: solo el backend progresa. || V24: el ejercicio 380 del 2026-11-13 lleva 4x10 con 90 s de descanso y 4D v2 exige 3x10, descanso 90 s (HYPERTROPHY). Ajusta la dosis exactamente a la de su capacidad; si no cabe en el dia, quita una colocacion en vez de recortar la dosis."
+U03/ciclo1,2,true,SIN_EFECTO,CONSERVED,false,[],
+U03/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U04/ciclo1,1,false,CONTRATO,,false,,"El plan propuesto no cumple las restricciones: La sesion 28 no estaba senalada. Las senaladas son [29, 30]: corrige solo esas."
+U04/ciclo1,2,true,CORRECCION_IA,AI,true,[29],
+U04/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U05/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U05/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U06/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U06/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U07/ciclo1,0,true,SIN_EFECTO,CONSERVED,false,[],
+U07/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U08/ciclo1,1,false,SIN_EFECTO,,false,[],"V8C: la sesion 66 esta senalada como REVISAR_CARGA_Y_RECUPERACION, que no autoriza sustituir ejercicios (anade [118], quita [994]). Revisar carga y recuperacion. Puedes ajustar la dosis. No sustituir ni retirar ejercicios, y no cambiar el dia."
+U08/ciclo1,2,true,CORRECCION_IA,AI,true,[66],
+U08/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U09/ciclo1,1,false,SIN_EFECTO,,false,[],V8C: la sesion 74 sube la dosis del ejercicio 540 (3x6r/150 -> 4x6r/150). La IA no puede subir dosis: solo el backend progresa.
+U09/ciclo1,2,true,CORRECCION_IA,AI,true,"[74, 75]",
+U09/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U10/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U10/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U11/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U11/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U12/ciclo1,0,true,SIN_EFECTO,CONSERVED,false,[],
+U12/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U13/ciclo1,1,false,CONTRATO,,false,,El plan propuesto no cumple las restricciones: La sesion 109 no estaba senalada. Las senaladas son [111]: corrige solo esas.
+U13/ciclo1,2,true,CORRECCION_IA,AI,true,[111],
+U13/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U14/ciclo1,1,false,SIN_EFECTO,,false,[],V8C: la sesion 119 sube la dosis del ejercicio 933 (2x8r/120 -> 3x8r/120). La IA no puede subir dosis: solo el backend progresa.
+U14/ciclo1,2,true,CORRECCION_IA,AI,true,"[119, 120]",
+U14/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U15/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U15/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U16/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U16/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U17/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U17/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U18/ciclo1,1,false,SIN_EFECTO,,false,[],V8C: la sesion 156 sube la dosis del ejercicio 101 (2x10r/90 -> 3x10r/90). La IA no puede subir dosis: solo el backend progresa.
+U18/ciclo1,2,true,CORRECCION_IA,AI,true,[156],
+U18/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U19/ciclo1,1,false,CONTRATO,,false,,"El plan propuesto no cumple las restricciones: La sesion 163 no estaba senalada. Las senaladas son [164, 165]: corrige solo esas."
+U19/ciclo1,2,true,CORRECCION_IA,AI,true,"[164, 165]",
+U19/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],
+U20/ciclo1,0,true,SIN_ORDEN,CONSERVED,false,[],
+U20/ciclo2,0,true,SIN_ORDEN,CONSERVED,false,[],

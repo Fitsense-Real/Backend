@@ -1,0 +1,4 @@
+K20 DETERMINISTA -> docs/FitSense/short_paper_ieee/k20_adaptacion_real/evidencia/final/Dp_U usuarios=20 llamadas=0 incidencias=0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 38.70 s -- in Evaluacion final K20: 20 usuarios de extremo a extremo sobre la version candidata
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS

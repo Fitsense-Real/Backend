@@ -1,0 +1,77 @@
+id,nombre,grupo,patron,clase,dificultad,tipo,capacidad,series,series_max,reps,segundos,descanso,coste_s
+129,Flexión con agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+318,Levantamiento de cuerpo,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+508,Flexión de agarre cerrado,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+509,Flexión cerrada con rodillas,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+510,Flexión diamante,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1120,Flexión en antebrazos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1152,Fondos invertidos,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1206,Flexión lateral,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1320,Dip de tríceps en piso,upper arms,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+121,Extensión de cadera inclinada con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+122,Elevacion de cadera con banda,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+125,Pase de banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+142,Peso muerto con piernas rectas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+144,Sentadilla con banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+145,Sentadilla con remo en banda,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+147,Peso muerto con piernas rígidas y banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+148,Peso muerto de piernas rígidas con banda,upper legs,HIP_HINGE,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+507,Sentadilla curtsy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+877,Zancada hacia adelante (hombre),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+878,Marcha en puente de glúteos,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+939,Abdominal patada,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1059,Zancada con giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1073,Puente de glúteos bajo en el suelo,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1076,Sentadilla marcha (contra la pared),upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1103,Sentadilla de baño,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1112,Inclinación pélvica hacia puente,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1114,Sentadilla de baño con apoyo,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1118,Puente trasero declinado,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1157,Puente de cadera con banda en rodillas,upper legs,HIP_EXTENSION,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1195,Curl invertido de piernas asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1196,Curl de piernas invertido asistido,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1205,Sentadilla sissy,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1263,Sentadillas búlgaras,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1264,Sentadilla con alcance por encima,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1265,Sentadilla con alcance por encima y giro,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1315,Zancada caminando,upper legs,KNEE_DOMINANT,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+114,Jalón con agarre cerrado,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+115,Jalón cercano con banda y agarre estrecho,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+116,Jalón bajo con banda y agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+117,Jalón a una mano de rodillas con banda,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+119,Remo sentado a una mano con giro,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+143,Jalón con agarre supino,back,VERTICAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+775,Elevación de codo y push-up invertido,back,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1156,Remo sentado con banda de espalda recta,back,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+460,Flexión con toques de pecho,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+494,Flexión en reloj,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+496,Flexión con caída controlada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+933,Flexión de rodillas en apoyo,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1058,Flexión hindú modificada,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1095,Empuje y tracción con peso corporal,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1096,Flexión,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1097,Flexión en pared,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1098,Flexión en pared versión 2,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1099,Flexión de brazos con extensión de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1111,Flexión con patada de pierna externa,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1113,Flexión pike a cobra,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1115,Flexión con patada interna,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1138,Flexión de escápula,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1155,Press de pecho sentado con banda,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1179,Flexión con toques de hombro,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1262,Flexión con desplazamiento de araña,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1334,Flexión con manos anchas,chest,HORIZONTAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+101,Press de hombros con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+135,"Remo de deltoides traseros con banda, de pie",shoulders,HORIZONTAL_PULL,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+136,Press por encima de la cabeza con giro y banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+704,Press alterno sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+705,Press de hombro alterno sentado,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+725,Curl de bíceps sentado con press de hombro,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+739,Press de hombro sentado con mancuerna,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+740,"Press de hombro sentado con mancuerna, agarre paralelo",shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+1154,Press de hombro sentado con banda,shoulders,VERTICAL_PUSH,ESTRUCTURAL,1,SETS_REPS,STRENGTH,2,3,8,null,120,312
+253,Gateo de oso,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+853,Media sentadilla,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1054,Escalador,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1093,Empujar para correr,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390
+1117,Pies rápidos v. 2,cardio,LOCOMOTION_CARDIO,CARDIO,1,DURATION,CARDIO,3,3,null,90,60,390

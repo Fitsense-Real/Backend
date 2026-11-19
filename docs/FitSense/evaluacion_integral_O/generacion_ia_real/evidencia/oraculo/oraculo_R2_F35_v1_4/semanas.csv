@@ -1,0 +1,5 @@
+id,semana,inicio,plan,programadas,completas,parciales,omitidas,sin_registro,guion,adherencia_observada,cobertura,adherencia_ponderada,senal,decision_oraculo,decision_backend,coinciden,intervenciones,estado_v32,fuente,llamadas_ia,plan_siguiente,pasos
+O11F35,1,2026-11-02,1,1,1,0,0,0,H,100.00,100.00,100.00,-,NO_CHANGE,NO_CHANGE,True,-,SIN_ORDEN,CONSERVED,0,2,-
+O11F35,2,2026-11-09,2,1,1,0,0,0,H,100.00,100.00,100.00,-,NO_CHANGE,NO_CHANGE,True,-,SIN_ORDEN,CONSERVED,0,3,-
+O11F35,3,2026-11-16,3,1,1,0,0,0,H,100.00,100.00,100.00,-,NO_CHANGE,NO_CHANGE,True,-,SIN_ORDEN,CONSERVED,0,4,-
+O11F35,4,2026-11-23,4,1,1,0,0,0,H,100.00,100.00,100.00,-,NO_CHANGE,NO_CHANGE,True,-,SIN_ORDEN,CONSERVED,0,5,-

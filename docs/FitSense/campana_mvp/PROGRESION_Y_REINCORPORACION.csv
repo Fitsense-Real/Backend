@@ -1,0 +1,14 @@
+usuario,semana,tipo,sesion_origen,ejercicio,dosis_antes,dosis_despues,volumen_antes,volumen_despues,volumen_base,techo,incremento_pct,estado_reserva,resultado
+U01,4,PROGRESION,18,1152,"{""reps"":10,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":11,""series"":3,""descanso"":90,""segundos"":null}",150,153,150,165,2.00,,PUBLICADO
+U01,5,PROGRESION,21,134,"{""reps"":13,""series"":2,""descanso"":90,""segundos"":null}","{""reps"":14,""series"":2,""descanso"":90,""segundos"":null}",168,170,168,184,1.19,,PUBLICADO
+U01,8,PROGRESION,26,1155,"{""reps"":10,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":11,""series"":3,""descanso"":90,""segundos"":null}",150,153,150,165,2.00,,PUBLICADO
+U03,2,PROGRESION,36,887,"{""reps"":10,""series"":2,""descanso"":90,""segundos"":null}","{""reps"":11,""series"":2,""descanso"":90,""segundos"":null}",132,134,132,145,1.52,,PUBLICADO
+U03,5,PROGRESION,69,1018,"{""reps"":13,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":14,""series"":3,""descanso"":90,""segundos"":null}",210,213,210,231,1.43,,PUBLICADO
+U03,6,PROGRESION,74,556,"{""reps"":10,""series"":3,""descanso"":90,""segundos"":null}","{""reps"":11,""series"":3,""descanso"":90,""segundos"":null}",120,123,132,145,2.50,,PUBLICADO
+U04,2,PROGRESION,2,1262,"{""reps"":15,""series"":2,""descanso"":45,""segundos"":null}","{""reps"":16,""series"":2,""descanso"":45,""segundos"":null}",89,91,89,97,2.25,,PUBLICADO
+U05,2,PROGRESION,52,508,"{""reps"":18,""series"":3,""descanso"":45,""segundos"":null}","{""reps"":19,""series"":3,""descanso"":45,""segundos"":null}",106,109,106,116,2.83,,PUBLICADO
+U05,6,RECUPERACION,158,508,"{""reps"":18,""series"":3,""descanso"":45,""segundos"":null}","{""reps"":19,""series"":3,""descanso"":45,""segundos"":null}",98,101,106,116,3.06,,PUBLICADO
+U05,8,RECUPERACION,170,709,"{""reps"":8,""series"":2,""descanso"":90,""segundos"":null}","{""reps"":10,""series"":2,""descanso"":90,""segundos"":null}",101,105,106,116,3.96,,PUBLICADO
+U07,7,PROGRESION,134,341,"{""reps"":6,""series"":3,""descanso"":150,""segundos"":null}","{""reps"":7,""series"":3,""descanso"":150,""segundos"":null}",96,99,96,105,3.13,,PUBLICADO
+U07,8,PROGRESION,141,354,"{""reps"":6,""series"":3,""descanso"":150,""segundos"":null}","{""reps"":7,""series"":3,""descanso"":150,""segundos"":null}",96,99,96,105,3.13,,PUBLICADO
+U08,2,PROGRESION,193,500,"{""reps"":13,""series"":2,""descanso"":90,""segundos"":null}","{""reps"":14,""series"":2,""descanso"":90,""segundos"":null}",150,152,150,165,1.33,,PUBLICADO

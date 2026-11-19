@@ -1,0 +1,22 @@
+id,sesion,intervencion,estado_v32,origen,cambio,categoria,factible_sonda,sustituciones,reducciones,trabajo_antes_s,trabajo_despues_s
+J01,S4,REVISAR_CARGA_Y_RECUPERACION,SIN_EFECTO,SIN_EFECTO,no,CONS-J,no,[],[],543,543
+J02,S3,REVISAR_CARGA_Y_RECUPERACION,APLICADA,IA,si,ACC,si,[],"[[1058, ""reps"", ""10"", ""9""], [1164, ""reps"", ""10"", ""9""]]",396,378
+J04,S3,REVISAR_CARGA_Y_RECUPERACION,APLICADA,IA,si,ACC,si,[],"[[1157, ""sets"", ""3"", ""2""], [853, ""sets"", ""3"", ""2""], [1190, ""dur"", ""30"", ""20""]]",906,712
+J05,S3,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 1202, ""a"": 1073, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}]",[],630,630
+J06,S4,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,[],"[[107, ""reps"", ""13"", ""12""]]",762,753
+J07,S3,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 532, ""a"": 53, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""cardiovascular system"", ""musculo_a"": ""cardiovascular system"", ""dosis_no_mayor"": true}]","[[992, ""sets"", ""3"", ""2""], [1175, ""dur"", ""120"", ""110""]]",774,726
+J08,S4,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,[],"[[1114, ""reps"", ""10"", ""9""], [1205, ""reps"", ""18"", ""17""], [1254, ""sets"", ""3"", ""2""], [856, ""reps"", ""18"", ""17""], [1133, ""dur"", ""120"", ""110""], [978, ""dur"", ""30"", ""20""]]",996,865
+J09,S4,INVESTIGAR_CAMBIO_MINIMO,SIN_EFECTO,SIN_EFECTO,no,CONS-J,no,[],[],828,828
+J10,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[973, ""reps"", ""10"", ""9""]]",222,216
+J11,S4,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[675, ""sets"", ""3"", ""2""]]",828,810
+J12,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[1096, ""reps"", ""10"", ""9""]]",975,966
+J13,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 578, ""a"": 98, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""delts"", ""musculo_a"": ""delts"", ""dosis_no_mayor"": true}]",[],408,408
+J13,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,SIN_EFECTO,no,CONS-J,no,[],[],408,408
+J14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 161, ""a"": 127, ""dif_de"": 3, ""dif_a"": 2, ""musculo_de"": ""quads"", ""musculo_a"": ""quads"", ""dosis_no_mayor"": true}, {""de"": 790, ""a"": 147, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}]",[],432,432
+J14,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[1156, ""sets"", ""3"", ""2""]]",306,288
+J14,S4,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 1110, ""a"": 144, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}, {""de"": 751, ""a"": 147, ""dif_de"": 3, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}]",[],432,432
+J15,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,[],"[[1054, ""dur"", ""90"", ""80""]]",828,798
+J15,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[1093, ""dur"", ""90"", ""80""]]",828,798
+J16,S2,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 755, ""a"": 144, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}, {""de"": 788, ""a"": 147, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}, {""de"": 790, ""a"": 125, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}]","[[735, ""reps"", ""13"", ""12""], [863, ""reps"", ""13"", ""12""], [63, ""reps"", ""13"", ""12""], [853, ""dur"", ""120"", ""110""]]",1002,948
+J16,S3,INVESTIGAR_CAMBIO_MINIMO,APLICADA,IA,si,ACC,si,[],"[[508, ""reps"", ""10"", ""9""]]",1476,1467
+J16,S4,VARIANTE_MAS_SENCILLA_O_CARGA,APLICADA,IA,si,ACC,si,"[{""de"": 755, ""a"": 144, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}, {""de"": 790, ""a"": 125, ""dif_de"": 2, ""dif_a"": 1, ""musculo_de"": ""glutes"", ""musculo_a"": ""glutes"", ""dosis_no_mayor"": true}]","[[1065, ""reps"", ""13"", ""12""], [609, ""reps"", ""10"", ""9""], [695, ""reps"", ""18"", ""17""], [1186, ""reps"", ""18"", ""17""], [1117, ""dur"", ""120"", ""110""], [253, ""dur"", ""120"", ""110""]]",1503,1407

@@ -1,0 +1,10 @@
+GRA (PR-1.7): generaciones=40 p50 75.8->74.3 s, p95 268.7->267.6 s, max 350.1->345.1 s; validas al 1er intento p50 60.5->59.9 s; cambian de desenlace=0; intentos 56->56
+ESTRES (prompt anterior): generaciones=8 p50 146.2->144.2 s, p95 437.1->360.0 s, max 460.3->360.0 s; validas al 1er intento p50 77.8->75.8 s; cambian de desenlace=2; intentos 17->17
+   cambia: {'conjunto': 'ESTRES (prompt anterior)', 'generacion': 'U06', 'intentos_antes': 3, 'intentos_despues': 3, 'segundos_antes': 460.3, 'segundos_despues': 360.0, 'desenlace_antes': 'IA', 'desenlace_despues': 'RESPALDO (presupuesto: prediccion cancelada)', 'cambia_desenlace': 'SI'}
+   cambia: {'conjunto': 'ESTRES (prompt anterior)', 'generacion': 'U02', 'intentos_antes': 3, 'intentos_despues': 3, 'segundos_antes': 394.0, 'segundos_despues': 360.0, 'desenlace_antes': 'IA', 'desenlace_despues': 'RESPALDO (presupuesto: prediccion cancelada)', 'cambia_desenlace': 'SI'}
+BARRIDO presupuesto_s | GRA cambian | ESTRES cambian | GRA max_s | ESTRES max_s
+BARRIDO 240 4 3 240 240
+BARRIDO 300 2 2 300 300
+BARRIDO 360 0 2 345.1 360
+BARRIDO 420 0 1 345.1 420
+BARRIDO 480 0 0 345.1 455.3

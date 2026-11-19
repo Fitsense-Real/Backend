@@ -25,19 +25,70 @@ public class CatalogContextFacade {
     private final ExerciseQueryService exerciseQueryService;
     private final BodyPartRepository bodyPartRepository;
     private final EquipmentTypeRepository equipmentTypeRepository;
+    /**
+     * V53 · DECISION DE SIGNIFICADO PENDIENTE DE APROBACION: si «no colgarse» excluye tambien el apoyo suspendido
+     * sobre un aparato sin soporte de pies (fondos en paralelas o anillas, silla del capitan, muscle-up). V53 migra
+     * el dato (requires_suspended_support), pero el comportamiento queda APAGADO por defecto: con false, el permiso
+     * significa exactamente lo mismo que antes. Se activa con fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true.
+     */
+    private final boolean apoyoSuspendidoEnNoColgarse;
+    /**
+     * V53-B · PROPUESTA PENDIENTE DE APROBACION (opcion B de cierre/V53_DEFINITIVO.md §2): el apoyo suspendido lo decide
+     * un permiso PROPIO del perfil (user_profiles.allow_suspended_support, V55), sin cambiar el significado de «no
+     * colgarse». APAGADO por defecto: con false nada de esta clase cambia. Se activa con
+     * fitsense.seguridad.permiso-apoyo-suspendido=true; es excluyente con la opcion A (con las dos, no arranca).
+     */
+    private final boolean permisoApoyoSuspendido;
 
+    /** Compatibilidad: solo la opcion A (la opcion B queda apagada). */
     public CatalogContextFacade(ExerciseQueryService exerciseQueryService,
                                 BodyPartRepository bodyPartRepository,
-                                EquipmentTypeRepository equipmentTypeRepository) {
+                                EquipmentTypeRepository equipmentTypeRepository,
+                                boolean apoyoSuspendidoEnNoColgarse) {
+        this(exerciseQueryService, bodyPartRepository, equipmentTypeRepository, apoyoSuspendidoEnNoColgarse, false);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public CatalogContextFacade(ExerciseQueryService exerciseQueryService,
+                                BodyPartRepository bodyPartRepository,
+                                EquipmentTypeRepository equipmentTypeRepository,
+                                @org.springframework.beans.factory.annotation.Value(
+                                        "${fitsense.seguridad.apoyo-suspendido-en-no-colgarse:false}")
+                                boolean apoyoSuspendidoEnNoColgarse,
+                                @org.springframework.beans.factory.annotation.Value(
+                                        "${fitsense.seguridad.permiso-apoyo-suspendido:false}")
+                                boolean permisoApoyoSuspendido) {
+        // Las dos opciones dan a la misma restriccion significados distintos: no se arranca con una configuracion
+        // ambigua. Mismo criterio que planning (ModoApoyoSuspendido), sin depender de ese contexto.
+        if (apoyoSuspendidoEnNoColgarse && permisoApoyoSuspendido)
+            throw new IllegalStateException("Configuracion ambigua del apoyo suspendido: "
+                    + "fitsense.seguridad.apoyo-suspendido-en-no-colgarse=true (opcion A, «no colgarse» lo excluye) y "
+                    + "fitsense.seguridad.permiso-apoyo-suspendido=true (opcion B, permiso propio) son excluyentes. "
+                    + "Enciende como mucho una de las dos.");
         this.exerciseQueryService = exerciseQueryService;
         this.bodyPartRepository = bodyPartRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
+        this.apoyoSuspendidoEnNoColgarse = apoyoSuspendidoEnNoColgarse;
+        this.permisoApoyoSuspendido = permisoApoyoSuspendido;
+    }
+
+    /**
+     * Si la opcion B esta encendida. Planning lo consulta para llamar a la sobrecarga con
+     * {@code excludeSuspendedSupport} explicito; apagada (por defecto) sigue usando la de once argumentos, igual que
+     * antes de V53-B.
+     */
+    public boolean permisoApoyoSuspendidoActivo() {
+        return permisoApoyoSuspendido;
     }
 
     /**
      * @param excludeHighImpact fuera saltos y pliometria
      * @param excludeFloorWork  fuera lo que exige bajar al suelo
-     * @param excludeAxialLoad  fuera carga axial e invertidos
+     * @param excludeAxialLoad  fuera carga sobre columna o cuello
+     * @param excludeKneeling   fuera lo que exige apoyar las rodillas
+     * @param excludeHanging    fuera lo que exige suspenderse
+     * @param excludeOverhead   fuera lo que exige los brazos sobre la cabeza
+     * @param excludeInversion  fuera las posiciones con la cabeza bajo el corazon
      */
     @Transactional(readOnly = true)
     public List<EligibleExerciseView> fetchEligibleExercises(List<String> equipmentCodes,
@@ -46,15 +97,47 @@ public class CatalogContextFacade {
                                                              List<Long> blockedExerciseIds,
                                                              boolean excludeHighImpact,
                                                              boolean excludeFloorWork,
-                                                             boolean excludeAxialLoad) {
+                                                             boolean excludeAxialLoad,
+                                                             boolean excludeKneeling,
+                                                             boolean excludeHanging,
+                                                             boolean excludeOverhead,
+                                                             boolean excludeInversion) {
+        // Igual que antes de V53-B: el apoyo suspendido solo sale con «no colgarse» y la opcion A encendida.
+        return fetchEligibleExercises(equipmentCodes, excludeGymOnly, maxDifficultyLevel, blockedExerciseIds,
+                excludeHighImpact, excludeFloorWork, excludeAxialLoad, excludeKneeling, excludeHanging,
+                excludeOverhead, excludeInversion, excludeHanging && apoyoSuspendidoEnNoColgarse);
+    }
+
+    /**
+     * V53-B · la misma consulta con la exclusion del apoyo suspendido EXPLICITA. Planning solo la usa con la opcion B
+     * encendida ({@link #permisoApoyoSuspendidoActivo()}), con el valor ya resuelto en su SafetyProfile.
+     *
+     * @param excludeSuspendedSupport fuera lo que exige sostenerse sobre un aparato sin soporte de pies
+     *                                ({@code requires_suspended_support}, V53)
+     */
+    @Transactional(readOnly = true)
+    public List<EligibleExerciseView> fetchEligibleExercises(List<String> equipmentCodes,
+                                                             boolean excludeGymOnly,
+                                                             int maxDifficultyLevel,
+                                                             List<Long> blockedExerciseIds,
+                                                             boolean excludeHighImpact,
+                                                             boolean excludeFloorWork,
+                                                             boolean excludeAxialLoad,
+                                                             boolean excludeKneeling,
+                                                             boolean excludeHanging,
+                                                             boolean excludeOverhead,
+                                                             boolean excludeInversion,
+                                                             boolean excludeSuspendedSupport) {
         var query = new GetEligibleExercisesQuery(equipmentCodes, excludeGymOnly,
                 maxDifficultyLevel, blockedExerciseIds,
-                excludeHighImpact, excludeFloorWork, excludeAxialLoad);
+                excludeHighImpact, excludeFloorWork, excludeAxialLoad,
+                excludeKneeling, excludeHanging, excludeOverhead, excludeInversion);
 
         var bodyParts = indexBodyParts();
         var equipment = indexEquipment();
 
         return exerciseQueryService.handle(query).stream()
+                .filter(exercise -> !(excludeSuspendedSupport && exercise.isRequiresSuspendedSupport()))
                 .map(exercise -> toView(exercise, bodyParts, equipment))
                 .toList();
     }
@@ -76,6 +159,23 @@ public class CatalogContextFacade {
     }
 
     /** Nombre para mostrar de un conjunto de ids. */
+    /** Las banderas de seguridad de cada ejercicio pedido, exista o no en el conjunto elegible. */
+    @Transactional(readOnly = true)
+    public Map<Long, ExerciseSafetyFlagsView> fetchSafetyFlags(Set<Long> exerciseIds) {
+        if (exerciseIds == null || exerciseIds.isEmpty()) return Map.of();
+        return exerciseIds.stream()
+                .map(id -> exerciseQueryService.handle(new GetExerciseByIdQuery(id)))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(Exercise::getId, e -> new ExerciseSafetyFlagsView(e.getId(),
+                        e.isActive(), e.isHighImpact(), e.isRequiresFloor(), e.isAxialLoad(),
+                        e.isRequiresKneeling(), e.isRequiresHanging(), e.isRequiresOverhead(),
+                        e.isRequiresInversion(),
+                        // V53 y V53-B: el hecho solo existe para los validadores con la opcion A o la B encendida.
+                        (apoyoSuspendidoEnNoColgarse || permisoApoyoSuspendido) && e.isRequiresSuspendedSupport()),
+                        (a, b) -> a));
+    }
+
     @Transactional(readOnly = true)
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return fetchDetails(exerciseIds).entrySet().stream()
@@ -107,6 +207,15 @@ public class CatalogContextFacade {
                 exercise.getDefaultPrescription().name(),
                 exercise.getGifPath(),
                 exercise.getImagePath(),
-                exercise.getMediaAttribution());
+                exercise.getMediaAttribution(),
+                // V26. Hasta ahora ninguna clase Java leia esta columna.
+                exercise.getMovementPattern(),
+                // V10, para P-C2 (impacto).
+                exercise.isHighImpact(),
+                // V26 is_isolation (auditoria v46, P15-C experimental).
+                exercise.getIsolation(),
+                // V51: impacto y estiramiento explicitos (ya no se deducen del nombre).
+                exercise.getImpactLevel(),
+                exercise.getStretch());
     }
 }

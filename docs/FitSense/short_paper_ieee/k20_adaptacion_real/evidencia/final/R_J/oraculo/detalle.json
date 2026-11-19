@@ -1,0 +1,752 @@
+[
+ {
+  "id": "J01",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "SIN_EFECTO",
+   "source": "CONSERVED",
+   "ai_calls": "1",
+   "applied": [],
+   "no_effect": [
+    4
+   ],
+   "conserved": [
+    1,
+    2,
+    3
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "J02",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    15
+   ],
+   "no_effect": [],
+   "conserved": [
+    13,
+    14
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En 2 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J03",
+  "comprobaciones": {
+   "A_generacion": [
+    "0 planes vigentes en S1"
+   ]
+  },
+  "estado": "FAIL"
+ },
+ {
+  "id": "J04",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:REVISAR_CARGA_Y_RECUPERACION"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    24
+   ],
+   "no_effect": [],
+   "conserved": [
+    22,
+    23
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos contaste que llegabas con cansancio. En 3 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J05",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    33
+   ],
+   "no_effect": [],
+   "conserved": [
+    31,
+    32
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En 1 ejercicio usamos una variante registrada como de menor dificultad.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J06",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    43
+   ],
+   "no_effect": [],
+   "conserved": [
+    40,
+    41,
+    42
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J07",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    54
+   ],
+   "no_effect": [],
+   "conserved": [
+    52,
+    53
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J08",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    64
+   ],
+   "no_effect": [],
+   "conserved": [
+    61,
+    62,
+    63
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que una sesión te resultó difícil. En 2 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J09",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "SIN_EFECTO",
+   "source": "CONSERVED",
+   "ai_calls": "1",
+   "applied": [],
+   "no_effect": [
+    76
+   ],
+   "conserved": [
+    73,
+    74,
+    75
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": false
+ },
+ {
+  "id": "J10",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    87
+   ],
+   "no_effect": [],
+   "conserved": [
+    85,
+    86
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J11",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "75.00",
+   "Aobs": "75.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S4:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    97
+   ],
+   "no_effect": [],
+   "conserved": [
+    94,
+    95,
+    96
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J12",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "66.67",
+   "Aobs": "66.67",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "100.00",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_LOCALIZED",
+   "backend": "ADAPT_LOCALIZED",
+   "senaladas": [
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    108
+   ],
+   "no_effect": [],
+   "conserved": [
+    106,
+    107
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Nos dijiste que te costó encontrar motivación. En 1 ejercicio bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J13",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    116
+   ],
+   "no_effect": [
+    117
+   ],
+   "conserved": [
+    115
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 1 ejercicio usamos una variante registrada como de menor dificultad. En una de las sesiones no aplicamos cambios esta semana: se mantiene como estaba.",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J14",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "25.00",
+   "Aobs": "25.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO",
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    125,
+    126,
+    127
+   ],
+   "no_effect": [],
+   "conserved": [
+    124
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 5 ejercicios usamos una variante registrada como de menor dificultad. En 5 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J15",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "33.33",
+   "Aobs": "33.33",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    137,
+    138
+   ],
+   "no_effect": [],
+   "conserved": [
+    136
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 2 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ },
+ {
+  "id": "J16",
+  "comprobaciones": {
+   "A_generacion": [],
+   "B_registro": [],
+   "C_adherencia": [],
+   "D_decision": [],
+   "E_adaptacion": [],
+   "F_publicacion": [],
+   "G_continuidad": []
+  },
+  "adherencia": {
+   "Aw": "25.00",
+   "Aobs": "25.00",
+   "C": "100.00",
+   "por_sesion": [
+    "100.00",
+    "0",
+    "0",
+    "0"
+   ]
+  },
+  "decision": {
+   "oraculo_politica": "ADAPT_EXPANDED",
+   "backend": "ADAPT_EXPANDED",
+   "senaladas": [
+    "S2:VARIANTE_MAS_SENCILLA_O_CARGA",
+    "S3:INVESTIGAR_CAMBIO_MINIMO",
+    "S4:VARIANTE_MAS_SENCILLA_O_CARGA"
+   ],
+   "teorico_articulo": null,
+   "coincide_teorico": null
+  },
+  "v32": {
+   "status": "APLICADA",
+   "source": "AI",
+   "ai_calls": "1",
+   "applied": [
+    146,
+    147,
+    148
+   ],
+   "no_effect": [],
+   "conserved": [
+    145
+   ],
+   "reason_codes": ""
+  },
+  "texto_s2": "Revisamos las sesiones que nos indicaste. En 3 ejercicios usamos una variante registrada como de menor dificultad. En 5 ejercicios bajamos un poco el trabajo (menos series, repeticiones o tiempo).",
+  "estado": "PASS",
+  "adaptacion_efectiva_ia": true
+ }
+]

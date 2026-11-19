@@ -23,5 +23,16 @@ public record UpdateUserProfileResource(
         @NotNull @Min(15) @Max(180) Short sessionMinutes,
         List<String> equipmentCodes,
         List<Long> blockedExerciseIds,
-        @Size(max = 500) String healthNotes
+        @Size(max = 500) String healthNotes,
+        /*
+         * INC-4C-03. Permisos, no prohibiciones: true = puede hacerlo.
+         * Al CREAR, lo que no se envia se admite (como el DEFAULT TRUE de V25).
+         * Al ACTUALIZAR, lo que no se envia SE CONSERVA: un cliente que no
+         * conozca estos campos no puede borrar una restriccion declarada.
+         */
+        Boolean allowHighImpact,
+        Boolean allowFloorExercises,
+        Boolean allowKneelingExercises,
+        Boolean allowHangingExercises,
+        Boolean allowOverheadExercises
 ) {}

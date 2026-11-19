@@ -1,0 +1,5 @@
+dia,fecha,enfoque,orden,id,nombre,grupo,patron,clase,tipo,series,reps,segundos,descanso,segundos_sesion,piso
+0,2026-11-02,FULL_BODY,1,916,Curl de piernas invertido en polea,upper legs,KNEE_DOMINANT,ESTRUCTURAL,SETS_REPS,2,8,null,120,1596,1470
+0,2026-11-02,FULL_BODY,2,1118,Puente trasero declinado,upper legs,HIP_EXTENSION,ESTRUCTURAL,SETS_REPS,2,8,null,120,1596,1470
+0,2026-11-02,FULL_BODY,3,253,Gateo de oso,cardio,LOCOMOTION_CARDIO,CARDIO,DURATION,3,null,90,60,1596,1470
+0,2026-11-02,FULL_BODY,4,1093,Empujar para correr,cardio,LOCOMOTION_CARDIO,CARDIO,DURATION,3,null,90,60,1596,1470

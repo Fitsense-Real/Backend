@@ -38,8 +38,19 @@ public final class WeeklySplitPlanner {
 
     public static List<PlannedSession> plan(LocalDate weekStart, List<Short> availableDays,
                                             int sessions, int weekNumber) {
+        return plan(weekStart, availableDays, sessions, weekNumber, false);
+    }
+
+    /**
+     * Con {@code sinTraccion} (P-G3: el conjunto elegible no tiene ningun ejercicio de traccion), las divisiones de 5
+     * o mas dias no usan PULL: se alternan superior e inferior (P1 de recuperacion se cumple: el tren superior queda
+     * a 48 h y las piernas tambien). El aviso de la limitacion de traccion lo da PlanLimitationsService (slot
+     * UPPER_PULL vacio). Con {@code false}, exactamente la division de siempre.
+     */
+    public static List<PlannedSession> plan(LocalDate weekStart, List<Short> availableDays,
+                                            int sessions, int weekNumber, boolean sinTraccion) {
         var dates = chooseDates(weekStart, availableDays, sessions);
-        var focuses = focusesFor(dates, weekNumber);
+        var focuses = sinTraccion && dates.size() >= 5 ? superiorInferior(dates.size()) : focusesFor(dates, weekNumber);
         var result = new ArrayList<PlannedSession>();
         for (int i = 0; i < dates.size(); i++) result.add(new PlannedSession(dates.get(i), focuses.get(i)));
         return List.copyOf(result);
@@ -73,6 +84,12 @@ public final class WeeklySplitPlanner {
                 yield List.copyOf(six);
             }
         };
+    }
+
+    static List<WorkoutFocus> superiorInferior(int n) {
+        var r = new ArrayList<WorkoutFocus>();
+        for (int i = 0; i < n; i++) r.add(i % 2 == 0 ? WorkoutFocus.UPPER_BODY : WorkoutFocus.LOWER_BODY);
+        return List.copyOf(r);
     }
 
     public static boolean hasConsecutive(List<LocalDate> dates) {

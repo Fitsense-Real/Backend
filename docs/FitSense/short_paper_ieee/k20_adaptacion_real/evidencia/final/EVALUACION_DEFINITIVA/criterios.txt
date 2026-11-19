@@ -1,0 +1,21 @@
+A-1 | U01-U20 | R_U: recorridos PASS = 20/20 | 20/20 | CUMPLE
+A-2/C | U01-U20 | R_U: 0 incumplimientos de seguridad (oraculo v2; los fallos de generacion sin plan cuentan en A-1: ninguno) | 0 | CUMPLE
+B-4 | U01-U20 | R_U: 0 sesiones de desmotivacion con mas de 2 ejercicios cambiados | 0 | CUMPLE
+A-1 | U01-U20 | Rp_U: recorridos PASS = 20/20 | 20/20 | CUMPLE
+A-2/C | U01-U20 | Rp_U: 0 incumplimientos de seguridad (oraculo v2; los fallos de generacion sin plan cuentan en A-1: ninguno) | 0 | CUMPLE
+B-4 | U01-U20 | Rp_U: 0 sesiones de desmotivacion con mas de 2 ejercicios cambiados | 0 | CUMPLE
+B-1 | U01-U20 | R + R': efectivas y pertinentes >= 18/20 sobre las factibles | 20/20 | CUMPLE
+B-1 | U01-U20 | R_U: ninguna corrida por debajo de 9/10 | 10/10 | CUMPLE
+B-1 | U01-U20 | Rp_U: ninguna corrida por debajo de 9/10 | 10/10 | CUMPLE
+B-3 | U01-U20 | R + R': proporcion de ACC entre las efectivas (informativa, sin umbral) | 20/20 | CUMPLE
+A-1 | J01-J16 | R_J: recorridos PASS = 16/16 | 15/16 | NO CUMPLE
+A-2/C | J01-J16 | R_J: 0 incumplimientos de seguridad (oraculo v2; los fallos de generacion sin plan cuentan en A-1: J03) | 0 | CUMPLE
+B-4 | J01-J16 | R_J: 0 sesiones de desmotivacion con mas de 2 ejercicios cambiados | 0 | CUMPLE
+A-1 | J01-J16 | Rp_J: recorridos PASS = 16/16 | 15/16 | NO CUMPLE
+A-2/C | J01-J16 | Rp_J: 0 incumplimientos de seguridad (oraculo v2; los fallos de generacion sin plan cuentan en A-1: J03) | 0 | CUMPLE
+B-4 | J01-J16 | Rp_J: 0 sesiones de desmotivacion con mas de 2 ejercicios cambiados | 0 | CUMPLE
+B-2 | J01-J16 | R + R': efectivas y pertinentes >= 80 % de las factibles | 36/36 = 100.0% | CUMPLE
+B-2 | J01-J16 | R + R': limite inferior de Wilson al 95 % >= 63 % | 90.4% | CUMPLE
+B-2 | J01-J16 | R_J: ninguna corrida por debajo del 75 % de sus factibles | 18/18 = 100.0% | CUMPLE
+B-2 | J01-J16 | Rp_J: ninguna corrida por debajo del 75 % de sus factibles | 18/18 = 100.0% | CUMPLE
+B-3 | J01-J16 | R + R': proporcion de ACC entre las efectivas (informativa, sin umbral) | 36/36 | CUMPLE

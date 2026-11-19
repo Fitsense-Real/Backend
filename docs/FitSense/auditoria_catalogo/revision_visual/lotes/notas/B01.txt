@@ -1,0 +1,21 @@
+119|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo con piernas extendidas
+304|CONFIRMADO|MEDIA|equipment|body weight|espaldera (no modelada)|Rema agarrado a una espaldera
+307|CONFIRMADO|MEDIA|equipment|body weight|espaldera (no modelada)|Rema agarrado a una espaldera
+308|CONFIRMADO|MEDIA|equipment|body weight|espaldera (no modelada)|Rema con toalla en la espaldera
+351|CONFIRMADO|ALTA|requires_overhead|false|true|Tira desde polea alta con brazos por encima de la cabeza
+434|CONFIRMADO|ALTA|requires_overhead|false|true|Polea alta: manos por encima de la cabeza al inicio
+434|PROBABLE|MEDIA|movement_pattern|HORIZONTAL_PULL|VERTICAL_PULL|
+910|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado bajo la barra con talones en el suelo (igual que 912, que si la lleva)
+911|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado bajo la barra, rodillas flexionadas (igual que 912)
+914|CONFIRMADO|ALTA|requires_floor|false|true|Remo con correas desde tumbado en el suelo (igual que 912)
+913|CONFIRMADO|ALTA|requires_hanging / requires_inversion / requires_overhead|false / false / false|true / true / true|Colgado cabeza abajo de la barra con las piernas enganchadas
+913|CONFIRMADO|ALTA|difficulty_level|1|3|Remo invertido colgado
+913|CONFIRMADO|MEDIA|equipment|smith machine o suspension straps|pull-up bar|Barra fija
+1041|CONFIRMADO|ALTA|requires_kneeling|false|true|Una rodilla en la almohadilla de la maquina
+1156|CONFIRMADO|BAJA|requires_floor|true|false|Sentado en un asiento inclinado, no en el suelo
+1307|PROBABLE|ALTA|requires_floor|false|true|Remo en anillas desde casi tumbado, talones en el suelo
+66|CONFIRMADO|MEDIA|equipment|body weight|bench|Manos apoyadas en un banco
+809|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo abrazando el balon
+810|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo con los brazos sobre el balon
+822|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|Rodillas y manos en el suelo sobre el balon
+1188|CONFIRMADO|ALTA|requires_overhead|false|true|Sentado con un brazo extendido por encima de la cabeza

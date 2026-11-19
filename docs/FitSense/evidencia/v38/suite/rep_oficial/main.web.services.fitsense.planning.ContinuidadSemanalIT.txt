@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.planning.ContinuidadSemanalIT
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 56.85 s -- in main.web.services.fitsense.planning.ContinuidadSemanalIT

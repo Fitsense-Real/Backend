@@ -22,8 +22,26 @@ public record GetEligibleExercisesQuery(
         /** Fuera lo que exige bajar al suelo y levantarse. Es barrera de movilidad. */
         boolean excludeFloorWork,
 
-        /** Fuera carga axial e invertidos. */
-        boolean excludeAxialLoad
+        /**
+         * Fuera carga sobre columna o cuello. NO incluye los invertidos: para eso
+         * esta excludeInversion. El comentario anterior decia "carga axial e
+         * invertidos" y el SQL solo comprobaba axial_load; medido sobre el
+         * catalogo activo, de los 33 ejercicios con requires_inversion ninguno
+         * tiene axial_load, asi que la promesa no se cumplia en ningun caso.
+         */
+        boolean excludeAxialLoad,
+
+        /** Fuera lo que exige apoyar las rodillas. Declarado por el perfil (V25). */
+        boolean excludeKneeling,
+
+        /** Fuera lo que exige suspenderse. Declarado por el perfil (V25). */
+        boolean excludeHanging,
+
+        /** Fuera lo que exige los brazos sobre la cabeza. Declarado por el perfil (V25). */
+        boolean excludeOverhead,
+
+        /** Fuera las posiciones con la cabeza por debajo del corazon (V25). */
+        boolean excludeInversion
 ) {
     /** Sin restricciones de seguridad. Es el caso de la mayoria de perfiles. */
     public static GetEligibleExercisesQuery unrestricted(List<String> equipmentCodes,
@@ -31,6 +49,6 @@ public record GetEligibleExercisesQuery(
                                                          int maxDifficultyLevel,
                                                          List<Long> blockedExerciseIds) {
         return new GetEligibleExercisesQuery(equipmentCodes, excludeGymOnly, maxDifficultyLevel,
-                blockedExerciseIds, false, false, false);
+                blockedExerciseIds, false, false, false, false, false, false, false);
     }
 }

@@ -1,0 +1,1 @@
+Linea base (sin sql-previo, commit d733af2): identica byte a byte a rediseno_politicas/evidencia/barridos/REV2_cierre y HIST_cierre (cmp); no se duplica.

@@ -1,0 +1,7 @@
+prueba,esperado,obtenido,resultado
+IDENTIDAD v1.4 = v1.3 (corrida sin generacion_ia),identicos,identicos,PASA
+"pruebas de v1.3 (19 negativas, R-1, D1-D5) con v1.4",todas PASA,todas PASA,PASA
+"G-C S1=RULE_ENGINE, llamadas=[('RESPUESTA', 'SI'), ('RESPUESTA', 'SI'), ('RESPUESTA', 'SI')]",A10 APROBADO + 'RESPALDO DETERMINISTA',A10 APROBADO [generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 3 llamada(s) de IA],PASA
+"G-V S1=AI, llamadas=[('RESPUESTA', 'NO')]",A10 APROBADO + 'PROPUESTA DE LA IA VALIDA',A10 APROBADO [generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)],PASA
+"G-N S1=AI, llamadas=[('RESPUESTA', 'SI'), ('RESPUESTA', 'SI'), ('RESPUESTA', 'SI')]",A10 FALLO + 'ninguna propuesta de generacion fue valida',A10 FALLO [R-2: el plan S1 consta como generado por la IA y ninguna propuesta de generacion fue valida | generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)],PASA
+"G-E S1=AI, llamadas=[('ERROR_PROVEEDOR', '')]",A10 FALLO + 'ninguna propuesta de generacion fue valida',A10 FALLO [R-2: el plan S1 consta como generado por la IA y ninguna propuesta de generacion fue valida | generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)],PASA

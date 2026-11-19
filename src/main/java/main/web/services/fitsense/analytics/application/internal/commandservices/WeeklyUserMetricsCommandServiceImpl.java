@@ -2,6 +2,7 @@ package main.web.services.fitsense.analytics.application.internal.commandservice
 
 import main.web.services.fitsense.analytics.application.internal.outboundservices.acl.ExternalConfigurationService;
 import main.web.services.fitsense.analytics.application.internal.outboundservices.acl.ExternalExecutionService;
+import main.web.services.fitsense.analytics.application.internal.outboundservices.acl.ExternalIamService;
 import main.web.services.fitsense.analytics.application.internal.outboundservices.acl.ExternalPlanningService;
 import main.web.services.fitsense.analytics.domain.model.aggregates.WeeklyUserMetrics;
 import main.web.services.fitsense.analytics.domain.model.commands.CalculateWeeklyMetricsCommand;
@@ -23,6 +24,7 @@ public class WeeklyUserMetricsCommandServiceImpl implements WeeklyUserMetricsCom
     private final ExternalPlanningService externalPlanningService;
     private final ExternalExecutionService externalExecutionService;
     private final ExternalConfigurationService externalConfigurationService;
+    private final ExternalIamService externalIamService;
     private final JsonSupport jsonSupport;
 
     public WeeklyUserMetricsCommandServiceImpl(WeeklyUserMetricsRepository metricsRepository,
@@ -30,12 +32,14 @@ public class WeeklyUserMetricsCommandServiceImpl implements WeeklyUserMetricsCom
                                                ExternalPlanningService externalPlanningService,
                                                ExternalExecutionService externalExecutionService,
                                                ExternalConfigurationService externalConfigurationService,
+                                               ExternalIamService externalIamService,
                                                JsonSupport jsonSupport) {
         this.metricsRepository = metricsRepository;
         this.calculator = calculator;
         this.externalPlanningService = externalPlanningService;
         this.externalExecutionService = externalExecutionService;
         this.externalConfigurationService = externalConfigurationService;
+        this.externalIamService = externalIamService;
         this.jsonSupport = jsonSupport;
     }
 
@@ -60,10 +64,12 @@ public class WeeklyUserMetricsCommandServiceImpl implements WeeklyUserMetricsCom
         var breakdown = externalPlanningService.weekBreakdown(
                 command.userId(), week.startDate());
 
-        var sessions = externalExecutionService.fetchWeekSessions(
-                command.userId(), week.startDate(), week.endDate(), divisor);
+        var sessions = externalExecutionService.fetchWeekSessions(plan, divisor);
+        // Solo sesiones validas (>= 30 %), contadas en el dia local del participante.
         var daysSinceLastWorkout = externalExecutionService.daysSinceLastWorkout(
-                command.userId(), week.endDate());
+                command.userId(), week.endDate(),
+                configuration.params().adherence().sessionValidThresholdPct(),
+                externalIamService.timezoneOf(command.userId()));
 
         // La caida se mide contra la semana anterior YA CALCULADA, no contra la
         // que se este calculando ahora: comparar con una fila a medio escribir

@@ -20,7 +20,8 @@ public class UserResourceFromEntityAssembler {
                 enrollment.participantCode(),
                 enrollment.enrolledAt(),
                 enrollment.withdrawnAt(),
-                entity.getLastLoginAt()
+                entity.getLastLoginAt(),
+                entity.getRole().name()
         );
     }
 }

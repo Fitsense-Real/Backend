@@ -1,0 +1,11 @@
+Commit 6b5ccb6
+[INFO] Tests run: 1218, Failures: 0, Errors: 0, Skipped: 1
+[INFO] Tests run: 523, Failures: 0, Errors: 0, Skipped: 41
+[INFO] BUILD SUCCESS
+EXIT 0
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in 4D v3.4: tope de colocaciones de GAIN_MUSCLE derivado del piso de V20 (30-75 min)
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in 4D v3.1 ? GAIN_MUSCLE
+[WARNING] Tests run: 3, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.546 s -- in DEV-R: control del consumo real de Replicate por tokens
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.869 s -- in 4D v3.2: V24 admite la serie adicional del relleno de zona pequena solo cuando hace falta
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.95 s -- in 4D v3.4 + C-8: GAIN_MUSCLE genera planes validos en cada minuto de 30 a 75 (rejilla de 312 perfiles)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.223 s -- in R0548 (GM intermedio, casa, 7 dias, 75 min): la generacion inicial publica un plan valido (4D v3.4)

@@ -1,0 +1,5 @@
+usuarios=16
+llamadas_proveedor=7
+incidencias=1
+usd_medido=0.1251 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=sin metricas de la prediccion hzc2287xj5rmw0d1n74agyp30g: no se hacen mas llamadas
