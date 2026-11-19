@@ -30,18 +30,19 @@ campaña, y se comprobó que todas lo son.
 | 10 | `afrn5j7ab9rmy0d1ya0rperk4g` | 19/11 06:32:42 | failed E002 | — (no es del backend) | intento programado 1/3 | — |
 | 11 | `k2hevnyq3nrmw0d1yck8sd8gj4` | 19/11 09:32:51 | failed E002 (47 s en cola) | — (no es del backend) | intento programado 2/3 | — |
 | 12 | `7bt2dqqn25rmr0d1yf5sv2m330` | 19/11 12:33:12 | failed E002 | — (no es del backend) | intento programado 3/3 | — |
+| 13 | `pfmy2026hdrmw0d1yk0azmsjcw` | 19/11 17:00:04 | failed E002 (115 s en cola) | — (no es del backend) | sonda a petición del usuario | — |
 
 ## 3. Comprobaciones
 
 | Comprobación | Resultado |
 |---|---|
-| Predicciones nuevas en Replicate | **12** (4 el 17/11, 4 el 18/11 y 4 el 19/11) |
-| Filas del libro (backend) + sondas registradas | 2 + 10 = **12**. Coinciden una a una por id. |
+| Predicciones nuevas en Replicate | **13** (4 el 17/11, 4 el 18/11 y 5 el 19/11) |
+| Filas del libro (backend) + sondas registradas | 2 + 11 = **13**. Coinciden una a una por id. |
 | Predicciones sin identificar | 0 |
 | NO_CONFIRMADA | 0 |
 | Predicciones duplicadas (dos POST para el mismo intento) | 0 |
 | Cancelaciones | 0 |
-| Tokens facturables (`metrics`) | 0 de entrada y 0 de salida en las 12. Solo hay `predict_time` (0,14–0,65 s). |
+| Tokens facturables (`metrics`) | 0 de entrada y 0 de salida en las 13. Solo hay `predict_time` (0,14–0,65 s). |
 | Coste estimado | **USD 0,00**: tokens × tarifa (0,25 / 2,00 USD por millón) = 0 |
 | Cargo real | **No verificable desde aquí.** La API pública no expone la facturación y `replicate.com` no está en la red permitida. **Pendiente de confirmar** en el panel de facturación de Replicate. Al ser un modelo oficial que se factura por tokens y no haber ninguno, lo esperado es USD 0,00. |
 | Configuración de facturación | No se consultó ni se modificó: no hay API para ello. No se activaron recargas. |

@@ -9,7 +9,7 @@ Antes de enviarlo, completa `<usuario de la cuenta>` y no añadas tokens ni clav
 
 Hello,
 
-Since 2026-11-17 16:47 UTC (and still on 2026-11-19 12:33 UTC, after the 2026-11-17 incident was reported as resolved), every prediction I create on the official model `openai/gpt-5-structured` fails within
+Since 2026-11-17 16:47 UTC (and still on 2026-11-19 17:02 UTC, after the 2026-11-17 incident was reported as resolved), every prediction I create on the official model `openai/gpt-5-structured` fails within
 about 0.3 s. The error is always the same, the logs read `No sid`, and no tokens are counted. The same account and
 model worked normally on 2026-11-12. The last successful prediction was `jhxmsrkj61rmr0d1t5trg6znj4`
 (gpt-5-mini, 33,985 input tokens and 11,421 output tokens).
@@ -41,6 +41,7 @@ Affected predictions (all created via the API, `POST /v1/models/openai/gpt-5-str
 | `afrn5j7ab9rmy0d1ya0rperk4g` | 2026-11-19 06:32:42 | same minimal test: same error |
 | `k2hevnyq3nrmw0d1yck8sd8gj4` | 2026-11-19 09:32:51 | same minimal test: queued ~47 s, then the same error |
 | `7bt2dqqn25rmr0d1yf5sv2m330` | 2026-11-19 12:33:12 | same minimal test: same error |
+| `pfmy2026hdrmw0d1yk0azmsjcw` | 2026-11-19 17:00:04 | same minimal test: queued ~115 s, then the same error |
 
 Because a trivial one-line request fails with the same reference code, I don't believe the input is the cause.
 
@@ -53,7 +54,7 @@ Could you please tell us:
    models) that blocks these predictions?
 3. Is the incident posted on the status page on 2026-11-17 ("Errors and stalled predictions on some models") related, and is there an ongoing incident with the OpenAI integration for `openai/gpt-5-structured` (or the `gpt-5-mini`
    variant)?
-4. Were these twelve failed predictions billed? We expect no charge, since no tokens were processed.
+4. Were these thirteen failed predictions billed? We expect no charge, since no tokens were processed.
 
 Thank you.
 

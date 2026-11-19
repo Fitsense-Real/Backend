@@ -214,3 +214,7 @@ del primer fallo.
 
 Los tres intentos de la noche fallaron igual. El error persiste unas 44 h después del primero. No se programan más
 intentos: depende de soporte o de que el Playground vuelva a funcionar.
+
+## 14. Sonda del 19/11/2026 a las 17:00 UTC (a petición del usuario)
+
+`pfmy2026hdrmw0d1yk0azmsjcw`: 115 s en cola y después `failed`, `E002 (1cah9wlWR9)`, `No sid`, 0 tokens. Sin cambios.
