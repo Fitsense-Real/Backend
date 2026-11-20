@@ -1,0 +1,14 @@
+# Registros de ejecucion (anadidos el 2026-11-03 despues de publicar el PR: la regla *.log del .gitignore los habia excluido)
+# sha256 (16) | modificacion UTC | bytes | archivo
+e44c2d75e760f7b6 2026-11-03T01:04:40Z 157312 A0/ejecucion_maven.log
+e3b0c44298fc1c14 2026-11-03T01:04:33Z 0 A0/incidencias.log
+58caf3a1d09d8c3e 2026-11-03T01:07:26Z 157229 A1/ejecucion_maven.log
+e3b0c44298fc1c14 2026-11-03T01:07:25Z 0 A1/incidencias.log
+a045de7b4b896506 2026-11-03T01:08:18Z 157240 A1_repeticion/ejecucion_maven.log
+e3b0c44298fc1c14 2026-11-03T01:08:17Z 0 A1_repeticion/incidencias.log
+3efd8ab53cd5a4d9 2026-11-03T02:34:39Z 413450 C/ejecucion_maven.log
+e3b0c44298fc1c14 2026-11-03T02:34:12Z 0 C/incidencias.log
+e4522f582a3096dd 2026-11-03T01:30:39Z 1429 C_bloqueo/intento_sin_token.log
+e3b0c44298fc1c14 2026-11-03T01:36:25Z 0 C_intento1_error_laboratorio/incidencias.log
+0921618ae8dd2abd 2026-11-03T01:48:33Z 252748 C_intento2_proxy_502/ejecucion_maven.log
+e3b0c44298fc1c14 2026-11-03T01:48:12Z 0 C_intento2_proxy_502/incidencias.log
