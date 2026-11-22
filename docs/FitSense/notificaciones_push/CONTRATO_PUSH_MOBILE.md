@@ -1,6 +1,6 @@
 # Contrato de notificaciones push: backend ↔ Mobile
 
-**Estado:** propuesta del backend, **pendiente de confirmación por Mobile**. No hubo un agente Mobile disponible en la sesión en que se escribió. El contrato se basa en las APIs publicadas de las dos librerías y se verificó en sus artefactos (§1).
+**Estado:** contrato que **ofrece el backend**. La app lo implementa por su lado. Se basa en las APIs publicadas de las dos librerías y se verificó en sus artefactos (§1).
 
 **Proyecto Firebase:** `kora-fitpe`.
 **App Android:** `pe.fit.kora`.
@@ -128,18 +128,18 @@ Detalle y lo que **no** se notifica: `EVENTOS_Y_PROCESOS.md`.
 
 ## 6. Pantallas de destino
 
-| `targetScreen` | Pantalla de Mobile (a confirmar) | Dato que pide después |
+| `targetScreen` | Pantalla de la app | Dato que pide después |
 |---|---|---|
 | `WEEKLY_PLAN` | Plan semanal | `GET` del plan activo; `resourceId` sirve para resaltar la versión |
 | `ACCOUNT_SECURITY` | Ajustes, cuenta y seguridad | — |
 
-## 7. Lo que pedimos a Mobile que confirme
+## 7. Lo que el backend espera de la app
 
-1. Que la app usa `firebase_messaging` **≥ 17.0.0** con `register()` / `onRegistered`, y **no** `getToken()`.
-2. Que el `applicationId` es `pe.fit.kora`. El clon del repositorio Mobile disponible al escribir esto todavía tiene `com.example.fitsense_mobile` y no incluye Firebase.
-3. Los nombres de las pantallas de destino y de los canales `kora_planes` / `kora_cuenta`.
-4. Que el cierre de sesión llama al `DELETE` **antes** de borrar el JWT.
-5. Que se deduplica por `eventId` en la app.
-6. Que se pide el permiso `POST_NOTIFICATIONS` antes de `register()`.
+1. Que usa `firebase_messaging` **≥ 17.0.0** con `register()` / `onRegistered`, y **no** `getToken()`.
+2. Que el `applicationId` es `pe.fit.kora`: el backend solo admite ese `appId` y restringe los mensajes a ese paquete.
+3. Que traduce las pantallas de destino (§6) a sus rutas y crea los canales `kora_planes` / `kora_cuenta`.
+4. Que el cierre de sesión llame al `DELETE` **antes** de borrar el JWT.
+5. Que deduplique por `eventId` en la app.
+6. Que pida el permiso `POST_NOTIFICATIONS` antes de `register()`.
 
 Cualquier cambio a este contrato se hace con una versión nueva de `schemaVersion` o con un acuerdo explícito. Nunca se pasa de forma silenciosa a usar tokens.

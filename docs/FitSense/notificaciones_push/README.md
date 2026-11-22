@@ -4,7 +4,7 @@
 
 | Documento | Contenido |
 |---|---|
-| `CONTRATO_PUSH_MOBILE.md` | Contrato con Mobile: identificador FID, ciclo de vida, endpoints, mensaje, pantallas y lo que Mobile debe confirmar |
+| `CONTRATO_PUSH_MOBILE.md` | Contrato de integración que ofrece el backend: identificador FID, ciclo de vida, endpoints, mensaje, pantallas y lo que se espera de la app |
 | `EVENTOS_Y_PROCESOS.md` | Verificación de los cuatro eventos frente a los procesos reales, antiduplicado y estados |
 | `SEGURIDAD_Y_CONFIGURACION.md` | Credenciales, variables, garantías de la orden con su prueba, riesgos y privacidad |
 | `PRUEBAS.md` | Pruebas y regresión |

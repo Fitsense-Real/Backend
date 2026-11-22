@@ -40,4 +40,4 @@
 ## Lo que no se probó
 
 - **Envío real a Firebase con credenciales de `kora-fitpe`.** No hay credenciales en el entorno de desarrollo y la orden no autoriza desplegar.
-- **La app Mobile.** No hay agente Mobile disponible y el contrato está pendiente de su confirmación.
+- **La app.** Queda fuera del alcance del backend.
