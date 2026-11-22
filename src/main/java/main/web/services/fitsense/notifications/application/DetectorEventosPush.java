@@ -1,5 +1,6 @@
 package main.web.services.fitsense.notifications.application;
 
+import main.web.services.fitsense.notifications.domain.TransportePush;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -64,17 +65,19 @@ public class DetectorEventosPush {
             ON CONFLICT (dedupe_key) DO NOTHING""";
 
     private final JdbcTemplate jdbc;
+    private final TransportePush transporte;
     private final boolean activado;
     private final Duration ventana;
     private final Clock reloj;
 
-    public DetectorEventosPush(JdbcTemplate jdbc,
+    public DetectorEventosPush(JdbcTemplate jdbc, TransportePush transporte,
                                @Value("${fitsense.push.enabled:false}") boolean activado,
                                @Value("${fitsense.push.detection-window-hours:6}") long horas,
                                ObjectProvider<Clock> reloj) {
         if (horas < 1 || horas > 48)
             throw new IllegalArgumentException("fitsense.push.detection-window-hours debe estar entre 1 y 48.");
         this.jdbc = jdbc;
+        this.transporte = transporte;
         this.activado = activado;
         this.ventana = Duration.ofHours(horas);
         this.reloj = reloj.getIfAvailable(Clock::systemUTC);
@@ -92,8 +95,12 @@ public class DetectorEventosPush {
         }
     }
 
-    /** Cuantos eventos nuevos se registraron. Idempotente. */
+    /**
+     * Cuantos eventos nuevos se registraron. Idempotente. Sin transporte disponible (envio apagado o sin credenciales
+     * validas) no registra nada: no se acumulan eventos que nadie va a enviar.
+     */
     public int detectar() {
+        if (!transporte.disponible()) return 0;
         var ahora = Timestamp.from(reloj.instant());
         var desde = Timestamp.from(reloj.instant().minus(ventana));
         // Primero el cierre semanal: si un mismo plan apareciera en las dos fuentes, el tipo lo decide la adaptacion.

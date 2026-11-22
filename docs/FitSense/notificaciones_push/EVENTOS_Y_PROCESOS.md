@@ -13,6 +13,15 @@ La orden pide mantener PLAN_GENERATED, PLAN_ADAPTED, WEEKLY_PLAN_READY y ACCOUNT
 | WEEKLY_PLAN_READY | Cierre semanal que publica la semana siguiente sin aplicar adaptación | `plan_adaptation_attempts` con `resulting_plan_id` y estado `SIN_ORDEN`, `SIN_EFECTO` o `RESPALDO`. La progresión publica por este camino | **Existe** |
 | ACCOUNT_NOTICE | Recuperación de contraseña (`PasswordResetService.confirmar`), que sube `token_version` | La fila del aviso se escribe en la **misma transacción** que el cambio | **Existe** (solo `PASSWORD_CHANGED`) |
 
+**Garantías de que solo se notifican eventos reales.** Las da el esquema y las comprueban pruebas:
+
+| Garantía | Fuente | Prueba |
+|---|---|---|
+| Una operación solo se notifica en `COMPLETED`, que siempre tiene plan | `ck_pgo_completed_has_plan` (V58) y el filtro `status = 'COMPLETED'` | `NotificacionesPushIT.soloEventosReales`: FAILED y NO_FACTIBLE no generan nada |
+| Un intento `RECHAZADA` o `NO_FACTIBLE` no puede citar un plan | `ck_paa_plan_segun_estado` (V32). Intentar ponerle plan viola el CHECK | `soloEventosReales` |
+| La generación síncrona no notifica | Solo se leen `plan_generation_operations` y `plan_adaptation_attempts` | `planGenerado`, `soloEventosReales` |
+| Un plan, un evento | `UNIQUE (dedupe_key)` y `PLAN:<id>` | `cierreSemanal`, `soloEventosReales` |
+
 ## Lo que NO se notifica, y por qué
 
 | Caso | Motivo |

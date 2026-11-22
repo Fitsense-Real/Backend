@@ -294,6 +294,36 @@ class NotificacionesPushIT {
     }
 
     @Test
+    @DisplayName("solo eventos reales: FAILED/NO_FACTIBLE y la generacion sincrona no notifican; RECHAZADA no puede citar un plan")
+    void soloEventosReales() throws Exception {
+        var c = conPlan();
+        registrar(c.cuenta(), fid());
+        long u = c.cuenta().userId();
+        jdbc.update("INSERT INTO plan_generation_operations (operation_id, user_id, kind, status, week_start_date,"
+                + " reason_code, executions, created_at, started_at, finished_at, updated_at) VALUES"
+                + " (?, ?, 'FIRST_PLAN', 'FAILED', ?, 'PRUEBA', 1, now(), now(), now(), now()),"
+                + " (?, ?, 'FIRST_PLAN', 'NO_FACTIBLE', ?, 'PRUEBA', 1, now(), now(), now(), now())",
+                UUID.randomUUID(), u, S1, UUID.randomUUID(), u, S1);
+        assertEquals(0, detector.detectar(), "generacion sincrona, FAILED y NO_FACTIBLE: ningun evento");
+
+        var semana2 = ciclo.runFor(u, S1, S1.plusWeeks(1)).orElseThrow();
+        long intento = jdbc.queryForObject("SELECT attempt_id FROM plan_adaptation_attempts WHERE user_id = ?"
+                + " ORDER BY attempt_id DESC LIMIT 1", Long.class, u);
+        // Garantia del esquema (V32, ck_paa_plan_segun_estado): un intento RECHAZADA o NO_FACTIBLE nunca cita un plan,
+        // asi que el detector no puede notificar un plan que no se publico.
+        for (var estado : List.of("RECHAZADA", "NO_FACTIBLE"))
+            assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> jdbc.update(
+                    "UPDATE plan_adaptation_attempts SET status = ?, rejection_reason = 'x' WHERE attempt_id = ?",
+                    estado, intento), estado);
+        assertEquals(1, detector.detectar(), "solo la semana publicada");
+        assertEquals(0, detector.detectar());
+        assertEquals("WEEKLY_PLAN_READY", jdbc.queryForObject("SELECT event_type FROM notification_events"
+                + " WHERE user_id = ? AND resource_id = ?", String.class, u, semana2));
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM notification_events WHERE user_id = ?",
+                Integer.class, u), "un evento por plan publicado y ninguno mas");
+    }
+
+    @Test
     @DisplayName("un plan reemplazado antes del envio no se notifica; un evento mas viejo que el TTL caduca")
     void planNoVigenteYCaducado() throws Exception {
         var c = conPlan();

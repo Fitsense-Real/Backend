@@ -6,6 +6,8 @@
 |---|---|
 | `CONTRATO_PUSH_MOBILE.md` | Contrato de integración que ofrece el backend: identificador FID, ciclo de vida, endpoints, mensaje, pantallas y lo que se espera de la app |
 | `EVENTOS_Y_PROCESOS.md` | Verificación de los cuatro eventos frente a los procesos reales, antiduplicado y estados |
+| `EJEMPLOS_REALES_HTTP.md` | Solicitudes y respuestas reales de todos los endpoints, generadas por `ContratoPushHttpIT` |
+| `CONFIGURACION_RAILWAY.md` | Cómo se entregan las credenciales en Railway sin pasar por GitHub, y qué ocurre sin credenciales válidas |
 | `SEGURIDAD_Y_CONFIGURACION.md` | Credenciales, variables, garantías de la orden con su prueba, riesgos y privacidad |
 | `PRUEBAS.md` | Pruebas y regresión |
 
@@ -21,7 +23,7 @@
   - `notification_events` (bandeja de salida);
   - `notification_deliveries`.
 - **Endpoints autenticados** con el JWT de siempre:
-  - `PUT` / `GET` / `DELETE /api/v1/users/me/push-devices`;
+  - `PUT` / `GET` / `DELETE /api/v1/users/me/push-devices` (el `DELETE` acepta el FID en la ruta o en el cuerpo);
   - `GET` / `PUT /api/v1/users/me/notification-preferences`.
 - **Eventos.**
   - El detector programado crea PLAN_GENERATED, PLAN_ADAPTED y WEEKLY_PLAN_READY leyendo filas ya confirmadas. Esto **no modifica** la generación, la adaptación, la progresión ni la reincorporación.

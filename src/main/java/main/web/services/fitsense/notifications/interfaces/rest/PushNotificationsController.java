@@ -44,6 +44,10 @@ public class PushNotificationsController {
 
     public record PreferenciasResource(@NotNull Boolean planUpdates, @NotNull Boolean accountNotices) {}
 
+    public record DesvinculacionResource(
+            @Schema(description = "Firebase Installation ID a desvincular", example = "cR_9l0aBcD3fGh1jK2lM4n")
+            @NotBlank @Size(max = 4096) String installationId) {}
+
     private final DispositivosPushService dispositivos;
     private final PreferenciasNotificacionService preferencias;
 
@@ -68,6 +72,14 @@ public class PushNotificationsController {
     public ResponseEntity<Void> desvincular(@AuthenticationPrincipal UserDetailsImpl principal,
                                             @PathVariable String installationId) {
         dispositivos.desvincular(principal.getUserId(), installationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/push-devices")
+    @Operation(summary = "Igual que DELETE /push-devices/{installationId}, con el FID en el cuerpo JSON. Idempotente")
+    public ResponseEntity<Void> desvincularPorCuerpo(@AuthenticationPrincipal UserDetailsImpl principal,
+                                                     @Valid @RequestBody DesvinculacionResource r) {
+        dispositivos.desvincular(principal.getUserId(), r.installationId());
         return ResponseEntity.noContent().build();
     }
 

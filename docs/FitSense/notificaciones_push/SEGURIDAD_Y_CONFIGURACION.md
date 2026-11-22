@@ -18,8 +18,10 @@ El repositorio **no contiene** ninguna credencial de Firebase. `.gitignore` excl
 **Si las credenciales faltan o fallan:**
 - la aplicación **arranca igual**;
 - el registro deja un error sin el detalle de la excepción, que podría citar parte de la credencial;
-- el transporte queda no disponible: los eventos esperan y caducan a las 24 h;
+- el envío queda **apagado de hecho**: no se detectan eventos, no se registran avisos de cuenta y no se envía nada;
 - nada del entrenamiento se ve afectado.
+
+Guía para Railway: `CONFIGURACION_RAILWAY.md`.
 
 ## Variables
 
