@@ -58,7 +58,9 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V62 (solicitud web de eliminacion): una tabla nueva, sin datos.
             "62:db/migration/V62__solicitud_eliminacion_web.sql",
             // V63 (consentimientos): una tabla nueva y la copia de los consentimientos de users; nada del catalogo.
-            "63:db/migration/V63__consentimientos.sql");
+            "63:db/migration/V63__consentimientos.sql",
+            // V64 (notificaciones push): cuatro tablas nuevas, sin datos.
+            "64:db/migration/V64__notificaciones_push.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {

@@ -58,3 +58,7 @@ logs/
 *.class
 hs_err_pid*
 replay_pid*
+# Credenciales de Firebase: NUNCA en el repositorio (notificaciones push, V64)
+*firebase-adminsdk*.json
+*service-account*.json
+firebase-credentials*.json

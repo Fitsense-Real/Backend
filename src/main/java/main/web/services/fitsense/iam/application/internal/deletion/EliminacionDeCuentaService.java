@@ -65,6 +65,11 @@ public class EliminacionDeCuentaService {
             "password_reset_tokens",
             "account_deletion_tokens",
             "user_consents",
+            // V64 (notificaciones push): entregas, eventos, instalaciones y preferencias.
+            "notification_deliveries",
+            "notification_events",
+            "push_devices",
+            "notification_preferences",
             "users");
 
     /** Tablas con user_id que NO son datos de la persona y no se borran (el propio registro de eliminaciones). */

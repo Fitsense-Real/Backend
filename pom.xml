@@ -24,6 +24,8 @@
 		<java.version>21</java.version>
 		<springdoc.version>3.1.0</springdoc.version>
 		<jjwt.version>0.12.6</jjwt.version>
+		<!-- 9.10.0 es la primera con Message.Builder.setFid (envio por Firebase Installation ID). -->
+		<firebase-admin.version>9.11.0</firebase-admin.version>
 		<!-- Destino deliberadamente inalcanzable (puerto 1 de loopback) que
 		     surefire y failsafe imponen a spring.datasource.url. -->
 		<fitsense.bd.bloqueada>jdbc:postgresql://127.0.0.1:1/bloqueada-por-maven</fitsense.bd.bloqueada>
@@ -52,6 +54,25 @@
 			     endpoints de actuator no se exponen y la cadena de seguridad los deniega. -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- ============ Notificaciones push (FCM) ============ -->
+		<!-- Firebase Admin SDK, solo para mensajeria: sin Firestore ni Storage. Las credenciales de servicio
+		     NUNCA van en el repositorio (ver docs/FitSense/notificaciones_push/). -->
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>${firebase-admin.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.cloud</groupId>
+					<artifactId>google-cloud-firestore</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.cloud</groupId>
+					<artifactId>google-cloud-storage</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- ============ Persistencia ============ -->

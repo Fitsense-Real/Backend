@@ -6,6 +6,7 @@ import main.web.services.fitsense.iam.domain.model.aggregates.PasswordResetToken
 import main.web.services.fitsense.iam.domain.model.valueobjects.EmailAddress;
 import main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositories.PasswordResetTokenRepository;
 import main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositories.UserRepository;
+import main.web.services.fitsense.notifications.application.AvisosDeCuenta;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,12 +45,13 @@ public class PasswordResetService {
     private final PasswordResetTokenRepository tokens;
     private final HashingService hashing;
     private final PasswordResetNotifier notificador;
+    private final AvisosDeCuenta avisos;
     private final Duration vigencia;
     private final int maximoPorHora;
     private final Clock reloj;
 
     public PasswordResetService(UserRepository usuarios, PasswordResetTokenRepository tokens, HashingService hashing,
-                                PasswordResetNotifier notificador,
+                                PasswordResetNotifier notificador, AvisosDeCuenta avisos,
                                 @Value("${fitsense.password-reset.ttl-minutes:30}") long minutos,
                                 @Value("${fitsense.password-reset.max-requests-per-hour:3}") int maximoPorHora,
                                 ObjectProvider<Clock> reloj) {
@@ -61,6 +63,7 @@ public class PasswordResetService {
         this.tokens = tokens;
         this.hashing = hashing;
         this.notificador = notificador;
+        this.avisos = avisos;
         this.vigencia = Duration.ofMinutes(minutos);
         this.maximoPorHora = maximoPorHora;
         this.reloj = reloj.getIfAvailable(Clock::systemUTC);
@@ -97,8 +100,11 @@ public class PasswordResetService {
                 .orElseThrow(() -> new IllegalArgumentException(TOKEN_NO_VALIDO));
         var usuario = usuarios.findById(fila.getUserId()).filter(u -> u.canSignIn())
                 .orElseThrow(() -> new IllegalArgumentException(TOKEN_NO_VALIDO));
+        int versionAnterior = usuario.getTokenVersion();
         usuario.changePassword(hashing.encode(nuevaContrasena));
         usuarios.save(usuario);
+        // Aviso de seguridad en la misma transaccion: solo existe si el cambio se confirma (V64).
+        avisos.contrasenaCambiada(usuario.getId(), versionAnterior, usuario.getTokenVersion());
         fila.markUsed(ahora);
         tokens.save(fila);
         tokens.invalidarPendientes(usuario.getId(), ahora);
