@@ -47,7 +47,10 @@ for k in sorted(parejas):
     print(f"| {k} | {a['objetivo']} | {a['nivel']} | {a['lugar']} | {a['dias']} | {a['minutos']} | "
           f"{a['validacion']} | {b['validacion']} | {a['rechazos_v15']} ({a['rechazos_v15_mitad']}) | "
           f"{b['rechazos_v15']} ({b['rechazos_v15_mitad']}) | {a['otros']} | {b['otros']} | "
-          f"{int(a['ms'])/1000:.1f} | {int(b['ms'])/1000:.1f} |")
+          f"{(int(a['ms'])/1000 and f'{int(a["ms"])/1000:.1f}') or 'n/d'} | {(int(b['ms'])/1000 and f'{int(b["ms"])/1000:.1f}') or 'n/d'} |")
+
+
+con_tiempo = [k for k in parejas if all(int(parejas[k][b]['ms']) > 0 for b in 'AB')]
 
 
 def resumen(brazo):
@@ -63,8 +66,10 @@ def resumen(brazo):
         'rechazos_v15_mitad': sum(int(r['rechazos_v15_mitad']) for r in l),
         'otros': dict(sorted(o.items())),
         'casos_con_otros': {k: sum(otros(r['otros']).get(k, 0) > 0 for r in l) for k in sorted(o)},
-        'mediana_s': statistics.median(int(r['ms']) for r in l) / 1000 if l else 0,
-        'max_s': max(int(r['ms']) for r in l) / 1000 if l else 0,
+        # Latencia solo en parejas con las DOS medidas (las recuperadas por GET no tienen tiempo del backend).
+        'mediana_s': statistics.median(int(parejas[k][brazo]['ms']) for k in con_tiempo) / 1000 if con_tiempo else 0,
+        'max_s': max(int(parejas[k][brazo]['ms']) for k in con_tiempo) / 1000 if con_tiempo else 0,
+        'parejas_con_tiempo': len(con_tiempo),
         'cota_usd': sum(float(r['cota_usd']) for r in l),
         'caracteres_salida_mediana': statistics.median(int(r['caracteres_salida']) for r in l) if l else 0,
     }
