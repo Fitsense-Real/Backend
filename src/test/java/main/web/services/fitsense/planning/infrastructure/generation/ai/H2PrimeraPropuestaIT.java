@@ -94,6 +94,16 @@ class H2PrimeraPropuestaIT {
     @Autowired JdbcTemplate jdbc;
 
     static final String MODO = System.getProperty("fitsense.h2.primera.modo", "");
+    /**
+     * VALIDAR (sin Replicate, sin coste): vuelve a pasar por el ensamblador, el normalizador y el validador las salidas
+     * REALES ya obtenidas ({@code <caso>_<brazo>.json} en {@code salidas-dir}), con el mismo perfil y el mismo
+     * contexto. Sirve para no repetir predicciones ya pagadas cuando la corrida REAL se interrumpe (reinicio del
+     * contenedor del 23/11/2026) o cuando una salida se recupero por su id de prediccion (GET, sin coste).
+     * {@code registro} (opcional): fichero {@code caso;brazo;prediction_id;ms;origen} con lo medido en la corrida REAL.
+     */
+    static final boolean VALIDAR = "VALIDAR".equals(MODO);
+    static final Path SALIDAS_DIR = Path.of(System.getProperty("fitsense.h2.primera.salidas-dir", "."));
+    static final String REGISTRO = System.getProperty("fitsense.h2.primera.registro", "");
     static final boolean REAL = "REAL".equals(MODO);
     static final double TOPE_USD = Double.parseDouble(System.getProperty("fitsense.h2.primera.tope-usd", "0"));
     static final double USD_ENTRADA = 0.25, USD_SALIDA = 2.00;
@@ -149,7 +159,14 @@ class H2PrimeraPropuestaIT {
 
     @Test
     void primeraPropuestaPareada() throws Exception {
-        assumeTrue(MODO.equals("PROMPTS") || REAL, "opt-in: -Dfitsense.h2.primera.modo=PROMPTS|REAL");
+        assumeTrue(MODO.equals("PROMPTS") || REAL || VALIDAR, "opt-in: -Dfitsense.h2.primera.modo=PROMPTS|REAL|VALIDAR");
+        var registro = new HashMap<String, String[]>();
+        if (VALIDAR && !REGISTRO.isBlank())
+            for (var l : Files.readAllLines(Path.of(REGISTRO)))
+                if (!l.isBlank() && !l.startsWith("caso;")) {
+                    var x = l.split(";");
+                    registro.put(x[0] + "_" + x[1], x);
+                }
         if (REAL) {
             assertEquals("SI", System.getProperty("fitsense.h2.primera.autorizado"), "REAL exige autorizado=SI");
             assertTrue(TOPE_USD > 0, "REAL exige tope-usd");
@@ -185,6 +202,23 @@ class H2PrimeraPropuestaIT {
                     filas.add(new Fila(c, b, 0, "NO_INVOCADA_INVIABLE", peticiones.get(b).version(),
                             peticiones.get(b).prompt().length(), peticiones.get(b).cota(), "-", 0, 0, "-", 0, 0, "-",
                             inviable.get().describe()));
+                continue;
+            }
+            if (VALIDAR) {
+                int k = 0;
+                for (var b : orden) {
+                    k++;
+                    var fichero = SALIDAS_DIR.resolve(c.id() + "_" + b + ".json");
+                    var p = peticiones.get(b);
+                    if (!Files.exists(fichero)) {
+                        filas.add(new Fila(c, b, k, "NO_DISPONIBLE", p.version(), p.prompt().length() + p.sistema().length(),
+                                p.cota(), "-", 0, 0, "-", 0, 0, "-", "sin salida real guardada"));
+                        continue;
+                    }
+                    var r = registro.getOrDefault(c.id() + "_" + b, new String[]{c.id(), b, "desconocido", "0", "-"});
+                    filas.add(validarSalida(c, b, k, ctx, p, Files.readString(fichero), r[2], Long.parseLong(r[3]),
+                            r.length > 4 ? r[4] : "-"));
+                }
                 continue;
             }
             if (!REAL) {
@@ -234,6 +268,28 @@ class H2PrimeraPropuestaIT {
     }
 
     private static final Pattern MITAD = Pattern.compile("V15: el entrenamiento del \\S+ dedica \\d+ de \\d+ ejercicios");
+
+    /** VALIDAR: la misma evaluacion que {@link #llamar}, sobre una salida real ya obtenida. */
+    private Fila validarSalida(Caso c, String brazo, int orden, PlanGenerationContext ctx, Peticion p, String salida,
+                               String predictionId, long ms, String origen) {
+        fijarInterruptor(brazo.equals("B"));
+        List<String> problemas;
+        try {
+            var borrador = normalizador.normalize(generador.toDraft(salida), ctx).draft();
+            validador.validate(borrador, ctx, configuracion.durationToRepsDivisor());
+            problemas = List.of();
+        } catch (InvalidPlanDraftException e) {
+            problemas = e.problems();
+        }
+        guardar(c.id() + "_" + brazo + "_problemas.txt", String.join("\n", problemas));
+        int v15 = (int) problemas.stream().filter(x -> x.startsWith("V15")).count();
+        int mitad = (int) problemas.stream().filter(x -> MITAD.matcher(x).find()).count();
+        var otros = problemas.stream().map(H2PrimeraPropuestaIT::codigo).filter(x -> !x.equals("V15"))
+                .collect(Collectors.groupingBy(x -> x, TreeMap::new, Collectors.counting())).toString();
+        return new Fila(c, brazo, orden, "RESPUESTA", p.version(), p.prompt().length() + p.sistema().length(), p.cota(),
+                predictionId, ms, salida.length(), problemas.isEmpty() ? "VALIDA" : "RECHAZADA", v15, mitad, otros,
+                origen);
+    }
 
     private Fila llamar(Caso c, String brazo, int orden, PlanGenerationContext ctx, Peticion p) {
         fijarInterruptor(brazo.equals("B"));
