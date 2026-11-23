@@ -19,8 +19,10 @@
 | `…fallosDeFcm` | 1 | `UNREGISTERED` desvincula el dispositivo. `UNAVAILABLE` se reintenta en su turno, sin repetir el FID desvinculado |
 | `…fcmCaido` | 1 | Los reintentos se agotan (`FALLIDO`). El plan sigue publicado y el ciclo semanal funciona con FCM caído |
 | `…cambioDeContrasena` | 1 | La recuperación de contraseña crea `ACCOUNT_NOTICE/PASSWORD_CHANGED`. El aviso va al dispositivo de antes. Después ese dispositivo no recibe hasta un nuevo registro |
+| `…soloEventosReales` | 1 | Las operaciones FAILED y NO_FACTIBLE y la generación síncrona no notifican. El esquema impide que un intento RECHAZADA o NO_FACTIBLE cite un plan. Un plan publicado produce un evento y ninguno más |
+| `ContratoPushHttpIT.contrato` | 1 | **Contrato HTTP exacto**: rutas `/api/v1/...` y cabecera JWT; campos exactos de `Dispositivo`, `Preferencias` y `ApiErrorResource`; FID aceptado y token FCM rechazado; `appVersion` opcional; 401 sin JWT; `DELETE` por ruta y por cuerpo; `DELETE` sin FID da 400; cambio de cuenta; eliminación de cuenta (JWT 401 y sin dispositivos). Genera `EJEMPLOS_REALES_HTTP.md` |
 | `MensajePushTest` | 6 | Las claves del contrato, el aviso de cuenta, la ausencia de datos sensibles en los cuatro tipos, el mensaje FCM con `fid` (y sin `token`), `restrictedPackageName`, el TTL, la clasificación de errores de FCM y el FID ofuscado en los registros |
-| `PushConfiguracionTest` | 2 | Apagado por omisión. Sin credenciales, con Base64 inválido o con un archivo inexistente, el transporte queda no disponible y la aplicación no falla |
+| `PushConfiguracionTest` | 3 | Apagado por omisión. Sin credenciales, con Base64 inválido o con un archivo inexistente, el transporte queda no disponible y la aplicación no falla. Encendido sin credenciales, ni el detector ni los avisos de cuenta escriben en la base |
 
 ## Pruebas existentes ajustadas
 
@@ -34,10 +36,13 @@
 
 | Ejecución | Resultado |
 |---|---|
-| Regresión completa (`mvnw verify -Pintegration`, árbol del primer commit) | Unitarias: **1.592, 0 fallos**, 1 omitida. Integración: **861, 1 fallo** (`MigracionCuentasV60aV63IT`, la versión fija «63»), 72 omitidas (opt-in) |
-| Tras corregirla, con la configuración final | `NotificacionesPushIT` 10/10, `MigracionCuentasV60aV63IT` 1/1, `EliminacionDeCuentaIT` 7/7, `RecuperacionContrasenaIT` 5/5, `RecuperacionPorCorreoIT` 4/4, `MensajePushTest` 6/6 y `PushConfiguracionTest` 2/2 |
+| **Regresión completa sobre `785bedc4`** (`mvn verify -Pintegration`, el último commit de código) | Unitarias: **1.595, 0 fallos**, 1 omitida. Integración: **863, 0 fallos**, 72 omitidas (opt-in). BUILD SUCCESS |
+| CI de GitHub (`verify`) sobre `785bedc4` | Verde |
+| Antecedente: regresión sobre `c40dd4b` | 1.592 y 861. El único fallo, `MigracionCuentasV60aV63IT` (fijaba la versión 63), quedó corregido en `1c433e8` |
 
 ## Lo que no se probó
 
-- **Envío real a Firebase con credenciales de `kora-fitpe`.** No hay credenciales en el entorno de desarrollo y la orden no autoriza desplegar.
-- **La app.** Queda fuera del alcance del backend.
+Pendientes:
+
+- **Envío real a Firebase con credenciales de `kora-fitpe`.** No hay credenciales en el entorno de desarrollo y la orden no autoriza desplegar. Procedimiento en `CONFIGURACION_RAILWAY.md` §5.
+- **Prueba integral con la app Mobile.** La app tiene que ajustarse al contrato (`CONTRATO_PUSH_MOBILE.md`); el repositorio Mobile no se modificó.
