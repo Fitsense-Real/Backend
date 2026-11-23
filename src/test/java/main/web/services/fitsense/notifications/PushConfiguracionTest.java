@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 import java.time.Clock;
 import java.util.Base64;
 
@@ -20,16 +19,14 @@ import static org.mockito.Mockito.*;
 @DisplayName("Notificaciones push: arranque sin credenciales")
 class PushConfiguracionTest {
 
-    Object transporte(boolean activado, String base64, String archivo) throws Exception {
-        Method m = PushConfiguracion.class.getDeclaredMethod("transportePush", boolean.class, String.class,
-                String.class, String.class, String.class, long.class);
-        m.setAccessible(true);
-        return m.invoke(new PushConfiguracion(), activado, "kora-fitpe", "pe.fit.kora", base64, archivo, 24L);
+    Object transporte(boolean activado, String base64, String archivo) {
+        return PushConfiguracion.crear(activado, "kora-fitpe", "pe.fit.kora", base64, archivo, 24L, null,
+                "prueba-config-" + java.util.UUID.randomUUID());
     }
 
     @Test
     @DisplayName("apagado por omision: no disponible")
-    void apagado() throws Exception {
+    void apagado() {
         var t = (PushConfiguracion.TransporteNoDisponible) transporte(false, "", "");
         assertFalse(t.disponible());
         assertEquals("apagado", t.motivo());
@@ -37,7 +34,7 @@ class PushConfiguracionTest {
 
     @Test
     @DisplayName("encendido sin credenciales, con Base64 invalido o con archivo inexistente: no disponible, sin excepcion")
-    void sinCredencialesValidas() throws Exception {
+    void sinCredencialesValidas() {
         if (System.getenv("GOOGLE_APPLICATION_CREDENTIALS") == null) {
             var t = (PushConfiguracion.TransporteNoDisponible) transporte(true, "", "");
             assertEquals("sin credenciales", t.motivo());
