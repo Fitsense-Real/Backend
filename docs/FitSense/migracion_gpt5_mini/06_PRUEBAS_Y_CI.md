@@ -20,7 +20,7 @@ Ejecutada con `mvn verify -Pintegration`, la misma orden que el CI.
 |---|---|
 | Unitarias (surefire) sobre `f53b3b8a` | **1.609 ejecutadas, 0 fallos, 0 errores**, 1 omitida (antes: 1.598) |
 | Integración (failsafe, PostgreSQL 16 de Testcontainers) sobre `f53b3b8a` | **867 ejecutadas, 0 fallos, 0 errores**, 72 omitidas (opt-in). **BUILD SUCCESS** (30 min 57 s) |
-| CI de GitHub (`verify`) sobre el commit final de la PR | {{CI}} |
+| CI de GitHub (`verify`) sobre `e426e1be` (código final de la PR, con `reasoning-effort=medium`) | **Verde** ([run 45259199041](https://github.com/Fitsense-Real/Backend/actions/runs/45259199041)). Los commits posteriores son solo de documentación |
 
 Las pruebas no llaman a Replicate. Surefire y failsafe apagan la IA, y las ITs con IA real son opt-in y quedan omitidas. Tampoco llaman a Google: el transporte de FCM está simulado.
 
