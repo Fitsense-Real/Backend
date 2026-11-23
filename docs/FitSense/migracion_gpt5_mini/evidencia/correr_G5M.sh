@@ -8,6 +8,7 @@
 #   se corre con RESERVA=0.13 (prompt maximo observado ~300.000 caracteres + retroalimentacion).
 # MG | MP: ajuste por resultados medidos (orden G5M): reasoning_effort=medium en los perfiles G que con low acabaron
 #   en respaldo (O03, O07, O08, O09, O12) y en el bloque P completo. RESERVA=0.13.
+#   MG2: el resto de G con medium (O01, O02, O04, O05, O06, O10, O11, O13, O14), con el presupuesto restante.
 # RESERVA 0.10 (antes 0.08): la cota de un prompt de ~200.000 caracteres es ~0,082 USD (O03: 192.454 -> 0,0803).
 set -u
 cd /home/user/wt_g5m; SHA=$(git rev-parse HEAD); mkdir -p $R
@@ -46,6 +47,7 @@ for x in "$@"; do case $x in
  SMOKE) pagado G5M_SMOKE_O02 0.80 $bo -Dfitsense.evaluacion.k20.solo=O02 || break ;;
  GC) pagado G5M_G_COMPLEMENTO 2.60 $bo -Dfitsense.evaluacion.k20.solo=O09,O10,O11,O12,O13,O14 || break ;;
  MG) pagado G5M_MEDIUM_G 2.00 $bo -Dfitsense.ai.reasoning-effort=medium -Dfitsense.evaluacion.k20.solo=O03,O07,O08,O09,O12 || break ;;
+ MG2) pagado G5M_MEDIUM_G2 2.05 $bo -Dfitsense.ai.reasoning-effort=medium -Dfitsense.evaluacion.k20.solo=O01,O02,O04,O05,O06,O10,O11,O13,O14 || break ;;
  MP) pagado G5M_MEDIUM_P 2.00 $bo -Dfitsense.ai.reasoning-effort=medium -Dfitsense.evaluacion.k20.solo=$P -Dfitsense.evaluacion.k20.progresion=true || break ;;
  G) pagado G5M_G 4.50 $bo -Dfitsense.evaluacion.k20.solo=$G || break ;;
  P) pagado G5M_P 2.50 $bo -Dfitsense.evaluacion.k20.solo=$P -Dfitsense.evaluacion.k20.progresion=true || break ;;

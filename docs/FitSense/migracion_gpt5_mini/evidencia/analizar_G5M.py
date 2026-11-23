@@ -142,7 +142,7 @@ def serie(nombre, dirs, ratio):
 
 def main():
     series = [a.split('=', 1) for a in sys.argv[1:]]
-    gra_dirs = [d for n, ds in series if n.startswith('GRA') for d in ds.split(',')]
+    gra_dirs = [d.partition('@')[0] for n, ds in series if n.startswith('GRA') for d in ds.split(',')]
     ratio = ratio_gra(gra_dirs) if gra_dirs else None
     print(json.dumps({'ratio_caracteres_por_token_entrada (GRA)': None if ratio is None else round(ratio, 3)}))
     for n, ds in series:
