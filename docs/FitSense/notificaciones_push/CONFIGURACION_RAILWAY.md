@@ -65,4 +65,4 @@ Ningún proceso de entrenamiento depende de Firebase. Con FCM caído o mal confi
 
    Lo esperado es `ENVIADO`, con `fcm_message_id` informado en la entrega.
 
-Estas pruebas con Firebase real y con la app **siguen pendientes**.
+Según la orden de merge del 23/11/2026, la prueba con Firebase real resultó satisfactoria; sus registros no forman parte del repositorio. Este procedimiento sirve para repetirla en cada entorno nuevo.

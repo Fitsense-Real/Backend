@@ -14,6 +14,7 @@
 | `…preferencias` | 1 | Por omisión, las dos categorías están activadas. Desactivar PLANES descarta también lo pendiente |
 | `…planGenerado` | 1 | Una operación asíncrona COMPLETED produce un solo `PLAN_GENERATED`. El detector y el emisor son idempotentes. El destino es el FID. El mensaje tiene exactamente las 7 claves del contrato |
 | `…cierreSemanal` | 1 | El ciclo semanal real publica la semana 2 (`SIN_ORDEN`). Si un segundo registro APLICADA cita el mismo plan, hay **un** evento y es `PLAN_ADAPTED` |
+| `…sinDispositivoActivo` | 1 | PLAN_GENERATED sin dispositivo activo, porque nunca se registró o porque se desvinculó: el evento queda `SIN_DESTINO/SIN_DISPOSITIVOS_ACTIVOS`, sin envíos ni reintentos |
 | `…planNoVigenteYCaducado` | 1 | Un plan reemplazado antes del envío se descarta. Un evento de más de 24 h caduca |
 | `…cuentaEliminada` | 1 | Durante la eliminación no se envía nada. Una vez eliminada la cuenta, no quedan filas en las cuatro tablas |
 | `…fallosDeFcm` | 1 | `UNREGISTERED` desvincula el dispositivo. `UNAVAILABLE` se reintenta en su turno, sin repetir el FID desvinculado |
@@ -52,9 +53,14 @@ Cubiertos en esta regresión:
 - la seguridad y la eliminación de cuenta (`cuentaEliminada`, `EliminacionDeCuentaIT`);
 - el arranque en los tres escenarios.
 
-## Lo que no se probó
+## Prueba con Firebase real (reportada)
 
-Pendientes:
+La orden de merge del responsable del proyecto (23/11/2026) indica que la **prueba real** de notificaciones con Firebase `kora-fitpe` resultó **satisfactoria**.
 
-- **Envío real a Firebase con credenciales de `kora-fitpe`.** No hay credenciales en el entorno de desarrollo y la orden no autoriza desplegar. Procedimiento en `CONFIGURACION_RAILWAY.md` §5.
-- **Prueba integral con la app Mobile.** La app tiene que ajustarse al contrato (`CONTRATO_PUSH_MOBILE.md`); el repositorio Mobile no se modificó.
+- Esa prueba se hizo fuera del entorno de desarrollo del backend.
+- Este repositorio **no contiene** sus registros, credenciales, identificadores de dispositivo ni mensajes, y no se incorporan aquí.
+- La evidencia automatizada que sí contiene el repositorio es la de este documento: SDK real con Google simulado y credencial sintética.
+
+## Pendiente
+
+- **Prueba integral repetible** con la app Mobile ajustada al contrato (`CONTRATO_PUSH_MOBILE.md`). El repositorio Mobile no se modificó desde el backend.

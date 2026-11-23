@@ -324,6 +324,25 @@ class NotificacionesPushIT {
     }
 
     @Test
+    @DisplayName("PLAN_GENERATED sin dispositivo activo (nunca registrado o desvinculado): SIN_DESTINO, sin envios ni reintentos")
+    void sinDispositivoActivo() throws Exception {
+        var sinRegistro = conPlan();
+        operacionCompletada(sinRegistro.cuenta().userId(), sinRegistro.planId());
+        var desvinculado = conPlan();
+        String fid = fid();
+        registrar(desvinculado.cuenta(), fid);
+        como(desvinculado.cuenta(), delete("/api/v1/users/me/push-devices/" + fid));
+        operacionCompletada(desvinculado.cuenta().userId(), desvinculado.planId());
+
+        assertEquals(2, detector.detectar());
+        emisor.procesar();
+        assertEquals("SIN_DESTINO/SIN_DISPOSITIVOS_ACTIVOS", estado(sinRegistro.planId()));
+        assertEquals("SIN_DESTINO/SIN_DISPOSITIVOS_ACTIVOS", estado(desvinculado.planId()));
+        assertEquals(List.of(), ENVIOS, "ningun envio a un dispositivo desvinculado");
+        assertEquals(0, emisor.procesar(), "un evento sin destino no se reintenta");
+    }
+
+    @Test
     @DisplayName("un plan reemplazado antes del envio no se notifica; un evento mas viejo que el TTL caduca")
     void planNoVigenteYCaducado() throws Exception {
         var c = conPlan();

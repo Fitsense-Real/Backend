@@ -74,4 +74,4 @@ INFO  PushConfiguracion -- Notificaciones push activas: proyecto kora-fitpe, paq
 - **Entrega real.** Ninguna prueba usó credenciales reales de `kora-fitpe` ni un dispositivo Android. Google está simulado y la respuesta de FCM es la documentada, no una observada en producción.
 - **Que FCM acepte el FID de un dispositivo concreto.** Eso solo lo prueba un envío real.
 
-**La entrega real de notificaciones no está aprobada** hasta probarla con Firebase y un dispositivo Android (`CONFIGURACION_RAILWAY.md` §5).
+**Prueba real.** Según la orden de merge del 23/11/2026, la prueba con Firebase `kora-fitpe` y un dispositivo resultó satisfactoria. Sus registros no forman parte de este repositorio (ver `PRUEBAS.md`).
