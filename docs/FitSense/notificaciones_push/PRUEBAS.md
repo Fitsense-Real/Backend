@@ -21,6 +21,10 @@
 | `…cambioDeContrasena` | 1 | La recuperación de contraseña crea `ACCOUNT_NOTICE/PASSWORD_CHANGED`. El aviso va al dispositivo de antes. Después ese dispositivo no recibe hasta un nuevo registro |
 | `…soloEventosReales` | 1 | Las operaciones FAILED y NO_FACTIBLE y la generación síncrona no notifican. El esquema impide que un intento RECHAZADA o NO_FACTIBLE cite un plan. Un plan publicado produce un evento y ninguno más |
 | `ContratoPushHttpIT.contrato` | 1 | **Contrato HTTP exacto**: rutas `/api/v1/...` y cabecera JWT; campos exactos de `Dispositivo`, `Preferencias` y `ApiErrorResource`; FID aceptado y token FCM rechazado; `appVersion` opcional; 401 sin JWT; `DELETE` por ruta y por cuerpo; `DELETE` sin FID da 400; cambio de cuenta; eliminación de cuenta (JWT 401 y sin dispositivos). Genera `EJEMPLOS_REALES_HTTP.md` |
+| `ArranqueFirebaseTest` | 3 | **Regresión del arranque con Firebase activo**: credencial sintética y Google simulado (`GoogleSimulado`), sin salida de la JVM. Falla con 9.11.0 (`NoClassDefFoundError: JacksonFactory`) y pasa con 9.12.0. Prueba el envío por `fid` con el SDK real y la clasificación de `UNREGISTERED` |
+| `ArranquePushDesactivadoIT` | 1 | Spring Boot real con el push desactivado: arranca y no hay eventos ni envíos. El registro de FID funciona |
+| `ArranquePushSinCredencialesIT` | 1 | Spring Boot real con el push activado y una credencial inválida: arranca, el envío queda apagado y **0 eventos** acumulados |
+| `ArranquePushActivoIT` | 1 | Spring Boot real con el push activado y una credencial sintética: arranca sin `NoClassDefFoundError` y hace de punta a punta FID → PLAN_GENERATED → FCM v1 con `fid` → `ENVIADO` |
 | `MensajePushTest` | 6 | Las claves del contrato, el aviso de cuenta, la ausencia de datos sensibles en los cuatro tipos, el mensaje FCM con `fid` (y sin `token`), `restrictedPackageName`, el TTL, la clasificación de errores de FCM y el FID ofuscado en los registros |
 | `PushConfiguracionTest` | 3 | Apagado por omisión. Sin credenciales, con Base64 inválido o con un archivo inexistente, el transporte queda no disponible y la aplicación no falla. Encendido sin credenciales, ni el detector ni los avisos de cuenta escriben en la base |
 
@@ -36,9 +40,17 @@
 
 | Ejecución | Resultado |
 |---|---|
-| **Regresión completa sobre `785bedc4`** (`mvn verify -Pintegration`, el último commit de código) | Unitarias: **1.595, 0 fallos**, 1 omitida. Integración: **863, 0 fallos**, 72 omitidas (opt-in). BUILD SUCCESS |
-| CI de GitHub (`verify`) sobre `785bedc4` | Verde |
-| Antecedente: regresión sobre `c40dd4b` | 1.592 y 861. El único fallo, `MigracionCuentasV60aV63IT` (fijaba la versión 63), quedó corregido en `1c433e8` |
+| **Regresión completa sobre `18b415c0`** (`mvn verify -Pintegration`, último commit de código: firebase-admin 9.12.0 y pruebas de arranque) | Unitarias: **1.598, 0 fallos**, 1 omitida. Integración: **866, 0 fallos**, 72 omitidas (opt-in). BUILD SUCCESS |
+| CI de GitHub (`verify`) sobre `ead2a682` (el mismo código más documentación) | Verde. El run de `18b415c0` quedó cancelado porque lo reemplazó el push siguiente |
+| Antecedentes | `785bedc4`: 1.595 y 863, 0 fallos. `c40dd4b`: el único fallo, `MigracionCuentasV60aV63IT`, se corrigió en `1c433e8` |
+
+Cubiertos en esta regresión:
+- registro y desvinculación de FID (`ContratoPushHttpIT`, `NotificacionesPushIT`);
+- persistencia en PostgreSQL (V64);
+- los cuatro eventos y la prevención de duplicados (`planGenerado`, `cierreSemanal`, `soloEventosReales`, `cambioDeContrasena`);
+- los reintentos (`fallosDeFcm`, `fcmCaido`);
+- la seguridad y la eliminación de cuenta (`cuentaEliminada`, `EliminacionDeCuentaIT`);
+- el arranque en los tres escenarios.
 
 ## Lo que no se probó
 
