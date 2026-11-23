@@ -31,7 +31,7 @@ O02 es LOSE_WEIGHT, BEGINNER, en casa, 30 min y 2 días.
 - Publicó la segunda, después de pasar V1–V27.
 
 En las corridas completas (`04`):
-- **{{N_IA}} perfiles-corrida** generaron con la IA y publicaron planes válidos;
+- **32 perfiles-corrida (13 con `low`, 18 con `medium` y 1 en la prueba de humo)** generaron con la IA y publicaron planes válidos;
 - **0 propuestas inválidas** llegaron al usuario;
 - **todo respaldo** quedó registrado como `RULE_ENGINE`.
 

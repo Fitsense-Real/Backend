@@ -9,7 +9,7 @@ Rama `feature/replicate-gpt-5-mini`, creada desde `generation` en `e46dbe18`. Si
 | `fitsense.ai.base-url` | `FITSENSE_AI_BASE_URL` (nueva) | `…/openai/gpt-5-structured/predictions` (fija) | `…/openai/gpt-5-mini/predictions` |
 | `fitsense.ai.api-format` (nueva) | `FITSENSE_AI_API_FORMAT` | — | Vacío: se deduce de la URL (`direct`; sería `structured` si la URL contiene `/gpt-5-structured/`) |
 | `fitsense.ai.model` | `FITSENSE_AI_MODEL` | `gpt-5-mini` (viajaba en la petición) | `gpt-5-mini`. En `direct` es solo la etiqueta de respaldo: el modelo lo fija la URL |
-| `fitsense.ai.reasoning-effort` | `FITSENSE_AI_REASONING_EFFORT` | `medium` | **`low`** |
+| `fitsense.ai.reasoning-effort` | `FITSENSE_AI_REASONING_EFFORT` | `medium` | **`medium`**. Se empezó con `low`, como pedía la orden, y se volvió a `medium` por los resultados medidos (`04` §4) |
 | `fitsense.ai.verbosity` (nueva) | `FITSENSE_AI_VERBOSITY` | — | **`low`** |
 | `fitsense.ai.max-completion-tokens` (nueva) | `FITSENSE_AI_MAX_COMPLETION_TOKENS` | — | **16.000**, acotado a 1.000–128.000 |
 | `fitsense.ai.cost.input-usd-per-million` / `output-usd-per-million` (nuevas) | `FITSENSE_AI_COST_*` | — | 0,25 / 2,00. Solo para la estimación del registro: no limita nada |
@@ -38,7 +38,7 @@ Hay **un solo constructor** de la entrada, que usan tanto la llamada directa com
 {"input": {
   "system_prompt": "Eres el componente de IA de FitSense. Responde UNICAMENTE con un objeto JSON valido … JSON Schema:\n{…}",
   "prompt": "<el mismo prompt de siempre: PR-1.7 en generación, V2.1 en adaptación>",
-  "reasoning_effort": "low",
+  "reasoning_effort": "medium",
   "verbosity": "low",
   "max_completion_tokens": 16000
 }}
