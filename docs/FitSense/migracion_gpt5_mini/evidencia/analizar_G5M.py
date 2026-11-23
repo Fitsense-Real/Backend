@@ -39,13 +39,29 @@ def ratio_gra(dirs):
 
 
 def serie(nombre, dirs, ratio):
-    gen = [r for d in dirs for r in leer(os.path.join(d, 'generacion_ia.csv'))]
-    met = [r for d in dirs for r in leer(os.path.join(d, 'predicciones_metricas.csv'))]
-    intentos = [r for d in dirs for r in leer(os.path.join(d, 'intentos_ia.csv'))]
-    res = [r for d in dirs for r in leer(os.path.join(d, 'resultados_20.csv'))]
-    trazas = [json.loads(l) for d in dirs for l in open(os.path.join(d, 'trazas_ia.jsonl'))]
+    """dirs: 'dir' o 'dir@O01+O02' (solo esos perfiles de esa corrida; el coste se prorratea por sus llamadas)."""
+    filtros = {}
+    limpios = []
+    for d in dirs:
+        d, _, f = d.partition('@')
+        limpios.append(d)
+        filtros[d] = set(f.split('+')) if f else None
+    dirs = limpios
+
+    def ok(d, perfil):
+        return filtros[d] is None or perfil in filtros[d]
+
+    gen = [r for d in dirs for r in leer(os.path.join(d, 'generacion_ia.csv')) if ok(d, r['id'])]
+    met = [r for d in dirs for r in leer(os.path.join(d, 'predicciones_metricas.csv'))
+           if ok(d, r['etiqueta'].split('/')[0])]
+    intentos = [r for d in dirs for r in leer(os.path.join(d, 'intentos_ia.csv')) if ok(d, r['etiqueta'].split('/')[0])]
+    usuarios = {}
+    for d in dirs:
+        for r in leer(os.path.join(d, 'usuarios.csv')):
+            usuarios[(d, r['user_id'])] = r['id']
     consumo = [l for d in dirs if os.path.exists(os.path.join(d, 'consumo_replicate.log'))
-               for l in open(os.path.join(d, 'consumo_replicate.log'))]
+               for l in open(os.path.join(d, 'consumo_replicate.log'))
+               if ok(d, usuarios.get((d, re.search(r'user=(\S+)', l).group(1)), '?'))]
     resumen = {}
     for d in dirs:
         t = open(os.path.join(d, '99_resumen.txt')).read()
@@ -83,8 +99,8 @@ def serie(nombre, dirs, ratio):
             por_perfil[m['etiqueta'].split('/')[0]] += int(m['ms'])
     ada_ia = [r for r in intentos if r['intento'] not in ('0', '')]
     ada_resultado = Counter((r['motivo'], r['source']) for r in ada_ia)
-    llamadas = sum(v[0] for v in resumen.values())
-    usd = sum(v[1] for v in resumen.values())
+    llamadas = len(met)
+    usd = sum(float(m['usd']) for m in met)
     # Estimacion minima G5M
     est = None
     if consumo and ratio:
