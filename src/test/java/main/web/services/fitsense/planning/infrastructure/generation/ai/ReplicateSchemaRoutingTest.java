@@ -88,11 +88,15 @@ class ReplicateSchemaRoutingTest {
     // El esquema que viaja
     // =======================================================================
 
+    // G5M (23/11/2026): con la URL de prueba el formato es direct (por omision): el esquema viaja en system_prompt.
+
     @Test
-    @DisplayName("Generacion inicial: viaja weekly_training_plan, como antes")
+    @DisplayName("Generacion inicial (direct): viaja weekly_training_plan en el system_prompt")
     void generacionInicialMandaElEsquemaDeSemana() {
         server.expect(requestTo(URL))
-                .andExpect(jsonPath("$.input.json_schema.format.name").value("weekly_training_plan"))
+                .andExpect(jsonPath("$.input.system_prompt").value(
+                        org.hamcrest.Matchers.containsString("\"weekly_training_plan\"")))
+                .andExpect(jsonPath("$.input.json_schema").doesNotExist())
                 .andRespond(withSuccess(resuelta(), MediaType.APPLICATION_JSON));
 
         generator.call("prompt", 3, 7L, (short) 1, 1);
@@ -101,10 +105,13 @@ class ReplicateSchemaRoutingTest {
     }
 
     @Test
-    @DisplayName("Adaptacion: viaja corrected_sessions, NO el esquema de semana")
+    @DisplayName("Adaptacion (direct): viaja corrected_sessions, NO el esquema de semana")
     void adaptacionMandaElEsquemaDeCorrecciones() {
         server.expect(requestTo(URL))
-                .andExpect(jsonPath("$.input.json_schema.format.name").value("corrected_sessions"))
+                .andExpect(jsonPath("$.input.system_prompt").value(
+                        org.hamcrest.Matchers.containsString("\"corrected_sessions\"")))
+                .andExpect(jsonPath("$.input.system_prompt").value(
+                        org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("weekly_training_plan"))))
                 .andRespond(withSuccess(resuelta(), MediaType.APPLICATION_JSON));
 
         generator.call("prompt",
@@ -112,6 +119,29 @@ class ReplicateSchemaRoutingTest {
                 7L, (short) 1, 1);
 
         server.verify();
+    }
+
+    @Test
+    @DisplayName("Structured (configuracion reversible): la peticion de siempre, con json_schema")
+    void structuredMandaElEsquemaEnJsonSchema() {
+        var builder = RestClient.builder();
+        var servidor = MockRestServiceServer.bindTo(builder).build();
+        var structured = new ReplicateProperties(true, "token-de-prueba", URL, "gpt-5-nano", "medium", 150, 0,
+                0, 0, 0, 0, "structured", null, 0);
+        var ia = new ReplicateTrainingPlanGenerator(structured, null, null, new JsonSupport(), builder);
+        servidor.expect(requestTo(URL))
+                .andExpect(jsonPath("$.input.json_schema.format.name").value("weekly_training_plan"))
+                .andExpect(jsonPath("$.input.model").value("gpt-5-nano"))
+                .andExpect(jsonPath("$.input.system_prompt").doesNotExist())
+                .andRespond(withSuccess(resuelta(), MediaType.APPLICATION_JSON));
+        servidor.expect(requestTo(URL))
+                .andExpect(jsonPath("$.input.json_schema.format.name").value("corrected_sessions"))
+                .andRespond(withSuccess(resuelta(), MediaType.APPLICATION_JSON));
+
+        ia.call("prompt", 3, 7L, (short) 1, 1);
+        ia.call("prompt", ReplicateTrainingPlanGenerator.Peticion.deCorrecciones(2), 7L, (short) 1, 1);
+
+        servidor.verify();
     }
 
     @Test

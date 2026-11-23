@@ -15,10 +15,23 @@ record ReplicateResponse(
         JsonNode output,
         String error,
         String logs,
-        Urls urls
+        Urls urls,
+        Metrics metrics
 ) {
     /** urls.get es la direccion para consultar el estado de una prediccion en curso. */
     record Urls(String get, String cancel, String web) {}
+
+    /**
+     * G5M (23/11/2026): {@code metrics} de Replicate. gpt-5-structured informaba token_input_count y
+     * token_output_count; openai/gpt-5-mini directo (comprobado el 23/11/2026) solo informa predict_time y total_time,
+     * asi que los tokens pueden llegar nulos y el coste se registra entonces como "no_reportado".
+     */
+    record Metrics(Double predictTime, Long tokenInputCount, Long tokenOutputCount) {}
+
+    /** Sin metricas (respuestas armadas a mano: reanudacion, cancelacion). */
+    ReplicateResponse(String id, String status, JsonNode output, String error, String logs, Urls urls) {
+        this(id, status, output, error, logs, urls, null);
+    }
 
     boolean succeeded() {
         return "succeeded".equals(status);
