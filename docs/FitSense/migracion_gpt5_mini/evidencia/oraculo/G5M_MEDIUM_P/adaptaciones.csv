@@ -1,0 +1,6 @@
+id,ciclo,sesion,intervencion,estado_v32,fuente,llamadas_ia,igual,sustituciones,reducciones,retirados,trabajo_antes_s,trabajo_despues_s,pertinencia,problemas
+O16,2,22,CONSERVAR,SIN_EFECTO,CONSERVED,0,True,-,-,-,336,336,CONS-J,-
+O17,1,38,REVISAR_CARGA_Y_RECUPERACION,APLICADA,AI,1,False,-,853.sets 3->2;978.dur 30->20;299.reps 15->14;1158.reps 10->9,-,528,406,ACC,-
+O18,1,53,ACORTAR_O_REORGANIZAR,SIN_EFECTO,CONSERVED,1,True,-,-,-,348,348,CONS-J,-
+O19,1,133,ACORTAR_O_REORGANIZAR,APLICADA,AI,1,False,-,253.sets 3->2;1117.sets 3->2;1098.sets 3->2;1264.sets 3->2;1073.sets 3->2,-,882,588,ACC,-
+O20,1,215,SEGURIDAD_ANTE_DOLOR,APLICADA,AI,1,False,-,-,537,354,294,ACC,-

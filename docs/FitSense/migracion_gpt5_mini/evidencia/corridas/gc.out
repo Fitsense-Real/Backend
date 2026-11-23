@@ -1,0 +1,7 @@
+PRESUPUESTO antes de G5M_G_COMPLEMENTO: cargado=3.0177 USD en 48 predicciones -> disponible USD 2.6
+RUN G5M_G_COMPLEMENTO [INFO] BUILD SUCCESS usuarios=6 llamadas=12 incidencias=1
+llamadas_proveedor=12
+usd_medido=0.8469 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+CARGADO TOTAL (cota): 60 3.8646
+FIN_G5M
