@@ -4,11 +4,12 @@
 #   DG | DP (gratuitos: mismos bloques en modo DETERMINISTA, para comparar)
 # Presupuesto GLOBAL de la orden G5M: USD 8. Se descuentan las sondas previas (USD 0,01 de margen) y lo cargado por
 # cada corrida (99_resumen.txt: usd_medido, que con COTA_POR_TOPE es la COTA SUPERIOR, no el gasto estimado).
+# RESERVA 0.10 (antes 0.08): la cota de un prompt de ~200.000 caracteres es ~0,082 USD (O03: 192.454 -> 0,0803).
 set -u
 cd /home/user/wt_g5m; SHA=$(git rev-parse HEAD); mkdir -p $R
 O=$PWD/docs/FitSense/evaluacion_integral_O/cohorte/O_PERFILES.csv; OSHA=9b996825a6c146f156b7bd8d585a024cb1ccc44adf2054b11f1badb5de2b2106
 G=O01,O02,O03,O04,O05,O06,O07,O08,O09,O10,O11,O12,O13,O14; P=O15,O16,O17,O18,O19,O20
-MAXUSD=7.99; RESERVA=0.08
+MAXUSD=7.99; RESERVA=0.10
 k20="/opt/maven/bin/mvn -o -B -ntp verify -Pintegration -DskipUTs=true -Dtest=NONE -Dsurefire.failIfNoSpecifiedTests=false -Dit.test=EvaluacionK20IT -Dfitsense.evaluacion.k20=true -Dfitsense.evaluacion.k20.commit=$SHA -Dfitsense.planning.policy.allow-candidates=true"
 run() { nombre=$1; shift; $k20 "$@" -Dfitsense.evaluacion.k20.salida=$R/$nombre > $R/$nombre.log 2>&1; echo "RUN $nombre $(grep -E 'BUILD (SUCCESS|FAILURE)' $R/$nombre.log) $(grep -o 'usuarios=[0-9]* llamadas=[0-9]* incidencias=[0-9]*' $R/$nombre.log)"; }
 gastado() { python3 - $R <<'PY'
