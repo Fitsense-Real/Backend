@@ -4,10 +4,10 @@
 
 | Ejecución | Commit | Resultado |
 |---|---|---|
-| `mvn verify -Pintegration` completo, local | `46490225` (#83 con las pruebas nuevas; el resto son commits de documentación) | Unitarias: **1.609, 0 fallos**, 1 omitida. Integración: {{IT}} |
+| `mvn verify -Pintegration` completo, local | `46490225` (#83 con las pruebas nuevas; el resto son commits de documentación) | Unitarias: **1.609, 0 fallos**, 1 omitida. Integración: **869, 0 fallos**, 72 omitidas (opt-in). **BUILD SUCCESS** (29 min 51 s) |
 | Pruebas nuevas o ajustadas en esta tarea | `dc541074` | `DuracionSinSeriesHttpIT` (O04 y el contrato de Mobile), `O06LimiteDuracionIT`, `ReanudacionConReplicateSimuladoIT` en formato directo (12) y `GeneracionAsincronaResilienciaIT` (23): **0 fallos** |
 | Rama de evaluación `eval/h2-gpt5-mini` (#69 + #83) | `e0128cef`+ | Pruebas de H2 (`ContratoV15PromptTest`, `RepartoV15Test`, `ContratoPromptV15IT`) y de G5M (`ReplicateGpt5MiniDirectoTest`, `ReplicateSchemaRoutingTest`, `PromptRev2Test`): **29, 0 fallos** |
-| CI de GitHub (`verify`) en #83 | Cabeza final | {{CI}} |
+| CI de GitHub (`verify`) en #83 | `f46f48fe` (pruebas nuevas e informe) | **Verde** ([run 45274221577](https://github.com/Fitsense-Real/Backend/actions/runs/45274221577)). Los commits posteriores son solo de documentación |
 
 **Cobertura de la lista de la orden** (todas dentro de la regresión completa; nombres en `migracion_gpt5_mini/06` §2):
 

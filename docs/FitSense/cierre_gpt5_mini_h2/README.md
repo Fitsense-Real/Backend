@@ -26,7 +26,7 @@
 | 2 | **O04** | `02_O04_O20.md` | DURATION sin series: **válido** (contrato V4/V9/V8C) y **una sola interpretación** en el backend (una tanda). Reducción real de 696 a 344 s. Es una **discrepancia del oráculo**, con propuesta para v1.5. En Mobile se muestra y se registra bien, pero hay un **defecto aparte**, D-M1 |
 | 3 | **O20** | `02_O04_O20.md` | `SUST-SEG-1` sigue la política vigente y respeta las restricciones. Es una **limitación del oráculo** (A6), con propuesta para v1.5. **Riesgo de seguridad abierto:** la sustituta es una variante del mismo gesto que dolió (25 familias). Hay que decidir entre A, B y C |
 | 4 | **Rendimiento** | `03_RENDIMIENTO_Y_MOBILE.md` | Mediana de 81 s por llamada con `medium`. Con el cliente asíncrono de Mobile (rama `generation`), **compatible**: «pendiente» a los 30 s, sin duplicados, sin falsos fallos y sin estados inconsistentes. Riesgo solo con la rama síncrona `main` (D-M2). No se aumentó ningún límite |
-| 5 | **Regresiones** | `05_REGRESIONES_PRESUPUESTO_PENDIENTES.md` §1 | Regresión completa, pruebas nuevas, rama de evaluación y CI |
+| 5 | **Regresiones** | `05_REGRESIONES_PRESUPUESTO_PENDIENTES.md` §1 | Unitarias **1.609 / 0 fallos**, integración **869 / 0 fallos**, rama de evaluación **29 / 0 fallos** y **CI verde** sobre `f46f48fe` |
 | 6 | **Presupuesto** | `05` §2 | 131 predicciones. **USD 7,9438 de 8** cargados por cota y saldo de USD 0,0562. No se amplió |
 | 7 | **Código** | Más abajo | Solo pruebas y documentación en #83. **Sin cambios en el código de producción, las reglas ni los validadores** |
 | 8 | **Pendientes** | `05` §4 | P-1 (seguridad de `SUST-SEG-1`) bloquea el merge. P-2 y P-4 son de Mobile. P-3 es H2 |
