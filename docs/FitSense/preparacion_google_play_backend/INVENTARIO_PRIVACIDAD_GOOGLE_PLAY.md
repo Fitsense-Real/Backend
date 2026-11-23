@@ -73,3 +73,14 @@ Esta lista se limita al backend. **Los SDK que incluya la app Flutter (analític
 - **Plazos de las copias, de los logs y de Replicate.** No se han verificado.
 - **Cumplimiento de una norma concreta** (por ejemplo, la ley peruana 29733 o el RGPD) y **aprobación ética.** No se afirman; corresponden al equipo responsable.
 - **La URL de la página de eliminación y la de la política de privacidad.** No existen aún.
+
+## 5. Adenda: notificaciones push (V64, rama `feature/notificaciones-push-fcm`, sin fusionar)
+
+| Dato | Categoría de Play Console | Finalidad | Sale del backend | Se borra con la cuenta |
+|---|---|---|---|---|
+| Firebase Installation ID (FID) de la app | Identificadores de dispositivo u otros identificadores | Funcionalidad de la app (notificaciones) | Sí, a Google (Firebase Cloud Messaging), como destino del mensaje | Sí (`push_devices`) |
+| Versión de la app, fechas de registro y de última actividad del dispositivo | Información y rendimiento de la app | Funcionalidad (diagnóstico de entregas) | No | Sí |
+| Preferencias de notificación | Actividad en la app | Funcionalidad | No | Sí (`notification_preferences`) |
+| Eventos y entregas (tipo, id del plan, resultado del envío) | Actividad en la app | Funcionalidad | Solo el tipo de evento, los identificadores y textos genéricos van a FCM | Sí (`notification_events`, `notification_deliveries`) |
+
+Los mensajes **no** llevan datos de salud, de dolor, de adherencia ni de entrenamiento. Detalle en `../notificaciones_push/SEGURIDAD_Y_CONFIGURACION.md`.

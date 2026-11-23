@@ -46,7 +46,8 @@ class MigracionCuentasV60aV63IT {
                 + " '2026-10-20T10:00:00Z')");
         jdbc.update("INSERT INTO users (email, password_hash, first_name) VALUES ('c@pruebas.invalid', 'x', 'C')");
 
-        var r = flyway(null).migrate();
+        // Hasta V63 exactamente: esta prueba es de V60-V63; las migraciones posteriores tienen la suya.
+        var r = flyway("63").migrate();
         assertEquals("63", r.targetSchemaVersion);
         assertEquals(8L, jdbc.queryForObject("SELECT nextval('participant_code_seq')", Long.class),
                 "V60: el siguiente codigo sigue al mayor existente (P-007)");
@@ -66,7 +67,7 @@ class MigracionCuentasV60aV63IT {
         assertNull(filas.get(0).get("withdrawn_at"));
         assertNotNull(filas.get(1).get("withdrawn_at"), "la retirada existente se conserva");
 
-        var otra = flyway(null);
+        var otra = flyway("63");
         assertEquals(0, otra.migrate().migrationsExecuted, "reinicio: nada que aplicar");
         assertDoesNotThrow(otra::validate);
     }

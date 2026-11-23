@@ -92,6 +92,13 @@ public class GlobalExceptionHandler {
                         List.of("DEMASIADAS_SOLICITUDES")));
     }
 
+    /** Registro push invalido (identificador que no es FID, plataforma o app no admitidas): codigo en details[0]. */
+    @ExceptionHandler(main.web.services.fitsense.notifications.application.DispositivosPushService.SolicitudPushInvalidaException.class)
+    public ResponseEntity<ApiErrorResource> handleSolicitudPushInvalida(
+            main.web.services.fitsense.notifications.application.DispositivosPushService.SolicitudPushInvalidaException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), List.of(ex.codigo()));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());
