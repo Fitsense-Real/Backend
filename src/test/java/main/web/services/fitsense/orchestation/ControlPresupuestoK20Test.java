@@ -88,4 +88,39 @@ class ControlPresupuestoK20Test {
         assertTrue(puedeLlamar(3, 24, gasto, R, 0.15, bloqueo), "0,10 + 0,05 = 0,15 cabe");
         assertFalse(puedeLlamar(4, 24, gasto + R, R, 0.15, bloqueo), "ya no cabe otra reserva");
     }
+
+    @Test
+    @DisplayName("G5M COTA_POR_TOPE: sin tokens se carga la cota y se sigue; cota ausente o mayor que la reserva bloquea")
+    void cotaPorTope() {
+        double cota = 0.045;
+        for (var estado : ControlPresupuestoK20.EstadoProveedor.values()) {
+            var c = contabilizar(COTA_POR_TOPE, estado != SUCCEEDED, estado, null, null, 0.08, TE, TS, "g1", false, cota);
+            assertEquals(cota, c.usd(), 1e-12, estado.name());
+            assertNull(c.bloqueo(), estado.name());
+            assertEquals("COTA_POR_TOPE", c.estado());
+        }
+        assertNotNull(contabilizar(COTA_POR_TOPE, false, SUCCEEDED, null, null, 0.04, TE, TS, "g2", false, cota)
+                .bloqueo(), "la cota no cabe en la reserva");
+        var sinCota = contabilizar(COTA_POR_TOPE, false, SUCCEEDED, null, null, 0.08, TE, TS, "g3", false, null);
+        assertNotNull(sinCota.bloqueo());
+        assertEquals(0.08, sinCota.usd(), 1e-12);
+        // Con tokens informados se mide por tokens, aunque haya cota.
+        var medido = contabilizar(COTA_POR_TOPE, false, SUCCEEDED, 40_000L, 5_000L, 0.08, TE, TS, "g4", false, cota);
+        assertEquals(0.02, medido.usd(), 1e-12);
+        assertEquals("MEDIDO", medido.estado());
+        // Las demas politicas ignoran la cota: nada cambia para las corridas anteriores.
+        assertNotNull(contabilizar(BLOQUEAR, false, SUCCEEDED, null, null, 0.08, TE, TS, "g5", false, cota).bloqueo());
+        assertNotNull(contabilizar(RESERVA_SIN_BLOQUEO, false, SUCCEEDED, null, null, 0.08, TE, TS, "g6", false, cota)
+                .bloqueo());
+    }
+
+    @Test
+    @DisplayName("G5M: lectura de claves de REPLICATE_CONSUMO")
+    void lecturaDeLinea() {
+        var l = "REPLICATE_CONSUMO user=7 modelo=gpt-5-mini formato=direct coste_usd=no_reportado coste_cota_usd=0.045123";
+        assertEquals(0.045123, EvaluacionK20IT.valorDe(l, "coste_cota_usd"), 1e-12);
+        assertNull(EvaluacionK20IT.valorDe(l, "coste_usd"));
+        assertEquals("gpt-5-mini", EvaluacionK20IT.textoDe(l, "modelo"));
+        assertNull(EvaluacionK20IT.textoDe(null, "modelo"));
+    }
 }

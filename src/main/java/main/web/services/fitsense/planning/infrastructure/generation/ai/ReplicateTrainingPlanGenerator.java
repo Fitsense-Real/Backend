@@ -711,6 +711,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         private String predictionId;
         // G5M: consumo. Solo longitudes y contadores: nunca el texto del prompt ni de la salida.
         private long caracteresEntrada = -1;
+        private long bytesEntrada = -1;
         private long caracteresSalida = -1;
         private boolean reanudada;
         private ReplicateResponse.Metrics metricas;
@@ -751,13 +752,20 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
         void resultado(ReplicateTiming.Resultado r) { this.resultado = r; }
 
-        /** Caracteres de texto enviados al modelo (prompt y, en direct, system_prompt). */
+        /** Caracteres (y bytes UTF-8) de texto enviados al modelo (prompt y, en direct, system_prompt). */
         void entrada(Map<String, Object> input) {
-            long n = 0;
+            long n = 0, b = 0;
             for (var clave : List.of("prompt", "system_prompt"))
-                if (input.get(clave) instanceof String t) n += t.length();
+                if (input.get(clave) instanceof String t) {
+                    n += t.length();
+                    b += t.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
+                }
             caracteresEntrada = n;
+            bytesEntrada = b;
         }
+
+        /** Margen de la cota por los tokens de formato del chat (roles, separadores), muy por encima de lo real. */
+        static final int MARGEN_TOKENS_FORMATO = 256;
 
         void salida(int caracteres) { caracteresSalida = caracteres; }
 
@@ -772,7 +780,8 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
          *   <li>{@code coste_usd}: con los tokens que informa Replicate; "no_reportado" si no los informa (gpt-5-mini
          *   directo solo informa predict_time).</li>
          *   <li>{@code coste_cota_usd}: cota SUPERIOR sin depender de Replicate, solo en direct (hay tope de salida):
-         *   un token por caracter de entrada (ningun tokenizador produce mas) mas max_completion_tokens de salida.
+         *   un token por BYTE UTF-8 de entrada (un tokenizador BPE por bytes no produce mas) mas un margen de formato,
+         *   y max_completion_tokens de salida (razonamiento incluido).
          *   "sin_cota" en structured, que no fija tope de salida.</li>
          * </ul>
          * Una prediccion reanudada del libro no se vuelve a cobrar: su coste ya se registro en la llamada que la creo.
@@ -785,7 +794,8 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                     : usd(tokensEntrada / 1e6 * tarifaEntrada + tokensSalida / 1e6 * tarifaSalida);
             boolean directo = p.formato() == ReplicateProperties.Formato.DIRECT;
             String cota = !directo ? "sin_cota" : caracteresEntrada < 0 ? "-"
-                    : usd(caracteresEntrada / 1e6 * tarifaEntrada + p.maxCompletionTokens() / 1e6 * tarifaSalida);
+                    : usd((bytesEntrada + MARGEN_TOKENS_FORMATO) / 1e6 * tarifaEntrada
+                            + p.maxCompletionTokens() / 1e6 * tarifaSalida);
             return ("REPLICATE_CONSUMO user=%s week=%d attempt=%d modelo=%s formato=%s prediction_id=%s resultado=%s"
                     + " origen=%s predict_time_s=%s tokens_entrada=%s tokens_salida=%s coste_usd=%s coste_cota_usd=%s"
                     + " caracteres_entrada=%d caracteres_salida=%d reasoning_effort=%s verbosity=%s"
