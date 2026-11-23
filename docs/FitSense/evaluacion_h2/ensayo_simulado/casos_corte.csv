@@ -1,0 +1,7 @@
+modo;caso;objetivo;nivel;lugar;dias;minutos;restringido;brazo;orden;usuario;resultado;origen;predicciones;valida_primer_intento;rechazos_v15;rechazos_otros;ms_total;plan_id;validacion_final;prompt_version;detalle
+SIMULADO;G01;GAIN_MUSCLE;BEGINNER;GYM;3;45;false;A;1;1;PUBLICADO;RULE_ENGINE;3;false;0;[CONTRATO/OTRO];510;1;VALIDA;PR-1.7;
+SIMULADO;G01;GAIN_MUSCLE;BEGINNER;GYM;3;45;false;B;2;2;PUBLICADO;RULE_ENGINE;3;false;0;[CONTRATO/OTRO];110;2;VALIDA;PR-1.9;
+SIMULADO;G02;GAIN_MUSCLE;BEGINNER;HOME;4;60;false;B;1;-1;NO_EJECUTADO;-;0;false;0;-;0;null;-;-;no cabe la pareja G02 (12 > max 10 o tope 0.0 USD con reserva 0.05)
+SIMULADO;G02;GAIN_MUSCLE;BEGINNER;HOME;4;60;false;A;2;-1;NO_EJECUTADO;-;0;false;0;-;0;null;-;-;no cabe la pareja G02 (12 > max 10 o tope 0.0 USD con reserva 0.05)
+SIMULADO;G03;GAIN_MUSCLE;INTERMEDIATE;GYM;4;60;false;A;1;-1;NO_EJECUTADO;-;0;false;0;-;0;null;-;-;no cabe la pareja G02 (12 > max 10 o tope 0.0 USD con reserva 0.05)
+SIMULADO;G03;GAIN_MUSCLE;INTERMEDIATE;GYM;4;60;false;B;2;-1;NO_EJECUTADO;-;0;false;0;-;0;null;-;-;no cabe la pareja G02 (12 > max 10 o tope 0.0 USD con reserva 0.05)

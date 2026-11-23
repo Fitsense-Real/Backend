@@ -7,6 +7,7 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePoli
 import main.web.services.fitsense.planning.domain.model.valueobjects.GoalCapabilityPolicy;
 import main.web.services.fitsense.planning.domain.services.CapabilityCoveragePolicy;
 import main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy;
+import main.web.services.fitsense.planning.domain.services.CatalogEligibilityPolicy;
 import main.web.services.fitsense.planning.domain.services.GoalFeasibilityPolicy;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanGenerationContext;
 import main.web.services.fitsense.planning.domain.model.valueobjects.TargetPrescription;
@@ -150,7 +151,28 @@ public record PlanInputSnapshot(
              * cambia.
              */
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @JsonProperty("max_session_seconds") Long maxSessionSeconds) {
+            @JsonProperty("max_session_seconds") Long maxSessionSeconds,
+            /**
+             * H2 (contrato prompt–V15, solo con fitsense.ai.generacion.contrato-v15=true): los exercise_id de
+             * available_exercises que V15 NO cuenta como ejercicios de trabajo (los complementos de capacidad,
+             * CatalogEligibilityPolicy.complementos). Con el contrato historico es null y NO se serializa.
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("complementos_no_cuentan") List<Long> complementosNoCuentan) {
+
+        /** Compatibilidad con la firma anterior a H2: sin complementos_no_cuentan (contrato historico). */
+        public Constraints(short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate, int daysPerWeek,
+                           List<Short> availableDays, int sessionMinutes, String trainingLocation,
+                           int maxDifficultyLevel, Integer maxReps, Integer targetReps, Integer targetSets,
+                           Integer minSessionMinutes, Integer minExercisesPerSession, Integer maxRestSeconds,
+                           List<SuggestedSession> suggestedSplit, List<ReduceVolumeCap> reduceVolumeCaps,
+                           List<DosisPorClase> dosisPorClase, Integer maxColocacionesDia, Double minutosUtilesDia,
+                           List<String> slotsExigibles, CapacidadesObjetivo capacidades, Long maxSessionSeconds) {
+            this(weekNumber, weekStartDate, weekEndDate, daysPerWeek, availableDays, sessionMinutes,
+                    trainingLocation, maxDifficultyLevel, maxReps, targetReps, targetSets, minSessionMinutes,
+                    minExercisesPerSession, maxRestSeconds, suggestedSplit, reduceVolumeCaps, dosisPorClase,
+                    maxColocacionesDia, minutosUtilesDia, slotsExigibles, capacidades, maxSessionSeconds, null);
+        }
 
         /** Compatibilidad con GEN-IN-1.13: sin techo en segundos (politica historica). */
         public Constraints(short weekNumber, LocalDate weekStartDate, LocalDate weekEndDate, int daysPerWeek,
@@ -262,7 +284,22 @@ public record PlanInputSnapshot(
              * no aplica. Sin este numero, en los planes 31 y 32 el dia inferior
              * salio con 9 de 9 ejercicios en upper legs.
              */
-            @JsonProperty("max_per_body_part") Integer maxPerBodyPart) {}
+            @JsonProperty("max_per_body_part") Integer maxPerBodyPart,
+            /**
+             * H2 (solo con fitsense.ai.generacion.contrato-v15=true): para cada numero n de ejercicios DE TRABAJO de
+             * la sesion (sin complementos_no_cuentan), cuantos del mismo body_part admite V15 (RepartoV15). Sustituye
+             * a max_per_body_part, que llega null: un solo numero no puede decir la regla de la mitad, porque depende
+             * de n. Con el contrato historico es null y NO se serializa.
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("max_per_body_part_por_n_trabajo") Map<String, Integer> maxPerBodyPartPorNTrabajo) {
+
+        /** Contrato historico (PR-1.7): sin tabla por n. */
+        public SuggestedSession(LocalDate scheduledDate, String focusCode, List<String> bodyParts,
+                                Integer minBodyParts, Integer maxPerBodyPart) {
+            this(scheduledDate, focusCode, bodyParts, minBodyParts, maxPerBodyPart, null);
+        }
+    }
 
     public record Adjustment(
             List<String> types,
@@ -511,7 +548,18 @@ public record PlanInputSnapshot(
         return escasos;
     }
 
+    /** El contrato historico (PR-1.7). */
     public static PlanInputSnapshot of(PlanGenerationContext context) {
+        return of(context, false);
+    }
+
+    /**
+     * @param contratoV15 H2: con {@code true} (fitsense.ai.generacion.contrato-v15) la instantanea comunica la regla
+     *                    de la mitad de V15 tal como se verifica (tabla por numero de ejercicios de trabajo y los
+     *                    complementos que no cuentan), y min_exercises_per_session nunca supera max_colocaciones_dia
+     *                    (null cuando gobiernan las capacidades). Con {@code false}, exactamente lo de PR-1.7.
+     */
+    public static PlanInputSnapshot of(PlanGenerationContext context, boolean contratoV15) {
         var profile = context.profile();
 
         var user = new User(profile.age(), profile.biologicalSex(), profile.heightCm(),
@@ -521,7 +569,7 @@ public record PlanInputSnapshot(
 
         var limites = context.prescription() == null ? null : context.prescription().repLimits();
         var objetivo = TargetPrescription.forGoal(profile.goalType());
-        var minExercises = minExercisesOrNull(context, objetivo);
+        var minExercisesHistorico = minExercisesOrNull(context, objetivo);
 
         // GEN-IN-1.10 (P-1.3). Un solo interruptor para todo lo de 4D: los
         // campos nuevos van a null y la instruccion no aparece cuando el
@@ -530,6 +578,15 @@ public record PlanInputSnapshot(
         boolean dosisFijada = MvpDosePolicy.aplicaA(profile.goalType());
         // GEN-IN-1.11: el resto de objetivos, por capacidades (4D v4).
         boolean porCapacidades = CapabilityPrescriptionPolicy.gobiernaGeneracion(profile.goalType());
+        Integer maxColoc = dosisFijada ? Integer.valueOf(MvpDosePolicy.maxColocaciones(context.effectiveSessionMinutes()))
+                : porCapacidades ? Integer.valueOf(CapabilityPrescriptionPolicy.MAX_COLOC_DIA) : null;
+        // H2 · C1: con el contrato V15, el minimo de ejercicios nunca pide mas de lo que el tope admite, y no se
+        // comunica cuando gobiernan las capacidades (se calculaba con target_sets x target_reps, no con las dosis
+        // que exige V24).
+        Integer minExercises = !contratoV15 ? minExercisesHistorico
+                : porCapacidades || minExercisesHistorico == null ? null
+                : maxColoc == null ? minExercisesHistorico : Math.min(minExercisesHistorico, maxColoc);
+        int maxTrabajo = maxColoc == null ? 10 : maxColoc;
 
         // GEN-IN-1.12: las dosis por capacidad de cada candidato se calculan una
         // vez; la tabla de codigos sale de todas ellas.
@@ -548,15 +605,15 @@ public record PlanInputSnapshot(
                 minExercises,
                 context.prescription() == null ? null : context.prescription().maxRestSecondsOrDefault(),
                 context.suggestedSplit().stream()
-                        .map(session -> suggestedSession(session, minExercises))
+                        .map(session -> contratoV15 ? suggestedSessionV15(session, minExercises, maxTrabajo)
+                                : suggestedSession(session, minExercises))
                         .toList(),
                 reduceVolumeCapsOrNull(context),
                 !dosisFijada ? null : tablaDosis(),
                 // El tope de V24 tambien para los objetivos por capacidades: antes
                 // se validaba sin decirselo a la IA (plan 55, intento 1: nueve
                 // colocaciones por dia).
-                dosisFijada ? MvpDosePolicy.maxColocaciones(context.effectiveSessionMinutes())
-                        : porCapacidades ? CapabilityPrescriptionPolicy.MAX_COLOC_DIA : null,
+                maxColoc,
                 !dosisFijada ? null
                         : MvpDosePolicy.presupuestoDiarioSegundos(context.effectiveSessionMinutes()) / 60.0,
                 // 4C: tambien a los objetivos por capacidades que exigen slots
@@ -567,7 +624,9 @@ public record PlanInputSnapshot(
                 !porCapacidades ? null : capacidades(context, limites, codigos, dosisDe),
                 context.policy().v4Segundos()
                         ? context.policy().limiteV4SegundosDe(context.profile().sessionMinutes())
-                        : null);
+                        : null,
+                !contratoV15 ? null : CatalogEligibilityPolicy.complementos(context.availableExercises(),
+                        profile.goalType()).stream().sorted().toList());
 
         var adjustment = context.adjustment() == null ? null : new Adjustment(
                 context.adjustment().types().stream().map(Enum::name).toList(),
@@ -662,7 +721,8 @@ public record PlanInputSnapshot(
         // para que el modelo modere la prescripcion de los que SI quedan: una
         // sentadilla sigue siendo elegible y puede pautarse mas o menos profunda.
         return new PlanInputSnapshot(PlanGenerationContext.SCHEMA_VERSION,
-                PrescriptionPrinciples.VERSION, PlanPromptBuilder.VERSION,
+                PrescriptionPrinciples.VERSION,
+                contratoV15 ? PlanPromptBuilder.VERSION_CONTRATO_V15 : PlanPromptBuilder.VERSION,
                 user, constraints, adjustment, previousWeek, exercises,
                 context.safety() == null ? null : context.safety().describe());
     }
@@ -674,6 +734,23 @@ public record PlanInputSnapshot(
      * min_exercises_per_session; si la IA pone mas ejercicios, V15 admitira algo
      * mas, nunca menos.
      */
+    /**
+     * H2: las cuotas de V15 tal como se verifican. La regla de la mitad depende del numero de ejercicios de TRABAJO
+     * de la sesion, que la IA decide; por eso se comunica como tabla (n = 4..max_colocaciones_dia) y no como un solo
+     * numero. max_per_body_part llega null.
+     */
+    private static SuggestedSession suggestedSessionV15(
+            main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.PlannedSession session,
+            Integer minExercises, int maxTrabajo) {
+        var grupos = session.focus().bodyPartCodes();
+        int minGrupos = minExercises == null
+                ? Math.min(2, grupos.size())
+                : Math.min(2, Math.min(grupos.size(), minExercises));
+        var tabla = main.web.services.fitsense.planning.domain.services.RepartoV15.tabla(grupos.size(), maxTrabajo);
+        return new SuggestedSession(session.date(), session.focus().name(), List.copyOf(grupos), minGrupos, null,
+                tabla.isEmpty() ? null : tabla);
+    }
+
     private static SuggestedSession suggestedSession(
             main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.PlannedSession session,
             Integer minExercises) {

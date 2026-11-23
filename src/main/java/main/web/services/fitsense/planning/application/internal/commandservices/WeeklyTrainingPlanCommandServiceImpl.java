@@ -31,6 +31,10 @@ import java.util.List;
 @Service
 public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanCommandService {
 
+    /** H2 (contrato prompt–V15): la misma bandera que PlanPromptBuilder; apagada, la instantanea de PR-1.7. */
+    @org.springframework.beans.factory.annotation.Value("${fitsense.ai.generacion.contrato-v15:false}")
+    private boolean contratoV15 = false;
+
     private static final Logger log = LoggerFactory.getLogger(WeeklyTrainingPlanCommandServiceImpl.class);
 
     private final WeeklyTrainingPlanRepository planRepository;
@@ -316,7 +320,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         if (previousActive.isPresent() && !command.replaceExisting())
             throw new PlanAlreadyExistsException(command.userId(), prepared.weekStartDate());
 
-        var snapshotJson = jsonSupport.write(PlanInputSnapshot.of(prepared.context()));
+        var snapshotJson = jsonSupport.write(PlanInputSnapshot.of(prepared.context(), contratoV15));
 
         var plan = previousActive
                 .map(previous -> WeeklyTrainingPlan.nextVersionOf(previous, draft.source(),

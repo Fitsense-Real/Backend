@@ -164,10 +164,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
      */
     public String requestOutput(PlanGenerationContext context, AiRetryFeedback feedback,
                                 int attempt) {
-        var snapshot = PlanInputSnapshot.of(context);
+        var snapshot = PlanInputSnapshot.of(context, promptBuilder.contratoV15());
         var snapshotJson = jsonSupport.write(snapshot);
         var prompt = promptBuilder.build(context, snapshotJson, feedback);
-        return call(prompt, Peticion.deSemana(context.effectiveDaysPerWeek()),
+        return call(prompt, Peticion.deSemana(context.effectiveDaysPerWeek(), promptBuilder.version()),
                 context.userId(), context.weekNumber(), attempt);
     }
 
@@ -195,8 +195,13 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
         /** Generacion inicial: una semana entera, con sus principios. */
         static Peticion deSemana(int workoutCount) {
+            return deSemana(workoutCount, PlanPromptBuilder.VERSION);
+        }
+
+        /** H2: con la version efectiva del texto de reglas (PR-1.7 o PR-1.9). */
+        static Peticion deSemana(int workoutCount, String versionReglas) {
             return new Peticion(PlanJsonSchema.format(workoutCount),
-                    PlanPromptBuilder.VERSION + " " + PrescriptionPrinciples.VERSION);
+                    versionReglas + " " + PrescriptionPrinciples.VERSION);
         }
 
         /** Adaptacion localizada: correcciones de sesiones concretas. */

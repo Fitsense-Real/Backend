@@ -261,8 +261,26 @@ class CampanaReplicateRealIT {
     @FunctionalInterface
     interface Llamar { Object[] llamar() throws Throwable; }
 
+    /**
+     * Orden 3 (H2): tope DURO opcional, el mismo criterio que la evaluacion pareada. Antes de cada prediccion:
+     * n x reserva <= tope y n <= max. Sin las propiedades, la campana se comporta como antes (sin tope).
+     */
+    static final int MAX_PREDICCIONES = Integer.getInteger("fitsense.replicate.max-predicciones", Integer.MAX_VALUE);
+    static final double TOPE_USD = Double.parseDouble(System.getProperty("fitsense.replicate.tope-usd", "Infinity"));
+    static final double RESERVA_USD = Double.parseDouble(System.getProperty("fitsense.replicate.reserva-usd", "0.05"));
+    final AtomicInteger predicciones = new AtomicInteger();
+
     private Object registrar(String tipo, Long usuario, Object intento, Object feedback, Llamar real) throws Throwable {
         if (abortar.get()) throw new IllegalStateException("campana detenida: " + motivoParada);
+        synchronized (predicciones) {
+            int siguiente = predicciones.get() + 1;
+            if (!ControlPresupuestoK20.puedeLlamar(siguiente, MAX_PREDICCIONES, 0, RESERVA_USD, TOPE_USD, null)) {
+                parar("CORTE_PRESUPUESTO antes de la prediccion " + siguiente + " (max " + MAX_PREDICCIONES
+                        + ", tope " + TOPE_USD + " USD, reserva " + RESERVA_USD + ")");
+                throw new IllegalStateException("campana detenida: " + motivoParada);
+            }
+            predicciones.incrementAndGet();
+        }
         var previos = feedback instanceof AiRetryFeedback f ? f.rejectionProblems() : List.<String>of();
         long t0 = System.nanoTime();
         try {
