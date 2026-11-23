@@ -26,7 +26,7 @@ Mobile propone `PUT` y `DELETE /users/me/push-devices`. No se asume compatibilid
 |---|---|---|
 | Flutter `firebase_messaging` | **17.0.0** | `FirebaseMessaging.instance.register()`, `onRegistered` (Stream con el FID), `unregister()`, `onUnregistered`. `getToken()`, `onTokenRefresh` y `deleteToken()` están marcados `@Deprecated` |
 | Android | BoM 35, minSdk 24 (requisitos de `firebase_messaging` 17) | `FirebaseMessagingService.onRegistered` / `onUnregistered` (el plugin los usa) |
-| Backend: Firebase Admin SDK Java | **9.10.0** (se usa 9.11.0) | `Message.Builder.setFid(fid)` |
+| Backend: Firebase Admin SDK Java | **9.10.0** para `setFid`; se usa **9.12.0** (9.11.0 no arranca sin Firestore, ver `ARRANQUE_FIREBASE.md`) | `Message.Builder.setFid(fid)` |
 
 **Formato aceptado:** `^[A-Za-z0-9_-]{16,64}$`. Un FID mide 22 caracteres; ejemplo: `cR_9l0aBcD3fGh1jK2lM4n`.
 

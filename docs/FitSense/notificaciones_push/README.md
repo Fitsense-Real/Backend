@@ -7,6 +7,7 @@
 | `CONTRATO_PUSH_MOBILE.md` | Contrato de integración que ofrece el backend: identificador FID, ciclo de vida, endpoints, mensaje, pantallas y lo que se espera de la app |
 | `EVENTOS_Y_PROCESOS.md` | Verificación de los cuatro eventos frente a los procesos reales, antiduplicado y estados |
 | `EJEMPLOS_REALES_HTTP.md` | Solicitudes y respuestas reales de todos los endpoints, generadas por `ContratoPushHttpIT` |
+| `ARRANQUE_FIREBASE.md` | Causa y solución del `NoClassDefFoundError: JacksonFactory`, prueba de regresión y arranque real en los tres escenarios |
 | `CONFIGURACION_RAILWAY.md` | Cómo se entregan las credenciales en Railway sin pasar por GitHub, y qué ocurre sin credenciales válidas |
 | `SEGURIDAD_Y_CONFIGURACION.md` | Credenciales, variables, garantías de la orden con su prueba, riesgos y privacidad |
 | `PRUEBAS.md` | Pruebas y regresión |
@@ -15,7 +16,7 @@
 
 - **Identificador:** solo Firebase Installation ID.
   - Flutter `firebase_messaging` ≥ 17.0.0, con `register()` / `onRegistered`.
-  - Admin SDK Java ≥ 9.10.0, con `setFid`.
+  - Admin SDK Java **9.12.0** (`setFid` desde 9.10.0; 9.11.0 no arranca sin Firestore, ver `ARRANQUE_FIREBASE.md`).
   - No se aceptan tokens FCM.
 - **Migración V64**, con cuatro tablas nuevas:
   - `push_devices`;

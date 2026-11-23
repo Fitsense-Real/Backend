@@ -34,13 +34,14 @@
 
 ## 3. Qué hace el backend según la configuración
 
-Comprobado en `PushConfiguracionTest` y `NotificacionesPushIT`:
+Comprobado en `PushConfiguracionTest`, `NotificacionesPushIT` y en el arranque real de Spring Boot (`ArranquePushDesactivadoIT`, `ArranquePushSinCredencialesIT`, `ArranquePushActivoIT`; ver `ARRANQUE_FIREBASE.md`):
 
 | `FITSENSE_PUSH_ENABLED` | Credencial | Resultado |
 |---|---|---|
 | ausente o `false` | cualquiera | **Apagado.** No se detectan eventos, no se registran avisos de cuenta y no se envía nada. Los endpoints de dispositivos y preferencias funcionan: la app puede registrarse antes de que se active el envío |
 | `true` | ausente | **Apagado de hecho.** El registro dice «activadas pero sin credenciales válidas: no se envía nada». Igual que la fila anterior: ni eventos, ni avisos, ni envíos. La aplicación arranca con normalidad |
 | `true` | Base64 inválido, JSON que no es una cuenta de servicio o archivo inexistente | **Apagado de hecho**, igual que la fila anterior. Por seguridad, el registro no incluye el detalle de la excepción |
+| `true` | presente, pero falta una clase del SDK en el classpath (como 9.11.0 sin Firestore) | **Apagado de hecho**, sin tumbar el arranque. El registro dice «el SDK de Firebase no se pudo cargar (NoClassDefFoundError: …)». `ArranqueFirebaseTest` lo detecta en la construcción |
 | `true` | válida | **Activo.** El registro dice «Notificaciones push activas: proyecto kora-fitpe, paquete pe.fit.kora, destino por FID» |
 
 Ningún proceso de entrenamiento depende de Firebase. Con FCM caído o mal configurado, la generación, la adaptación y el ciclo semanal siguen igual (`NotificacionesPushIT.fcmCaido`).
