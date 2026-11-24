@@ -82,6 +82,15 @@
 
 **Regresión completa:** ver §5.
 
+### Pruebas existentes ajustadas, y por qué
+
+Ninguna se relajó: cada una conserva lo que protegía y suma la comprobación de la opción A.
+
+| Prueba | Fallaba porque | Ajuste |
+|---|---|---|
+| `PoliticasP123IT` (4: `antesDelReinicio`, `despuesDelReinicio`, `reactivacion`, `dolorSimultaneoMismoEventoYOtroUsuario`) | Fijaban que `excluidosActivos` es exactamente lo registrado. Por ejemplo, 4 ejercicios registrados que ahora excluyen 20, como todas las variantes de «shoulder press» tras dolor en «lever shoulder press v. 3» | Lo registrado se comprueba con `excluidosActivosDirectos`: persistencia tras el reinicio, una fila por evento, aislamiento entre usuarios y reactivación. Además, la exclusión efectiva contiene lo registrado, y tras el reinicio **ningún miembro de la familia es elegible** |
+| `HerenciaD8IT.dolorConRegeneracionSegura` | Su premisa era «P-03 nivel 2 publica para el participante 9004». **En `generation` sin corregir, esa semana publicada contenía 988 «lever chest press», el mismo gesto que 992 «lever incline chest press v. 2», que dolió** (diagnóstico ejecutado sobre `generation`). Con la familia excluida, la única regeneración sube una dosis (472: 2×10 → 3×10) y P-03 la rechaza | Si P-03 publica, se comprueba todo lo de antes y, además, que no aparece ninguna variante equivalente. Si no, el desenlace seguro: NO_FACTIBLE con el motivo de P-03, la exclusión conservada y nada de la familia en una semana nueva. Una exploración con el mismo escenario (participantes 9005–9040) no encontró ningún caso en que P-03 publique, porque el dolor de sesión excluye la sesión entera y sus familias. El camino de publicación de P-03 sigue cubierto por las otras pruebas que publican por P-03 (7 en la regresión) |
+
 ## 4. Lo que no cubre
 
 - **Equivalencias que no tienen el mismo núcleo de nombre.** Por ejemplo, «bench press» frente a «chest press» son el mismo gesto con nombres distintos y quedan en grupos separados. Una lista revisada por un profesional (catálogo con `familia_movimiento`) sería la evolución natural. La regla actual cubre las variantes con nombre propio y el mismo gesto con otro material o postura.

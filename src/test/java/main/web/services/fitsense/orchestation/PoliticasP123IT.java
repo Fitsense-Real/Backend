@@ -267,7 +267,9 @@ class PoliticasP123IT {
         omitirPorDolor(u, ws.get(1));
         usuarioReinicio = u;
         excluidosReinicio = new TreeSet<>(ejercicios(ws.get(1)));
-        assertEquals(excluidosReinicio, dolor.excluidosActivos(u));
+        // O20 opcion A: lo REGISTRADO son los ejercicios de la sesion; la exclusion efectiva añade su familia.
+        assertEquals(excluidosReinicio, dolor.excluidosActivosDirectos(u));
+        assertTrue(dolor.excluidosActivos(u).containsAll(excluidosReinicio));
         assertTrue(exclusiones.findByUserIdOrderByIdAsc(u).stream().allMatch(x ->
                 x.getReason() == UserSafetyExclusion.Reason.DOLOR_SESION_SIN_IDENTIFICAR
                         && x.getRecordedBy() == UserSafetyExclusion.RecordedBy.OMISION));
@@ -278,10 +280,14 @@ class PoliticasP123IT {
     @DisplayName("P-02 (2/2): tras reiniciar la aplicacion la exclusion sigue y se aplica")
     void despuesDelReinicio() {
         assertTrue(usuarioReinicio > 0, "premisa: corrio la parte 1");
-        assertEquals(excluidosReinicio, dolor.excluidosActivos(usuarioReinicio));
+        assertEquals(excluidosReinicio, dolor.excluidosActivosDirectos(usuarioReinicio));
+        var efectivos = dolor.excluidosActivos(usuarioReinicio);
+        assertTrue(efectivos.containsAll(excluidosReinicio));
         var ctx = planComandos.prepare(new GenerateWeeklyPlanCommand(usuarioReinicio, S1.plusWeeks(5), null, false,
                 null, null)).context();
         assertTrue(ctx.availableExercises().stream().noneMatch(c -> excluidosReinicio.contains(c.exerciseId())));
+        // O20 opcion A: tampoco ninguna variante equivalente de lo que dolio.
+        assertTrue(ctx.availableExercises().stream().noneMatch(c -> efectivos.contains(c.exerciseId())));
     }
 
     @Test
@@ -299,7 +305,9 @@ class PoliticasP123IT {
         hacer(a, ws.get(1), null);
         hacer(a, ws.get(2), null);
         long w2 = ciclo.runFor(a, S1, S1.plusWeeks(1)).orElseThrow();
-        assertEquals(Set.of(doloroso), dolor.excluidosActivos(a));
+        assertEquals(Set.of(doloroso), dolor.excluidosActivosDirectos(a));
+        var familia = new java.util.TreeSet<>(dolor.excluidosActivos(a));
+        assertTrue(familia.contains(doloroso));
         String ruta = "/api/v1/users/me/pain-exclusions/" + doloroso + "/reactivation";
         String cuerpo = "{\"confirmNoPain\":true,\"comment\":\"ya no molesta\"}";
 
@@ -324,7 +332,8 @@ class PoliticasP123IT {
         http.perform(post(ruta).header("Authorization", "Bearer " + token(http, a))
                 .contentType(MediaType.APPLICATION_JSON).content("{\"confirmNoPain\":false}"))
                 .andExpect(status().isUnprocessableEntity());
-        assertEquals(Set.of(doloroso), dolor.excluidosActivos(a), "nada de lo anterior la levanta");
+        assertEquals(Set.of(doloroso), dolor.excluidosActivosDirectos(a), "nada de lo anterior la levanta");
+        assertEquals(familia, dolor.excluidosActivos(a), "ni a su familia");
 
         http.perform(post(ruta).header("Authorization", "Bearer " + token(http, a))
                 .contentType(MediaType.APPLICATION_JSON).content(cuerpo)).andExpect(status().isOk());
@@ -338,6 +347,9 @@ class PoliticasP123IT {
                 .context();
         assertTrue(ctx.availableExercises().stream().anyMatch(c -> c.exerciseId() == doloroso),
                 "reactivado: vuelve a ser candidato");
+        // O20 opcion A: reactivado lo que dolio, su familia deja de estar excluida (excluidosActivos vacio, arriba) y
+        // ningun miembro de la familia queda fuera del conjunto elegible por dolor.
+        assertTrue(familia.stream().noneMatch(id -> dolor.excluidosActivos(a).contains(id)));
 
         // Reactivar NO es reincorporar: la semana siguiente se conserva y no lo trae de vuelta.
         for (var w : workouts(w2)) hacer(a, w, null);
@@ -432,8 +444,11 @@ class PoliticasP123IT {
                 Long.class, u), "una sola fila por evento aunque se registre dos veces a la vez");
         assertEquals(List.of(ev), jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ?",
                 Long.class, v), "el otro usuario tiene la suya y solo la suya");
-        assertEquals(Set.of(eu), dolor.excluidosActivos(u));
-        assertEquals(Set.of(ev), dolor.excluidosActivos(v));
+        assertEquals(Set.of(eu), dolor.excluidosActivosDirectos(u));
+        assertEquals(Set.of(ev), dolor.excluidosActivosDirectos(v));
+        // O20 opcion A: la exclusion efectiva de cada usuario parte solo de SUS filas.
+        assertTrue(dolor.excluidosActivos(u).contains(eu));
+        assertTrue(dolor.excluidosActivos(v).contains(ev));
     }
 
     @Test
@@ -453,7 +468,7 @@ class PoliticasP123IT {
         // Nuevo evento sobre el mismo ejercicio despues de reactivar (otra sesion real del usuario como origen).
         exclusiones.save(new UserSafetyExclusion(u, ejercicio, UserSafetyExclusion.Reason.DOLOR_IDENTIFICADO, w1,
                 ws.get(1), null, S1.plusDays(2), UserSafetyExclusion.RecordedBy.SESION));
-        assertEquals(java.util.Set.of(ejercicio), dolor.excluidosActivos(u), "el dolor posterior prevalece");
+        assertEquals(java.util.Set.of(ejercicio), dolor.excluidosActivosDirectos(u), "el dolor posterior prevalece");
         assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND"
                 + " status = 'REACTIVADA'", Integer.class, u), "la reactivacion anterior sigue constando");
     }
