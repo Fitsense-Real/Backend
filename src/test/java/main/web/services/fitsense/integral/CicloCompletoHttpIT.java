@@ -173,6 +173,13 @@ class CicloCompletoHttpIT {
         int hechos = (int) Math.ceil(ejercicios.size() * fraccion);
         for (int i = 0; i < hechos; i++) {
             var e = ejercicios.get(i);
+            if (e.hasNonNull("safetyBlockReason")) {
+                assertTrue(e.get("safetyBlockReason").asText().contains("dolor_registrado"), e.toString());
+                ok(c, put("/api/v1/sessions/{s}/exercises/{pe}", sid, e.get("plannedExerciseId").asLong())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"actualSets\":0,\"skipReason\":\"PAIN_OR_DISCOMFORT\"}"));
+                continue;
+            }
             boolean duracion = "DURATION".equals(e.get("prescriptionType").asText());
             int series = e.get("plannedSets").isNull() ? 1 : e.get("plannedSets").asInt();
             String cuerpo = duracion
@@ -352,8 +359,11 @@ class CicloCompletoHttpIT {
         var s = sesiones(p1);
         RelojPruebas.abrirVentanaDeEjecucion(jdbc, c.userId());
         omitir(c, s.get(0), "PAIN_OR_DISCOMFORT");
-        entrenar(c, s.get(1), 1.0);
-        entrenar(c, s.get(2), 1.0);
+        // Releido tras la omision: una prescripcion de las sesiones abiertas excluida por el dolor (o variante
+        // equivalente provisional) llega marcada con safetyBlockReason y solo se registra como omitida (P-DOLOR-PUB).
+        var abiertas = sesiones(ok(c, get("/api/v1/users/me/plan/{id}", p1.get("planId").asLong())));
+        entrenar(c, abiertas.get(1), 1.0);
+        entrenar(c, abiertas.get(2), 1.0);
 
         var exclusiones = ok(c, get("/api/v1/users/me/pain-exclusions"));
         assertTrue(exclusiones.size() > 0, "P-02: lo que dolio queda retirado");
