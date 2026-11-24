@@ -174,7 +174,7 @@ class HerenciaD8IT {
      * progresion, recuperacion, reincorporacion ni herencia) y sin la exencion de V20 de D8.
      */
     @Test
-    @DisplayName("el dolor no aprovecha D8: si P-03 regenera, la semana nueva no trae lo que dolio ni mas trabajo, y valida sin exenciones")
+    @DisplayName("el dolor no aprovecha D8: si P-03 regenera, la semana nueva no trae lo que dolio (ni su familia) ni mas trabajo, y valida sin exenciones; si no, NO_FACTIBLE con su motivo")
     void dolorConRegeneracionSegura() throws Exception {
         // La premisa (que P-03 publique para 9004) se construyo con el conjunto elegible anterior a INC-CAT-CONS-v1; el
         // mecanismo que se comprueba no depende del catalogo, asi que se ejecuta con la contencion apagada.
@@ -188,6 +188,7 @@ class HerenciaD8IT {
     }
 
     @Autowired main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService catalogo;
+    @Autowired main.web.services.fitsense.planning.application.internal.commandservices.PainMemoryService dolorEfectivo;
 
     private void dolorConRegeneracionSeguraSinContencion() throws Exception {
         modo = Modo.IGUAL;
@@ -200,8 +201,33 @@ class HerenciaD8IT {
         ejecutar(u, plan, Dia.HECHO, Dia.HECHO, Dia.DOLOR);
         var r = ciclo.runFor(u, S1.plusWeeks(2), S1.plusWeeks(3));
 
-        assertTrue(r.isPresent(), "premisa del caso: P-03 nivel 2 publica para el participante 9004");
+        // O20 OPCION A (orden de seguridad del 24/11/2026). Antes de la correccion, P-03 publicaba para 9004 una semana
+        // con 988 «lever chest press», el MISMO GESTO que 992 «lever incline chest press v. 2», uno de los ejercicios
+        // que dolieron (comprobado sobre generation sin la correccion: docs/FitSense/seguridad_o20/README.md §3). Con la
+        // familia excluida, la unica regeneracion sube la dosis de una colocacion (472: 2x10 -> 3x10) y P-03 la
+        // rechaza: ante dolor no se recupera dosis. El desenlace seguro pasa a ser NO_FACTIBLE con su motivo. Si con
+        // otro catalogo o semana P-03 vuelve a publicar, se comprueba todo lo de abajo (y ninguna variante equivalente).
+        var efectivos = dolorEfectivo.excluidosActivos(u);
+        if (r.isEmpty()) {
+            assertEquals("NO_FACTIBLE", ultimo(u).get("status"));
+            assertTrue(String.valueOf(jdbc.queryForObject("SELECT validation_problems FROM safe_regeneration_attempts"
+                    + " WHERE user_id = ? AND outcome = 'NO_FACTIBLE'", String.class, u)).contains("sube"),
+                    "P-03 registra por que no publica");
+            assertTrue(jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND status ="
+                    + " 'ACTIVA'", Integer.class, u) > 0, "la exclusion por dolor se conserva");
+            for (var p : jdbc.queryForList("SELECT plan_id FROM weekly_training_plans WHERE user_id = ? AND status ="
+                    + " 'ACTIVE'", Long.class, u))
+                assertTrue(jdbc.queryForList("SELECT pwe.exercise_id FROM planned_workout_exercises pwe JOIN"
+                        + " planned_workouts pw ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ?"
+                        + " AND pw.scheduled_date >= ?", Long.class, p, S1.plusWeeks(3)).stream()
+                        .noneMatch(efectivos::contains), "una semana nueva con lo que dolio o su familia");
+            assertSinViolaciones();
+            return;
+        }
         long regenerado = r.get();
+        assertTrue(jdbc.queryForList("SELECT pwe.exercise_id FROM planned_workout_exercises pwe JOIN planned_workouts pw"
+                + " ON pw.planned_workout_id = pwe.planned_workout_id WHERE pw.plan_id = ?", Long.class, regenerado)
+                .stream().noneMatch(efectivos::contains), "P-03 publico una variante equivalente de lo que dolio");
         // 1. La IA no publico (su intento sigue NO_FACTIBLE); publica SOLO P-03 nivel 2, con su fila.
         assertEquals("NO_FACTIBLE", ultimo(u).get("status"));
         var excluidos = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND status ="

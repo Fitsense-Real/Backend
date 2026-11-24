@@ -1,5 +1,8 @@
 package main.web.services.fitsense.catalog.application.internal.queryservices;
 
+import main.web.services.fitsense.catalog.domain.model.valueobjects.EquivalentExercise;
+import main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente;
+
 import main.web.services.fitsense.catalog.domain.model.aggregates.Exercise;
 import main.web.services.fitsense.catalog.domain.model.queries.GetActiveExercisesQuery;
 import main.web.services.fitsense.catalog.domain.model.queries.GetEligibleExercisesQuery;
@@ -112,5 +115,52 @@ public class ExerciseQueryServiceImpl implements ExerciseQueryService {
     @Transactional(readOnly = true)
     public Optional<Exercise> handle(GetExerciseByIdQuery query) {
         return exerciseRepository.findById(query.exerciseId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Map<Long, java.util.List<EquivalentExercise>> handle(
+            main.web.services.fitsense.catalog.domain.model.queries.GetEquivalentVariantsQuery query) {
+        var resultado = new java.util.TreeMap<Long, java.util.List<EquivalentExercise>>();
+        if (query == null || query.exerciseIds() == null) return resultado;
+        for (var id : query.exerciseIds()) {
+            if (id == null) continue;
+            var ejercicio = exerciseRepository.findById(id).orElse(null);
+            if (ejercicio == null) continue;
+            var equivalentes = new java.util.TreeMap<Long, EquivalentExercise>();
+            var nombre = ejercicio.getNameEn();
+            var clave = FamiliaDeMovimientoEquivalente.clave(nombre);
+            if (clave == null) continue;
+            // Nivel 1 (la propia clave) y nivel 2 (las demas claves de su grupo confirmado de la lista explicita; si no
+            // esta en la lista, no tiene equivalentes de nivel 2). Cada clave arrastra sus variantes v. N.
+            var grupo = FamiliaDeMovimientoEquivalente.grupo(nombre);
+            var claves = new java.util.TreeSet<String>();
+            claves.add(clave);
+            grupo.ifPresent(g -> claves.addAll(g.claves()));
+            // Cierre final: el mismo gesto con otro angulo (precaucion, no equivalencia).
+            claves.addAll(FamiliaDeMovimientoEquivalente.clavesPrecaucionAngulo(nombre));
+            for (var k : claves)
+                exerciseRepository.candidatosDeFamilia(k, FamiliaDeMovimientoEquivalente.patronVariantes(k)).stream()
+                        .filter(e -> !id.equals(e.getId()))
+                        .forEach(e -> {
+                            var nivel = FamiliaDeMovimientoEquivalente.nivel(nombre, e.getNameEn());
+                            if (nivel == null) return; // el LIKE amplia de mas; el filtro es la regla
+                            EquivalentExercise eq;
+                            if (FamiliaDeMovimientoEquivalente.NIVEL_VARIANTE.equals(nivel))
+                                eq = new EquivalentExercise(e.getId(), nivel, null,
+                                        "el mismo ejercicio: mismo nombre salvo el sufijo v. N");
+                            else if (FamiliaDeMovimientoEquivalente.NIVEL_MISMO_GESTO.equals(nivel))
+                                eq = new EquivalentExercise(e.getId(), nivel, grupo.get().id(),
+                                        grupo.get().justificacion());
+                            else {
+                                var fila = FamiliaDeMovimientoEquivalente.precaucionPorAngulo(nombre, e.getNameEn())
+                                        .orElseThrow();
+                                eq = new EquivalentExercise(e.getId(), nivel, fila.id(), fila.justificacion());
+                            }
+                            equivalentes.put(e.getId(), eq);
+                        });
+            if (!equivalentes.isEmpty()) resultado.put(id, java.util.List.copyOf(equivalentes.values()));
+        }
+        return resultado;
     }
 }

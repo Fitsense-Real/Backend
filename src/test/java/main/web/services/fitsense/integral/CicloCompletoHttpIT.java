@@ -173,6 +173,13 @@ class CicloCompletoHttpIT {
         int hechos = (int) Math.ceil(ejercicios.size() * fraccion);
         for (int i = 0; i < hechos; i++) {
             var e = ejercicios.get(i);
+            if (e.hasNonNull("safetyBlockReason")) {
+                assertTrue(e.get("safetyBlockReason").asText().contains("dolor_registrado"), e.toString());
+                ok(c, put("/api/v1/sessions/{s}/exercises/{pe}", sid, e.get("plannedExerciseId").asLong())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"actualSets\":0,\"skipReason\":\"PAIN_OR_DISCOMFORT\"}"));
+                continue;
+            }
             boolean duracion = "DURATION".equals(e.get("prescriptionType").asText());
             int series = e.get("plannedSets").isNull() ? 1 : e.get("plannedSets").asInt();
             String cuerpo = duracion
@@ -352,19 +359,90 @@ class CicloCompletoHttpIT {
         var s = sesiones(p1);
         RelojPruebas.abrirVentanaDeEjecucion(jdbc, c.userId());
         omitir(c, s.get(0), "PAIN_OR_DISCOMFORT");
-        entrenar(c, s.get(1), 1.0);
-        entrenar(c, s.get(2), 1.0);
+        // Releido tras la omision: una prescripcion de las sesiones abiertas excluida por el dolor (o variante
+        // equivalente provisional) llega marcada con safetyBlockReason y solo se registra como omitida (P-DOLOR-PUB).
+        var abiertas = sesiones(ok(c, get("/api/v1/users/me/plan/{id}", p1.get("planId").asLong())));
+        // Cierre final (punto 6): el plan releido marca EXACTAMENTE lo que /effective excluye, en cada sesion abierta, y
+        // la sesion no queda bloqueada entera: Mobile puede mostrar que ejercicio ya no se puede ejecutar.
+        var efectivosAlOmitir = new java.util.TreeSet<Long>();
+        ok(c, get("/api/v1/users/me/pain-exclusions/effective"))
+                .forEach(e -> efectivosAlOmitir.add(e.get("exerciseId").asLong()));
+        for (int i = 1; i < abiertas.size(); i++) {
+            var w = abiertas.get(i);
+            assertFalse(w.get("safetyBlocked").asBoolean(), "un ejercicio con dolor no bloquea la sesion entera: " + w);
+            w.get("exercises").forEach(e -> assertEquals(efectivosAlOmitir.contains(e.get("exerciseId").asLong()),
+                    e.hasNonNull("safetyBlockReason"), "marcado = excluido por dolor: " + e));
+        }
+        entrenar(c, abiertas.get(1), 1.0);
+        entrenar(c, abiertas.get(2), 1.0);
 
         var exclusiones = ok(c, get("/api/v1/users/me/pain-exclusions"));
         assertTrue(exclusiones.size() > 0, "P-02: lo que dolio queda retirado");
         var retirados = new ArrayList<Long>();
         exclusiones.forEach(e -> retirados.add(e.get("exerciseId").asLong()));
+        // O20: un dolor de sesion sin identificar es un reporte GENERAL, no una exclusion confirmada.
+        exclusiones.forEach(e -> assertFalse(e.get("confirmed").asBoolean(), "sin identificar: " + e));
+        // /effective distingue lo registrado (DIRECT) de sus variantes equivalentes (EQUIVALENT, aqui provisionales).
+        var efectivas = ok(c, get("/api/v1/users/me/pain-exclusions/effective"));
+        var directas = new java.util.TreeSet<Long>();
+        var excluidosEfectivos = new java.util.TreeSet<Long>();
+        efectivas.forEach(e -> {
+            excluidosEfectivos.add(e.get("exerciseId").asLong());
+            if ("DIRECT".equals(e.get("origin").asText())) {
+                directas.add(e.get("exerciseId").asLong());
+                assertFalse(e.get("confirmed").asBoolean(), e.toString());
+                assertTrue(e.get("canIdentify").asBoolean() && e.get("canReactivate").asBoolean(), e.toString());
+                assertEquals(s.get(0).get("plannedWorkoutId").asLong(), e.get("sourcePlannedWorkoutId").asLong());
+            } else {
+                assertTrue(List.of("EQUIVALENT", "PRECAUTION").contains(e.get("origin").asText()), e.toString());
+                assertTrue(e.get("provisional").asBoolean(), "deriva de un dolor sin identificar: " + e);
+                assertTrue(retirados.contains(e.get("derivedFromExerciseId").asLong()), e.toString());
+                assertFalse(e.get("equivalenceLevel").asText().isBlank(), e.toString());
+                assertFalse(e.get("canIdentify").asBoolean() || e.get("canReactivate").asBoolean(), e.toString());
+            }
+        });
+        assertEquals(new java.util.TreeSet<>(retirados), directas);
+        efectivas.forEach(e -> assertFalse(e.get("confirmationRequired").asBoolean(), "aun no se pide: " + e));
+        // La peticion de confirmacion: la sesion, con sus ejercicios; aun no vencida.
+        var peticiones = ok(c, get("/api/v1/users/me/pain-exclusions/confirmation-requests"));
+        assertEquals(1, peticiones.size(), peticiones.toString());
+        assertEquals(s.get(0).get("plannedWorkoutId").asLong(), peticiones.get(0).get("plannedWorkoutId").asLong());
+        assertFalse(peticiones.get(0).get("confirmationRequired").asBoolean());
+        var enPeticion = new java.util.TreeSet<Long>();
+        peticiones.get(0).get("exercises").forEach(e -> enPeticion.add(e.get("exerciseId").asLong()));
+        assertEquals(new java.util.TreeSet<>(retirados), enPeticion);
 
         long nuevo = cerrar(c, semana(p1));
         var siguiente = ok(c, get("/api/v1/users/me/plan/{id}", nuevo));
         verificarPublicable(siguiente);
         siguiente.get("workouts").forEach(w -> w.get("exercises").forEach(e ->
-                assertFalse(retirados.contains(e.get("exerciseId").asLong()), "lo que dolio no vuelve: " + e)));
+                assertFalse(excluidosEfectivos.contains(e.get("exerciseId").asLong()),
+                        "lo que dolio, y sus variantes equivalentes, no vuelven: " + e)));
+
+        // O20: identificar despues cual fue. Sin confirmacion, 422; con ella queda confirmado. En la misma accion se
+        // confirma que UNO de los demas no tuvo que ver: solo ese se levanta; el resto sigue excluido.
+        assertTrue(retirados.size() >= 3, "premisa: tres ejercicios o mas en la sesion: " + retirados);
+        long identificado = retirados.get(retirados.size() - 1), noRelacionado = retirados.get(1);
+        assertEquals(422, como(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":false}")).getResponse().getStatus());
+        var identificacion = ok(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":true,\"plannedWorkoutId\":"
+                        + s.get(0).get("plannedWorkoutId").asLong() + ",\"unrelatedExerciseIds\":[" + noRelacionado + "]}"));
+        assertEquals(identificado, identificacion.get("exerciseId").asLong());
+        var levantados = new ArrayList<Long>();
+        identificacion.get("noRelacionadosLevantados").forEach(x -> levantados.add(x.asLong()));
+        assertTrue(levantados.contains(noRelacionado)
+                || identificacion.get("noRelacionadosNoLevantados").has(String.valueOf(noRelacionado)),
+                identificacion.toString());
+        assertEquals(404, como(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":true}")).getResponse().getStatus(),
+                "ya confirmado: no hay nada sin identificar");
+        ok(c, get("/api/v1/users/me/pain-exclusions")).forEach(e -> {
+            long id = e.get("exerciseId").asLong();
+            assertEquals(id == identificado, e.get("confirmed").asBoolean(), e.toString());
+            assertEquals(id == noRelacionado ? "REACTIVADA" : "ACTIVA", e.get("status").asText(),
+                    "solo se levanta el confirmado como no relacionado: " + e);
+        });
 
         // Reincorporacion: sin confirmar (confirmNoPain=false), 422 y sigue retirado; con confirmacion, se reactiva.
         long ex = retirados.get(0);

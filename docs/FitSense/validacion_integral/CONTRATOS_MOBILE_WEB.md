@@ -45,6 +45,7 @@ Las rutas usadas por Flutter se han extraído de `lib/` (`ApiConstants` y reposi
 | POST `/workouts/{id}/start`, `/skip`, `/report` | start, skip | Los tres | Disponible | `EjecucionEntrenamientosIT`, `ContratoErroresApiIT`, `CicloCompletoHttpIT.restoDeLaApi` |
 | GET `/sessions/current`, `/sessions/{id}`; PUT `/sessions/{id}/exercises/{pe}`; POST `/finish`, `/abandon` | Sí | Sí | Disponible | `EjecucionEntrenamientosIT`, `CicloCompletoHttpIT` (abandono en `restoDeLaApi`) |
 | GET `/users/me/pain-exclusions`, POST `/{e}/reactivation` | Sí | Sí | Disponible | `PoliticasP123IT`, `ContratoErroresApiIT`, `CicloCompletoHttpIT` |
+| GET `/users/me/pain-exclusions/effective` y `/confirmation-requests`, POST `/{e}/identification` (con `unrelatedExerciseIds`); campos aditivos `confirmed` e `identifiedAt` (O20) | No | No | Disponible en la PR de seguridad O20; Mobile sin adoptar (`seguridad_o20/ESPEC_MOBILE_EXCLUSIONES.md`) | `CicloCompletoHttpIT.dolorYReincorporacion`, `ContratoErroresApiIT`, `DolorFamiliaEquivalenteIT` |
 
 ### Métricas, intervenciones y catálogo
 

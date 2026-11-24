@@ -102,4 +102,13 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
                                 @Param("excludeInversion") boolean excludeInversion);
 
     long countByActiveTrue();
+
+    /**
+     * O20 (opcion A): candidatos a la familia de movimiento de una clave: el nombre exacto (sin mayusculas) y sus
+     * variantes {@code v. N}. El filtro final por clave se hace en el dominio (FamiliaDeMovimientoEquivalente): un
+     * comodin de LIKE en el nombre solo puede ampliar los candidatos, nunca colar uno de otra familia.
+     */
+    @Query("SELECT e FROM Exercise e WHERE LOWER(e.nameEn) = :clave OR LOWER(e.nameEn) LIKE :patron")
+    List<Exercise> candidatosDeFamilia(@Param("clave") String clave, @Param("patron") String patron);
+
 }
