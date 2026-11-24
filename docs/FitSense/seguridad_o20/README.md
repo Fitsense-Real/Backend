@@ -159,5 +159,6 @@ Ninguna se relajó: cada una conserva lo que protegía y suma la comprobación d
 |---|---|---|
 | `mvn verify -Pintegration` completo, local, primera versión | `d196a7a0` | Unitarias: **1.604, 0 fallos**, 1 omitida (antes 1.598, más las 6 nuevas). Integración: **875, 0 fallos**, 72 omitidas (opt-in; antes 867, más las 8 nuevas). **BUILD SUCCESS** (28 min 31 s) |
 | Primera regresión, antes de ajustar las pruebas existentes | `28a186e7` | 5 fallos esperados por el cambio de semántica (§3, «Pruebas existentes ajustadas»). Ninguno en otras áreas |
-| `mvn verify -Pintegration` completo, local, con el ajuste final | `aef6402f` | Ver abajo (en curso) |
-| CI de GitHub (`verify`) | Cabeza de la PR | Ver la PR |
+| `mvn verify -Pintegration` completo, local, con el ajuste final | `aef6402f` | Unitarias: 1.612, 0 fallos. Integración: **48 errores**, todos por la misma causa: las pruebas que fijan un catálogo anterior no aplicaban V65 (`missing column [identification_evidence]`). Corregido en `EsquemaVigenteSobreCatalogoAnterior`, sin tocar código de producción |
+| `mvn verify -Pintegration` completo, local, con el ajuste final | `568bb7e8` | Unitarias: **1.612, 0 fallos**, 1 omitida. Integración: **877, 0 fallos**, 72 omitidas (opt-in). **BUILD SUCCESS** (24 min 27 s) |
+| CI de GitHub (`verify`) | `568bb7e8` | **success** |
