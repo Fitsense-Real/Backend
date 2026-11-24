@@ -74,6 +74,7 @@ class RegeneracionPorColocacionRev2IT {
 
     @Autowired WeeklyCycleService ciclo;
     @Autowired PlanningContextFacade planning;
+    @Autowired main.web.services.fitsense.planning.application.internal.commandservices.PainMemoryService dolorEfectivo;
     @Autowired UserProfileCommandService perfiles;
     @Autowired WorkoutSessionCommandService sesiones;
     @Autowired TrainingPlanController planes;
@@ -301,7 +302,11 @@ class RegeneracionPorColocacionRev2IT {
         var excluidos = jdbc.queryForList("SELECT exercise_id FROM user_safety_exclusions WHERE user_id = ? AND status ="
                 + " 'ACTIVA'", Long.class, u);
         assertFalse(excluidos.isEmpty(), "premisa: P-02 registra la exclusion");
-        String lista = "{" + String.join(",", excluidos.stream().map(String::valueOf).toList()) + "}";
+        // O20: lo que P-DOLOR-PUB marca es la exclusion EFECTIVA: lo registrado y sus variantes equivalentes (aqui,
+        // provisionales: dolor de sesion sin identificar).
+        var efectivos = dolorEfectivo.excluidosActivos(u);
+        assertTrue(efectivos.containsAll(excluidos), "la exclusion efectiva contiene lo registrado");
+        String lista = "{" + String.join(",", efectivos.stream().map(String::valueOf).toList()) + "}";
 
         // Casos 1, 2 y 3: se marcan exactamente las prescripciones cuyo ejercicio dolio, con la causa del dolor, en las
         // sesiones abiertas y en la omitida (el reporte retroactivo tampoco puede anotar trabajo en lo que dolio);

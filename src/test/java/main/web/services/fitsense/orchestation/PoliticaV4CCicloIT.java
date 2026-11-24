@@ -291,10 +291,18 @@ class PoliticaV4CCicloIT {
     void hacer(long u, long w, short rpe) {
         RelojPruebas.abrirVentanaDeEjecucion(jdbc, u);
         long sesion = sesiones.handle(new StartWorkoutSessionCommand(u, w)).orElseThrow().getId();
+        // P-DOLOR-PUB: tras omitir una sesion por dolor, lo que esta sesion marca (lo registrado o, de forma
+        // provisional, una variante equivalente) solo se registra como omitido.
+        var marcados = planning.fetchPlannedWorkout(w).map(v -> v.safetyConflicts().keySet()).orElse(java.util.Set.of());
         for (var f : jdbc.queryForList("SELECT planned_exercise_id, prescription_type, planned_sets, planned_reps,"
                 + " planned_duration_seconds FROM planned_workout_exercises WHERE planned_workout_id = ?"
                 + " ORDER BY exercise_order", w)) {
             long pe = ((Number) f.get("planned_exercise_id")).longValue();
+            if (marcados.contains(pe)) {
+                sesiones.handle(new RecordSessionExerciseCommand(u, sesion, pe, (short) 0, 0, null, null,
+                        main.web.services.fitsense.shared.domain.model.valueobjects.SkipReason.OTHER));
+                continue;
+            }
             int series = f.get("planned_sets") == null ? 1 : ((Number) f.get("planned_sets")).intValue();
             boolean dur = "DURATION".equals(f.get("prescription_type"));
             int reps = f.get("planned_reps") == null ? 0 : ((Number) f.get("planned_reps")).intValue();
