@@ -86,7 +86,27 @@ En todos los casos, cada petición:
 - `MigracionV65IT`, sobre una base existente migrada a V64 con datos y sobre una base nueva;
 - `EsquemaVigenteSobreCatalogoAnterior`, para las pruebas que fijan un catálogo anterior.
 
-## 3. Problemas pendientes antes del merge de #83
+## 3. Regresión y CI
+
+| Ejecución | Commit | Resultado |
+|---|---|---|
+| `mvn verify -Pintegration` completo, local, con #84 incorporada | `3ac7d70a` (código igual al de `19c815e9`; este solo añade documentación) | Unitarias: **1.630, 0 fallos**, 1 omitida. Integración: **887, 0 fallos**, 72 omitidas (opt-in). **BUILD SUCCESS** (33 min 08 s) |
+| CI de GitHub (`verify`) | `19c815e9` | **success** |
+| CI de `generation` tras fusionar #84 | `b9c197de` | **success** (dos ejecuciones `verify`) |
+
+La regresión incluye las pruebas de la orden:
+- generación inicial con los cuatro objetivos y los validadores;
+- duración autorizada;
+- adaptación, reducción de carga, progresión y reincorporación;
+- dolor, equivalencias, precauciones y NO_FACTIBLE;
+- generación asíncrona y reanudación con Replicate simulado;
+- notificaciones push (FCM);
+- V65 sobre bases existentes y nuevas;
+- contrato HTTP para Mobile.
+
+Ningún validador se modificó.
+
+## 4. Problemas pendientes antes del merge de #83
 
 - **Revisión final y autorización** de la persona responsable.
 - **Variable `FITSENSE_AI_BASE_URL` del entorno de despliegue:** comprobar que no fija la URL antigua.
