@@ -27,6 +27,7 @@
 | 7. Pruebas automatizadas y CI | `06_PRUEBAS_Y_CI.md` |
 | 8. Incidencias, riesgos y limitaciones | `05_INCIDENCIAS_RIESGOS_LIMITACIONES.md` |
 | 9. PR y commit final | Descripción de la PR |
+| Configuración efectiva, compatibilidad con O20 y V65 (orden «MERGE O20 E INTEGRACIÓN GPT-5 MINI») | `07_CONFIGURACION_EFECTIVA_Y_O20.md` |
 
 **Evidencia** (`evidencia/`):
 - `corridas/*.tar.gz`: salida completa del arnés y registro de cada corrida real, con sha256 en `SHA256SUMS.txt`;
