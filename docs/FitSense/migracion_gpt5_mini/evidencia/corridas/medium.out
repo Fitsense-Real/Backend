@@ -1,0 +1,12 @@
+PRESUPUESTO antes de G5M_MEDIUM_G: cargado=3.8646 USD en 60 predicciones -> disponible USD 2.0
+RUN G5M_MEDIUM_G [INFO] BUILD SUCCESS usuarios=5 llamadas=15 incidencias=0
+llamadas_proveedor=15
+usd_medido=1.0551 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+PRESUPUESTO antes de G5M_MEDIUM_P: cargado=4.9197 USD en 75 predicciones -> disponible USD 2.0
+RUN G5M_MEDIUM_P [INFO] BUILD SUCCESS usuarios=6 llamadas=14 incidencias=0
+llamadas_proveedor=14
+usd_medido=0.9643 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+CARGADO TOTAL (cota): 89 5.884
+FIN_G5M

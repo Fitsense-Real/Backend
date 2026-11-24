@@ -198,7 +198,10 @@ class ReanudacionConReplicateSimuladoIT {
 
     @DynamicPropertySource
     static void replicateLocal(DynamicPropertyRegistry r) {
-        r.add("fitsense.ai.base-url", () -> base() + "/v1/models/openai/gpt-5-structured/predictions");
+        // G5M (23/11/2026): el formato de produccion es gpt-5-mini directo. El libro V59 y la reanudacion se prueban con
+        // esa peticion (system_prompt + prompt + reasoning_effort/verbosity/max_completion_tokens); structured sigue
+        // cubierto en DiarioDePrediccionesReplicateTest y ReplicateSchemaRoutingTest.
+        r.add("fitsense.ai.base-url", () -> base() + "/v1/models/openai/gpt-5-mini/predictions");
     }
 
     @AfterAll

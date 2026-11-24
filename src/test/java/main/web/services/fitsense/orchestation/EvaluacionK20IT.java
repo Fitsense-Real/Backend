@@ -25,6 +25,7 @@ import main.web.services.fitsense.planning.domain.services.PlanDraftValidator;
 import main.web.services.fitsense.planning.domain.services.PermisosIntervencion;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateSessionFixGenerator;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateTrainingPlanGenerator;
+import main.web.services.fitsense.planning.infrastructure.generation.ai.ReplicateProperties;
 import main.web.services.fitsense.planning.infrastructure.generation.ai.SessionFixPromptBuilder;
 import main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade;
 import main.web.services.fitsense.planning.interfaces.rest.TrainingPlanController;
@@ -154,6 +155,8 @@ class EvaluacionK20IT {
     static double usdMedido = 0;
     static volatile String bloqueoPresupuesto = null;
     static final java.util.Queue<String> tiemposReplicate = new java.util.concurrent.ConcurrentLinkedQueue<>();
+    /** G5M: lineas REPLICATE_CONSUMO (modelo, formato, tokens si los hay, cota del coste). */
+    static final java.util.Queue<String> consumoReplicate = new java.util.concurrent.ConcurrentLinkedQueue<>();
     static final List<String> metricasPredicciones = Collections.synchronizedList(new ArrayList<>());
     static final String PREFER_WAIT = System.getProperty("fitsense.evaluacion.k20.prefer-wait", "25");
     /**
@@ -375,6 +378,12 @@ class EvaluacionK20IT {
                 : CREDENCIAL_PROXY ? "secreto de red inyectado por el proxy (no visible)" : "variable REPLICATE_API_TOKEN");
         cfg.put("comprobacion_cuenta_http", cuenta);
         cfg.put("politica_sin_metricas", SIN_METRICAS);
+        // G5M: el modelo y la forma de peticion que de verdad se usaron (la configuracion cargada, no un literal).
+        cfg.put("modelo_ia", replicateProperties.modeloEfectivo() + " formato=" + replicateProperties.formato().etiqueta()
+                + " endpoint=" + replicateProperties.baseUrl() + " reasoning_effort=" + replicateProperties.reasoningEffort()
+                + (replicateProperties.formato() == ReplicateProperties.Formato.DIRECT ? " verbosity="
+                + replicateProperties.verbosity() + " max_completion_tokens=" + replicateProperties.maxCompletionTokens()
+                : ""));
         cfg.put("limite_ia", REPLICATE ? MAX_LLAMADAS + " predicciones / USD " + MAX_USD + " (reserva de peor caso "
                 + COSTE_MAX_POR_LLAMADA_USD + " por prediccion; gasto real medido por tokens a " + TARIFA_ENTRADA_USD_MILLON
                 + " / " + TARIFA_SALIDA_USD_MILLON + " USD por millon)" : "no aplica");
@@ -417,6 +426,7 @@ class EvaluacionK20IT {
             m.addAll(metricasPredicciones);
             escribir("predicciones_metricas.csv", m);
             escribir("tiempos_replicate.log", new ArrayList<>(tiemposReplicate));
+            escribir("consumo_replicate.log", new ArrayList<>(consumoReplicate));
         }
         escribir("99_resumen.txt", List.of("usuarios=" + res.size(), "llamadas_proveedor=" + llamadas.get(),
                 "incidencias=" + incid.size(), "usd_medido=" + String.format(java.util.Locale.ROOT, "%.4f", usdMedido)
@@ -1013,6 +1023,7 @@ class EvaluacionK20IT {
             protected void append(ch.qos.logback.classic.spi.ILoggingEvent e) {
                 String t = e.getFormattedMessage();
                 if (t != null && t.startsWith("REPLICATE_TIMING")) tiemposReplicate.add(t);
+                if (t != null && t.startsWith("REPLICATE_CONSUMO")) consumoReplicate.add(t);
             }
         };
         appender.start();
@@ -1084,6 +1095,7 @@ class EvaluacionK20IT {
         }
         traza.put("n", n);
         int tiemposAntes = tiemposReplicate.size();
+        int consumoAntes = consumoReplicate.size();
         long t0 = System.nanoTime();
         try {
             Object salida = inv.callRealMethod();
@@ -1096,15 +1108,19 @@ class EvaluacionK20IT {
             throw e;
         } finally {
             traza.put("ms", (System.nanoTime() - t0) / 1_000_000);
-            if (REPLICATE) contabilizar(traza, tiemposAntes);
+            if (REPLICATE) contabilizar(traza, tiemposAntes, consumoAntes);
             trazasIa.add(json(traza));
         }
     }
 
     /** Lee las metricas de la prediccion recien hecha, suma su coste real y bloquea si la reserva no basto. */
-    private void contabilizar(Map<String, Object> traza, int tiemposAntes) {
+    private void contabilizar(Map<String, Object> traza, int tiemposAntes, int consumoAntes) {
         var nuevas = new ArrayList<>(tiemposReplicate).subList(Math.min(tiemposAntes, tiemposReplicate.size()),
                 tiemposReplicate.size());
+        // G5M: la linea REPLICATE_CONSUMO de esta llamada (la ultima nueva): modelo, formato y cota del coste.
+        var consumos = new ArrayList<>(consumoReplicate);
+        String consumo = consumos.size() > consumoAntes ? consumos.get(consumos.size() - 1) : null;
+        Double cota = valorDe(consumo, "coste_cota_usd");
         String id = nuevas.isEmpty() ? null : idPrediccion(nuevas.get(nuevas.size() - 1));
         double usd = COSTE_MAX_POR_LLAMADA_USD;
         String estado;
@@ -1130,7 +1146,14 @@ class EvaluacionK20IT {
         if (metricas != null) predict = metricas.path("predict_time").asDouble(-1);
         var cont = ControlPresupuestoK20.contabilizar(SIN_METRICAS, fallida, estadoProv, te, ts,
                 COSTE_MAX_POR_LLAMADA_USD, TARIFA_ENTRADA_USD_MILLON, TARIFA_SALIDA_USD_MILLON, id,
-                Boolean.TRUE.equals(traza.get("cancelacion_solicitada")));
+                Boolean.TRUE.equals(traza.get("cancelacion_solicitada")), cota);
+        if (consumo != null) {
+            traza.put("modelo", textoDe(consumo, "modelo"));
+            traza.put("formato", textoDe(consumo, "formato"));
+            traza.put("coste_cota_usd", cota);
+            traza.put("caracteres_entrada", textoDe(consumo, "caracteres_entrada"));
+            traza.put("caracteres_salida", textoDe(consumo, "caracteres_salida"));
+        }
         usd = cont.usd();
         estado = cont.estado();
         if (cont.bloqueo() != null) bloqueoPresupuesto = cont.bloqueo();
@@ -1151,6 +1174,22 @@ class EvaluacionK20IT {
                 String.valueOf(traza.get("intento")), String.valueOf(id), String.valueOf(entrada), String.valueOf(salida),
                 String.valueOf(predict), String.valueOf(traza.get("ms")), String.format(java.util.Locale.ROOT, "%.6f", usd),
                 String.format(java.util.Locale.ROOT, "%.6f", acumulado), estado));
+    }
+
+    /** Valor {@code clave=...} de una linea de registro; null si falta o no es un numero. */
+    static String textoDe(String linea, String clave) {
+        if (linea == null) return null;
+        var m = java.util.regex.Pattern.compile("(?:^|\\s)" + clave + "=(\\S+)").matcher(linea);
+        return m.find() ? m.group(1) : null;
+    }
+
+    static Double valorDe(String linea, String clave) {
+        var t = textoDe(linea, clave);
+        try {
+            return t == null ? null : Double.valueOf(t);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     static double costeUsd(long tokensEntrada, long tokensSalida) {
@@ -1230,6 +1269,7 @@ class EvaluacionK20IT {
     }
 
     @Autowired main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService planCommands;
+    @Autowired ReplicateProperties replicateProperties;
     @Autowired main.web.services.fitsense.planning.domain.services.PlanDraftNormalizer normalizador;
 
     /** Linea base: contexto real de la generacion (solo lectura) + validadores reales; nada se persiste. */

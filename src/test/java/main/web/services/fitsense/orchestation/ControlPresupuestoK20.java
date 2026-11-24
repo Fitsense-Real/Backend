@@ -18,6 +18,14 @@ final class ControlPresupuestoK20 {
 
     static final String BLOQUEAR = "BLOQUEAR";
     static final String RESERVA_SIN_BLOQUEO = "RESERVA_SIN_BLOQUEO";
+    /**
+     * G5M (23/11/2026): openai/gpt-5-mini directo NO informa tokens (solo predict_time). Con tope de salida
+     * (max_completion_tokens), el coste de UNA prediccion esta acotado sin Replicate: bytes de entrada como tokens
+     * (mas un margen) + el tope de salida a su tarifa ({@code coste_cota_usd} de REPLICATE_CONSUMO). Esta politica
+     * carga esa COTA en lugar de bloquear, en cualquier estado final, y bloquea si la cota no cabe en la reserva o si
+     * falta. Con tokens informados se sigue midiendo por tokens. Opt-in: las corridas anteriores no cambian.
+     */
+    static final String COTA_POR_TOPE = "COTA_POR_TOPE";
 
     private ControlPresupuestoK20() {}
 
@@ -72,5 +80,26 @@ final class ControlPresupuestoK20 {
             return new Contabilidad(reserva, "FALLIDA_SIN_METRICAS_SE_CARGA_LA_RESERVA_SIN_BLOQUEO", null);
         return new Contabilidad(reserva, "SIN_METRICAS_SE_CARGA_LA_RESERVA",
                 "sin metricas de la prediccion " + id + " (estado " + estado + "): no se hacen mas llamadas");
+    }
+
+    /**
+     * G5M: como {@link #contabilizar(String, boolean, EstadoProveedor, Long, Long, double, double, double, String,
+     * boolean)}, pero con la cota de la prediccion ({@code null} si no se conoce). Solo la politica COTA_POR_TOPE la usa.
+     */
+    static Contabilidad contabilizar(String politica, boolean fallidaBackend, EstadoProveedor estado,
+                                     Long tokensEntrada, Long tokensSalida, double reserva,
+                                     double tarifaEntradaMillon, double tarifaSalidaMillon, String id,
+                                     boolean canceladaPorTimeout, Double cotaUsd) {
+        boolean conTokens = tokensEntrada != null && tokensSalida != null && tokensEntrada >= 0 && tokensSalida >= 0;
+        if (!COTA_POR_TOPE.equals(politica) || conTokens)
+            return contabilizar(politica, fallidaBackend, estado, tokensEntrada, tokensSalida, reserva,
+                    tarifaEntradaMillon, tarifaSalidaMillon, id, canceladaPorTimeout);
+        if (cotaUsd == null || cotaUsd <= 0)
+            return new Contabilidad(reserva, "SIN_COTA_SE_CARGA_LA_RESERVA",
+                    "sin tokens ni cota de la prediccion " + id + " (estado " + estado + "): no se hacen mas llamadas");
+        if (cotaUsd > reserva + 1e-12)
+            return new Contabilidad(cotaUsd, "COTA_SUPERA_LA_RESERVA",
+                    "la cota de la prediccion " + id + " (" + cotaUsd + " USD) supera la reserva: no se hacen mas llamadas");
+        return new Contabilidad(cotaUsd, "COTA_POR_TOPE", null);
     }
 }

@@ -90,6 +90,16 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 properties.connectTimeoutSeconds(), properties.readTimeoutSeconds(), properties.preferWaitSeconds(),
                 properties.pollReadTimeoutSeconds(), properties.timeoutSeconds(), properties.pollIntervalMillis(),
                 properties.esperaMaximaSegundos(), properties.esperaMaximaConCancelacionSegundos());
+        // G5M: que modelo y que forma de peticion quedan activos (sin token ni URL con credenciales).
+        if (properties.formato() == ReplicateProperties.Formato.DIRECT)
+            log.info("Replicate: modelo {} en formato direct (reasoning_effort={}, verbosity={},"
+                            + " max_completion_tokens={}); el esquema viaja en el system_prompt y la salida se valida",
+                    properties.modeloEfectivo(), properties.reasoningEffort(), properties.verbosity(),
+                    properties.maxCompletionTokens());
+        else
+            log.warn("Replicate: formato structured (modelo {} via gpt-5-structured). Ese endpoint respondio E002 para"
+                    + " esta cuenta desde el 17/11/2026: solo debe usarse para comparar o revertir, a proposito.",
+                    properties.modeloEfectivo());
     }
 
     /**
@@ -127,7 +137,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     public GenerationSource source() { return GenerationSource.AI; }
 
     @Override
-    public String modelName() { return properties.model(); }
+    public String modelName() { return properties.modeloEfectivo(); }
 
     public boolean isEnabled() { return properties.isUsable(); }
 
@@ -163,7 +173,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
     /** Convierte la salida del modelo en borrador. Lanza InvalidPlanDraftException si no se puede. */
     public PlanDraft toDraft(String output) {
-        return assembler.toDraft(output, properties.model());
+        return assembler.toDraft(output, properties.modeloEfectivo());
     }
 
     /**
@@ -242,6 +252,9 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             return callMedido(prompt, peticion, medicion, plazo);
         } finally {
             log.info("{}", medicion.timing(userId, weekNumber, attempt).describe());
+            // G5M: modelo, formato, tokens y coste de la misma llamada (sin prompt, sin token, sin datos personales).
+            log.info("{}", medicion.consumo(userId, weekNumber, attempt, properties, tarifaEntradaUsdMillon,
+                    tarifaSalidaUsdMillon));
         }
     }
 
@@ -250,6 +263,20 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     // =====================================================================================================
 
     private DiarioDePredicciones diario;
+
+    /*
+     * G5M: tarifa de Replicate para estimar el coste (USD por millon de tokens; gpt-5-mini: 0,25 entrada y 2,00
+     * salida, la misma que usa el control de presupuesto de la evaluacion K20). Solo alimenta la linea
+     * REPLICATE_CONSUMO: no limita ni decide nada.
+     */
+    private double tarifaEntradaUsdMillon = 0.25;
+    private double tarifaSalidaUsdMillon = 2.00;
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.ai.cost.input-usd-per-million:0.25}")
+    void setTarifaEntradaUsdMillon(double usd) { this.tarifaEntradaUsdMillon = usd; }
+
+    @org.springframework.beans.factory.annotation.Value("${fitsense.ai.cost.output-usd-per-million:2.00}")
+    void setTarifaSalidaUsdMillon(double usd) { this.tarifaSalidaUsdMillon = usd; }
     private Duration ventanaReutilizacion = Duration.ofHours(24);
 
     /** Opcional: sin libro (pruebas unitarias del cliente), todo sigue como antes. */
@@ -282,13 +309,61 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         return huella(entrada(prompt, Peticion.deSemana(workoutCount)));
     }
 
+    /**
+     * Lo que se envia como {@code input}, segun el formato (G5M, 23/11/2026).
+     * <ul>
+     *   <li><b>direct</b> (openai/gpt-5-mini): {@code system_prompt} con el esquema, {@code prompt},
+     *   {@code reasoning_effort}, {@code verbosity} y {@code max_completion_tokens}. Ni {@code model} ni
+     *   {@code json_schema}: ese modelo no los admite (su esquema de entrada en Replicate: prompt, system_prompt,
+     *   messages, image_input, reasoning_effort, verbosity, max_completion_tokens). El esquema deja de ser una
+     *   restriccion del proveedor y pasa a ser una instruccion: por eso la salida se sigue validando entera
+     *   (ensamblador + V1-V27/V8C) y un texto que no sea el JSON pedido es un intento rechazado, no un plan.</li>
+     *   <li><b>structured</b> (openai/gpt-5-structured): la peticion de siempre, sin cambios.</li>
+     * </ul>
+     * No se usa {@code messages}: segun Replicate, si se envia se ignoran prompt y system_prompt, y no aporta nada a
+     * una peticion de un solo turno.
+     */
     private Map<String, Object> entrada(String prompt, Peticion peticion) {
         var input = new LinkedHashMap<String, Object>();
-        input.put("model", properties.model());
+        if (properties.formato() == ReplicateProperties.Formato.STRUCTURED) {
+            input.put("model", properties.model());
+            input.put("prompt", prompt);
+            input.put("reasoning_effort", properties.reasoningEffort());
+            input.put("json_schema", peticion.jsonSchema());
+            return input;
+        }
+        input.put("system_prompt", instruccionDeSistema(peticion));
         input.put("prompt", prompt);
         input.put("reasoning_effort", properties.reasoningEffort());
-        input.put("json_schema", peticion.jsonSchema());
+        input.put("verbosity", properties.verbosity());
+        input.put("max_completion_tokens", properties.maxCompletionTokens());
         return input;
+    }
+
+    /** Version de la instruccion de sistema del formato direct, para la traza. */
+    static final String VERSION_INSTRUCCION_DIRECTA = "SYS-JSON-1.0";
+
+    /**
+     * La instruccion de sistema del formato direct: responder SOLO con el JSON del esquema de la peticion. El esquema
+     * es el MISMO objeto que structured enviaba en json_schema (PlanJsonSchema / SessionFixJsonSchema), serializado
+     * con las claves ordenadas para que la peticion -y su huella del libro V59- sea identica entre arranques.
+     */
+    static String instruccionDeSistema(Peticion peticion) {
+        @SuppressWarnings("unchecked")
+        var format = (Map<String, Object>) peticion.jsonSchema().get("format");
+        String esquema;
+        try {
+            esquema = HUELLA.writeValueAsString(format.get("schema"));
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo serializar el esquema de la peticion", e);
+        }
+        return ("Eres el componente de IA de FitSense. Responde UNICAMENTE con un objeto JSON valido: sin texto antes"
+                + " ni despues, sin bloques de codigo (```), sin comentarios y sin explicaciones. El objeto debe cumplir"
+                + " exactamente el JSON Schema \"%s\" que sigue: incluye todas las propiedades de cada \"required\","
+                + " ninguna propiedad adicional, los tipos indicados (los enteros sin comillas ni decimales) y solo los"
+                + " valores de cada \"enum\". Las \"description\" del esquema son instrucciones obligatorias."
+                + " Las reglas de las instrucciones del usuario prevalecen y no se relajan para poder responder."
+                + "\n\nJSON Schema:\n%s").formatted(format.get("name"), esquema);
     }
 
     private String callConDiario(String prompt, Peticion peticion, Medicion medicion, java.time.Instant plazo,
@@ -297,6 +372,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // el libro (no puede, por ejemplo, dar por NO_CONFIRMADA la prediccion que el propietario esta enviando).
         ambito.antesDeEnviar().run();
         var input = entrada(prompt, peticion);
+        medicion.entrada(input);
         String hash = huella(input);
         var propia = diario.deIntento(ambito.operationId(), attempt);
         DiarioDePredicciones.Entrada previa = null;
@@ -367,6 +443,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     private String reanudar(DiarioDePredicciones.Entrada e, Peticion peticion, String prompt, Medicion medicion,
                             java.time.Instant plazo, DiarioDePredicciones.Ambito ambito) {
         medicion.predictionId(e.predictionId());
+        medicion.reanudada();
         switch (e.estado()) {
             case SUCCEEDED -> {
                 medicion.postTerminado();
@@ -424,6 +501,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 response = trasCancelar;
             }
         }
+        medicion.metricas(response.metrics());
         if (!response.succeeded()) {
             String detail = response.status() + " " + response.error();
             var estado = "canceled".equals(response.status()) ? DiarioDePredicciones.Estado.CANCELED
@@ -434,6 +512,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             throw new AiProviderUnavailableException(detail);
         }
         String output = response.joinedOutput();
+        medicion.salida(output.length());
         diario.terminada(fila, DiarioDePredicciones.Estado.SUCCEEDED, output, null, reloj.instant());
         medicion.resultado(ReplicateTiming.Resultado.SUCCEEDED);
         log.info("Salida de la IA (prediccion {}, prompt {}, {} caracteres de prompt): {}",
@@ -495,11 +574,9 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     private String callMedido(String prompt, Peticion peticion, Medicion medicion, java.time.Instant plazo) {
-        var input = new LinkedHashMap<String, Object>();
-        input.put("model", properties.model());
-        input.put("prompt", prompt);
-        input.put("reasoning_effort", properties.reasoningEffort());
-        input.put("json_schema", peticion.jsonSchema());
+        // G5M: la misma entrada que el libro V59 (antes, una copia a mano que habria podido divergir del formato).
+        var input = entrada(prompt, peticion);
+        medicion.entrada(input);
 
         String rawBody;
         try {
@@ -563,6 +640,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             }
         }
 
+        if (response != null) medicion.metricas(response.metrics());
         if (response == null || !response.succeeded()) {
             String detail = response == null
                     ? "respuesta vacia"
@@ -581,6 +659,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
         medicion.resultado(ReplicateTiming.Resultado.SUCCEEDED);
         String output = response.joinedOutput();
+        medicion.salida(output.length());
 
         // Evidencia de cada intento, tambien de los rechazados: la proporcion de
         // planes validos al primer intento es un resultado de la tesis y esta
@@ -630,6 +709,12 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         private long pollingMs;
         private int pollingRequests;
         private String predictionId;
+        // G5M: consumo. Solo longitudes y contadores: nunca el texto del prompt ni de la salida.
+        private long caracteresEntrada = -1;
+        private long bytesEntrada = -1;
+        private long caracteresSalida = -1;
+        private boolean reanudada;
+        private ReplicateResponse.Metrics metricas;
 
         /**
          * Por omision POST_ERROR: si el POST lanza, nunca se llega a cambiarlo y
@@ -666,6 +751,69 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         }
 
         void resultado(ReplicateTiming.Resultado r) { this.resultado = r; }
+
+        /** Caracteres (y bytes UTF-8) de texto enviados al modelo (prompt y, en direct, system_prompt). */
+        void entrada(Map<String, Object> input) {
+            long n = 0, b = 0;
+            for (var clave : List.of("prompt", "system_prompt"))
+                if (input.get(clave) instanceof String t) {
+                    n += t.length();
+                    b += t.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
+                }
+            caracteresEntrada = n;
+            bytesEntrada = b;
+        }
+
+        /** Margen de la cota por los tokens de formato del chat (roles, separadores), muy por encima de lo real. */
+        static final int MARGEN_TOKENS_FORMATO = 256;
+
+        void salida(int caracteres) { caracteresSalida = caracteres; }
+
+        /** El intento ya estaba en el libro V59: no se creo una prediccion nueva en esta llamada. */
+        void reanudada() { reanudada = true; }
+
+        void metricas(ReplicateResponse.Metrics m) { if (m != null) metricas = m; }
+
+        /**
+         * Linea REPLICATE_CONSUMO. Coste:
+         * <ul>
+         *   <li>{@code coste_usd}: con los tokens que informa Replicate; "no_reportado" si no los informa (gpt-5-mini
+         *   directo solo informa predict_time).</li>
+         *   <li>{@code coste_cota_usd}: cota SUPERIOR sin depender de Replicate, solo en direct (hay tope de salida):
+         *   un token por BYTE UTF-8 de entrada (un tokenizador BPE por bytes no produce mas) mas un margen de formato,
+         *   y max_completion_tokens de salida (razonamiento incluido).
+         *   "sin_cota" en structured, que no fija tope de salida.</li>
+         * </ul>
+         * Una prediccion reanudada del libro no se vuelve a cobrar: su coste ya se registro en la llamada que la creo.
+         */
+        String consumo(Long userId, short weekNumber, int attempt, ReplicateProperties p,
+                       double tarifaEntrada, double tarifaSalida) {
+            var tokensEntrada = metricas == null ? null : metricas.tokenInputCount();
+            var tokensSalida = metricas == null ? null : metricas.tokenOutputCount();
+            String coste = tokensEntrada == null || tokensSalida == null ? "no_reportado"
+                    : usd(tokensEntrada / 1e6 * tarifaEntrada + tokensSalida / 1e6 * tarifaSalida);
+            boolean directo = p.formato() == ReplicateProperties.Formato.DIRECT;
+            String cota = !directo ? "sin_cota" : caracteresEntrada < 0 ? "-"
+                    : usd((bytesEntrada + MARGEN_TOKENS_FORMATO) / 1e6 * tarifaEntrada
+                            + p.maxCompletionTokens() / 1e6 * tarifaSalida);
+            return ("REPLICATE_CONSUMO user=%s week=%d attempt=%d modelo=%s formato=%s prediction_id=%s resultado=%s"
+                    + " origen=%s predict_time_s=%s tokens_entrada=%s tokens_salida=%s coste_usd=%s coste_cota_usd=%s"
+                    + " caracteres_entrada=%d caracteres_salida=%d reasoning_effort=%s verbosity=%s"
+                    + " max_completion_tokens=%s").formatted(
+                    userId == null ? "-" : userId, weekNumber, attempt, p.modeloEfectivo(), p.formato().etiqueta(),
+                    predictionId == null ? "desconocido" : predictionId, resultado,
+                    reanudada ? "reanudada" : "nueva",
+                    metricas == null || metricas.predictTime() == null ? "no_reportado"
+                            : String.format(java.util.Locale.ROOT, "%.3f", metricas.predictTime()),
+                    tokensEntrada == null ? "no_reportado" : tokensEntrada,
+                    tokensSalida == null ? "no_reportado" : tokensSalida,
+                    reanudada && !"no_reportado".equals(coste) ? "0_reanudada" : coste,
+                    reanudada ? "0_reanudada" : cota,
+                    caracteresEntrada, caracteresSalida, p.reasoningEffort(),
+                    directo ? p.verbosity() : "-", directo ? p.maxCompletionTokens() : "-");
+        }
+
+        private static String usd(double v) { return String.format(java.util.Locale.ROOT, "%.6f", v); }
 
         ReplicateTiming timing(Long userId, short weekNumber, int attempt) {
             return new ReplicateTiming(userId, weekNumber, attempt, predictionId,

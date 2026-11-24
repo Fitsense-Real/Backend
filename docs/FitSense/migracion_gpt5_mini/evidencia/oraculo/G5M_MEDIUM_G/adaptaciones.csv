@@ -1,0 +1,3 @@
+id,ciclo,sesion,intervencion,estado_v32,fuente,llamadas_ia,igual,sustituciones,reducciones,retirados,trabajo_antes_s,trabajo_despues_s,pertinencia,problemas
+O03,1,3,REVISAR_CARGA_Y_RECUPERACION,APLICADA,AI,1,False,-,177.sets 3->2;418.sets 3->2;520.reps 10->9,-,276,234,ACC,-
+O12,1,92,SEGURIDAD_ANTE_DOLOR,RESPALDO,CONSERVED,1,False,1093->253;67->1075;1104->296;177->56;1103->791;706->98;1062->57,-,-,822,822,ACC,-
