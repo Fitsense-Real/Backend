@@ -137,17 +137,27 @@ public class ExerciseQueryServiceImpl implements ExerciseQueryService {
             var claves = new java.util.TreeSet<String>();
             claves.add(clave);
             grupo.ifPresent(g -> claves.addAll(g.claves()));
+            // Cierre final: el mismo gesto con otro angulo (precaucion, no equivalencia).
+            claves.addAll(FamiliaDeMovimientoEquivalente.clavesPrecaucionAngulo(nombre));
             for (var k : claves)
                 exerciseRepository.candidatosDeFamilia(k, FamiliaDeMovimientoEquivalente.patronVariantes(k)).stream()
                         .filter(e -> !id.equals(e.getId()))
                         .forEach(e -> {
                             var nivel = FamiliaDeMovimientoEquivalente.nivel(nombre, e.getNameEn());
                             if (nivel == null) return; // el LIKE amplia de mas; el filtro es la regla
-                            equivalentes.put(e.getId(), FamiliaDeMovimientoEquivalente.NIVEL_VARIANTE.equals(nivel)
-                                    ? new EquivalentExercise(e.getId(), nivel, null,
-                                    "el mismo ejercicio: mismo nombre salvo el sufijo v. N")
-                                    : new EquivalentExercise(e.getId(), nivel, grupo.get().id(),
-                                    grupo.get().justificacion()));
+                            EquivalentExercise eq;
+                            if (FamiliaDeMovimientoEquivalente.NIVEL_VARIANTE.equals(nivel))
+                                eq = new EquivalentExercise(e.getId(), nivel, null,
+                                        "el mismo ejercicio: mismo nombre salvo el sufijo v. N");
+                            else if (FamiliaDeMovimientoEquivalente.NIVEL_MISMO_GESTO.equals(nivel))
+                                eq = new EquivalentExercise(e.getId(), nivel, grupo.get().id(),
+                                        grupo.get().justificacion());
+                            else {
+                                var fila = FamiliaDeMovimientoEquivalente.precaucionPorAngulo(nombre, e.getNameEn())
+                                        .orElseThrow();
+                                eq = new EquivalentExercise(e.getId(), nivel, fila.id(), fila.justificacion());
+                            }
+                            equivalentes.put(e.getId(), eq);
                         });
             if (!equivalentes.isEmpty()) resultado.put(id, java.util.List.copyOf(equivalentes.values()));
         }

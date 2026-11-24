@@ -321,7 +321,7 @@ class DolorFamiliaEquivalenteIT {
 
     @Test
     @Order(8)
-    @DisplayName("Nombre, postura y material segun el backend: confirmadas las del mismo gesto; no el angulo ni el sinonimo")
+    @DisplayName("Nombre, postura y material segun el backend: confirmadas las del mismo gesto; el angulo, precaucion; el sinonimo, nada")
     void diferenciasDeNombrePosturaYMaterial() {
         record Par(String a, String b, String nivel) {}
         var pares = List.of(
@@ -333,7 +333,7 @@ class DolorFamiliaEquivalenteIT {
                 new Par("dumbbell bent over row", "barbell one arm bent over row", "MISMO_GESTO"),  // lateralidad
                 new Par("dumbbell front raise", "dumbbell lateral raise", null),                    // mismo musculo
                 new Par("dumbbell front raise", "dumbbell full can lateral raise", null),
-                new Par("lever chest press", "lever incline chest press v. 2", null),               // angulo
+                new Par("lever chest press", "lever incline chest press v. 2", "PRECAUCION_OTRO_ANGULO"), // angulo
                 new Par("barbell bench press", "lever chest press", null),                          // sinonimo dudoso
                 new Par("barbell hack squat", "smith hack squat", null));                           // revisado: distinto
         for (var p : pares) {
@@ -393,23 +393,38 @@ class DolorFamiliaEquivalenteIT {
         enS3.retainAll(familia);
         assertTrue(enS3.isEmpty(), "la semana siguiente tampoco trae la familia: " + enS3);
 
-        // Con dos semanas con plan despues del dolor: la familia provisional deja de aplicarse (sin bloqueos
-        // innecesarios), pero los ejercicios de la sesion SIGUEN excluidos: nada se reactiva solo.
+        // Cierre final: con dos semanas con plan despues del dolor NO se levanta nada (ni la sesion ni sus familias):
+        // se pide una nueva confirmacion. El vencimiento no reactiva en silencio.
         var tras = elegibles(u);
-        assertTrue(tras.containsKey(FRONT_RAISE_V2), "538 vuelve a ser candidato: el dolor no se atribuyo a 537");
-        for (var id : deLaSesion) assertFalse(tras.containsKey(id), "sigue excluido sin reactivacion: " + id);
+        assertFalse(tras.containsKey(FRONT_RAISE_V2), "538 sigue fuera: el vencimiento no lo reactiva");
+        for (var id : deLaSesion) assertFalse(tras.containsKey(id), "sigue excluido sin confirmacion: " + id);
         assertEquals(deLaSesion, dolor.excluidosActivosDirectos(u));
+        var pendientes = porEjercicio(u);
+        for (var id : deLaSesion) assertTrue(pendientes.get(id).requiereConfirmacion(), "se pide confirmacion: " + id);
+        assertTrue(pendientes.get(FRONT_RAISE_V2).requiereConfirmacion() && pendientes.get(FRONT_RAISE_V2).provisional());
 
-        // La persona identifica despues que fue 537: su familia queda excluida de forma permanente; el resto de la
-        // sesion sigue excluido (no se reactiva por identificar otro).
-        var r = dolor.identificar(u, FRONT_RAISE, ultima, true);
-        assertTrue(r.equivalentesExcluidos().contains(FRONT_RAISE_V2), r.toString());
+        // La persona identifica despues que fue 537 y confirma que UNO de los demas no tuvo que ver; otro no lo nombra.
         var otros = new TreeSet<>(deLaSesion);
         otros.remove(FRONT_RAISE);
-        assertEquals(List.copyOf(otros), r.otrosDeLaSesionSiguenExcluidos());
+        otros.removeAll(familia);
+        assertTrue(otros.size() >= 2, "premisa: al menos dos ejercicios mas en la sesion: " + otros);
+        long noRelacionado = otros.first(), sinNombrar = otros.last();
+        var r = dolor.identificar(u, FRONT_RAISE, ultima, true, Set.of(noRelacionado));
+        System.out.println("O20_IDENTIFICACION " + r);
+        assertTrue(r.equivalentesExcluidos().contains(FRONT_RAISE_V2), r.toString());
+        assertEquals(List.of(noRelacionado), r.noRelacionadosLevantados(), r.toString());
+        assertFalse(dolor.excluidosActivosDirectos(u).contains(noRelacionado), "levantado por confirmacion explicita");
+        assertTrue(dolor.excluidosActivosDirectos(u).contains(sinNombrar), "sin confirmacion: sigue excluido");
+        assertTrue(porEjercicio(u).get(sinNombrar).requiereConfirmacion());
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " exercise_id = ? AND status = 'REACTIVADA' AND reactivation_evidence LIKE"
+                + " 'CONFIRMACION_EXPLICITA_NO_RELACIONADO%'", Integer.class, u, noRelacionado), "con constancia");
+        if (!dolor.excluidosActivos(u).contains(noRelacionado))
+            assertTrue(elegibles(u).containsKey(noRelacionado), "el no relacionado vuelve a ser candidato");
         var identificada = elegibles(u);
         for (var id : familia) assertFalse(identificada.containsKey(id), "confirmado: familia fuera " + id);
         assertTrue(porEjercicio(u).get(FRONT_RAISE).confirmada());
+        assertFalse(porEjercicio(u).get(FRONT_RAISE_V2).provisional(), "la familia del confirmado es permanente");
         // Cuatro semanas despues sigue igual: lo confirmado no caduca.
         planning.generateWeeklyPlan(u, S1.plusWeeks(3), PlanAdjustment.none(), null, null).orElseThrow();
         assertTrue(dolor.excluidosActivos(u).containsAll(familia));
@@ -417,12 +432,29 @@ class DolorFamiliaEquivalenteIT {
                 + " exercise_id = ? AND identified_at IS NOT NULL AND identification_evidence IS NOT NULL AND reason ="
                 + " 'DOLOR_SESION_SIN_IDENTIFICAR'", Integer.class, u, FRONT_RAISE), "el motivo original se conserva");
 
-        // Solo la reactivacion explicita la devuelve.
+        // Solo la reactivacion explicita y autorizada devuelve lo confirmado y su familia.
         dolor.reactivar(u, FRONT_RAISE, true, "prueba: ya no hay molestias");
         var reactivada = elegibles(u);
         assertTrue(reactivada.containsKey(FRONT_RAISE) && reactivada.containsKey(FRONT_RAISE_V2));
-        for (var id : otros) assertFalse(reactivada.containsKey(id), "los otros siguen fuera: " + id);
+        assertFalse(reactivada.containsKey(sinNombrar), "el no nombrado sigue fuera: " + sinNombrar);
         assertTrue(planS2 > 0);
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Cambio de angulo tras dolor: lever chest press no se da por seguro tras dolor en lever incline chest press")
+    void cambioDeAngulo() {
+        long inclinado = idActivo("lever incline chest press v. 2"), plano = idActivo("lever chest press");
+        var relacion = catalogo.fetchEquivalentVariants(Set.of(inclinado)).get(inclinado).stream()
+                .filter(e -> e.exerciseId() == plano).findFirst().orElseThrow();
+        assertEquals(FamiliaDeMovimientoEquivalente.NIVEL_PRECAUCION_ANGULO, relacion.level(), "no es equivalencia");
+        long u = participante(false);
+        registrarDolorDirecto(u, inclinado);
+        var e = porEjercicio(u);
+        assertEquals(PainMemoryService.Origen.PRECAUCION, e.get(plano).origen());
+        assertTrue(dolor.excluidosActivos(u).contains(plano), "el plano no se prescribe ni sustituye mientras dure");
+        dolor.reactivar(u, inclinado, true, "prueba");
+        assertFalse(dolor.excluidosActivos(u).contains(plano), "vuelve solo con la reactivacion de lo que dolio");
     }
 
     // ===================================================================================================== material
@@ -554,7 +586,8 @@ class DolorFamiliaEquivalenteIT {
     /** La familia tal como la calcula el backend (consulta del catalogo), con el propio ejercicio. */
     private Set<Long> familiaSegunBackend(long ejercicio) {
         var r = new TreeSet<Long>();
-        catalogo.fetchEquivalentVariants(Set.of(ejercicio)).getOrDefault(ejercicio, List.of())
+        catalogo.fetchEquivalentVariants(Set.of(ejercicio)).getOrDefault(ejercicio, List.of()).stream()
+                .filter(e -> !FamiliaDeMovimientoEquivalente.NIVEL_PRECAUCION_ANGULO.equals(e.level()))
                 .forEach(e -> r.add(e.exerciseId()));
         r.add(ejercicio);
         return r;

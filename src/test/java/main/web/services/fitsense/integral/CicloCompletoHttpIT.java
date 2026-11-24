@@ -362,6 +362,17 @@ class CicloCompletoHttpIT {
         // Releido tras la omision: una prescripcion de las sesiones abiertas excluida por el dolor (o variante
         // equivalente provisional) llega marcada con safetyBlockReason y solo se registra como omitida (P-DOLOR-PUB).
         var abiertas = sesiones(ok(c, get("/api/v1/users/me/plan/{id}", p1.get("planId").asLong())));
+        // Cierre final (punto 6): el plan releido marca EXACTAMENTE lo que /effective excluye, en cada sesion abierta, y
+        // la sesion no queda bloqueada entera: Mobile puede mostrar que ejercicio ya no se puede ejecutar.
+        var efectivosAlOmitir = new java.util.TreeSet<Long>();
+        ok(c, get("/api/v1/users/me/pain-exclusions/effective"))
+                .forEach(e -> efectivosAlOmitir.add(e.get("exerciseId").asLong()));
+        for (int i = 1; i < abiertas.size(); i++) {
+            var w = abiertas.get(i);
+            assertFalse(w.get("safetyBlocked").asBoolean(), "un ejercicio con dolor no bloquea la sesion entera: " + w);
+            w.get("exercises").forEach(e -> assertEquals(efectivosAlOmitir.contains(e.get("exerciseId").asLong()),
+                    e.hasNonNull("safetyBlockReason"), "marcado = excluido por dolor: " + e));
+        }
         entrenar(c, abiertas.get(1), 1.0);
         entrenar(c, abiertas.get(2), 1.0);
 
@@ -383,7 +394,7 @@ class CicloCompletoHttpIT {
                 assertTrue(e.get("canIdentify").asBoolean() && e.get("canReactivate").asBoolean(), e.toString());
                 assertEquals(s.get(0).get("plannedWorkoutId").asLong(), e.get("sourcePlannedWorkoutId").asLong());
             } else {
-                assertEquals("EQUIVALENT", e.get("origin").asText());
+                assertTrue(List.of("EQUIVALENT", "PRECAUTION").contains(e.get("origin").asText()), e.toString());
                 assertTrue(e.get("provisional").asBoolean(), "deriva de un dolor sin identificar: " + e);
                 assertTrue(retirados.contains(e.get("derivedFromExerciseId").asLong()), e.toString());
                 assertFalse(e.get("equivalenceLevel").asText().isBlank(), e.toString());
@@ -391,6 +402,15 @@ class CicloCompletoHttpIT {
             }
         });
         assertEquals(new java.util.TreeSet<>(retirados), directas);
+        efectivas.forEach(e -> assertFalse(e.get("confirmationRequired").asBoolean(), "aun no se pide: " + e));
+        // La peticion de confirmacion: la sesion, con sus ejercicios; aun no vencida.
+        var peticiones = ok(c, get("/api/v1/users/me/pain-exclusions/confirmation-requests"));
+        assertEquals(1, peticiones.size(), peticiones.toString());
+        assertEquals(s.get(0).get("plannedWorkoutId").asLong(), peticiones.get(0).get("plannedWorkoutId").asLong());
+        assertFalse(peticiones.get(0).get("confirmationRequired").asBoolean());
+        var enPeticion = new java.util.TreeSet<Long>();
+        peticiones.get(0).get("exercises").forEach(e -> enPeticion.add(e.get("exerciseId").asLong()));
+        assertEquals(new java.util.TreeSet<>(retirados), enPeticion);
 
         long nuevo = cerrar(c, semana(p1));
         var siguiente = ok(c, get("/api/v1/users/me/plan/{id}", nuevo));
@@ -399,20 +419,29 @@ class CicloCompletoHttpIT {
                 assertFalse(excluidosEfectivos.contains(e.get("exerciseId").asLong()),
                         "lo que dolio, y sus variantes equivalentes, no vuelven: " + e)));
 
-        // O20: identificar despues cual fue. Sin confirmacion, 422; con ella queda confirmado y nada se reactiva.
-        long identificado = retirados.get(retirados.size() - 1);
+        // O20: identificar despues cual fue. Sin confirmacion, 422; con ella queda confirmado. En la misma accion se
+        // confirma que UNO de los demas no tuvo que ver: solo ese se levanta; el resto sigue excluido.
+        assertTrue(retirados.size() >= 3, "premisa: tres ejercicios o mas en la sesion: " + retirados);
+        long identificado = retirados.get(retirados.size() - 1), noRelacionado = retirados.get(1);
         assertEquals(422, como(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
                 .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":false}")).getResponse().getStatus());
         var identificacion = ok(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
                 .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":true,\"plannedWorkoutId\":"
-                        + s.get(0).get("plannedWorkoutId").asLong() + "}"));
+                        + s.get(0).get("plannedWorkoutId").asLong() + ",\"unrelatedExerciseIds\":[" + noRelacionado + "]}"));
         assertEquals(identificado, identificacion.get("exerciseId").asLong());
+        var levantados = new ArrayList<Long>();
+        identificacion.get("noRelacionadosLevantados").forEach(x -> levantados.add(x.asLong()));
+        assertTrue(levantados.contains(noRelacionado)
+                || identificacion.get("noRelacionadosNoLevantados").has(String.valueOf(noRelacionado)),
+                identificacion.toString());
         assertEquals(404, como(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
                 .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":true}")).getResponse().getStatus(),
                 "ya confirmado: no hay nada sin identificar");
         ok(c, get("/api/v1/users/me/pain-exclusions")).forEach(e -> {
-            assertEquals(e.get("exerciseId").asLong() == identificado, e.get("confirmed").asBoolean(), e.toString());
-            assertEquals("ACTIVA", e.get("status").asText(), "identificar no reactiva nada: " + e);
+            long id = e.get("exerciseId").asLong();
+            assertEquals(id == identificado, e.get("confirmed").asBoolean(), e.toString());
+            assertEquals(id == noRelacionado ? "REACTIVADA" : "ACTIVA", e.get("status").asText(),
+                    "solo se levanta el confirmado como no relacionado: " + e);
         });
 
         // Reincorporacion: sin confirmar (confirmNoPain=false), 422 y sigue retirado; con confirmacion, se reactiva.

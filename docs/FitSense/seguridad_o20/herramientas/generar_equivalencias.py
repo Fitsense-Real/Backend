@@ -17,11 +17,17 @@ Criterio:
   4. Un nucleo GENERICO (curl, row, press, fly, extension...) queda PENDIENTE: agrupa gestos distintos. Los nucleos
      de una palabra revisados uno a uno como gesto concreto estan en REVISADOS_COMO_GESTO.
   5. Revision manual: FUSIONES (mismo gesto registrado con patrones distintos) y PENDIENTES_MANUALES.
+  6. Cierre final: las relaciones PENDIENTES por angulo no son equivalencias, pero el cambio de angulo no se da por
+     seguro ante dolor: van a una lista de PRECAUCION (precauciones_angulo.csv) que el backend aplica mientras dure
+     la exclusion del ejercicio que dolio.
 Uso: python3 -I generar_equivalencias.py <exercises.csv> <salida_confirmadas.csv> <salida_pendientes.csv>
+     [<salida_precauciones_angulo.csv>]
 """
 import csv, re, sys
 
 ent, sal_conf, sal_pend = sys.argv[1:4]
+sal_prec = sys.argv[4] if len(sys.argv) > 4 else None
+precauciones = []
 ex = [r for r in csv.DictReader(open(ent)) if r['is_active'] == 'true']
 
 def clave(n):
@@ -102,6 +108,9 @@ for (core, pat, mus), v in sorted(grupos.items()):
     if len(por_angulo) > 1:
         pendientes.append((core, pat, mus, 'entre angulos o apoyos del cuerpo distintos (%s): no se da por equivalente'
                            % ' / '.join(','.join(a) or 'sin angulo' for a in sorted(por_angulo)), lista(v)))
+        precauciones.append((core, pat, mus, [(','.join(a) or 'sin angulo',
+                                               sorted({clave(r['name_en']) for r, _ in sub}))
+                                              for a, sub in sorted(por_angulo.items())]))
     for ang, sub in sorted(por_angulo.items()):
         claves = sorted({clave(r['name_en']) for r, _ in sub})
         if len(claves) < 2:
@@ -137,3 +146,17 @@ with open(sal_pend, 'w') as f:
     for nombre, pat, mus, motivo in SINONIMOS_POSIBLES:
         w.writerow([nombre, pat, mus, 'posible sinonimo con otro nombre: ' + motivo, 'ver los grupos confirmados de cada nombre'])
 print('confirmados', len(confirmados), 'claves', sum(len(c[3]) for c in confirmados), 'pendientes', len(pendientes))
+if sal_prec:
+    with open(sal_prec, 'w') as f:
+        f.write('# O20 · cierre final: PRECAUCION por cambio de angulo o de apoyo del cuerpo (incline, decline, lying,\n')
+        f.write('# kneeling). NO son equivalencias: el mismo gesto con otro angulo. Tras dolor en un miembro de un subgrupo,\n')
+        f.write('# los de los OTROS subgrupos de la misma fila no se prescriben ni se usan como sustituto mientras dure la\n')
+        f.write('# exclusion de la que derivan; vuelven solo con su reactivacion explicita (que pasa el control de seguridad)\n')
+        f.write('# y siguen sujetos a todas las restricciones y validadores. Generada con generar_equivalencias.py.\n')
+        f.write('fila;patron;musculo;subgrupos;justificacion\n')
+        for i, (core, pat, mus, subs) in enumerate(precauciones, 1):
+            for _, claves in subs:
+                assert all(x not in c for c in claves for x in ';|^='), core
+            f.write('PA-%03d %s;%s;%s;%s;mismo gesto (%s) con otro angulo o apoyo del cuerpo: no se da por seguro tras dolor\n'
+                    % (i, core, pat, mus, '^'.join('%s=%s' % (a, '|'.join(c)) for a, c in subs), core))
+    print('precauciones por angulo', len(precauciones))

@@ -35,13 +35,22 @@ import java.util.regex.Pattern;
  * sinonimos) no esta en la lista y por tanto NO es equivalente; queda en el inventario de pendientes
  * ({@code docs/FitSense/seguridad_o20/evidencia/equivalencias_pendientes.csv}). No es un criterio clinico.
  * <p>
- * Dominio puro: sin base de datos. La lista se lee una vez del classpath.
+ * <p>
+ * <b>Precaucion por angulo</b> ({@link #NIVEL_PRECAUCION_ANGULO}, cierre final): el mismo gesto con otro angulo o apoyo
+ * del cuerpo (incline, decline, lying, kneeling) NO es equivalente, pero tampoco se da por seguro tras dolor. La lista
+ * {@value #RECURSO_PRECAUCIONES} (las relaciones pendientes por angulo del inventario) se aplica como precaucion: tras
+ * dolor en «lever incline chest press», «lever chest press» no se prescribe ni se usa como sustituto mientras dure la
+ * exclusion. Solo esas relaciones; los nucleos genericos y los posibles sinonimos siguen pendientes sin efecto.
+ * <p>
+ * Dominio puro: sin base de datos. Las listas se leen una vez del classpath.
  */
 public final class FamiliaDeMovimientoEquivalente {
 
     public static final String NIVEL_VARIANTE = "VARIANTE_MISMO_EJERCICIO";
     public static final String NIVEL_MISMO_GESTO = "MISMO_GESTO";
     public static final String RECURSO = "catalog/equivalencias_mismo_gesto.csv";
+    public static final String NIVEL_PRECAUCION_ANGULO = "PRECAUCION_OTRO_ANGULO";
+    public static final String RECURSO_PRECAUCIONES = "catalog/precauciones_angulo.csv";
 
     /** «v. 2», «v.3», «V. 10» al final del nombre. */
     private static final Pattern SUFIJO_VARIANTE = Pattern.compile("\\s+v\\.\\s*\\d+\\s*$", Pattern.CASE_INSENSITIVE);
@@ -50,7 +59,11 @@ public final class FamiliaDeMovimientoEquivalente {
     /** Un grupo confirmado de la lista explicita: sus miembros son claves de nivel 1. */
     public record GrupoMismoGesto(String id, Set<String> claves, String justificacion) {}
 
+    /** Una fila de precaucion por angulo: subgrupos de claves, uno por angulo, del mismo gesto. */
+    public record PrecaucionAngulo(String id, java.util.List<Set<String>> subgrupos, String justificacion) {}
+
     private static volatile Map<String, GrupoMismoGesto> porClave;
+    private static volatile Map<String, java.util.List<PrecaucionAngulo>> precaucionesPorClave;
 
     private FamiliaDeMovimientoEquivalente() {}
 
@@ -85,10 +98,47 @@ public final class FamiliaDeMovimientoEquivalente {
         return mismaFamilia(nombreA, nombreB) || mismoGesto(nombreA, nombreB);
     }
 
-    /** El nivel por el que dos nombres son equivalentes, o {@code null} si no lo son. */
+    /**
+     * La relacion de seguridad entre dos nombres: {@link #NIVEL_VARIANTE} o {@link #NIVEL_MISMO_GESTO} (equivalentes),
+     * {@link #NIVEL_PRECAUCION_ANGULO} (el mismo gesto con otro angulo: no equivalente, precaucion tras dolor) o
+     * {@code null} (sin relacion).
+     */
     public static String nivel(String nombreA, String nombreB) {
         if (mismaFamilia(nombreA, nombreB)) return NIVEL_VARIANTE;
-        return mismoGesto(nombreA, nombreB) ? NIVEL_MISMO_GESTO : null;
+        if (mismoGesto(nombreA, nombreB)) return NIVEL_MISMO_GESTO;
+        return precaucionPorAngulo(nombreA, nombreB).isPresent() ? NIVEL_PRECAUCION_ANGULO : null;
+    }
+
+    /** La fila de precaucion por angulo que relaciona dos nombres de subgrupos (angulos) distintos, si la hay. */
+    public static Optional<PrecaucionAngulo> precaucionPorAngulo(String nombreA, String nombreB) {
+        var a = clave(nombreA);
+        var b = clave(nombreB);
+        if (a == null || b == null || a.equals(b)) return Optional.empty();
+        for (var fila : precauciones().getOrDefault(a, java.util.List.of()))
+            for (var sub : fila.subgrupos())
+                if (sub.contains(a)) {
+                    if (sub.contains(b)) break; // mismo angulo: no es precaucion por angulo
+                    if (fila.subgrupos().stream().anyMatch(o -> o != sub && o.contains(b))) return Optional.of(fila);
+                }
+        return Optional.empty();
+    }
+
+    /** Las claves relacionadas por precaucion de angulo con un nombre (los otros subgrupos de su fila). */
+    public static Set<String> clavesPrecaucionAngulo(String nombreEn) {
+        var c = clave(nombreEn);
+        var r = new TreeSet<String>();
+        if (c == null) return r;
+        for (var fila : precauciones().getOrDefault(c, java.util.List.of()))
+            for (var sub : fila.subgrupos())
+                if (!sub.contains(c)) r.addAll(sub);
+        return r;
+    }
+
+    /** Las filas de precaucion por angulo, para el inventario. */
+    public static Collection<PrecaucionAngulo> filasPrecaucion() {
+        var porId = new LinkedHashMap<String, PrecaucionAngulo>();
+        precauciones().values().forEach(l -> l.forEach(f -> porId.putIfAbsent(f.id(), f)));
+        return Collections.unmodifiableCollection(porId.values());
     }
 
     /** Los grupos confirmados, para el inventario. */
@@ -104,6 +154,70 @@ public final class FamiliaDeMovimientoEquivalente {
      */
     public static String patronVariantes(String clave) {
         return clave + " v.%";
+    }
+
+    private static Map<String, java.util.List<PrecaucionAngulo>> precauciones() {
+        var l = precaucionesPorClave;
+        if (l == null) {
+            synchronized (FamiliaDeMovimientoEquivalente.class) {
+                if (precaucionesPorClave == null) {
+                    var in = FamiliaDeMovimientoEquivalente.class.getClassLoader()
+                            .getResourceAsStream(RECURSO_PRECAUCIONES);
+                    if (in == null)
+                        throw new IllegalStateException("Falta la lista de precauciones " + RECURSO_PRECAUCIONES);
+                    try (var r = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                        precaucionesPorClave = leerPrecauciones(r);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+                l = precaucionesPorClave;
+            }
+        }
+        return l;
+    }
+
+    /**
+     * Lee las precauciones: {@code fila;patron;musculo;subgrupos;justificacion}, con subgrupos
+     * {@code angulo=clave|clave^angulo=clave}. Falla si una fila tiene menos de dos subgrupos, un miembro sin
+     * normalizar, un miembro en dos subgrupos de la misma fila o le falta la justificacion.
+     */
+    public static Map<String, java.util.List<PrecaucionAngulo>> leerPrecauciones(Reader fuente) throws IOException {
+        var resultado = new LinkedHashMap<String, java.util.List<PrecaucionAngulo>>();
+        var ids = new TreeSet<String>();
+        try (var br = new BufferedReader(fuente)) {
+            String linea;
+            int n = 0;
+            while ((linea = br.readLine()) != null) {
+                n++;
+                if (linea.isBlank() || linea.startsWith("#") || linea.startsWith("fila;")) continue;
+                var c = linea.split(";", -1);
+                if (c.length != 5) throw new IllegalStateException("Linea %d: se esperaban 5 columnas".formatted(n));
+                var id = c[0].strip();
+                var just = c[4].strip();
+                if (id.isEmpty() || just.isEmpty() || !ids.add(id))
+                    throw new IllegalStateException("Linea %d: fila sin id, repetida o sin justificacion".formatted(n));
+                var subgrupos = new java.util.ArrayList<Set<String>>();
+                var vistos = new TreeSet<String>();
+                for (var sub : c[3].split("\\^")) {
+                    var partes = sub.split("=", 2);
+                    if (partes.length != 2) throw new IllegalStateException("Linea %d: subgrupo sin angulo".formatted(n));
+                    var claves = new TreeSet<String>();
+                    for (var m : partes[1].split("\\|")) {
+                        var k = clave(m);
+                        if (k == null || !k.equals(m.strip()) || !vistos.add(k))
+                            throw new IllegalStateException("Linea %d: miembro no valido «%s»".formatted(n, m));
+                        claves.add(k);
+                    }
+                    subgrupos.add(Collections.unmodifiableSet(claves));
+                }
+                if (subgrupos.size() < 2) throw new IllegalStateException("Linea %d: menos de dos angulos".formatted(n));
+                var fila = new PrecaucionAngulo(id, java.util.List.copyOf(subgrupos), just);
+                for (var k : vistos) resultado.computeIfAbsent(k, x -> new java.util.ArrayList<>()).add(fila);
+            }
+        }
+        resultado.replaceAll((k, v) -> java.util.List.copyOf(v));
+        return Collections.unmodifiableMap(resultado);
     }
 
     private static Map<String, GrupoMismoGesto> lista() {

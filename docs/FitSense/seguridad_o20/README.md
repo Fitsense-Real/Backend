@@ -10,6 +10,19 @@
 
 **Replicate:** sin llamadas. Todas las pruebas usan el motor de reglas y la IA de adaptación simulada.
 
+## 0. Cierre final («ORDEN — CIERRE FINAL DE SEGURIDAD O20»)
+
+| Punto | Ajuste | Pruebas |
+|---|---|---|
+| 1 · Nivel 1, nivel 2 confirmado y 53 pendientes | Sin cambios en `equivalencias_mismo_gesto.csv` (118 grupos). Una prueba recorre las 53 pendientes y comprueba que **ninguna** se convirtió en equivalencia | `FamiliaDeMovimientoEquivalenteTest.pendientesSinConvertir` |
+| 2 · Cambio de ángulo | Nueva lista `src/main/resources/catalog/precauciones_angulo.csv` (37 filas: las pendientes por ángulo). **No es equivalencia** (`equivalentes()` sigue en falso), sino **precaución** (`PRECAUCION_OTRO_ANGULO`): tras dolor en «lever incline chest press», «lever chest press» no se prescribe ni se usa como sustituto mientras dure la exclusión. Solo vuelve con la reactivación explícita de lo que dolió, que pasa el control de seguridad (restricciones), y sigue sujeto a todos los validadores. Los genéricos, los revisados y los sinónimos siguen sin efecto | `FamiliaDeMovimientoEquivalenteTest.precaucionOtroAngulo` y `listaPrecauciones`, `PainMemoryFamiliaTest.precaucionPorAngulo`, `DolorFamiliaEquivalenteIT.cambioDeAngulo`; `HerenciaD8IT`, que ahora acaba en NO_FACTIBLE |
+| 3 · Vencimiento de las dos semanas | **Ya no levanta nada.** A las dos semanas con plan, la sesión, sus equivalentes y sus precauciones siguen excluidos y pasan a `requiereConfirmacion`. La confirmación se pide con `confirmationRequired` en `/effective` y con el nuevo `GET /users/me/pain-exclusions/confirmation-requests`, que lista la sesión y sus ejercicios | `PainMemoryFamiliaTest.sesionSinIdentificar…`, `DolorFamiliaEquivalenteIT.dolorDeSesionSinIdentificar`, `CicloCompletoHttpIT` |
+| 4 · Identificar y declarar no relacionados | `POST …/{e}/identification` acepta `unrelatedExerciseIds`. **Solo esos** se levantan, cada uno con el control de seguridad de la reactivación y la constancia `CONFIRMACION_EXPLICITA_NO_RELACIONADO`. Se rechaza uno de otra sesión o el propio identificado. Uno que choca con una restricción no se levanta, y se dice por qué. Los no nombrados siguen excluidos | `PainMemoryFamiliaTest.identificarConNoRelacionados` y `noRelacionadoConConflicto`, `DolorFamiliaEquivalenteIT`, `CicloCompletoHttpIT` |
+| 5 · Lo confirmado y sus equivalentes | Excluidos hasta la reactivación explícita (sin cambios). Un no relacionado que es equivalente o precaución del confirmado **sigue fuera** | `PainMemoryFamiliaTest`, `DolorFamiliaEquivalenteIT` (incluso 4 semanas después) |
+| 6 · Bloqueo en sesiones abiertas y Mobile | Sin cambios en el bloqueo (P-DOLOR-PUB). Contrato verificado: tras omitir, el plan releído (`GET /plan/{id}`) marca con `safetyBlockReason` **exactamente** las prescripciones cuyo ejercicio está en `/effective`, sin bloquear la sesión entera (`safetyBlocked` falso). Registrar trabajo en ellas da 422 `SESION_BLOQUEADA_POR_SEGURIDAD`, y registrarlas como omitidas, 200 | `CicloCompletoHttpIT.dolorYReincorporacion`, `RegeneracionPorColocacionRev2IT` |
+| 7 · V65 | Sin cambios en V65. Probada sobre una base **existente** (migrada hasta V64 con exclusiones identificadas, de sesión y reactivadas): no se pierde ni cambia ningún dato, las columnas nuevas quedan NULL, el CHECK es válido y la aplicación las lee y opera sobre ellas. Y sobre una base **nueva** | `MigracionV65IT` (2) |
+| 8 · Regresión | Ver §5. Sin cambios en V8C, V24 ni los demás validadores. Sin llamadas a Replicate | — |
+
 ## 1. El problema (O20)
 
 - **Caso real:** evaluación gpt-5-mini, corrida `G5M_MEDIUM_P`, perfil O20.
@@ -61,7 +74,7 @@
   - 3 revisadas como distintas;
   - 3 posibles sinónimos.
 
-  **Una relación pendiente no excluye nada.**
+  **Una relación pendiente no es una equivalencia.** Desde el cierre final (§0), las 37 de ángulo se aplican como **precaución** tras dolor; las demás (genéricas, revisadas y sinónimos) no tienen efecto.
 - **Control de la lista:** al cargarla, el backend rechaza una lista ambigua (un miembro en dos grupos, un miembro sin normalizar, un grupo de un solo miembro o sin justificación). Una prueba comprueba que cada miembro existe en el catálogo activo.
 
 ### 2.2 Ajuste final: dolor de sesión sin identificar
@@ -70,7 +83,7 @@
 |---|---|---|
 | Qué es | Una exclusión **confirmada** de ese ejercicio | Un **reporte general**: no se sabe cuál dolió |
 | Ejercicio registrado | Excluido hasta la reactivación explícita (sin cambios) | **Cada** ejercicio de la sesión, excluido hasta su reactivación explícita (sin cambios: la regla de V8C) |
-| Familia equivalente | **Permanente**, lo que dure la exclusión | **Provisional**: la adaptación o regeneración inmediata y la semana siguiente (`SEMANAS_FAMILIA_PROVISIONAL = 2`, contadas en semanas con plan, no en días). Después deja de aplicarse sola; el ejercicio de la sesión sigue excluido |
+| Familia equivalente | **Permanente**, lo que dure la exclusión | **Provisional**: no confirmada. Desde el cierre final (§0) **no caduca**: a las dos semanas con plan (`SEMANAS_PARA_PEDIR_CONFIRMACION = 2`) se pide confirmación y sigue excluida hasta que la persona conteste |
 | Identificar después | — | `POST /users/me/pain-exclusions/{e}/identification`. Esa fila queda **confirmada** (`identified_at`, V65) y su familia pasa a ser permanente. No reactiva los demás de la sesión |
 
 **Por qué así:**
@@ -121,7 +134,7 @@
 | `DolorFamiliaEquivalenteIT` (9, PostgreSQL y catálogo real) | **Premisa**, con nivel y justificación según el backend. **Elegibles:** solo sale la familia; 578 sigue. **Simétrico.** **V1** rechaza 538. **Ciclo O20 real**, con y sin restricciones. **Diferencias de nombre, postura y material** según el backend, con simetría (11 pares). **Dolor de sesión sin identificar en el ciclo real:** véase la fila siguiente. **Inventario**, con simetría y existencia de cada miembro de la lista |
 | `DolorFamiliaEquivalenteIT.dolorDeSesionSinIdentificar` | Regeneración inmediata y semana siguiente sin la familia. Después, 538 vuelve y la sesión sigue fuera. Identificar después lo hace permanente, incluso 4 semanas después. Solo la reactivación lo devuelve |
 | `DolorSinAlternativaIT` (1, catálogo reducido a propósito) | Sin sustituto fuera de la familia: **no se usa 538**. **NO_FACTIBLE** con su causa. P-03 lo rechaza porque subiría el trabajo |
-| `HerenciaD8IT.dolorConRegeneracionSegura` | Con el criterio explícito, 988 «lever chest press» ya no queda bloqueado por el dolor en 992 «lever incline chest press v. 2», porque cambia el ángulo. **P-03 vuelve a publicar** (plan 16) y se cumplen todas las comprobaciones originales y la de la familia. **Sin bloqueos innecesarios** |
+| `HerenciaD8IT.dolorConRegeneracionSegura` | Admite los dos desenlaces seguros. Con la precaución por ángulo del cierre final (§0), 988 «lever chest press» vuelve a quedar fuera tras dolor en 992 «lever incline chest press v. 2» y la regeneración termina **NO_FACTIBLE** con el motivo de P-03 (subiría una dosis), con la exclusión conservada |
 | `CicloCompletoHttpIT.dolorYReincorporacion` y `ContratoErroresApiIT` | El contrato HTTP: `confirmed`, `/effective` (DIRECT frente a EQUIVALENT provisional), `/identification` (400, 422, 200 y 404), y que identificar no reactiva nada |
 
 **Antes y después** (los mismos escenarios):
@@ -147,11 +160,11 @@ Ninguna se relajó: cada una conserva lo que protegía y suma la comprobación d
 
 ## 4. Lo que no cubre, y decisiones para la revisión
 
-- **Las relaciones pendientes no excluyen nada** (53 filas en `evidencia/equivalencias_pendientes.csv`). En particular:
-  - **Cambio de ángulo.** Tras dolor en «lever incline chest press v. 2», «lever chest press» (plano) sigue siendo elegible, y así publica P-03 en `HerenciaD8IT`. Si se prefiere tratarlo como el mismo gesto, basta con unir los dos grupos en la lista: un cambio de datos, sin código.
+- **Las relaciones pendientes no son equivalencias** (53 filas en `evidencia/equivalencias_pendientes.csv`). Las 37 de ángulo se aplican como precaución (§0); el resto no tiene efecto. En particular:
+  - **Cambio de ángulo.** Tras dolor en «lever incline chest press v. 2», «lever chest press» (plano) no se prescribe ni se usa como sustituto mientras dure la exclusión (precaución, §0). Vuelve solo con la reactivación explícita de lo que dolió.
   - **Posibles sinónimos** («bench press ~ chest press», «shoulder ~ military ~ overhead press», «stiff-leg ~ straight-leg ~ romanian deadlift»). Requieren un criterio profesional que esta PR no establece.
 - **La lista no es un criterio clínico.** Es una revisión del catálogo por nombre, material y postura, versionada y trazable. Un ejercicio nuevo del catálogo no entra en ningún grupo de nivel 2 hasta que se añada a la lista; el nivel 1 sí lo cubre si es una variante `v. N`.
-- **Duración de la familia provisional.** Es de dos semanas con plan, por la constante `SEMANAS_FAMILIA_PROVISIONAL`. Si no se publican planes nuevos, por ejemplo porque todo queda NO_FACTIBLE, la ventana no se cierra: es conservador.
+- **Petición de confirmación.** Tras dos semanas con plan (`SEMANAS_PARA_PEDIR_CONFIRMACION`), un dolor de sesión sin identificar pide confirmación; no se levanta nada solo. Si no se publican planes nuevos, la petición no se activa, pero la exclusión sigue igual.
 - **Identificar no reactiva los demás ejercicios de la sesión.** Siguen excluidos y la persona los reactiva uno a uno (`/reactivation`). Es una decisión deliberada: también pudieron doler.
 - **Mobile:** el contrato está listo (`ESPEC_MOBILE_EXCLUSIONES.md`), pero Mobile no lo muestra todavía. Hasta que lo haga, la persona ve en su historial las filas registradas, ahora con `confirmed`, y no ve las variantes equivalentes.
 - **Planes ya publicados antes de esta corrección:** la variante de una sesión abierta queda marcada por `safetyBlockReason`, con la misma ruta de antes y ahora también para la familia.

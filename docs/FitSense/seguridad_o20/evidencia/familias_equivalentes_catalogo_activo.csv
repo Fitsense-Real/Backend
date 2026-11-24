@@ -7,42 +7,53 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 99;band front raise;SHOULDER_RAISE;delts;[150, 334, 537, 538, 703, 707];150=G2-036 front raise,334=G2-036 front raise,537=G2-036 front raise,538=G2-036 front raise,703=G2-036 front raise,707=G2-036 front raise
 100;band reverse fly;SHOULDER_RAISE;delts;[700, 1020];700=G2-093 reverse fly,1020=G2-093 reverse fly
 101;band shoulder press;VERTICAL_PUSH;delts;[321, 418, 661, 662, 739, 1019, 1022, 1023, 1024, 1154, 1279, 1280];321=G2-105 shoulder press,418=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,739=G2-105 shoulder press,1019=G2-105 shoulder press,1022=G2-105 shoulder press,1023=G2-105 shoulder press,1024=G2-105 shoulder press,1154=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
-102;band bench press;HORIZONTAL_PUSH;pectorals;[151, 323, 517, 1218];151=G2-007 bench press,323=G2-007 bench press,517=G2-007 bench press,1218=G2-007 bench press
+102;band bench press;HORIZONTAL_PUSH;pectorals;[151, 152, 177, 323, 341, 517, 540, 548, 1218, 1219, 1221];151=G2-007 bench press,152=PA-001 bench press,177=PA-001 bench press,323=G2-007 bench press,341=PA-001 bench press,517=G2-007 bench press,540=PA-001 bench press,548=PA-001 bench press,1218=G2-007 bench press,1219=PA-001 bench press,1221=PA-001 bench press
 104;band alternating v-up;TRUNK_FLEXION;abs;[140];140=G2-116 v up
+109;band kneeling twisting crunch;TRUNK_ROTATION_LATERAL_FLEXION;abs;[139];139=PA-035 twisting crunch
 113;band assisted pull-up;VERTICAL_PULL;lats;[75, 77];75=G2-003 assisted pull up,77=G2-003 assisted pull up
+117;band kneeling one arm pulldown;VERTICAL_PULL;lats;[386, 389];386=PA-025 pulldown,389=PA-025 pulldown
 118;band one arm standing low row;HORIZONTAL_PULL;upper back;[357];357=G2-068 low row
-120;band shrug;SCAPULAR_ELEVATION;traps;[234, 438, 749, 1038, 1287];234=G2-106 shrug,438=G2-106 shrug,749=G2-106 shrug,1038=G2-106 shrug,1287=G2-106 shrug
+120;band shrug;SCAPULAR_ELEVATION;traps;[234, 438, 549, 550, 593, 749, 1038, 1287];234=G2-106 shrug,438=G2-106 shrug,549=PA-033 shrug,550=PA-033 shrug,593=PA-033 shrug,749=G2-106 shrug,1038=G2-106 shrug,1287=G2-106 shrug
+123;band lying hip internal rotation;OTHER;glutes;[126];126=PA-016 hip internal rotation
 124;band one arm single leg split squat;KNEE_DOMINANT;quads;[127, 243, 753, 1288];127=G2-065 leg split squat,243=G2-065 leg split squat,753=G2-065 leg split squat,1288=G2-065 leg split squat
+126;band seated hip internal rotation;OTHER;glutes;[123];123=PA-016 hip internal rotation
 127;band single leg split squat;KNEE_DOMINANT;quads;[124, 243, 753, 1288];124=G2-065 leg split squat,243=G2-065 leg split squat,753=G2-065 leg split squat,1288=G2-065 leg split squat
-128;band alternating biceps curl;ELBOW_FLEXION;biceps;[167, 520, 555, 723, 764, 1011, 1160, 1240];167=G2-010 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
-129;band close-grip push-up;HORIZONTAL_PUSH;triceps;[508];508=G2-025 close grip push up
+128;band alternating biceps curl;ELBOW_FLEXION;biceps;[167, 369, 520, 555, 596, 723, 764, 1011, 1160, 1240];167=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
+129;band close-grip push-up;HORIZONTAL_PUSH;triceps;[508, 921];508=G2-025 close grip push up,921=PA-008 close grip push up
 130;band concentration curl;ELBOW_FLEXION;biceps;[288, 330, 447, 562, 765, 768];288=G2-027 concentration curl,330=G2-027 concentration curl,447=G2-027 concentration curl,562=G2-027 concentration curl,765=G2-027 concentration curl,768=G2-027 concentration curl
 133;band wrist curl;WRIST_FOREARM;forearms;[257, 258, 469, 655, 1274];257=G2-117 wrist curl,258=G2-117 wrist curl,469=G2-117 wrist curl,655=G2-117 wrist curl,1274=G2-117 wrist curl
 135;band standing rear delt row;HORIZONTAL_PULL;delts;[218, 1217];218=G2-087 rear delt row,1217=G2-087 rear delt row
+139;band standing twisting crunch;TRUNK_ROTATION_LATERAL_FLEXION;abs;[109];109=PA-035 twisting crunch
 140;band v-up;TRUNK_FLEXION;abs;[104];104=G2-116 v up
 142;band straight leg deadlift;HIP_HINGE;hamstrings;[283];283=G2-112 straight leg deadlift
 143;band underhand pulldown;VERTICAL_PULL;lats;[485];485=G2-114 underhand pulldown
 146;band step-up;KNEE_DOMINANT;glutes;[281, 785];281=G2-109 step up,785=G2-109 step up
 147;band stiff leg deadlift;HIP_HINGE;glutes;[788];788=G2-110 stiff leg deadlift
 150;barbell front raise;SHOULDER_RAISE;delts;[99, 334, 537, 538, 703, 707];99=G2-036 front raise,334=G2-036 front raise,537=G2-036 front raise,538=G2-036 front raise,703=G2-036 front raise,707=G2-036 front raise
-151;barbell bench press;HORIZONTAL_PUSH;pectorals;[102, 323, 517, 1218];102=G2-007 bench press,323=G2-007 bench press,517=G2-007 bench press,1218=G2-007 bench press
-152;barbell decline bench press;HORIZONTAL_PUSH;pectorals;[540, 1219];540=G2-029 decline bench press,1219=G2-029 decline bench press
+151;barbell bench press;HORIZONTAL_PUSH;pectorals;[102, 152, 177, 323, 341, 517, 540, 548, 1218, 1219, 1221];102=G2-007 bench press,152=PA-001 bench press,177=PA-001 bench press,323=G2-007 bench press,341=PA-001 bench press,517=G2-007 bench press,540=PA-001 bench press,548=PA-001 bench press,1218=G2-007 bench press,1219=PA-001 bench press,1221=PA-001 bench press
+152;barbell decline bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 177, 323, 341, 517, 540, 548, 1218, 1219, 1221];102=PA-001 bench press,151=PA-001 bench press,177=PA-001 bench press,323=PA-001 bench press,341=PA-001 bench press,517=PA-001 bench press,540=G2-029 decline bench press,548=PA-001 bench press,1218=PA-001 bench press,1219=G2-029 decline bench press,1221=PA-001 bench press
+153;barbell decline pullover;SHOULDER_EXTENSION;pectorals;[670];670=PA-026 pullover
+156;barbell bent arm pullover;SHOULDER_EXTENSION;lats;[158];158=PA-002 bent arm pullover
 157;barbell bent over row;HORIZONTAL_PULL;upper back;[180, 359, 518, 636, 981, 982, 1227];180=G2-008 bent over row,359=G2-008 bent over row,518=G2-008 bent over row,636=G2-008 bent over row,981=G2-008 bent over row,982=G2-008 bent over row,1227=G2-008 bent over row
+158;barbell decline bent arm pullover;SHOULDER_EXTENSION;lats;[156];156=PA-002 bent arm pullover
 164;barbell deadlift;HIP_HINGE;glutes;[553, 1004, 1233];553=G2-028 deadlift,1004=G2-028 deadlift,1233=G2-028 deadlift
-167;barbell alternate biceps curl;ELBOW_FLEXION;biceps;[128, 520, 555, 723, 764, 1011, 1160, 1240];128=G2-010 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
+167;barbell alternate biceps curl;ELBOW_FLEXION;biceps;[128, 369, 520, 555, 596, 723, 764, 1011, 1160, 1240];128=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
 168;barbell biceps curl (with arm blaster);ELBOW_FLEXION;biceps;[521, 556, 850];521=G2-014 bicep curl with arm blaster,556=G2-014 bicep curl with arm blaster,850=G2-014 bicep curl with arm blaster
-169;barbell close-grip bench press;HORIZONTAL_PUSH;triceps;[851, 1239];851=G2-021 close grip bench press,1239=G2-021 close grip bench press
+169;barbell close-grip bench press;HORIZONTAL_PUSH;triceps;[201, 851, 1239, 1241];201=PA-005 close grip bench press,851=G2-021 close grip bench press,1239=G2-021 close grip bench press,1241=PA-005 close grip bench press
 172;barbell drag curl;ELBOW_FLEXION;biceps;[363];363=G2-032 drag curl
 175;barbell one arm snatch;HIP_HINGE;glutes;[674, 947];674=G2-108 snatch,947=G2-108 snatch
-177;barbell incline bench press;HORIZONTAL_PUSH;pectorals;[341, 548, 1221];341=G2-046 incline bench press,548=G2-046 incline bench press,1221=G2-046 incline bench press
+177;barbell incline bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 323, 341, 517, 540, 548, 1218, 1219, 1221];102=PA-001 bench press,151=PA-001 bench press,152=PA-001 bench press,323=PA-001 bench press,341=G2-046 incline bench press,517=PA-001 bench press,540=PA-001 bench press,548=G2-046 incline bench press,1218=PA-001 bench press,1219=PA-001 bench press,1221=G2-046 incline bench press
 178;barbell incline shoulder raise;SHOULDER_RAISE;serratus anterior;[590];590=G2-054 incline shoulder raise
 180;barbell one arm bent over row;HORIZONTAL_PULL;upper back;[157, 359, 518, 636, 981, 982, 1227];157=G2-008 bent over row,359=G2-008 bent over row,518=G2-008 bent over row,636=G2-008 bent over row,981=G2-008 bent over row,982=G2-008 bent over row,1227=G2-008 bent over row
 182;barbell full squat;KNEE_DOMINANT;glutes;[1235];1235=G2-037 full squat
 187;barbell glute bridge two legs on bench (male);HIP_EXTENSION;glutes;[879];879=G2-038 glute bridge two legs on bench male
-192;barbell jump squat;KNEE_DOMINANT;glutes;[918, 919];918=G2-057 jump squat,919=G2-057 jump squat
+192;barbell jump squat;KNEE_DOMINANT;glutes;[918, 919, 972];918=G2-057 jump squat,919=G2-057 jump squat,972=PA-018 jump squat
 194;barbell low bar squat;KNEE_DOMINANT;glutes;[1238];1238=G2-067 low bar squat
 195;barbell lunge;KNEE_DOMINANT;glutes;[595];595=G2-069 lunge
+201;barbell incline close grip bench press;HORIZONTAL_PUSH;triceps;[169, 851, 1239, 1241];169=PA-005 close grip bench press,851=PA-005 close grip bench press,1239=PA-005 close grip bench press,1241=PA-005 close grip bench press
 203;barbell jm bench press;HORIZONTAL_PUSH;triceps;[843];843=G2-056 jm bench press
+205;barbell lying close-grip press;HORIZONTAL_PUSH;triceps;[560, 561];560=PA-007 close grip press,561=PA-007 close grip press
+208;barbell lying preacher curl;ELBOW_FLEXION;biceps;[244, 397, 403, 523, 688, 756, 792, 1048, 1049];244=PA-021 preacher curl,397=PA-021 preacher curl,403=PA-021 preacher curl,523=PA-021 preacher curl,688=PA-021 preacher curl,756=PA-021 preacher curl,792=PA-021 preacher curl,1048=PA-021 preacher curl,1049=PA-021 preacher curl
 214;barbell reverse wrist curl;WRIST_FOREARM;forearms;[95, 373, 653, 693];95=G2-101 reverse wrist curl,373=G2-101 reverse wrist curl,653=G2-101 reverse wrist curl,693=G2-101 reverse wrist curl
 215;barbell seated calf raise;ANKLE_PLANTAR_FLEXION;calves;[216, 259, 294, 414, 695, 738, 1016, 1018];216=VARIANTE_MISMO_EJERCICIO,259=G2-017 calf raise,294=G2-017 calf raise,414=G2-017 calf raise,695=G2-017 calf raise,738=G2-017 calf raise,1016=G2-017 calf raise,1018=G2-017 calf raise
 216;barbell seated calf raise;ANKLE_PLANTAR_FLEXION;calves;[215, 259, 294, 414, 695, 738, 1016, 1018];215=VARIANTE_MISMO_EJERCICIO,259=G2-017 calf raise,294=G2-017 calf raise,414=G2-017 calf raise,695=G2-017 calf raise,738=G2-017 calf raise,1016=G2-017 calf raise,1018=G2-017 calf raise
@@ -50,10 +61,12 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 218;barbell rear delt row;HORIZONTAL_PULL;delts;[135, 1217];135=G2-087 rear delt row,1217=G2-087 rear delt row
 219;barbell seated behind head military press;VERTICAL_PUSH;delts;[1281];1281=G2-005 behind head military press
 221;barbell seated overhead press;VERTICAL_PUSH;delts;[743, 778];743=G2-076 overhead press,778=G2-076 overhead press
+222;barbell reverse grip decline bench press;HORIZONTAL_PUSH;pectorals;[223];223=PA-030 reverse grip bench press
+223;barbell reverse grip incline bench press;HORIZONTAL_PUSH;pectorals;[222];222=PA-030 reverse grip bench press
 230;barbell pullover;SHOULDER_EXTENSION;lats;[1033];1033=G2-082 pullover
 232;barbell reverse grip bent over row;HORIZONTAL_PULL;upper back;[832, 1230];832=G2-094 reverse grip bent over row,1230=G2-094 reverse grip bent over row
 233;barbell reverse grip incline bench row;HORIZONTAL_PULL;upper back;[711, 712];711=G2-053 incline reverse grip bench row,712=G2-053 incline reverse grip bench row
-234;barbell shrug;SCAPULAR_ELEVATION;traps;[120, 438, 749, 1038, 1287];120=G2-106 shrug,438=G2-106 shrug,749=G2-106 shrug,1038=G2-106 shrug,1287=G2-106 shrug
+234;barbell shrug;SCAPULAR_ELEVATION;traps;[120, 438, 549, 550, 593, 749, 1038, 1287];120=G2-106 shrug,438=G2-106 shrug,549=PA-033 shrug,550=PA-033 shrug,593=PA-033 shrug,749=G2-106 shrug,1038=G2-106 shrug,1287=G2-106 shrug
 236;barbell rear lunge;KNEE_DOMINANT;glutes;[237, 714];237=VARIANTE_MISMO_EJERCICIO,714=G2-090 rear lunge
 237;barbell rear lunge v. 2;KNEE_DOMINANT;glutes;[236, 714];236=VARIANTE_MISMO_EJERCICIO,714=G2-090 rear lunge
 238;barbell romanian deadlift;HIP_HINGE;glutes;[715];715=G2-102 romanian deadlift
@@ -62,8 +75,8 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 241;barbell side split squat v. 2;KNEE_DOMINANT;quads;[240];240=VARIANTE_MISMO_EJERCICIO
 242;barbell single leg deadlift;HIP_HINGE;glutes;[751];751=G2-062 leg deadlift
 243;barbell single leg split squat;KNEE_DOMINANT;quads;[124, 127, 753, 1288];124=G2-065 leg split squat,127=G2-065 leg split squat,753=G2-065 leg split squat,1288=G2-065 leg split squat
-244;barbell preacher curl;ELBOW_FLEXION;biceps;[397, 403, 523, 688, 756, 792, 1048, 1049];397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
-245;barbell prone incline curl;ELBOW_FLEXION;biceps;[691];691=G2-052 incline prone curl
+244;barbell preacher curl;ELBOW_FLEXION;biceps;[208, 397, 403, 523, 688, 756, 792, 1048, 1049];208=PA-021 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
+245;barbell prone incline curl;ELBOW_FLEXION;biceps;[651, 691];651=PA-023 prone curl,691=G2-052 incline prone curl
 247;barbell reverse curl;ELBOW_FLEXION;biceps;[408, 410, 772, 793];408=G2-092 reverse curl,410=G2-092 reverse curl,772=G2-092 reverse curl,793=G2-092 reverse curl
 249;barbell reverse preacher curl;ELBOW_FLEXION;biceps;[398, 411, 676, 717];398=G2-099 reverse preacher curl,411=G2-099 reverse preacher curl,676=G2-099 reverse preacher curl,717=G2-099 reverse preacher curl
 251;barbell seated close-grip concentration curl;ELBOW_FLEXION;biceps;[835];835=G2-022 close grip concentration curl
@@ -79,7 +92,7 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 270;barbell upright row v. 3;HORIZONTAL_PULL;delts;[268, 269, 472, 663, 780, 1283];268=VARIANTE_MISMO_EJERCICIO,269=VARIANTE_MISMO_EJERCICIO,472=G2-115 upright row,663=G2-115 upright row,780=G2-115 upright row,1283=G2-115 upright row
 281;barbell step-up;KNEE_DOMINANT;glutes;[146, 785];146=G2-109 step up,785=G2-109 step up
 283;barbell straight leg deadlift;HIP_HINGE;hamstrings;[142];142=G2-112 straight leg deadlift
-287;barbell standing close grip curl;ELBOW_FLEXION;biceps;[329, 838];329=G2-023 close grip curl,838=G2-023 close grip curl
+287;barbell standing close grip curl;ELBOW_FLEXION;biceps;[329, 370, 838];329=G2-023 close grip curl,370=PA-006 close grip curl,838=G2-023 close grip curl
 288;barbell standing concentration curl;ELBOW_FLEXION;biceps;[130, 330, 447, 562, 765, 768];130=G2-027 concentration curl,330=G2-027 concentration curl,447=G2-027 concentration curl,562=G2-027 concentration curl,765=G2-027 concentration curl,768=G2-027 concentration curl
 289;barbell standing overhead triceps extension;ELBOW_EXTENSION;triceps;[252];252=G2-077 overhead tricep extension
 290;barbell standing reverse grip curl;ELBOW_FLEXION;biceps;[844];844=G2-095 reverse grip curl
@@ -90,43 +103,48 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 306;bodyweight standing one arm row (with towel);HORIZONTAL_PULL;upper back;[308];308=G2-104 row with towel
 308;bodyweight standing row (with towel);HORIZONTAL_PULL;upper back;[306];306=G2-104 row with towel
 321;cable alternate shoulder press;VERTICAL_PUSH;delts;[101, 418, 661, 662, 739, 1019, 1022, 1023, 1024, 1154, 1279, 1280];101=G2-105 shoulder press,418=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,739=G2-105 shoulder press,1019=G2-105 shoulder press,1022=G2-105 shoulder press,1023=G2-105 shoulder press,1024=G2-105 shoulder press,1154=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
-323;cable bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 517, 1218];102=G2-007 bench press,151=G2-007 bench press,517=G2-007 bench press,1218=G2-007 bench press
-329;cable close grip curl;ELBOW_FLEXION;biceps;[287, 838];287=G2-023 close grip curl,838=G2-023 close grip curl
+323;cable bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 341, 517, 540, 548, 1218, 1219, 1221];102=G2-007 bench press,151=G2-007 bench press,152=PA-001 bench press,177=PA-001 bench press,341=PA-001 bench press,517=G2-007 bench press,540=PA-001 bench press,548=PA-001 bench press,1218=G2-007 bench press,1219=PA-001 bench press,1221=PA-001 bench press
+329;cable close grip curl;ELBOW_FLEXION;biceps;[287, 370, 838];287=G2-023 close grip curl,370=PA-006 close grip curl,838=G2-023 close grip curl
 330;cable concentration curl;ELBOW_FLEXION;biceps;[130, 288, 447, 562, 765, 768];130=G2-027 concentration curl,288=G2-027 concentration curl,447=G2-027 concentration curl,562=G2-027 concentration curl,765=G2-027 concentration curl,768=G2-027 concentration curl
 334;cable front raise;SHOULDER_RAISE;delts;[99, 150, 537, 538, 703, 707];99=G2-036 front raise,150=G2-036 front raise,537=G2-036 front raise,538=G2-036 front raise,703=G2-036 front raise,707=G2-036 front raise
-337;cable lateral raise;SHOULDER_RAISE;delts;[374, 578, 622, 708, 709, 986];374=G2-059 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
-341;cable incline bench press;HORIZONTAL_PUSH;pectorals;[177, 548, 1221];177=G2-046 incline bench press,548=G2-046 incline bench press,1221=G2-046 incline bench press
+337;cable lateral raise;SHOULDER_RAISE;delts;[374, 573, 578, 622, 708, 709, 986];374=G2-059 lateral raise,573=PA-019 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
+341;cable incline bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 323, 517, 540, 548, 1218, 1219, 1221];102=PA-001 bench press,151=PA-001 bench press,152=PA-001 bench press,177=G2-046 incline bench press,323=PA-001 bench press,517=PA-001 bench press,540=PA-001 bench press,548=G2-046 incline bench press,1218=PA-001 bench press,1219=PA-001 bench press,1221=G2-046 incline bench press
+349;cable decline seated wide-grip row;HORIZONTAL_PULL;upper back;[437];437=PA-037 wide grip row
+351;cable high row (kneeling);HORIZONTAL_PULL;upper back;[1001];1001=PA-015 high row
 357;cable low seated row;HORIZONTAL_PULL;upper back;[118];118=G2-068 low row
 359;cable one arm bent over row;HORIZONTAL_PULL;upper back;[157, 180, 518, 636, 981, 982, 1227];157=G2-008 bent over row,180=G2-008 bent over row,518=G2-008 bent over row,636=G2-008 bent over row,981=G2-008 bent over row,982=G2-008 bent over row,1227=G2-008 bent over row
 361;cable hip adduction;HIP_ABDUCTION_ADDUCTION;adductors;[1045];1045=G2-044 hip adduction
 363;cable drag curl;ELBOW_FLEXION;biceps;[172];172=G2-032 drag curl
+369;cable lying bicep curl;ELBOW_FLEXION;biceps;[128, 167, 520, 555, 596, 723, 764, 1011, 1160, 1240];128=PA-003 bicep curl,167=PA-003 bicep curl,520=PA-003 bicep curl,555=PA-003 bicep curl,596=PA-003 bicep curl,723=PA-003 bicep curl,764=PA-003 bicep curl,1011=PA-003 bicep curl,1160=PA-003 bicep curl,1240=PA-003 bicep curl
+370;cable lying close-grip curl;ELBOW_FLEXION;biceps;[287, 329, 838];287=PA-006 close grip curl,329=PA-006 close grip curl,838=PA-006 close grip curl
 373;cable reverse wrist curl;WRIST_FOREARM;forearms;[95, 214, 653, 693];95=G2-101 reverse wrist curl,214=G2-101 reverse wrist curl,653=G2-101 reverse wrist curl,693=G2-101 reverse wrist curl
-374;cable one arm lateral raise;SHOULDER_RAISE;delts;[337, 578, 622, 708, 709, 986];337=G2-059 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
+374;cable one arm lateral raise;SHOULDER_RAISE;delts;[337, 573, 578, 622, 708, 709, 986];337=G2-059 lateral raise,573=PA-019 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
 376;cable rear delt row (with rope);HORIZONTAL_PULL;delts;[420];420=G2-088 rear delt row with rope
-378;cable one arm fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[546, 631];546=G2-034 fly on exercise ball,631=G2-034 fly on exercise ball
-379;cable one arm incline fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[582, 585];582=G2-049 incline fly on exercise ball,585=G2-049 incline fly on exercise ball
-381;cable one arm incline press on exercise ball;HORIZONTAL_PUSH;pectorals;[587, 589];587=G2-051 incline press on exercise ball,589=G2-051 incline press on exercise ball
-383;cable one arm press on exercise ball;HORIZONTAL_PUSH;pectorals;[384, 633, 669];384=G2-080 press on exercise ball,633=G2-080 press on exercise ball,669=G2-080 press on exercise ball
-384;cable press on exercise ball;HORIZONTAL_PUSH;pectorals;[383, 633, 669];383=G2-080 press on exercise ball,633=G2-080 press on exercise ball,669=G2-080 press on exercise ball
+378;cable one arm fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[379, 546, 582, 585, 631];379=PA-010 fly on exercise ball,546=G2-034 fly on exercise ball,582=PA-010 fly on exercise ball,585=PA-010 fly on exercise ball,631=G2-034 fly on exercise ball
+379;cable one arm incline fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[378, 546, 582, 585, 631];378=PA-010 fly on exercise ball,546=PA-010 fly on exercise ball,582=G2-049 incline fly on exercise ball,585=G2-049 incline fly on exercise ball,631=PA-010 fly on exercise ball
+381;cable one arm incline press on exercise ball;HORIZONTAL_PUSH;pectorals;[383, 384, 587, 589, 633, 669];383=PA-022 press on exercise ball,384=PA-022 press on exercise ball,587=G2-051 incline press on exercise ball,589=G2-051 incline press on exercise ball,633=PA-022 press on exercise ball,669=PA-022 press on exercise ball
+383;cable one arm press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 384, 587, 589, 633, 669];381=PA-022 press on exercise ball,384=G2-080 press on exercise ball,587=PA-022 press on exercise ball,589=PA-022 press on exercise ball,633=G2-080 press on exercise ball,669=G2-080 press on exercise ball
+384;cable press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 383, 587, 589, 633, 669];381=PA-022 press on exercise ball,383=G2-080 press on exercise ball,587=PA-022 press on exercise ball,589=PA-022 press on exercise ball,633=G2-080 press on exercise ball,669=G2-080 press on exercise ball
 385;cable reverse crunch;TRUNK_FLEXION;abs;[1139];1139=G2-091 reverse crunch
-386;cable one arm pulldown;VERTICAL_PULL;lats;[389];389=G2-081 pulldown
-389;cable pulldown;VERTICAL_PULL;lats;[386];386=G2-081 pulldown
-397;cable one arm preacher curl;ELBOW_FLEXION;biceps;[244, 403, 523, 688, 756, 792, 1048, 1049];244=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
+386;cable one arm pulldown;VERTICAL_PULL;lats;[117, 389];117=PA-025 pulldown,389=G2-081 pulldown
+389;cable pulldown;VERTICAL_PULL;lats;[117, 386];117=PA-025 pulldown,386=G2-081 pulldown
+397;cable one arm preacher curl;ELBOW_FLEXION;biceps;[208, 244, 403, 523, 688, 756, 792, 1048, 1049];208=PA-021 preacher curl,244=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
 398;cable one arm reverse preacher curl;ELBOW_FLEXION;biceps;[249, 411, 676, 717];249=G2-099 reverse preacher curl,411=G2-099 reverse preacher curl,676=G2-099 reverse preacher curl,717=G2-099 reverse preacher curl
 400;cable overhead curl;ELBOW_FLEXION;biceps;[448];448=G2-075 overhead curl
-403;cable preacher curl;ELBOW_FLEXION;biceps;[244, 397, 523, 688, 756, 792, 1048, 1049];244=G2-079 preacher curl,397=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
+403;cable preacher curl;ELBOW_FLEXION;biceps;[208, 244, 397, 523, 688, 756, 792, 1048, 1049];208=PA-021 preacher curl,244=G2-079 preacher curl,397=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
 408;cable reverse curl;ELBOW_FLEXION;biceps;[247, 410, 772, 793];247=G2-092 reverse curl,410=G2-092 reverse curl,772=G2-092 reverse curl,793=G2-092 reverse curl
 410;cable reverse one arm curl;ELBOW_FLEXION;biceps;[247, 408, 772, 793];247=G2-092 reverse curl,408=G2-092 reverse curl,772=G2-092 reverse curl,793=G2-092 reverse curl
 411;cable reverse preacher curl;ELBOW_FLEXION;biceps;[249, 398, 676, 717];249=G2-099 reverse preacher curl,398=G2-099 reverse preacher curl,676=G2-099 reverse preacher curl,717=G2-099 reverse preacher curl
 413;cable standing back wrist curl;WRIST_FOREARM;forearms;[256, 1275];256=G2-004 back wrist curl,1275=G2-004 back wrist curl
 414;cable standing calf raise;ANKLE_PLANTAR_FLEXION;calves;[215, 216, 259, 294, 695, 738, 1016, 1018];215=G2-017 calf raise,216=G2-017 calf raise,259=G2-017 calf raise,294=G2-017 calf raise,695=G2-017 calf raise,738=G2-017 calf raise,1016=G2-017 calf raise,1018=G2-017 calf raise
 415;cable standing one leg calf raise;ANKLE_PLANTAR_FLEXION;calves;[96, 260, 734, 737, 1276, 1277];96=G2-060 leg calf raise,260=G2-060 leg calf raise,734=G2-060 leg calf raise,737=G2-060 leg calf raise,1276=G2-060 leg calf raise,1277=G2-060 leg calf raise
-416;cable seated rear lateral raise;SHOULDER_RAISE;delts;[698];698=G2-089 rear lateral raise
+416;cable seated rear lateral raise;SHOULDER_RAISE;delts;[575, 621, 698];575=PA-029 rear lateral raise,621=PA-029 rear lateral raise,698=G2-089 rear lateral raise
 418;cable shoulder press;VERTICAL_PUSH;delts;[101, 321, 661, 662, 739, 1019, 1022, 1023, 1024, 1154, 1279, 1280];101=G2-105 shoulder press,321=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,739=G2-105 shoulder press,1019=G2-105 shoulder press,1022=G2-105 shoulder press,1023=G2-105 shoulder press,1024=G2-105 shoulder press,1154=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
 420;cable standing rear delt row (with rope);HORIZONTAL_PULL;delts;[376];376=G2-088 rear delt row with rope
-421;cable seated chest press;HORIZONTAL_PUSH;pectorals;[988, 989, 1026, 1155];988=G2-018 chest press,989=G2-018 chest press,1026=G2-018 chest press,1155=G2-018 chest press
+421;cable seated chest press;HORIZONTAL_PUSH;pectorals;[630, 632, 988, 989, 990, 991, 992, 1026, 1155];630=PA-004 chest press,632=PA-004 chest press,988=G2-018 chest press,989=G2-018 chest press,990=PA-004 chest press,991=PA-004 chest press,992=PA-004 chest press,1026=G2-018 chest press,1155=G2-018 chest press
 426;cable side bend;TRUNK_ROTATION_LATERAL_FLEXION;abs;[748];748=G2-107 side bend
-438;cable shrug;SCAPULAR_ELEVATION;traps;[120, 234, 749, 1038, 1287];120=G2-106 shrug,234=G2-106 shrug,749=G2-106 shrug,1038=G2-106 shrug,1287=G2-106 shrug
+437;cable seated wide-grip row;HORIZONTAL_PULL;upper back;[349];349=PA-037 wide grip row
+438;cable shrug;SCAPULAR_ELEVATION;traps;[120, 234, 549, 550, 593, 749, 1038, 1287];120=G2-106 shrug,234=G2-106 shrug,549=PA-033 shrug,550=PA-033 shrug,593=PA-033 shrug,749=G2-106 shrug,1038=G2-106 shrug,1287=G2-106 shrug
 440;cable standing hip extension;HIP_EXTENSION;glutes;[1005];1005=G2-045 hip extension
 441;cable rope hammer preacher curl;ELBOW_FLEXION;biceps;[445];445=G2-103 rope hammer preacher curl
 445;cable rope one arm hammer preacher curl;ELBOW_FLEXION;biceps;[441];441=G2-103 rope hammer preacher curl
@@ -140,16 +158,18 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 488;cable standing reverse grip one arm overhead tricep extension;ELBOW_EXTENSION;triceps;[758];758=G2-096 reverse grip overhead tricep extension
 492;cable two arm tricep kickback;ELBOW_EXTENSION;triceps;[606, 650, 729, 732, 761, 767];606=G2-058 kickback,650=G2-058 kickback,729=G2-058 kickback,732=G2-058 kickback,761=G2-058 kickback,767=G2-058 kickback
 493;donkey calf raise;ANKLE_PLANTAR_FLEXION;calves;[985];985=G2-031 donkey calf raise
-508;close-grip push-up;HORIZONTAL_PUSH;triceps;[129];129=G2-025 close grip push up
+495;decline push-up;HORIZONTAL_PUSH;pectorals;[896, 1096, 1180];896=PA-028 push up,1096=PA-028 push up,1180=PA-028 push up
+505;decline sit-up;TRUNK_FLEXION;abs;[1186];1186=PA-034 sit up
+508;close-grip push-up;HORIZONTAL_PUSH;triceps;[129, 921];129=G2-025 close grip push up,921=PA-008 close grip push up
 512;dumbbell arnold press;VERTICAL_PUSH;delts;[513, 924];513=VARIANTE_MISMO_EJERCICIO,924=G2-001 arnold press
 513;dumbbell arnold press v. 2;VERTICAL_PUSH;delts;[512, 924];512=VARIANTE_MISMO_EJERCICIO,924=G2-001 arnold press
-517;dumbbell bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 323, 1218];102=G2-007 bench press,151=G2-007 bench press,323=G2-007 bench press,1218=G2-007 bench press
+517;dumbbell bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 323, 341, 540, 548, 1218, 1219, 1221];102=G2-007 bench press,151=G2-007 bench press,152=PA-001 bench press,177=PA-001 bench press,323=G2-007 bench press,341=PA-001 bench press,540=PA-001 bench press,548=PA-001 bench press,1218=G2-007 bench press,1219=PA-001 bench press,1221=PA-001 bench press
 518;dumbbell bent over row;HORIZONTAL_PULL;upper back;[157, 180, 359, 636, 981, 982, 1227];157=G2-008 bent over row,180=G2-008 bent over row,359=G2-008 bent over row,636=G2-008 bent over row,981=G2-008 bent over row,982=G2-008 bent over row,1227=G2-008 bent over row
-520;dumbbell alternate biceps curl;ELBOW_FLEXION;biceps;[128, 167, 555, 723, 764, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,555=G2-010 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
+520;dumbbell alternate biceps curl;ELBOW_FLEXION;biceps;[128, 167, 369, 555, 596, 723, 764, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,369=PA-003 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
 521;dumbbell alternate biceps curl (with arm blaster);ELBOW_FLEXION;biceps;[168, 556, 850];168=G2-014 bicep curl with arm blaster,556=G2-014 bicep curl with arm blaster,850=G2-014 bicep curl with arm blaster
 522;dumbbell alternate hammer preacher curl;ELBOW_FLEXION;biceps;[648];648=G2-042 hammer preacher curl
-523;dumbbell alternate preacher curl;ELBOW_FLEXION;biceps;[244, 397, 403, 688, 756, 792, 1048, 1049];244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
-524;dumbbell alternate seated hammer curl;ELBOW_FLEXION;biceps;[568, 570, 679, 681, 727];568=G2-040 hammer curl,570=G2-040 hammer curl,679=G2-040 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
+523;dumbbell alternate preacher curl;ELBOW_FLEXION;biceps;[208, 244, 397, 403, 688, 756, 792, 1048, 1049];208=PA-021 preacher curl,244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
+524;dumbbell alternate seated hammer curl;ELBOW_FLEXION;biceps;[568, 570, 599, 679, 681, 727];568=G2-040 hammer curl,570=G2-040 hammer curl,599=PA-011 hammer curl,679=G2-040 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
 526;dumbbell alternating seated bicep curl on exercise ball;ELBOW_FLEXION;biceps;[678];678=G2-011 bicep curl on exercise ball
 528;dumbbell bicep curl on exercise ball with leg raised;ELBOW_FLEXION;biceps;[731];731=G2-012 bicep curl on exercise ball with leg raised
 533;dumbbell burpee;LOCOMOTION_CARDIO;cardiovascular system;[293];293=G2-015 burpee
@@ -158,47 +178,63 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 536;dumbbell cuban press v. 2;VERTICAL_PUSH;delts;[535];535=VARIANTE_MISMO_EJERCICIO
 537;dumbbell front raise;SHOULDER_RAISE;delts;[99, 150, 334, 538, 703, 707];99=G2-036 front raise,150=G2-036 front raise,334=G2-036 front raise,538=VARIANTE_MISMO_EJERCICIO,703=G2-036 front raise,707=G2-036 front raise
 538;dumbbell front raise v. 2;SHOULDER_RAISE;delts;[99, 150, 334, 537, 703, 707];99=G2-036 front raise,150=G2-036 front raise,334=G2-036 front raise,537=VARIANTE_MISMO_EJERCICIO,703=G2-036 front raise,707=G2-036 front raise
-540;dumbbell decline bench press;HORIZONTAL_PUSH;pectorals;[152, 1219];152=G2-029 decline bench press,1219=G2-029 decline bench press
-546;dumbbell fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[378, 631];378=G2-034 fly on exercise ball,631=G2-034 fly on exercise ball
-548;dumbbell incline bench press;HORIZONTAL_PUSH;pectorals;[177, 341, 1221];177=G2-046 incline bench press,341=G2-046 incline bench press,1221=G2-046 incline bench press
-549;dumbbell decline shrug;SCAPULAR_ELEVATION;traps;[550];550=VARIANTE_MISMO_EJERCICIO
-550;dumbbell decline shrug v. 2;SCAPULAR_ELEVATION;traps;[549];549=VARIANTE_MISMO_EJERCICIO
+540;dumbbell decline bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 323, 341, 517, 548, 1218, 1219, 1221];102=PA-001 bench press,151=PA-001 bench press,152=G2-029 decline bench press,177=PA-001 bench press,323=PA-001 bench press,341=PA-001 bench press,517=PA-001 bench press,548=PA-001 bench press,1218=PA-001 bench press,1219=G2-029 decline bench press,1221=PA-001 bench press
+542;dumbbell decline hammer press;HORIZONTAL_PUSH;pectorals;[583, 624];583=PA-012 hammer press,624=PA-012 hammer press
+546;dumbbell fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[378, 379, 582, 585, 631];378=G2-034 fly on exercise ball,379=PA-010 fly on exercise ball,582=PA-010 fly on exercise ball,585=PA-010 fly on exercise ball,631=G2-034 fly on exercise ball
+548;dumbbell incline bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 323, 341, 517, 540, 1218, 1219, 1221];102=PA-001 bench press,151=PA-001 bench press,152=PA-001 bench press,177=G2-046 incline bench press,323=PA-001 bench press,341=G2-046 incline bench press,517=PA-001 bench press,540=PA-001 bench press,1218=PA-001 bench press,1219=PA-001 bench press,1221=G2-046 incline bench press
+549;dumbbell decline shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 550, 593, 749, 1038, 1287];120=PA-033 shrug,234=PA-033 shrug,438=PA-033 shrug,550=VARIANTE_MISMO_EJERCICIO,593=PA-033 shrug,749=PA-033 shrug,1038=PA-033 shrug,1287=PA-033 shrug
+550;dumbbell decline shrug v. 2;SCAPULAR_ELEVATION;traps;[120, 234, 438, 549, 593, 749, 1038, 1287];120=PA-033 shrug,234=PA-033 shrug,438=PA-033 shrug,549=VARIANTE_MISMO_EJERCICIO,593=PA-033 shrug,749=PA-033 shrug,1038=PA-033 shrug,1287=PA-033 shrug
 551;dumbbell clean;HIP_HINGE;glutes;[953];953=G2-020 clean
 553;dumbbell deadlift;HIP_HINGE;glutes;[164, 1004, 1233];164=G2-028 deadlift,1004=G2-028 deadlift,1233=G2-028 deadlift
-555;dumbbell biceps curl;ELBOW_FLEXION;biceps;[128, 167, 520, 723, 764, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,520=G2-010 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
+555;dumbbell biceps curl;ELBOW_FLEXION;biceps;[128, 167, 369, 520, 596, 723, 764, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
 556;dumbbell biceps curl (with arm blaster);ELBOW_FLEXION;biceps;[168, 521, 850];168=G2-014 bicep curl with arm blaster,521=G2-014 bicep curl with arm blaster,850=G2-014 bicep curl with arm blaster
-560;dumbbell close grip press;HORIZONTAL_PUSH;triceps;[561];561=G2-024 close grip press
-561;dumbbell close-grip press;HORIZONTAL_PUSH;triceps;[560];560=G2-024 close grip press
+560;dumbbell close grip press;HORIZONTAL_PUSH;triceps;[205, 561];205=PA-007 close grip press,561=G2-024 close grip press
+561;dumbbell close-grip press;HORIZONTAL_PUSH;triceps;[205, 560];205=PA-007 close grip press,560=G2-024 close grip press
 562;dumbbell concentration curl;ELBOW_FLEXION;biceps;[130, 288, 330, 447, 765, 768];130=G2-027 concentration curl,288=G2-027 concentration curl,330=G2-027 concentration curl,447=G2-027 concentration curl,765=G2-027 concentration curl,768=G2-027 concentration curl
 563;dumbbell cross body hammer curl;ELBOW_FLEXION;biceps;[564];564=VARIANTE_MISMO_EJERCICIO
 564;dumbbell cross body hammer curl v. 2;ELBOW_FLEXION;biceps;[563];563=VARIANTE_MISMO_EJERCICIO
-568;dumbbell hammer curl;ELBOW_FLEXION;biceps;[524, 570, 679, 681, 727];524=G2-040 hammer curl,570=VARIANTE_MISMO_EJERCICIO,679=G2-040 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
+565;dumbbell decline one arm hammer press;HORIZONTAL_PUSH;triceps;[602];602=PA-013 hammer press
+568;dumbbell hammer curl;ELBOW_FLEXION;biceps;[524, 570, 599, 679, 681, 727];524=G2-040 hammer curl,570=VARIANTE_MISMO_EJERCICIO,599=PA-011 hammer curl,679=G2-040 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
 569;dumbbell hammer curl on exercise ball;ELBOW_FLEXION;biceps;[719];719=G2-041 hammer curl on exercise ball
-570;dumbbell hammer curl v. 2;ELBOW_FLEXION;biceps;[524, 568, 679, 681, 727];524=G2-040 hammer curl,568=VARIANTE_MISMO_EJERCICIO,679=G2-040 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
-578;dumbbell lateral raise;SHOULDER_RAISE;delts;[337, 374, 622, 708, 709, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
-582;dumbbell incline fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[379, 585];379=G2-049 incline fly on exercise ball,585=G2-049 incline fly on exercise ball
-585;dumbbell incline one arm fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[379, 582];379=G2-049 incline fly on exercise ball,582=G2-049 incline fly on exercise ball
-587;dumbbell incline one arm press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 589];381=G2-051 incline press on exercise ball,589=G2-051 incline press on exercise ball
-589;dumbbell incline press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 587];381=G2-051 incline press on exercise ball,587=G2-051 incline press on exercise ball
+570;dumbbell hammer curl v. 2;ELBOW_FLEXION;biceps;[524, 568, 599, 679, 681, 727];524=G2-040 hammer curl,568=VARIANTE_MISMO_EJERCICIO,599=PA-011 hammer curl,679=G2-040 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
+573;dumbbell incline one arm lateral raise;SHOULDER_RAISE;delts;[337, 374, 578, 622, 708, 709, 986];337=PA-019 lateral raise,374=PA-019 lateral raise,578=PA-019 lateral raise,622=PA-019 lateral raise,708=PA-019 lateral raise,709=PA-019 lateral raise,986=PA-019 lateral raise
+575;dumbbell incline rear lateral raise;SHOULDER_RAISE;delts;[416, 621, 698];416=PA-029 rear lateral raise,621=PA-029 rear lateral raise,698=PA-029 rear lateral raise
+578;dumbbell lateral raise;SHOULDER_RAISE;delts;[337, 374, 573, 622, 708, 709, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,573=PA-019 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
+582;dumbbell incline fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[378, 379, 546, 585, 631];378=PA-010 fly on exercise ball,379=G2-049 incline fly on exercise ball,546=PA-010 fly on exercise ball,585=G2-049 incline fly on exercise ball,631=PA-010 fly on exercise ball
+583;dumbbell incline hammer press;HORIZONTAL_PUSH;pectorals;[542, 624];542=PA-012 hammer press,624=PA-012 hammer press
+585;dumbbell incline one arm fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[378, 379, 546, 582, 631];378=PA-010 fly on exercise ball,379=G2-049 incline fly on exercise ball,546=PA-010 fly on exercise ball,582=G2-049 incline fly on exercise ball,631=PA-010 fly on exercise ball
+587;dumbbell incline one arm press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 383, 384, 589, 633, 669];381=G2-051 incline press on exercise ball,383=PA-022 press on exercise ball,384=PA-022 press on exercise ball,589=G2-051 incline press on exercise ball,633=PA-022 press on exercise ball,669=PA-022 press on exercise ball
+589;dumbbell incline press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 383, 384, 587, 633, 669];381=G2-051 incline press on exercise ball,383=PA-022 press on exercise ball,384=PA-022 press on exercise ball,587=G2-051 incline press on exercise ball,633=PA-022 press on exercise ball,669=PA-022 press on exercise ball
 590;dumbbell incline shoulder raise;SHOULDER_RAISE;serratus anterior;[178];178=G2-054 incline shoulder raise
+593;dumbbell incline shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 549, 550, 749, 1038, 1287];120=PA-033 shrug,234=PA-033 shrug,438=PA-033 shrug,549=PA-033 shrug,550=PA-033 shrug,749=PA-033 shrug,1038=PA-033 shrug,1287=PA-033 shrug
 595;dumbbell lunge;KNEE_DOMINANT;glutes;[195];195=G2-069 lunge
+596;dumbbell incline biceps curl;ELBOW_FLEXION;biceps;[128, 167, 369, 520, 555, 723, 764, 1011, 1160, 1240];128=PA-003 bicep curl,167=PA-003 bicep curl,369=PA-003 bicep curl,520=PA-003 bicep curl,555=PA-003 bicep curl,723=PA-003 bicep curl,764=PA-003 bicep curl,1011=PA-003 bicep curl,1160=PA-003 bicep curl,1240=PA-003 bicep curl
 597;dumbbell incline curl;ELBOW_FLEXION;biceps;[598];598=VARIANTE_MISMO_EJERCICIO
 598;dumbbell incline curl v. 2;ELBOW_FLEXION;biceps;[597];597=VARIANTE_MISMO_EJERCICIO
-600;dumbbell incline hammer press on exercise ball;HORIZONTAL_PUSH;triceps;[603];603=G2-050 incline hammer press on exercise ball
-603;dumbbell incline one arm hammer press on exercise ball;HORIZONTAL_PUSH;triceps;[600];600=G2-050 incline hammer press on exercise ball
+599;dumbbell incline hammer curl;ELBOW_FLEXION;biceps;[524, 568, 570, 679, 681, 727];524=PA-011 hammer curl,568=PA-011 hammer curl,570=PA-011 hammer curl,679=PA-011 hammer curl,681=PA-011 hammer curl,727=PA-011 hammer curl
+600;dumbbell incline hammer press on exercise ball;HORIZONTAL_PUSH;triceps;[603, 649];603=G2-050 incline hammer press on exercise ball,649=PA-014 hammer press on exercise ball
+601;dumbbell incline inner biceps curl;ELBOW_FLEXION;biceps;[728, 766];728=PA-017 inner bicep curl,766=PA-017 inner bicep curl
+602;dumbbell incline one arm hammer press;HORIZONTAL_PUSH;triceps;[565];565=PA-013 hammer press
+603;dumbbell incline one arm hammer press on exercise ball;HORIZONTAL_PUSH;triceps;[600, 649];600=G2-050 incline hammer press on exercise ball,649=PA-014 hammer press on exercise ball
 606;dumbbell kickback;ELBOW_EXTENSION;triceps;[492, 650, 729, 732, 761, 767];492=G2-058 kickback,650=G2-058 kickback,729=G2-058 kickback,732=G2-058 kickback,761=G2-058 kickback,767=G2-058 kickback
-622;dumbbell one arm lateral raise;SHOULDER_RAISE;delts;[337, 374, 578, 708, 709, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,578=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
+621;dumbbell lying rear lateral raise;SHOULDER_RAISE;delts;[416, 575, 698];416=PA-029 rear lateral raise,575=PA-029 rear lateral raise,698=PA-029 rear lateral raise
+622;dumbbell one arm lateral raise;SHOULDER_RAISE;delts;[337, 374, 573, 578, 708, 709, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,573=PA-019 lateral raise,578=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise,986=G2-059 lateral raise
+624;dumbbell lying hammer press;HORIZONTAL_PUSH;pectorals;[542, 583];542=PA-012 hammer press,583=PA-012 hammer press
 625;dumbbell lying one arm press;HORIZONTAL_PUSH;pectorals;[626];626=VARIANTE_MISMO_EJERCICIO
 626;dumbbell lying one arm press v. 2;HORIZONTAL_PUSH;pectorals;[625];625=VARIANTE_MISMO_EJERCICIO
-630;dumbbell one arm decline chest press;HORIZONTAL_PUSH;pectorals;[990];990=G2-030 decline chest press
-631;dumbbell one arm fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[378, 546];378=G2-034 fly on exercise ball,546=G2-034 fly on exercise ball
-632;dumbbell one arm incline chest press;HORIZONTAL_PUSH;pectorals;[991, 992];991=G2-047 incline chest press,992=G2-047 incline chest press
-633;dumbbell one arm press on exercise ball;HORIZONTAL_PUSH;pectorals;[383, 384, 669];383=G2-080 press on exercise ball,384=G2-080 press on exercise ball,669=G2-080 press on exercise ball
-634;dumbbell one arm pullover on exercise ball;SHOULDER_EXTENSION;pectorals;[672];672=G2-083 pullover on exercise ball
+627;dumbbell lying pullover on exercise ball;SHOULDER_EXTENSION;pectorals;[634, 672];634=PA-027 pullover on exercise ball,672=PA-027 pullover on exercise ball
+630;dumbbell one arm decline chest press;HORIZONTAL_PUSH;pectorals;[421, 632, 988, 989, 990, 991, 992, 1026, 1155];421=PA-004 chest press,632=PA-004 chest press,988=PA-004 chest press,989=PA-004 chest press,990=G2-030 decline chest press,991=PA-004 chest press,992=PA-004 chest press,1026=PA-004 chest press,1155=PA-004 chest press
+631;dumbbell one arm fly on exercise ball;HORIZONTAL_ADDUCTION;pectorals;[378, 379, 546, 582, 585];378=G2-034 fly on exercise ball,379=PA-010 fly on exercise ball,546=G2-034 fly on exercise ball,582=PA-010 fly on exercise ball,585=PA-010 fly on exercise ball
+632;dumbbell one arm incline chest press;HORIZONTAL_PUSH;pectorals;[421, 630, 988, 989, 990, 991, 992, 1026, 1155];421=PA-004 chest press,630=PA-004 chest press,988=PA-004 chest press,989=PA-004 chest press,990=PA-004 chest press,991=G2-047 incline chest press,992=G2-047 incline chest press,1026=PA-004 chest press,1155=PA-004 chest press
+633;dumbbell one arm press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 383, 384, 587, 589, 669];381=PA-022 press on exercise ball,383=G2-080 press on exercise ball,384=G2-080 press on exercise ball,587=PA-022 press on exercise ball,589=PA-022 press on exercise ball,669=G2-080 press on exercise ball
+634;dumbbell one arm pullover on exercise ball;SHOULDER_EXTENSION;pectorals;[627, 672];627=PA-027 pullover on exercise ball,672=G2-083 pullover on exercise ball
 636;dumbbell one arm bent-over row;HORIZONTAL_PULL;upper back;[157, 180, 359, 518, 981, 982, 1227];157=G2-008 bent over row,180=G2-008 bent over row,359=G2-008 bent over row,518=G2-008 bent over row,981=G2-008 bent over row,982=G2-008 bent over row,1227=G2-008 bent over row
 647;dumbbell one arm french press on exercise ball;ELBOW_EXTENSION;triceps;[833];833=G2-035 french press on exercise ball
 648;dumbbell one arm hammer preacher curl;ELBOW_FLEXION;biceps;[522];522=G2-042 hammer preacher curl
+649;dumbbell one arm hammer press on exercise ball;HORIZONTAL_PUSH;triceps;[600, 603];600=PA-014 hammer press on exercise ball,603=PA-014 hammer press on exercise ball
 650;dumbbell one arm kickback;ELBOW_EXTENSION;triceps;[492, 606, 729, 732, 761, 767];492=G2-058 kickback,606=G2-058 kickback,729=G2-058 kickback,732=G2-058 kickback,761=G2-058 kickback,767=G2-058 kickback
+651;dumbbell one arm prone curl;ELBOW_FLEXION;biceps;[245, 691];245=PA-023 prone curl,691=PA-023 prone curl
+652;dumbbell one arm prone hammer curl;ELBOW_FLEXION;biceps;[692];692=PA-024 prone hammer curl
 653;dumbbell one arm reverse wrist curl;WRIST_FOREARM;forearms;[95, 214, 373, 693];95=G2-101 reverse wrist curl,214=G2-101 reverse wrist curl,373=G2-101 reverse wrist curl,693=G2-101 reverse wrist curl
 654;dumbbell one arm seated neutral wrist curl;WRIST_FOREARM;forearms;[730];730=G2-072 neutral wrist curl
 655;dumbbell one arm wrist curl;WRIST_FOREARM;forearms;[133, 257, 258, 469, 1274];133=G2-117 wrist curl,257=G2-117 wrist curl,258=G2-117 wrist curl,469=G2-117 wrist curl,1274=G2-117 wrist curl
@@ -209,28 +245,30 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 663;dumbbell one arm upright row;HORIZONTAL_PULL;delts;[268, 269, 270, 472, 780, 1283];268=G2-115 upright row,269=G2-115 upright row,270=G2-115 upright row,472=G2-115 upright row,780=G2-115 upright row,1283=G2-115 upright row
 664;dumbbell push press;VERTICAL_PUSH;delts;[946];946=G2-084 push press
 666;dumbbell rear delt raise;SHOULDER_RAISE;delts;[217];217=G2-086 rear delt raise
-667;dumbbell one arm reverse grip press;HORIZONTAL_PUSH;pectorals;[1284];1284=G2-098 reverse grip press
-669;dumbbell press on exercise ball;HORIZONTAL_PUSH;pectorals;[383, 384, 633];383=G2-080 press on exercise ball,384=G2-080 press on exercise ball,633=G2-080 press on exercise ball
-672;dumbbell pullover on exercise ball;SHOULDER_EXTENSION;pectorals;[634];634=G2-083 pullover on exercise ball
+667;dumbbell one arm reverse grip press;HORIZONTAL_PUSH;pectorals;[1220, 1222, 1284];1220=PA-031 reverse grip press,1222=PA-031 reverse grip press,1284=G2-098 reverse grip press
+669;dumbbell press on exercise ball;HORIZONTAL_PUSH;pectorals;[381, 383, 384, 587, 589, 633];381=PA-022 press on exercise ball,383=G2-080 press on exercise ball,384=G2-080 press on exercise ball,587=PA-022 press on exercise ball,589=PA-022 press on exercise ball,633=G2-080 press on exercise ball
+670;dumbbell pullover;SHOULDER_EXTENSION;pectorals;[153];153=PA-026 pullover
+672;dumbbell pullover on exercise ball;SHOULDER_EXTENSION;pectorals;[627, 634];627=PA-027 pullover on exercise ball,634=G2-083 pullover on exercise ball
 674;dumbbell one arm snatch;HIP_HINGE;glutes;[175, 947];175=G2-108 snatch,947=G2-108 snatch
 676;dumbbell one arm reverse preacher curl;ELBOW_FLEXION;biceps;[249, 398, 411, 717];249=G2-099 reverse preacher curl,398=G2-099 reverse preacher curl,411=G2-099 reverse preacher curl,717=G2-099 reverse preacher curl
 677;dumbbell one arm reverse spider curl;ELBOW_FLEXION;biceps;[718];718=G2-100 reverse spider curl
 678;dumbbell one arm seated bicep curl on exercise ball;ELBOW_FLEXION;biceps;[526];526=G2-011 bicep curl on exercise ball
-679;dumbbell one arm seated hammer curl;ELBOW_FLEXION;biceps;[524, 568, 570, 681, 727];524=G2-040 hammer curl,568=G2-040 hammer curl,570=G2-040 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
-681;dumbbell one arm standing hammer curl;ELBOW_FLEXION;biceps;[524, 568, 570, 679, 727];524=G2-040 hammer curl,568=G2-040 hammer curl,570=G2-040 hammer curl,679=G2-040 hammer curl,727=G2-040 hammer curl
+679;dumbbell one arm seated hammer curl;ELBOW_FLEXION;biceps;[524, 568, 570, 599, 681, 727];524=G2-040 hammer curl,568=G2-040 hammer curl,570=G2-040 hammer curl,599=PA-011 hammer curl,681=G2-040 hammer curl,727=G2-040 hammer curl
+681;dumbbell one arm standing hammer curl;ELBOW_FLEXION;biceps;[524, 568, 570, 599, 679, 727];524=G2-040 hammer curl,568=G2-040 hammer curl,570=G2-040 hammer curl,599=PA-011 hammer curl,679=G2-040 hammer curl,727=G2-040 hammer curl
 683;dumbbell one arm zottman preacher curl;ELBOW_FLEXION;biceps;[795, 802];795=G2-118 zottman preacher curl,802=G2-118 zottman preacher curl
 684;dumbbell over bench neutral wrist curl;WRIST_FOREARM;forearms;[685];685=G2-073 over bench neutral wrist curl
 685;dumbbell over bench one arm neutral wrist curl;WRIST_FOREARM;forearms;[684];684=G2-073 over bench neutral wrist curl
-688;dumbbell preacher curl;ELBOW_FLEXION;biceps;[244, 397, 403, 523, 756, 792, 1048, 1049];244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
-691;dumbbell prone incline curl;ELBOW_FLEXION;biceps;[245];245=G2-052 incline prone curl
+688;dumbbell preacher curl;ELBOW_FLEXION;biceps;[208, 244, 397, 403, 523, 756, 792, 1048, 1049];208=PA-021 preacher curl,244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
+691;dumbbell prone incline curl;ELBOW_FLEXION;biceps;[245, 651];245=G2-052 incline prone curl,651=PA-023 prone curl
+692;dumbbell prone incline hammer curl;ELBOW_FLEXION;biceps;[652];652=PA-024 prone hammer curl
 693;dumbbell reverse wrist curl;WRIST_FOREARM;forearms;[95, 214, 373, 653];95=G2-101 reverse wrist curl,214=G2-101 reverse wrist curl,373=G2-101 reverse wrist curl,653=G2-101 reverse wrist curl
 695;dumbbell seated calf raise;ANKLE_PLANTAR_FLEXION;calves;[215, 216, 259, 294, 414, 738, 1016, 1018];215=G2-017 calf raise,216=G2-017 calf raise,259=G2-017 calf raise,294=G2-017 calf raise,414=G2-017 calf raise,738=G2-017 calf raise,1016=G2-017 calf raise,1018=G2-017 calf raise
-698;dumbbell rear lateral raise;SHOULDER_RAISE;delts;[416];416=G2-089 rear lateral raise
+698;dumbbell rear lateral raise;SHOULDER_RAISE;delts;[416, 575, 621];416=G2-089 rear lateral raise,575=PA-029 rear lateral raise,621=PA-029 rear lateral raise
 700;dumbbell reverse fly;SHOULDER_RAISE;delts;[100, 1020];100=G2-093 reverse fly,1020=G2-093 reverse fly
 703;dumbbell seated alternate front raise;SHOULDER_RAISE;delts;[99, 150, 334, 537, 538, 707];99=G2-036 front raise,150=G2-036 front raise,334=G2-036 front raise,537=G2-036 front raise,538=G2-036 front raise,707=G2-036 front raise
 707;dumbbell seated front raise;SHOULDER_RAISE;delts;[99, 150, 334, 537, 538, 703];99=G2-036 front raise,150=G2-036 front raise,334=G2-036 front raise,537=G2-036 front raise,538=G2-036 front raise,703=G2-036 front raise
-708;dumbbell seated lateral raise;SHOULDER_RAISE;delts;[337, 374, 578, 622, 709, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,709=VARIANTE_MISMO_EJERCICIO,986=G2-059 lateral raise
-709;dumbbell seated lateral raise v. 2;SHOULDER_RAISE;delts;[337, 374, 578, 622, 708, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=VARIANTE_MISMO_EJERCICIO,986=G2-059 lateral raise
+708;dumbbell seated lateral raise;SHOULDER_RAISE;delts;[337, 374, 573, 578, 622, 709, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,573=PA-019 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,709=VARIANTE_MISMO_EJERCICIO,986=G2-059 lateral raise
+709;dumbbell seated lateral raise v. 2;SHOULDER_RAISE;delts;[337, 374, 573, 578, 622, 708, 986];337=G2-059 lateral raise,374=G2-059 lateral raise,573=PA-019 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=VARIANTE_MISMO_EJERCICIO,986=G2-059 lateral raise
 711;dumbbell reverse grip incline bench one arm row;HORIZONTAL_PULL;upper back;[233, 712];233=G2-053 incline reverse grip bench row,712=G2-053 incline reverse grip bench row
 712;dumbbell reverse grip incline bench two arm row;HORIZONTAL_PULL;upper back;[233, 711];233=G2-053 incline reverse grip bench row,711=G2-053 incline reverse grip bench row
 714;dumbbell rear lunge;KNEE_DOMINANT;glutes;[236, 237];236=G2-090 rear lunge,237=G2-090 rear lunge
@@ -239,10 +277,10 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 718;dumbbell reverse spider curl;ELBOW_FLEXION;biceps;[677];677=G2-100 reverse spider curl
 719;dumbbell seated alternate hammer curl on exercise ball;ELBOW_FLEXION;biceps;[569];569=G2-041 hammer curl on exercise ball
 722;dumbbell seated bent over triceps extension;ELBOW_EXTENSION;triceps;[762, 763];762=G2-009 bent over tricep extension,763=G2-009 bent over tricep extension
-723;dumbbell seated bicep curl;ELBOW_FLEXION;biceps;[128, 167, 520, 555, 764, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
+723;dumbbell seated bicep curl;ELBOW_FLEXION;biceps;[128, 167, 369, 520, 555, 596, 764, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
 724;dumbbell seated biceps curl (on stability ball);ELBOW_FLEXION;biceps;[1338];1338=G2-013 bicep curl on stability ball
-727;dumbbell seated hammer curl;ELBOW_FLEXION;biceps;[524, 568, 570, 679, 681];524=G2-040 hammer curl,568=G2-040 hammer curl,570=G2-040 hammer curl,679=G2-040 hammer curl,681=G2-040 hammer curl
-728;dumbbell seated inner biceps curl;ELBOW_FLEXION;biceps;[766];766=G2-055 inner bicep curl
+727;dumbbell seated hammer curl;ELBOW_FLEXION;biceps;[524, 568, 570, 599, 679, 681];524=G2-040 hammer curl,568=G2-040 hammer curl,570=G2-040 hammer curl,599=PA-011 hammer curl,679=G2-040 hammer curl,681=G2-040 hammer curl
+728;dumbbell seated inner biceps curl;ELBOW_FLEXION;biceps;[601, 766];601=PA-017 inner bicep curl,766=G2-055 inner bicep curl
 729;dumbbell seated kickback;ELBOW_EXTENSION;triceps;[492, 606, 650, 732, 761, 767];492=G2-058 kickback,606=G2-058 kickback,650=G2-058 kickback,732=G2-058 kickback,761=G2-058 kickback,767=G2-058 kickback
 730;dumbbell seated neutral wrist curl;WRIST_FOREARM;forearms;[654];654=G2-072 neutral wrist curl
 731;dumbbell seated one arm bicep curl on exercise ball with leg raised;ELBOW_FLEXION;biceps;[528];528=G2-012 bicep curl on exercise ball with leg raised
@@ -253,28 +291,29 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 739;dumbbell seated shoulder press;VERTICAL_PUSH;delts;[101, 321, 418, 661, 662, 1019, 1022, 1023, 1024, 1154, 1279, 1280];101=G2-105 shoulder press,321=G2-105 shoulder press,418=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,1019=G2-105 shoulder press,1022=G2-105 shoulder press,1023=G2-105 shoulder press,1024=G2-105 shoulder press,1154=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
 743;dumbbell standing alternate overhead press;VERTICAL_PUSH;delts;[221, 778];221=G2-076 overhead press,778=G2-076 overhead press
 748;dumbbell side bend;TRUNK_ROTATION_LATERAL_FLEXION;abs;[426];426=G2-107 side bend
-749;dumbbell shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 1038, 1287];120=G2-106 shrug,234=G2-106 shrug,438=G2-106 shrug,1038=G2-106 shrug,1287=G2-106 shrug
+749;dumbbell shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 549, 550, 593, 1038, 1287];120=G2-106 shrug,234=G2-106 shrug,438=G2-106 shrug,549=PA-033 shrug,550=PA-033 shrug,593=PA-033 shrug,1038=G2-106 shrug,1287=G2-106 shrug
 751;dumbbell single leg deadlift;HIP_HINGE;glutes;[242];242=G2-062 leg deadlift
 753;dumbbell single leg split squat;KNEE_DOMINANT;quads;[124, 127, 243, 1288];124=G2-065 leg split squat,127=G2-065 leg split squat,243=G2-065 leg split squat,1288=G2-065 leg split squat
 754;dumbbell single leg squat;KNEE_DOMINANT;glutes;[1110];1110=G2-066 leg squat
-756;dumbbell seated preacher curl;ELBOW_FLEXION;biceps;[244, 397, 403, 523, 688, 792, 1048, 1049];244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
+756;dumbbell seated preacher curl;ELBOW_FLEXION;biceps;[208, 244, 397, 403, 523, 688, 792, 1048, 1049];208=PA-021 preacher curl,244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,792=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
 758;dumbbell seated reverse grip one arm overhead tricep extension;ELBOW_EXTENSION;triceps;[488];488=G2-096 reverse grip overhead tricep extension
 761;dumbbell standing alternating tricep kickback;ELBOW_EXTENSION;triceps;[492, 606, 650, 729, 732, 767];492=G2-058 kickback,606=G2-058 kickback,650=G2-058 kickback,729=G2-058 kickback,732=G2-058 kickback,767=G2-058 kickback
 762;dumbbell standing bent over one arm triceps extension;ELBOW_EXTENSION;triceps;[722, 763];722=G2-009 bent over tricep extension,763=G2-009 bent over tricep extension
 763;dumbbell standing bent over two arm triceps extension;ELBOW_EXTENSION;triceps;[722, 762];722=G2-009 bent over tricep extension,762=G2-009 bent over tricep extension
-764;dumbbell standing biceps curl;ELBOW_FLEXION;biceps;[128, 167, 520, 555, 723, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,723=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
+764;dumbbell standing biceps curl;ELBOW_FLEXION;biceps;[128, 167, 369, 520, 555, 596, 723, 1011, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
 765;dumbbell standing concentration curl;ELBOW_FLEXION;biceps;[130, 288, 330, 447, 562, 768];130=G2-027 concentration curl,288=G2-027 concentration curl,330=G2-027 concentration curl,447=G2-027 concentration curl,562=G2-027 concentration curl,768=G2-027 concentration curl
-766;dumbbell standing inner biceps curl v. 2;ELBOW_FLEXION;biceps;[728];728=G2-055 inner bicep curl
+766;dumbbell standing inner biceps curl v. 2;ELBOW_FLEXION;biceps;[601, 728];601=PA-017 inner bicep curl,728=G2-055 inner bicep curl
 767;dumbbell standing kickback;ELBOW_EXTENSION;triceps;[492, 606, 650, 729, 732, 761];492=G2-058 kickback,606=G2-058 kickback,650=G2-058 kickback,729=G2-058 kickback,732=G2-058 kickback,761=G2-058 kickback
 768;dumbbell standing one arm concentration curl;ELBOW_FLEXION;biceps;[130, 288, 330, 447, 562, 765];130=G2-027 concentration curl,288=G2-027 concentration curl,330=G2-027 concentration curl,447=G2-027 concentration curl,562=G2-027 concentration curl,765=G2-027 concentration curl
 769;dumbbell standing one arm curl (over incline bench);ELBOW_FLEXION;biceps;[770];770=G2-048 incline curl over bench
 770;dumbbell standing one arm curl over incline bench;ELBOW_FLEXION;biceps;[769];769=G2-048 incline curl over bench
 772;dumbbell standing one arm reverse curl;ELBOW_FLEXION;biceps;[247, 408, 410, 793];247=G2-092 reverse curl,408=G2-092 reverse curl,410=G2-092 reverse curl,793=G2-092 reverse curl
+774;elbow-to-knee;TRUNK_ROTATION_LATERAL_FLEXION;abs;[1060];1060=PA-009 elbow to knee
 778;dumbbell standing overhead press;VERTICAL_PUSH;delts;[221, 743];221=G2-076 overhead press,743=G2-076 overhead press
 780;dumbbell upright row;SHOULDER_RAISE;delts;[268, 269, 270, 472, 663, 1283];268=G2-115 upright row,269=G2-115 upright row,270=G2-115 upright row,472=G2-115 upright row,663=G2-115 upright row,1283=G2-115 upright row
 785;dumbbell step-up;KNEE_DOMINANT;glutes;[146, 281];146=G2-109 step up,281=G2-109 step up
 788;dumbbell stiff leg deadlift;HIP_HINGE;glutes;[147];147=G2-110 stiff leg deadlift
-792;dumbbell standing preacher curl;ELBOW_FLEXION;biceps;[244, 397, 403, 523, 688, 756, 1048, 1049];244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
+792;dumbbell standing preacher curl;ELBOW_FLEXION;biceps;[208, 244, 397, 403, 523, 688, 756, 1048, 1049];208=PA-021 preacher curl,244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,1048=G2-079 preacher curl,1049=G2-079 preacher curl
 793;dumbbell standing reverse curl;ELBOW_FLEXION;biceps;[247, 408, 410, 772];247=G2-092 reverse curl,408=G2-092 reverse curl,410=G2-092 reverse curl,772=G2-092 reverse curl
 795;dumbbell standing zottman preacher curl;ELBOW_FLEXION;biceps;[683, 802];683=G2-118 zottman preacher curl,802=G2-118 zottman preacher curl
 802;dumbbell zottman preacher curl;ELBOW_FLEXION;biceps;[683, 795];683=G2-118 zottman preacher curl,795=G2-118 zottman preacher curl
@@ -282,21 +321,24 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 832;ez bar reverse grip bent over row;HORIZONTAL_PULL;upper back;[232, 1230];232=G2-094 reverse grip bent over row,1230=G2-094 reverse grip bent over row
 833;ez bar french press on exercise ball;ELBOW_EXTENSION;triceps;[647];647=G2-035 french press on exercise ball
 835;ez bar seated close grip concentration curl;ELBOW_FLEXION;biceps;[251];251=G2-022 close grip concentration curl
-838;ez barbell close-grip curl;ELBOW_FLEXION;biceps;[287, 329];287=G2-023 close grip curl,329=G2-023 close grip curl
+838;ez barbell close-grip curl;ELBOW_FLEXION;biceps;[287, 329, 370];287=G2-023 close grip curl,329=G2-023 close grip curl,370=PA-006 close grip curl
 843;ez barbell jm bench press;HORIZONTAL_PUSH;triceps;[203];203=G2-056 jm bench press
 844;ez barbell reverse grip curl;ELBOW_FLEXION;biceps;[290];290=G2-095 reverse grip curl
 845;ez barbell reverse grip preacher curl;ELBOW_FLEXION;biceps;[1050];1050=G2-097 reverse grip preacher curl
 848;ez barbell spider curl;ELBOW_FLEXION;biceps;[849];849=VARIANTE_MISMO_EJERCICIO
 849;ez barbell spider curl;ELBOW_FLEXION;biceps;[848];848=VARIANTE_MISMO_EJERCICIO
 850;ez-bar biceps curl (with arm blaster);ELBOW_FLEXION;biceps;[168, 521, 556];168=G2-014 bicep curl with arm blaster,521=G2-014 bicep curl with arm blaster,556=G2-014 bicep curl with arm blaster
-851;ez-bar close-grip bench press;HORIZONTAL_PUSH;triceps;[169, 1239];169=G2-021 close grip bench press,1239=G2-021 close grip bench press
+851;ez-bar close-grip bench press;HORIZONTAL_PUSH;triceps;[169, 201, 1239, 1241];169=G2-021 close grip bench press,201=PA-005 close grip bench press,1239=G2-021 close grip bench press,1241=PA-005 close grip bench press
 879;glute bridge two legs on bench (male);HIP_EXTENSION;glutes;[187];187=G2-038 glute bridge two legs on bench male
+896;incline push-up;HORIZONTAL_PUSH;pectorals;[495, 1096, 1180];495=PA-028 push up,1096=PA-028 push up,1180=PA-028 push up
+899;incline scapula push up;HORIZONTAL_PUSH;serratus anterior;[1138];1138=PA-032 scapula push up
 902;inchworm;LOCOMOTION_CARDIO;abs;[903];903=VARIANTE_MISMO_EJERCICIO
 903;inchworm v. 2;MOBILITY;abs;[902];902=VARIANTE_MISMO_EJERCICIO
 910;inverted row;HORIZONTAL_PULL;upper back;[913];913=VARIANTE_MISMO_EJERCICIO
 913;inverted row v. 2;HORIZONTAL_PULL;upper back;[910];910=VARIANTE_MISMO_EJERCICIO
-918;jump squat;KNEE_DOMINANT;glutes;[192, 919];192=G2-057 jump squat,919=VARIANTE_MISMO_EJERCICIO
-919;jump squat v. 2;KNEE_DOMINANT;glutes;[192, 918];192=G2-057 jump squat,918=VARIANTE_MISMO_EJERCICIO
+918;jump squat;KNEE_DOMINANT;glutes;[192, 919, 972];192=G2-057 jump squat,919=VARIANTE_MISMO_EJERCICIO,972=PA-018 jump squat
+919;jump squat v. 2;KNEE_DOMINANT;glutes;[192, 918, 972];192=G2-057 jump squat,918=VARIANTE_MISMO_EJERCICIO,972=PA-018 jump squat
+921;incline close-grip push-up;HORIZONTAL_PUSH;triceps;[129, 508];129=PA-008 close grip push up,508=PA-008 close grip push up
 924;kettlebell arnold press;VERTICAL_PUSH;delts;[512, 513];512=G2-001 arnold press,513=G2-001 arnold press
 946;kettlebell one arm push press;VERTICAL_PUSH;delts;[664];664=G2-084 push press
 947;kettlebell one arm snatch;HIP_HINGE;glutes;[175, 674];175=G2-108 snatch,674=G2-108 snatch
@@ -305,26 +347,30 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 953;kettlebell two arm clean;HIP_HINGE;glutes;[551];551=G2-020 clean
 954;kettlebell two arm military press;VERTICAL_PUSH;delts;[950, 987, 1282];950=G2-070 military press,987=G2-070 military press,1282=G2-070 military press
 957;kettlebell plyo push-up;HORIZONTAL_PUSH;pectorals;[1094];1094=G2-078 plyo push up
+972;kneeling jump squat;KNEE_DOMINANT;glutes;[192, 918, 919];192=PA-018 jump squat,918=PA-018 jump squat,919=PA-018 jump squat
 981;lever bent over row;HORIZONTAL_PULL;upper back;[157, 180, 359, 518, 636, 982, 1227];157=G2-008 bent over row,180=G2-008 bent over row,359=G2-008 bent over row,518=G2-008 bent over row,636=G2-008 bent over row,982=G2-008 bent over row,1227=G2-008 bent over row
 982;lever one arm bent over row;HORIZONTAL_PULL;upper back;[157, 180, 359, 518, 636, 981, 1227];157=G2-008 bent over row,180=G2-008 bent over row,359=G2-008 bent over row,518=G2-008 bent over row,636=G2-008 bent over row,981=G2-008 bent over row,1227=G2-008 bent over row
 984;lever calf press;ANKLE_PLANTAR_FLEXION;calves;[1015];1015=G2-016 calf press
 985;lever donkey calf raise;ANKLE_PLANTAR_FLEXION;calves;[493];493=G2-031 donkey calf raise
-986;lever lateral raise;SHOULDER_RAISE;delts;[337, 374, 578, 622, 708, 709];337=G2-059 lateral raise,374=G2-059 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise
+986;lever lateral raise;SHOULDER_RAISE;delts;[337, 374, 573, 578, 622, 708, 709];337=G2-059 lateral raise,374=G2-059 lateral raise,573=PA-019 lateral raise,578=G2-059 lateral raise,622=G2-059 lateral raise,708=G2-059 lateral raise,709=G2-059 lateral raise
 987;lever military press;VERTICAL_PUSH;delts;[950, 954, 1282];950=G2-070 military press,954=G2-070 military press,1282=G2-070 military press
-988;lever chest press;HORIZONTAL_PUSH;pectorals;[421, 989, 1026, 1155];421=G2-018 chest press,989=VARIANTE_MISMO_EJERCICIO,1026=G2-018 chest press,1155=G2-018 chest press
-989;lever chest press;HORIZONTAL_PUSH;pectorals;[421, 988, 1026, 1155];421=G2-018 chest press,988=VARIANTE_MISMO_EJERCICIO,1026=G2-018 chest press,1155=G2-018 chest press
-990;lever decline chest press;HORIZONTAL_PUSH;pectorals;[630];630=G2-030 decline chest press
-991;lever incline chest press;HORIZONTAL_PUSH;pectorals;[632, 992];632=G2-047 incline chest press,992=VARIANTE_MISMO_EJERCICIO
-992;lever incline chest press v. 2;HORIZONTAL_PUSH;pectorals;[632, 991];632=G2-047 incline chest press,991=VARIANTE_MISMO_EJERCICIO
+988;lever chest press;HORIZONTAL_PUSH;pectorals;[421, 630, 632, 989, 990, 991, 992, 1026, 1155];421=G2-018 chest press,630=PA-004 chest press,632=PA-004 chest press,989=VARIANTE_MISMO_EJERCICIO,990=PA-004 chest press,991=PA-004 chest press,992=PA-004 chest press,1026=G2-018 chest press,1155=G2-018 chest press
+989;lever chest press;HORIZONTAL_PUSH;pectorals;[421, 630, 632, 988, 990, 991, 992, 1026, 1155];421=G2-018 chest press,630=PA-004 chest press,632=PA-004 chest press,988=VARIANTE_MISMO_EJERCICIO,990=PA-004 chest press,991=PA-004 chest press,992=PA-004 chest press,1026=G2-018 chest press,1155=G2-018 chest press
+990;lever decline chest press;HORIZONTAL_PUSH;pectorals;[421, 630, 632, 988, 989, 991, 992, 1026, 1155];421=PA-004 chest press,630=G2-030 decline chest press,632=PA-004 chest press,988=PA-004 chest press,989=PA-004 chest press,991=PA-004 chest press,992=PA-004 chest press,1026=PA-004 chest press,1155=PA-004 chest press
+991;lever incline chest press;HORIZONTAL_PUSH;pectorals;[421, 630, 632, 988, 989, 990, 992, 1026, 1155];421=PA-004 chest press,630=PA-004 chest press,632=G2-047 incline chest press,988=PA-004 chest press,989=PA-004 chest press,990=PA-004 chest press,992=VARIANTE_MISMO_EJERCICIO,1026=PA-004 chest press,1155=PA-004 chest press
+992;lever incline chest press v. 2;HORIZONTAL_PUSH;pectorals;[421, 630, 632, 988, 989, 990, 991, 1026, 1155];421=PA-004 chest press,630=PA-004 chest press,632=G2-047 incline chest press,988=PA-004 chest press,989=PA-004 chest press,990=PA-004 chest press,991=VARIANTE_MISMO_EJERCICIO,1026=PA-004 chest press,1155=PA-004 chest press
 994;lever alternating narrow grip seated row;HORIZONTAL_PULL;upper back;[1002];1002=G2-071 narrow grip row
 995;lever assisted chin-up;VERTICAL_PULL;lats;[76];76=G2-002 assisted chin up
 999;lever gripless shrug;SCAPULAR_ELEVATION;traps;[1000];1000=VARIANTE_MISMO_EJERCICIO
 1000;lever gripless shrug v. 2;SCAPULAR_ELEVATION;traps;[999];999=VARIANTE_MISMO_EJERCICIO
+1001;lever high row;HORIZONTAL_PULL;upper back;[351];351=PA-015 high row
 1002;lever narrow grip seated row;HORIZONTAL_PULL;upper back;[994];994=G2-071 narrow grip row
 1004;lever deadlift;HIP_HINGE;glutes;[164, 553, 1233];164=G2-028 deadlift,553=G2-028 deadlift,1233=G2-028 deadlift
 1005;lever hip extension v. 2;HIP_EXTENSION;glutes;[440];440=G2-045 hip extension
+1007;lever kneeling leg curl;KNEE_DOMINANT;hamstrings;[1009, 1046, 1266];1009=PA-020 leg curl,1046=PA-020 leg curl,1266=PA-020 leg curl
 1008;lever leg extension;KNEE_DOMINANT;quads;[1158];1158=G2-063 leg extension
-1011;lever bicep curl;ELBOW_FLEXION;biceps;[128, 167, 520, 555, 723, 764, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
+1009;lever lying leg curl;KNEE_DOMINANT;hamstrings;[1007, 1046, 1266];1007=PA-020 leg curl,1046=PA-020 leg curl,1266=PA-020 leg curl
+1011;lever bicep curl;ELBOW_FLEXION;biceps;[128, 167, 369, 520, 555, 596, 723, 764, 1160, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1160=G2-010 bicep curl,1240=G2-010 bicep curl
 1015;lever seated calf press;ANKLE_PLANTAR_FLEXION;calves;[984];984=G2-016 calf press
 1016;lever seated calf raise;ANKLE_PLANTAR_FLEXION;calves;[215, 216, 259, 294, 414, 695, 738, 1018];215=G2-017 calf raise,216=G2-017 calf raise,259=G2-017 calf raise,294=G2-017 calf raise,414=G2-017 calf raise,695=G2-017 calf raise,738=G2-017 calf raise,1018=G2-017 calf raise
 1018;lever standing calf raise;ANKLE_PLANTAR_FLEXION;calves;[215, 216, 259, 294, 414, 695, 738, 1016];215=G2-017 calf raise,216=G2-017 calf raise,259=G2-017 calf raise,294=G2-017 calf raise,414=G2-017 calf raise,695=G2-017 calf raise,738=G2-017 calf raise,1016=G2-017 calf raise
@@ -333,35 +379,38 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 1022;lever shoulder press;VERTICAL_PUSH;delts;[101, 321, 418, 661, 662, 739, 1019, 1023, 1024, 1154, 1279, 1280];101=G2-105 shoulder press,321=G2-105 shoulder press,418=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,739=G2-105 shoulder press,1019=G2-105 shoulder press,1023=VARIANTE_MISMO_EJERCICIO,1024=VARIANTE_MISMO_EJERCICIO,1154=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
 1023;lever shoulder press v. 2;VERTICAL_PUSH;delts;[101, 321, 418, 661, 662, 739, 1019, 1022, 1024, 1154, 1279, 1280];101=G2-105 shoulder press,321=G2-105 shoulder press,418=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,739=G2-105 shoulder press,1019=G2-105 shoulder press,1022=VARIANTE_MISMO_EJERCICIO,1024=VARIANTE_MISMO_EJERCICIO,1154=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
 1024;lever shoulder press v. 3;VERTICAL_PUSH;delts;[101, 321, 418, 661, 662, 739, 1019, 1022, 1023, 1154, 1279, 1280];101=G2-105 shoulder press,321=G2-105 shoulder press,418=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,739=G2-105 shoulder press,1019=G2-105 shoulder press,1022=VARIANTE_MISMO_EJERCICIO,1023=VARIANTE_MISMO_EJERCICIO,1154=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
-1026;lever standing chest press;HORIZONTAL_PUSH;pectorals;[421, 988, 989, 1155];421=G2-018 chest press,988=G2-018 chest press,989=G2-018 chest press,1155=G2-018 chest press
+1026;lever standing chest press;HORIZONTAL_PUSH;pectorals;[421, 630, 632, 988, 989, 990, 991, 992, 1155];421=G2-018 chest press,630=PA-004 chest press,632=PA-004 chest press,988=G2-018 chest press,989=G2-018 chest press,990=PA-004 chest press,991=PA-004 chest press,992=PA-004 chest press,1155=G2-018 chest press
 1027;lever seated crunch;TRUNK_FLEXION;abs;[1029];1029=VARIANTE_MISMO_EJERCICIO
 1029;lever seated crunch v. 2;TRUNK_FLEXION;abs;[1027];1027=VARIANTE_MISMO_EJERCICIO
 1033;lever pullover;SHOULDER_EXTENSION;lats;[230];230=G2-082 pullover
-1038;lever shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 749, 1287];120=G2-106 shrug,234=G2-106 shrug,438=G2-106 shrug,749=G2-106 shrug,1287=G2-106 shrug
+1038;lever shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 549, 550, 593, 749, 1287];120=G2-106 shrug,234=G2-106 shrug,438=G2-106 shrug,549=PA-033 shrug,550=PA-033 shrug,593=PA-033 shrug,749=G2-106 shrug,1287=G2-106 shrug
 1043;lever seated good morning;HIP_HINGE;glutes;[239];239=G2-039 good morning
 1044;lever seated hip abduction;HIP_ABDUCTION_ADDUCTION;abductors;[1159];1159=G2-043 hip abduction
 1045;lever seated hip adduction;HIP_ABDUCTION_ADDUCTION;adductors;[361];361=G2-044 hip adduction
-1046;lever seated leg curl;KNEE_DOMINANT;hamstrings;[1266];1266=G2-061 leg curl
-1048;lever preacher curl;ELBOW_FLEXION;biceps;[244, 397, 403, 523, 688, 756, 792, 1049];244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1049=VARIANTE_MISMO_EJERCICIO
-1049;lever preacher curl v. 2;ELBOW_FLEXION;biceps;[244, 397, 403, 523, 688, 756, 792, 1048];244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=VARIANTE_MISMO_EJERCICIO
+1046;lever seated leg curl;KNEE_DOMINANT;hamstrings;[1007, 1009, 1266];1007=PA-020 leg curl,1009=PA-020 leg curl,1266=G2-061 leg curl
+1048;lever preacher curl;ELBOW_FLEXION;biceps;[208, 244, 397, 403, 523, 688, 756, 792, 1049];208=PA-021 preacher curl,244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1049=VARIANTE_MISMO_EJERCICIO
+1049;lever preacher curl v. 2;ELBOW_FLEXION;biceps;[208, 244, 397, 403, 523, 688, 756, 792, 1048];208=PA-021 preacher curl,244=G2-079 preacher curl,397=G2-079 preacher curl,403=G2-079 preacher curl,523=G2-079 preacher curl,688=G2-079 preacher curl,756=G2-079 preacher curl,792=G2-079 preacher curl,1048=VARIANTE_MISMO_EJERCICIO
 1050;lever reverse grip preacher curl;ELBOW_FLEXION;biceps;[845];845=G2-097 reverse grip preacher curl
 1057;one leg floor calf raise;ANKLE_PLANTAR_FLEXION;calves;[1213];1213=G2-064 leg floor calf raise
+1060;lying elbow to knee;TRUNK_ROTATION_LATERAL_FLEXION;abs;[774];774=PA-009 elbow to knee
 1071;one arm chin-up;VERTICAL_PULL;lats;[463];463=G2-019 chin up
 1094;plyo push up;HORIZONTAL_PUSH;pectorals;[957];957=G2-078 plyo push up
-1096;push-up;HORIZONTAL_PUSH;pectorals;[1180];1180=G2-085 push up
+1096;push-up;HORIZONTAL_PUSH;pectorals;[495, 896, 1180];495=PA-028 push up,896=PA-028 push up,1180=G2-085 push up
 1097;push-up (wall);HORIZONTAL_PUSH;pectorals;[1098];1098=VARIANTE_MISMO_EJERCICIO
 1098;push-up (wall) v. 2;HORIZONTAL_PUSH;pectorals;[1097];1097=VARIANTE_MISMO_EJERCICIO
 1110;one leg squat;KNEE_DOMINANT;glutes;[754];754=G2-066 leg squat
 1122;push-up (on stability ball);HORIZONTAL_PUSH;pectorals;[1123];1123=VARIANTE_MISMO_EJERCICIO
 1123;push-up (on stability ball);HORIZONTAL_PUSH;pectorals;[1122];1122=VARIANTE_MISMO_EJERCICIO
+1138;scapula push-up;HORIZONTAL_PUSH;serratus anterior;[899];899=PA-032 scapula push up
 1139;reverse crunch;TRUNK_FLEXION;abs;[385];385=G2-091 reverse crunch
 1154;resistance band seated shoulder press;VERTICAL_PUSH;delts;[101, 321, 418, 661, 662, 739, 1019, 1022, 1023, 1024, 1279, 1280];101=G2-105 shoulder press,321=G2-105 shoulder press,418=G2-105 shoulder press,661=G2-105 shoulder press,662=G2-105 shoulder press,739=G2-105 shoulder press,1019=G2-105 shoulder press,1022=G2-105 shoulder press,1023=G2-105 shoulder press,1024=G2-105 shoulder press,1279=G2-105 shoulder press,1280=G2-105 shoulder press
-1155;resistance band seated chest press;HORIZONTAL_PUSH;pectorals;[421, 988, 989, 1026];421=G2-018 chest press,988=G2-018 chest press,989=G2-018 chest press,1026=G2-018 chest press
+1155;resistance band seated chest press;HORIZONTAL_PUSH;pectorals;[421, 630, 632, 988, 989, 990, 991, 992, 1026];421=G2-018 chest press,630=PA-004 chest press,632=PA-004 chest press,988=G2-018 chest press,989=G2-018 chest press,990=PA-004 chest press,991=PA-004 chest press,992=PA-004 chest press,1026=G2-018 chest press
 1156;resistance band seated straight back row;HORIZONTAL_PULL;upper back;[482];482=G2-111 straight back row
 1158;resistance band leg extension;KNEE_DOMINANT;quads;[1008];1008=G2-063 leg extension
 1159;resistance band seated hip abduction;HIP_ABDUCTION_ADDUCTION;abductors;[1044];1044=G2-043 hip abduction
-1160;resistance band seated biceps curl;ELBOW_FLEXION;biceps;[128, 167, 520, 555, 723, 764, 1011, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1240=G2-010 bicep curl
-1180;single arm push-up;HORIZONTAL_PUSH;pectorals;[1096];1096=G2-085 push up
+1160;resistance band seated biceps curl;ELBOW_FLEXION;biceps;[128, 167, 369, 520, 555, 596, 723, 764, 1011, 1240];128=G2-010 bicep curl,167=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1240=G2-010 bicep curl
+1180;single arm push-up;HORIZONTAL_PUSH;pectorals;[495, 896, 1096];495=PA-028 push up,896=PA-028 push up,1096=G2-085 push up
+1186;sit-up v. 2;TRUNK_FLEXION;abs;[505];505=PA-034 sit up
 1195;self assisted inverse leg curl;KNEE_DOMINANT;hamstrings;[1196];1196=VARIANTE_MISMO_EJERCICIO
 1196;self assisted inverse leg curl;KNEE_DOMINANT;hamstrings;[1195];1195=VARIANTE_MISMO_EJERCICIO
 1213;smith one leg floor calf raise;ANKLE_PLANTAR_FLEXION;calves;[1057];1057=G2-064 leg floor calf raise
@@ -369,17 +418,20 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 1215;smith reverse calf raises;ANKLE_PLANTAR_FLEXION;calves;[1214];1214=VARIANTE_MISMO_EJERCICIO
 1216;smith behind neck press;VERTICAL_PUSH;delts;[1271];1271=G2-006 behind neck press
 1217;smith rear delt row;HORIZONTAL_PULL;delts;[135, 218];135=G2-087 rear delt row,218=G2-087 rear delt row
-1218;smith bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 323, 517];102=G2-007 bench press,151=G2-007 bench press,323=G2-007 bench press,517=G2-007 bench press
-1219;smith decline bench press;HORIZONTAL_PUSH;pectorals;[152, 540];152=G2-029 decline bench press,540=G2-029 decline bench press
-1221;smith incline bench press;HORIZONTAL_PUSH;pectorals;[177, 341, 548];177=G2-046 incline bench press,341=G2-046 incline bench press,548=G2-046 incline bench press
+1218;smith bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 323, 341, 517, 540, 548, 1219, 1221];102=G2-007 bench press,151=G2-007 bench press,152=PA-001 bench press,177=PA-001 bench press,323=G2-007 bench press,341=PA-001 bench press,517=G2-007 bench press,540=PA-001 bench press,548=PA-001 bench press,1219=PA-001 bench press,1221=PA-001 bench press
+1219;smith decline bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 323, 341, 517, 540, 548, 1218, 1221];102=PA-001 bench press,151=PA-001 bench press,152=G2-029 decline bench press,177=PA-001 bench press,323=PA-001 bench press,341=PA-001 bench press,517=PA-001 bench press,540=G2-029 decline bench press,548=PA-001 bench press,1218=PA-001 bench press,1221=PA-001 bench press
+1220;smith decline reverse-grip press;HORIZONTAL_PUSH;pectorals;[667, 1222, 1284];667=PA-031 reverse grip press,1222=PA-031 reverse grip press,1284=PA-031 reverse grip press
+1221;smith incline bench press;HORIZONTAL_PUSH;pectorals;[102, 151, 152, 177, 323, 341, 517, 540, 548, 1218, 1219];102=PA-001 bench press,151=PA-001 bench press,152=PA-001 bench press,177=G2-046 incline bench press,323=PA-001 bench press,341=G2-046 incline bench press,517=PA-001 bench press,540=PA-001 bench press,548=G2-046 incline bench press,1218=PA-001 bench press,1219=PA-001 bench press
+1222;smith incline reverse-grip press;HORIZONTAL_PUSH;pectorals;[667, 1220, 1284];667=PA-031 reverse grip press,1220=PA-031 reverse grip press,1284=PA-031 reverse grip press
 1227;smith bent over row;HORIZONTAL_PULL;upper back;[157, 180, 359, 518, 636, 981, 982];157=G2-008 bent over row,180=G2-008 bent over row,359=G2-008 bent over row,518=G2-008 bent over row,636=G2-008 bent over row,981=G2-008 bent over row,982=G2-008 bent over row
 1230;smith reverse grip bent over row;HORIZONTAL_PULL;upper back;[232, 832];232=G2-094 reverse grip bent over row,832=G2-094 reverse grip bent over row
 1233;smith deadlift;HIP_HINGE;glutes;[164, 553, 1004];164=G2-028 deadlift,553=G2-028 deadlift,1004=G2-028 deadlift
 1235;smith full squat;KNEE_DOMINANT;glutes;[182];182=G2-037 full squat
 1238;smith low bar squat;KNEE_DOMINANT;glutes;[194];194=G2-067 low bar squat
-1239;smith close-grip bench press;HORIZONTAL_PUSH;triceps;[169, 851];169=G2-021 close grip bench press,851=G2-021 close grip bench press
-1240;smith machine bicep curl;ELBOW_FLEXION;biceps;[128, 167, 520, 555, 723, 764, 1011, 1160];128=G2-010 bicep curl,167=G2-010 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl
-1266;standing single leg curl;KNEE_DOMINANT;hamstrings;[1046];1046=G2-061 leg curl
+1239;smith close-grip bench press;HORIZONTAL_PUSH;triceps;[169, 201, 851, 1241];169=G2-021 close grip bench press,201=PA-005 close grip bench press,851=G2-021 close grip bench press,1241=PA-005 close grip bench press
+1240;smith machine bicep curl;ELBOW_FLEXION;biceps;[128, 167, 369, 520, 555, 596, 723, 764, 1011, 1160];128=G2-010 bicep curl,167=G2-010 bicep curl,369=PA-003 bicep curl,520=G2-010 bicep curl,555=G2-010 bicep curl,596=PA-003 bicep curl,723=G2-010 bicep curl,764=G2-010 bicep curl,1011=G2-010 bicep curl,1160=G2-010 bicep curl
+1241;smith machine decline close grip bench press;HORIZONTAL_PUSH;triceps;[169, 201, 851, 1239];169=PA-005 close grip bench press,201=PA-005 close grip bench press,851=PA-005 close grip bench press,1239=PA-005 close grip bench press
+1266;standing single leg curl;KNEE_DOMINANT;hamstrings;[1007, 1009, 1046];1007=PA-020 leg curl,1009=PA-020 leg curl,1046=G2-061 leg curl
 1271;standing behind neck press;VERTICAL_PUSH;delts;[1216];1216=G2-006 behind neck press
 1274;smith seated wrist curl;WRIST_FOREARM;forearms;[133, 257, 258, 469, 655];133=G2-117 wrist curl,257=G2-117 wrist curl,258=G2-117 wrist curl,469=G2-117 wrist curl,655=G2-117 wrist curl
 1275;smith standing back wrist curl;WRIST_FOREARM;forearms;[256, 413];256=G2-004 back wrist curl,413=G2-004 back wrist curl
@@ -390,7 +442,9 @@ exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_
 1281;smith standing behind head military press;VERTICAL_PUSH;delts;[219];219=G2-005 behind head military press
 1282;smith standing military press;VERTICAL_PUSH;delts;[950, 954, 987];950=G2-070 military press,954=G2-070 military press,987=G2-070 military press
 1283;smith upright row;HORIZONTAL_PULL;delts;[268, 269, 270, 472, 663, 780];268=G2-115 upright row,269=G2-115 upright row,270=G2-115 upright row,472=G2-115 upright row,663=G2-115 upright row,780=G2-115 upright row
-1284;smith reverse-grip press;HORIZONTAL_PUSH;pectorals;[667];667=G2-098 reverse grip press
-1287;smith shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 749, 1038];120=G2-106 shrug,234=G2-106 shrug,438=G2-106 shrug,749=G2-106 shrug,1038=G2-106 shrug
+1284;smith reverse-grip press;HORIZONTAL_PUSH;pectorals;[667, 1220, 1222];667=G2-098 reverse grip press,1220=PA-031 reverse grip press,1222=PA-031 reverse grip press
+1285;smith wide grip bench press;HORIZONTAL_PUSH;pectorals;[1286];1286=PA-036 wide grip bench press
+1286;smith wide grip decline bench press;HORIZONTAL_PUSH;pectorals;[1285];1285=PA-036 wide grip bench press
+1287;smith shrug;SCAPULAR_ELEVATION;traps;[120, 234, 438, 549, 550, 593, 749, 1038];120=G2-106 shrug,234=G2-106 shrug,438=G2-106 shrug,549=PA-033 shrug,550=PA-033 shrug,593=PA-033 shrug,749=G2-106 shrug,1038=G2-106 shrug
 1288;smith single leg split squat;KNEE_DOMINANT;quads;[124, 127, 243, 753];124=G2-065 leg split squat,127=G2-065 leg split squat,243=G2-065 leg split squat,753=G2-065 leg split squat
 1338;weighted seated bicep curl (on stability ball);ELBOW_FLEXION;biceps;[724];724=G2-013 bicep curl on stability ball

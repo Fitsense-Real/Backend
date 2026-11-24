@@ -107,4 +107,76 @@ class FamiliaDeMovimientoEquivalenteTest {
                 "un miembro es una clave, sin v. N");
         assertDoesNotThrow(() -> leer(new java.io.StringReader("# comentario\n" + cab + "G1;P;m;a b|c d;j\n")));
     }
+
+    @Test
+    @DisplayName("Cierre final: otro angulo no es equivalente, pero es PRECAUCION; mismo angulo, otro material, no")
+    void precaucionOtroAngulo() {
+        assertFalse(equivalentes("lever chest press", "lever incline chest press v. 2"), "sigue sin ser equivalencia");
+        assertEquals(NIVEL_PRECAUCION_ANGULO, nivel("lever incline chest press v. 2", "lever chest press"));
+        assertEquals(NIVEL_PRECAUCION_ANGULO, nivel("lever chest press", "lever decline chest press"), "simetrico");
+        assertEquals(NIVEL_PRECAUCION_ANGULO, nivel("barbell bench press", "barbell incline bench press"));
+        assertEquals(NIVEL_MISMO_GESTO, nivel("barbell incline bench press", "dumbbell incline bench press"),
+                "mismo angulo: equivalencia confirmada, no precaucion");
+        assertTrue(precaucionPorAngulo("lever chest press", "cable seated chest press").isEmpty(), "mismo angulo");
+        assertTrue(clavesPrecaucionAngulo("lever incline chest press v. 2").contains("lever chest press"));
+        assertFalse(clavesPrecaucionAngulo("lever incline chest press v. 2").contains("dumbbell one arm incline chest press"),
+                "lo del mismo angulo es su familia, no su precaucion");
+        // Lo pendiente que no es de angulo sigue sin ningun efecto: sinonimos, genericos y revisados como distintos.
+        assertNull(nivel("barbell bench press", "lever chest press"));
+        assertNull(nivel("barbell curl", "dumbbell incline curl"));
+        assertNull(nivel("barbell hack squat", "smith hack squat"));
+        assertNull(nivel("dumbbell front raise", "dumbbell lateral raise"));
+    }
+
+    @Test
+    @DisplayName("Lista de precauciones valida (37 filas, cada una con dos angulos o mas) y una ambigua se rechaza")
+    void listaPrecauciones() {
+        assertEquals(37, filasPrecaucion().size());
+        for (var f : filasPrecaucion()) {
+            assertTrue(f.subgrupos().size() >= 2, f.id());
+            assertFalse(f.justificacion().isBlank(), f.id());
+        }
+        var cab = "fila;patron;musculo;subgrupos;justificacion\n";
+        assertThrows(IllegalStateException.class, () -> leerPrecauciones(new java.io.StringReader(cab
+                + "PA-1;P;m;sin angulo=a b;j\n")), "un solo angulo");
+        assertThrows(IllegalStateException.class, () -> leerPrecauciones(new java.io.StringReader(cab
+                + "PA-1;P;m;sin angulo=a b^incline=a b;j\n")), "miembro en dos angulos");
+        assertThrows(IllegalStateException.class, () -> leerPrecauciones(new java.io.StringReader(cab
+                + "PA-1;P;m;sin angulo=a b^incline=c d;\n")), "sin justificacion");
+        assertDoesNotThrow(() -> leerPrecauciones(new java.io.StringReader(cab + "PA-1;P;m;sin angulo=a b^incline=c d;j\n")));
+    }
+
+    @Test
+    @DisplayName("Punto 1: ninguna de las 53 diferencias pendientes se convirtio en equivalencia")
+    void pendientesSinConvertir() throws Exception {
+        var filas = java.nio.file.Files.readAllLines(
+                java.nio.file.Path.of("docs/FitSense/seguridad_o20/evidencia/equivalencias_pendientes.csv"));
+        assertEquals(54, filas.size(), "cabecera y 53 pendientes");
+        int comprobados = 0;
+        for (var linea : filas.subList(1, filas.size())) {
+            // Los ejercicios de la fila: «id nombre | id nombre ...».
+            var nombres = new java.util.ArrayList<String>();
+            var m = java.util.regex.Pattern.compile("(?<![\\w/])\\d+ ([^|\"]+)").matcher(linea);
+            while (m.find()) nombres.add(m.group(1).strip());
+            boolean angulo = linea.contains("entre angulos");
+            for (int a = 0; a < nombres.size(); a++)
+                for (int b = a + 1; b < nombres.size(); b++) {
+                    var x = nombres.get(a);
+                    var y = nombres.get(b);
+                    if (!angulo) {
+                        // Generico, revisado o sinonimo: o no tienen relacion, o la tienen por un grupo confirmado de
+                        // su mismo angulo (la fila agrupa todo el nucleo); nunca por la lista de precauciones.
+                        assertNotEquals(NIVEL_PRECAUCION_ANGULO, nivel(x, y), x + " / " + y);
+                        continue;
+                    }
+                    var mismoAngulo = precaucionPorAngulo(x, y).isEmpty();
+                    if (!mismoAngulo) {
+                        assertFalse(equivalentes(x, y), "pendiente por angulo convertida en equivalencia: " + x + " / " + y);
+                        assertEquals(NIVEL_PRECAUCION_ANGULO, nivel(x, y), x + " / " + y);
+                        comprobados++;
+                    }
+                }
+        }
+        assertTrue(comprobados > 100, "pares entre angulos comprobados: " + comprobados);
+    }
 }
