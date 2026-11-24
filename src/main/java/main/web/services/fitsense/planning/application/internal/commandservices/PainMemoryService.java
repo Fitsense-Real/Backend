@@ -9,6 +9,7 @@ import main.web.services.fitsense.planning.domain.model.aggregates.UserSafetyExc
 import main.web.services.fitsense.planning.domain.model.aggregates.WeeklyTrainingPlan;
 import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkout;
 import main.web.services.fitsense.planning.domain.model.entities.PlannedWorkoutExercise;
+import main.web.services.fitsense.planning.domain.model.valueobjects.ExerciseEquivalence;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanStatus;
 import main.web.services.fitsense.planning.domain.model.valueobjects.SafetyProfile;
 import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.UserSafetyExclusionRepository;
@@ -39,11 +40,18 @@ import java.util.*;
  * <p>
  * <b>Aplicar.</b> {@link #excluidosActivos} se resta del conjunto elegible en TODA preparacion
  * (generacion inicial, regeneracion, adaptacion, progresion y reincorporacion parten de ese
- * conjunto), y {@code SafetyExclusionResolver} lo declara causa de seguridad de lo heredado.
+ * conjunto), y {@code SafetyExclusionResolver} lo declara causa de seguridad de lo heredado. Incluye
+ * las variantes equivalentes (O20): permanentes las de lo confirmado y provisionales las de un dolor
+ * de sesion sin identificar ({@link #exclusionesEfectivas}).
  * <p>
- * <b>No caduca.</b> Nada aqui mira fechas para levantar una exclusion: ni semanas, ni cumplimiento,
- * ni ausencia de reportes. Solo {@link #reactivar}, por accion explicita del propio usuario y tras
- * un control de seguridad que la confirmacion no puede saltarse.
+ * <b>Identificar despues (O20).</b> Un dolor de sesion sin identificar es un reporte general; la
+ * persona puede decir despues que ejercicio fue ({@link #identificar}) y esa exclusion queda confirmada.
+ * <p>
+ * <b>No caduca.</b> Nada aqui mira fechas para levantar una exclusion registrada: ni semanas, ni
+ * cumplimiento, ni ausencia de reportes. Solo {@link #reactivar}, por accion explicita del propio
+ * usuario y tras un control de seguridad que la confirmacion no puede saltarse. Lo unico que deja de
+ * aplicarse solo es la familia PROVISIONAL de un dolor de sesion sin identificar, que no es una
+ * exclusion registrada: el ejercicio de la sesion sigue excluido.
  */
 @Service
 public class PainMemoryService {
@@ -147,27 +155,44 @@ public class PainMemoryService {
     // =====================================================================
 
     /**
-     * Los ejercicios excluidos HOY por dolor para ese usuario. Solo los suyos.
-     * <p>
-     * O20 (opcion A, 24/11/2026): incluye tambien las variantes de la MISMA familia de movimiento equivalente de cada
-     * ejercicio que dolio ({@link main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente}):
-     * tras dolor en «dumbbell front raise», «dumbbell front raise v. 2» tampoco es elegible, ni sustituto de SUST-SEG-1,
-     * ni lo encuentran la IA, el motor de reglas, la progresion o la reincorporacion. Es un conjunto DERIVADO, no se
-     * guarda: dura exactamente lo que la exclusion del ejercicio que dolio (ACTIVA hasta su reactivacion explicita) y
-     * se recalcula en cada lectura, asi que no puede quedar una variante excluida "huerfana" ni reaparecer antes.
-     * Lo leen todos los caminos que aplican el dolor (preparacion, SafetyExclusionResolver, PublishedPlanSafetyService
-     * y SafeRegenerationService).
+     * O20: cuantas semanas con plan, posteriores a un dolor de sesion SIN IDENTIFICAR, mantienen excluida de forma
+     * PROVISIONAL la familia equivalente de los ejercicios de esa sesion: la adaptacion o regeneracion inmediata y la
+     * semana siguiente. Despues sigue excluido el propio ejercicio de la sesion (hasta que se identifique o se
+     * reactive), pero no toda su familia. Se mide en planes, no en dias: sin planes nuevos la ventana no se cierra.
+     */
+    public static final int SEMANAS_FAMILIA_PROVISIONAL = 2;
+
+    /** De donde viene una exclusion efectiva. */
+    public enum Origen {
+        /** Registrada para ese ejercicio (marcado con dolor, o de una sesion con dolor sin identificar). */
+        DIRECTA,
+        /** Derivada: variante equivalente de un ejercicio con exclusion directa. No se guarda. */
+        EQUIVALENTE
+    }
+
+    /**
+     * Una exclusion EFECTIVA, lo que de verdad se resta del conjunto elegible, con su porque.
+     *
+     * @param confirmada  DIRECTA: la persona marco ese ejercicio o lo identifico despues. EQUIVALENTE: deriva de uno
+     *                    confirmado.
+     * @param provisional EQUIVALENTE derivada de un dolor de sesion sin identificar: solo durante
+     *                    {@link #SEMANAS_FAMILIA_PROVISIONAL} semanas con plan.
+     * @param derivaDe    EQUIVALENTE: el ejercicio con exclusion directa del que deriva.
+     * @param nivel       EQUIVALENTE: {@code VARIANTE_MISMO_EJERCICIO} o {@code MISMO_GESTO}.
+     */
+    public record ExclusionEfectiva(Long exerciseId, Origen origen, boolean confirmada, boolean provisional,
+                                    Long derivaDe, String nivel, String grupo, String justificacion,
+                                    Long sourcePlannedWorkoutId, LocalDate eventDate) {}
+
+    /**
+     * Los ejercicios excluidos HOY por dolor para ese usuario. Solo los suyos. Es {@link #exclusionesEfectivas}: lo
+     * leen todos los caminos que aplican el dolor (preparacion, SafetyExclusionResolver, PublishedPlanSafetyService y
+     * SafeRegenerationService).
      */
     @Transactional(readOnly = true)
     public Set<Long> excluidosActivos(Long userId) {
-        var ids = new TreeSet<Long>(excluidosActivosDirectos(userId));
-        if (ids.isEmpty()) return ids;
-        var familia = variantesExcluidas(userId, ids);
-        if (!familia.isEmpty()) {
-            ids.addAll(familia.keySet());
-            log.info("DOLOR_FAMILIA usuario {}: variantes equivalentes excluidas {} (variante<-ejercicio que dolio)",
-                    userId, familia);
-        }
+        var ids = new TreeSet<Long>();
+        exclusionesEfectivas(userId).forEach(x -> ids.add(x.exerciseId()));
         return ids;
     }
 
@@ -181,23 +206,87 @@ public class PainMemoryService {
     }
 
     /**
-     * Las variantes excluidas por familia, cada una con el ejercicio que dolio del que deriva (el menor id si hay
-     * varios). No incluye las que ya tienen su propia exclusion directa.
+     * O20 (opcion A y ajuste final del 24/11/2026). Lo excluido hoy y por que:
+     * <ul>
+     *   <li><b>DIRECTA:</b> todo ejercicio con una exclusion ACTIVA, confirmada o de una sesion con dolor sin
+     *   identificar (la regla de V8C: si no se sabe cual dolio, cualquiera pudo ser). Hasta su reactivacion
+     *   explicita, como siempre.</li>
+     *   <li><b>EQUIVALENTE, permanente:</b> las variantes equivalentes
+     *   ({@link main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente}) de cada ejercicio
+     *   CONFIRMADO. Duran lo que su exclusion directa: se recalculan en cada lectura y no se guardan.</li>
+     *   <li><b>EQUIVALENTE, provisional:</b> las de los ejercicios de una sesion con dolor SIN IDENTIFICAR, solo
+     *   durante {@link #SEMANAS_FAMILIA_PROVISIONAL} semanas con plan. Asi la regeneracion inmediata no reproduce el
+     *   problema con otra variante del mismo gesto, y un reporte general no deja excluidas para siempre las familias
+     *   de todos los ejercicios de la sesion. Si la persona identifica despues el ejercicio ({@link #identificar}),
+     *   su familia pasa a ser permanente.</li>
+     * </ul>
+     * Si el catalogo no responde, se mantiene como minimo lo directo (falla cerrado) y queda
+     * {@code DOLOR_FAMILIA_NO_CALCULADA}.
      */
-    private java.util.Map<Long, Long> variantesExcluidas(Long userId, Set<Long> directos) {
-        var resultado = new java.util.TreeMap<Long, Long>();
-        if (catalog == null) return resultado;
-        java.util.Map<Long, Set<Long>> variantes;
+    @Transactional(readOnly = true)
+    public List<ExclusionEfectiva> exclusionesEfectivas(Long userId) {
+        var activas = repository.findByUserIdAndStatusOrderByIdAsc(userId, UserSafetyExclusion.Status.ACTIVA);
+        if (activas.isEmpty()) return List.of();
+        // Una entrada por ejercicio: si alguna de sus filas esta confirmada, cuenta la confirmada (la primera).
+        var directas = new TreeMap<Long, UserSafetyExclusion>();
+        for (var x : activas)
+            directas.merge(x.getExerciseId(), x, (a, b) -> !a.confirmada() && b.confirmada() ? b : a);
+        var semanas = planRepository == null ? null : planRepository.semanasConPlan(userId);
+        var base = new TreeMap<Long, Boolean>(); // ejercicio directo -> su familia es permanente (confirmada)
+        directas.forEach((id, x) -> {
+            if (x.confirmada()) base.put(id, true);
+            else if (familiaProvisionalVigente(activas, id, semanas)) base.put(id, false);
+        });
+        var resultado = new ArrayList<ExclusionEfectiva>();
+        directas.forEach((id, x) -> resultado.add(new ExclusionEfectiva(id, Origen.DIRECTA, x.confirmada(), false,
+                null, null, null, null, x.getSourcePlannedWorkoutId(), x.getEventDate())));
+        var derivadas = equivalentesDe(userId, base, directas.keySet());
+        resultado.addAll(derivadas.values());
+        if (!derivadas.isEmpty())
+            log.info("DOLOR_FAMILIA usuario {}: variantes equivalentes excluidas {} (variante<-ejercicio que dolio;"
+                    + " provisionales {})", userId,
+                    derivadas.values().stream().collect(java.util.stream.Collectors.toMap(ExclusionEfectiva::exerciseId,
+                            ExclusionEfectiva::derivaDe, (a, b) -> a, TreeMap::new)),
+                    derivadas.values().stream().filter(ExclusionEfectiva::provisional)
+                            .map(ExclusionEfectiva::exerciseId).toList());
+        resultado.sort(Comparator.comparing(ExclusionEfectiva::exerciseId));
+        return List.copyOf(resultado);
+    }
+
+    /**
+     * La familia de un ejercicio de sesion sin identificar sigue excluida mientras ALGUNA de sus filas activas tenga
+     * menos de {@link #SEMANAS_FAMILIA_PROVISIONAL} semanas con plan posteriores al dolor. Sin poder medirlo, si
+     * (conservador).
+     */
+    private static boolean familiaProvisionalVigente(List<UserSafetyExclusion> activas, Long exerciseId,
+                                                     List<LocalDate> semanas) {
+        if (semanas == null) return true;
+        return activas.stream().filter(x -> exerciseId.equals(x.getExerciseId()))
+                .anyMatch(x -> semanas.stream().filter(w -> w.isAfter(x.getEventDate())).count()
+                        < SEMANAS_FAMILIA_PROVISIONAL);
+    }
+
+    /**
+     * Las variantes equivalentes de cada ejercicio base, cada una con el ejercicio del que deriva. Si deriva de varios,
+     * manda el confirmado (permanente) y despues el menor id. No incluye las que tienen su propia exclusion directa.
+     */
+    private Map<Long, ExclusionEfectiva> equivalentesDe(Long userId, Map<Long, Boolean> base, Set<Long> directos) {
+        var resultado = new TreeMap<Long, ExclusionEfectiva>();
+        if (catalog == null || base.isEmpty()) return resultado;
+        Map<Long, List<ExerciseEquivalence>> equivalentes;
         try {
-            variantes = catalog.fetchEquivalentVariants(directos);
+            equivalentes = catalog.fetchEquivalentVariants(base.keySet());
         } catch (RuntimeException e) {
             // FALLA CERRADO sobre lo directo: sin catalogo se mantiene, como minimo, la exclusion registrada. Se deja
             // constancia: la familia no se pudo calcular y la variante podria seguir siendo elegible en esta lectura.
-            log.error("DOLOR_FAMILIA_NO_CALCULADA usuario {} ejercicios {}: {}", userId, directos, e.toString());
+            log.error("DOLOR_FAMILIA_NO_CALCULADA usuario {} ejercicios {}: {}", userId, base.keySet(), e.toString());
             return resultado;
         }
-        variantes.forEach((original, familia) -> familia.forEach(v -> {
-            if (!directos.contains(v)) resultado.merge(v, original, Math::min);
+        base.forEach((original, permanente) -> equivalentes.getOrDefault(original, List.of()).forEach(eq -> {
+            if (eq.exerciseId() == null || directos.contains(eq.exerciseId())) return;
+            var nueva = new ExclusionEfectiva(eq.exerciseId(), Origen.EQUIVALENTE, permanente, !permanente, original,
+                    eq.level(), eq.groupId(), eq.justification(), null, null);
+            resultado.merge(eq.exerciseId(), nueva, (a, b) -> a.provisional() && !b.provisional() ? b : a);
         }));
         return resultado;
     }
@@ -205,6 +294,60 @@ public class PainMemoryService {
     @Transactional(readOnly = true)
     public List<UserSafetyExclusion> historial(Long userId) {
         return repository.findByUserIdOrderByIdAsc(userId);
+    }
+
+    // =====================================================================
+    // Identificar despues (O20)
+    // =====================================================================
+
+    /** Lo que la API devuelve tras identificar. */
+    public record Identificacion(Long exerciseId, List<Long> exclusionesConfirmadas, OffsetDateTime identificadaEn,
+                                 List<Long> equivalentesExcluidos, List<Long> otrosDeLaSesionSiguenExcluidos,
+                                 String nota) {}
+
+    /**
+     * O20: la persona dice DESPUES cual de los ejercicios de una sesion con dolor sin identificar fue el que dolio. Su
+     * exclusion queda CONFIRMADA y con ella, de forma permanente hasta una reactivacion explicita, su familia
+     * equivalente. No reactiva nada: los demas ejercicios de esa sesion siguen excluidos (pudieron doler tambien) y
+     * solo vuelven con su propia reactivacion explicita.
+     *
+     * @param plannedWorkoutId la sesion de la que habla; {@code null}: todas sus filas sin identificar.
+     */
+    @Transactional
+    public Identificacion identificar(Long userId, Long exerciseId, Long plannedWorkoutId, boolean confirmacionExplicita) {
+        if (!confirmacionExplicita)
+            throw new DomainRuleViolationException(
+                    "Para indicar que este ejercicio fue el que te dolio confirmalo de forma explicita.");
+        var filas = repository.bloquearActivas(userId, exerciseId).stream()
+                .filter(x -> !x.confirmada())
+                .filter(x -> plannedWorkoutId == null || plannedWorkoutId.equals(x.getSourcePlannedWorkoutId()))
+                .toList();
+        // Otro usuario, otra sesion o nada pendiente de identificar: no se revela nada.
+        if (filas.isEmpty())
+            throw new ResourceNotFoundException("Dolor de sesion sin identificar del ejercicio", exerciseId);
+        var ahora = OffsetDateTime.now(ZoneOffset.UTC);
+        var ids = new ArrayList<Long>();
+        var sesiones = new TreeSet<Long>();
+        for (var x : filas) {
+            x.identificar(ahora, ("IDENTIFICACION_EXPLICITA_DEL_USUARIO user=%d ejercicio=%d sesion=%d"
+                    + " via=POST /api/v1/users/me/pain-exclusions/%d/identification en=%s")
+                    .formatted(userId, exerciseId, x.getSourcePlannedWorkoutId(), exerciseId, ahora));
+            repository.save(x);
+            ids.add(x.getId());
+            sesiones.add(x.getSourcePlannedWorkoutId());
+        }
+        var otros = repository.findByUserIdAndStatusOrderByIdAsc(userId, UserSafetyExclusion.Status.ACTIVA).stream()
+                .filter(x -> sesiones.contains(x.getSourcePlannedWorkoutId()) && !exerciseId.equals(x.getExerciseId()))
+                .map(UserSafetyExclusion::getExerciseId).distinct().sorted().toList();
+        var equivalentes = exclusionesEfectivas(userId).stream()
+                .filter(x -> x.origen() == Origen.EQUIVALENTE && exerciseId.equals(x.derivaDe()))
+                .map(ExclusionEfectiva::exerciseId).toList();
+        log.warn("DOLOR_IDENTIFICADO_DESPUES usuario {} ejercicio {} exclusiones {} equivalentes {} siguen_excluidos {}",
+                userId, exerciseId, ids, equivalentes, otros);
+        return new Identificacion(exerciseId, ids, ahora, equivalentes, otros,
+                "Queda confirmado: este ejercicio y sus variantes equivalentes no vuelven a tus planes hasta que pidas"
+                + " reactivarlo. Los demas ejercicios de esa sesion siguen excluidos; si no te dolieron, puedes"
+                + " pedir que vuelvan a considerarse uno a uno.");
     }
 
     // =====================================================================

@@ -114,7 +114,8 @@ class DolorSinAlternativaIT {
         dolor.registrarSemana(u, S1);
         assertEquals(Set.of(FRONT_RAISE), dolor.excluidosActivosDirectos(u), "premisa: 537 excluido por dolor");
         // Familia de 537 y sustitutos posibles fuera de ella, con la funcion de la politica.
-        var familia = new TreeSet<>(catalogo.fetchEquivalentVariants(Set.of(FRONT_RAISE)).get(FRONT_RAISE));
+        var familia = new TreeSet<Long>();
+        catalogo.fetchEquivalentVariants(Set.of(FRONT_RAISE)).get(FRONT_RAISE).forEach(e -> familia.add(e.exerciseId()));
         familia.add(FRONT_RAISE);
         var original = catalogo.fetchAsCandidates(Set.of(FRONT_RAISE)).get(FRONT_RAISE);
         var ctx = planComandos.prepare(new GenerateWeeklyPlanCommand(u, S1.plusWeeks(1), null, true, null, null))

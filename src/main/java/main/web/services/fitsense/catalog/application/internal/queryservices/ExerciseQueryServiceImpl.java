@@ -1,5 +1,8 @@
 package main.web.services.fitsense.catalog.application.internal.queryservices;
 
+import main.web.services.fitsense.catalog.domain.model.valueobjects.EquivalentExercise;
+import main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente;
+
 import main.web.services.fitsense.catalog.domain.model.aggregates.Exercise;
 import main.web.services.fitsense.catalog.domain.model.queries.GetActiveExercisesQuery;
 import main.web.services.fitsense.catalog.domain.model.queries.GetEligibleExercisesQuery;
@@ -116,35 +119,37 @@ public class ExerciseQueryServiceImpl implements ExerciseQueryService {
 
     @Override
     @Transactional(readOnly = true)
-    public java.util.Map<Long, java.util.Set<Long>> handle(
+    public java.util.Map<Long, java.util.List<EquivalentExercise>> handle(
             main.web.services.fitsense.catalog.domain.model.queries.GetEquivalentVariantsQuery query) {
-        var resultado = new java.util.TreeMap<Long, java.util.Set<Long>>();
+        var resultado = new java.util.TreeMap<Long, java.util.List<EquivalentExercise>>();
         if (query == null || query.exerciseIds() == null) return resultado;
         for (var id : query.exerciseIds()) {
             if (id == null) continue;
             var ejercicio = exerciseRepository.findById(id).orElse(null);
             if (ejercicio == null) continue;
-            var equivalentes = new java.util.TreeSet<Long>();
-            // Nivel 1: variantes v. N y nombres identicos (cualquier patron).
-            var clave = main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente
-                    .clave(ejercicio.getNameEn());
-            if (clave != null)
-                exerciseRepository.candidatosDeFamilia(clave, main.web.services.fitsense.catalog.domain.services
-                                .FamiliaDeMovimientoEquivalente.patronVariantes(clave)).stream()
-                        .filter(e -> main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente
-                                .mismaFamilia(ejercicio.getNameEn(), e.getNameEn()))
-                        .forEach(e -> equivalentes.add(e.getId()));
-            // Nivel 2: el mismo gesto con otro material o postura (mismo patron, musculo y nucleo del nombre).
-            if (ejercicio.getMovementPattern() != null && ejercicio.getTargetMuscle() != null)
-                exerciseRepository.candidatosDeGesto(ejercicio.getMovementPattern(), ejercicio.getTargetMuscle())
-                        .stream()
-                        .filter(e -> main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente
-                                .mismoGesto(ejercicio.getNameEn(), ejercicio.getMovementPattern(),
-                                        ejercicio.getTargetMuscle(), e.getNameEn(), e.getMovementPattern(),
-                                        e.getTargetMuscle()))
-                        .forEach(e -> equivalentes.add(e.getId()));
-            equivalentes.remove(id);
-            if (!equivalentes.isEmpty()) resultado.put(id, equivalentes);
+            var equivalentes = new java.util.TreeMap<Long, EquivalentExercise>();
+            var nombre = ejercicio.getNameEn();
+            var clave = FamiliaDeMovimientoEquivalente.clave(nombre);
+            if (clave == null) continue;
+            // Nivel 1 (la propia clave) y nivel 2 (las demas claves de su grupo confirmado de la lista explicita; si no
+            // esta en la lista, no tiene equivalentes de nivel 2). Cada clave arrastra sus variantes v. N.
+            var grupo = FamiliaDeMovimientoEquivalente.grupo(nombre);
+            var claves = new java.util.TreeSet<String>();
+            claves.add(clave);
+            grupo.ifPresent(g -> claves.addAll(g.claves()));
+            for (var k : claves)
+                exerciseRepository.candidatosDeFamilia(k, FamiliaDeMovimientoEquivalente.patronVariantes(k)).stream()
+                        .filter(e -> !id.equals(e.getId()))
+                        .forEach(e -> {
+                            var nivel = FamiliaDeMovimientoEquivalente.nivel(nombre, e.getNameEn());
+                            if (nivel == null) return; // el LIKE amplia de mas; el filtro es la regla
+                            equivalentes.put(e.getId(), FamiliaDeMovimientoEquivalente.NIVEL_VARIANTE.equals(nivel)
+                                    ? new EquivalentExercise(e.getId(), nivel, null,
+                                    "el mismo ejercicio: mismo nombre salvo el sufijo v. N")
+                                    : new EquivalentExercise(e.getId(), nivel, grupo.get().id(),
+                                    grupo.get().justificacion()));
+                        });
+            if (!equivalentes.isEmpty()) resultado.put(id, java.util.List.copyOf(equivalentes.values()));
         }
         return resultado;
     }

@@ -181,7 +181,8 @@ public class CatalogContextFacade {
      * Lo usa planning para que lo que dolio no vuelva bajo otra variante del mismo gesto.
      */
     @Transactional(readOnly = true)
-    public Map<Long, Set<Long>> fetchEquivalentVariants(Set<Long> exerciseIds) {
+    public Map<Long, java.util.List<main.web.services.fitsense.catalog.domain.model.valueobjects.EquivalentExercise>> fetchEquivalentVariants(
+            Set<Long> exerciseIds) {
         if (exerciseIds == null || exerciseIds.isEmpty()) return Map.of();
         return exerciseQueryService.handle(
                 new main.web.services.fitsense.catalog.domain.model.queries.GetEquivalentVariantsQuery(exerciseIds));

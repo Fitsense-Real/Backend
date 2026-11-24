@@ -111,7 +111,4 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     @Query("SELECT e FROM Exercise e WHERE LOWER(e.nameEn) = :clave OR LOWER(e.nameEn) LIKE :patron")
     List<Exercise> candidatosDeFamilia(@Param("clave") String clave, @Param("patron") String patron);
 
-    /** O20 (opcion A, nivel 2): los ejercicios del mismo patron y musculo objetivo; el nucleo se compara en el dominio. */
-    @Query("SELECT e FROM Exercise e WHERE e.movementPattern = :patron AND e.targetMuscle = :musculo")
-    List<Exercise> candidatosDeGesto(@Param("patron") String patron, @Param("musculo") String musculo);
 }

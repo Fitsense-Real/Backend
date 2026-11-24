@@ -359,12 +359,51 @@ class CicloCompletoHttpIT {
         assertTrue(exclusiones.size() > 0, "P-02: lo que dolio queda retirado");
         var retirados = new ArrayList<Long>();
         exclusiones.forEach(e -> retirados.add(e.get("exerciseId").asLong()));
+        // O20: un dolor de sesion sin identificar es un reporte GENERAL, no una exclusion confirmada.
+        exclusiones.forEach(e -> assertFalse(e.get("confirmed").asBoolean(), "sin identificar: " + e));
+        // /effective distingue lo registrado (DIRECT) de sus variantes equivalentes (EQUIVALENT, aqui provisionales).
+        var efectivas = ok(c, get("/api/v1/users/me/pain-exclusions/effective"));
+        var directas = new java.util.TreeSet<Long>();
+        var excluidosEfectivos = new java.util.TreeSet<Long>();
+        efectivas.forEach(e -> {
+            excluidosEfectivos.add(e.get("exerciseId").asLong());
+            if ("DIRECT".equals(e.get("origin").asText())) {
+                directas.add(e.get("exerciseId").asLong());
+                assertFalse(e.get("confirmed").asBoolean(), e.toString());
+                assertTrue(e.get("canIdentify").asBoolean() && e.get("canReactivate").asBoolean(), e.toString());
+                assertEquals(s.get(0).get("plannedWorkoutId").asLong(), e.get("sourcePlannedWorkoutId").asLong());
+            } else {
+                assertEquals("EQUIVALENT", e.get("origin").asText());
+                assertTrue(e.get("provisional").asBoolean(), "deriva de un dolor sin identificar: " + e);
+                assertTrue(retirados.contains(e.get("derivedFromExerciseId").asLong()), e.toString());
+                assertFalse(e.get("equivalenceLevel").asText().isBlank(), e.toString());
+                assertFalse(e.get("canIdentify").asBoolean() || e.get("canReactivate").asBoolean(), e.toString());
+            }
+        });
+        assertEquals(new java.util.TreeSet<>(retirados), directas);
 
         long nuevo = cerrar(c, semana(p1));
         var siguiente = ok(c, get("/api/v1/users/me/plan/{id}", nuevo));
         verificarPublicable(siguiente);
         siguiente.get("workouts").forEach(w -> w.get("exercises").forEach(e ->
-                assertFalse(retirados.contains(e.get("exerciseId").asLong()), "lo que dolio no vuelve: " + e)));
+                assertFalse(excluidosEfectivos.contains(e.get("exerciseId").asLong()),
+                        "lo que dolio, y sus variantes equivalentes, no vuelven: " + e)));
+
+        // O20: identificar despues cual fue. Sin confirmacion, 422; con ella queda confirmado y nada se reactiva.
+        long identificado = retirados.get(retirados.size() - 1);
+        assertEquals(422, como(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":false}")).getResponse().getStatus());
+        var identificacion = ok(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":true,\"plannedWorkoutId\":"
+                        + s.get(0).get("plannedWorkoutId").asLong() + "}"));
+        assertEquals(identificado, identificacion.get("exerciseId").asLong());
+        assertEquals(404, como(c, post("/api/v1/users/me/pain-exclusions/{e}/identification", identificado)
+                .contentType(MediaType.APPLICATION_JSON).content("{\"confirmPain\":true}")).getResponse().getStatus(),
+                "ya confirmado: no hay nada sin identificar");
+        ok(c, get("/api/v1/users/me/pain-exclusions")).forEach(e -> {
+            assertEquals(e.get("exerciseId").asLong() == identificado, e.get("confirmed").asBoolean(), e.toString());
+            assertEquals("ACTIVA", e.get("status").asText(), "identificar no reactiva nada: " + e);
+        });
 
         // Reincorporacion: sin confirmar (confirmNoPain=false), 422 y sigue retirado; con confirmacion, se reactiva.
         long ex = retirados.get(0);

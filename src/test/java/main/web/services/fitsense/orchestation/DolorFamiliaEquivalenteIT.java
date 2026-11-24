@@ -118,12 +118,18 @@ class DolorFamiliaEquivalenteIT {
         assertEquals("dumbbell front raise v. 2", nombres.get(FRONT_RAISE_V2));
         assertTrue(FamiliaDeMovimientoEquivalente.mismaFamilia(nombres.get(FRONT_RAISE), nombres.get(FRONT_RAISE_V2)));
         assertFalse(FamiliaDeMovimientoEquivalente.mismaFamilia(nombres.get(FRONT_RAISE), nombres.get(LATERAL_RAISE)));
-        // Nivel 1: 538 (v. 2) y el duplicado historico inactivo 28. Nivel 2 (mismo gesto, patron SHOULDER_RAISE y
-        // musculo delts): las elevaciones frontales con otro material o postura. NO: las laterales (578, 539) ni
-        // «lateral to front raise» (579) ni «front raise above head» (746), que son otro nucleo.
+        // Nivel 1: 538 (v. 2) y el duplicado historico inactivo 28. Nivel 2 (grupo confirmado «front raise» de la lista
+        // explicita): las elevaciones frontales con otro material o postura. NO: las laterales (578, 539), «lateral to
+        // front raise» (579) ni «front raise above head» (746), que comparten patron y musculo y son otro movimiento.
         var f = familia(FRONT_RAISE);
         assertTrue(f.containsAll(Set.of(FRONT_RAISE, FRONT_RAISE_V2, 28L, 150L, 334L, 703L, 707L)), f.toString());
+        assertTrue(f.contains(99L), "band front raise: otro material");
         assertFalse(f.contains(LATERAL_RAISE) || f.contains(539L) || f.contains(579L) || f.contains(746L), f.toString());
+        var porque = catalogo.fetchEquivalentVariants(Set.of(FRONT_RAISE)).get(FRONT_RAISE).stream()
+                .collect(Collectors.toMap(e -> e.exerciseId(), e -> e));
+        assertEquals(FamiliaDeMovimientoEquivalente.NIVEL_VARIANTE, porque.get(FRONT_RAISE_V2).level());
+        assertEquals(FamiliaDeMovimientoEquivalente.NIVEL_MISMO_GESTO, porque.get(707L).level(), "seated front raise");
+        assertTrue(porque.get(707L).groupId().endsWith("front raise") && !porque.get(707L).justification().isBlank());
         assertEquals(f, familiaSegunBackend(FRONT_RAISE), "el backend calcula la misma familia que la regla");
         // Recuento de familias de nivel 1 con mas de un ejercicio ACTIVO (el informe de la evaluacion: 29). Se fija para
         // que un cambio de catalogo obligue a revisar esta prueba.
@@ -135,12 +141,15 @@ class DolorFamiliaEquivalenteIT {
     @DisplayName("Inventario de familias del catalogo activo (para revision): cada familia segun el backend")
     void inventario() throws Exception {
         var filas = new ArrayList<String>();
-        filas.add("exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos");
+        filas.add("exercise_id;name_en;movement_pattern;target_muscle;equivalentes_activos;nivel_y_grupo");
         var activos = jdbc.queryForList("SELECT exercise_id, name_en, movement_pattern, target_muscle FROM exercises"
                 + " WHERE is_active ORDER BY exercise_id");
         var ids = new TreeSet<Long>();
         activos.forEach(f -> ids.add(((Number) f.get("exercise_id")).longValue()));
-        var variantes = catalogo.fetchEquivalentVariants(ids);
+        var detalle = catalogo.fetchEquivalentVariants(ids);
+        var variantes = new HashMap<Long, Set<Long>>();
+        detalle.forEach((id, l) -> variantes.put(id, l.stream().map(e -> e.exerciseId())
+                .collect(Collectors.toCollection(TreeSet::new))));
         int conEquivalentes = 0;
         for (var f : activos) {
             long id = ((Number) f.get("exercise_id")).longValue();
@@ -149,7 +158,10 @@ class DolorFamiliaEquivalenteIT {
             if (eq.isEmpty()) continue;
             conEquivalentes++;
             filas.add(String.join(";", String.valueOf(id), String.valueOf(f.get("name_en")),
-                    String.valueOf(f.get("movement_pattern")), String.valueOf(f.get("target_muscle")), eq.toString()));
+                    String.valueOf(f.get("movement_pattern")), String.valueOf(f.get("target_muscle")), eq.toString(),
+                    detalle.get(id).stream().filter(e -> ids.contains(e.exerciseId()))
+                            .map(e -> e.exerciseId() + "=" + (e.groupId() == null ? e.level() : e.groupId()))
+                            .collect(Collectors.joining(","))));
             // La relacion es simetrica: si A excluye a B tras dolor, B excluye a A.
             for (var otro : eq)
                 assertTrue(variantes.getOrDefault(otro, Set.of()).contains(id), id + " <-> " + otro + " no es simetrico");
@@ -158,6 +170,11 @@ class DolorFamiliaEquivalenteIT {
         java.nio.file.Files.write(java.nio.file.Path.of("target", "familias_equivalentes.csv"), filas);
         System.out.println("INVENTARIO_FAMILIAS activos=" + ids.size() + " con_equivalentes=" + conEquivalentes);
         assertTrue(conEquivalentes > 0);
+        // Trazabilidad de la lista explicita: cada miembro de cada grupo confirmado existe en el catalogo activo.
+        var claves = new HashSet<String>();
+        activos.forEach(f -> claves.add(FamiliaDeMovimientoEquivalente.clave((String) f.get("name_en"))));
+        for (var g : FamiliaDeMovimientoEquivalente.grupos())
+            for (var k : g.claves()) assertTrue(claves.contains(k), g.id() + ": «" + k + "» no esta en el catalogo activo");
     }
 
     // ===================================================================================================== elegibles
@@ -300,6 +317,114 @@ class DolorFamiliaEquivalenteIT {
         }
     }
 
+    // ================================================================= diferencias de nombre, postura y material
+
+    @Test
+    @Order(8)
+    @DisplayName("Nombre, postura y material segun el backend: confirmadas las del mismo gesto; no el angulo ni el sinonimo")
+    void diferenciasDeNombrePosturaYMaterial() {
+        record Par(String a, String b, String nivel) {}
+        var pares = List.of(
+                new Par("dumbbell front raise", "dumbbell seated front raise", "MISMO_GESTO"),      // postura
+                new Par("dumbbell front raise", "band front raise", "MISMO_GESTO"),                 // material
+                new Par("dumbbell front raise", "dumbbell front raise v. 2", "VARIANTE_MISMO_EJERCICIO"),
+                new Par("dumbbell biceps curl", "lever bicep curl", "MISMO_GESTO"),                 // nombre (ortografia)
+                new Par("barbell upright row", "cable upright row", "MISMO_GESTO"),                 // dos patrones
+                new Par("dumbbell bent over row", "barbell one arm bent over row", "MISMO_GESTO"),  // lateralidad
+                new Par("dumbbell front raise", "dumbbell lateral raise", null),                    // mismo musculo
+                new Par("dumbbell front raise", "dumbbell full can lateral raise", null),
+                new Par("lever chest press", "lever incline chest press v. 2", null),               // angulo
+                new Par("barbell bench press", "lever chest press", null),                          // sinonimo dudoso
+                new Par("barbell hack squat", "smith hack squat", null));                           // revisado: distinto
+        for (var p : pares) {
+            long a = idActivo(p.a()), b = idActivo(p.b());
+            var eq = catalogo.fetchEquivalentVariants(Set.of(a)).getOrDefault(a, List.of()).stream()
+                    .filter(e -> e.exerciseId() == b).findFirst();
+            assertEquals(p.nivel(), eq.map(e -> e.level()).orElse(null), p.a() + " / " + p.b());
+            var vuelta = catalogo.fetchEquivalentVariants(Set.of(b)).getOrDefault(b, List.of()).stream()
+                    .anyMatch(e -> e.exerciseId() == a);
+            assertEquals(p.nivel() != null, vuelta, "simetrico: " + p.b() + " / " + p.a());
+        }
+    }
+
+    // ================================================================= dolor de sesion sin identificar (ciclo real)
+
+    @Test
+    @Order(9)
+    @DisplayName("Dolor de sesion sin identificar: excluye la sesion y, provisionalmente, sus familias; nada se reactiva solo")
+    void dolorDeSesionSinIdentificar() {
+        long u = participante(false);
+        long plan = planning.generateWeeklyPlan(u, S1, PlanAdjustment.none(), null, null).orElseThrow();
+        var ids = sesionesDe(plan);
+        colocar(ids.get(0), FRONT_RAISE);
+        colocar(ids.get(ids.size() - 1), FRONT_RAISE);
+        var familia = familia(FRONT_RAISE);
+        var ultima = ids.get(ids.size() - 1);
+        var deLaSesion = new TreeSet<>(jdbc.queryForList("SELECT exercise_id FROM planned_workout_exercises WHERE"
+                + " planned_workout_id = ?", Long.class, ultima));
+
+        // Semana 1: todo hecho salvo la ultima sesion, OMITIDA por dolor sin decir que ejercicio.
+        for (int i = 0; i < ids.size() - 1; i++) hacer(u, ids.get(i), -1);
+        planComandos.handle(new main.web.services.fitsense.planning.domain.model.commands.SkipPlannedWorkoutCommand(u,
+                ultima, SkipReason.PAIN_OR_DISCOMFORT));
+        assertEquals(deLaSesion, dolor.excluidosActivosDirectos(u), "se excluyen todos los de la sesion (regla V8C)");
+        var efectivas = porEjercicio(u);
+        for (var id : deLaSesion) {
+            assertEquals(PainMemoryService.Origen.DIRECTA, efectivas.get(id).origen());
+            assertFalse(efectivas.get(id).confirmada(), "un reporte general no confirma cual dolio");
+            assertEquals(ultima, efectivas.get(id).sourcePlannedWorkoutId(), "queda la sesion para identificarlo");
+        }
+        assertTrue(efectivas.get(FRONT_RAISE_V2).provisional(), "la variante de 537 sale, de forma provisional");
+
+        // Adaptacion inmediata (ciclo real): ni la sesion ni las familias de sus ejercicios vuelven.
+        var semana2 = ciclo.runFor(u, S1, S1.plusWeeks(1));
+        var intento = ultimo(u);
+        System.out.println("O20_SESION publicado=" + semana2 + " intento=" + intento);
+        var excluidosAhora = dolor.excluidosActivos(u);
+        assertTrue(excluidosAhora.containsAll(familia), "familia de 537 excluida en la regeneracion inmediata");
+        comprobarSinFamilia(u, semana2, excluidosAhora, intento, false);
+        long planS2 = semana2.orElseGet(() ->
+                planning.generateWeeklyPlan(u, S1.plusWeeks(1), PlanAdjustment.none(), null, null).orElseThrow());
+
+        // Semana siguiente: aun provisional (una sola semana con plan despues del dolor).
+        assertTrue(dolor.excluidosActivos(u).containsAll(familia));
+        long planS3 = planning.generateWeeklyPlan(u, S1.plusWeeks(2), PlanAdjustment.none(), null, null).orElseThrow();
+        var enS3 = new HashSet<>(ejerciciosDelPlan(planS3));
+        enS3.retainAll(familia);
+        assertTrue(enS3.isEmpty(), "la semana siguiente tampoco trae la familia: " + enS3);
+
+        // Con dos semanas con plan despues del dolor: la familia provisional deja de aplicarse (sin bloqueos
+        // innecesarios), pero los ejercicios de la sesion SIGUEN excluidos: nada se reactiva solo.
+        var tras = elegibles(u);
+        assertTrue(tras.containsKey(FRONT_RAISE_V2), "538 vuelve a ser candidato: el dolor no se atribuyo a 537");
+        for (var id : deLaSesion) assertFalse(tras.containsKey(id), "sigue excluido sin reactivacion: " + id);
+        assertEquals(deLaSesion, dolor.excluidosActivosDirectos(u));
+
+        // La persona identifica despues que fue 537: su familia queda excluida de forma permanente; el resto de la
+        // sesion sigue excluido (no se reactiva por identificar otro).
+        var r = dolor.identificar(u, FRONT_RAISE, ultima, true);
+        assertTrue(r.equivalentesExcluidos().contains(FRONT_RAISE_V2), r.toString());
+        var otros = new TreeSet<>(deLaSesion);
+        otros.remove(FRONT_RAISE);
+        assertEquals(List.copyOf(otros), r.otrosDeLaSesionSiguenExcluidos());
+        var identificada = elegibles(u);
+        for (var id : familia) assertFalse(identificada.containsKey(id), "confirmado: familia fuera " + id);
+        assertTrue(porEjercicio(u).get(FRONT_RAISE).confirmada());
+        // Cuatro semanas despues sigue igual: lo confirmado no caduca.
+        planning.generateWeeklyPlan(u, S1.plusWeeks(3), PlanAdjustment.none(), null, null).orElseThrow();
+        assertTrue(dolor.excluidosActivos(u).containsAll(familia));
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM user_safety_exclusions WHERE user_id = ? AND"
+                + " exercise_id = ? AND identified_at IS NOT NULL AND identification_evidence IS NOT NULL AND reason ="
+                + " 'DOLOR_SESION_SIN_IDENTIFICAR'", Integer.class, u, FRONT_RAISE), "el motivo original se conserva");
+
+        // Solo la reactivacion explicita la devuelve.
+        dolor.reactivar(u, FRONT_RAISE, true, "prueba: ya no hay molestias");
+        var reactivada = elegibles(u);
+        assertTrue(reactivada.containsKey(FRONT_RAISE) && reactivada.containsKey(FRONT_RAISE_V2));
+        for (var id : otros) assertFalse(reactivada.containsKey(id), "los otros siguen fuera: " + id);
+        assertTrue(planS2 > 0);
+    }
+
     // ===================================================================================================== material
 
     private long participante(boolean restringido) {
@@ -393,6 +518,16 @@ class DolorFamiliaEquivalenteIT {
                 + " AND status = 'ACTIVA'", Integer.class, u, ejercicio) > 0;
     }
 
+    private long idActivo(String nombreEn) {
+        return jdbc.queryForObject("SELECT min(exercise_id) FROM exercises WHERE LOWER(name_en) = ? AND is_active",
+                Long.class, nombreEn);
+    }
+
+    private Map<Long, PainMemoryService.ExclusionEfectiva> porEjercicio(long u) {
+        return dolor.exclusionesEfectivas(u).stream()
+                .collect(Collectors.toMap(PainMemoryService.ExclusionEfectiva::exerciseId, x -> x));
+    }
+
     private Map<Long, String> nombresEn(Set<Long> ids) {
         var r = new HashMap<Long, String>();
         for (var id : ids)
@@ -401,7 +536,8 @@ class DolorFamiliaEquivalenteIT {
     }
 
     /**
-     * La familia calculada recorriendo TODO el catalogo con la regla del dominio (los dos niveles), sin usar la consulta
+     * La familia calculada recorriendo TODO el catalogo con la regla del dominio (nivel 1 por nombre y nivel 2 por la
+     * lista explicita), sin usar la consulta
      * del backend: es la referencia independiente con la que se comprueba lo publicado.
      */
     private Set<Long> familia(long ejercicio) {
@@ -409,17 +545,17 @@ class DolorFamiliaEquivalenteIT {
                 ejercicio);
         var r = new TreeSet<Long>();
         r.add(ejercicio);
-        for (var f : jdbc.queryForList("SELECT exercise_id, name_en, movement_pattern, target_muscle FROM exercises"))
-            if (FamiliaDeMovimientoEquivalente.equivalentes((String) o.get("name_en"), (String) o.get("movement_pattern"),
-                    (String) o.get("target_muscle"), (String) f.get("name_en"), (String) f.get("movement_pattern"),
-                    (String) f.get("target_muscle")))
+        for (var f : jdbc.queryForList("SELECT exercise_id, name_en FROM exercises"))
+            if (FamiliaDeMovimientoEquivalente.equivalentes((String) o.get("name_en"), (String) f.get("name_en")))
                 r.add(((Number) f.get("exercise_id")).longValue());
         return r;
     }
 
     /** La familia tal como la calcula el backend (consulta del catalogo), con el propio ejercicio. */
     private Set<Long> familiaSegunBackend(long ejercicio) {
-        var r = new TreeSet<Long>(catalogo.fetchEquivalentVariants(Set.of(ejercicio)).getOrDefault(ejercicio, Set.of()));
+        var r = new TreeSet<Long>();
+        catalogo.fetchEquivalentVariants(Set.of(ejercicio)).getOrDefault(ejercicio, List.of())
+                .forEach(e -> r.add(e.exerciseId()));
         r.add(ejercicio);
         return r;
     }
