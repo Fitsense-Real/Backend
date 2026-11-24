@@ -106,7 +106,33 @@ La regresión incluye las pruebas de la orden:
 
 Ningún validador se modificó.
 
-## 4. Problemas pendientes antes del merge de #83
+## 4. Configuración para los entornos local y Railway
+
+**Lo que hay que hacer: nada, salvo comprobar una variable.** Los valores por omisión de `application.properties` ya son los de gpt-5-mini directo. Ninguna variable nueva es obligatoria.
+
+| Variable | Qué poner | Por qué |
+|---|---|---|
+| `FITSENSE_AI_BASE_URL` | **No definirla.** Si existe y contiene `gpt-5-structured`, **borrarla** o cambiarla a `https://api.replicate.com/v1/models/openai/gpt-5-mini/predictions` | Spring la aplica sobre `fitsense.ai.base-url` y manda sobre el valor por omisión. Con la URL antigua, el formato se deduciría `structured` y se volvería al endpoint de E002, con un WARN al arrancar |
+| `FITSENSE_AI_API_FORMAT` | No definirla (se deduce `direct`) | Solo para forzar `structured` a propósito |
+| `FITSENSE_AI_MODEL` | No definirla | En `direct` no se envía; el modelo lo fija el endpoint |
+| `FITSENSE_AI_REASONING_EFFORT` | No definirla (`medium`) | Valor validado. `low` es más rápido pero recurre más al respaldo (`04`) |
+| `FITSENSE_AI_VERBOSITY`, `FITSENSE_AI_MAX_COMPLETION_TOKENS` | No definirlas (`low`, `16000`) | — |
+| `FITSENSE_AI_ENABLED`, `REPLICATE_API_TOKEN` | Sin cambios: las del entorno | El token **no** cambia con el modelo: es el de la cuenta de Replicate. Nunca va en el repositorio |
+
+**Railway** (`cierre_definitivo_backend/MIGRACIONES_Y_DESPLIEGUE.md` §2). Antes del primer despliegue con este cambio:
+1. En el panel, **Variables** del servicio del Backend: buscar `FITSENSE_AI_BASE_URL` y aplicar la tabla de arriba. No tocar `REPLICATE_API_TOKEN`.
+2. Tras desplegar, en el registro de arranque debe aparecer `Replicate: modelo gpt-5-mini en formato direct (reasoning_effort=medium, verbosity=low, max_completion_tokens=16000)`, **y no** el WARN de `gpt-5-structured`.
+3. La primera generación con IA debe quedar con `generation_source = AI` y `model_name = gpt-5-mini` en `weekly_training_plans`, o con el respaldo `RULE_ENGINE` y su causa en la traza.
+4. V65 se aplica sola al arrancar: dos columnas que admiten NULL y un CHECK, sin tocar datos, probada sobre una base existente. Seguir los pasos 4–6 de ese documento: consulta previa de `flyway_schema_history`, copia de seguridad y verificaciones.
+
+**Local:**
+1. `git fetch origin && git checkout generation && git pull`.
+2. Comprobar que el shell, el IDE o `.env` no exportan `FITSENSE_AI_BASE_URL` con la URL antigua: `echo "$FITSENSE_AI_BASE_URL"` debe salir vacío o con la de gpt-5-mini.
+3. Base local: `docker compose -f docker-compose.local.yml up -d`. Al arrancar, Flyway aplica V65.
+4. Arrancar con el perfil `local-dev`, como siempre. Con `REPLICATE_API_TOKEN` exportado se usa gpt-5-mini; sin él, la IA no se llama y genera el motor de reglas.
+5. Las pruebas (`mvn verify -Pintegration`) no necesitan token ni hacen llamadas reales: Replicate está simulado.
+
+## 5. Problemas pendientes
 
 - **Revisión final y autorización** de la persona responsable.
 - **Variable `FITSENSE_AI_BASE_URL` del entorno de despliegue:** comprobar que no fija la URL antigua.
