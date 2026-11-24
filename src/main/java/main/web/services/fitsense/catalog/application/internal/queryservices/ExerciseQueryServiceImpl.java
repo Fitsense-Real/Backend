@@ -113,4 +113,39 @@ public class ExerciseQueryServiceImpl implements ExerciseQueryService {
     public Optional<Exercise> handle(GetExerciseByIdQuery query) {
         return exerciseRepository.findById(query.exerciseId());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Map<Long, java.util.Set<Long>> handle(
+            main.web.services.fitsense.catalog.domain.model.queries.GetEquivalentVariantsQuery query) {
+        var resultado = new java.util.TreeMap<Long, java.util.Set<Long>>();
+        if (query == null || query.exerciseIds() == null) return resultado;
+        for (var id : query.exerciseIds()) {
+            if (id == null) continue;
+            var ejercicio = exerciseRepository.findById(id).orElse(null);
+            if (ejercicio == null) continue;
+            var equivalentes = new java.util.TreeSet<Long>();
+            // Nivel 1: variantes v. N y nombres identicos (cualquier patron).
+            var clave = main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente
+                    .clave(ejercicio.getNameEn());
+            if (clave != null)
+                exerciseRepository.candidatosDeFamilia(clave, main.web.services.fitsense.catalog.domain.services
+                                .FamiliaDeMovimientoEquivalente.patronVariantes(clave)).stream()
+                        .filter(e -> main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente
+                                .mismaFamilia(ejercicio.getNameEn(), e.getNameEn()))
+                        .forEach(e -> equivalentes.add(e.getId()));
+            // Nivel 2: el mismo gesto con otro material o postura (mismo patron, musculo y nucleo del nombre).
+            if (ejercicio.getMovementPattern() != null && ejercicio.getTargetMuscle() != null)
+                exerciseRepository.candidatosDeGesto(ejercicio.getMovementPattern(), ejercicio.getTargetMuscle())
+                        .stream()
+                        .filter(e -> main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente
+                                .mismoGesto(ejercicio.getNameEn(), ejercicio.getMovementPattern(),
+                                        ejercicio.getTargetMuscle(), e.getNameEn(), e.getMovementPattern(),
+                                        e.getTargetMuscle()))
+                        .forEach(e -> equivalentes.add(e.getId()));
+            equivalentes.remove(id);
+            if (!equivalentes.isEmpty()) resultado.put(id, equivalentes);
+        }
+        return resultado;
+    }
 }

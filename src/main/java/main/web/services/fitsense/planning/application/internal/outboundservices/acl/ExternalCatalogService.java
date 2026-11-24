@@ -267,6 +267,12 @@ public class ExternalCatalogService {
         return candidatos;
     }
 
+    /** O20 (opcion A): variantes de la misma familia de movimiento de cada ejercicio (sin el propio). */
+    public Map<Long, Set<Long>> fetchEquivalentVariants(Set<Long> exerciseIds) {
+        var r = catalogContextFacade.fetchEquivalentVariants(exerciseIds);
+        return r == null ? Map.of() : r;
+    }
+
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return catalogContextFacade.fetchNames(exerciseIds);
     }

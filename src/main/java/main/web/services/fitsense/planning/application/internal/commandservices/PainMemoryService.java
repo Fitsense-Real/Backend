@@ -146,13 +146,60 @@ public class PainMemoryService {
     // Aplicar
     // =====================================================================
 
-    /** Los ejercicios excluidos HOY por dolor para ese usuario. Solo los suyos. */
+    /**
+     * Los ejercicios excluidos HOY por dolor para ese usuario. Solo los suyos.
+     * <p>
+     * O20 (opcion A, 24/11/2026): incluye tambien las variantes de la MISMA familia de movimiento equivalente de cada
+     * ejercicio que dolio ({@link main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente}):
+     * tras dolor en «dumbbell front raise», «dumbbell front raise v. 2» tampoco es elegible, ni sustituto de SUST-SEG-1,
+     * ni lo encuentran la IA, el motor de reglas, la progresion o la reincorporacion. Es un conjunto DERIVADO, no se
+     * guarda: dura exactamente lo que la exclusion del ejercicio que dolio (ACTIVA hasta su reactivacion explicita) y
+     * se recalcula en cada lectura, asi que no puede quedar una variante excluida "huerfana" ni reaparecer antes.
+     * Lo leen todos los caminos que aplican el dolor (preparacion, SafetyExclusionResolver, PublishedPlanSafetyService
+     * y SafeRegenerationService).
+     */
     @Transactional(readOnly = true)
     public Set<Long> excluidosActivos(Long userId) {
+        var ids = new TreeSet<Long>(excluidosActivosDirectos(userId));
+        if (ids.isEmpty()) return ids;
+        var familia = variantesExcluidas(userId, ids);
+        if (!familia.isEmpty()) {
+            ids.addAll(familia.keySet());
+            log.info("DOLOR_FAMILIA usuario {}: variantes equivalentes excluidas {} (variante<-ejercicio que dolio)",
+                    userId, familia);
+        }
+        return ids;
+    }
+
+    /** Solo los ejercicios con una exclusion ACTIVA registrada (sin su familia). */
+    @Transactional(readOnly = true)
+    public Set<Long> excluidosActivosDirectos(Long userId) {
         var ids = new TreeSet<Long>();
         repository.findByUserIdAndStatusOrderByIdAsc(userId, UserSafetyExclusion.Status.ACTIVA)
                 .forEach(x -> ids.add(x.getExerciseId()));
         return ids;
+    }
+
+    /**
+     * Las variantes excluidas por familia, cada una con el ejercicio que dolio del que deriva (el menor id si hay
+     * varios). No incluye las que ya tienen su propia exclusion directa.
+     */
+    private java.util.Map<Long, Long> variantesExcluidas(Long userId, Set<Long> directos) {
+        var resultado = new java.util.TreeMap<Long, Long>();
+        if (catalog == null) return resultado;
+        java.util.Map<Long, Set<Long>> variantes;
+        try {
+            variantes = catalog.fetchEquivalentVariants(directos);
+        } catch (RuntimeException e) {
+            // FALLA CERRADO sobre lo directo: sin catalogo se mantiene, como minimo, la exclusion registrada. Se deja
+            // constancia: la familia no se pudo calcular y la variante podria seguir siendo elegible en esta lectura.
+            log.error("DOLOR_FAMILIA_NO_CALCULADA usuario {} ejercicios {}: {}", userId, directos, e.toString());
+            return resultado;
+        }
+        variantes.forEach((original, familia) -> familia.forEach(v -> {
+            if (!directos.contains(v)) resultado.merge(v, original, Math::min);
+        }));
+        return resultado;
     }
 
     @Transactional(readOnly = true)

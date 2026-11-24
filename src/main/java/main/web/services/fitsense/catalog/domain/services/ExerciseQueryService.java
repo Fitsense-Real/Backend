@@ -12,4 +12,12 @@ public interface ExerciseQueryService {
     List<Exercise> handle(GetActiveExercisesQuery query);
     List<Exercise> handle(GetEligibleExercisesQuery query);
     Optional<Exercise> handle(GetExerciseByIdQuery query);
+
+    /**
+     * O20 (opcion A): por cada ejercicio pedido, los ids de su familia de movimiento equivalente
+     * ({@link main.web.services.fitsense.catalog.domain.services.FamiliaDeMovimientoEquivalente}), activos o no, SIN
+     * incluir el propio. Un id que no existe o no tiene variantes no aparece.
+     */
+    java.util.Map<Long, java.util.Set<Long>> handle(
+            main.web.services.fitsense.catalog.domain.model.queries.GetEquivalentVariantsQuery query);
 }
