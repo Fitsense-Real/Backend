@@ -60,7 +60,9 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V63 (consentimientos): una tabla nueva y la copia de los consentimientos de users; nada del catalogo.
             "63:db/migration/V63__consentimientos.sql",
             // V64 (notificaciones push): cuatro tablas nuevas, sin datos.
-            "64:db/migration/V64__notificaciones_push.sql");
+            "64:db/migration/V64__notificaciones_push.sql",
+            // V65 (O20, identificacion posterior del dolor): dos columnas NULL y un CHECK, sin datos.
+            "65:db/migration/V65__dolor_identificacion_posterior.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {

@@ -176,6 +176,18 @@ public class CatalogContextFacade {
                         (a, b) -> a));
     }
 
+    /**
+     * O20 (opcion A): por cada ejercicio pedido, las variantes de su familia de movimiento equivalente (sin el propio).
+     * Lo usa planning para que lo que dolio no vuelva bajo otra variante del mismo gesto.
+     */
+    @Transactional(readOnly = true)
+    public Map<Long, java.util.List<main.web.services.fitsense.catalog.domain.model.valueobjects.EquivalentExercise>> fetchEquivalentVariants(
+            Set<Long> exerciseIds) {
+        if (exerciseIds == null || exerciseIds.isEmpty()) return Map.of();
+        return exerciseQueryService.handle(
+                new main.web.services.fitsense.catalog.domain.model.queries.GetEquivalentVariantsQuery(exerciseIds));
+    }
+
     @Transactional(readOnly = true)
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return fetchDetails(exerciseIds).entrySet().stream()

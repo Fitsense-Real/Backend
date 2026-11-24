@@ -138,6 +138,11 @@ class EliminacionDeCuentaIT {
         RelojPruebas.abrirVentanaDeEjecucion(jdbc, c.userId());
         ok(c, post("/api/v1/workouts/{id}/skip", sesiones.get(0).get("plannedWorkoutId").asLong())
                 .contentType(MediaType.APPLICATION_JSON).content("{\"reason\":\"PAIN_OR_DISCOMFORT\"}"));
+        // Releido tras la omision: lo que la exclusion por dolor (y, provisionalmente, sus variantes equivalentes) marca
+        // en las sesiones abiertas solo puede registrarse como omitido (P-DOLOR-PUB).
+        var vigente = ok(c, get("/api/v1/users/me/plan/{id}", plan.get("planId").asLong()));
+        sesiones.clear();
+        vigente.get("workouts").forEach(sesiones::add);
         for (int i = 1; i < sesiones.size(); i++) entrenar(c, sesiones.get(i));
         var semana = LocalDate.parse(plan.get("weekStartDate").asText());
         assertTrue(ciclo.runFor(c.userId(), semana, semana.plusWeeks(1)).isPresent(), "el ciclo publica la semana 2");
@@ -151,6 +156,13 @@ class EliminacionDeCuentaIT {
         var sesion = ok(c, post("/api/v1/workouts/{id}/start", workout.get("plannedWorkoutId").asLong()));
         long sid = sesion.get("sessionId") != null ? sesion.get("sessionId").asLong() : sesion.get("id").asLong();
         for (var e : workout.get("exercises")) {
+            if (e.hasNonNull("safetyBlockReason")) {
+                assertTrue(e.get("safetyBlockReason").asText().contains("dolor_registrado"), e.toString());
+                ok(c, put("/api/v1/sessions/{s}/exercises/{pe}", sid, e.get("plannedExerciseId").asLong())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"actualSets\":0,\"skipReason\":\"PAIN_OR_DISCOMFORT\"}"));
+                continue;
+            }
             boolean duracion = "DURATION".equals(e.get("prescriptionType").asText());
             int series = e.get("plannedSets").isNull() ? 1 : e.get("plannedSets").asInt();
             String cuerpo = duracion

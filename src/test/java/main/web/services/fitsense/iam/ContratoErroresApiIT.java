@@ -152,6 +152,11 @@ class ContratoErroresApiIT {
                 .content("{\"confirmNoPain\":null}")).andExpect(status().isBadRequest());
         como(c, post("/api/v1/users/me/pain-exclusions/755/reactivation").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+        // O20: identificar despues tambien exige la confirmacion explicita; de otro usuario o sin nada pendiente, 404.
+        como(c, post("/api/v1/users/me/pain-exclusions/755/identification").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"confirmPain\":null}")).andExpect(status().isBadRequest());
+        como(c, post("/api/v1/users/me/pain-exclusions/755/identification").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"confirmPain\":true}")).andExpect(status().isNotFound());
     }
 
     // ----------------------------------------------------------------- recursos ajenos

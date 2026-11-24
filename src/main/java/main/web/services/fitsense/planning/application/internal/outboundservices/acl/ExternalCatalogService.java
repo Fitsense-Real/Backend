@@ -267,6 +267,19 @@ public class ExternalCatalogService {
         return candidatos;
     }
 
+    /** O20: los equivalentes de cada ejercicio (sin el propio), con el nivel y la justificacion de cada uno. */
+    public Map<Long, List<main.web.services.fitsense.planning.domain.model.valueobjects.ExerciseEquivalence>>
+            fetchEquivalentVariants(Set<Long> exerciseIds) {
+        var r = catalogContextFacade.fetchEquivalentVariants(exerciseIds);
+        var resultado = new java.util.TreeMap<Long,
+                List<main.web.services.fitsense.planning.domain.model.valueobjects.ExerciseEquivalence>>();
+        if (r != null)
+            r.forEach((id, eq) -> resultado.put(id, eq.stream().map(e -> new main.web.services.fitsense.planning
+                    .domain.model.valueobjects.ExerciseEquivalence(e.exerciseId(), e.level(), e.groupId(),
+                    e.justification())).toList()));
+        return resultado;
+    }
+
     public Map<Long, String> fetchNames(Set<Long> exerciseIds) {
         return catalogContextFacade.fetchNames(exerciseIds);
     }

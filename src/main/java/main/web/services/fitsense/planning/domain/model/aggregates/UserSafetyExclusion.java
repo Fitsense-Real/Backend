@@ -72,6 +72,13 @@ public class UserSafetyExclusion {
     @Column(name = "reactivation_evidence", length = 500)
     private String reactivationEvidence;
 
+    /** O20: la persona identifico DESPUES que este ejercicio de la sesion fue el que dolio (V65). */
+    @Column(name = "identified_at")
+    private OffsetDateTime identifiedAt;
+
+    @Column(name = "identification_evidence", length = 500)
+    private String identificationEvidence;
+
     protected UserSafetyExclusion() {
         // JPA
     }
@@ -113,6 +120,30 @@ public class UserSafetyExclusion {
         return status == Status.ACTIVA;
     }
 
+    /**
+     * O20: CONFIRMADA si la persona marco ESE ejercicio con dolor, o si lo identifico despues entre los de una sesion
+     * con dolor. Una fila de dolor de sesion sin identificar es un reporte GENERAL: excluye el ejercicio, pero no
+     * confirma que fuera el que dolio.
+     */
+    public boolean confirmada() {
+        return reason == Reason.DOLOR_IDENTIFICADO || identifiedAt != null;
+    }
+
+    /**
+     * O20: la IDENTIFICACION POSTERIOR. Solo sobre una fila activa de dolor de sesion aun sin identificar; deja
+     * constancia de la accion explicita. No reescribe el motivo original.
+     */
+    public void identificar(OffsetDateTime cuando, String evidencia) {
+        if (status != Status.ACTIVA)
+            throw new DomainRuleViolationException("La exclusion %d ya no esta activa.".formatted(id));
+        if (reason != Reason.DOLOR_SESION_SIN_IDENTIFICAR || identifiedAt != null)
+            throw new DomainRuleViolationException("La exclusion %d ya esta confirmada.".formatted(id));
+        if (cuando == null || evidencia == null || evidencia.isBlank())
+            throw new IllegalArgumentException("Identificar exige la evidencia de la accion explicita.");
+        this.identifiedAt = cuando;
+        this.identificationEvidence = evidencia.substring(0, Math.min(500, evidencia.length()));
+    }
+
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
     public Long getExerciseId() { return exerciseId; }
@@ -127,4 +158,6 @@ public class UserSafetyExclusion {
     public OffsetDateTime getReactivatedAt() { return reactivatedAt; }
     public String getReactivationReason() { return reactivationReason; }
     public String getReactivationEvidence() { return reactivationEvidence; }
+    public OffsetDateTime getIdentifiedAt() { return identifiedAt; }
+    public String getIdentificationEvidence() { return identificationEvidence; }
 }
