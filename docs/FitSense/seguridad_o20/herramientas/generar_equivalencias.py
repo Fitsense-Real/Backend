@@ -39,10 +39,10 @@ GENERICOS = {'press', 'extension', 'curl', 'row', 'fly', 'raise', 'twist', 'crun
              'lunge', 'kickback', 'pullover', 'dip', 'bridge', 'plank', 'stretch', 'rotation', 'hold'}
 # Nucleos de una palabra revisados como gesto concreto (con su patron y musculo).
 REVISADOS_COMO_GESTO = {
-    'shrug': 'encogimiento de hombros', 'deadlift': 'peso muerto', 'lunge': 'zancada', 'step-up': 'subida al cajon',
+    'shrug': 'encogimiento de hombros', 'deadlift': 'peso muerto', 'lunge': 'zancada', 'step up': 'subida al cajon',
     'thruster': 'sentadilla con empuje por encima de la cabeza', 'clean': 'cargada', 'snatch': 'arrancada',
-    'burpee': 'burpee', 'chin-up': 'dominada supina', 'kickback': 'patada de triceps', 'pulldown': 'jalon',
-    'v-up': 'v-up', 'pullover': 'pullover', 'push-up': 'flexion de brazos',
+    'burpee': 'burpee', 'chin up': 'dominada supina', 'kickback': 'patada de triceps', 'pulldown': 'jalon',
+    'v up': 'v-up', 'pullover': 'pullover', 'push up': 'flexion de brazos',
 }
 # Variantes ORTOGRAFICAS del mismo nucleo (no sinonimos): se unifican antes de agrupar.
 ALIAS_NUCLEO = {'tricep kickback': 'kickback'}

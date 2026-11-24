@@ -22,7 +22,7 @@ G2-015 burpee;LOCOMOTION_CARDIO;cardiovascular system;burpee|dumbbell burpee;mis
 G2-016 calf press;ANKLE_PLANTAR_FLEXION;calves;lever calf press|lever seated calf press;mismo gesto (calf press), cambia material, apoyo sentado/de pie
 G2-017 calf raise;ANKLE_PLANTAR_FLEXION;calves;barbell seated calf raise|barbell standing calf raise|bodyweight standing calf raise|cable standing calf raise|dumbbell seated calf raise|dumbbell standing calf raise|lever seated calf raise|lever standing calf raise;mismo gesto (calf raise), cambia material, apoyo sentado/de pie
 G2-018 chest press;HORIZONTAL_PUSH;pectorals;cable seated chest press|lever chest press|lever standing chest press|resistance band seated chest press;mismo gesto (chest press), cambia material, apoyo sentado/de pie
-G2-019 chin up;VERTICAL_PULL;lats;chin-up|one arm chin-up;mismo gesto (chin up), cambia lateralidad
+G2-019 chin up;VERTICAL_PULL;lats;chin-up|one arm chin-up;mismo gesto (dominada supina), cambia lateralidad
 G2-020 clean;HIP_HINGE;glutes;dumbbell clean|kettlebell two arm clean;mismo gesto (cargada), cambia material, lateralidad
 G2-021 close grip bench press;HORIZONTAL_PUSH;triceps;barbell close-grip bench press|ez-bar close-grip bench press|smith close-grip bench press;mismo gesto (close grip bench press), cambia material
 G2-022 close grip concentration curl;ELBOW_FLEXION;biceps;barbell seated close-grip concentration curl|ez bar seated close grip concentration curl;mismo gesto (close grip concentration curl), cambia material, apoyo sentado/de pie
@@ -88,7 +88,7 @@ G2-081 pulldown;VERTICAL_PULL;lats;cable one arm pulldown|cable pulldown;mismo g
 G2-082 pullover;SHOULDER_EXTENSION;lats;barbell pullover|lever pullover;mismo gesto (pullover), cambia material
 G2-083 pullover on exercise ball;SHOULDER_EXTENSION;pectorals;dumbbell one arm pullover on exercise ball|dumbbell pullover on exercise ball;mismo gesto (pullover on exercise ball), cambia material, lateralidad
 G2-084 push press;VERTICAL_PUSH;delts;dumbbell push press|kettlebell one arm push press;mismo gesto (push press), cambia material, lateralidad
-G2-085 push up;HORIZONTAL_PUSH;pectorals;push-up|single arm push-up;mismo gesto (push up), cambia lateralidad
+G2-085 push up;HORIZONTAL_PUSH;pectorals;push-up|single arm push-up;mismo gesto (flexion de brazos), cambia lateralidad
 G2-086 rear delt raise;SHOULDER_RAISE;delts;barbell rear delt raise|dumbbell rear delt raise;mismo gesto (rear delt raise), cambia material
 G2-087 rear delt row;HORIZONTAL_PULL;delts;band standing rear delt row|barbell rear delt row|smith rear delt row;mismo gesto (rear delt row), cambia material, apoyo sentado/de pie
 G2-088 rear delt row with rope;HORIZONTAL_PULL;delts;cable rear delt row (with rope)|cable standing rear delt row (with rope);mismo gesto (rear delt row with rope), cambia material, apoyo sentado/de pie
@@ -112,13 +112,13 @@ G2-105 shoulder press;VERTICAL_PUSH;delts;band shoulder press|cable alternate sh
 G2-106 shrug;SCAPULAR_ELEVATION;traps;band shrug|barbell shrug|cable shrug|dumbbell shrug|lever shrug|smith shrug;mismo gesto (encogimiento de hombros), cambia material
 G2-107 side bend;TRUNK_ROTATION_LATERAL_FLEXION;abs;cable side bend|dumbbell side bend;mismo gesto (side bend), cambia material
 G2-108 snatch;HIP_HINGE;glutes;barbell one arm snatch|dumbbell one arm snatch|kettlebell one arm snatch;mismo gesto (arrancada), cambia material, lateralidad
-G2-109 step up;KNEE_DOMINANT;glutes;band step-up|barbell step-up|dumbbell step-up;mismo gesto (step up), cambia material
+G2-109 step up;KNEE_DOMINANT;glutes;band step-up|barbell step-up|dumbbell step-up;mismo gesto (subida al cajon), cambia material
 G2-110 stiff leg deadlift;HIP_HINGE;glutes;band stiff leg deadlift|dumbbell stiff leg deadlift;mismo gesto (stiff leg deadlift), cambia material
 G2-111 straight back row;HORIZONTAL_PULL;upper back;cable straight back seated row|resistance band seated straight back row;mismo gesto (straight back row), cambia material, apoyo sentado/de pie
 G2-112 straight leg deadlift;HIP_HINGE;hamstrings;band straight leg deadlift|barbell straight leg deadlift;mismo gesto (straight leg deadlift), cambia material
 G2-113 thruster;KNEE_DOMINANT;quads;barbell thruster|kettlebell thruster;mismo gesto (sentadilla con empuje por encima de la cabeza), cambia material
 G2-114 underhand pulldown;VERTICAL_PULL;lats;band underhand pulldown|cable underhand pulldown;mismo gesto (underhand pulldown), cambia material
 G2-115 upright row;HORIZONTAL_PULL+SHOULDER_RAISE;delts;barbell upright row|cable upright row|dumbbell one arm upright row|dumbbell upright row|smith upright row;mismo gesto (remo al menton (el catalogo lo registra como HORIZONTAL_PULL y como SHOULDER_RAISE)), cambia material, lateralidad
-G2-116 v up;TRUNK_FLEXION;abs;band alternating v-up|band v-up;mismo gesto (v up), cambia material, lateralidad
+G2-116 v up;TRUNK_FLEXION;abs;band alternating v-up|band v-up;mismo gesto (v-up), cambia material, lateralidad
 G2-117 wrist curl;WRIST_FOREARM;forearms;band wrist curl|barbell wrist curl|cable wrist curl|dumbbell one arm wrist curl|smith seated wrist curl;mismo gesto (wrist curl), cambia material, lateralidad, apoyo sentado/de pie
 G2-118 zottman preacher curl;ELBOW_FLEXION;biceps;dumbbell one arm zottman preacher curl|dumbbell standing zottman preacher curl|dumbbell zottman preacher curl;mismo gesto (zottman preacher curl), cambia material, lateralidad, apoyo sentado/de pie
