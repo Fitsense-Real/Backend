@@ -180,3 +180,5 @@ Ninguna se relajó: cada una conserva lo que protegía y suma la comprobación d
 | CI de GitHub (`verify`) | `568bb7e8` | **success** |
 | CI de GitHub (`verify`) | `74a97b0e` (solo documentación) | **failure** en `EliminacionDeCuentaIT.eliminacionCompleta`: el plan de ese usuario traía una variante equivalente en otra sesión abierta. Prueba adaptada (§3, «Pruebas existentes ajustadas») |
 | `mvn verify -Pintegration` completo, local, con las pruebas adaptadas | `aeea6d0a` | Unitarias: **1.612, 0 fallos**, 1 omitida. Integración: **877, 0 fallos**, 72 omitidas (opt-in). **BUILD SUCCESS** (25 min 44 s) |
+| `mvn verify -Pintegration` completo, local, cierre final | `0b5fe314` | Unitarias: **1.619, 0 fallos**, 1 omitida. Integración: **880, 0 fallos**, 72 omitidas (opt-in). **BUILD SUCCESS** (36 min 28 s) |
+| CI de GitHub (`verify`), cierre final | `0b5fe314` | **success** |
