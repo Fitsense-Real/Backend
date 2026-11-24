@@ -99,4 +99,8 @@ Ninguna se relajó: cada una conserva lo que protegía y suma la comprobación d
 
 ## 5. Regresión y CI
 
-{{REGRESION}}
+| Ejecución | Commit | Resultado |
+|---|---|---|
+| `mvn verify -Pintegration` completo, local | `d196a7a0` | Unitarias: **1.604, 0 fallos**, 1 omitida (antes 1.598, más las 6 nuevas). Integración: **875, 0 fallos**, 72 omitidas (opt-in; antes 867, más las 8 nuevas). **BUILD SUCCESS** (28 min 31 s) |
+| Primera regresión, antes de ajustar las pruebas existentes | `28a186e7` | 5 fallos esperados por el cambio de semántica (§3, «Pruebas existentes ajustadas»). Ninguno en otras áreas |
+| CI de GitHub (`verify`) | Cabeza de la PR | Ver la PR |
