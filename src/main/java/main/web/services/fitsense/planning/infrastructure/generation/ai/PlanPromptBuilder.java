@@ -92,6 +92,49 @@ public class PlanPromptBuilder {
      */
     public static final String VERSION = "PR-1.7";
 
+    /**
+     * H2-v2 (docs/FitSense/h2_v2/). Solo con {@code fitsense.ai.generacion.prompt-version=PR-2.0}; por omision el prompt
+     * y la instantanea son exactamente los de {@link #VERSION}. Sobre el texto de PR-1.7:
+     * <ul>
+     *   <li>regla 15: la regla de la mitad de V15 tal como se verifica (tabla por n de trabajo, sin complementos) y
+     *   solo entre los grupos con material de la sesion;</li>
+     *   <li>regla 21 (nueva): los techos de V26 de series directas por grupo, por sesion y por semana, con la
+     *   orientacion por grupo que sustituye a la de los principios;</li>
+     *   <li>con PLAN-REV-2.0: regla 4 sin el +15 % (V4 al 100 %) y sin las frases que piden llenar tiempo (regla 17,
+     *   capacidades, fuerza), porque ya no hay minimo de duracion;</li>
+     *   <li>una comprobacion final del reparto, despues de los datos, para los cuatro objetivos;</li>
+     *   <li>en el reintento: como corregir V15 y V26 sin contradecir las demas reglas.</li>
+     * </ul>
+     * No cambia ninguna regla del backend. Requiere una evaluacion pareada con la IA real antes de activarse.
+     */
+    public static final String VERSION_H2V2 = "PR-2.0";
+
+    /** Si una version configurada es la de H2-v2; falla con una desconocida (no se reinterpreta con otra). */
+    public static boolean esH2v2(String version) {
+        var v = version == null ? VERSION : version.trim();
+        if (v.isEmpty() || v.equals(VERSION)) return false;
+        if (v.equals(VERSION_H2V2)) return true;
+        throw new IllegalArgumentException("fitsense.ai.generacion.prompt-version debe ser " + VERSION + " o "
+                + VERSION_H2V2 + ": " + version);
+    }
+
+    private boolean h2v2 = false;
+
+    /** H2-v2: PR-1.7 por omision (configuracion evaluada). */
+    @org.springframework.beans.factory.annotation.Value("${fitsense.ai.generacion.prompt-version:PR-1.7}")
+    void setPromptVersion(String version) {
+        this.h2v2 = esH2v2(version);
+    }
+
+    public boolean h2v2() {
+        return h2v2;
+    }
+
+    /** La version efectiva del texto de reglas. */
+    public String version() {
+        return h2v2 ? VERSION_H2V2 : VERSION;
+    }
+
     /** El bloque de capacidades. Publico para poder probar que solo aparece donde toca. */
     public static final String BLOQUE_CAPACIDADES = """
 
@@ -123,7 +166,7 @@ public class PlanPromptBuilder {
         var prompt = new StringBuilder();
         boolean porCapacidades = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
                 .gobiernaGeneracion(context.profile().goalType());
-        var capacidades = porCapacidades ? PlanInputSnapshot.of(context).constraints().capacidades() : null;
+        var capacidades = porCapacidades ? PlanInputSnapshot.of(context, h2v2).constraints().capacidades() : null;
 
         prompt.append("""
                 Eres un entrenador que diseña planes semanales de entrenamiento.
@@ -270,12 +313,14 @@ public class PlanPromptBuilder {
         // modelo antes de escribir, y lo que el plan 53 no hizo en su primer intento.
         if (capacidades != null) prompt.append(comprobacionFinal(capacidades))
                 .append(comprobacionDeFuerza(context, capacidades));
+        // H2-v2: la comprobacion del reparto, para los cuatro objetivos, tambien despues de los datos.
+        if (h2v2) prompt.append(H2v2.comprobacionReparto(context));
 
         // Reintento (19.4). Va AL FINAL, despues de los datos: es lo ultimo que
         // lee el modelo y lo unico que distingue este intento del anterior.
         if (feedback != null && !feedback.isEmpty()) appendRetry(prompt, feedback);
 
-        return prompt.toString();
+        return h2v2 ? H2v2.aplicar(prompt.toString(), context, feedback) : prompt.toString();
     }
 
     /**
@@ -461,4 +506,193 @@ public class PlanPromptBuilder {
         return ESTIMADOR.estimateSeconds(w, p) - (long) p.warmupMinutesOrDefault() * 60;
     }
 
+
+    /**
+     * H2-v2 (PR-2.0): las sustituciones sobre el texto de PR-1.7. Cada una exige encontrar la frase historica: si alguien
+     * cambia PR-1.7, la variante no puede quedarse a medias en silencio (falla y la prueba lo detecta).
+     */
+    static final class H2v2 {
+
+        private H2v2() {}
+
+        static final java.util.regex.Pattern REGLA4 = java.util.regex.Pattern.compile(
+                "4\\.  expected_duration_minutes no puede superar session_minutes mas 15 %\\.");
+        static final String REGLA4_MAXIMO = "4.  session_minutes es el MAXIMO de la persona: ninguna sesion puede"
+                + " pasar de constraints.max_session_seconds (el backend calcula los segundos con la formula de la"
+                + " regla 17), declares los minutos que declares.";
+
+        static final java.util.regex.Pattern REGLA15 = java.util.regex.Pattern.compile(
+                "cubre al menos min_body_parts de ellos y no pongas mas de\\s+max_per_body_part ejercicios del mismo"
+                        + " body_part\\. Reparte\\s+entre los grupos hasta completar los ejercicios de la sesion:\\s+"
+                        + "si un grupo llega a su tope, sigue por otro\\.");
+        static final String REGLA15_V2 = "cubre al menos min_body_parts de ellos, eligiendolos entre"
+                + " body_parts_con_material (los grupos de esa sesion con ejercicios para esta persona), y no metas"
+                + " grupos que no esten en body_parts (salvo FULL_BODY). Los ejercicios de"
+                + " constraints.complementos_no_cuentan (cardio y movilidad) no cuentan para nada de esta regla. Llama n"
+                + " a los demas ejercicios de la sesion (los de trabajo). Si la sesion trae"
+                + " max_per_body_part_por_n_trabajo, ningun body_part puede tener mas ejercicios que el valor de n en esa"
+                + " tabla (la mitad, redondeando hacia abajo); sin tabla, esa mitad no aplica. Reparte entre"
+                + " body_parts_con_material: si un grupo llega a su tope, sigue por otro de esa lista; si ya no queda"
+                + " ninguno, NO anadas mas ejercicios a la sesion: una sesion con menos ejercicios es valida, una que pasa"
+                + " un tope no.";
+
+        static final java.util.regex.Pattern REGLA17_LLENAR = java.util.regex.Pattern.compile(
+                "Usala para comprobar que cada sesion llega a su minimo:.*?eso solo es posible si clase_dosis es"
+                        + " null\\.", java.util.regex.Pattern.DOTALL);
+        static final String REGLA17_SIN_MINIMO = "Esta semana NO hay minimo de duracion: session_minutes es un"
+                + " maximo. No anadas ejercicios ni series solo para llenar tiempo: el contenido lo deciden la cobertura"
+                + " del enfoque, las dosis y los techos de la regla 21. rest_seconds nunca supera"
+                + " constraints.max_rest_seconds.";
+
+        /** 4D (GAIN_MUSCLE): la serie adicional solo existia para llegar al minimo de V20; sin minimo V24 la rechaza. */
+        static final java.util.regex.Pattern SERIE_ADICIONAL = java.util.regex.Pattern.compile(
+                "Unica excepcion: si una clase trae series_max mayor que series,.*?y solo si sin esa serie la sesion no"
+                        + " llega a su minimo\\.", java.util.regex.Pattern.DOTALL);
+        static final String SIN_SERIE_ADICIONAL = "Sin excepciones: esta semana no hay minimo de duracion, asi que la"
+                + " serie adicional (series_max, tambien la del RELLENO_ESTANDAR de upper arms en PULL) NO se admite:"
+                + " usa siempre series.";
+        static final java.util.regex.Pattern REINTENTO_MINIMO = java.util.regex.Pattern.compile(
+                "Si una sesion no llega al minimo de minutos, anadele un\\s+ejercicio en vez de rehacerla; anade series"
+                        + " solo si clase_dosis\\s+es null y el ejercicio es SETS_REPS\\.\\s*");
+
+        static final java.util.regex.Pattern REGLA20_FIN = java.util.regex.Pattern.compile(
+                "(20\\. En PUSH, de upper arms solo ejercicios de triceps; en PULL, solo\\s+de biceps\\. Mira"
+                        + " target_muscle de cada ejercicio\\.\\n)");
+
+        static final java.util.regex.Pattern CAPACIDADES_LLENAR = java.util.regex.Pattern.compile(
+                "Despues completa el tiempo con las\\s+secundarias\\.");
+        static final String CAPACIDADES_SIN_LLENAR = "Despues, si caben, anade secundarias, sin pasar de"
+                + " constraints.max_colocaciones_dia ni de los techos de la regla 21: no hace falta llenar el tiempo.";
+        static final java.util.regex.Pattern PRIORITARIA_LLENAR = java.util.regex.Pattern.compile(
+                "Solo despues completa el tiempo con las secundarias \\(([^)]*)\\), sin pasar de\\s+"
+                        + "constraints\\.max_colocaciones_dia ejercicios por sesion\\.");
+        static final String PRIORITARIA_SIN_LLENAR = "Solo despues, si caben, anade secundarias ($1), sin pasar de"
+                + " constraints.max_colocaciones_dia ejercicios por sesion ni de los techos de la regla 21. No hace falta"
+                + " llenar el tiempo.";
+        static final java.util.regex.Pattern FUERZA_LLENAR = java.util.regex.Pattern.compile(
+                "2\\. Solo despues, si queda tiempo, completa con HYPERTROPHY\\.");
+        static final String FUERZA_SIN_LLENAR = "2. Solo despues, si caben dentro de los techos de la regla 21, anade"
+                + " HYPERTROPHY.";
+        static final java.util.regex.Pattern COMPROBACION_CAPACIDADES = java.util.regex.Pattern.compile(
+                "- En cada sesion, ningun body_part pasa del max_per_body_part de su\\s+sesion en"
+                        + " constraints\\.suggested_split\\.");
+        static final String COMPROBACION_CAPACIDADES_V2 = "- El reparto de cada sesion cumple la COMPROBACION DEL"
+                + " REPARTO de mas abajo.";
+
+        static final java.util.regex.Pattern REINTENTO_REPONER = java.util.regex.Pattern.compile(
+                "Si sobran de un grupo muscular,\\s+REEMPLAZALOS por otros del enfoque, nunca los elimines sin"
+                        + " reponerlos\\.");
+        static final String REINTENTO_REPONER_V2 = "Si sobran de un grupo muscular (V15 o V26), REEMPLAZALOS por"
+                + " otros de body_parts_con_material de esa sesion; si ninguno de esos grupos admite mas, quitalos sin"
+                + " reponerlos: V15 y V26 lo exigen. Para V26 tambien puedes bajar series dentro de la dosis admitida.";
+        static final java.util.regex.Pattern REINTENTO_REGLAS = java.util.regex.Pattern.compile(
+                "las reglas 1 a 20 completas");
+
+        static String aplicar(String prompt, PlanGenerationContext context, AiRetryFeedback feedback) {
+            boolean sinMinimo = main.web.services.fitsense.planning.domain.services.PlanDraftValidator
+                    .minimumSessionSeconds(context) == 0;
+            boolean sinLlenado = context.policy() != null && context.policy().duracion()
+                    == main.web.services.fitsense.planning.domain.model.valueobjects.PlanningPolicy.Duracion.DOSIS_SEMANAL;
+            var volumen = main.web.services.fitsense.planning.domain.services.ContratoReparto.volumen(context);
+
+            var salida = obligatoria(REGLA15, prompt, REGLA15_V2, "regla 15");
+            if (context.policy() != null && context.policy().v4Maximo())
+                salida = obligatoria(REGLA4, salida, REGLA4_MAXIMO, "regla 4");
+            if (sinMinimo) {
+                salida = obligatoria(REGLA17_LLENAR, salida, REGLA17_SIN_MINIMO, "regla 17");
+                salida = opcional(SERIE_ADICIONAL, salida, SIN_SERIE_ADICIONAL);
+                if (feedback != null && !feedback.isEmpty()) salida = opcional(REINTENTO_MINIMO, salida, "");
+            }
+            if (volumen != null) {
+                var m = REGLA20_FIN.matcher(salida);
+                if (!m.find()) throw new IllegalStateException("H2-v2: no esta la regla 20 de PR-1.7");
+                salida = m.replaceFirst(java.util.regex.Matcher.quoteReplacement(m.group(1) + regla21(volumen)));
+                salida = REINTENTO_REGLAS.matcher(salida).replaceAll("las reglas 1 a 21 completas");
+            }
+            if (sinLlenado) {
+                salida = opcional(CAPACIDADES_LLENAR, salida, CAPACIDADES_SIN_LLENAR);
+                salida = PRIORITARIA_LLENAR.matcher(salida).replaceAll(PRIORITARIA_SIN_LLENAR);
+                salida = opcional(FUERZA_LLENAR, salida, FUERZA_SIN_LLENAR);
+            }
+            salida = opcional(COMPROBACION_CAPACIDADES, salida, COMPROBACION_CAPACIDADES_V2);
+            if (feedback != null && !feedback.isEmpty()) {
+                salida = opcional(REINTENTO_REPONER, salida, REINTENTO_REPONER_V2);
+                salida = conPistas(salida, feedback);
+            }
+            return salida;
+        }
+
+        private static String obligatoria(java.util.regex.Pattern p, String texto, String nuevo, String que) {
+            var m = p.matcher(texto);
+            if (!m.find()) throw new IllegalStateException("H2-v2: no esta la " + que + " de PR-1.7");
+            return m.replaceFirst(java.util.regex.Matcher.quoteReplacement(nuevo));
+        }
+
+        private static String opcional(java.util.regex.Pattern p, String texto, String nuevo) {
+            return p.matcher(texto).replaceFirst(java.util.regex.Matcher.quoteReplacement(nuevo));
+        }
+
+        static String regla21(main.web.services.fitsense.planning.domain.services.ContratoReparto.Volumen v) {
+            int porEjercicio = 3;
+            return ("21. VOLUMEN POR GRUPO MUSCULAR (el backend lo verifica). Sin contar"
+                    + " constraints.complementos_no_cuentan ni constraints.volumen_semanal.no_cuentan, suma los"
+                    + " planned_sets de cada body_part:\n"
+                    + "    - en CADA sesion, como mucho %d series de un mismo body_part (techo_series_sesion);\n"
+                    + "    - en la SEMANA entera, como mucho %d series de un mismo body_part (techo_series_semana).\n"
+                    + "    Ejemplo: con %d series por ejercicio caben como mucho %d ejercicios del mismo body_part en una"
+                    + " sesion. Si dos sesiones de la semana trabajan el mismo grupo, el total de las dos tampoco pasa de"
+                    + " %d. objetivo_series_semana es una orientacion por grupo que sustituye a la de los principios:"
+                    + " acercate a ella si cabe, nunca pases un techo para alcanzarla.\n")
+                    .formatted(v.techoSesion(), v.techoSemana(), porEjercicio, v.techoSesion() / porEjercicio,
+                            v.techoSemana());
+        }
+
+        /** La comprobacion del reparto, despues de los datos (lo ultimo que lee el modelo antes de escribir). */
+        static String comprobacionReparto(PlanGenerationContext context) {
+            var volumen = main.web.services.fitsense.planning.domain.services.ContratoReparto.volumen(context);
+            var b = new StringBuilder("""
+
+                    COMPROBACION DEL REPARTO, sesion por sesion, antes de escribir el JSON:
+                    - Cuenta n, sus ejercicios de trabajo (sin constraints.complementos_no_cuentan). Si la sesion trae
+                      max_per_body_part_por_n_trabajo, ningun body_part pasa del valor de n en esa tabla.
+                    - Cubre al menos min_body_parts grupos de body_parts_con_material y no mete grupos fuera de
+                      body_parts (salvo FULL_BODY).
+                    """);
+            if (volumen != null)
+                b.append(("- Ningun body_part suma mas de %d series directas en la sesion, ni mas de %d en la semana"
+                        + " (regla 21).\n").formatted(volumen.techoSesion(), volumen.techoSemana()));
+            b.append("""
+                    - Si un grupo llega a su tope y no queda otro de body_parts_con_material, la sesion lleva menos
+                      ejercicios: es valido. Pasar un tope no lo es.
+                    Si algo falla, corrige la semana antes de responder.
+                    """);
+            return b.toString();
+        }
+
+        /** Las pistas de V15 y V26 en el reintento (PistasDeReintento no las tiene y la adaptacion no se toca). */
+        private static String conPistas(String texto, AiRetryFeedback feedback) {
+            var pistas = new java.util.ArrayList<String>();
+            if (feedback.rejectionProblems().stream().anyMatch(m -> m.startsWith("V15")))
+                pistas.add("V15: cuenta los ejercicios de trabajo n de esa sesion y usa el valor de n en"
+                        + " max_per_body_part_por_n_trabajo; reparte entre body_parts_con_material o pon menos"
+                        + " ejercicios.");
+            if (feedback.rejectionProblems().stream().anyMatch(m -> m.startsWith("V26")))
+                pistas.add("V26: en esa sesion (o en la semana) baja series o quita una colocacion de ese body_part; los"
+                        + " techos estan en constraints.volumen_semanal.");
+            if (pistas.isEmpty()) return texto;
+            var bloque = new StringBuilder();
+            pistas.forEach(p -> bloque.append("- ").append(p).append('\n'));
+            int i = texto.indexOf("\nDonde esta la solucion de cada motivo:\n");
+            if (i >= 0) {
+                int fin = texto.indexOf("\n\n", i + 2);
+                if (fin < 0) fin = texto.length();
+                return texto.substring(0, fin) + "\n" + bloque.toString().stripTrailing() + texto.substring(fin);
+            }
+            int j = texto.lastIndexOf("\nEl backend la rechazo por estos motivos:\n");
+            int k = j < 0 ? -1 : texto.indexOf("\n\n", j + 2);
+            if (k < 0) return texto + "\nDonde esta la solucion de cada motivo:\n" + bloque;
+            return texto.substring(0, k) + "\n\nDonde esta la solucion de cada motivo:\n" + bloque.toString()
+                    .stripTrailing() + texto.substring(k);
+        }
+    }
 }
