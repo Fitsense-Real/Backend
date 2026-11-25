@@ -106,6 +106,21 @@ class H2v2PrimeraPropuestaIT {
     static final String CASOS = System.getProperty("fitsense.h2v2.casos", "");
     static final Path SALIDA = Path.of(System.getProperty("fitsense.h2v2.salida", "target/h2v2-primera"));
     static final LocalDate SEMANA = LocalDate.of(2026, 11, 23);
+    /** Libro comun a las dos etapas (opcion A, USD 7,50 en total): el limite no se reinicia entre ejecuciones. */
+    static final String ETAPA = "E1";
+    final LibroPresupuestoH2v2 libro = new LibroPresupuestoH2v2(Path.of(System.getProperty("fitsense.h2v2.libro",
+            "docs/FitSense/h2_v2/evaluacion_real/libro_presupuesto.csv")));
+
+    /** Una linea por prediccion recibida, al momento (para reanudar sin repetir ni pagar dos veces). */
+    private void anotarRegistro(String linea) {
+        try {
+            var reg = SALIDA.resolve("registro.csv");
+            if (!Files.exists(reg)) Files.writeString(reg, "caso;brazo;prediction_id;ms;origen\n");
+            Files.writeString(reg, linea + "\n", java.nio.file.StandardOpenOption.APPEND);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     static final List<String> GIMNASIO = List.of("body weight", "dumbbell", "barbell", "cable", "leverage machine",
             "bench", "band", "stationary bike", "treadmill", "kettlebell", "ez barbell", "smith machine", "pull-up bar");
@@ -174,6 +189,20 @@ class H2v2PrimeraPropuestaIT {
 
         var filas = new ArrayList<Fila>();
         double gastado = 0;
+        var hechos = new HashMap<String, String[]>();
+        if (REAL) {
+            assertTrue(TOPE_USD <= LibroPresupuestoH2v2.TOPE_TOTAL_USD, "el tope de la etapa no supera el total autorizado");
+            var reg = SALIDA.resolve("registro.csv");
+            if (Files.exists(reg))
+                for (var l : Files.readAllLines(reg))
+                    if (!l.isBlank() && !l.startsWith("caso;")) {
+                        var x = l.split(";");
+                        if (Files.exists(SALIDA.resolve("salidas").resolve(x[0] + "_" + x[1] + ".json")))
+                            hechos.put(x[0] + "_" + x[1], x);
+                    }
+            System.out.println("H2V2_LIBRO reservado_total=" + libro.reservado(null) + " reservado_" + ETAPA + "="
+                    + libro.reservado(ETAPA) + " saldo=" + libro.saldo() + " ya_hechas=" + hechos.keySet());
+        }
         String corte = null;
         var lista = casos();
         for (int i = 0; i < lista.size(); i++) {
@@ -225,11 +254,17 @@ class H2v2PrimeraPropuestaIT {
                             peticiones.get(b).cota(), "-", 0, 0, "-", 0, 0, "-", ""));
                 continue;
             }
-            double pareja = peticiones.values().stream().mapToDouble(Peticion::cota).sum();
-            if (corte == null && gastado + pareja > TOPE_USD + 1e-9)
-                corte = "no cabe la pareja " + c.id() + ": cota " + "%.4f".formatted(pareja) + " + cargado "
-                        + "%.4f".formatted(gastado) + " > tope " + TOPE_USD;
-            if (corte != null) {
+            // REAL. Reanudacion sin duplicar: una salida ya guardada en esta carpeta (con su linea en registro.csv) no se
+            // vuelve a pedir; se valida otra vez sin coste. Solo se piden los brazos que faltan.
+            var faltan = new ArrayList<String>();
+            for (var b : orden) if (!hechos.containsKey(c.id() + "_" + b)) faltan.add(b);
+            double pareja = faltan.stream().mapToDouble(b -> peticiones.get(b).cota()).sum();
+            // Parejas completas: si no caben los brazos que faltan (en el tope de la etapa y en el total), no se empieza.
+            if (corte == null && !faltan.isEmpty() && !libro.cabe(ETAPA, TOPE_USD, pareja))
+                corte = "no cabe la pareja " + c.id() + ": cota " + "%.4f".formatted(pareja) + " + reservado etapa "
+                        + "%.4f".formatted(libro.reservado(ETAPA)) + " (tope etapa " + TOPE_USD + "), reservado total "
+                        + "%.4f".formatted(libro.reservado(null)) + " (tope total " + LibroPresupuestoH2v2.TOPE_TOTAL_USD + ")";
+            if (corte != null && !faltan.isEmpty()) {
                 for (var b : orden)
                     filas.add(new Fila(c, b, 0, "NO_EJECUTADO_PRESUPUESTO", peticiones.get(b).version(),
                             peticiones.get(b).prompt().length(), peticiones.get(b).cota(), "-", 0, 0, "-", 0, 0, "-",
@@ -238,8 +273,22 @@ class H2v2PrimeraPropuestaIT {
             }
             int k = 0;
             for (var b : orden) {
-                filas.add(llamar(c, b, ++k, ctx, peticiones.get(b)));
-                gastado += peticiones.get(b).cota();
+                k++;
+                var p = peticiones.get(b);
+                var previo = hechos.get(c.id() + "_" + b);
+                if (previo != null) {
+                    filas.add(validarSalida(c, b, k, ctx, p, Files.readString(SALIDA.resolve("salidas")
+                            .resolve(c.id() + "_" + b + ".json")), previo[2], Long.parseLong(previo[3]), "REANUDADA"));
+                    continue;
+                }
+                if (!libro.reservar(ETAPA, TOPE_USD, c.id(), b, 1, p.cota(), p.version()))
+                    throw new IllegalStateException("la reserva no cabe tras comprobar la pareja: " + c.id() + b);
+                gastado += p.cota();
+                var f = llamar(c, b, k, ctx, p);
+                filas.add(f);
+                libro.resultado(ETAPA, c.id(), b, 1, f.predictionId(), f.estado() + " " + f.validacion());
+                if (f.estado().equals("RESPUESTA"))
+                    anotarRegistro(c.id() + ";" + b + ";" + f.predictionId() + ";" + f.ms() + ";REAL");
             }
         }
         escribir(filas, gastado, corte);
