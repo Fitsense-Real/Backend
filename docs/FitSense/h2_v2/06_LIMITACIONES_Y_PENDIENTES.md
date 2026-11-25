@@ -22,3 +22,12 @@
 | 3 | Con resultados favorables: activar `FITSENSE_AI_GENERACION_PROMPT_VERSION=PR-2.0` en el entorno, con autorización expresa | Responsable del estudio |
 | 4 | La PR #69 (PR-1.9) puede cerrarse sin fusionar: PR-2.0 incorpora su corrección eficaz (C1, C9). No se ha tocado | Responsable del estudio |
 | 5 | Revisar `FITSENSE_AI_BASE_URL` en Railway antes de desplegar (no tengo acceso) | Quien opere Railway |
+
+## Actualización tras la evaluación real (`07`)
+
+- **Resultado:** RECHAZADA según los criterios previos. Falla P1 (B = 2 casos con V15 de la mitad o V26; se exigía como mucho 1) y falla el bloqueante K1 (V25 sube en 2 casos).
+- **Pendiente para una PR-2.1, si se decide:** que el texto de la regla 21 diga explícitamente que la dosis de 4D/V24 nunca se recorta para cumplir el techo de V26. La segunda opción, quitar una colocación, ya la dice el mensaje de V24, pero solo en el reintento. Exige una evaluación nueva con su propio presupuesto.
+- **O20:** la evaluación real no lo ejercita, porque los perfiles congelados no tienen dolor. Queda cubierto solo por la prueba simulada.
+- **Etapa 2:** el arnés está listo y probado con Replicate simulado, pero sin ejecución real.
+- **Coste real:** no verificable sin el panel de facturación de Replicate.
+

@@ -1,0 +1,6 @@
+modo=SIMULADO
+predicciones=4
+reservado_E2_usd=0.5747 (COTA superior por prediccion)
+reservado_total_usd=0.5747
+corte=no cabe el peor caso de G26 (0.3870): reservado E2 0.5747 de 0.75, total 0.5747 de 7.5
+modelo=gpt-5-mini formato=direct reasoning_effort=medium verbosity=low max_completion_tokens=16000

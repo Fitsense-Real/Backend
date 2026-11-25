@@ -1,0 +1,2 @@
+V15: el entrenamiento del 2026-11-23 tiene enfoque PUSH y solo trabaja [chest]. Debe cubrir al menos 2 grupos distintos de: [chest, shoulders, upper arms].
+V15: el entrenamiento del 2026-11-23 dedica 4 de 4 ejercicios a chest. Reparte entre los grupos del enfoque PUSH.

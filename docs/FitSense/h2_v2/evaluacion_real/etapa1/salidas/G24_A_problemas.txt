@@ -1,0 +1,1 @@
+V24: el ejercicio 294 del 2026-11-29 no lleva la dosis de ninguna capacidad de GENERAL_FITNESS. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s, MUSCULAR_ENDURANCE 2-3x15, descanso 45 s].

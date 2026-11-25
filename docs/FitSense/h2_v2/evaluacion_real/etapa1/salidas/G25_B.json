@@ -1,0 +1,276 @@
+{
+  "schema_version": "GEN-IN-1.13",
+  "plan_name": "Semana 1 - Hipertrofia equilibrada",
+  "total_volume": 572,
+  "rationale": "Te propongo 6 sesiones (empuje, tracción y piernas duplicadas) con ejercicios estructurales para priorizar hipertrofia: volumen moderado y distribución equilibrada por grupo muscular.",
+  "workouts": [
+    {
+      "scheduled_date": "2026-11-23",
+      "focus_code": "PUSH",
+      "workout_name": "Empuje - Pecho/Deltoides/Tríceps",
+      "expected_duration_minutes": 26,
+      "exercises": [
+        {
+          "exercise_id": 517,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 548,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 512,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 313,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-24",
+      "focus_code": "PULL",
+      "workout_name": "Tracción - Espalda y bíceps",
+      "expected_duration_minutes": 19,
+      "exercises": [
+        {
+          "exercise_id": 436,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 673,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 521,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-25",
+      "focus_code": "LEGS",
+      "workout_name": "Piernas - Cuádriceps/Glúteos y gemelos",
+      "expected_duration_minutes": 19,
+      "exercises": [
+        {
+          "exercise_id": 554,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 595,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 1018,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-26",
+      "focus_code": "PUSH",
+      "workout_name": "Empuje - Pecho/Deltoides/Tríceps (variante)",
+      "expected_duration_minutes": 26,
+      "exercises": [
+        {
+          "exercise_id": 515,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 341,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 221,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 560,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-27",
+      "focus_code": "PULL",
+      "workout_name": "Tracción - Espalda y bíceps (variante)",
+      "expected_duration_minutes": 19,
+      "exercises": [
+        {
+          "exercise_id": 325,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 350,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 555,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-28",
+      "focus_code": "LEGS",
+      "workout_name": "Piernas - Glúteos/Cuádriceps y gemelos (variante)",
+      "expected_duration_minutes": 19,
+      "exercises": [
+        {
+          "exercise_id": 755,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 715,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 294,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

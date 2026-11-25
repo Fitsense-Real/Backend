@@ -1,0 +1,6 @@
+src/main/java/main/web/services/fitsense/planning/application/internal/commandservices/WeeklyTrainingPlanCommandServiceImpl.java
+src/main/java/main/web/services/fitsense/planning/domain/services/ContratoReparto.java
+src/main/java/main/web/services/fitsense/planning/infrastructure/generation/ai/PlanInputSnapshot.java
+src/main/java/main/web/services/fitsense/planning/infrastructure/generation/ai/PlanPromptBuilder.java
+src/main/java/main/web/services/fitsense/planning/infrastructure/generation/ai/ReplicateTrainingPlanGenerator.java
+src/main/resources/application.properties

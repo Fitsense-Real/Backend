@@ -9,7 +9,11 @@
 
 ## Estado en una línea
 
-**PR-2.0 está implementada, probada sin coste y desactivada por omisión** (`fitsense.ai.generacion.prompt-version=PR-1.7`). **H2 no se declara resuelta** hasta una evaluación con gpt-5-mini real, que exige un presupuesto nuevo (`05`).
+**Evaluación con gpt-5-mini real: RECHAZADA** (`07`).
+- **Mejora:** PR-2.0 reduce los rechazos V15 de la mitad y V26 en la primera propuesta (6 → 2 casos; V26 de 7 rechazos a 0).
+- **Empeora:** en dos perfiles GAIN_MUSCLE recorta dosis, y eso dispara rechazos V24/V25 (K1 bloqueante). Además, P1 no se cumple.
+- **Se mantiene PR-1.7**, que es el valor por omisión. PR-2.0 queda desactivada y **H2 no se declara resuelta**.
+- **Presupuesto:** USD 3,1168 de 7,50 reservados. La etapa 2 no se ejecutó, porque el diseño la condicionaba a superar la etapa 1.
 
 ## Índice
 
@@ -22,6 +26,7 @@
 | 6. Diseño y presupuesto de la evaluación con IA real | `05_DISENO_EVALUACION_Y_PRESUPUESTO.md` |
 | 7. Regresión y CI | §Regresión, abajo |
 | 9. Limitaciones y pendientes | `06_LIMITACIONES_Y_PENDIENTES.md` |
+| Evaluación con IA real (opción A), informe y decisión | `07_EVALUACION_REAL_Y_DECISION.md`; datos en `evaluacion_real/` |
 
 **Evidencia** (`evidencia/`), toda sin coste:
 - `prompts_y_cotas_26_casos_PR17_PR20.csv`: el modo `PROMPTS`;

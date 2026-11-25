@@ -1,0 +1,7 @@
+modo;caso;brazo;orden;prompt_version;semana;estado_operacion;origen;modelo;intentos_plan;predicciones;ms_total;primera_valida;rechazos_v15_mitad;rechazos_v26;otros_por_intento;motivo_respaldo;revalidacion_publicado;fuera_de_available;prediction_ids;detalle
+SIMULADO;G25;A;1;PR-1.7;2026-11-30;COMPLETED;AI;gpt-5-mini;1;1;493;true;0;0;[];-;VALIDA;0;sim4;
+SIMULADO;G25;B;2;PR-2.0;2026-11-30;COMPLETED;RULE_ENGINE;-;4;3;1092;false;0;0;[{CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}];RECHAZOS;VALIDA;0;sim5 sim6 sim7;
+SIMULADO;G26;B;0;PR-2.0;null;NO_EJECUTADO_PRESUPUESTO;-;-;0;0;0;false;0;0;[];-;-;-;;no cabe el peor caso de G26 (0.3870): reservado E2 0.5747 de 0.75, total 0.5747 de 7.5
+SIMULADO;G26;A;0;PR-1.7;null;NO_EJECUTADO_PRESUPUESTO;-;-;0;0;0;false;0;0;[];-;-;-;;no cabe el peor caso de G26 (0.3870): reservado E2 0.5747 de 0.75, total 0.5747 de 7.5
+SIMULADO;G05;A;0;PR-1.7;null;NO_EJECUTADO_PRESUPUESTO;-;-;0;0;0;false;0;0;[];-;-;-;;no cabe el peor caso de G26 (0.3870): reservado E2 0.5747 de 0.75, total 0.5747 de 7.5
+SIMULADO;G05;B;0;PR-2.0;null;NO_EJECUTADO_PRESUPUESTO;-;-;0;0;0;false;0;0;[];-;-;-;;no cabe el peor caso de G26 (0.3870): reservado E2 0.5747 de 0.75, total 0.5747 de 7.5
