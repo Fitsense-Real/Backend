@@ -1,0 +1,76 @@
+{
+  "sessionId" : 910000000,
+  "plannedWorkoutId" : 910000000,
+  "planId" : 910000000,
+  "attemptNumber" : 1,
+  "countsTowardAdherence" : true,
+  "startedAt" : "2026-11-02T23:30:00Z",
+  "endedAt" : "2026-11-03T00:30:00Z",
+  "activeMinutes" : 55,
+  "completionPercentage" : 100.0,
+  "sessionRpe" : 6,
+  "satisfaction" : 4,
+  "source" : "APP_TRACKED",
+  "status" : "COMPLETED",
+  "exercises" : [ {
+    "sessionExerciseId" : 910000000,
+    "plannedExerciseId" : 910000000,
+    "actualSets" : 3,
+    "actualRepsTotal" : 30,
+    "actualDurationSeconds" : null,
+    "actualLoadKg" : null,
+    "completionPercentage" : 100.0,
+    "status" : "COMPLETED",
+    "skipReason" : null
+  }, {
+    "sessionExerciseId" : 910000001,
+    "plannedExerciseId" : 910000001,
+    "actualSets" : 3,
+    "actualRepsTotal" : 30,
+    "actualDurationSeconds" : null,
+    "actualLoadKg" : null,
+    "completionPercentage" : 100.0,
+    "status" : "COMPLETED",
+    "skipReason" : null
+  }, {
+    "sessionExerciseId" : 910000002,
+    "plannedExerciseId" : 910000002,
+    "actualSets" : 3,
+    "actualRepsTotal" : 30,
+    "actualDurationSeconds" : null,
+    "actualLoadKg" : null,
+    "completionPercentage" : 100.0,
+    "status" : "COMPLETED",
+    "skipReason" : null
+  }, {
+    "sessionExerciseId" : 910000003,
+    "plannedExerciseId" : 910000003,
+    "actualSets" : 3,
+    "actualRepsTotal" : 30,
+    "actualDurationSeconds" : null,
+    "actualLoadKg" : null,
+    "completionPercentage" : 100.0,
+    "status" : "COMPLETED",
+    "skipReason" : null
+  }, {
+    "sessionExerciseId" : 910000004,
+    "plannedExerciseId" : 910000004,
+    "actualSets" : 3,
+    "actualRepsTotal" : 30,
+    "actualDurationSeconds" : null,
+    "actualLoadKg" : null,
+    "completionPercentage" : 100.0,
+    "status" : "COMPLETED",
+    "skipReason" : null
+  }, {
+    "sessionExerciseId" : 910000005,
+    "plannedExerciseId" : 910000005,
+    "actualSets" : 3,
+    "actualRepsTotal" : 30,
+    "actualDurationSeconds" : null,
+    "actualLoadKg" : null,
+    "completionPercentage" : 100.0,
+    "status" : "COMPLETED",
+    "skipReason" : null
+  } ]
+}

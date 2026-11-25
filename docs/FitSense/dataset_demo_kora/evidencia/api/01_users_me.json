@@ -1,0 +1,14 @@
+{
+  "userId" : 2,
+  "email" : "usuario.demo.kora@example.com",
+  "firstName" : "Usuario",
+  "lastName" : "Demo Kora",
+  "timezone" : "America/Lima",
+  "status" : "ACTIVE",
+  "studyParticipant" : false,
+  "participantCode" : null,
+  "enrolledAt" : null,
+  "withdrawnAt" : null,
+  "lastLoginAt" : "2026-11-25T03:01:10.879091Z",
+  "role" : "USER"
+}

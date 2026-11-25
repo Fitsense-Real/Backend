@@ -1,0 +1,58 @@
+Base nueva con Flyway: 65 · hoy en Lima 2026-11-24 · W0 2026-11-23
+Otra cuenta 1: {user_profiles=1, weekly_training_plans=1, planned_workouts=3, planned_workout_exercises=18, workout_sessions=1, workout_session_exercises=0, weekly_user_metrics=0, plan_adaptation_attempts=0, safe_regeneration_attempts=0, user_interventions=0, user_safety_exclusions=0, plan_generation_operations=0, notification_events=0, users=1, user_consents=1}
+01 sin cuenta registrada -> ERROR: ERROR: DEMO 01: no existe la cuenta usuario.demo.kora@example.com. Registrela antes por la API (ver README_EJECUCION.md).
+02 sin cuenta registrada -> ERROR: ERROR: DEMO 02: no existe la cuenta usuario.demo.kora@example.com. Registrela por la API y ejecute 01.
+Cuenta demo registrada por la API: user_id 2
+Primera pasada de 01-05:
+  01_USUARIO_DEMO.sql: DEMO 01 aplicado: perfil de la cuenta 2
+  02_RUTINA_INICIAL.sql: DEMO 02 aplicado a la cuenta 2 (weekly_training_plans=1, planned_workouts=5, planned_workout_exercises=30)
+  03_HISTORIAL_ADHERENCIA.sql: DEMO 03 aplicado a la cuenta 2 (workout_sessions=4, workout_session_exercises=23, weekly_user_metrics=1, user_safety_exclusions=1)
+  04_ADAPTACIONES.sql: DEMO 04 aplicado a la cuenta 2 (weekly_training_plans=2, planned_workouts=10, planned_workout_exercises=60, workout_sessions=10, workout_session_exercises=60, weekly_user_metrics=2, plan_adaptation_attempts=2, user_interventions=2)
+  05_RUTINA_VIGENTE.sql: DEMO 05 aplicado a la cuenta 2 (weekly_training_plans=1, planned_workouts=5, planned_workout_exercises=30, plan_adaptation_attempts=1, user_interventions=1)
+Filas de la demo tras la carga: {user_profiles=1, weekly_training_plans=4, planned_workouts=20, planned_workout_exercises=120, workout_sessions=14, workout_session_exercises=83, weekly_user_metrics=3, plan_adaptation_attempts=3, safe_regeneration_attempts=0, user_interventions=3, user_safety_exclusions=1, plan_generation_operations=0, notification_events=0, users=1, user_consents=0}
+Segunda pasada de 01-05 (idempotencia):
+  01_USUARIO_DEMO.sql: DEMO 01: el perfil de la cuenta 2 ya existe y coincide. No se cambia nada.
+  02_RUTINA_INICIAL.sql: DEMO 02: ya aplicado a la cuenta 2. No se cambia nada.
+  03_HISTORIAL_ADHERENCIA.sql: DEMO 03: ya aplicado a la cuenta 2. No se cambia nada.
+  04_ADAPTACIONES.sql: DEMO 04: ya aplicado a la cuenta 2. No se cambia nada.
+  05_RUTINA_VIGENTE.sql: DEMO 05: ya aplicado a la cuenta 2. No se cambia nada.
+06: integridad 10/10 ok; adherencia recalculada coincide en 3 semanas
+GET /api/v1/users/me -> 200 (284 bytes)
+GET /api/v1/users/me/profile -> 200 (713 bytes)
+GET /api/v1/users/me/plan/current -> 200 (17859 bytes)
+GET /api/v1/users/me/plans -> 200 (837 bytes)
+GET /api/v1/users/me/plan/910000000 -> 200 (17570 bytes)
+GET /api/v1/users/me/plan/910000001 -> 200 (18191 bytes)
+GET /api/v1/users/me/plan/910000002 -> 200 (17854 bytes)
+GET /api/v1/users/me/plan/910000003 -> 200 (17859 bytes)
+GET /api/v1/users/me/plan/adaptations -> 200 (1163 bytes)
+GET /api/v1/users/me/plan/limitations -> 422 (183 bytes)
+GET /api/v1/users/me/metrics/weekly -> 200 (2383 bytes)
+GET /api/v1/users/me/metrics/weekly/2026-11-02 -> 200 (797 bytes)
+GET /api/v1/users/me/metrics/weekly/2026-11-09 -> 200 (791 bytes)
+GET /api/v1/users/me/metrics/weekly/2026-11-16 -> 200 (791 bytes)
+GET /api/v1/users/me/interventions -> 200 (1924 bytes)
+GET /api/v1/users/me/pain-exclusions -> 200 (305 bytes)
+GET /api/v1/users/me/pain-exclusions/effective -> 200 (402 bytes)
+GET /api/v1/sessions/910000000 -> 200 (1621 bytes)
+plan/current: planId 910000003, semana "2026-11-23", 5 sesiones
+POST /users/me/plan/generate -> 422 {"timestamp":"2026-11-25T03:01:11.926640183Z","status":422,"error":"Unprocessable Entity","message":"El usuario 2 no esta activo en el estudio: no se le generan planes.","details":[]}
+POST /users/me/plan/generation -> 200 {"operationId":"9fd56f65-260e-440d-ac7f-f34e05eaf659","status":"COMPLETED","terminal":true,"weekStartDate":"2026-11-23","planId":910000003,"reasonCode":null,"message":null,"retryable":false,"createdAt":"2026-11-25T03:01:11.948161042Z","startedAt":null,"finishedAt":"2026-11-25T03:01:11.948161042Z","pollAfterSeconds":null}
+POST /cycle/run-for-me -> 403
+Participantes del cierre de los lunes en America/Lima: [1] (demo 2 no incluida)
+plan_generation_operations de la demo: [{status=COMPLETED, plan_id=910000003, executions=0}]; predicciones: 0
+Semana en curso antes del vencimiento: [{scheduled_date=2026-11-23, status=SCHEDULED}, {scheduled_date=2026-11-24, status=SCHEDULED}, {scheduled_date=2026-11-25, status=SCHEDULED}, {scheduled_date=2026-11-26, status=SCHEDULED}, {scheduled_date=2026-11-27, status=SCHEDULED}]
+Semana en curso despues del vencimiento: [{scheduled_date=2026-11-23, status=SKIPPED, skip_reason=null}, {scheduled_date=2026-11-24, status=SCHEDULED, skip_reason=null}, {scheduled_date=2026-11-25, status=SCHEDULED, skip_reason=null}, {scheduled_date=2026-11-26, status=SCHEDULED, skip_reason=null}, {scheduled_date=2026-11-27, status=SCHEDULED, skip_reason=null}]
+07 (limpieza):
+  07_ELIMINAR_DEMO.sql: DEMO 07: datos de la cuenta 2 borrados (notification_deliveries=0, notification_events=0, user_interventions=3, safe_regeneration_attempts=0, plan_adaptation_attempts=3, user_safety_exclusions=1, workout_session_exercises=83, workout_sessions=14, weekly_user_metrics=3, plan_generation_predictions=0, plan_generation_operations=1, planned_workout_exercises=120, planned_workouts=20, weekly_training_plans=4, user_profiles=1).
+Filas de la demo tras 07: {user_profiles=0, weekly_training_plans=0, planned_workouts=0, planned_workout_exercises=0, workout_sessions=0, workout_session_exercises=0, weekly_user_metrics=0, plan_adaptation_attempts=0, safe_regeneration_attempts=0, user_interventions=0, user_safety_exclusions=0, plan_generation_operations=0, notification_events=0, users=1, user_consents=0}
+Otra cuenta tras 07: {user_profiles=1, weekly_training_plans=1, planned_workouts=3, planned_workout_exercises=18, workout_sessions=1, workout_session_exercises=0, weekly_user_metrics=0, plan_adaptation_attempts=0, safe_regeneration_attempts=0, user_interventions=0, user_safety_exclusions=0, plan_generation_operations=0, notification_events=0, users=1, user_consents=1} (identica)
+07 otra vez:
+  07_ELIMINAR_DEMO.sql: DEMO 07: la cuenta 2 no tiene el dataset cargado; perfil demo borrado: 0.
+Recarga de 01-05 despues de 07:
+  01_USUARIO_DEMO.sql: DEMO 01 aplicado: perfil de la cuenta 2
+  02_RUTINA_INICIAL.sql: DEMO 02 aplicado a la cuenta 2 (weekly_training_plans=1, planned_workouts=5, planned_workout_exercises=30)
+  03_HISTORIAL_ADHERENCIA.sql: DEMO 03 aplicado a la cuenta 2 (workout_sessions=4, workout_session_exercises=23, weekly_user_metrics=1, user_safety_exclusions=1)
+  04_ADAPTACIONES.sql: DEMO 04 aplicado a la cuenta 2 (weekly_training_plans=2, planned_workouts=10, planned_workout_exercises=60, workout_sessions=10, workout_session_exercises=60, weekly_user_metrics=2, plan_adaptation_attempts=2, user_interventions=2)
+  05_RUTINA_VIGENTE.sql: DEMO 05 aplicado a la cuenta 2 (weekly_training_plans=1, planned_workouts=5, planned_workout_exercises=30, plan_adaptation_attempts=1, user_interventions=1)
+  07_ELIMINAR_DEMO.sql: DEMO 07: datos de la cuenta 2 borrados (notification_deliveries=0, notification_events=0, user_interventions=3, safe_regeneration_attempts=0, plan_adaptation_attempts=3, user_safety_exclusions=1, workout_session_exercises=83, workout_sessions=14, weekly_user_metrics=3, plan_generation_predictions=0, plan_generation_operations=0, planned_workout_exercises=120, planned_workouts=20, weekly_training_plans=4, user_profiles=1).
