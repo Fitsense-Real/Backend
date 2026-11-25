@@ -44,4 +44,7 @@
 
 ## Regresión
 
-REGRESION_PENDIENTE
+| Ejecución | Commit | Resultado |
+|---|---|---|
+| `mvn verify -Pintegration` completo, local | `67b33a13` (código igual al de la cabeza; lo posterior es documentación) | Unitarias: **1.633, 0 fallos**, 1 omitida. Integración: **918, 0 fallos**, 73 omitidas: las opt-in, entre ellas el arnés pagado `H2v2PrimeraPropuestaIT`. **BUILD SUCCESS** (31 min 16 s) |
+| CI de GitHub (`verify`) | Cabeza de la PR | Ver la PR |
