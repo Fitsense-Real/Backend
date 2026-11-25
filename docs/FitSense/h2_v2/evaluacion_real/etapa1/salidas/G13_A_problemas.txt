@@ -1,0 +1,3 @@
+V24: el ejercicio 1105 del 2026-11-23 no lleva la dosis de ninguna capacidad de INCREASE_STRENGTH. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s].
+V24: el ejercicio 111 del 2026-11-25 no lleva la dosis de ninguna capacidad de INCREASE_STRENGTH. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s].
+V24: el ejercicio 1101 del 2026-11-27 no lleva la dosis de ninguna capacidad de INCREASE_STRENGTH. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s].
