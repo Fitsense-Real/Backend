@@ -1,0 +1,1 @@
+V24: el ejercicio 1000 del 2026-11-25 no aporta ninguna capacidad de LOSE_WEIGHT (clase RESISTIDO). Usa un ejercicio de una capacidad del objetivo.

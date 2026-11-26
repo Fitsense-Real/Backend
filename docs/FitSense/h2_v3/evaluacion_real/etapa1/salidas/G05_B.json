@@ -1,0 +1,268 @@
+{
+  "schema_version": "GEN-IN-1.13",
+  "plan_name": "Semana Hipertrófica 1 - 5 sesiones",
+  "total_volume": 548,
+  "rationale": "Te propongo 5 sesiones orientadas a hipertrofia, con progresión conservadora y foco en técnica y seguridad según tus restricciones.",
+  "workouts": [
+    {
+      "scheduled_date": "2026-11-23",
+      "focus_code": "PUSH",
+      "workout_name": "Pecho, hombros y tríceps - Enfoque fuerza/hipertrofia",
+      "expected_duration_minutes": 24,
+      "exercises": [
+        {
+          "exercise_id": 548,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 472,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 612,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 699,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-24",
+      "focus_code": "PULL",
+      "workout_name": "Espalda y bíceps - Remo y aislamiento",
+      "expected_duration_minutes": 22,
+      "exercises": [
+        {
+          "exercise_id": 433,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 394,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 450,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 555,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-25",
+      "focus_code": "LEGS",
+      "workout_name": "Piernas - Cuádriceps, glúteo y pantorrilla",
+      "expected_duration_minutes": 25,
+      "exercises": [
+        {
+          "exercise_id": 1008,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 789,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 1015,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 714,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-27",
+      "focus_code": "UPPER_BODY",
+      "workout_name": "Parte superior - Empuje y tracción equilibrada",
+      "expected_duration_minutes": 24,
+      "exercises": [
+        {
+          "exercise_id": 421,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 436,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 701,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 561,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-28",
+      "focus_code": "LOWER_BODY",
+      "workout_name": "Piernas - Fuerza y estabilidad (glúteo/cuádriceps/pantorrilla/centro)",
+      "expected_duration_minutes": 23,
+      "exercises": [
+        {
+          "exercise_id": 1237,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 414,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 1043,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        },
+        {
+          "exercise_id": 60,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, evita dolor y movimientos explosivos."
+        }
+      ]
+    }
+  ]
+}
