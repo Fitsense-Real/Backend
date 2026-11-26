@@ -10,12 +10,26 @@
 
 ## Estado en una línea
 
-**PR-2.1 corrige en pruebas controladas las cuatro contradicciones que explicaban las regresiones de PR-2.0** (C10–C13, `01`):
-- se reproducen los rechazos reales de G02, G03, G15, G18 y G19;
-- seguir PR-2.1 al pie de la letra los convierte en semanas válidas, y lo mismo pasa con las 51 salidas reales y las 26 rutinas del motor de reglas;
-- su reintento ya no pide recortar dosis.
+**Evaluación con gpt-5-mini real (opción A): RECHAZADA** (`06`). Falla el bloqueante **K2** (latencia).
 
-**No se ha hecho ninguna llamada pagada. H2 no se declara resuelta:** falta la evaluación con gpt-5-mini real (`04`), que necesita autorización y presupuesto nuevos.
+| Brazo | Mediana de `predict_time` |
+|---|---:|
+| PR-1.7 | 54,4 s |
+| PR-2.1 | **61,0 s** |
+| Máximo permitido (PR-1.7 × 1,10) | 59,8 s |
+
+El resto de criterios se cumple:
+- válidas al primer intento: **23 frente a 18**;
+- casos con V15 de la mitad o V26: **1 frente a 4**;
+- V26 de 5 rechazos a 0, y V24/V25 de 1 caso a 0.
+
+Consecuencias:
+- **se mantiene PR-1.7** y PR-2.1 sigue desactivada;
+- la etapa 2 no se ejecutó, porque estaba condicionada a aprobar la etapa 1;
+- **presupuesto:** USD 3,1327 de 7,60 reservados;
+- **H2 no se declara resuelta.**
+
+Antes de la evaluación, en pruebas controladas sin coste, PR-2.1 corrigió las cuatro contradicciones de PR-2.0 (C10–C13, `01`–`03`).
 
 ## Índice
 
@@ -30,6 +44,7 @@
 | 9–10. Diseño experimental con gpt-5-mini real y presupuesto | `04` |
 | 11. PR nueva e independiente | La PR de esta rama |
 | 12. Riesgos y limitaciones | `05` |
+| Evaluación real (opción A), informe y decisión | `06`; datos en `evaluacion_real/` |
 
 ## Evidencia (`evidencia/`), toda sin coste
 

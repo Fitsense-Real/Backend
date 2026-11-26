@@ -1,0 +1,5 @@
+modo=REAL
+llamadas_proveedor=52
+usd_medido=3.1327 (COTA superior por prediccion)
+corte=ninguno
+modelo=gpt-5-mini formato=direct reasoning_effort=medium verbosity=low max_completion_tokens=16000
