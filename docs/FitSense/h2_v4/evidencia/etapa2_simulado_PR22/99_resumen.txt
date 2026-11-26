@@ -1,0 +1,6 @@
+modo=SIMULADO
+predicciones=16
+reservado_E2_usd=2.0174 (COTA superior por prediccion)
+reservado_total_usd=2.0174
+corte=ninguno
+modelo=gpt-5-mini formato=direct reasoning_effort=medium verbosity=low max_completion_tokens=16000

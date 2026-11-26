@@ -1,0 +1,71 @@
+== G17 A  split=[('PUSH', None), ('PULL', None), ('LEGS', None), ('UPPER_BODY', None), ('LOWER_BODY', None)]
+  2026-11-23 PUSH 6 ej | 323:chest:-:3x6/150 376:should:-:3x6/150 313:upper :-:3x6/150 135:should:-:3x6/150 577:should:-:2x10/90 722:upper :-:2x10/90
+    series por grupo: {'chest': 3, 'shoulders': 8, 'upper arms': 5}
+  2026-11-24 PULL 6 ej | 118:back:-:3x6/150 712:back:-:3x6/150 350:back:-:3x6/150 437:back:-:3x6/150 596:upper :-:2x10/90 450:upper :-:2x10/90
+    series por grupo: {'back': 12, 'upper arms': 4}
+  2026-11-25 LEGS 6 ej | 1059:upper :-:3x6/150 789:upper :-:3x6/150 1008:upper :-:3x6/150 1110:upper :-:3x6/150 294:lower :-:2x13/90 1015:lower :-:2x13/90
+    series por grupo: {'upper legs': 12, 'lower legs': 4}
+  2026-11-27 UPPER_BODY 6 ej | 179:back:-:3x6/150 177:chest:-:3x6/150 1217:should:-:3x6/150 1320:upper :-:3x6/150 333:should:-:2x10/90 555:upper :-:2x10/90
+    series por grupo: {'back': 3, 'chest': 3, 'shoulders': 5, 'upper arms': 5}
+  2026-11-28 LOWER_BODY 6 ej | 1231:upper :-:3x6/150 1009:upper :-:3x6/150 1118:upper :-:3x6/150 1236:upper :-:3x6/150 736:lower :-:2x13/90 1063:waist:-:2x13/90
+    series por grupo: {'upper legs': 12, 'lower legs': 2, 'waist': 2}
+  semana: {'chest': 6, 'shoulders': 13, 'upper arms': 14, 'back': 15, 'upper legs': 24, 'lower legs': 6, 'waist': 2}
+== G17 B  split=[('PUSH', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('PULL', None), ('LEGS', None), ('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4})]
+  2026-11-23 PUSH 5 ej | 323:chest:-:3x6/150 1026:chest:-:3x6/150 1179:chest:-:3x6/150 313:upper :-:3x6/150 708:should:-:2x10/90
+    series por grupo: {'chest': 9, 'upper arms': 3, 'shoulders': 2}
+  2026-11-24 PULL 5 ej | 712:back:-:3x6/150 350:back:-:3x6/150 437:back:-:3x6/150 316:upper :-:3x6/150 597:upper :-:2x10/90
+    series por grupo: {'back': 9, 'upper arms': 5}
+  2026-11-25 LEGS 4 ej | 1059:upper :-:3x6/150 789:upper :-:3x6/150 1114:upper :-:3x6/150 736:lower :-:2x13/90
+    series por grupo: {'upper legs': 9, 'lower legs': 2}
+  2026-11-27 UPPER_BODY 5 ej | 421:chest:-:3x6/150 437:back:-:3x6/150 375:should:-:3x6/150 313:upper :-:3x6/150 578:should:-:2x10/90
+    series por grupo: {'chest': 3, 'back': 3, 'shoulders': 5, 'upper arms': 3}
+  2026-11-28 LOWER_BODY 4 ej | 1235:upper :-:3x6/150 715:upper :-:3x6/150 1118:upper :-:3x6/150 1016:lower :-:2x13/90
+    series por grupo: {'upper legs': 9, 'lower legs': 2}
+  semana: {'chest': 12, 'upper arms': 11, 'shoulders': 7, 'back': 12, 'upper legs': 18, 'lower legs': 4}
+== G21 A  split=[('UPPER_BODY', None), ('LOWER_BODY', None), ('UPPER_BODY', None), ('LOWER_BODY', None)]
+  2026-11-23 UPPER_BODY 5 ej | 712:back:-:3x6/150 592:back:-:3x18/45 53:cardio:-:3x120/60 456:chest:-:2x30/15 442:upper :-:2x10/90
+    series por grupo: {'back': 6, 'cardio': 3, 'chest': 2, 'upper arms': 2}
+  2026-11-24 LOWER_BODY 5 ej | 553:upper :-:3x6/150 1077:upper :-:3x40/45 1324:cardio:-:3x120/60 1150:upper :-:2x30/15 1101:waist:-:2x13/90
+    series por grupo: {'upper legs': 8, 'cardio': 3, 'waist': 2}
+  2026-11-26 UPPER_BODY 5 ej | 548:chest:-:3x6/150 555:upper :-:3x18/45 853:cardio:-:3x120/60 1137:should:-:2x30/15 547:chest:-:3x10/90
+    series por grupo: {'chest': 6, 'upper arms': 3, 'cardio': 3, 'shoulders': 2}
+  2026-11-27 LOWER_BODY 5 ej | 519:upper :-:3x6/150 1017:upper :-:3x18/45 293:cardio:-:3x120/60 1193:upper :-:2x30/15 1018:lower :-:2x13/90
+    series por grupo: {'upper legs': 8, 'cardio': 3, 'lower legs': 2}
+  semana: {'back': 6, 'cardio': 12, 'chest': 8, 'upper arms': 5, 'upper legs': 16, 'waist': 2, 'shoulders': 2, 'lower legs': 2}
+== G21 B  split=[('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4})]
+  2026-11-23 UPPER_BODY 4 ej | 547:chest:-:3x6/150 555:upper :-:3x18/45 1325:cardio:-:3x120/60 456:chest:-:2x30/15
+    series por grupo: {'chest': 5, 'upper arms': 3, 'cardio': 3}
+  2026-11-24 LOWER_BODY 5 ej | 309:upper :-:3x6/150 1015:lower :-:3x18/45 519:upper :-:3x10/90 1324:cardio:-:3x120/60 1150:upper :-:2x30/15
+    series por grupo: {'upper legs': 8, 'lower legs': 3, 'cardio': 3}
+  2026-11-26 UPPER_BODY 4 ej | 712:back:-:3x6/150 555:upper :-:3x18/45 53:cardio:-:3x120/60 66:back:-:2x30/15
+    series por grupo: {'back': 5, 'upper arms': 3, 'cardio': 3}
+  2026-11-27 LOWER_BODY 4 ej | 553:upper :-:3x6/150 1263:upper :-:3x18/45 1133:cardio:-:3x120/60 1193:upper :-:2x30/15
+    series por grupo: {'upper legs': 8, 'cardio': 3}
+  semana: {'chest': 5, 'upper arms': 6, 'cardio': 12, 'upper legs': 16, 'lower legs': 3, 'back': 5}
+== G24 A  split=[('UPPER_BODY', None), ('LOWER_BODY', None), ('UPPER_BODY', None), ('LOWER_BODY', None)]
+  2026-11-23 UPPER_BODY 5 ej | 1026:chest:-:2x8/120 482:back:-:2x15/45 253:cardio:-:3x90/60 1322:should:-:2x30/15 575:should:-:2x10/90
+    series por grupo: {'chest': 2, 'back': 2, 'cardio': 3, 'shoulders': 4}
+  2026-11-26 LOWER_BODY 5 ej | 1017:upper :-:2x8/120 294:lower :-:2x15/45 1325:cardio:-:3x90/60 978:upper :-:2x30/15 1073:upper :-:2x10/90
+    series por grupo: {'upper legs': 6, 'lower legs': 2, 'cardio': 3}
+  2026-11-27 UPPER_BODY 5 ej | 74:back:-:2x8/120 1052:upper :-:2x15/45 1054:cardio:-:3x90/60 1137:should:-:2x30/15 705:should:-:2x10/90
+    series por grupo: {'back': 2, 'upper arms': 2, 'cardio': 3, 'shoulders': 4}
+  2026-11-29 LOWER_BODY 5 ej | 1004:upper :-:2x8/120 499:waist:-:2x15/45 1117:cardio:-:3x90/60 1254:lower :-:2x30/15 121:upper :-:2x10/90
+    series por grupo: {'upper legs': 4, 'waist': 2, 'cardio': 3, 'lower legs': 2}
+  semana: {'chest': 2, 'back': 4, 'cardio': 12, 'shoulders': 8, 'upper legs': 10, 'lower legs': 4, 'upper arms': 2, 'waist': 2}
+== G24 B  split=[('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4})]
+  2026-11-23 UPPER_BODY 4 ej | 1026:chest:-:2x8/120 482:back:-:2x15/45 1054:cardio:-:3x90/60 1322:should:-:2x30/15
+    series por grupo: {'chest': 2, 'back': 2, 'cardio': 3, 'shoulders': 2}
+  2026-11-26 LOWER_BODY 4 ej | 1017:upper :-:2x8/120 1073:upper :-:2x15/45 1325:cardio:-:3x90/60 1151:upper :-:2x30/15
+    series por grupo: {'upper legs': 6, 'cardio': 3}
+  2026-11-27 UPPER_BODY 4 ej | 739:should:-:2x8/120 446:upper :-:2x15/45 1117:cardio:-:3x90/60 1137:should:-:2x30/15
+    series por grupo: {'shoulders': 4, 'upper arms': 2, 'cardio': 3}
+  2026-11-29 LOWER_BODY 4 ej | 1004:upper :-:2x8/120 294:lower :-:2x15/45 253:cardio:-:3x90/60 978:upper :-:2x30/15
+    series por grupo: {'upper legs': 4, 'lower legs': 2, 'cardio': 3}
+  semana: {'chest': 2, 'back': 2, 'cardio': 12, 'shoulders': 6, 'upper legs': 10, 'upper arms': 2, 'lower legs': 2}
+== G17 B (PR-2.1)
+V15: el entrenamiento del 2026-11-23 dedica 3 de 5 ejercicios a chest. Reparte entre los grupos del enfoque PUSH.
+V15: el entrenamiento del 2026-11-28 dedica 3 de 4 ejercicios a upper legs. Reparte entre los grupos del enfoque LOWER_BODY.
+== G21 B (PR-2.1)
+V15: el entrenamiento del 2026-11-27 tiene enfoque LOWER_BODY y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs, waist].
+== G24 B (PR-2.1)
+V15: el entrenamiento del 2026-11-26 tiene enfoque LOWER_BODY y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs, waist].

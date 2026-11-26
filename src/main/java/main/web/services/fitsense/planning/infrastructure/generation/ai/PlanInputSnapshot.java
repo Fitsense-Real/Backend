@@ -293,6 +293,8 @@ public record PlanInputSnapshot(
              */
             @JsonInclude(JsonInclude.Include.NON_NULL)
             @JsonProperty("prioridad_series_semana") Map<String, Integer> prioridadSeriesSemana,
+            /** Hasta PR-2.1. Con PR-2.2 va marcado en cada ejercicio ("cuenta") y aqui es null. */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @JsonProperty("no_cuentan") List<Long> noCuentan) {
 
         /** PR-2.0. */
@@ -331,12 +333,26 @@ public record PlanInputSnapshot(
              * persona (los que V15 cuenta como disponibles). Repartir solo puede hacerse entre estos.
              */
             @JsonInclude(JsonInclude.Include.NON_NULL)
-            @JsonProperty("body_parts_con_material") List<String> bodyPartsConMaterial) {
+            @JsonProperty("body_parts_con_material") List<String> bodyPartsConMaterial,
+            /**
+             * H2-v4 (PR-2.2): true si V15 aplica en esta sesion la regla de la mitad (enfoque de 3 o mas grupos; con 4
+             * o mas ejercicios de trabajo, ninguno pasa de la mitad). Sustituye a max_per_body_part_por_n_trabajo, que
+             * era esa misma mitad escrita como tabla. Con las demas versiones es null y NO se serializa.
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("regla_mitad") Boolean reglaMitad) {
 
         /** Contrato historico (PR-1.7). */
         public SuggestedSession(LocalDate scheduledDate, String focusCode, List<String> bodyParts,
                                 Integer minBodyParts, Integer maxPerBodyPart) {
-            this(scheduledDate, focusCode, bodyParts, minBodyParts, maxPerBodyPart, null, null);
+            this(scheduledDate, focusCode, bodyParts, minBodyParts, maxPerBodyPart, null, null, null);
+        }
+
+        /** PR-2.0 y PR-2.1. */
+        public SuggestedSession(LocalDate scheduledDate, String focusCode, List<String> bodyParts,
+                                Integer minBodyParts, Integer maxPerBodyPart, Map<String, Integer> tabla,
+                                List<String> conMaterial) {
+            this(scheduledDate, focusCode, bodyParts, minBodyParts, maxPerBodyPart, tabla, conMaterial, null);
         }
     }
 
@@ -479,14 +495,31 @@ public record PlanInputSnapshot(
              * que admite este ejercicio. Es lo que viaja: la lista completa de
              * arriba sigue disponible en Java, pero ya no se serializa.
              */
-            @JsonProperty("dosis") List<String> dosis) {
+            @JsonProperty("dosis") List<String> dosis,
+            /**
+             * H2-v4 (PR-2.2): {@code "complemento"} si V15 y V26 no lo cuentan (cardio y movilidad), {@code
+             * "sin_series"} si cuenta para el reparto de V15 pero sus series no son directas para V26. Sustituye a las
+             * listas complementos_no_cuentan y volumen_semanal.no_cuentan. Con las demas versiones es null y NO se
+             * serializa.
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("cuenta") String cuenta) {
 
         /** Compatibilidad con GEN-IN-1.10. */
         public AvailableExercise(Long exerciseId, String name, String bodyPart, String equipment, int difficulty,
                                  String prescriptionType, String targetMuscle, Integer minReps,
                                  String movementPattern, String slot, String claseDosis) {
             this(exerciseId, name, bodyPart, equipment, difficulty, prescriptionType, targetMuscle, minReps,
-                    movementPattern, slot, claseDosis, null, null);
+                    movementPattern, slot, claseDosis, null, null, null);
+        }
+
+        /** Hasta PR-2.1: sin la marca de lo que no cuenta. */
+        public AvailableExercise(Long exerciseId, String name, String bodyPart, String equipment, int difficulty,
+                                 String prescriptionType, String targetMuscle, Integer minReps,
+                                 String movementPattern, String slot, String claseDosis,
+                                 List<DosisCapacidad> dosisPorCapacidad, List<String> dosis) {
+            this(exerciseId, name, bodyPart, equipment, difficulty, prescriptionType, targetMuscle, minReps,
+                    movementPattern, slot, claseDosis, dosisPorCapacidad, dosis, null);
         }
     }
 
@@ -609,6 +642,7 @@ public record PlanInputSnapshot(
     public static PlanInputSnapshot of(PlanGenerationContext context, String promptVersion) {
         boolean h2v2 = PlanPromptBuilder.esH2v2(promptVersion);
         boolean h2v3 = PlanPromptBuilder.esH2v3(promptVersion);
+        boolean h2v4 = PlanPromptBuilder.esH2v4(promptVersion);
         var profile = context.profile();
 
         var user = new User(profile.age(), profile.biologicalSex(), profile.heightCm(),
@@ -637,6 +671,9 @@ public record PlanInputSnapshot(
         var complementosH2 = !h2v2 ? null
                 : main.web.services.fitsense.planning.domain.services.ContratoReparto.complementos(context);
         int maxTrabajo = maxColoc == null ? 10 : maxColoc;
+        // H2-v4: lo que V26 no cuenta como series directas, para marcarlo en cada ejercicio.
+        var volumenH2 = !h2v4 ? null : main.web.services.fitsense.planning.domain.services.ContratoReparto.volumen(context);
+        java.util.Set<Long> noCuentanH2 = volumenH2 == null ? java.util.Set.of() : java.util.Set.copyOf(volumenH2.noCuentan());
 
         // GEN-IN-1.12: las dosis por capacidad de cada candidato se calculan una
         // vez; la tabla de codigos sale de todas ellas.
@@ -656,7 +693,7 @@ public record PlanInputSnapshot(
                 context.prescription() == null ? null : context.prescription().maxRestSecondsOrDefault(),
                 context.suggestedSplit().stream()
                         .map(session -> h2v2 ? suggestedSessionH2v2(session, minExercises, maxTrabajo, context,
-                                complementosH2) : suggestedSession(session, minExercises))
+                                complementosH2, h2v4) : suggestedSession(session, minExercises))
                         .toList(),
                 reduceVolumeCapsOrNull(context),
                 !dosisFijada ? null : tablaDosis(),
@@ -675,8 +712,8 @@ public record PlanInputSnapshot(
                 context.policy().v4Segundos()
                         ? context.policy().limiteV4SegundosDe(context.profile().sessionMinutes())
                         : null,
-                !h2v2 ? null : complementosH2.stream().sorted().toList(),
-                !h2v2 ? null : volumenSemanalOrNull(context, h2v3));
+                !h2v2 || h2v4 ? null : complementosH2.stream().sorted().toList(),
+                !h2v2 ? null : volumenSemanalOrNull(context, h2v3 || h2v4, h2v4));
 
         var adjustment = context.adjustment() == null ? null : new Adjustment(
                 context.adjustment().types().stream().map(Enum::name).toList(),
@@ -753,7 +790,9 @@ public record PlanInputSnapshot(
                             minRepsOrNull(candidate, limites, profile.fitnessLevel()),
                             candidate.movementPattern(),
                             etiquetas.slot(), etiquetas.claseDosis(), dosis,
-                            dosis == null ? null : dosis.stream().map(codigos::get).toList()));
+                            dosis == null ? null : dosis.stream().map(codigos::get).toList(),
+                            !h2v4 ? null : complementosH2.contains(candidate.exerciseId()) ? "complemento"
+                                    : noCuentanH2.contains(candidate.exerciseId()) ? "sin_series" : null));
         });
 
         var random = new java.util.Random(
@@ -791,7 +830,8 @@ public record PlanInputSnapshot(
      */
     private static SuggestedSession suggestedSessionH2v2(
             main.web.services.fitsense.planning.domain.services.WeeklySplitPlanner.PlannedSession session,
-            Integer minExercises, int maxTrabajo, PlanGenerationContext context, java.util.Set<Long> complementos) {
+            Integer minExercises, int maxTrabajo, PlanGenerationContext context, java.util.Set<Long> complementos,
+            boolean h2v4) {
         var grupos = session.focus().bodyPartCodes();
         var conMaterial = main.web.services.fitsense.planning.domain.services.ContratoReparto
                 .gruposConMaterial(session.focus(), context, complementos);
@@ -800,12 +840,15 @@ public record PlanInputSnapshot(
                 : Math.min(2, Math.min(conMaterial.size(), minExercises));
         var tabla = main.web.services.fitsense.planning.domain.services.ContratoReparto.tablaMitad(grupos.size(),
                 maxTrabajo);
+        if (h2v4)
+            return new SuggestedSession(session.date(), session.focus().name(), List.copyOf(grupos), minGrupos, null,
+                    null, conMaterial, tabla.isEmpty() ? null : Boolean.TRUE);
         return new SuggestedSession(session.date(), session.focus().name(), List.copyOf(grupos), minGrupos, null,
                 tabla.isEmpty() ? null : tabla, conMaterial);
     }
 
     /** H2-v2: los techos de V26, o null si la politica no aplica V26. */
-    private static VolumenSemanal volumenSemanalOrNull(PlanGenerationContext context, boolean h2v3) {
+    private static VolumenSemanal volumenSemanalOrNull(PlanGenerationContext context, boolean h2v3, boolean h2v4) {
         var v = main.web.services.fitsense.planning.domain.services.ContratoReparto.volumen(context);
         if (v == null) return null;
         if (!h2v3) return new VolumenSemanal(v.techoSesion(), v.techoSemana(), v.objetivoSemana(), v.noCuentan());
@@ -813,7 +856,7 @@ public record PlanInputSnapshot(
         v.objetivoSemana().forEach((g, n) -> {
             if (n != null && n > 0) prioridad.put(g, n);
         });
-        return new VolumenSemanal(v.techoSesion(), v.techoSemana(), null, prioridad, v.noCuentan());
+        return new VolumenSemanal(v.techoSesion(), v.techoSemana(), null, prioridad, h2v4 ? null : v.noCuentan());
     }
 
     private static SuggestedSession suggestedSession(

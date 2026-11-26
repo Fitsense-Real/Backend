@@ -1,0 +1,9 @@
+modo;caso;brazo;orden;prompt_version;semana;estado_operacion;origen;modelo;intentos_plan;predicciones;ms_total;primera_valida;rechazos_v15_mitad;rechazos_v26;otros_por_intento;motivo_respaldo;revalidacion_publicado;fuera_de_available;prediction_ids;detalle
+SIMULADO;G25;A;1;PR-1.7;2026-11-30;COMPLETED;AI;gpt-5-mini;1;1;551;true;0;0;[];-;VALIDA;0;sim4;
+SIMULADO;G25;B;2;PR-2.2;2026-11-30;COMPLETED;RULE_ENGINE;-;4;3;1190;false;0;0;[{CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}];RECHAZOS;VALIDA;0;sim5 sim6 sim7;
+SIMULADO;G26;B;1;PR-2.2;2026-11-30;COMPLETED;AI;gpt-5-mini;1;1;407;true;0;0;[];-;VALIDA;0;sim11;
+SIMULADO;G26;A;2;PR-1.7;2026-11-30;COMPLETED;RULE_ENGINE;-;4;3;1021;false;0;0;[{CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}];RECHAZOS;VALIDA;0;sim12 sim13 sim14;
+SIMULADO;G21;A;1;PR-1.7;2026-11-30;COMPLETED;RULE_ENGINE;-;4;3;1194;false;0;0;[{CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}];RECHAZOS;VALIDA;0;sim15 sim16 sim17;
+SIMULADO;G21;B;2;PR-2.2;2026-11-30;COMPLETED;AI;gpt-5-mini;1;1;578;true;0;0;[];-;VALIDA;0;sim21;
+SIMULADO;G24;B;1;PR-2.2;2026-11-30;COMPLETED;AI;gpt-5-mini;1;1;434;true;0;0;[];-;VALIDA;0;sim25;
+SIMULADO;G24;A;2;PR-1.7;2026-11-30;COMPLETED;RULE_ENGINE;-;4;3;1040;false;0;0;[{CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}, {CONTRATO/OTRO=1}];RECHAZOS;VALIDA;0;sim26 sim27 sim28;

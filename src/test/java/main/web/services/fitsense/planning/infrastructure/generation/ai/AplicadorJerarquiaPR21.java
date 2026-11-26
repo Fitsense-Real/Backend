@@ -42,12 +42,18 @@ final class AplicadorJerarquiaPR21 {
 
     AplicadorJerarquiaPR21(String instantaneaPR21) throws Exception {
         snap = JSON.readTree(instantaneaPR21);
-        if (!PlanPromptBuilder.VERSION_H2V3.equals(snap.path("prompt_version").asText()))
-            throw new IllegalArgumentException("se necesita la instantanea de PR-2.1");
+        String version = snap.path("prompt_version").asText();
+        if (!PlanPromptBuilder.VERSION_H2V3.equals(version) && !PlanPromptBuilder.VERSION_H2V4.equals(version))
+            throw new IllegalArgumentException("se necesita la instantanea de PR-2.1 o PR-2.2");
         c = snap.get("constraints");
         snap.get("available_exercises").forEach(e -> ex.put(e.get("exercise_id").asLong(), e));
+        // PR-2.1: dos listas de ids. PR-2.2: la marca "cuenta" en cada ejercicio (lo mismo, sin cruces).
         c.path("complementos_no_cuentan").forEach(x -> complementos.add(x.asLong()));
         c.path("volumen_semanal").path("no_cuentan").forEach(x -> noCuentan.add(x.asLong()));
+        ex.forEach((id, e) -> {
+            if ("complemento".equals(e.path("cuenta").asText(null))) complementos.add(id);
+            if ("sin_series".equals(e.path("cuenta").asText(null))) noCuentan.add(id);
+        });
         c.get("suggested_split").forEach(s -> sesionPorFecha.put(s.get("scheduled_date").asText(), s));
         porClase = c.hasNonNull("dosis_por_clase");
     }
@@ -175,16 +181,16 @@ final class AplicadorJerarquiaPR21 {
         for (var w : sesiones) {
             var s = sesionPorFecha.get(w.get("scheduled_date").asText());
             if (s == null) continue;
-            for (int guarda = 0; guarda < 10 && s.hasNonNull("max_per_body_part_por_n_trabajo"); guarda++) {
+            for (int guarda = 0; guarda < 10 && mitadAplica(s); guarda++) {
                 var trabajo = ejercicios(w).stream().filter(e -> !complementos.contains(id(e))).toList();
-                var tope = s.get("max_per_body_part_por_n_trabajo").get(String.valueOf(trabajo.size()));
+                var tope = tope(s, trabajo.size());
                 if (tope == null) break;
                 var cuenta = new TreeMap<String, Integer>();
                 trabajo.forEach(e -> cuenta.merge(grupo(id(e)), 1, Integer::sum));
-                var sobra = cuenta.entrySet().stream().filter(x -> x.getValue() > tope.asInt()).map(Map.Entry::getKey)
+                var sobra = cuenta.entrySet().stream().filter(x -> x.getValue() > tope).map(Map.Entry::getKey)
                         .findFirst().orElse(null);
                 if (sobra == null) break;
-                sustituir(w, s, sobra, cuenta, tope.asInt(), sesiones, "V15 reparto");
+                sustituir(w, s, sobra, cuenta, tope, sesiones, "V15 reparto");
             }
             // Minimo de grupos: si faltan, el grupo que mas tiene cede una colocacion a uno que falte.
             for (int guarda = 0; guarda < 4; guarda++) {
@@ -197,12 +203,26 @@ final class AplicadorJerarquiaPR21 {
                 if (cubiertos >= s.path("min_body_parts").asInt(0) || cuenta.isEmpty()) break;
                 var mas = cuenta.entrySet().stream().max(Map.Entry.comparingByValue()).orElseThrow().getKey();
                 if (cuenta.get(mas) < 2) break;
-                var tabla = s.path("max_per_body_part_por_n_trabajo").get(String.valueOf(trabajo.size()));
+                Integer tabla = mitadAplica(s) ? tope(s, trabajo.size()) : null;
                 int antes = cambios.size();
-                sustituir(w, s, mas, cuenta, tabla == null ? Integer.MAX_VALUE : tabla.asInt(), sesiones, "V15 grupos");
+                sustituir(w, s, mas, cuenta, tabla == null ? Integer.MAX_VALUE : tabla, sesiones, "V15 grupos");
                 if (cambios.size() == antes) break;
             }
         }
+    }
+
+    /** PR-2.1: la sesion trae la tabla; PR-2.2: trae "regla_mitad": true. */
+    private static boolean mitadAplica(JsonNode s) {
+        return s.hasNonNull("max_per_body_part_por_n_trabajo") || s.path("regla_mitad").asBoolean(false);
+    }
+
+    /** El tope de la mitad con {@code n} de trabajo: el valor de la tabla (PR-2.1) o n / 2 desde 4 (PR-2.2). */
+    private static Integer tope(JsonNode s, int n) {
+        if (s.hasNonNull("max_per_body_part_por_n_trabajo")) {
+            var t = s.get("max_per_body_part_por_n_trabajo").get(String.valueOf(n));
+            return t == null ? null : t.asInt();
+        }
+        return n >= 4 ? n / 2 : null;
     }
 
     /** Cambia una colocacion de {@code sobra} por una de un grupo con material que falte o tenga menos, o la quita. */

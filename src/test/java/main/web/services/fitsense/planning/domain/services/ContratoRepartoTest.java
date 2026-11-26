@@ -38,7 +38,7 @@ class ContratoRepartoTest {
     }
 
     @Test
-    @DisplayName("Version: PR-1.7 por omision, PR-2.0 y PR-2.1 explicitas, cualquier otra es un error")
+    @DisplayName("Version: PR-1.7 por omision, PR-2.0, PR-2.1 y PR-2.2 explicitas, cualquier otra es un error")
     void version() {
         assertFalse(PlanPromptBuilder.esH2v2(null));
         assertFalse(PlanPromptBuilder.esH2v2(""));
@@ -48,7 +48,11 @@ class ContratoRepartoTest {
         assertTrue(PlanPromptBuilder.esH2v3(" PR-2.1 "));
         assertFalse(PlanPromptBuilder.esH2v3("PR-2.0"));
         assertFalse(PlanPromptBuilder.esH2v3("PR-1.7"));
-        assertThrows(IllegalArgumentException.class, () -> PlanPromptBuilder.esH2v3("PR-2.2"));
+        assertTrue(PlanPromptBuilder.esH2v4("PR-2.2"));
+        assertTrue(PlanPromptBuilder.esH2v2("PR-2.2"), "PR-2.2 usa el contrato H2");
+        assertFalse(PlanPromptBuilder.esH2v3("PR-2.2"));
+        assertFalse(PlanPromptBuilder.esH2v4("PR-2.1"));
+        assertThrows(IllegalArgumentException.class, () -> PlanPromptBuilder.esH2v4("PR-2.3"));
         assertThrows(IllegalArgumentException.class, () -> PlanPromptBuilder.esH2v2("PR-1.9"),
                 "PR-1.9 (#69) no esta en esta rama");
         assertThrows(IllegalArgumentException.class, () -> PlanPromptBuilder.esH2v2("pr-2.0"));
