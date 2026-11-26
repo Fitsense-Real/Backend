@@ -55,4 +55,8 @@ No es un generador ni predice al modelo. Comprueba que **seguir las instruccione
 
 ## 4. Regresión y CI
 
-Ver el README (§Regresión), que se completa con el resultado de la ejecución completa y del CI de la PR.
+- `mvn verify -Pintegration` completo, local:
+  - unitarias: **1.635, 0 fallos**;
+  - integración: **927, 0 fallos**, 74 omitidas (las opcionales);
+  - BUILD SUCCESS.
+- CI de GitHub: ver la PR.

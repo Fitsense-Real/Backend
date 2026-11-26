@@ -46,5 +46,5 @@
 
 | Ejecución | Resultado |
 |---|---|
-| `mvn verify -Pintegration` completo, local | Pendiente de anotar al terminar |
+| `mvn verify -Pintegration` completo, local, sobre el código de `4dcd3773` | Unitarias: **1.635, 0 fallos**, 1 omitida. Integración: **927, 0 fallos**, 74 omitidas (las opcionales, entre ellas los arneses pagados). **BUILD SUCCESS** (31 min 4 s). Incluye `H2v3RegresionesIT`, `H2v3PipelineSimuladoIT`, `ContratoH2v2IT` y `H2v2PipelineSimuladoIT` |
 | CI de GitHub (`verify`) | Ver la PR |
