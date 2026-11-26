@@ -1,0 +1,28 @@
+import java.io.*; import java.net.*; import java.util.concurrent.atomic.*;
+public class Retry {
+  public static void main(String[] a) throws Exception {
+    var cuenta = new AtomicInteger();
+    var ss = new ServerSocket(0, 50, InetAddress.getLoopbackAddress());
+    String modo = a[0];
+    new Thread(() -> { while (true) { try { var s = ss.accept(); new Thread(() -> { try {
+        var in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        String l; int len = 0; String primera = in.readLine();
+        while ((l = in.readLine()) != null && !l.isEmpty()) if (l.toLowerCase().startsWith("content-length:")) len = Integer.parseInt(l.substring(15).trim());
+        for (int i = 0; i < len; i++) in.read();
+        cuenta.incrementAndGet();
+        var out = s.getOutputStream();
+        if (modo.equals("parcial")) { out.write("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 500\r\n\r\n{\"id\":\"p1\"".getBytes()); out.flush(); Thread.sleep(20000); }
+        else if (modo.equals("sincabeceras")) { out.write("HTTP/1.1 201 Created\r\nContent-Length: 500\r\n\r\n{\"id\":\"p1\"".getBytes()); out.flush(); s.close(); }
+        else if (modo.equals("cierra")) { s.close(); }
+      } catch (Exception e) {} }).start(); } catch (IOException e) { return; } } }).start();
+    var c = (HttpURLConnection) new URL("http://127.0.0.1:" + ss.getLocalPort() + "/p").openConnection();
+    c.setReadTimeout(3000); c.setDoOutput(true); c.setRequestMethod(a.length > 1 ? a[1] : "POST");
+    long t = System.nanoTime();
+    try { if (c.getRequestMethod().equals("POST")) c.getOutputStream().write("{\"input\":{}}".getBytes());
+      System.out.println("status " + c.getResponseCode() + " ct=" + c.getContentType()); c.getInputStream().readAllBytes(); }
+    catch (Exception e) { System.out.println("excepcion " + e); }
+    Thread.sleep(300);
+    System.out.println(modo + " " + c.getRequestMethod() + ": peticiones recibidas por el servidor=" + cuenta.get() + " ms=" + (System.nanoTime()-t)/1000000);
+    System.exit(0);
+  }
+}
