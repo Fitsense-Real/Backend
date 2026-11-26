@@ -91,6 +91,70 @@ class H2v2PrimeraPropuestaIT {
 
     static final String MODO = System.getProperty("fitsense.h2v2.modo", "");
     /**
+     * Opcion C de H2-v4: replicas por perfil (0 = modo historico, una pareja por perfil y nombres sin replica). Con 1 o 2,
+     * el plan, las claves y el registro de {@link PlanEjecucionH2}.
+     */
+    static final int REPLICAS = Integer.getInteger("fitsense.h2v2.replicas", 0);
+    /** Solo esa replica (0 = todas): parte la corrida sin cambiar el orden fijado. */
+    static final int SOLO_REPLICA = Integer.getInteger("fitsense.h2v2.solo-replica", 0);
+    /** SIMULADO: Replicate local (sin coste), para probar plan, reanudacion, reservas y corte de punta a punta. */
+    static final boolean SIMULADO = "SIMULADO".equals(MODO);
+    /** SIMULADO: tras N predicciones de esta corrida se interrumpe (para probar la reanudacion). 0 = no. */
+    static final int DETENER_TRAS = Integer.getInteger("fitsense.h2v2.detener-tras", 0);
+    static final java.util.concurrent.atomic.AtomicInteger POSTS_SIM = new java.util.concurrent.atomic.AtomicInteger();
+    static final com.sun.net.httpserver.HttpServer SIM;
+
+    static {
+        com.sun.net.httpserver.HttpServer s = null;
+        if (SIMULADO) {
+            try {
+                s = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
+            } catch (java.io.IOException e) {
+                throw new IllegalStateException(e);
+            }
+            s.createContext("/v1/models/", x -> {
+                x.getRequestBody().readAllBytes();
+                responderSim(x, 201, prediccionSim("sim" + POSTS_SIM.incrementAndGet(), "starting"));
+            });
+            s.createContext("/v1/predictions/", x -> responderSim(x, 200, prediccionSim(
+                    x.getRequestURI().getPath().substring("/v1/predictions/".length()), "succeeded")));
+            s.start();
+        }
+        SIM = s;
+    }
+
+    static String baseSim() {
+        return "http://127.0.0.1:" + SIM.getAddress().getPort();
+    }
+
+    static String prediccionSim(String id, String estado) {
+        return "{\"id\":\"" + id + "\",\"status\":\"" + estado + "\",\"output\":" + (estado.equals("succeeded")
+                ? "\"{}\"" : "null") + ",\"error\":null,\"urls\":{\"get\":\"" + baseSim() + "/v1/predictions/" + id
+                + "\",\"cancel\":\"" + baseSim() + "/v1/predictions/" + id + "/cancel\"}}";
+    }
+
+    static void responderSim(com.sun.net.httpserver.HttpExchange x, int codigo, String cuerpo) throws java.io.IOException {
+        byte[] b = cuerpo.getBytes(StandardCharsets.UTF_8);
+        x.getResponseHeaders().add("Content-Type", "application/json");
+        x.sendResponseHeaders(codigo, b.length);
+        try (var o = x.getResponseBody()) {
+            o.write(b);
+        }
+    }
+
+    @org.springframework.test.context.DynamicPropertySource
+    static void replicateSimulado(org.springframework.test.context.DynamicPropertyRegistry r) {
+        if (SIMULADO) {
+            r.add("fitsense.ai.base-url", () -> baseSim() + "/v1/models/openai/gpt-5-mini/predictions");
+            r.add("fitsense.ai.poll-interval-millis", () -> "50");
+        }
+    }
+
+    @org.junit.jupiter.api.AfterAll
+    static void pararSim() {
+        if (SIM != null) SIM.stop(0);
+    }
+    /**
      * Version del brazo B (tratamiento). PR-2.0 por omision, la de la evaluacion de H2-v2 (su evidencia sigue siendo
      * reproducible); {@code -Dfitsense.h2v2.version-b=PR-2.1} para H2-v3. El brazo A es siempre PR-1.7.
      */
@@ -117,8 +181,9 @@ class H2v2PrimeraPropuestaIT {
     /** Tope total del libro (7,50 el de H2-v2; el de H2-v3 se abrio con 7,60). Lo fija el libro al crearse. */
     static final double TOPE_TOTAL = Double.parseDouble(System.getProperty("fitsense.h2v2.tope-total-usd",
             String.valueOf(LibroPresupuestoH2v2.TOPE_TOTAL_USD)));
-    final LibroPresupuestoH2v2 libro = new LibroPresupuestoH2v2(Path.of(System.getProperty("fitsense.h2v2.libro",
-            "docs/FitSense/h2_v2/evaluacion_real/libro_presupuesto.csv")), TOPE_TOTAL);
+    /** El libro real: solo en modo REAL (SIMULADO usa uno aparte; PROMPTS y VALIDAR no reservan). */
+    final LibroPresupuestoH2v2 libro = !REAL ? null : new LibroPresupuestoH2v2(Path.of(System.getProperty(
+            "fitsense.h2v2.libro", "docs/FitSense/h2_v2/evaluacion_real/libro_presupuesto.csv")), TOPE_TOTAL);
 
     /** Una linea por prediccion recibida, al momento (para reanudar sin repetir ni pagar dos veces). */
     private void anotarRegistro(String linea) {
@@ -179,7 +244,12 @@ class H2v2PrimeraPropuestaIT {
 
     @Test
     void primeraPropuestaPareada() throws Exception {
-        assumeTrue(MODO.equals("PROMPTS") || REAL || VALIDAR, "opt-in: -Dfitsense.h2v2.modo=PROMPTS|REAL|VALIDAR");
+        assumeTrue(MODO.equals("PROMPTS") || REAL || VALIDAR || SIMULADO,
+                "opt-in: -Dfitsense.h2v2.modo=PROMPTS|REAL|VALIDAR|SIMULADO");
+        if (REPLICAS > 0 || SIMULADO) {
+            pareadaConReplicas();
+            return;
+        }
         var registro = new HashMap<String, String[]>();
         if (VALIDAR && !REGISTRO.isBlank())
             for (var l : Files.readAllLines(Path.of(REGISTRO)))
@@ -308,6 +378,162 @@ class H2v2PrimeraPropuestaIT {
         escribir(filas, gastado, corte);
     }
 
+    /**
+     * OPCION C (H2-v4): parejas con REPLICAS, en el orden fijado de {@link PlanEjecucionH2}. REAL (con coste, libro y tope),
+     * SIMULADO (Replicate local, libro aparte) o VALIDAR (sin coste, sobre las salidas guardadas). Reanuda sin repetir: lo
+     * que ya esta en el registro con su salida no se vuelve a pedir.
+     */
+    private void pareadaConReplicas() throws Exception {
+        int replicas = Math.max(1, REPLICAS);
+        if (REAL) {
+            assertEquals("SI", System.getProperty("fitsense.h2v2.autorizado"), "REAL exige autorizado=SI");
+            assertTrue(TOPE_USD > 0, "REAL exige tope-usd");
+        }
+        assertEquals(ReplicateProperties.Formato.DIRECT, propiedades.formato(), "la evaluacion es con gpt-5-mini directo");
+        assertEquals("medium", propiedades.reasoningEffort());
+        assertEquals("low", propiedades.verbosity());
+        assertEquals(16_000, propiedades.maxCompletionTokens());
+        Files.createDirectories(SALIDA.resolve("salidas"));
+        escuchar();
+        var libroUsado = SIMULADO ? new LibroPresupuestoH2v2(SALIDA.resolve("libro_simulado.csv"), TOPE_TOTAL) : libro;
+        if (REAL || SIMULADO) assertTrue(TOPE_USD <= libroUsado.topeTotal(), "el tope de la etapa no supera el total");
+        var reg = new PlanEjecucionH2.Registro(SALIDA.resolve("registro_replicas.csv"), SALIDA.resolve("salidas"));
+        var hechas = reg.hechas();
+        System.out.println("H2V2_LIBRO reservado_total=" + libroUsado.reservado(null) + " reservado_" + ETAPA + "="
+                + libroUsado.reservado(ETAPA) + " saldo=" + libroUsado.saldo() + " ya_hechas=" + hechas.size());
+        var todos = casos();
+        var ids = todos.stream().map(Caso::id).toList();
+        var contextos = new HashMap<String, PlanGenerationContext>();
+        var peticiones = new HashMap<String, Peticion>();
+        var filas = new ArrayList<Map.Entry<Integer, Fila>>();
+        double gastado = 0;
+        int nuevas = 0;
+        String corte = null;
+        for (var paso : PlanEjecucionH2.plan(ids, replicas, SOLO_REPLICA)) {
+            var c = todos.get(ids.indexOf(paso.caso()));
+            int r = paso.replica();
+            PlanGenerationContext ctx;
+            try {
+                ctx = contextos.computeIfAbsent(c.id(), k -> {
+                    var x = planComandos.prepare(GenerateWeeklyPlanCommand.firstPlan(participante(c), SEMANA)).context();
+                    assertEquals("PLAN-REV-2.0", x.policy().id(), "la politica por omision, igual en los dos brazos");
+                    return x;
+                });
+            } catch (RuntimeException e) {
+                for (var b : paso.orden())
+                    filas.add(Map.entry(r, new Fila(c, b, 0, "NO_FACTIBLE_PREPARE", "-", 0, 0, "-", 0, 0, "-", 0, 0, "-",
+                            e.getClass().getSimpleName() + ": " + e.getMessage())));
+                continue;
+            }
+            for (var b : paso.orden())
+                peticiones.computeIfAbsent(c.id() + "_" + b, k -> construir(ctx, b.equals("B")));
+            var inviable = FactibilidadGeneracionIA.evaluar(ctx, validador.coverageEnforcement(),
+                    validador.capabilityEnforcement());
+            if (inviable.isPresent()) {
+                for (var b : paso.orden()) {
+                    var p = peticiones.get(c.id() + "_" + b);
+                    filas.add(Map.entry(r, new Fila(c, b, 0, "NO_INVOCADA_INVIABLE", p.version(), p.prompt().length(),
+                            p.cota(), "-", 0, 0, "-", 0, 0, "-", inviable.get().describe())));
+                }
+                continue;
+            }
+            var faltan = paso.orden().stream().filter(b -> !hechas.containsKey(paso.clave(b))).toList();
+            if (VALIDAR) {
+                int k = 0;
+                for (var b : paso.orden()) {
+                    k++;
+                    var p = peticiones.get(c.id() + "_" + b);
+                    var previo = hechas.get(paso.clave(b));
+                    if (previo == null) {
+                        filas.add(Map.entry(r, new Fila(c, b, k, "NO_DISPONIBLE", p.version(), p.prompt().length()
+                                + p.sistema().length(), p.cota(), "-", 0, 0, "-", 0, 0, "-", "sin salida guardada")));
+                        continue;
+                    }
+                    filas.add(Map.entry(r, validarSalida(c, b, k, ctx, p, Files.readString(reg.salida(paso.clave(b))),
+                            previo[3], Long.parseLong(previo[4]), "VALIDAR", paso.clave(b))));
+                }
+                continue;
+            }
+            double pareja = faltan.stream().mapToDouble(b -> peticiones.get(c.id() + "_" + b).cota()).sum();
+            if (corte == null && !faltan.isEmpty() && !libroUsado.cabe(ETAPA, TOPE_USD, pareja))
+                corte = "no cabe la pareja " + c.id() + " r" + r + ": cota " + "%.4f".formatted(pareja)
+                        + " + reservado etapa " + "%.4f".formatted(libroUsado.reservado(ETAPA)) + " (tope etapa " + TOPE_USD
+                        + "), reservado total " + "%.4f".formatted(libroUsado.reservado(null)) + " (tope total "
+                        + libroUsado.topeTotal() + ")";
+            if (corte != null && !faltan.isEmpty()) {
+                for (var b : paso.orden()) {
+                    var p = peticiones.get(c.id() + "_" + b);
+                    filas.add(Map.entry(r, new Fila(c, b, 0, "NO_EJECUTADO_PRESUPUESTO", p.version(), p.prompt().length(),
+                            p.cota(), "-", 0, 0, "-", 0, 0, "-", corte)));
+                }
+                continue;
+            }
+            int k = 0;
+            for (var b : paso.orden()) {
+                k++;
+                var p = peticiones.get(c.id() + "_" + b);
+                var previo = hechas.get(paso.clave(b));
+                if (previo != null) {
+                    filas.add(Map.entry(r, validarSalida(c, b, k, ctx, p, Files.readString(reg.salida(paso.clave(b))),
+                            previo[3], Long.parseLong(previo[4]), "REANUDADA", paso.clave(b))));
+                    continue;
+                }
+                if (!libroUsado.reservar(ETAPA, TOPE_USD, c.id() + "#r" + r, b, 1, p.cota(), p.version()))
+                    throw new IllegalStateException("la reserva no cabe tras comprobar la pareja: " + paso.clave(b));
+                gastado += p.cota();
+                var f = llamar(c, b, k, ctx, p, paso.clave(b));
+                filas.add(Map.entry(r, f));
+                libroUsado.resultado(ETAPA, c.id() + "#r" + r, b, 1, f.predictionId(), f.estado() + " " + f.validacion());
+                if (f.estado().equals("RESPUESTA")) {
+                    reg.anotar(c.id(), r, b, f.predictionId(), f.ms(), SIMULADO ? "SIMULADO" : "REAL",
+                            Files.readString(reg.salida(paso.clave(b))));
+                    nuevas++;
+                    if (DETENER_TRAS > 0 && nuevas >= DETENER_TRAS) {
+                        escribirReplicas(filas, gastado, "interrupcion simulada tras " + nuevas, libroUsado);
+                        throw new IllegalStateException("H2V2_INTERRUPCION_SIMULADA tras " + nuevas + " predicciones");
+                    }
+                }
+            }
+        }
+        System.out.println("H2V2_REPLICAS nuevas=" + nuevas + " posts_simulados=" + POSTS_SIM.get()
+                + " reservado_total=" + libroUsado.reservado(null));
+        escribirReplicas(filas, gastado, corte, libroUsado);
+    }
+
+    private void escribirReplicas(List<Map.Entry<Integer, Fila>> filas, double gastado, String corte,
+                                  LibroPresupuestoH2v2 libroUsado) throws Exception {
+        var sb = new StringBuilder("modo;caso;origen_caso;objetivo;nivel;lugar;dias;minutos;restringido;brazo;orden;"
+                + "estado;prompt_version;caracteres_entrada;cota_usd;prediction_id;ms;caracteres_salida;validacion;"
+                + "rechazos_v15;rechazos_v15_mitad;otros;detalle;replica\n");
+        for (var e : filas) {
+            var f = e.getValue();
+            var c = f.caso();
+            sb.append(String.join(";", MODO, c.id(), c.origen(), c.objetivo().name(), c.nivel().name(), c.lugar().name(),
+                    String.valueOf(c.dias().size()), String.valueOf(c.minutos()), String.valueOf(c.restringido()),
+                    f.brazo(), String.valueOf(f.orden()), f.estado(), f.version(), String.valueOf(f.caracteres()),
+                    String.format(Locale.ROOT, "%.6f", f.cota()), f.predictionId(), String.valueOf(f.ms()),
+                    String.valueOf(f.caracteresSalida()), f.validacion(), String.valueOf(f.v15()),
+                    String.valueOf(f.v15Mitad()), f.otros(), f.detalle().replace(';', ',').replace('\n', ' '),
+                    String.valueOf(e.getKey()))).append('\n');
+        }
+        String nombre = SOLO_REPLICA == 0 ? "primera_propuesta.csv" : "primera_propuesta_r" + SOLO_REPLICA + ".csv";
+        Files.writeString(SALIDA.resolve(nombre), sb.toString());
+        Files.write(SALIDA.resolve("consumo_replicate" + (SOLO_REPLICA == 0 ? "" : "_r" + SOLO_REPLICA) + ".log"),
+                List.copyOf(lineas));
+        Files.writeString(SALIDA.resolve("99_resumen" + (SOLO_REPLICA == 0 ? "" : "_r" + SOLO_REPLICA) + ".txt"),
+                "modo=" + MODO + " replicas=" + REPLICAS + " solo_replica=" + SOLO_REPLICA + " version_b=" + VERSION_B
+                + "\nllamadas_proveedor_esta_corrida=" + filas.stream().filter(x -> x.getValue().estado().equals("RESPUESTA")
+                && !x.getValue().detalle().equals("REANUDADA") || x.getValue().estado().equals("ERROR_PROVEEDOR")).count()
+                + "\nusd_reservado_esta_corrida=" + String.format(Locale.ROOT, "%.4f", gastado)
+                + "\nusd_reservado_total_libro=" + String.format(Locale.ROOT, "%.4f", libroUsado.reservado(null))
+                + " (COTA superior por prediccion; tope " + libroUsado.topeTotal() + ")"
+                + "\ncorte=" + (corte == null ? "ninguno" : corte) + "\nmodelo=" + propiedades.modeloEfectivo()
+                + " formato=" + propiedades.formato().etiqueta() + " reasoning_effort=" + propiedades.reasoningEffort()
+                + " verbosity=" + propiedades.verbosity() + " max_completion_tokens=" + propiedades.maxCompletionTokens()
+                + "\n");
+    }
+
+
     /** Construye la peticion de un brazo exactamente como requestOutput (mismo prompt, misma instruccion de sistema). */
     private Peticion construir(PlanGenerationContext ctx, boolean h2v2) {
         fijarInterruptor(h2v2);
@@ -336,6 +562,11 @@ class H2v2PrimeraPropuestaIT {
     /** VALIDAR: la misma evaluacion que {@link #llamar}, sobre una salida real ya obtenida. */
     private Fila validarSalida(Caso c, String brazo, int orden, PlanGenerationContext ctx, Peticion p, String salida,
                                String predictionId, long ms, String origen) {
+        return validarSalida(c, brazo, orden, ctx, p, salida, predictionId, ms, origen, c.id() + "_" + brazo);
+    }
+
+    private Fila validarSalida(Caso c, String brazo, int orden, PlanGenerationContext ctx, Peticion p, String salida,
+                               String predictionId, long ms, String origen, String nombre) {
         fijarInterruptor(brazo.equals("B"));
         List<String> problemas;
         try {
@@ -345,7 +576,7 @@ class H2v2PrimeraPropuestaIT {
         } catch (InvalidPlanDraftException e) {
             problemas = e.problems();
         }
-        guardar(c.id() + "_" + brazo + "_problemas.txt", String.join("\n", problemas));
+        guardar(nombre + "_problemas.txt", String.join("\n", problemas));
         int v15 = (int) problemas.stream().filter(x -> x.startsWith("V15")).count();
         int mitad = (int) problemas.stream().filter(x -> MITAD.matcher(x).find()).count();
         var otros = problemas.stream().map(H2v2PrimeraPropuestaIT::codigo).filter(x -> !x.equals("V15"))
@@ -356,6 +587,11 @@ class H2v2PrimeraPropuestaIT {
     }
 
     private Fila llamar(Caso c, String brazo, int orden, PlanGenerationContext ctx, Peticion p) {
+        return llamar(c, brazo, orden, ctx, p, c.id() + "_" + brazo);
+    }
+
+    /** @param nombre el nombre de la salida guardada (con replicas, la clave de {@link PlanEjecucionH2}). */
+    private Fila llamar(Caso c, String brazo, int orden, PlanGenerationContext ctx, Peticion p, String nombre) {
         fijarInterruptor(brazo.equals("B"));
         int antes = lineas.size();
         long t0 = System.nanoTime();
@@ -368,7 +604,7 @@ class H2v2PrimeraPropuestaIT {
                     predictionIdDesde(antes), ms, 0, "-", 0, 0, "-", e.getClass().getSimpleName() + ": " + e.getMessage());
         }
         long ms = (System.nanoTime() - t0) / 1_000_000;
-        guardar(c.id() + "_" + brazo + ".json", salida);
+        guardar(nombre + ".json", salida);
         var consumo = lineas.subList(antes, lineas.size()).stream().filter(x -> x.startsWith("REPLICATE_CONSUMO"))
                 .reduce((a, b2) -> b2).orElse("");
         assertTrue(consumo.contains("caracteres_entrada=" + (p.prompt().length() + p.sistema().length())),
@@ -385,7 +621,7 @@ class H2v2PrimeraPropuestaIT {
         int mitad = (int) problemas.stream().filter(x -> MITAD.matcher(x).find()).count();
         var otros = problemas.stream().map(H2v2PrimeraPropuestaIT::codigo).filter(x -> !x.equals("V15"))
                 .collect(Collectors.groupingBy(x -> x, TreeMap::new, Collectors.counting())).toString();
-        guardar(c.id() + "_" + brazo + "_problemas.txt", String.join("\n", problemas));
+        guardar(nombre + "_problemas.txt", String.join("\n", problemas));
         return new Fila(c, brazo, orden, "RESPUESTA", p.version(), p.prompt().length() + p.sistema().length(), p.cota(),
                 predictionIdDesde(antes), ms, salida.length(), problemas.isEmpty() ? "VALIDA" : "RECHAZADA", v15, mitad, otros, "");
     }

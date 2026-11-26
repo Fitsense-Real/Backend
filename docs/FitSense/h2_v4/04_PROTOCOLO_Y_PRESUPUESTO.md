@@ -98,3 +98,44 @@ python3 -I docs/FitSense/h2_v4/analizar_h2v4.py etapa1 .../primera_propuesta.csv
 # Etapa 2 (solo si la etapa 1 pasa)
 #   -Dit.test=H2v2PipelineCompletoIT -Dfitsense.h2v2.e2.modo=REAL -Dfitsense.h2v2.version-b=PR-2.2 -Dfitsense.h2v2.tope-usd=4.50 ...
 ```
+
+## 7. Opción C autorizada: reglas de las réplicas, fijadas ANTES de gastar
+
+**Orden:** «ORDEN DE EJECUCIÓN — EVALUACIÓN REAL H2-v4 (PR-2.2)», opción C, **tope USD 10,80** (etapa 1 ≤ 6,30; etapa 2 ≤ 4,50), libro nuevo `evaluacion_real/libro_presupuesto.csv`. Estas reglas se escriben, se programan (`analizar_h2v4.py etapa1r`) y se suben **antes de la primera llamada pagada**, y no se cambian después de ver resultados. Los umbrales son los de §3, sin cambios.
+
+**Diseño de la etapa 1:** 26 perfiles × 2 réplicas × 2 brazos = **104 predicciones** (`PlanEjecucionH2`).
+- Réplica 1: G01→G26, impar A-B y par B-A (el orden de siempre).
+- Réplica 2: G26→G01, con el orden de brazos invertido. Cada perfil tiene una pareja A-B y otra B-A.
+- Clave única `<caso>_r<réplica>_<brazo>` para la salida, el registro y la reserva. Se reanuda sin repetir; una pareja solo empieza si caben sus dos reservas.
+- No se hacen predicciones adicionales: si una falla, cuenta como fallo y conserva su reserva.
+
+**Unidad de análisis**
+| Criterio | Unidad | Regla con dos réplicas | Umbral (§3, sin cambios) |
+|---|---|---|---|
+| P1 | Perfil | Un perfil está afectado en un brazo si **alguna** de sus dos réplicas tiene V15 de la mitad o V26 (basta una: regla conservadora) | Perfiles B < A **y** B ≤ 1 |
+| Potencia | Perfil | Igual que P1 | INCONCLUSA si A tiene menos de 3 perfiles |
+| P2 | Pareja | Válidas a la primera sobre las parejas completas (hasta 52) | B ≥ A |
+| K1 | Perfil | Por cada otra categoría (las mismas que en H2-v3: las de `otros` salvo V26), perfiles con alguna réplica afectada | Ninguna sube más de 1 perfil |
+| K2 | Predicción | Mediana de `predict_time` de **todas** las respuestas de cada brazo (hasta 52), redondeada a 0,1 s como antes | B ≤ A × 1,10 |
+| K5 | Perfil | Perfiles con V24 o V25 en alguna réplica | B ≤ A |
+| K6 | Predicción | Errores del proveedor de cada brazo (sobre 52) | B ≤ A + 1 |
+| K3 | — | Solo en la etapa 2 (13 casos, una ejecución por brazo), igual que §3 | — |
+
+- **Parejas incompletas** (un brazo sin respuesta): fuera de P2; su error cuenta en K6; sus brazos con respuesta cuentan en K2 y en las categorías.
+- **INCONCLUSA** también si alguna de las 104 no se ejecuta por presupuesto.
+- **Decisión:** la de §3. Si la etapa 1 no es FAVORABLE, la etapa 2 **no se ejecuta**.
+
+**Estadística, respetando que las dos réplicas de un perfil no son independientes** (informativa, no decide):
+- McNemar exacta sobre los perfiles afectados por V15 de la mitad o V26 (solo A frente a solo B).
+- Prueba de signos exacta sobre `d = válidas B − válidas A` por perfil (de −2 a +2).
+- Prueba de signos de la latencia sobre la media por perfil de `log(B / A)`, y la mediana por perfil de B / A.
+- Nunca se tratan las 52 parejas como 52 perfiles independientes.
+
+**Se informa además, por separado** (no decide):
+- cada réplica con sus 26 parejas: validez, V15 de la mitad o V26 y mediana de `predict_time`;
+- variabilidad de la latencia entre perfiles (rango e IQR de la mediana por perfil) y entre las dos réplicas de un mismo perfil;
+- V15 del mínimo de grupos (G21, G24) y los casos especiales G02, G03, G15, G17, G18 y G19.
+
+**Comprobado sin coste:** con los datos de PR-2.1 duplicados como dos réplicas, `etapa1r` da las mismas cifras y el mismo veredicto que `etapa1` (P1 1 frente a 4, K1 `{V23: −2, V24: −1}`, K2 61,0 > 59,8, DESFAVORABLE).
+
+**Fuera de alcance:** los 26 perfiles congelados no tienen dolor; esta evaluación **no demuestra O20 con dolor** (cubierto por `H2v4PipelineSimuladoIT` y la suite de O20).
