@@ -1,0 +1,216 @@
+{
+  "schema_version": "GEN-IN-1.13",
+  "plan_name": "Ciclo semanal de fuerza - evaluación",
+  "total_volume": 306,
+  "rationale": "Te doy 4 sesiones centradas en fuerza, priorizando ejercicios estructurales con dos series y progresión conservadora para reducir riesgo.",
+  "workouts": [
+    {
+      "scheduled_date": "2026-11-23",
+      "focus_code": "UPPER_BODY",
+      "workout_name": "Fuerza tren superior 1",
+      "expected_duration_minutes": 19,
+      "exercises": [
+        {
+          "exercise_id": 1096,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 351,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 342,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 596,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-26",
+      "focus_code": "LOWER_BODY",
+      "workout_name": "Fuerza tren inferior 1",
+      "expected_duration_minutes": 20,
+      "exercises": [
+        {
+          "exercise_id": 1003,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 1004,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 1062,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 1014,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-27",
+      "focus_code": "UPPER_BODY",
+      "workout_name": "Fuerza tren superior 2",
+      "expected_duration_minutes": 19,
+      "exercises": [
+        {
+          "exercise_id": 436,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 421,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 574,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 721,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-29",
+      "focus_code": "LOWER_BODY",
+      "workout_name": "Fuerza tren inferior 2",
+      "expected_duration_minutes": 19,
+      "exercises": [
+        {
+          "exercise_id": 1017,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 1005,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 8,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 120,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 1008,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        },
+        {
+          "exercise_id": 1016,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; progresión conservadora."
+        }
+      ]
+    }
+  ]
+}

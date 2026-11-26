@@ -1,0 +1,6 @@
+V24: el ejercicio 1263 del 2026-11-23 no lleva la dosis de ninguna capacidad de LOSE_WEIGHT. Usa exactamente una de: [STRENGTH 2-3x8, descanso 120 s].
+V24: el ejercicio 1096 del 2026-11-23 no lleva la dosis de ninguna capacidad de LOSE_WEIGHT. Usa exactamente una de: [STRENGTH 2-3x8, descanso 120 s].
+V24: el ejercicio 349 del 2026-11-25 no lleva la dosis de ninguna capacidad de LOSE_WEIGHT. Usa exactamente una de: [STRENGTH 2-3x8, descanso 120 s].
+V24: el ejercicio 704 del 2026-11-25 no lleva la dosis de ninguna capacidad de LOSE_WEIGHT. Usa exactamente una de: [STRENGTH 2-3x8, descanso 120 s].
+V24: el ejercicio 1112 del 2026-11-27 no lleva la dosis de ninguna capacidad de LOSE_WEIGHT. Usa exactamente una de: [STRENGTH 2-3x8, descanso 120 s].
+V24: el ejercicio 548 del 2026-11-27 no lleva la dosis de ninguna capacidad de LOSE_WEIGHT. Usa exactamente una de: [STRENGTH 2-3x8, descanso 120 s].

@@ -1,0 +1,180 @@
+{
+  "schema_version": "GEN-IN-1.13",
+  "plan_name": "Semana 1 - Enfoque Fuerza",
+  "total_volume": 238,
+  "rationale": "Te concentras en fuerza: cada sesión prioriza ejercicios STRENGTH para cubrir los cuatro slots exigibles y añade trabajo hipertrofia conservador. Volumen intacto según objetivo de fuerza.",
+  "workouts": [
+    {
+      "scheduled_date": "2026-11-23",
+      "focus_code": "PUSH",
+      "workout_name": "Pecho y tríceps - Fuerza",
+      "expected_duration_minutes": 50,
+      "exercises": [
+        {
+          "exercise_id": 323,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 313,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-24",
+      "focus_code": "PULL",
+      "workout_name": "Espalda y bíceps - Fuerza",
+      "expected_duration_minutes": 50,
+      "exercises": [
+        {
+          "exercise_id": 118,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 520,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-25",
+      "focus_code": "LEGS",
+      "workout_name": "Piernas - Fuerza (knee)",
+      "expected_duration_minutes": 50,
+      "exercises": [
+        {
+          "exercise_id": 1059,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 736,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-27",
+      "focus_code": "UPPER_BODY",
+      "workout_name": "Parte superior - Fuerza",
+      "expected_duration_minutes": 55,
+      "exercises": [
+        {
+          "exercise_id": 394,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 421,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 337,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-28",
+      "focus_code": "LOWER_BODY",
+      "workout_name": "Piernas - Fuerza (hip) y core",
+      "expected_duration_minutes": 55,
+      "exercises": [
+        {
+          "exercise_id": 715,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 736,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        },
+        {
+          "exercise_id": 501,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

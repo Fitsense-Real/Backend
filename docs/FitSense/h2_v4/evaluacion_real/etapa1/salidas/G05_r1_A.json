@@ -1,0 +1,224 @@
+{
+  "schema_version": "GEN-IN-1.13",
+  "plan_name": "Semana H2 - Hipertrofia 5x",
+  "total_volume": 438,
+  "rationale": "Te propongo 5 sesiones enfocadas a hipertrofia, priorizando ejercicios compuestos y dosis moderadas. He respetado tus restricciones de seguridad y elegido variantes conservadoras para progresar sin impacto.",
+  "workouts": [
+    {
+      "scheduled_date": "2026-11-23",
+      "focus_code": "PUSH",
+      "workout_name": "Pecho, hombros y tríceps - Estabilidad",
+      "expected_duration_minutes": 22,
+      "exercises": [
+        {
+          "exercise_id": 548,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado, control; evitar movimientos explosivos y brazos por encima."
+        },
+        {
+          "exercise_id": 574,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Variante conservadora, movimiento controlado y ROM cómodo; evita explosivos."
+        },
+        {
+          "exercise_id": 612,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Priorizar técnica, ROM moderado; descanso suficiente entre series."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-24",
+      "focus_code": "PULL",
+      "workout_name": "Espalda y bíceps - Tensión controlada",
+      "expected_duration_minutes": 20,
+      "exercises": [
+        {
+          "exercise_id": 436,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Tira con control, evitar balanceo y suspenderse de la barra; ROM cómodo."
+        },
+        {
+          "exercise_id": 349,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Remo controlado, prioridad técnica, evitar movimientos explosivos."
+        },
+        {
+          "exercise_id": 450,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Curl en polea, ROM moderado; evita apoyo de rodillas o suspensión."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-25",
+      "focus_code": "LEGS",
+      "workout_name": "Piernas (isquiotibiales, quads, gemelos)",
+      "expected_duration_minutes": 20,
+      "exercises": [
+        {
+          "exercise_id": 554,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Sentadilla copa controlada, ROM cómodo; evita impactos y movimientos explosivos."
+        },
+        {
+          "exercise_id": 1010,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Curl de isquiotibiales en máquina, control del movimiento; descanso completo."
+        },
+        {
+          "exercise_id": 414,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Elevación de talones controlada; ritmo lento, evitar rebotes."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-27",
+      "focus_code": "UPPER_BODY",
+      "workout_name": "Parte superior integral",
+      "expected_duration_minutes": 25,
+      "exercises": [
+        {
+          "exercise_id": 421,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Press de pecho en polea, ROM controlado; evitar empujes explosivos y brazos por encima de la cabeza."
+        },
+        {
+          "exercise_id": 433,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Remo sentado con cuerda, movimiento controlado; evita suspensión y balanceo."
+        },
+        {
+          "exercise_id": 472,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Remo vertical en polea versión conservadora; evita elevaciones explosivas."
+        },
+        {
+          "exercise_id": 601,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Curl inclinado con mancuerna; ROM cómodo y control, evita balanceo."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-28",
+      "focus_code": "LOWER_BODY",
+      "workout_name": "Fuerza de piernas y core",
+      "expected_duration_minutes": 18,
+      "exercises": [
+        {
+          "exercise_id": 1008,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Extensión de piernas en palanca, control y ROM moderado; evita impactos."
+        },
+        {
+          "exercise_id": 1015,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Prensa de pantorrilla sentado, ritmo controlado; evita rebotes."
+        },
+        {
+          "exercise_id": 60,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Abdominales controlados, ROM cómodo; evita apoyo de rodillas o movimientos explosivos."
+        }
+      ]
+    }
+  ]
+}

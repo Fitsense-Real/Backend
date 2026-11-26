@@ -1,0 +1,1 @@
+V24: el ejercicio 501 del 2026-11-28 no lleva la dosis de ninguna capacidad de INCREASE_STRENGTH. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s].

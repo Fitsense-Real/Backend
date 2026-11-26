@@ -1,0 +1,4 @@
+V23: la semana no cubre LOWER_HIP. Step 4C exige que la semana toque los cuatro patrones obligatorios cuando hay ejercicios para ellos. Hay LOWER_HIP=17 elegibles para esos patrones. Cambia algun ejercicio por uno de ese patron sin tocar series, repeticiones ni descansos: el volumen total no debe cambiar.
+V24: el ejercicio 864 del 2026-11-23 no lleva la dosis de ninguna capacidad de GENERAL_FITNESS. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s, MUSCULAR_ENDURANCE 3x18, descanso 45 s].
+V24: el ejercicio 1182 del 2026-11-25 no lleva la dosis de ninguna capacidad de GENERAL_FITNESS. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s, MUSCULAR_ENDURANCE 3x18, descanso 45 s].
+V24: el ejercicio 864 del 2026-11-27 no lleva la dosis de ninguna capacidad de GENERAL_FITNESS. Usa exactamente una de: [HYPERTROPHY 2-3x13, descanso 90 s, MUSCULAR_ENDURANCE 3x18, descanso 45 s].

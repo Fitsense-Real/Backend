@@ -1,0 +1,268 @@
+{
+  "schema_version": "GEN-IN-1.13",
+  "plan_name": "Semana fuerza - evaluación",
+  "total_volume": 382,
+  "rationale": "Te enfocas en fuerza: cada sesión comienza con ejercicios estructurales con dosis STRENGTH para priorizar la mejora de la evaluación pareada H2. Progresión conservadora por tus restricciones.",
+  "workouts": [
+    {
+      "scheduled_date": "2026-11-23",
+      "focus_code": "PUSH",
+      "workout_name": "PUSH - Fuerza estructural",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 323,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 1026,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 313,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 708,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-24",
+      "focus_code": "PULL",
+      "workout_name": "PULL - Fuerza de tracción",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 712,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 118,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 437,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 555,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-25",
+      "focus_code": "LEGS",
+      "workout_name": "LEGS - Fuerza piernas",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 1008,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 789,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 1110,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 1016,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-27",
+      "focus_code": "UPPER_BODY",
+      "workout_name": "UPPER BODY - Fuerza equilibrada",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 1179,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 482,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 1320,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 575,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-28",
+      "focus_code": "LOWER_BODY",
+      "workout_name": "LOWER BODY - Fuerza y estabilización",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 715,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 1003,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 1112,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": null
+        },
+        {
+          "exercise_id": 736,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": null
+        }
+      ]
+    }
+  ]
+}

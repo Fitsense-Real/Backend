@@ -1,0 +1,3 @@
+V15: el entrenamiento del 2026-11-29 tiene enfoque LOWER_BODY y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs, waist].
+V26: el entrenamiento del 2026-11-29 suma 9 series directas de upper legs y el techo por sesion es 6 (politica PLAN-REV-2.0). Quita una colocacion de ese grupo.
+V26: la semana suma 15 series directas de upper legs y el techo semanal es 12 (nivel BEGINNER, politica PLAN-REV-2.0). Reparte o quita trabajo de ese grupo.
