@@ -80,4 +80,17 @@ Detalle de cada salida (rechazos antes y después, y cambios): `evidencia/lector
 
 ## 3. Regresión completa
 
-Ver el README (§Regresión) con las cifras reales.
+`mvn verify -Pintegration` completo, local:
+- unitarias: **1.636, 0 fallos**;
+- integración: **935, 0 fallos**, 74 omitidas;
+- BUILD SUCCESS.
+
+**Contratos de versiones anteriores**, en verde:
+- `ContratoH2v2IT` (PR-2.0, 26/26);
+- `H2v2PipelineSimuladoIT` (4/4);
+- `H2v3RegresionesIT` (2/2);
+- `H2v3PipelineSimuladoIT` (6/6).
+
+**Resto de la suite**, incluida en la ejecución: generación inicial, reintentos, motor de reglas, O20, progresión, reincorporación, adaptación y configuración por defecto.
+
+**Validadores y políticas:** el diff de `src/main` frente a PR-2.1 solo toca `PlanPromptBuilder`, `PlanInputSnapshot` y `application.properties` (`evidencia/diff_produccion_PR21_a_PR22.diff`).
