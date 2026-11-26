@@ -216,7 +216,19 @@ El arnés sigue listo y probado (`evidencia/etapa2_simulado_PR21/`).
 4. **Coste real no verificable.**
 5. **O20 no se ejercita con IA real.**
 
-## 7. Recomendación
+## 7. Validación técnica posterior (orden §11)
+
+| Comprobación | Resultado |
+|---|---|
+| Regresión unitaria completa | **1.636, 0 fallos**, 1 omitida |
+| Regresión de integración completa | **927, 0 fallos**, 74 omitidas (las opcionales, entre ellas los arneses pagados). BUILD SUCCESS (33 min 15 s) |
+| Compatibilidad con O20 | `H2v3PipelineSimuladoIT`, 6/6 (el ejercicio con dolor no se ofrece y no se publica con PR-2.1), y las pruebas de O20 de la suite en verde |
+| PR-1.7 por omisión | `fitsense.ai.generacion.prompt-version=${FITSENSE_AI_GENERACION_PROMPT_VERSION:PR-1.7}` |
+| Libro y tope | `LibroPresupuestoH2v2Test`, 3/3 |
+| CI de GitHub | `verify` en verde en `a29a66a4`; la PR no tiene conflictos |
+| Resultados históricos | Sin cambios: `h2_v2/evaluacion_real/` intacto |
+
+## 8. Recomendación
 
 1. **Se mantiene PR-1.7** y **no se activa PR-2.1**. No hay que tocar nada en Railway.
 2. **PR #86 sigue abierta y sin fusionar**, como propuesta rechazada en esta evaluación. No se recomienda el merge.

@@ -62,4 +62,5 @@ Antes de la evaluación, en pruebas controladas sin coste, PR-2.1 corrigió las 
 | Ejecución | Resultado |
 |---|---|
 | `mvn verify -Pintegration` completo, local, sobre el código de `4dcd3773` | Unitarias: **1.635, 0 fallos**, 1 omitida. Integración: **927, 0 fallos**, 74 omitidas (las opcionales, entre ellas los arneses pagados). **BUILD SUCCESS** (31 min 4 s). Incluye `H2v3RegresionesIT`, `H2v3PipelineSimuladoIT`, `ContratoH2v2IT` y `H2v2PipelineSimuladoIT` |
-| CI de GitHub (`verify`) | Ver la PR |
+| `mvn verify -Pintegration` completo, local, tras la evaluación (código de `5d29e302` en adelante; después solo cambiaron datos y documentación) | Unitarias: **1.636, 0 fallos**, 1 omitida. Integración: **927, 0 fallos**, 74 omitidas. **BUILD SUCCESS** (33 min 15 s) |
+| CI de GitHub (`verify`) | En verde en `a29a66a4` (resultados de la evaluación); ver la cabeza de la PR |
