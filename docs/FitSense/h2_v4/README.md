@@ -78,4 +78,5 @@
 | Ejecución | Resultado |
 |---|---|
 | `mvn verify -Pintegration` completo, local, sobre el código de `6ee70b01` | Unitarias: **1.636, 0 fallos**, 1 omitida. Integración: **935, 0 fallos**, 74 omitidas (las opcionales, entre ellas los arneses pagados). **BUILD SUCCESS** (34 min 22 s). H2-v3 dio 1.636 + 927: las 8 de integración nuevas son `H2v4RegresionesIT` (2) y `H2v4PipelineSimuladoIT` (6) |
+| `mvn verify -Pintegration` completo, tras la evaluación real (`32d22d88`) | Unitarias **1.640, 0 fallos** (+4: `PlanEjecucionH2Test`). Integración **935, 0 fallos**, 74 omitidas. **BUILD SUCCESS** (27 min 40 s) |
 | CI de GitHub (`verify`) | Ver la PR |

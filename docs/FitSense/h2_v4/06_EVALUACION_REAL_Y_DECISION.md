@@ -228,6 +228,15 @@ Lo que sí muestra esta evaluación, para decidir el siguiente paso:
 
 **No se hicieron predicciones adicionales.** La PR #87 queda **abierta, sin merge, a la espera de la decisión final**.
 
+## Regresión tras la evaluación
+
+`mvn verify -Pintegration` completo y local, sobre el código de `32d22d88` (el código no cambió después):
+- unitarias: **1.640, 0 fallos**, 1 omitida (las 4 nuevas son `PlanEjecucionH2Test`);
+- integración: **935, 0 fallos**, 74 omitidas, que son las opcionales, entre ellas los arneses pagados;
+- **BUILD SUCCESS** (27 min 40 s).
+
+Incluye O20, generación inicial, reintentos, motor de reglas, adaptación, progresión, reincorporación y los contratos de PR-2.0, PR-2.1 y PR-2.2. CI de GitHub: ver los checks de la PR #87.
+
 ## Anexos (`evaluacion_real/`)
 
 | Archivo | Contenido |
