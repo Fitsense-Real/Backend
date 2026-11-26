@@ -114,8 +114,11 @@ class H2v2PrimeraPropuestaIT {
     static final LocalDate SEMANA = LocalDate.of(2026, 11, 23);
     /** Libro comun a las dos etapas (opcion A, USD 7,50 en total): el limite no se reinicia entre ejecuciones. */
     static final String ETAPA = "E1";
+    /** Tope total del libro (7,50 el de H2-v2; el de H2-v3 se abrio con 7,60). Lo fija el libro al crearse. */
+    static final double TOPE_TOTAL = Double.parseDouble(System.getProperty("fitsense.h2v2.tope-total-usd",
+            String.valueOf(LibroPresupuestoH2v2.TOPE_TOTAL_USD)));
     final LibroPresupuestoH2v2 libro = new LibroPresupuestoH2v2(Path.of(System.getProperty("fitsense.h2v2.libro",
-            "docs/FitSense/h2_v2/evaluacion_real/libro_presupuesto.csv")));
+            "docs/FitSense/h2_v2/evaluacion_real/libro_presupuesto.csv")), TOPE_TOTAL);
 
     /** Una linea por prediccion recibida, al momento (para reanudar sin repetir ni pagar dos veces). */
     private void anotarRegistro(String linea) {
@@ -197,7 +200,7 @@ class H2v2PrimeraPropuestaIT {
         double gastado = 0;
         var hechos = new HashMap<String, String[]>();
         if (REAL) {
-            assertTrue(TOPE_USD <= LibroPresupuestoH2v2.TOPE_TOTAL_USD, "el tope de la etapa no supera el total autorizado");
+            assertTrue(TOPE_USD <= libro.topeTotal(), "el tope de la etapa no supera el total autorizado");
             var reg = SALIDA.resolve("registro.csv");
             if (Files.exists(reg))
                 for (var l : Files.readAllLines(reg))

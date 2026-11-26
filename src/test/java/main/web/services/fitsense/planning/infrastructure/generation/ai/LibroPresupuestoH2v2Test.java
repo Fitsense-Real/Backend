@@ -29,6 +29,20 @@ class LibroPresupuestoH2v2Test {
     }
 
     @Test
+    void unLibroNuevoFijaSuTopeYNoSeCambia() {
+        var f = dir.resolve("h2v3.csv");
+        var libro = new LibroPresupuestoH2v2(f, 7.60);
+        assertEquals(7.60, libro.saldo(), 1e-9);
+        assertTrue(libro.reservar("E1", 3.20, "G01", "A", 1, 3.20, ""));
+        assertFalse(libro.reservar("E1", 3.20, "G01", "B", 1, 0.01, ""), "tope de etapa");
+        assertTrue(libro.reservar("E2", 4.40, "G02", "A", 1, 4.40, ""));
+        assertFalse(libro.reservar("E2", 4.40, "G02", "A", 2, 0.01, ""), "tope total 7,60 compartido");
+        assertEquals(7.60, new LibroPresupuestoH2v2(f, 7.60).reservado(null), 1e-9, "se reanuda con lo reservado");
+        assertThrows(IllegalStateException.class, () -> new LibroPresupuestoH2v2(f, 8.00), "no se sube");
+        assertThrows(IllegalStateException.class, () -> new LibroPresupuestoH2v2(f), "ni se abre con otro tope");
+    }
+
+    @Test
     void laCotaEsLaDeReplicateConsumo() {
         // 1 token por byte + 256 de formato a 0,25 USD/M y 16.000 de salida a 2,00 USD/M.
         assertEquals((197_299 + 256) / 1e6 * 0.25 + 0.032, LibroPresupuestoH2v2.cota(197_299, 16_000), 1e-12);

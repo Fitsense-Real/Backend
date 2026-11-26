@@ -25,21 +25,47 @@ import java.util.Locale;
  */
 public final class LibroPresupuestoH2v2 {
 
-    /** El total autorizado para la evaluacion (opcion A). No se puede subir por propiedad. */
+    /** El total autorizado para la evaluacion de H2-v2 (opcion A). Es el de un libro sin cabecera (el de H2-v2). */
     public static final double TOPE_TOTAL_USD = 7.50;
     public static final double USD_ENTRADA = 0.25, USD_SALIDA = 2.00;
     static final String CABECERA = "fecha_utc;tipo;etapa;caso;brazo;intento;reserva_usd;acumulado_usd;prediction_id;detalle";
 
     private final Path fichero;
+    private final double topeTotal;
 
+    /** El libro de H2-v2 (tope USD 7,50, sin cabecera de tope). */
     public LibroPresupuestoH2v2(Path fichero) {
+        this(fichero, TOPE_TOTAL_USD);
+    }
+
+    /**
+     * Un libro con su tope total. Un libro NUEVO apunta el tope en su primera linea ({@code # tope_total_usd=...}); uno
+     * que ya existe exige el MISMO tope: el limite se fija al abrir el libro y no se puede subir despues (ni bajar para
+     * que parezca que cabe). Un libro sin esa linea es el de H2-v2 y su tope es {@link #TOPE_TOTAL_USD}.
+     */
+    public LibroPresupuestoH2v2(Path fichero, double topeTotal) {
         this.fichero = fichero;
+        this.topeTotal = topeTotal;
         try {
             Files.createDirectories(fichero.toAbsolutePath().getParent());
-            if (!Files.exists(fichero)) Files.writeString(fichero, CABECERA + "\n", StandardCharsets.UTF_8);
+            if (!Files.exists(fichero)) {
+                String cabecera = topeTotal == TOPE_TOTAL_USD ? "" : "# tope_total_usd="
+                        + String.format(Locale.ROOT, "%.2f", topeTotal) + "\n";
+                Files.writeString(fichero, cabecera + CABECERA + "\n", StandardCharsets.UTF_8);
+            }
+            var primera = Files.readAllLines(fichero, StandardCharsets.UTF_8).stream().findFirst().orElse("");
+            double registrado = primera.startsWith("# tope_total_usd=")
+                    ? Double.parseDouble(primera.substring("# tope_total_usd=".length()).trim()) : TOPE_TOTAL_USD;
+            if (Math.abs(registrado - topeTotal) > 1e-9)
+                throw new IllegalStateException("el libro " + fichero + " se abrio con tope " + registrado
+                        + " y se pide " + topeTotal + ": el tope no se cambia");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public double topeTotal() {
+        return topeTotal;
     }
 
     /** La reserva conservadora de una prediccion con {@code bytesEntrada} de prompt e instruccion de sistema. */
@@ -53,7 +79,7 @@ public final class LibroPresupuestoH2v2 {
             double t = 0;
             for (var l : Files.readAllLines(fichero, StandardCharsets.UTF_8)) {
                 var x = l.split(";", -1);
-                if (x.length < 7 || !x[1].equals("RESERVA")) continue;
+                if (l.startsWith("#") || x.length < 7 || !x[1].equals("RESERVA")) continue;
                 if (etapa != null && !x[2].equals(etapa)) continue;
                 t += Double.parseDouble(x[6]);
             }
@@ -64,12 +90,12 @@ public final class LibroPresupuestoH2v2 {
     }
 
     public double saldo() {
-        return TOPE_TOTAL_USD - reservado(null);
+        return topeTotal - reservado(null);
     }
 
     /** Cabe {@code importe} en el tope total y en el de la etapa. */
     public synchronized boolean cabe(String etapa, double topeEtapa, double importe) {
-        return reservado(null) + importe <= TOPE_TOTAL_USD + 1e-9 && reservado(etapa) + importe <= topeEtapa + 1e-9;
+        return reservado(null) + importe <= topeTotal + 1e-9 && reservado(etapa) + importe <= topeEtapa + 1e-9;
     }
 
     /** Apunta la reserva si cabe; si no, devuelve false y no apunta nada (la llamada no se debe hacer). */

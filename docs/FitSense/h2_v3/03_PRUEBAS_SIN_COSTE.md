@@ -49,7 +49,7 @@ No es un generador ni predice al modelo. Comprueba que **seguir las instruccione
 | El reintento invita a bajar series | «o las series» | Sí | **No** |
 | Jerarquía explícita (dosis, techos, reparto, cobertura, duración) | No | No | **Sí** |
 | Salidas reales que quedan válidas al seguir el texto al pie de la letra | — | — | **51/51** |
-| Caracteres de entrada (mediana B) | — | ≈103.200 | ≈105.400 |
+| Caracteres de entrada (mediana B) | — | ≈103.200 | ≈105.600 |
 
 **Límite de esta comparación.** Demuestra que el texto ya no contiene las contradicciones conocidas y que sus instrucciones son satisfacibles. **No demuestra** que gpt-5-mini las siga: eso solo lo mide la evaluación real (`04`). **H2 no se declara resuelta.**
 

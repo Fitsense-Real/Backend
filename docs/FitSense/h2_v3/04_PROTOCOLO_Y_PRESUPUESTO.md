@@ -17,7 +17,7 @@
 
 | Etapa | Arnés | Predicciones | Cota |
 |---|---|---|---|
-| **1 · Primera propuesta pareada** (26 casos) | `H2v2PrimeraPropuestaIT`, modo `REAL`, `version-b=PR-2.1`. **Listo** | 52 | **USD 3,1311**: A 1,5504 + B 1,5807 (`evidencia/prompts_y_cotas_26_casos_PR17_PR21.csv`) |
+| **1 · Primera propuesta pareada** (26 casos) | `H2v2PrimeraPropuestaIT`, modo `REAL`, `version-b=PR-2.1`. **Listo** | 52 | **USD 3,1327**: A 1,5504 + B 1,5823 (`evidencia/prompts_y_cotas_26_casos_PR17_PR21.csv`) |
 | **2 · Pipeline completo pareado** (13 casos: G25, G26, G05, G06, G02, G18, G14, G04, G16, G12, G08, G20, G10) | `H2v2PipelineCompletoIT`, modo `REAL`, `version-b=PR-2.1`. **Listo** y probado con Replicate simulado. **Solo si la etapa 1 pasa los criterios** | Hasta 3 por brazo y caso; **≈1,49 (A) y ≈1,36 (B)** esperadas, con la validez a la primera medida el 25/11 | Esperada **USD 2,02**. Máxima USD 4,26 con reintentos del mismo tamaño, y unos USD 4,33 con reintentos de unos 12 KB más |
 
 **Duración:** etapa 1, unos 70–80 min (52 × ≈85 s); etapa 2, unos 40–60 min.

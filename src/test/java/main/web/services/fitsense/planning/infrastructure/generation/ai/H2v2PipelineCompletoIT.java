@@ -208,12 +208,15 @@ class H2v2PipelineCompletoIT {
         assertEquals("PR-1.7", promptBuilder.version(), "PR-2.0 sigue apagado por omision");
         if (REAL) {
             assertEquals("SI", System.getProperty("fitsense.h2v2.autorizado"), "REAL exige autorizado=SI");
-            assertTrue(TOPE_ETAPA > 0 && TOPE_ETAPA <= LibroPresupuestoH2v2.TOPE_TOTAL_USD, "REAL exige tope-usd valido");
+            assertTrue(TOPE_ETAPA > 0, "REAL exige tope-usd");
         }
         Files.createDirectories(SALIDA.resolve("salidas"));
+        double topeTotal = Double.parseDouble(System.getProperty("fitsense.h2v2.tope-total-usd",
+                String.valueOf(LibroPresupuestoH2v2.TOPE_TOTAL_USD)));
         libro = new LibroPresupuestoH2v2(REAL
                 ? Path.of(System.getProperty("fitsense.h2v2.libro", "docs/FitSense/h2_v2/evaluacion_real/libro_presupuesto.csv"))
-                : SALIDA.resolve("libro_simulado.csv"));
+                : SALIDA.resolve("libro_simulado.csv"), REAL ? topeTotal : LibroPresupuestoH2v2.TOPE_TOTAL_USD);
+        if (REAL) assertTrue(TOPE_ETAPA <= libro.topeTotal(), "el tope de la etapa no supera el total del libro");
         double tope = REAL || TOPE_ETAPA > 0 ? TOPE_ETAPA : 100.0;
         escuchar();
         interceptar(tope);
@@ -246,7 +249,7 @@ class H2v2PipelineCompletoIT {
             if (corte == null && !libro.cabe(ETAPA, tope, peor))
                 corte = "no cabe el peor caso de " + c.id() + " (" + "%.4f".formatted(peor) + "): reservado E2 "
                         + "%.4f".formatted(libro.reservado(ETAPA)) + " de " + tope + ", total "
-                        + "%.4f".formatted(libro.reservado(null)) + " de " + LibroPresupuestoH2v2.TOPE_TOTAL_USD;
+                        + "%.4f".formatted(libro.reservado(null)) + " de " + libro.topeTotal();
             if (corte != null) {
                 for (var b : orden)
                     filas.add(new Brazo(c.id(), b, 0, usuarios.get(b), null, "NO_EJECUTADO_PRESUPUESTO", "-", "-", 0, 0,
