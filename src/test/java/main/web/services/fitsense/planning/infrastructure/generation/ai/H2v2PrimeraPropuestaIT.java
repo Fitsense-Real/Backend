@@ -399,7 +399,9 @@ class H2v2PrimeraPropuestaIT {
         if (REAL || SIMULADO) assertTrue(TOPE_USD <= libroUsado.topeTotal(), "el tope de la etapa no supera el total");
         var reg = new PlanEjecucionH2.Registro(SALIDA.resolve("registro_replicas.csv"), SALIDA.resolve("salidas"));
         var hechas = reg.hechas();
-        System.out.println("H2V2_LIBRO reservado_total=" + libroUsado.reservado(null) + " reservado_" + ETAPA + "="
+        // VALIDAR no reserva ni abre libro (sin coste).
+        System.out.println(libroUsado == null ? "H2V2_LIBRO ninguno (VALIDAR, sin coste) ya_hechas=" + hechas.size()
+                : "H2V2_LIBRO reservado_total=" + libroUsado.reservado(null) + " reservado_" + ETAPA + "="
                 + libroUsado.reservado(ETAPA) + " saldo=" + libroUsado.saldo() + " ya_hechas=" + hechas.size());
         var todos = casos();
         var ids = todos.stream().map(Caso::id).toList();
@@ -496,7 +498,7 @@ class H2v2PrimeraPropuestaIT {
             }
         }
         System.out.println("H2V2_REPLICAS nuevas=" + nuevas + " posts_simulados=" + POSTS_SIM.get()
-                + " reservado_total=" + libroUsado.reservado(null));
+                + " reservado_total=" + (libroUsado == null ? 0.0 : libroUsado.reservado(null)));
         escribirReplicas(filas, gastado, corte, libroUsado);
     }
 
@@ -525,8 +527,9 @@ class H2v2PrimeraPropuestaIT {
                 + "\nllamadas_proveedor_esta_corrida=" + filas.stream().filter(x -> x.getValue().estado().equals("RESPUESTA")
                 && !x.getValue().detalle().equals("REANUDADA") || x.getValue().estado().equals("ERROR_PROVEEDOR")).count()
                 + "\nusd_reservado_esta_corrida=" + String.format(Locale.ROOT, "%.4f", gastado)
-                + "\nusd_reservado_total_libro=" + String.format(Locale.ROOT, "%.4f", libroUsado.reservado(null))
-                + " (COTA superior por prediccion; tope " + libroUsado.topeTotal() + ")"
+                + (libroUsado == null ? "\nusd_reservado_total_libro=- (VALIDAR, sin libro)"
+                : "\nusd_reservado_total_libro=" + String.format(Locale.ROOT, "%.4f", libroUsado.reservado(null))
+                + " (COTA superior por prediccion; tope " + libroUsado.topeTotal() + ")")
                 + "\ncorte=" + (corte == null ? "ninguno" : corte) + "\nmodelo=" + propiedades.modeloEfectivo()
                 + " formato=" + propiedades.formato().etiqueta() + " reasoning_effort=" + propiedades.reasoningEffort()
                 + " verbosity=" + propiedades.verbosity() + " max_completion_tokens=" + propiedades.maxCompletionTokens()

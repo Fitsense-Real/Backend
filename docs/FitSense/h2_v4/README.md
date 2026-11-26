@@ -20,7 +20,18 @@
 - es **entre 1.902 y 2.950 caracteres más corta que PR-2.1** en los 26 perfiles, y más corta que PR-2.0;
 - siguiéndola al pie de la letra, las **103 salidas reales** y las 26 rutinas del motor de reglas quedan válidas, incluidas G17, G21 y G24.
 
-**Sin llamadas pagadas. H2 no se declara resuelta:** falta la evaluación con gpt-5-mini real (`04`), que necesita autorización.
+**Evaluación real (opción C, 26/11/2026, `06`): RECHAZADA en la etapa 1. H2 no se declara resuelta.**
+
+| | A · PR-1.7 | B · PR-2.2 | Límite |
+|---|---:|---:|---|
+| Válidas a la primera (51 parejas) | 29 | **45** | — |
+| Perfiles con V15 de la mitad o V26 | 8 | 3 | **P1: B ≤ 1, no cumple** |
+| Mediana de `predict_time` | 66,3 s | 75,9 s | **K2: 72,9 s, no cumple** |
+| V24, V25 y V26 | 3 y 6 perfiles | 0 | — |
+
+- 104 predicciones (103 con respuesta), reservado USD 6,2308 de 10,80.
+- La etapa 2 no se ejecutó, por la regla.
+- La PR #87 queda abierta, **sin merge**, esperando decisión.
 
 ## Índice
 
@@ -31,6 +42,7 @@
 | Resultados por perfil, coherencia, simulaciones y regresión | `03_PRUEBAS_SIN_COSTE.md` |
 | Evaluación nueva, criterios y presupuesto | `04_PROTOCOLO_Y_PRESUPUESTO.md` |
 | Riesgos y limitaciones | `05_RIESGOS_Y_LIMITACIONES.md` |
+| **Evaluación real (opción C) y decisión** | `06_EVALUACION_REAL_Y_DECISION.md` y `evaluacion_real/` |
 | Criterios programados | `analizar_h2v4.py` |
 | Análisis de latencia | `analisis_latencia.py` |
 

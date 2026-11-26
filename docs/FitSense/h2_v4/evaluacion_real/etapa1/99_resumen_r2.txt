@@ -1,0 +1,6 @@
+modo=REAL replicas=2 solo_replica=2 version_b=PR-2.2
+llamadas_proveedor_esta_corrida=52
+usd_reservado_esta_corrida=3.1154
+usd_reservado_total_libro=6.2308 (COTA superior por prediccion; tope 10.8)
+corte=ninguno
+modelo=gpt-5-mini formato=direct reasoning_effort=medium verbosity=low max_completion_tokens=16000

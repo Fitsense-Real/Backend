@@ -1,5 +1,7 @@
 # 04 · Protocolo de la evaluación con gpt-5-mini real y presupuesto (sin ejecutar)
 
+> **Actualización:** la opción C se autorizó y se ejecutó el 26/11/2026, con las reglas de §7 fijadas antes de gastar. Resultado en `06`. El texto de abajo es el protocolo tal como se escribió antes de esa autorización.
+>
 > **No ejecutado. No hay autorización de gasto.** Esta evaluación necesita una autorización nueva y abriría un **libro propio** de H2-v4. Los saldos que quedaron sin usar en H2-v2 (USD 4,3832) y H2-v3 (USD 4,4673) **no se usan**: sus libros quedan cerrados.
 
 ## 1. Comparación

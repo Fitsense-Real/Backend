@@ -1,0 +1,2 @@
+prediction_id;created_at;completed_at;status;predict_time_s;model
+g40bmfgq8nrzr0d236ktnedbfm;2026-11-26T20:58:30.597Z;2026-11-26T20:59:25.590607Z;succeeded;54.956543;openai/gpt-5-mini

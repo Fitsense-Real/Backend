@@ -1,0 +1,2 @@
+V15: el entrenamiento del 2026-11-27 tiene enfoque LOWER_BODY y solo trabaja [upper legs]. Debe cubrir al menos 2 grupos distintos de: [upper legs, lower legs, waist].
+V23: la semana no cubre UPPER_PULL. Step 4C exige que la semana toque los cuatro patrones obligatorios cuando hay ejercicios para ellos. Hay UPPER_PULL=8 elegibles para esos patrones. Cambia algun ejercicio por uno de ese patron sin tocar series, repeticiones ni descansos: el volumen total no debe cambiar.
