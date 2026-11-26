@@ -31,12 +31,13 @@ import java.util.List;
 @Service
 public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanCommandService {
 
-    /** H2-v2: la misma variante que PlanPromptBuilder (fitsense.ai.generacion.prompt-version); PR-1.7 por omision. */
-    private boolean h2v2 = false;
+    /** H2-v2/H2-v3: la misma variante que PlanPromptBuilder (fitsense.ai.generacion.prompt-version); PR-1.7 por omision. */
+    private String promptVersion = main.web.services.fitsense.planning.infrastructure.generation.ai.PlanPromptBuilder.VERSION;
 
     @org.springframework.beans.factory.annotation.Value("${fitsense.ai.generacion.prompt-version:PR-1.7}")
     void setPromptVersionGeneracion(String version) {
-        this.h2v2 = main.web.services.fitsense.planning.infrastructure.generation.ai.PlanPromptBuilder.esH2v2(version);
+        this.promptVersion = main.web.services.fitsense.planning.infrastructure.generation.ai.PlanPromptBuilder
+                .versionValida(version);
     }
 
     private static final Logger log = LoggerFactory.getLogger(WeeklyTrainingPlanCommandServiceImpl.class);
@@ -326,7 +327,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         // H2-v2: el plan guarda la instantanea de la variante de prompt configurada (PR-1.7 por omision). Se guarda la
         // del contrato elegido aunque el plan salga del motor de reglas: es el contexto de la generacion.
-        var snapshotJson = jsonSupport.write(PlanInputSnapshot.of(prepared.context(), h2v2));
+        var snapshotJson = jsonSupport.write(PlanInputSnapshot.of(prepared.context(), promptVersion));
 
         var plan = previousActive
                 .map(previous -> WeeklyTrainingPlan.nextVersionOf(previous, draft.source(),

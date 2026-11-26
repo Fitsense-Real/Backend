@@ -97,6 +97,12 @@ class H2v2PipelineCompletoIT {
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
     static final String MODO = System.getProperty("fitsense.h2v2.e2.modo", "");
+    /**
+     * Version del brazo B (tratamiento). PR-2.0 por omision, la de la evaluacion de H2-v2 (su evidencia sigue siendo
+     * reproducible); {@code -Dfitsense.h2v2.version-b=PR-2.1} para H2-v3. El brazo A es siempre PR-1.7.
+     */
+    static final String VERSION_B = PlanPromptBuilder.versionValida(System.getProperty("fitsense.h2v2.version-b",
+            PlanPromptBuilder.VERSION_H2V2));
     static final boolean REAL = "REAL".equals(MODO), SIMULADO = "SIMULADO".equals(MODO);
     static final double TOPE_ETAPA = Double.parseDouble(System.getProperty("fitsense.h2v2.tope-usd", "0"));
     static final String ETAPA = "E2";
@@ -302,7 +308,7 @@ class H2v2PipelineCompletoIT {
 
     /** Los bytes que enviara requestOutput: el mismo prompt y la misma instruccion de sistema. */
     private long bytes(PlanGenerationContext ctx, AiRetryFeedback fb) {
-        var snapshot = json.write(PlanInputSnapshot.of(ctx, promptBuilder.h2v2()));
+        var snapshot = json.write(PlanInputSnapshot.of(ctx, promptBuilder.version()));
         var prompt = promptBuilder.build(ctx, snapshot, fb);
         var sistema = ReplicateTrainingPlanGenerator.instruccionDeSistema(
                 ReplicateTrainingPlanGenerator.Peticion.deSemana(ctx.effectiveDaysPerWeek(), promptBuilder.version()));
@@ -339,7 +345,7 @@ class H2v2PipelineCompletoIT {
         if (SIMULADO) {
             var enviados = CUERPOS.subList(cuerposAntes, CUERPOS.size());
             assertEquals(ids.size(), enviados.size(), "una prediccion creada por cada REPLICATE_TIMING");
-            String v = b.equals("B") ? PlanPromptBuilder.VERSION_H2V2 : PlanPromptBuilder.VERSION;
+            String v = b.equals("B") ? VERSION_B : PlanPromptBuilder.VERSION;
             for (var x : enviados)
                 assertTrue(x.contains("\\\"prompt_version\\\":\\\"" + v + "\\\""), "el brazo " + b + " envia " + v);
         }
@@ -440,7 +446,7 @@ class H2v2PipelineCompletoIT {
     // ------------------------------------------------------------------ utilidades
 
     private void fijarInterruptor(boolean h2v2) {
-        String v = h2v2 ? PlanPromptBuilder.VERSION_H2V2 : PlanPromptBuilder.VERSION;
+        String v = h2v2 ? VERSION_B : PlanPromptBuilder.VERSION;
         ReflectionTestUtils.invokeMethod((Object) AopTestUtils.getUltimateTargetObject(promptBuilder), "setPromptVersion", v);
         ReflectionTestUtils.invokeMethod((Object) AopTestUtils.getUltimateTargetObject(planComandos),
                 "setPromptVersionGeneracion", v);
@@ -558,7 +564,7 @@ class H2v2PipelineCompletoIT {
             return m.find() ? m.group(1) : "CONTRATO/OTRO";
         }).collect(Collectors.groupingBy(x -> x, TreeMap::new, Collectors.counting())).toString()).toList();
         return String.join(";", MODO, f.caso(), f.brazo(), String.valueOf(f.orden()),
-                f.brazo().equals("B") ? PlanPromptBuilder.VERSION_H2V2 : PlanPromptBuilder.VERSION,
+                f.brazo().equals("B") ? VERSION_B : PlanPromptBuilder.VERSION,
                 String.valueOf(f.semana()), f.estadoOperacion(), f.origen(), f.modelo(), String.valueOf(f.intentosPlan()),
                 String.valueOf(f.predicciones()), String.valueOf(f.ms()), String.valueOf(f.primeraValida()),
                 String.valueOf(mitad), String.valueOf(v26), otros.toString().replace(';', ','), f.motivoRespaldo(),

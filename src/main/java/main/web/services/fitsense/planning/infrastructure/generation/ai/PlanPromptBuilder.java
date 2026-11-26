@@ -109,30 +109,72 @@ public class PlanPromptBuilder {
      */
     public static final String VERSION_H2V2 = "PR-2.0";
 
-    /** Si una version configurada es la de H2-v2; falla con una desconocida (no se reinterpreta con otra). */
-    public static boolean esH2v2(String version) {
+    /**
+     * H2-v3 (docs/FitSense/h2_v3/). Solo con {@code fitsense.ai.generacion.prompt-version=PR-2.1}. Es PR-2.0 con las
+     * correcciones de su evaluacion real (07 de h2_v2):
+     * <ul>
+     *   <li>JERARQUIA DE RESTRICCIONES (regla 22): la dosis de V24 se copia tal cual y nunca se recorta para cumplir
+     *   otro limite; V26 y V15 se cumplen eligiendo cuantas colocaciones y de que grupo; la cobertura (V23 y V25) no se
+     *   pierde al quitar colocaciones; la duracion (regla 4) se ajusta quitando secundarias;</li>
+     *   <li>regla 21: la orientacion por grupo deja de ser una cifra a alcanzar. Como en la politica real
+     *   (ControlVolumen), solo decide a que grupo dar una colocacion mas, siempre con su dosis completa, y un grupo sin
+     *   prioridad no esta prohibido (instantanea: prioridad_series_semana, solo los grupos con valor &gt; 0);</li>
+     *   <li>comprobacion final con la dosis y la cobertura antes que el reparto;</li>
+     *   <li>reintento sin "baja series": se quitan o mueven colocaciones; pistas de V24, V25 y V23 coherentes.</li>
+     * </ul>
+     * No cambia ninguna regla del backend. Desactivada por omision hasta aprobar su evaluacion real.
+     */
+    public static final String VERSION_H2V3 = "PR-2.1";
+
+    private static String normal(String version) {
         var v = version == null ? VERSION : version.trim();
-        if (v.isEmpty() || v.equals(VERSION)) return false;
-        if (v.equals(VERSION_H2V2)) return true;
-        throw new IllegalArgumentException("fitsense.ai.generacion.prompt-version debe ser " + VERSION + " o "
-                + VERSION_H2V2 + ": " + version);
+        return v.isEmpty() ? VERSION : v;
     }
 
-    private boolean h2v2 = false;
+    /**
+     * Si una version configurada usa el contrato H2 (PR-2.0 o PR-2.1); falla con una desconocida (no se reinterpreta
+     * con otra).
+     */
+    public static boolean esH2v2(String version) {
+        var v = normal(version);
+        if (v.equals(VERSION)) return false;
+        if (v.equals(VERSION_H2V2) || v.equals(VERSION_H2V3)) return true;
+        throw new IllegalArgumentException("fitsense.ai.generacion.prompt-version debe ser " + VERSION + ", "
+                + VERSION_H2V2 + " o " + VERSION_H2V3 + ": " + version);
+    }
 
-    /** H2-v2: PR-1.7 por omision (configuracion evaluada). */
+    /** Si una version configurada es la de H2-v3 (PR-2.1). */
+    public static boolean esH2v3(String version) {
+        return esH2v2(version) && normal(version).equals(VERSION_H2V3);
+    }
+
+    /** La version validada y normalizada (PR-1.7 si viene vacia). */
+    public static String versionValida(String version) {
+        esH2v2(version);
+        return normal(version);
+    }
+
+    private String version = VERSION;
+
+    /** H2-v2/H2-v3: PR-1.7 por omision (configuracion evaluada). */
     @org.springframework.beans.factory.annotation.Value("${fitsense.ai.generacion.prompt-version:PR-1.7}")
     void setPromptVersion(String version) {
-        this.h2v2 = esH2v2(version);
+        this.version = versionValida(version);
     }
 
+    /** El contrato H2 (PR-2.0 o PR-2.1). */
     public boolean h2v2() {
-        return h2v2;
+        return !VERSION.equals(version);
+    }
+
+    /** H2-v3 (PR-2.1). */
+    public boolean h2v3() {
+        return VERSION_H2V3.equals(version);
     }
 
     /** La version efectiva del texto de reglas. */
     public String version() {
-        return h2v2 ? VERSION_H2V2 : VERSION;
+        return version;
     }
 
     /** El bloque de capacidades. Publico para poder probar que solo aparece donde toca. */
@@ -166,7 +208,7 @@ public class PlanPromptBuilder {
         var prompt = new StringBuilder();
         boolean porCapacidades = main.web.services.fitsense.planning.domain.services.CapabilityPrescriptionPolicy
                 .gobiernaGeneracion(context.profile().goalType());
-        var capacidades = porCapacidades ? PlanInputSnapshot.of(context, h2v2).constraints().capacidades() : null;
+        var capacidades = porCapacidades ? PlanInputSnapshot.of(context, version).constraints().capacidades() : null;
 
         prompt.append("""
                 Eres un entrenador que diseña planes semanales de entrenamiento.
@@ -314,13 +356,13 @@ public class PlanPromptBuilder {
         if (capacidades != null) prompt.append(comprobacionFinal(capacidades))
                 .append(comprobacionDeFuerza(context, capacidades));
         // H2-v2: la comprobacion del reparto, para los cuatro objetivos, tambien despues de los datos.
-        if (h2v2) prompt.append(H2v2.comprobacionReparto(context));
+        if (h2v2()) prompt.append(H2v2.comprobacionReparto(context, h2v3()));
 
         // Reintento (19.4). Va AL FINAL, despues de los datos: es lo ultimo que
         // lee el modelo y lo unico que distingue este intento del anterior.
         if (feedback != null && !feedback.isEmpty()) appendRetry(prompt, feedback);
 
-        return h2v2 ? H2v2.aplicar(prompt.toString(), context, feedback) : prompt.toString();
+        return h2v2() ? H2v2.aplicar(prompt.toString(), context, feedback, h2v3()) : prompt.toString();
     }
 
     /**
@@ -589,6 +631,11 @@ public class PlanPromptBuilder {
                 "las reglas 1 a 20 completas");
 
         static String aplicar(String prompt, PlanGenerationContext context, AiRetryFeedback feedback) {
+            return aplicar(prompt, context, feedback, false);
+        }
+
+        /** @param v3 H2-v3 (PR-2.1): las mismas sustituciones de PR-2.0 mas la jerarquia de restricciones. */
+        static String aplicar(String prompt, PlanGenerationContext context, AiRetryFeedback feedback, boolean v3) {
             boolean sinMinimo = main.web.services.fitsense.planning.domain.services.PlanDraftValidator
                     .minimumSessionSeconds(context) == 0;
             boolean sinLlenado = context.policy() != null && context.policy().duracion()
@@ -606,8 +653,10 @@ public class PlanPromptBuilder {
             if (volumen != null) {
                 var m = REGLA20_FIN.matcher(salida);
                 if (!m.find()) throw new IllegalStateException("H2-v2: no esta la regla 20 de PR-1.7");
-                salida = m.replaceFirst(java.util.regex.Matcher.quoteReplacement(m.group(1) + regla21(volumen)));
-                salida = REINTENTO_REGLAS.matcher(salida).replaceAll("las reglas 1 a 21 completas");
+                salida = m.replaceFirst(java.util.regex.Matcher.quoteReplacement(m.group(1)
+                        + (v3 ? H2v3.regla21(volumen) + H2v3.regla22(context) : regla21(volumen))));
+                salida = REINTENTO_REGLAS.matcher(salida).replaceAll(v3 ? "las reglas 1 a 22 completas"
+                        : "las reglas 1 a 21 completas");
             }
             if (sinLlenado) {
                 salida = opcional(CAPACIDADES_LLENAR, salida, CAPACIDADES_SIN_LLENAR);
@@ -616,8 +665,14 @@ public class PlanPromptBuilder {
             }
             salida = opcional(COMPROBACION_CAPACIDADES, salida, COMPROBACION_CAPACIDADES_V2);
             if (feedback != null && !feedback.isEmpty()) {
-                salida = opcional(REINTENTO_REPONER, salida, REINTENTO_REPONER_V2);
-                salida = conPistas(salida, feedback);
+                if (v3) {
+                    salida = opcional(REINTENTO_REPONER, salida, H2v3.REINTENTO_REPONER);
+                    salida = opcional(H2v3.REINTENTO_SALVO, salida, H2v3.REINTENTO_SALVO_V3);
+                    salida = H2v3.conPistas(salida, feedback);
+                } else {
+                    salida = opcional(REINTENTO_REPONER, salida, REINTENTO_REPONER_V2);
+                    salida = conPistas(salida, feedback);
+                }
             }
             return salida;
         }
@@ -648,6 +703,10 @@ public class PlanPromptBuilder {
         }
 
         /** La comprobacion del reparto, despues de los datos (lo ultimo que lee el modelo antes de escribir). */
+        static String comprobacionReparto(PlanGenerationContext context, boolean v3) {
+            return v3 ? H2v3.comprobacion(context) : comprobacionReparto(context);
+        }
+
         static String comprobacionReparto(PlanGenerationContext context) {
             var volumen = main.web.services.fitsense.planning.domain.services.ContratoReparto.volumen(context);
             var b = new StringBuilder("""
@@ -670,7 +729,7 @@ public class PlanPromptBuilder {
         }
 
         /** Las pistas de V15 y V26 en el reintento (PistasDeReintento no las tiene y la adaptacion no se toca). */
-        private static String conPistas(String texto, AiRetryFeedback feedback) {
+        static String conPistas(String texto, AiRetryFeedback feedback) {
             var pistas = new java.util.ArrayList<String>();
             if (feedback.rejectionProblems().stream().anyMatch(m -> m.startsWith("V15")))
                 pistas.add("V15: cuenta los ejercicios de trabajo n de esa sesion y usa el valor de n en"
@@ -679,6 +738,155 @@ public class PlanPromptBuilder {
             if (feedback.rejectionProblems().stream().anyMatch(m -> m.startsWith("V26")))
                 pistas.add("V26: en esa sesion (o en la semana) baja series o quita una colocacion de ese body_part; los"
                         + " techos estan en constraints.volumen_semanal.");
+            if (pistas.isEmpty()) return texto;
+            var bloque = new StringBuilder();
+            pistas.forEach(p -> bloque.append("- ").append(p).append('\n'));
+            int i = texto.indexOf("\nDonde esta la solucion de cada motivo:\n");
+            if (i >= 0) {
+                int fin = texto.indexOf("\n\n", i + 2);
+                if (fin < 0) fin = texto.length();
+                return texto.substring(0, fin) + "\n" + bloque.toString().stripTrailing() + texto.substring(fin);
+            }
+            int j = texto.lastIndexOf("\nEl backend la rechazo por estos motivos:\n");
+            int k = j < 0 ? -1 : texto.indexOf("\n\n", j + 2);
+            if (k < 0) return texto + "\nDonde esta la solucion de cada motivo:\n" + bloque;
+            return texto.substring(0, k) + "\n\nDonde esta la solucion de cada motivo:\n" + bloque.toString()
+                    .stripTrailing() + texto.substring(k);
+        }
+    }
+
+    /**
+     * H2-v3 (PR-2.1): la jerarquia de restricciones sobre PR-2.0 (docs/FitSense/h2_v3/). Cada frase dice lo que el
+     * backend verifica y nada mas: no cambia V8C, V15, V20, V23, V24, V25 ni V26.
+     */
+    static final class H2v3 {
+
+        private H2v3() {}
+
+        /**
+         * Regla 21 de PR-2.1. Los techos de V26 son los mismos; la orientacion por grupo se comunica como lo que es en
+         * la politica (ControlVolumen.grupoPendiente): una prioridad para decidir a que grupo dar una colocacion MAS,
+         * siempre con su dosis completa, nunca una cifra a igualar ni un limite.
+         */
+        static String regla21(main.web.services.fitsense.planning.domain.services.ContratoReparto.Volumen v) {
+            return ("21. VOLUMEN POR GRUPO MUSCULAR (V26, el backend lo verifica). Sin contar"
+                    + " constraints.complementos_no_cuentan ni constraints.volumen_semanal.no_cuentan, suma los"
+                    + " planned_sets de cada body_part:\n"
+                    + "    - en CADA sesion, como mucho %d series de un mismo body_part (techo_series_sesion);\n"
+                    + "    - en la SEMANA entera, como mucho %d series de un mismo body_part (techo_series_semana).\n"
+                    + "    Estos techos se cumplen eligiendo CUANTAS colocaciones de cada body_part pones y en que"
+                    + " sesiones, nunca cambiando la dosis de una colocacion (regla 22).\n"
+                    + "    constraints.volumen_semanal.prioridad_series_semana NO es una cifra que alcanzar ni un limite:"
+                    + " solo sirve para decidir, cuando una sesion admite otra colocacion, a que grupo darsela (al que"
+                    + " mas lejos este de su prioridad). Quedarte por debajo o por encima es valido mientras no pases un"
+                    + " techo. Un body_part que no aparece en prioridad_series_semana no tiene prioridad, pero NO esta"
+                    + " prohibido: usalo cuando haga falta para repartir (regla 15) o para cubrir un slot o una"
+                    + " capacidad. La orientacion de series por grupo de los PRINCIPIOS DE PRESCRIPCION no se aplica:"
+                    + " la sustituye esta.\n").formatted(v.techoSesion(), v.techoSemana());
+        }
+
+        /** Regla 22: el orden en que se resuelven los choques. Todas se verifican; ninguna se cumple rompiendo otra. */
+        static String regla22(PlanGenerationContext context) {
+            boolean porClase = main.web.services.fitsense.planning.domain.model.valueobjects.MvpDosePolicy
+                    .aplicaA(context.profile().goalType());
+            // Lo mismo que verifica V24: con clase_dosis (GAIN_MUSCLE), las series de la clase sin la serie adicional
+            // (sin minimo de duracion no se admite); por capacidades, entre series y series_max del codigo.
+            boolean sinMinimo = main.web.services.fitsense.planning.domain.services.PlanDraftValidator
+                    .minimumSessionSeconds(context) == 0;
+            String dosis = porClase
+                    ? "de su clase_dosis en constraints.dosis_por_clase: planned_sets = \"series\" ("
+                    + (sinMinimo ? "sin la serie adicional" : "la serie adicional solo con la excepcion de las dosis")
+                    + "), planned_reps = \"reps\" y rest_seconds = \"descanso_segundos\", copiados tal cual"
+                    : "de uno de sus codigos de \"dosis\" en constraints.capacidades.dosis: planned_sets entre \"series\""
+                    + " y \"series_max\" de ese codigo, y \"reps\" (o los segundos) y \"descanso_segundos\" tal cual";
+            String techos = porClase
+                    ? "quita una colocacion de ese grupo o llevala a otra sesion de la semana que aun tenga margen"
+                    : "quita una colocacion de ese grupo, llevala a otra sesion de la semana que aun tenga margen o,"
+                    + " si su codigo admite un rango, usa menos series sin bajar de \"series\"";
+            return ("22. JERARQUIA DE RESTRICCIONES. Todas se verifican; ninguna se cumple rompiendo otra. Cuando"
+                    + " dos parecen chocar, se resuelven en este orden:\n"
+                    + "    1) DOSIS (V24): cada colocacion lleva EXACTAMENTE la dosis %s. NUNCA cambies series,"
+                    + " repeticiones, segundos ni descanso fuera de esa dosis para cumplir otra regla: una dosis recortada"
+                    + " se rechaza.\n"
+                    + "    2) TECHOS DE SERIES (V26, regla 21): si un body_part se pasa, %s.\n"
+                    + "    3) REPARTO (V15, regla 15): cada sesion cubre al menos min_body_parts grupos de"
+                    + " body_parts_con_material y ningun body_part pasa de su mitad. Si uno se pasa o falta un grupo,"
+                    + " cambia una colocacion del grupo que mas tiene por otra de un grupo de body_parts_con_material"
+                    + " que falte o tenga menos (tenga o no prioridad, y respetando la regla 20); si no queda ninguno,"
+                    + " quita la colocacion que se pasa.\n"
+                    + "    4) COBERTURA (V23 y V25): al quitar o cambiar una colocacion, la semana sigue cubriendo cada"
+                    + " slot de constraints.slots_exigibles%s con una colocacion de su dosis. Quita antes una secundaria"
+                    + " o una de un grupo o patron que ya este cubierto.\n"
+                    + "    5) DURACION (regla 4): ninguna sesion pasa de constraints.max_session_seconds. Si no cabe,"
+                    + " quita una colocacion secundaria; nunca acortes descansos ni dosis.\n"
+                    + "    Si no puedes cumplirlas todas a la vez, pon menos colocaciones secundarias. No inventes dosis,"
+                    + " grupos ni ejercicios: el backend rechaza lo que no cumple.\n")
+                    .formatted(dosis, techos, porClase
+                            ? " y la capacidad principal HYPERTROPHY (la cubre una colocacion con la dosis exacta de su"
+                            + " clase)"
+                            : " y cada capacidad de constraints.capacidades.principales_factibles");
+        }
+
+        /** La comprobacion final de PR-2.1: dosis y cobertura antes que el reparto. */
+        static String comprobacion(PlanGenerationContext context) {
+            var volumen = main.web.services.fitsense.planning.domain.services.ContratoReparto.volumen(context);
+            var b = new StringBuilder("""
+
+                    COMPROBACION FINAL, en el orden de la regla 22, antes de escribir el JSON:
+                    1) Cada colocacion lleva su dosis exacta (series, reps o segundos y descanso), copiada tal cual:
+                       ninguna recortada para que quepa otra cosa.
+                    """);
+            if (volumen != null)
+                b.append(("2) Ningun body_part suma mas de %d series directas en una sesion, ni mas de %d en la semana"
+                        + " (regla 21).\n").formatted(volumen.techoSesion(), volumen.techoSemana()));
+            b.append("""
+                    3) Cuenta n, los ejercicios de trabajo de cada sesion (sin constraints.complementos_no_cuentan). Si la
+                       sesion trae max_per_body_part_por_n_trabajo, ningun body_part pasa del valor de n en esa tabla; cubre
+                       al menos min_body_parts grupos de body_parts_con_material y no mete grupos fuera de body_parts
+                       (salvo FULL_BODY).
+                    4) La semana cubre cada slot de constraints.slots_exigibles y cada capacidad principal factible.
+                    5) Ninguna sesion pasa de constraints.max_session_seconds.
+                    Una sesion con menos ejercicios es valida si cumple 1-5; pasar un techo, recortar una dosis o perder
+                    un slot no lo es. Si algo falla, corrige la semana antes de responder.
+                    """);
+            return b.toString();
+        }
+
+        /** Reintento: sin "bajar series". Se quitan o mueven colocaciones; la dosis no se toca. */
+        static final String REINTENTO_REPONER = "Si sobran de un grupo muscular (V15 o V26), cambia esas colocaciones"
+                + " por otras de body_parts_con_material de esa sesion o llevalas a otra sesion con margen; si no"
+                + " cabe en ninguna, quitalas sin reponerlas. NUNCA cambies la dosis de una colocacion para corregir"
+                + " (regla 22).";
+
+        static final java.util.regex.Pattern REINTENTO_SALVO = java.util.regex.Pattern.compile(
+                "NO quites ejercicios ni sesiones para corregir, SALVO que un motivo\\s+del rechazo exija bajar el"
+                        + " numero de ejercicios o las series: en ese\\s+caso quitalos y conserva lo demas\\.");
+        static final String REINTENTO_SALVO_V3 = "NO quites ejercicios ni sesiones para corregir, SALVO que un motivo"
+                + " del rechazo exija menos colocaciones de un grupo (V15, V26) o menos duracion: en ese caso quita"
+                + " colocaciones y conserva lo demas, sin tocar la dosis de ninguna.";
+
+        /** Las pistas de PR-2.1 para el reintento: cada una dice como corregir sin romper otra regla. */
+        static String conPistas(String texto, AiRetryFeedback feedback) {
+            var motivos = feedback.rejectionProblems();
+            var pistas = new java.util.ArrayList<String>();
+            if (motivos.stream().anyMatch(m -> m.startsWith("V15")))
+                pistas.add("V15: cuenta los ejercicios de trabajo n de esa sesion y usa el valor de n en"
+                        + " max_per_body_part_por_n_trabajo; cambia la colocacion que sobra por otra de"
+                        + " body_parts_con_material (con su dosis exacta) o pon menos ejercicios.");
+            if (motivos.stream().anyMatch(m -> m.startsWith("V26")))
+                pistas.add("V26: quita una colocacion de ese body_part o llevala a otra sesion con margen (regla 22,"
+                        + " punto 2); no cambies ninguna dosis fuera de lo que admite. Los techos estan en"
+                        + " constraints.volumen_semanal.");
+            if (motivos.stream().anyMatch(m -> m.startsWith("V24")))
+                pistas.add("V24: vuelve a copiar la dosis exacta de cada colocacion (regla 22, punto 1). Si con la"
+                        + " dosis completa se pasa un techo o la duracion, quita una colocacion secundaria en vez de"
+                        + " recortarla.");
+            if (motivos.stream().anyMatch(m -> m.startsWith("V25")))
+                pistas.add("V25: anade una colocacion con una dosis de esa capacidad; si no cabe, cambiala por una"
+                        + " secundaria, no recortes dosis.");
+            if (motivos.stream().anyMatch(m -> m.startsWith("V23")))
+                pistas.add("V23: cambia un ejercicio de ese mismo grupo por uno del slot que falta, con la misma"
+                        + " dosis; no quites el ultimo ejercicio de otro slot.");
             if (pistas.isEmpty()) return texto;
             var bloque = new StringBuilder();
             pistas.forEach(p -> bloque.append("- ").append(p).append('\n'));

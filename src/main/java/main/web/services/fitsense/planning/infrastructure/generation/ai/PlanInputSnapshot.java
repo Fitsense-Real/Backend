@@ -283,8 +283,24 @@ public record PlanInputSnapshot(
     public record VolumenSemanal(
             @JsonProperty("techo_series_sesion") int techoSeriesSesion,
             @JsonProperty("techo_series_semana") int techoSeriesSemana,
+            /** PR-2.0. Con PR-2.1 es null y NO se serializa. */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             @JsonProperty("objetivo_series_semana") Map<String, Integer> objetivoSeriesSemana,
-            @JsonProperty("no_cuentan") List<Long> noCuentan) {}
+            /**
+             * H2-v3 (PR-2.1): la misma orientacion de DosisSemanalPolicy, solo los grupos con valor &gt; 0 y con el nombre
+             * de lo que es en la politica (ControlVolumen): una prioridad para elegir a que grupo dar una colocacion mas.
+             * Un 0 no es una prohibicion, asi que no se envia. Con PR-2.0 es null y NO se serializa.
+             */
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("prioridad_series_semana") Map<String, Integer> prioridadSeriesSemana,
+            @JsonProperty("no_cuentan") List<Long> noCuentan) {
+
+        /** PR-2.0. */
+        public VolumenSemanal(int techoSeriesSesion, int techoSeriesSemana, Map<String, Integer> objetivoSeriesSemana,
+                              List<Long> noCuentan) {
+            this(techoSeriesSesion, techoSeriesSemana, objetivoSeriesSemana, null, noCuentan);
+        }
+    }
 
     public record SuggestedSession(
             @JsonProperty("scheduled_date") LocalDate scheduledDate,
@@ -583,6 +599,16 @@ public record PlanInputSnapshot(
      *             gobiernan las capacidades). Con {@code false}, exactamente lo de PR-1.7.
      */
     public static PlanInputSnapshot of(PlanGenerationContext context, boolean h2v2) {
+        return of(context, h2v2 ? PlanPromptBuilder.VERSION_H2V2 : PlanPromptBuilder.VERSION);
+    }
+
+    /**
+     * @param promptVersion PR-1.7, PR-2.0 o PR-2.1 (fitsense.ai.generacion.prompt-version). PR-2.1 es la instantanea de
+     *                      PR-2.0 con la orientacion por grupo como prioridad_series_semana (solo valores &gt; 0).
+     */
+    public static PlanInputSnapshot of(PlanGenerationContext context, String promptVersion) {
+        boolean h2v2 = PlanPromptBuilder.esH2v2(promptVersion);
+        boolean h2v3 = PlanPromptBuilder.esH2v3(promptVersion);
         var profile = context.profile();
 
         var user = new User(profile.age(), profile.biologicalSex(), profile.heightCm(),
@@ -650,7 +676,7 @@ public record PlanInputSnapshot(
                         ? context.policy().limiteV4SegundosDe(context.profile().sessionMinutes())
                         : null,
                 !h2v2 ? null : complementosH2.stream().sorted().toList(),
-                !h2v2 ? null : volumenSemanalOrNull(context));
+                !h2v2 ? null : volumenSemanalOrNull(context, h2v3));
 
         var adjustment = context.adjustment() == null ? null : new Adjustment(
                 context.adjustment().types().stream().map(Enum::name).toList(),
@@ -745,7 +771,7 @@ public record PlanInputSnapshot(
         // para que el modelo modere la prescripcion de los que SI quedan: una
         // sentadilla sigue siendo elegible y puede pautarse mas o menos profunda.
         return new PlanInputSnapshot(PlanGenerationContext.SCHEMA_VERSION,
-                PrescriptionPrinciples.VERSION, h2v2 ? PlanPromptBuilder.VERSION_H2V2 : PlanPromptBuilder.VERSION,
+                PrescriptionPrinciples.VERSION, PlanPromptBuilder.versionValida(promptVersion),
                 user, constraints, adjustment, previousWeek, exercises,
                 context.safety() == null ? null : context.safety().describe());
     }
@@ -779,10 +805,15 @@ public record PlanInputSnapshot(
     }
 
     /** H2-v2: los techos de V26, o null si la politica no aplica V26. */
-    private static VolumenSemanal volumenSemanalOrNull(PlanGenerationContext context) {
+    private static VolumenSemanal volumenSemanalOrNull(PlanGenerationContext context, boolean h2v3) {
         var v = main.web.services.fitsense.planning.domain.services.ContratoReparto.volumen(context);
-        return v == null ? null : new VolumenSemanal(v.techoSesion(), v.techoSemana(), v.objetivoSemana(),
-                v.noCuentan());
+        if (v == null) return null;
+        if (!h2v3) return new VolumenSemanal(v.techoSesion(), v.techoSemana(), v.objetivoSemana(), v.noCuentan());
+        var prioridad = new java.util.TreeMap<String, Integer>();
+        v.objetivoSemana().forEach((g, n) -> {
+            if (n != null && n > 0) prioridad.put(g, n);
+        });
+        return new VolumenSemanal(v.techoSesion(), v.techoSemana(), null, prioridad, v.noCuentan());
     }
 
     private static SuggestedSession suggestedSession(

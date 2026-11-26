@@ -91,6 +91,12 @@ class H2v2PrimeraPropuestaIT {
 
     static final String MODO = System.getProperty("fitsense.h2v2.modo", "");
     /**
+     * Version del brazo B (tratamiento). PR-2.0 por omision, la de la evaluacion de H2-v2 (su evidencia sigue siendo
+     * reproducible); {@code -Dfitsense.h2v2.version-b=PR-2.1} para H2-v3. El brazo A es siempre PR-1.7.
+     */
+    static final String VERSION_B = PlanPromptBuilder.versionValida(System.getProperty("fitsense.h2v2.version-b",
+            PlanPromptBuilder.VERSION_H2V2));
+    /**
      * VALIDAR (sin Replicate, sin coste): vuelve a pasar por el ensamblador, el normalizador y el validador las salidas
      * REALES ya obtenidas ({@code <caso>_<brazo>.json} en {@code salidas-dir}), con el mismo perfil y el mismo
      * contexto. Sirve para no repetir predicciones ya pagadas cuando la corrida REAL se interrumpe (reinicio del
@@ -248,6 +254,11 @@ class H2v2PrimeraPropuestaIT {
                 continue;
             }
             if (!REAL) {
+                // Diagnostico sin coste: el texto exacto de cada peticion (prompt e instruccion de sistema).
+                if ("SI".equals(System.getProperty("fitsense.h2v2.volcar-prompts")))
+                    for (var b : orden)
+                        guardar(c.id() + "_" + b + "_prompt.txt", peticiones.get(b).sistema() + "\n\n=====\n\n"
+                                + peticiones.get(b).prompt());
                 for (var b : orden)
                     filas.add(new Fila(c, b, 0, "SOLO_PROMPT", peticiones.get(b).version(),
                             peticiones.get(b).prompt().length() + peticiones.get(b).sistema().length(),
@@ -297,7 +308,7 @@ class H2v2PrimeraPropuestaIT {
     /** Construye la peticion de un brazo exactamente como requestOutput (mismo prompt, misma instruccion de sistema). */
     private Peticion construir(PlanGenerationContext ctx, boolean h2v2) {
         fijarInterruptor(h2v2);
-        var snapshot = json.write(PlanInputSnapshot.of(ctx, promptBuilder.h2v2()));
+        var snapshot = json.write(PlanInputSnapshot.of(ctx, promptBuilder.version()));
         var prompt = promptBuilder.build(ctx, snapshot, AiRetryFeedback.none());
         var sistema = ReplicateTrainingPlanGenerator.instruccionDeSistema(
                 ReplicateTrainingPlanGenerator.Peticion.deSemana(ctx.effectiveDaysPerWeek(), promptBuilder.version()));
@@ -309,7 +320,7 @@ class H2v2PrimeraPropuestaIT {
 
     /** A = PR-1.7, B = PR-2.0: el prompt y la instantanea que guarda el plan, como en produccion. */
     private void fijarInterruptor(boolean h2v2) {
-        String v = h2v2 ? PlanPromptBuilder.VERSION_H2V2 : PlanPromptBuilder.VERSION;
+        String v = h2v2 ? VERSION_B : PlanPromptBuilder.VERSION;
         ReflectionTestUtils.invokeMethod((Object) AopTestUtils.getUltimateTargetObject(promptBuilder), "setPromptVersion",
                 v);
         ReflectionTestUtils.invokeMethod((Object) AopTestUtils.getUltimateTargetObject(planComandos),

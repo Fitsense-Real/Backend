@@ -1,0 +1,83 @@
+tipo;caso;brazo;codigos_antes;codigos_tras_PR21;cambios;detalle
+FOCO;G02;B;{V24=16, V25=1};{};16;dosis 1096: 2x10/90 -> 3x10/90 | dosis 1156: 2x10/90 -> 3x10/90 | dosis 101: 2x10/90 -> 3x10/90 | dosis 1320: 2x10/90 -> 3x10/90 | dosis 144: 2x10/90 -> 3x10/90 | dosis 1118: 2x10/90 -> 3x10/90 | dosis 294: 2x12/90 -> 2x13/90 | dosis 935: 2x12/90 -> 2x13/90 | dosis 1334: 2x10/90 -> 3x10/90 | dosis 114: 2x10/90 -> 3x10/90 | dosis 1154: 2x10/90 -> 3x10/90 | dosis 723: 2x12/90 -> 2x10/90 | dosis 877: 2x10/90 -> 3x10/90 | dosis 142: 2x10/90 -> 3x10/90 | dosis 695: 2x12/90 -> 2x13/90 | dosis 141: 2x10/90 -> 2x13/90
+FOCO;G03;B;{V24=24, V25=1};{};24;dosis 548: 3x8/90 -> 3x10/90 | dosis 325: 3x8/90 -> 3x10/90 | dosis 740: 3x8/90 -> 3x10/90 | dosis 561: 2x10/60 -> 3x10/90 | dosis 555: 2x10/60 -> 2x10/90 | dosis 345: 2x12/60 -> 2x10/90 | dosis 1238: 3x8/90 -> 3x10/90 | dosis 1233: 3x8/90 -> 3x10/90 | dosis 1018: 3x12/90 -> 2x13/90 | dosis 864: 2x12/60 -> 2x13/90 | dosis 1009: 2x10/60 -> 3x10/90 | dosis 1016: 2x12/60 -> 2x13/90 | dosis 177: 3x8/90 -> 3x10/90 | dosis 356: 3x8/90 -> 3x10/90 | dosis 1279: 3x8/90 -> 3x10/90 | dosis 1320: 2x10/60 -> 3x10/90 | dosis 362: 2x10/60 -> 2x10/90 | dosis 421: 2x12/60 -> 3x10/90 | dosis 1004: 3x8/90 -> 3x10/90 | dosis 1007: 3x8/90 -> 3x10/90 | dosis 414: 3x12/90 -> 2x13/90 | dosis 864: 2x12/60 -> 2x13/90 | dosis 1202: 2x10/60 -> 3x10/90 | dosis 1057: 2x12/60 -> 2x13/90
+FOCO;G15;B;{V15=2};{};2;V15 reparto: 1005 -> 864 el 2026-11-24 | V15 reparto: 1196 -> 864 el 2026-11-27
+FOCO;G18;B;{V15=1};{};1;V15 reparto: 1157 -> 864 el 2026-11-29
+FOCO;G19;B;{V23=1};{};1;V23 LOWER_HIP: 67 -> 125 el 2026-11-25
+REGLAS;G01;-;{};{};0;
+REGLAS;G02;-;{};{};0;
+REGLAS;G03;-;{};{};0;
+REGLAS;G04;-;{};{};0;
+REGLAS;G05;-;{};{};0;
+REGLAS;G06;-;{};{};0;
+REGLAS;G07;-;{};{};0;
+REGLAS;G08;-;{};{};0;
+REGLAS;G09;-;{};{};0;
+REGLAS;G10;-;{};{};0;
+REGLAS;G11;-;{};{};0;
+REGLAS;G12;-;{};{};0;
+REGLAS;G13;-;{};{};0;
+REGLAS;G14;-;{};{};0;
+REGLAS;G15;-;{};{};0;
+REGLAS;G16;-;{};{};0;
+REGLAS;G17;-;{};{};0;
+REGLAS;G18;-;{};{};0;
+REGLAS;G19;-;{};{};0;
+REGLAS;G20;-;{};{};0;
+REGLAS;G21;-;{};{};0;
+REGLAS;G22;-;{};{};0;
+REGLAS;G23;-;{};{};0;
+REGLAS;G24;-;{};{};0;
+REGLAS;G25;-;{};{};0;
+REGLAS;G26;-;{};{};0;
+SALIDA;G01;A;{};{};0;
+SALIDA;G01;B;{};{};0;
+SALIDA;G02;A;{V15=2, V26=3};{};2;V26 sesion: quita 122 del 2026-11-24 | V26 sesion: quita 1073 del 2026-11-27
+SALIDA;G02;B;{V24=16, V25=1};{};16;dosis 1096: 2x10/90 -> 3x10/90 | dosis 1156: 2x10/90 -> 3x10/90 | dosis 101: 2x10/90 -> 3x10/90 | dosis 1320: 2x10/90 -> 3x10/90 | dosis 144: 2x10/90 -> 3x10/90 | dosis 1118: 2x10/90 -> 3x10/90 | dosis 294: 2x12/90 -> 2x13/90 | dosis 935: 2x12/90 -> 2x13/90 | dosis 1334: 2x10/90 -> 3x10/90 | dosis 114: 2x10/90 -> 3x10/90 | dosis 1154: 2x10/90 -> 3x10/90 | dosis 723: 2x12/90 -> 2x10/90 | dosis 877: 2x10/90 -> 3x10/90 | dosis 142: 2x10/90 -> 3x10/90 | dosis 695: 2x12/90 -> 2x13/90 | dosis 141: 2x10/90 -> 2x13/90
+SALIDA;G03;A;{};{};0;
+SALIDA;G03;B;{V24=24, V25=1};{};24;dosis 548: 3x8/90 -> 3x10/90 | dosis 325: 3x8/90 -> 3x10/90 | dosis 740: 3x8/90 -> 3x10/90 | dosis 561: 2x10/60 -> 3x10/90 | dosis 555: 2x10/60 -> 2x10/90 | dosis 345: 2x12/60 -> 2x10/90 | dosis 1238: 3x8/90 -> 3x10/90 | dosis 1233: 3x8/90 -> 3x10/90 | dosis 1018: 3x12/90 -> 2x13/90 | dosis 864: 2x12/60 -> 2x13/90 | dosis 1009: 2x10/60 -> 3x10/90 | dosis 1016: 2x12/60 -> 2x13/90 | dosis 177: 3x8/90 -> 3x10/90 | dosis 356: 3x8/90 -> 3x10/90 | dosis 1279: 3x8/90 -> 3x10/90 | dosis 1320: 2x10/60 -> 3x10/90 | dosis 362: 2x10/60 -> 2x10/90 | dosis 421: 2x12/60 -> 3x10/90 | dosis 1004: 3x8/90 -> 3x10/90 | dosis 1007: 3x8/90 -> 3x10/90 | dosis 414: 3x12/90 -> 2x13/90 | dosis 864: 2x12/60 -> 2x13/90 | dosis 1202: 2x10/60 -> 3x10/90 | dosis 1057: 2x12/60 -> 2x13/90
+SALIDA;G04;A;{};{};0;
+SALIDA;G04;B;{};{};0;
+SALIDA;G05;A;{};{};0;
+SALIDA;G05;B;{};{};0;
+SALIDA;G06;A;{};{};0;
+SALIDA;G06;B;{};{};0;
+SALIDA;G07;A;{};{};0;
+SALIDA;G07;B;{};{};0;
+SALIDA;G08;A;{};{};0;
+SALIDA;G08;B;{};{};0;
+SALIDA;G09;A;{};{};0;
+SALIDA;G09;B;{};{};0;
+SALIDA;G10;A;{};{};0;
+SALIDA;G10;B;{};{};0;
+SALIDA;G11;A;{};{};0;
+SALIDA;G11;B;{};{};0;
+SALIDA;G12;A;{};{};0;
+SALIDA;G12;B;{};{};0;
+SALIDA;G13;A;{V24=3};{};3;dosis 1105: 2x10/90 -> 2x13/90 | dosis 111: 2x10/90 -> 2x13/90 | dosis 1101: 2x10/90 -> 2x13/90
+SALIDA;G13;B;{};{};0;
+SALIDA;G14;A;{V15=1};{};1;V15 reparto: 1159 -> 695 el 2026-11-27
+SALIDA;G14;B;{};{};0;
+SALIDA;G15;A;{V15=2, V26=3};{};5;V26 sesion: quita 1199 del 2026-11-24 | V26 sesion: quita 1005 del 2026-11-24 | V26 sesion: quita 715 del 2026-11-27 | V15 reparto: 552 -> 1277 el 2026-11-24 | V15 reparto: 1007 -> 1277 el 2026-11-27
+SALIDA;G15;B;{V15=2};{};2;V15 reparto: 1005 -> 864 el 2026-11-24 | V15 reparto: 1196 -> 864 el 2026-11-27
+SALIDA;G16;A;{V26=1};{};3;V26 semana: quita 1158 del 2026-11-23 | V26 semana: quita 1112 del 2026-11-25 | V26 semana: quita 755 del 2026-11-27
+SALIDA;G16;B;{V24=3};{};3;dosis 503: 2x10/90 -> 2x13/90 | dosis 935: 2x10/90 -> 2x13/90 | dosis 1139: 2x10/90 -> 2x13/90
+SALIDA;G17;A;{V15=1};{};1;V15 reparto: 1236 -> 1057 el 2026-11-28
+SALIDA;G17;B;{};{};0;
+SALIDA;G18;A;{};{};0;
+SALIDA;G18;B;{V15=1};{};1;V15 reparto: 1157 -> 864 el 2026-11-29
+SALIDA;G19;A;{};{};0;
+SALIDA;G19;B;{V23=1};{};1;V23 LOWER_HIP: 67 -> 125 el 2026-11-25
+SALIDA;G20;A;{V23=1};{};2;V23 UPPER_PULL: 1322 -> 135 el 2026-11-23 | V15 reparto: 973 -> 1138 el 2026-11-23
+SALIDA;G20;B;{};{};0;
+SALIDA;G21;A;{};{};0;
+SALIDA;G22;A;{};{};0;
+SALIDA;G22;B;{};{};0;
+SALIDA;G23;A;{V15=2};{};2;V15 reparto: 345 -> 744 el 2026-11-23 | V15 reparto: 773 -> 561 el 2026-11-23
+SALIDA;G23;B;{V15=1};{};1;V15 grupos: 978 -> 134 el 2026-11-25
+SALIDA;G24;A;{V24=1};{};1;dosis 294: 2x15/90 -> 2x15/45
+SALIDA;G24;B;{};{};0;
+SALIDA;G25;A;{};{};0;
+SALIDA;G25;B;{};{};0;
+SALIDA;G26;A;{};{};0;
+SALIDA;G26;B;{};{};0;

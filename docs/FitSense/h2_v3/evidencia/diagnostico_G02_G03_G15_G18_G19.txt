@@ -1,0 +1,96 @@
+== G02 A  split=[('UPPER_BODY', None), ('LOWER_BODY', None), ('UPPER_BODY', None), ('LOWER_BODY', None)]
+  2026-11-23 UPPER_BODY 4 ej | 1155:chest:ESTRUCTURAL_ESTANDAR:3x10/90 1156:back:ESTRUCTURAL_ESTANDAR:3x10/90 1154:should:ESTRUCTURAL_ESTANDAR:3x10/90 723:upper :RELLENO_ESTANDAR:2x10/90
+    series por grupo: {'chest': 3, 'back': 3, 'shoulders': 3, 'upper arms': 2}
+  2026-11-24 LOWER_BODY 4 ej | 144:upper :ESTRUCTURAL_ESTANDAR:3x10/90 148:upper :ESTRUCTURAL_ESTANDAR:3x10/90 122:upper :ESTRUCTURAL_ESTANDAR:3x10/90 294:lower :RELLENO_ZONA_PEQUENA:2x13/90
+    series por grupo: {'upper legs': 9, 'lower legs': 2}
+  2026-11-26 UPPER_BODY 4 ej | 1099:chest:ESTRUCTURAL_ESTANDAR:3x10/90 114:back:ESTRUCTURAL_ESTANDAR:3x10/90 739:should:ESTRUCTURAL_ESTANDAR:3x10/90 729:upper :RELLENO_ESTANDAR:2x10/90
+    series por grupo: {'chest': 3, 'back': 3, 'shoulders': 3, 'upper arms': 2}
+  2026-11-27 LOWER_BODY 4 ej | 1264:upper :ESTRUCTURAL_ESTANDAR:3x10/90 125:upper :ESTRUCTURAL_ESTANDAR:3x10/90 1073:upper :ESTRUCTURAL_ESTANDAR:3x10/90 695:lower :RELLENO_ZONA_PEQUENA:2x13/90
+    series por grupo: {'upper legs': 9, 'lower legs': 2}
+  semana: {'chest': 6, 'back': 6, 'shoulders': 6, 'upper arms': 4, 'upper legs': 18, 'lower legs': 4}
+== G02 B  split=[('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3}), ('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3})]
+  2026-11-23 UPPER_BODY 4 ej | 1096:chest:ESTRUCTURAL_ESTANDAR:2x10/90 1156:back:ESTRUCTURAL_ESTANDAR:2x10/90 101:should:ESTRUCTURAL_ESTANDAR:2x10/90 1320:upper :ESTRUCTURAL_ESTANDAR:2x10/90
+    series por grupo: {'chest': 2, 'back': 2, 'shoulders': 2, 'upper arms': 2}
+  2026-11-24 LOWER_BODY 4 ej | 144:upper :ESTRUCTURAL_ESTANDAR:2x10/90 1118:upper :ESTRUCTURAL_ESTANDAR:2x10/90 294:lower :RELLENO_ZONA_PEQUENA:2x12/90 935:waist:RELLENO_ZONA_PEQUENA:2x12/90
+    series por grupo: {'upper legs': 4, 'lower legs': 2, 'waist': 2}
+  2026-11-26 UPPER_BODY 4 ej | 1334:chest:ESTRUCTURAL_ESTANDAR:2x10/90 114:back:ESTRUCTURAL_ESTANDAR:2x10/90 1154:should:ESTRUCTURAL_ESTANDAR:2x10/90 723:upper :RELLENO_ESTANDAR:2x12/90
+    series por grupo: {'chest': 2, 'back': 2, 'shoulders': 2, 'upper arms': 2}
+  2026-11-27 LOWER_BODY 4 ej | 877:upper :ESTRUCTURAL_ESTANDAR:2x10/90 142:upper :ESTRUCTURAL_ESTANDAR:2x10/90 695:lower :RELLENO_ZONA_PEQUENA:2x12/90 141:waist:RELLENO_ZONA_PEQUENA:2x10/90
+    series por grupo: {'upper legs': 4, 'lower legs': 2, 'waist': 2}
+  semana: {'chest': 4, 'back': 4, 'shoulders': 4, 'upper arms': 4, 'upper legs': 8, 'lower legs': 4, 'waist': 4}
+== G03 A  split=[('UPPER_BODY', None), ('LOWER_BODY', None), ('UPPER_BODY', None), ('LOWER_BODY', None)]
+  2026-11-23 UPPER_BODY 4 ej | 548:chest:ESTRUCTURAL_ESTANDAR:3x10/90 433:back:ESTRUCTURAL_ESTANDAR:3x10/90 513:should:ESTRUCTURAL_ESTANDAR:3x10/90 560:upper :ESTRUCTURAL_ESTANDAR:3x10/90
+    series por grupo: {'chest': 3, 'back': 3, 'shoulders': 3, 'upper arms': 3}
+  2026-11-24 LOWER_BODY 4 ej | 1238:upper :ESTRUCTURAL_ESTANDAR:3x10/90 1233:upper :ESTRUCTURAL_ESTANDAR:3x10/90 294:lower :RELLENO_ZONA_PEQUENA:2x13/90 503:waist:RELLENO_ZONA_PEQUENA:2x13/90
+    series por grupo: {'upper legs': 6, 'lower legs': 2, 'waist': 2}
+  2026-11-26 UPPER_BODY 4 ej | 517:chest:ESTRUCTURAL_ESTANDAR:3x10/90 325:back:ESTRUCTURAL_ESTANDAR:3x10/90 418:should:ESTRUCTURAL_ESTANDAR:3x10/90 555:upper :RELLENO_ESTANDAR:2x10/90
+    series por grupo: {'chest': 3, 'back': 3, 'shoulders': 3, 'upper arms': 2}
+  2026-11-27 LOWER_BODY 4 ej | 1017:upper :ESTRUCTURAL_ESTANDAR:3x10/90 715:upper :ESTRUCTURAL_ESTANDAR:3x10/90 1016:lower :RELLENO_ZONA_PEQUENA:2x13/90 864:waist:RELLENO_ZONA_PEQUENA:2x13/90
+    series por grupo: {'upper legs': 6, 'lower legs': 2, 'waist': 2}
+  semana: {'chest': 6, 'back': 6, 'shoulders': 6, 'upper arms': 5, 'upper legs': 12, 'lower legs': 4, 'waist': 4}
+== G03 B  split=[('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3}), ('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3})]
+  2026-11-23 UPPER_BODY 6 ej | 548:chest:ESTRUCTURAL_ESTANDAR:3x8/90 325:back:ESTRUCTURAL_ESTANDAR:3x8/90 740:should:ESTRUCTURAL_ESTANDAR:3x8/90 561:upper :ESTRUCTURAL_ESTANDAR:2x10/60 555:upper :RELLENO_ESTANDAR:2x10/60 345:chest:RELLENO_ESTANDAR:2x12/60
+    series por grupo: {'chest': 5, 'back': 3, 'shoulders': 3, 'upper arms': 4}
+  2026-11-24 LOWER_BODY 6 ej | 1238:upper :ESTRUCTURAL_ESTANDAR:3x8/90 1233:upper :ESTRUCTURAL_ESTANDAR:3x8/90 1018:lower :RELLENO_ZONA_PEQUENA:3x12/90 864:waist:RELLENO_ZONA_PEQUENA:2x12/60 1009:upper :ESTRUCTURAL_ESTANDAR:2x10/60 1016:lower :RELLENO_ZONA_PEQUENA:2x12/60
+    series por grupo: {'upper legs': 8, 'lower legs': 5, 'waist': 2}
+  2026-11-26 UPPER_BODY 6 ej | 177:chest:ESTRUCTURAL_ESTANDAR:3x8/90 356:back:ESTRUCTURAL_ESTANDAR:3x8/90 1279:should:ESTRUCTURAL_ESTANDAR:3x8/90 1320:upper :ESTRUCTURAL_ESTANDAR:2x10/60 362:upper :RELLENO_ESTANDAR:2x10/60 421:chest:ESTRUCTURAL_ESTANDAR:2x12/60
+    series por grupo: {'chest': 5, 'back': 3, 'shoulders': 3, 'upper arms': 4}
+  2026-11-27 LOWER_BODY 6 ej | 1004:upper :ESTRUCTURAL_ESTANDAR:3x8/90 1007:upper :ESTRUCTURAL_ESTANDAR:3x8/90 414:lower :RELLENO_ZONA_PEQUENA:3x12/90 864:waist:RELLENO_ZONA_PEQUENA:2x12/60 1202:upper :ESTRUCTURAL_ESTANDAR:2x10/60 1057:lower :RELLENO_ZONA_PEQUENA:2x12/60
+    series por grupo: {'upper legs': 8, 'lower legs': 5, 'waist': 2}
+  semana: {'chest': 10, 'back': 6, 'shoulders': 6, 'upper arms': 8, 'upper legs': 16, 'lower legs': 10, 'waist': 4}
+== G15 A  split=[('UPPER_BODY', None), ('LOWER_BODY', None), ('UPPER_BODY', None), ('LOWER_BODY', None)]
+  2026-11-23 UPPER_BODY 6 ej | 177:chest:-:3x6/150 179:back:-:3x6/150 740:should:-:3x6/150 316:upper :-:3x6/150 583:chest:-:3x10/90 726:upper :-:2x10/90
+    series por grupo: {'chest': 6, 'back': 3, 'shoulders': 3, 'upper arms': 5}
+  2026-11-24 LOWER_BODY 7 ej | 1235:upper :-:3x6/150 1043:upper :-:3x6/150 552:upper :-:3x6/150 1005:upper :-:3x6/150 1016:lower :-:2x13/90 1105:waist:-:2x13/90 1199:upper :-:2x10/90
+    series por grupo: {'upper legs': 14, 'lower legs': 2, 'waist': 2}
+  2026-11-26 UPPER_BODY 6 ej | 632:chest:-:3x6/150 325:back:-:3x6/150 1023:should:-:3x6/150 1035:back:-:3x6/150 726:upper :-:2x10/90 405:upper :-:2x10/90
+    series por grupo: {'chest': 3, 'back': 6, 'shoulders': 3, 'upper arms': 4}
+  2026-11-27 LOWER_BODY 6 ej | 1233:upper :-:3x6/150 1235:upper :-:3x6/150 1007:upper :-:3x6/150 715:upper :-:3x6/150 1016:lower :-:2x13/90 1105:waist:-:2x13/90
+    series por grupo: {'upper legs': 12, 'lower legs': 2, 'waist': 2}
+  semana: {'chest': 9, 'back': 9, 'shoulders': 6, 'upper arms': 9, 'upper legs': 26, 'lower legs': 4, 'waist': 4}
+== G15 B  split=[('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4})]
+  2026-11-23 UPPER_BODY 5 ej | 177:chest:-:3x6/150 583:chest:-:3x6/150 179:back:-:3x6/150 325:back:-:3x6/150 555:upper :-:2x10/90
+    series por grupo: {'chest': 6, 'back': 6, 'upper arms': 2}
+  2026-11-24 LOWER_BODY 4 ej | 1235:upper :-:3x6/150 1233:upper :-:3x6/150 1005:upper :-:3x6/150 735:lower :-:2x13/90
+    series por grupo: {'upper legs': 9, 'lower legs': 2}
+  2026-11-26 UPPER_BODY 5 ej | 421:chest:-:3x6/150 1096:chest:-:3x6/150 436:back:-:3x6/150 356:back:-:3x6/150 446:upper :-:2x10/90
+    series por grupo: {'chest': 6, 'back': 6, 'upper arms': 2}
+  2026-11-27 LOWER_BODY 4 ej | 755:upper :-:3x6/150 715:upper :-:3x6/150 1196:upper :-:3x6/150 1015:lower :-:2x13/90
+    series por grupo: {'upper legs': 9, 'lower legs': 2}
+  semana: {'chest': 12, 'back': 12, 'upper arms': 4, 'upper legs': 18, 'lower legs': 4}
+== G18 A  split=[('UPPER_BODY', None), ('LOWER_BODY', None), ('UPPER_BODY', None), ('LOWER_BODY', None)]
+  2026-11-23 UPPER_BODY 4 ej | 1096:chest:-:2x8/120 350:back:-:2x8/120 593:back:-:2x10/90 596:upper :-:2x10/90
+    series por grupo: {'chest': 2, 'back': 4, 'upper arms': 2}
+  2026-11-26 LOWER_BODY 4 ej | 1003:upper :-:2x8/120 1004:upper :-:2x8/120 294:lower :-:2x13/90 1062:waist:-:2x13/90
+    series por grupo: {'upper legs': 4, 'lower legs': 2, 'waist': 2}
+  2026-11-27 UPPER_BODY 4 ej | 421:chest:-:2x8/120 75:back:-:2x8/120 342:chest:-:2x10/90 1120:upper :-:2x10/90
+    series por grupo: {'chest': 4, 'back': 2, 'upper arms': 2}
+  2026-11-29 LOWER_BODY 4 ej | 1017:upper :-:2x8/120 1005:upper :-:2x8/120 1016:lower :-:2x13/90 1060:waist:-:2x13/90
+    series por grupo: {'upper legs': 4, 'lower legs': 2, 'waist': 2}
+  semana: {'chest': 6, 'back': 6, 'upper arms': 4, 'upper legs': 8, 'lower legs': 4, 'waist': 4}
+== G18 B  split=[('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('UPPER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('LOWER_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4})]
+  2026-11-23 UPPER_BODY 4 ej | 548:chest:-:2x8/120 436:back:-:2x8/120 574:should:-:2x10/90 721:upper :-:2x10/90
+    series por grupo: {'chest': 2, 'back': 2, 'shoulders': 2, 'upper arms': 2}
+  2026-11-26 LOWER_BODY 4 ej | 1003:upper :-:2x8/120 1004:upper :-:2x8/120 294:lower :-:2x13/90 1062:waist:-:2x13/90
+    series por grupo: {'upper legs': 4, 'lower legs': 2, 'waist': 2}
+  2026-11-27 UPPER_BODY 4 ej | 421:chest:-:2x8/120 350:back:-:2x8/120 709:should:-:2x10/90 596:upper :-:2x10/90
+    series por grupo: {'chest': 2, 'back': 2, 'shoulders': 2, 'upper arms': 2}
+  2026-11-29 LOWER_BODY 4 ej | 1017:upper :-:2x8/120 1005:upper :-:2x8/120 1014:lower :-:2x13/90 1157:upper :-:2x10/90
+    series por grupo: {'upper legs': 6, 'lower legs': 2}
+  semana: {'chest': 4, 'back': 4, 'shoulders': 4, 'upper arms': 4, 'upper legs': 10, 'lower legs': 4, 'waist': 2}
+== G19 A  split=[('FULL_BODY', None), ('FULL_BODY', None), ('FULL_BODY', None)]
+  2026-11-23 FULL_BODY 6 ej | 1054:cardio:-:3x90/60 456:chest:-:2x30/15 1096:chest:-:2x8/120 505:waist:-:2x15/45 547:chest:-:2x10/90 791:upper :-:2x10/90
+    series por grupo: {'cardio': 3, 'chest': 6, 'waist': 2, 'upper legs': 2}
+  2026-11-25 FULL_BODY 6 ej | 1325:cardio:-:3x90/60 1309:back:-:2x30/15 1036:back:-:2x8/120 774:waist:-:2x15/45 1157:upper :-:2x10/90 348:waist:-:2x13/90
+    series por grupo: {'cardio': 3, 'back': 4, 'waist': 4, 'upper legs': 2}
+  2026-11-27 FULL_BODY 6 ej | 253:cardio:-:3x90/60 67:upper :-:2x30/15 583:chest:-:2x8/120 1315:upper :-:2x15/45 581:chest:-:2x10/90 1008:upper :-:2x10/90
+    series por grupo: {'cardio': 3, 'upper legs': 6, 'chest': 4}
+  semana: {'cardio': 9, 'chest': 10, 'waist': 6, 'upper legs': 10, 'back': 4}
+== G19 B  split=[('FULL_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('FULL_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4}), ('FULL_BODY', {'4': 2, '5': 2, '6': 3, '7': 3, '8': 4})]
+  2026-11-23 FULL_BODY 5 ej | 548:chest:-:2x8/120 791:upper :-:2x15/45 1054:cardio:-:3x90/60 456:chest:-:2x30/15 739:should:-:2x10/90
+    series por grupo: {'chest': 4, 'upper legs': 2, 'cardio': 3, 'shoulders': 2}
+  2026-11-25 FULL_BODY 5 ej | 436:back:-:2x8/120 348:waist:-:2x15/45 853:cardio:-:3x90/60 67:upper :-:2x30/15 583:chest:-:2x10/90
+    series por grupo: {'back': 2, 'waist': 2, 'cardio': 3, 'upper legs': 2, 'chest': 2}
+  2026-11-27 FULL_BODY 5 ej | 1036:back:-:2x8/120 1105:waist:-:2x15/45 1325:cardio:-:3x90/60 1309:back:-:2x30/15 1314:upper :-:2x10/90
+    series por grupo: {'back': 4, 'waist': 2, 'cardio': 3, 'upper legs': 2}
+  semana: {'chest': 6, 'upper legs': 6, 'cardio': 9, 'shoulders': 2, 'back': 6, 'waist': 4}
