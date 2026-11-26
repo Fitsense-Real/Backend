@@ -1,0 +1,5 @@
+# tope_total_usd=7.60
+fecha_utc;tipo;etapa;caso;brazo;intento;reserva_usd;acumulado_usd;prediction_id;detalle
+2026-11-26T13:36:39.882356387Z;RESERVA;E1;G01;A;1;0.057330;0.057330;-;PR-1.7
+2026-11-26T13:37:16.324186280Z;RESULTADO;E1;G01;A;1;0.000000;0.057330;5e71zbcp2hrzr0d2309aqwmcgm;RESPUESTA VALIDA
+2026-11-26T13:37:16.347353Z;RESERVA;E1;G01;B;1;0.058446;0.115776;-;PR-2.1
