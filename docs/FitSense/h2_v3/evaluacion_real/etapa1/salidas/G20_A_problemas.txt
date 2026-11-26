@@ -1,0 +1,1 @@
+V15: el entrenamiento del 2026-11-23 tiene enfoque UPPER_BODY y solo trabaja [shoulders]. Debe cubrir al menos 2 grupos distintos de: [chest, back, shoulders, upper arms].

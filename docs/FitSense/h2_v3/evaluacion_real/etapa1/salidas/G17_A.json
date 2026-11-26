@@ -1,0 +1,378 @@
+{
+  "schema_version": "GEN-IN-1.13",
+  "plan_name": "Semana 1 - Fuerza enfocada",
+  "total_volume": 584,
+  "rationale": "Te propongo una semana centrada en fuerza: cada sesión empieza con 4 ejercicios estructurales con dosis STRENGTH y se complementa con trabajo de hipertrofia conservador para mejorar fuerza sin sobrecarga, respetando tus restricciones de seguridad.",
+  "workouts": [
+    {
+      "scheduled_date": "2026-11-23",
+      "focus_code": "PUSH",
+      "workout_name": "Push - Fuerza primaria",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 323,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Rango de movimiento moderado; evita impacto."
+        },
+        {
+          "exercise_id": 376,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Control del movimiento; rango cómodo."
+        },
+        {
+          "exercise_id": 313,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Versión conservadora; evita carga explosiva."
+        },
+        {
+          "exercise_id": 135,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Movimiento controlado; más descanso si es necesario."
+        },
+        {
+          "exercise_id": 577,
+          "exercise_order": 5,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento moderado; técnica prioritaria."
+        },
+        {
+          "exercise_id": 722,
+          "exercise_order": 6,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Evita llevar brazos por encima de la cabeza; control."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-24",
+      "focus_code": "PULL",
+      "workout_name": "Pull - Fuerza primaria",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 118,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Rango cómodo; evita suspensión de la barra."
+        },
+        {
+          "exercise_id": 712,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Control postural; movimiento sin rebotes."
+        },
+        {
+          "exercise_id": 350,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Prioriza técnica y rango moderado."
+        },
+        {
+          "exercise_id": 437,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Descanso completo entre series; control."
+        },
+        {
+          "exercise_id": 596,
+          "exercise_order": 5,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Variante conservadora; evita carga excesiva."
+        },
+        {
+          "exercise_id": 450,
+          "exercise_order": 6,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Control del tronco; rango cómodo."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-25",
+      "focus_code": "LEGS",
+      "workout_name": "Legs - Fuerza primaria",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 1059,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Movimiento controlado; evita impacto en rodilla."
+        },
+        {
+          "exercise_id": 789,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Rango de movimiento moderado; técnica lenta."
+        },
+        {
+          "exercise_id": 1008,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Control de rodilla; evita impacto."
+        },
+        {
+          "exercise_id": 1110,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Versión conservadora; equilibrio controlado."
+        },
+        {
+          "exercise_id": 294,
+          "exercise_order": 5,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Elevaciones suaves; sin rebotes."
+        },
+        {
+          "exercise_id": 1015,
+          "exercise_order": 6,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Control de tobillo; técnica conservadora."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-27",
+      "focus_code": "UPPER_BODY",
+      "workout_name": "Upper body - Fuerza primaria",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 179,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Movimiento controlado; evita impacto."
+        },
+        {
+          "exercise_id": 177,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Rango moderado; técnica prioritaria."
+        },
+        {
+          "exercise_id": 1217,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Control del hombro; evita posiciones por encima de la cabeza."
+        },
+        {
+          "exercise_id": 1320,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Versión conservadora; control de codos."
+        },
+        {
+          "exercise_id": 333,
+          "exercise_order": 5,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Rango de movimiento cómodo; técnica lenta."
+        },
+        {
+          "exercise_id": 555,
+          "exercise_order": 6,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 10,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Evita impulso; control del tronco."
+        }
+      ]
+    },
+    {
+      "scheduled_date": "2026-11-28",
+      "focus_code": "LOWER_BODY",
+      "workout_name": "Lower body - Fuerza primaria",
+      "expected_duration_minutes": 60,
+      "exercises": [
+        {
+          "exercise_id": 1231,
+          "exercise_order": 1,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Rango moderado; evita impacto en cadera."
+        },
+        {
+          "exercise_id": 1009,
+          "exercise_order": 2,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Control de rodilla; técnica conservadora."
+        },
+        {
+          "exercise_id": 1118,
+          "exercise_order": 3,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Puente controlado; evita impulso."
+        },
+        {
+          "exercise_id": 1236,
+          "exercise_order": 4,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 3,
+          "planned_reps": 6,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 150,
+          "notes": "Sentadilla en máquina; rango cómodo."
+        },
+        {
+          "exercise_id": 736,
+          "exercise_order": 5,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Elevaciones controladas; sin rebotes."
+        },
+        {
+          "exercise_id": 1063,
+          "exercise_order": 6,
+          "prescription_type": "SETS_REPS",
+          "planned_sets": 2,
+          "planned_reps": 13,
+          "planned_duration_seconds": null,
+          "target_load_kg": null,
+          "rest_seconds": 90,
+          "notes": "Abdominales con rango moderado; evita molestias."
+        }
+      ]
+    }
+  ]
+}

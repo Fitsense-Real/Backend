@@ -1,0 +1,3 @@
+V15: el entrenamiento del 2026-11-23 tiene enfoque PUSH y solo trabaja [chest]. Debe cubrir al menos 2 grupos distintos de: [chest, shoulders, upper arms].
+V15: el entrenamiento del 2026-11-24 tiene enfoque PULL y solo trabaja [back]. Debe cubrir al menos 2 grupos distintos de: [back, upper arms].
+V23: la semana no cubre LOWER_HIP. Step 4C exige que la semana toque los cuatro patrones obligatorios cuando hay ejercicios para ellos. Hay LOWER_HIP=27 elegibles para esos patrones. Cambia algun ejercicio por uno de ese patron sin tocar series, repeticiones ni descansos: el volumen total no debe cambiar.
