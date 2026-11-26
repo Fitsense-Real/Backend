@@ -44,6 +44,8 @@ class ReplicateTimingInstrumentationTest {
 
     private static final String URL = "https://api.replicate.test/predictions";
     private static final String POLL = "https://api.replicate.test/predictions/mc7xdrmr";
+    /** RT: el listado donde se busca una prediccion creada sin id legible (gratuito). */
+    private static final String LISTADO = "https://api.replicate.test/v1/predictions";
     /** R-2: la URL publica de cancelacion, derivada del identificador (las predicciones de prueba no traen urls.cancel). */
     private static final String CANCEL = "https://api.replicate.test/v1/predictions/mc7xdrmr/cancel";
 
@@ -189,6 +191,8 @@ class ReplicateTimingInstrumentationTest {
     void errorEnPost() {
         montar(150);
         server.expect(requestTo(URL)).andRespond(withServerError());
+        // RT: un 5xx no prueba que no se creara: se busca (no hay ninguna) y no se reenvia.
+        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         assertThrows(AiProviderUnavailableException.class,
                 () -> generator.call("prompt", 3, 7L, (short) 4, 1));
@@ -208,6 +212,7 @@ class ReplicateTimingInstrumentationTest {
             dormir(ESPERA_SIMULADA_MS);
             return withServerError().createResponse(peticion);
         });
+        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         assertThrows(AiProviderUnavailableException.class,
                 () -> generator.call("prompt", 3, 7L, (short) 4, 1));
@@ -229,7 +234,9 @@ class ReplicateTimingInstrumentationTest {
         montar(150);
         server.expect(requestTo(URL))
                 .andRespond(withSuccess(prediccion("starting", true), MediaType.APPLICATION_JSON));
-        server.expect(requestTo(POLL)).andRespond(withServerError());
+        // RT: un fallo de consulta pasajero se reintenta (GET gratuito, misma prediccion); el tercero seguido termina.
+        server.expect(ExpectedCount.times(ReplicateTrainingPlanGenerator.SONDEO_FALLOS_SEGUIDOS_MAX), requestTo(POLL))
+                .andRespond(withServerError());
         // R-2: la prediccion seguia viva al dejar de esperar, asi que se pide su cancelacion (una vez).
         server.expect(ExpectedCount.once(), requestTo(CANCEL))
                 .andRespond(withSuccess(prediccion("canceled", false), MediaType.APPLICATION_JSON));
@@ -239,7 +246,8 @@ class ReplicateTimingInstrumentationTest {
 
         var t = timing();
         assertEquals("POLL_ERROR", t.get("resultado"));
-        assertEquals("1", t.get("polling_requests"), "fallo en la primera consulta");
+        assertEquals(String.valueOf(ReplicateTrainingPlanGenerator.SONDEO_FALLOS_SEGUIDOS_MAX),
+                t.get("polling_requests"), "tres consultas fallidas seguidas");
         assertTrue(Long.parseLong(t.get("polling_ms")) < 150_000,
                 "ocurrio muchisimo antes del limite, y el registro tiene que decirlo");
         assertEquals("mc7xdrmr", t.get("prediction_id"), "el id ya se conocia");
@@ -298,6 +306,7 @@ class ReplicateTimingInstrumentationTest {
     void laDecisionNoSeMueve() {
         montar(150);
         server.expect(requestTo(URL)).andRespond(withServerError());
+        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         // La instrumentacion no toca la politica 19.4. El pipeline tiene que
         // seguir viendo exactamente la misma excepcion que antes, porque es la

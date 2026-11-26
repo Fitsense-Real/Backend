@@ -37,6 +37,8 @@ class DiarioDePrediccionesReplicateTest {
 
     private static final String URL = "https://api.replicate.test/v1/models/openai/gpt-5-structured/predictions";
     private static final String GET = "https://api.replicate.test/v1/predictions/p1";
+    /** RT: el listado donde se busca una prediccion de envio incierto (gratuito). */
+    private static final String LISTADO = "https://api.replicate.test/v1/predictions";
     private static final long USUARIO = 7L;
     private static final String PROMPT = "prompt";
 
@@ -230,6 +232,8 @@ class DiarioDePrediccionesReplicateTest {
         var g = generador(libro);
         var op = UUID.randomUUID();
         libro.anadir(op, 1, g.huellaDe(PROMPT, 1), DiarioDePredicciones.Estado.SOLICITANDO, null, null);
+        // RT: antes de rendirse se busca en Replicate (gratuito); no hay ninguna con esta entrada.
+        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
         var e = assertThrows(AiProviderUnavailableException.class, () -> llamar(g, op, 1));
         assertTrue(e.getMessage().contains("PREDICCION_NO_CONFIRMADA"), e.getMessage());
         server.verify();
@@ -257,6 +261,7 @@ class DiarioDePrediccionesReplicateTest {
         var g = generador(libro);
         var op = UUID.randomUUID();
         server.expect(ExpectedCount.once(), requestTo(URL)).andRespond(withStatus(HttpStatus.BAD_GATEWAY));
+        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
         assertThrows(AiProviderUnavailableException.class, () -> llamar(g, op, 1));
         server.verify();
         assertEquals(DiarioDePredicciones.Estado.NO_CONFIRMADA, libro.deIntento(op, 1).orElseThrow().estado());
@@ -294,7 +299,9 @@ class DiarioDePrediccionesReplicateTest {
         var g = generador(libro);
         var op = UUID.randomUUID();
         server.expect(ExpectedCount.once(), requestTo(URL)).andRespond(withException(new IOException("reset")));
+        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
         assertThrows(AiProviderUnavailableException.class, () -> llamar(g, op, 1));
+        server.verify();
         assertEquals(DiarioDePredicciones.Estado.NO_CONFIRMADA, libro.deIntento(op, 1).orElseThrow().estado());
     }
 
@@ -378,6 +385,7 @@ class DiarioDePrediccionesReplicateTest {
         var op = UUID.randomUUID();
         libro.antesDeSolicitar = () -> libro.anadir(op, 1, g.huellaDe(PROMPT, 1),
                 DiarioDePredicciones.Estado.SOLICITANDO, null, null);
+        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
         var e = assertThrows(AiProviderUnavailableException.class, () -> llamar(g, op, 1));
         assertTrue(e.getMessage().contains("PREDICCION_NO_CONFIRMADA"), e.getMessage());
         server.verify();

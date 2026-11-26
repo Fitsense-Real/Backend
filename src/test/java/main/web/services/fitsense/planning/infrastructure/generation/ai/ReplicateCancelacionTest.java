@@ -209,7 +209,9 @@ class ReplicateCancelacionTest {
     void sondeoFallidoTambienCancela() {
         var g = generador();
         postEnCurso(true);
-        server.expect(requestTo(GET)).andRespond(withException(new IOException("timeout de lectura")));
+        // RT: un fallo pasajero se reintenta (GET gratuito de la misma prediccion); aqui fallan las tres seguidas.
+        server.expect(ExpectedCount.times(ReplicateTrainingPlanGenerator.SONDEO_FALLOS_SEGUIDOS_MAX), requestTo(GET))
+                .andRespond(withException(new IOException("timeout de lectura")));
         server.expect(ExpectedCount.once(), requestTo(CANCEL))
                 .andRespond(withSuccess(prediccion("canceled", true), MediaType.APPLICATION_JSON));
 
