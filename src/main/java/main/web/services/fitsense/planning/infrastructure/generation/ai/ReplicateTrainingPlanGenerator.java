@@ -402,7 +402,6 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                     ambito.operationId(), attempt);
             return reanudar(suya, peticion, prompt, medicion, plazo, ambito);
         }
-        var desde = reloj.instant().minus(RECUPERACION_HOLGURA);
         String rawBody;
         try {
             rawBody = enviar(input, null);
@@ -411,18 +410,19 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             diario.terminada(fila, DiarioDePredicciones.Estado.ERROR_ENVIO, null, e.getMessage(), reloj.instant());
             throw new AiProviderUnavailableException(e.getMessage());
         } catch (EnvioIncierto e) {
-            // RT: Replicate pudo crearla. Antes de darla por NO_CONFIRMADA se busca la existente (lista + GET por id).
+            // RT: Replicate pudo crearla. Solo se sigue si SU PROPIA respuesta (en esta conexion) llego a traer el id.
             medicion.postFallo();
-            return recuperarOConfirmarIncierta(fila, input, desde, e.getMessage(), peticion, prompt, medicion, plazo,
+            return confirmarPorId(fila, input, e.idDeSuRespuesta(), e.getMessage(), peticion, prompt, medicion, plazo,
                     ambito, attempt);
         }
         medicion.postTerminado();
 
         ReplicateResponse response = leerSobre(rawBody);
         if (response == null || !idValido(response.id())) {
-            // Un 2xx sin identificador legible: Replicate pudo crearla. Mismo trato: buscarla, nunca inventar el id.
+            // Un 2xx sin identificador legible: Replicate pudo crearla. Nunca se inventa el id: solo el que SU respuesta
+            // traiga completo (un sobre cortado puede traerlo al principio).
             medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
-            return recuperarOConfirmarIncierta(fila, input, desde,
+            return confirmarPorId(fila, input, response == null ? idDeSuRespuesta(rawBody) : null,
                     "respuesta 2xx sin identificador de prediccion legible", peticion, prompt, medicion, plazo, ambito,
                     attempt);
         }
@@ -432,18 +432,19 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     /**
-     * RT: el envio pudo aceptarse sin que tengamos su id. Si la prediccion aparece en Replicate (una sola, con la
-     * misma entrada), se anota su id y se sigue ESA; si no, queda NO_CONFIRMADA como antes y no se reenvia.
+     * RT: el envio pudo aceptarse y su respuesta no se pudo leer entera. Si esa MISMA respuesta trajo el id completo y
+     * Replicate lo confirma ({@link #verificarPorId}), se anota y se sigue ESA prediccion; si no, NO_CONFIRMADA como
+     * antes y no se reenvia.
      */
-    private String recuperarOConfirmarIncierta(long fila, Map<String, Object> input, java.time.Instant desde,
-                                              String motivo, Peticion peticion, String prompt, Medicion medicion,
-                                              java.time.Instant plazo, DiarioDePredicciones.Ambito ambito,
-                                              int attempt) {
-        var recuperada = recuperar(input, desde, motivo);
-        if (recuperada == null) return noConfirmada(fila, ambito, attempt, motivo);
-        diario.enviada(fila, recuperada.id(), reloj.instant());
-        medicion.predictionId(recuperada.id());
-        return seguir(fila, recuperada, peticion, prompt, medicion, plazo);
+    private String confirmarPorId(long fila, Map<String, Object> input, String id, String motivo, Peticion peticion,
+                                  String prompt, Medicion medicion, java.time.Instant plazo,
+                                  DiarioDePredicciones.Ambito ambito, int attempt) {
+        var verificada = id == null ? null : verificarPorId(id, input, motivo);
+        if (verificada == null)
+            return noConfirmada(fila, ambito, attempt, motivo + (id == null ? "" : " [id " + id + " sin verificar]"));
+        diario.enviada(fila, verificada.id(), reloj.instant());
+        medicion.predictionId(verificada.id());
+        return seguir(fila, verificada, peticion, prompt, medicion, plazo);
     }
 
     private String noConfirmada(long fila, DiarioDePredicciones.Ambito ambito, int attempt, String motivo) {
@@ -477,11 +478,9 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 return seguir(e.id(), enCurso, peticion, prompt, medicion, plazo);
             }
             case SOLICITANDO -> {
-                // RT: el proceso murio entre el envio y la confirmacion. La misma peticion (misma huella) se busca en
-                // Replicate antes de rendirse; si esta, se sigue por su id sin pagar otra.
-                var desde = reloj.instant().minus(RECUPERACION_VENTANA_REANUDACION);
-                return recuperarOConfirmarIncierta(e.id(), entrada(prompt, peticion), desde,
-                        "envio sin confirmar al reanudar", peticion, prompt, medicion, plazo, ambito, e.attempt());
+                // El proceso murio entre el envio y la confirmacion: no hay id de ESTE envio. Buscar por contenido podria
+                // atribuirle la prediccion de otra peticion identica (RT, revision de seguridad): no se hace.
+                return noConfirmada(e.id(), ambito, e.attempt(), "envio sin confirmar al reanudar");
             }
             default -> {
                 log.info("REPLICATE_REPETIDA operacion={} intento={} estado={}: se repite el desenlace registrado sin"
@@ -553,7 +552,17 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
     /** El envio pudo llegar y aceptarse sin que conozcamos su id (corte de lectura, 5xx, conexion reiniciada). */
     static final class EnvioIncierto extends RuntimeException {
-        EnvioIncierto(String m) { super(m); }
+        private final String idDeSuRespuesta;
+
+        EnvioIncierto(String m) { this(m, null); }
+
+        /** @param idDeSuRespuesta el id COMPLETO que traia la parte leida de la respuesta, o null */
+        EnvioIncierto(String m, String idDeSuRespuesta) {
+            super(m);
+            this.idDeSuRespuesta = idDeSuRespuesta;
+        }
+
+        String idDeSuRespuesta() { return idDeSuRespuesta; }
     }
 
     /**
@@ -570,6 +579,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
      * @param esperaSegundos {@code Prefer: wait} (camino sin libro) o null (con libro: el id llega enseguida)
      */
     private String enviar(Map<String, Object> input, Integer esperaSegundos) {
+        Lectura l;
         try {
             var peticion = restClient.post()
                     .uri(properties.baseUrl())
@@ -577,13 +587,9 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON);
             if (esperaSegundos != null) peticion = peticion.header("Prefer", "wait=" + esperaSegundos);
-            return peticion.body(Map.of("input", input)).retrieve().body(String.class);
-        } catch (org.springframework.web.client.RestClientResponseException e) {
-            int codigo = e.getStatusCode().value();
-            log.warn("Replicate no respondio correctamente: http {}", codigo);
-            if (codigo >= 400 && codigo < 500)
-                throw new EnvioNoAceptado("Replicate rechazo la peticion (http " + codigo + ")");
-            throw new EnvioIncierto("Replicate respondio http " + codigo);
+            // RT: el cuerpo se lee a mano para CONSERVAR lo recibido si la conexion se corta a mitad (G08): ahi puede
+            // venir ya el id de la prediccion. Con retrieve().body(...) se perdia todo.
+            l = peticion.body(Map.of("input", input)).exchange((solicitud, respuesta) -> leer(respuesta));
         } catch (org.springframework.web.client.ResourceAccessException e) {
             log.warn("Replicate no respondio correctamente: {}", e.getMessage());
             if (noLlegoAEnviarse(e)) throw new EnvioNoAceptado("no se pudo conectar con Replicate: " + e.getMessage());
@@ -592,6 +598,77 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             log.warn("Replicate no respondio correctamente: {}", e.getMessage());
             throw new EnvioIncierto(e.getClass().getSimpleName() + ": " + e.getMessage());
         }
+        int codigo = l.codigo();
+        if (codigo >= 400 && codigo < 500) {
+            log.warn("Replicate no respondio correctamente: http {}", codigo);
+            throw new EnvioNoAceptado("Replicate rechazo la peticion (http " + codigo + ")");
+        }
+        if (codigo >= 500 || codigo < 200 || codigo >= 300) {
+            log.warn("Replicate no respondio correctamente: http {}", codigo);
+            throw new EnvioIncierto("Replicate respondio http " + codigo);
+        }
+        if (l.corte() != null) {
+            // 2xx: la prediccion se creo (201/202), pero el cuerpo no llego entero. Solo un id COMPLETO de esa misma
+            // respuesta sirve para seguirla.
+            var id = idDeSuRespuesta(l.cuerpo());
+            var motivo = "se corto la lectura de la respuesta http " + codigo + " de Replicate (Content-Type "
+                    + (l.tipo() == null ? "ausente" : l.tipo()) + ", " + l.bytes() + " bytes leidos, id "
+                    + (id == null ? "no recibido" : "recibido") + "): " + l.corte();
+            log.warn("Replicate no respondio correctamente: {}", motivo);
+            throw new EnvioIncierto(motivo, id);
+        }
+        return l.cuerpo();
+    }
+
+    /** Lo que se leyo de la respuesta del POST: codigo, tipo, cuerpo (entero o hasta el corte) y el corte, si hubo. */
+    private record Lectura(int codigo, String tipo, String cuerpo, long bytes, java.io.IOException corte) {}
+
+    private static Lectura leer(org.springframework.http.client.ClientHttpResponse respuesta) throws java.io.IOException {
+        int codigo = respuesta.getStatusCode().value();
+        var tipo = respuesta.getHeaders().getContentType();
+        var leido = new java.io.ByteArrayOutputStream();
+        java.io.IOException corte = null;
+        try (var in = respuesta.getBody()) {
+            var buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) != -1) leido.write(buf, 0, n);
+        } catch (java.io.IOException e) {
+            corte = e;
+        }
+        return new Lectura(codigo, tipo == null ? null : tipo.toString(),
+                leido.toString(java.nio.charset.StandardCharsets.UTF_8), leido.size(), corte);
+    }
+
+    /**
+     * RT · El {@code id} de primer nivel de una respuesta de Replicate, solo si llego COMPLETO (con su comilla de
+     * cierre) y es alfanumerico. Sirve para un sobre cortado: se recorre con el analizador de flujo de Jackson hasta
+     * donde haya datos; un {@code "id"} anidado (p. ej. dentro de {@code input}) no cuenta. Si el corte cae dentro del
+     * id, o antes, devuelve null: nunca se completa ni se adivina.
+     */
+    static String idDeSuRespuesta(String texto) {
+        if (texto == null || texto.isBlank()) return null;
+        try (var p = HUELLA.getFactory().createParser(texto)) {
+            if (p.nextToken() != com.fasterxml.jackson.core.JsonToken.START_OBJECT) return null;
+            int profundidad = 1;
+            com.fasterxml.jackson.core.JsonToken t;
+            while ((t = p.nextToken()) != null) {
+                switch (t) {
+                    case START_OBJECT, START_ARRAY -> profundidad++;
+                    case END_OBJECT, END_ARRAY -> profundidad--;
+                    case FIELD_NAME -> {
+                        if (profundidad == 1 && "id".equals(p.currentName())) {
+                            if (p.nextToken() != com.fasterxml.jackson.core.JsonToken.VALUE_STRING) return null;
+                            var id = p.getText();
+                            return idValido(id) ? id : null;
+                        }
+                    }
+                    default -> { }
+                }
+            }
+        } catch (java.io.IOException | RuntimeException e) {
+            return null;
+        }
+        return null;
     }
 
     /** El sobre de Replicate, o null si no es su JSON (vacio, cortado, otra cosa). Nunca copia el cuerpo al log. */
@@ -623,7 +700,6 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         var input = entrada(prompt, peticion);
         medicion.entrada(input);
 
-        var desde = reloj.instant().minus(RECUPERACION_HOLGURA);
         String rawBody;
         try {
             rawBody = enviar(input, esperaDelPost(plazo));
@@ -633,11 +709,11 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             medicion.postFallo();
             throw new AiProviderUnavailableException(e.getMessage());
         } catch (EnvioIncierto e) {
-            // RT (G08, H2-v4): la prediccion pudo crearse y terminar. Se busca la existente antes de rendirse; si no
-            // aparece, es un fallo del proveedor INCIERTO y no se reenvia (el pipeline pasa al respaldo).
+            // RT (G08, H2-v4): la prediccion pudo crearse y terminar. Solo se sigue por el id que SU respuesta traia
+            // completo; si no, fallo del proveedor INCIERTO y no se reenvia (el pipeline pasa al respaldo).
             medicion.postFallo();
-            return seguirSinLibro(recuperarOFallar(input, desde, e.getMessage(), medicion), peticion, prompt,
-                    medicion, plazo);
+            return seguirSinLibro(confirmarPorIdOFallar(input, e.idDeSuRespuesta(), e.getMessage(), medicion),
+                    peticion, prompt, medicion, plazo);
         }
         medicion.postTerminado();
 
@@ -652,33 +728,36 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // que nadie capturaba, y la semana se quedaba sin plan aunque el motor de reglas pudiera hacerla. Es un fallo
         // del PROVEEDOR -el modelo no llego a proponer nada-, no del modelo: va por el mismo camino que un 5xx. El
         // cuerpo crudo no se copia al mensaje ni al log (repite el prompt entero).
-        // RT: un 2xx ilegible o sin id tampoco prueba que no se creara: se busca la prediccion (nunca se inventa el id).
+        // RT: un 2xx ilegible o sin id tampoco prueba que no se creara. Nunca se inventa el id: solo el que el propio
+        // sobre traiga completo al principio (JSON cortado) se verifica y se sigue.
         ReplicateResponse response = leerSobre(rawBody);
         if (response == null) {
             medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
             log.warn("Replicate devolvio un cuerpo que no es una respuesta valida ({} caracteres)",
                     rawBody == null ? 0 : rawBody.length());
-            response = recuperarOFallar(input, desde, "la respuesta de Replicate no se pudo interpretar", medicion);
+            response = confirmarPorIdOFallar(input, idDeSuRespuesta(rawBody),
+                    "la respuesta de Replicate no se pudo interpretar", medicion);
         } else if (!idValido(response.id()) && !response.succeeded()) {
             medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
-            response = recuperarOFallar(input, desde, "respuesta 2xx sin identificador de prediccion legible",
+            response = confirmarPorIdOFallar(input, null, "respuesta 2xx sin identificador de prediccion legible",
                     medicion);
         }
         return seguirSinLibro(response, peticion, prompt, medicion, plazo);
     }
 
     /**
-     * RT: busca la prediccion creada sin id; si no la encuentra, fallo del proveedor INCIERTO (sin reenviar). El
-     * mensaje conserva el motivo original.
+     * RT: sigue la prediccion por el id que traia SU respuesta, si Replicate lo confirma; si no hay id o no se puede
+     * verificar, fallo del proveedor INCIERTO (sin reenviar). El mensaje conserva el motivo original.
      */
-    private ReplicateResponse recuperarOFallar(Map<String, Object> input, java.time.Instant desde, String motivo,
-                                               Medicion medicion) {
-        var recuperada = recuperar(input, desde, motivo);
-        if (recuperada == null)
-            throw new AiProviderUnavailableException("PREDICCION_NO_CONFIRMADA: " + motivo
-                    + " (no se encontro en Replicate una prediccion con esta misma entrada; no se reenvia)");
-        medicion.predictionId(recuperada.id());
-        return recuperada;
+    private ReplicateResponse confirmarPorIdOFallar(Map<String, Object> input, String id, String motivo,
+                                                    Medicion medicion) {
+        var verificada = id == null ? null : verificarPorId(id, input, motivo);
+        if (verificada == null)
+            throw new AiProviderUnavailableException("PREDICCION_NO_CONFIRMADA: " + motivo + " (no se puede confirmar"
+                    + " a que prediccion corresponde" + (id == null ? "" : "; id " + id + " sin verificar")
+                    + "; no se reenvia)");
+        medicion.predictionId(verificada.id());
+        return verificada;
     }
 
     /** Sondeo, cancelacion y desenlace del camino sin libro (antes, el final de callMedido). */
@@ -1065,123 +1144,65 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
     }
 
     // =====================================================================================================
-    // RT · RECUPERACION DE UNA PREDICCION CREADA SIN IDENTIFICADOR CONOCIDO (transporte, 27/11/2026)
+    // RT · CONFIRMAR LA PREDICCION DE UNA RESPUESTA INCOMPLETA, POR SU ID (transporte, 27/11/2026)
     // =====================================================================================================
 
-    /** Margen de reloj entre FitSense y Replicate al buscar por fecha de creacion. */
-    static final Duration RECUPERACION_HOLGURA = Duration.ofMinutes(2);
-    /** Al reanudar tras un reinicio: Replicate borra la entrada de las predicciones de la API a la hora. */
-    static final Duration RECUPERACION_VENTANA_REANUDACION = Duration.ofMinutes(60);
-    /** Cuantas predicciones recientes se miran como mucho (cada una es un GET gratuito). */
-    static final int RECUPERACION_MAX_CANDIDATAS = 20;
-    /** Dos vueltas por si la prediccion tarda en aparecer en el listado. */
-    static final int RECUPERACION_RONDAS = 2;
-    private static final Pattern MODELO_DE_LA_URL = Pattern.compile("/models/([^/]+/[^/]+)/predictions");
-
     /**
-     * RT · Busca en Replicate la prediccion que pudo crear un envio cuyo id no llego a leerse, con la API documentada:
-     * {@code GET /v1/predictions} (las mas recientes; no trae la entrada) y {@code GET /v1/predictions/{id}} de cada
-     * candidata creada desde {@code desde}. Solo se adopta si hay EXACTAMENTE UNA cuya {@code input} es la misma que
-     * se envio (prompt, system_prompt y parametros, campo por campo). Cero, varias, o cualquier fallo al consultar:
-     * null (incierto). Nunca crea una prediccion, nunca inventa un id y nunca interpreta como JSON lo que no lo es.
+     * RT · IDENTIDAD. La API de Replicate (OpenAPI 1.0.0-a1) no documenta ninguna cabecera con el id ({@code Location}
+     * u otra), ni clave de idempotencia, ni metadatos de prediccion: la UNICA prueba de que una prediccion es la de
+     * este envio es el {@code id} que Replicate devuelve en la respuesta de ESTE POST, en esta conexion. Por eso:
+     * <ul>
+     *   <li>Nunca se busca por contenido (listado + comparar la entrada): dos peticiones identicas, de dos usuarios o
+     *   dos operaciones, son indistinguibles, y adoptar una seria atribuir el resultado de otra.</li>
+     *   <li>Un id de la propia respuesta (entero o al principio de un cuerpo cortado) se confirma con
+     *   {@code GET /v1/predictions/{id}}: tiene que existir, ser ese id, conservar su entrada y que esta sea la que se
+     *   envio. Una entrada borrada ({@code data_removed}) o vacia no se puede verificar: incierta.</li>
+     *   <li>Una sola consulta: si falla, incierta. Despues, el sondeo normal (que tolera fallos pasajeros).</li>
+     * </ul>
      *
-     * @return la prediccion tal como la devuelve su GET (en curso o terminada), o null
+     * @return la prediccion tal como la devuelve su GET (en curso o terminada), o null si no se puede confirmar
      */
-    ReplicateResponse recuperar(Map<String, Object> input, java.time.Instant desde, String motivo) {
-        var listado = urlDelListado();
-        if (listado == null) return null;
+    ReplicateResponse verificarPorId(String id, Map<String, Object> input, String motivo) {
+        var url = urlDeConsulta(id);
+        if (url == null) return null;
+        String raw;
+        com.fasterxml.jackson.databind.JsonNode arbol;
         com.fasterxml.jackson.databind.JsonNode esperada;
         try {
             esperada = jsonSupport.read(jsonSupport.write(input), com.fasterxml.jackson.databind.JsonNode.class);
+            raw = pollClient.get()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .body(String.class);
+            arbol = jsonSupport.read(raw, com.fasterxml.jackson.databind.JsonNode.class);
         } catch (RuntimeException e) {
+            log.warn("REPLICATE_RECUPERACION resultado=CONSULTA_FALLIDA prediction_id={} motivo_envio=\"{}\" error={}",
+                    id, motivo, e.getClass().getSimpleName());
             return null;
         }
-        for (int ronda = 1; ronda <= RECUPERACION_RONDAS; ronda++) {
-            if (ronda > 1) {
-                try {
-                    durmiente.dormir(Duration.ofMillis(properties.pollIntervalMillis()));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return null;
-                }
-            }
-            List<String> candidatas;
-            try {
-                candidatas = candidatas(listado, desde);
-            } catch (RuntimeException e) {
-                log.warn("REPLICATE_RECUPERACION resultado=LISTADO_FALLIDO motivo_envio=\"{}\" error={}", motivo,
-                        e.getClass().getSimpleName());
-                return null;
-            }
-            var coincidencias = new java.util.ArrayList<ReplicateResponse>();
-            for (var id : candidatas) {
-                String raw;
-                com.fasterxml.jackson.databind.JsonNode arbol;
-                try {
-                    raw = pollClient.get()
-                            .uri(urlDeConsulta(id))
-                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
-                            .accept(MediaType.APPLICATION_JSON)
-                            .retrieve()
-                            .body(String.class);
-                    arbol = jsonSupport.read(raw, com.fasterxml.jackson.databind.JsonNode.class);
-                } catch (RuntimeException e) {
-                    // Sin poder mirar una candidata no se puede afirmar que no fuera la nuestra: incierto.
-                    log.warn("REPLICATE_RECUPERACION resultado=CONSULTA_FALLIDA candidata={} motivo_envio=\"{}\"",
-                            id, motivo);
-                    return null;
-                }
-                if (mismaEntrada(arbol == null ? null : arbol.get("input"), esperada))
-                    coincidencias.add(jsonSupport.read(raw, ReplicateResponse.class));
-            }
-            if (coincidencias.size() == 1) {
-                var r = coincidencias.get(0);
-                log.info("REPLICATE_RECUPERACION resultado=RECUPERADA prediction_id={} estado={} candidatas={}"
-                        + " motivo_envio=\"{}\": se sigue la prediccion existente, no se crea otra", r.id(), r.status(),
-                        candidatas.size(), motivo);
-                return r;
-            }
-            if (coincidencias.size() > 1) {
-                log.warn("REPLICATE_RECUPERACION resultado=AMBIGUA prediction_ids={} motivo_envio=\"{}\": no se adopta"
-                        + " ninguna", coincidencias.stream().map(ReplicateResponse::id).toList(), motivo);
-                return null;
-            }
+        String resultado;
+        if (arbol == null || !id.equals(arbol.path("id").asText(null))) resultado = "IDENTIDAD_DISTINTA";
+        else if (arbol.path("data_removed").asBoolean(false)) resultado = "NO_VERIFICABLE_DATOS_BORRADOS";
+        else if (arbol.get("input") == null || !arbol.get("input").isObject() || arbol.get("input").isEmpty())
+            resultado = "NO_VERIFICABLE_SIN_ENTRADA";
+        else if (!mismaEntrada(arbol.get("input"), esperada)) resultado = "IDENTIDAD_DISTINTA";
+        else resultado = null;
+        var r = resultado == null ? leerSobre(raw) : null;
+        if (resultado == null && (r == null || r.status() == null)) resultado = "CONSULTA_ILEGIBLE";
+        if (resultado != null) {
+            log.warn("REPLICATE_RECUPERACION resultado={} prediction_id={} motivo_envio=\"{}\": no se adopta",
+                    resultado, id, motivo);
+            return null;
         }
-        log.warn("REPLICATE_RECUPERACION resultado=SIN_COINCIDENCIA motivo_envio=\"{}\": no aparece una prediccion con"
-                + " esta entrada; queda incierta y no se reenvia", motivo);
-        return null;
+        log.info("REPLICATE_RECUPERACION resultado=RECUPERADA_POR_ID prediction_id={} estado={} motivo_envio=\"{}\":"
+                + " id de la propia respuesta, confirmado; se sigue esa prediccion, no se crea otra", id, r.status(),
+                motivo);
+        return r;
     }
 
-    /** Ids de las predicciones de la API creadas desde {@code desde}, del mismo modelo, las mas recientes primero. */
-    private List<String> candidatas(String listado, java.time.Instant desde) {
-        var raw = pollClient.get()
-                .uri(listado)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .body(String.class);
-        var arbol = jsonSupport.read(raw, com.fasterxml.jackson.databind.JsonNode.class);
-        var resultados = arbol == null ? null : arbol.get("results");
-        if (resultados == null || !resultados.isArray()) throw new IllegalStateException("listado sin results");
-        var m = MODELO_DE_LA_URL.matcher(properties.baseUrl());
-        String modelo = m.find() ? m.group(1) : null;
-        var ids = new java.util.ArrayList<String>();
-        for (var r : resultados) {
-            if (ids.size() >= RECUPERACION_MAX_CANDIDATAS) break;
-            String id = r.path("id").asText(null);
-            if (!idValido(id)) continue;
-            var creada = instante(r.path("created_at").asText(null));
-            if (creada == null || creada.isBefore(desde)) continue;
-            String suModelo = r.path("model").asText(null);
-            if (modelo != null && suModelo != null && !modelo.equals(suModelo)) continue;
-            String fuente = r.path("source").asText(null);
-            if (fuente != null && !"api".equals(fuente)) continue;
-            ids.add(id);
-        }
-        return ids;
-    }
-
-    /** Cada campo enviado esta, igual, en la entrada de la candidata (una entrada borrada o vacia no coincide). */
+    /** Cada campo enviado esta, igual, en la entrada de la prediccion (una entrada vacia no coincide). */
     static boolean mismaEntrada(com.fasterxml.jackson.databind.JsonNode suya,
                                 com.fasterxml.jackson.databind.JsonNode esperada) {
         if (suya == null || !suya.isObject() || esperada == null || !esperada.isObject() || esperada.isEmpty())
@@ -1192,25 +1213,5 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
             if (!c.getValue().equals(suya.get(c.getKey()))) return false;
         }
         return true;
-    }
-
-    private static java.time.Instant instante(String texto) {
-        if (texto == null) return null;
-        try {
-            return java.time.OffsetDateTime.parse(texto).toInstant();
-        } catch (RuntimeException e) {
-            return null;
-        }
-    }
-
-    /** {@code GET /v1/predictions} en el mismo servidor que la base. */
-    String urlDelListado() {
-        try {
-            var base = URI.create(properties.baseUrl());
-            if (base.getScheme() == null || base.getRawAuthority() == null) return null;
-            return base.getScheme() + "://" + base.getRawAuthority() + "/v1/predictions";
-        } catch (RuntimeException e) {
-            return null;
-        }
     }
 }

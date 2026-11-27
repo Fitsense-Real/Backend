@@ -48,8 +48,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 class ReplicateRespuestasInvalidasTest {
 
     private static final String URL = "https://api.replicate.test/predictions";
-    /** RT: donde se busca una prediccion creada sin id legible (gratuito). */
-    private static final String LISTADO = "https://api.replicate.test/v1/predictions";
     private static final long USUARIO = 7L;
     private static final LocalDate LUNES = LocalDate.of(2026, 10, 12);
 
@@ -75,8 +73,12 @@ class ReplicateRespuestasInvalidasTest {
     void sobreIlegible(String cuerpo) {
         var g = generador();
         server.expect(requestTo(URL)).andRespond(withSuccess(cuerpo, MediaType.APPLICATION_JSON));
-        // RT: un 2xx ilegible no prueba que no se creara: se busca en Replicate (aqui no hay ninguna) y no se reenvia.
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
+        if (cuerpo.startsWith("{\"id\":\"p1\""))
+            // RT: el JSON cortado traia su id completo: se intenta confirmar por ese id (aqui no existe) y, al no poder,
+            // sigue siendo un fallo del proveedor sin reenviar.
+            server.expect(requestTo("https://api.replicate.test/v1/predictions/p1"))
+                    .andRespond(org.springframework.test.web.client.response.MockRestResponseCreators
+                            .withStatus(org.springframework.http.HttpStatus.NOT_FOUND));
 
         var e = assertThrows(AiProviderUnavailableException.class, () -> g.call("prompt", 1, USUARIO, (short) 1, 1));
         assertTrue(e.getMessage().contains("no se pudo interpretar"), e.getMessage());
@@ -89,7 +91,6 @@ class ReplicateRespuestasInvalidasTest {
     void sobreVacio() {
         var g = generador();
         server.expect(requestTo(URL)).andRespond(withSuccess("", MediaType.APPLICATION_JSON));
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
         assertThrows(AiProviderUnavailableException.class, () -> g.call("prompt", 1, USUARIO, (short) 1, 1));
         server.verify();
     }
@@ -99,8 +100,6 @@ class ReplicateRespuestasInvalidasTest {
     void sobreJsonVacio() {
         var g = generador();
         server.expect(requestTo(URL)).andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
-        // RT: sin id ni exito: se busca la prediccion antes de rendirse; ninguna, fallo del proveedor como antes.
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
         assertThrows(AiProviderUnavailableException.class, () -> g.call("prompt", 1, USUARIO, (short) 1, 1));
         server.verify();
     }
@@ -176,7 +175,6 @@ class ReplicateRespuestasInvalidasTest {
     void sobreIlegibleLlegaAlRespaldo() {
         montarPipeline(true);
         responder("<html>proxy</html>", 1);
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         var r = pipeline.run(contexto(), 30);
 
@@ -234,7 +232,6 @@ class ReplicateRespuestasInvalidasTest {
     void fallanLaIaYElRespaldo() {
         montarPipeline(false);
         responder("no es json", 1);
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         var e = assertThrows(PlanGenerationFailedException.class, () -> pipeline.run(contexto(), 30));
         assertTrue(e.getMessage().contains("V4"), e.getMessage());

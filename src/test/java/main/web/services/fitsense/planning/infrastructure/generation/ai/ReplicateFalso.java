@@ -145,9 +145,14 @@ final class ReplicateFalso implements AutoCloseable {
     // ------------------------------------------------------------------ respuestas
 
     static void json(OutputStream out, int estado, String cuerpo) throws IOException {
+        json(out, estado, cuerpo, "");
+    }
+
+    /** Con cabeceras extra ({@code "Nombre: valor\r\n"}), p. ej. un {@code Location} que la API no documenta. */
+    static void json(OutputStream out, int estado, String cuerpo, String cabeceras) throws IOException {
         var bytes = cuerpo.getBytes(StandardCharsets.UTF_8);
         out.write(("HTTP/1.1 " + estado + " X\r\nContent-Type: application/json\r\nContent-Length: " + bytes.length
-                + "\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+                + "\r\n" + cabeceras + "Connection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
         out.write(bytes);
         out.flush();
     }
@@ -183,11 +188,19 @@ final class ReplicateFalso implements AutoCloseable {
 
     /** Una prediccion como la devuelve Replicate (sin metricas). {@code output} ya en JSON o null. */
     static String prediccion(String id, String estado, String outputJson, JsonNode input, String base) {
+        return prediccion(id, estado, outputJson, input, base, Instant.now(), false);
+    }
+
+    /** Con la fecha de creacion y el indicador {@code data_removed} de Replicate. */
+    static String prediccion(String id, String estado, String outputJson, JsonNode input, String base,
+                             Instant creada, boolean datosBorrados) {
         var urls = "{\"get\":\"" + base + "/v1/predictions/" + id + "\",\"cancel\":\"" + base + "/v1/predictions/" + id
                 + "/cancel\"}";
         return "{\"id\":\"" + id + "\",\"model\":\"openai/gpt-5-mini\",\"source\":\"api\",\"status\":\"" + estado
-                + "\",\"created_at\":\"" + Instant.now() + "\",\"input\":" + (input == null ? "{}" : input.toString())
-                + ",\"output\":" + (outputJson == null ? "null" : outputJson) + ",\"error\":null,\"urls\":" + urls + "}";
+                + "\",\"created_at\":\"" + creada + "\",\"data_removed\":" + datosBorrados + ",\"input\":"
+                + (input == null || datosBorrados ? "{}" : input.toString())
+                + ",\"output\":" + (outputJson == null || datosBorrados ? "null" : outputJson) + ",\"error\":null,\"urls\":"
+                + urls + "}";
     }
 
     /** El listado de {@code GET /v1/predictions}: como el real, con la entrada vacia. */

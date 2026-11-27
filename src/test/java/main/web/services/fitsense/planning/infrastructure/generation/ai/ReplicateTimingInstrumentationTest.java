@@ -44,8 +44,6 @@ class ReplicateTimingInstrumentationTest {
 
     private static final String URL = "https://api.replicate.test/predictions";
     private static final String POLL = "https://api.replicate.test/predictions/mc7xdrmr";
-    /** RT: el listado donde se busca una prediccion creada sin id legible (gratuito). */
-    private static final String LISTADO = "https://api.replicate.test/v1/predictions";
     /** R-2: la URL publica de cancelacion, derivada del identificador (las predicciones de prueba no traen urls.cancel). */
     private static final String CANCEL = "https://api.replicate.test/v1/predictions/mc7xdrmr/cancel";
 
@@ -191,8 +189,6 @@ class ReplicateTimingInstrumentationTest {
     void errorEnPost() {
         montar(150);
         server.expect(requestTo(URL)).andRespond(withServerError());
-        // RT: un 5xx no prueba que no se creara: se busca (no hay ninguna) y no se reenvia.
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         assertThrows(AiProviderUnavailableException.class,
                 () -> generator.call("prompt", 3, 7L, (short) 4, 1));
@@ -212,7 +208,6 @@ class ReplicateTimingInstrumentationTest {
             dormir(ESPERA_SIMULADA_MS);
             return withServerError().createResponse(peticion);
         });
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         assertThrows(AiProviderUnavailableException.class,
                 () -> generator.call("prompt", 3, 7L, (short) 4, 1));
@@ -306,7 +301,6 @@ class ReplicateTimingInstrumentationTest {
     void laDecisionNoSeMueve() {
         montar(150);
         server.expect(requestTo(URL)).andRespond(withServerError());
-        RecuperacionSimulada.sinCoincidencia(server, LISTADO);
 
         // La instrumentacion no toca la politica 19.4. El pipeline tiene que
         // seguir viendo exactamente la misma excepcion que antes, porque es la
