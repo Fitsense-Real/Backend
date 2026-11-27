@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.*;
 import main.web.services.fitsense.planning.domain.exceptions.*;
 import main.web.services.fitsense.planning.domain.model.aggregates.PlanAdaptationAttempt;
@@ -173,7 +174,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
             var antes = eligible.size();
             eligible = eligible.stream().filter(c -> !excluidosPorDolor.contains(c.exerciseId())).toList();
             log.info("DOLOR_PERSISTENTE usuario {}: la semana del {} se prepara sin {} ({} candidato(s) menos)",
-                    command.userId(), week.startDate(), excluidosPorDolor, antes - eligible.size());
+                    command.userId(), week.startDate(), DetalleSensible.ids(excluidosPorDolor), antes - eligible.size());
         }
         if (eligible.isEmpty())
             throw new main.web.services.fitsense.catalog.domain.exceptions.EmptyEligibleSetException(

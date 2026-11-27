@@ -39,9 +39,16 @@ public class ConsentsController {
                                  List<ConsentimientoResource> history) {}
 
     private final ConsentimientoService servicio;
+    private final main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp limite;
+    private final int aceptacionesPorIp;
 
-    public ConsentsController(ConsentimientoService servicio) {
+    public ConsentsController(ConsentimientoService servicio,
+                              main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp limite,
+                              @org.springframework.beans.factory.annotation.Value(
+                                      "${fitsense.consent.accept-per-ip:20}") int aceptacionesPorIp) {
         this.servicio = servicio;
+        this.limite = limite;
+        this.aceptacionesPorIp = aceptacionesPorIp;
     }
 
     @GetMapping
@@ -57,7 +64,10 @@ public class ConsentsController {
     @PostMapping
     @Operation(summary = "Acepta la version vigente de las condiciones o de la politica de privacidad")
     public ResponseEntity<ConsentimientoResource> aceptar(@AuthenticationPrincipal UserDetailsImpl principal,
-                                                          @Valid @RequestBody AceptacionResource r) {
+                                                          @Valid @RequestBody AceptacionResource r,
+                                                          jakarta.servlet.http.HttpServletRequest peticion) {
+        // P0-02: el mismo cupo por IP que los endpoints publicos (429 con Retry-After).
+        limite.comprobar("consents-accept", peticion, aceptacionesPorIp, java.time.Duration.ofMinutes(15));
         var c = servicio.aceptar(principal.getUserId(), r.type(), r.documentVersion());
         return ResponseEntity.status(HttpStatus.CREATED).body(ConsentimientoResource.de(c));
     }
