@@ -1,0 +1,33 @@
+# Extracto de https://api.replicate.com/openapi.json (Replicate HTTP API 1.0.0-a1 ), obtenido con un GET gratuito el 27/11/2026.
+
+## POST /models/{model_owner}/{model_name}/predictions ( models.predictions.create ) - el endpoint que usa FitSense
+
+### Cabecera Prefer {"example": "wait=5", "pattern": "^wait(=([1-9]|[1-9][0-9]|60))?$", "type": "string"}
+Leave the request open and wait for the model to finish generating output. Set to `wait=n` where n is a number of seconds between 1 and 60.
+
+See [sync mode](https://replicate.com/docs/topics/predictions/create-a-prediction#sync-mode) for more information.
+
+
+### Cabecera Cancel-After {"example": "5m", "type": "string"}
+The maximum time the prediction can run before it is automatically canceled. The lifetime is measured from when the prediction is created.
+
+The duration can be specified as string with an optional unit suffix:
+- `s` for seconds (e.g., `30s`, `90s`)
+- `m` for minutes (e.g., `5m`, `15m`)
+- `h` for hours (e.g., `1h`, `2h30m`)
+- defaults to seconds if no unit suffix is provided (e.g. `30` is the same as `30s`)
+
+You can combine units for more precision (e.g., `1h30m45s`).
+
+The minimum allowed duration is 5 seconds.
+
+
+### Respuestas: {'201': 'Prediction has been created. If the `Prefer: wait` header is provided it will contain the final output.', '202': 'Prediction has been created but does not yet have all outputs'}
+
+## Campos de la prediccion relacionados
+- deadline : The absolute time at which the prediction will be automatically canceled if it has not completed
+- status : The prediction status. `canceled` means the prediction was canceled (either by the user or because it reached its deadline while running). `aborted` means the prediction was terminated before it started running (for example, when a deadline is reached before the prediction starts). 
+- created_at : The time that the prediction was created
+- started_at : The time that the model began the prediction
+- completed_at : The time that the model completed the prediction and all outputs were uploaded
+- data_removed : Whether the prediction output has been deleted
