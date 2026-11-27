@@ -26,6 +26,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
            """)
     List<User> findActiveParticipantsInTimezone(String zone);
 
+    /** B2.4, opcion B: todas las cuentas activas de una zona (participen o no en el estudio). */
+    @Query("""
+           SELECT u FROM User u
+           WHERE u.status = main.web.services.fitsense.iam.domain.model.valueobjects.UserStatus.ACTIVE
+             AND u.timezone.value = :zone
+           """)
+    List<User> findActiveUsersInTimezone(String zone);
+
     @Query("""
            SELECT DISTINCT u.timezone.value FROM User u
            WHERE u.status = main.web.services.fitsense.iam.domain.model.valueobjects.UserStatus.ACTIVE

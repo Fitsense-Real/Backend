@@ -50,6 +50,8 @@ public class WebSecurityConfiguration {
             // Solicitud web de eliminacion: la persona no tiene la app ni recuerda la contrasena. La propiedad del
             // correo se verifica con un token de un solo uso (SolicitudEliminacionWebService).
             "/api/v1/account-deletion/**",
+            // B2.2: documentos legales vigentes; la app los muestra antes de registrarse (solo publicados).
+            "/api/v1/legal-documents",
             "/actuator/health",
             // El despacho interno de errores: sin esto un 404 o 500 de un usuario
             // anonimo se volveria 401 y ocultaria el error real.
