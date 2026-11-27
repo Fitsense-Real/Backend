@@ -1,0 +1,23 @@
+predict_time (s) por evaluacion y version de prompt; gpt-5-mini directo, medium/low/16000, catalogo completo
+H2-v2 (25/11) PR-1.7                   n= 26  P50=  85.8  P90= 112.6  P95= 127.5  P99= 136.6  max= 139.3
+H2-v2 (25/11) PR-2.0                   n= 26  P50=  87.1  P90= 138.4  P95= 159.5  P99= 174.3  max= 177.1
+H2-v2 (25/11) total_time (cola incluida) n= 52  P50=  87.1  P90= 133.6  P95= 139.7  P99= 171.5  max= 177.1
+H2-v3 (26/11 manana) PR-1.7            n= 26  P50=  54.4  P90=  75.0  P95=  82.0  P99=  92.8  max=  95.6
+H2-v3 (26/11 manana) PR-2.1            n= 26  P50=  61.0  P90=  91.0  P95= 101.8  P99= 113.7  max= 117.5
+H2-v3 (26/11 manana) total_time (cola incluida) n= 52  P50=  56.7  P90=  81.4  P95=  97.9  P99= 109.7  max= 117.6
+H2-v4 (26/11 tarde) PR-1.7             n= 52  P50=  66.3  P90=  94.5  P95= 105.5  P99= 116.1  max= 119.9
+H2-v4 (26/11 tarde) PR-2.2             n= 51  P50=  75.9  P90= 109.1  P95= 110.0  P99= 127.7  max= 141.2
+H2-v4 (26/11 tarde) total_time (cola incluida) n=103  P50=  68.6  P90= 102.8  P95= 110.1  P99= 119.8  max= 141.3
+
+TODAS las predicciones                 n=207  P50=  69.5  P90= 107.1  P95= 122.8  P99= 141.1  max= 177.1
+Solo PR-1.7 (produccion)               n=104  P50=  64.9  P90=  96.8  P95= 109.2  P99= 128.5  max= 139.3
+total_time de todas                    n=207  P50=  69.5  P90= 107.2  P95= 122.8  P99= 141.2  max= 177.1
+estados: {'succeeded': 206, 'canceled': 1}
+
+predicciones con predict_time >  60 s: 141 de 207 (68.1 %); PR-1.7: 65 de 104
+predicciones con predict_time >  90 s:  45 de 207 (21.7 %); PR-1.7: 17 de 104
+predicciones con predict_time > 120 s:  12 de 207 (5.8 %); PR-1.7: 3 de 104
+predicciones con predict_time > 150 s:   2 de 207 (1.0 %); PR-1.7: 0 de 104
+predicciones con predict_time > 180 s:   0 de 207 (0.0 %); PR-1.7: 0 de 104
+predicciones con predict_time > 240 s:   0 de 207 (0.0 %); PR-1.7: 0 de 104
+predicciones con predict_time > 300 s:   0 de 207 (0.0 %); PR-1.7: 0 de 104

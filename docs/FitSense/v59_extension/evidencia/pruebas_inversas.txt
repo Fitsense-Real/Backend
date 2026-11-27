@@ -1,0 +1,11 @@
+== m1_sincrona_sin_seguimiento: [ERROR] Tests run: 15, Failures: 5, Errors: 5, Skipped: 0
+aislamientoDeLaApiAsincrona v59_01_reinicioSincronoPrediccionEnCurso v59_05_terminoDuranteLaCaida v59_06_postInciertoNoSeReenvia v59_07_dosUsuariosNoIntercambian v59_08_dosInstancias v59_11_resultadoInvalido v59_12_o20 v59_13_14_erroresYCancelacion v59_17_reiniciosRepetidos 
+== m2_ciclo_sin_seguimiento: [ERROR] Tests run: 15, Failures: 2, Errors: 2, Skipped: 0
+v59_02_03_reinicioDuranteLaAdaptacion v59_03b_reinicioRealDelContexto v59_10_planCambiado v59_18_variosParticipantes 
+== m3_sin_adopcion: [ERROR] Tests run: 15, Failures: 6, Errors: 0, Skipped: 0
+v59_01_reinicioSincronoPrediccionEnCurso v59_02_03_reinicioDuranteLaAdaptacion v59_06_postInciertoNoSeReenvia v59_08_dosInstancias v59_10_planCambiado v59_17_reiniciosRepetidos 
+== m4_sin_fencing: [ERROR] Tests run: 15, Failures: 1, Errors: 0, Skipped: 0
+v59_10_planCambiado 
+RESTAURADO GeneracionInicialService.java
+RESTAURADO WeeklyCycleService.java
+RESTAURADO SeguimientoOperacionesIa.java

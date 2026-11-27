@@ -72,21 +72,6 @@ class DiarioDePrediccionesReplicateTest {
                     && f.estado() != Estado.DESCARTADA).findFirst();
         }
 
-        @Override public Optional<Entrada> reutilizable(long u, String hash, UUID excepto, Instant desde) {
-            return filas.stream().filter(f -> f.userId() == u && f.requestHash().equals(hash)
-                            && !f.operationId().equals(excepto)
-                            && (f.estado() == Estado.SUCCEEDED || f.estado() == Estado.ENVIADA))
-                    .reduce((a, b) -> b);
-        }
-
-        @Override public Entrada adoptar(Entrada o, UUID op, int intento, Instant ahora) {
-            var e = new Entrada(++secuencia, op, o.userId(), intento, o.requestHash(), o.estado(), o.predictionId(),
-                    o.output(), o.error(), o.id());
-            filas.add(e);
-            eventos.add("adoptar " + o.id());
-            return e;
-        }
-
         /** Para simular otra ejecucion que anota el mismo intento justo antes que esta (carrera). */
         Runnable antesDeSolicitar = () -> { };
 
@@ -299,31 +284,57 @@ class DiarioDePrediccionesReplicateTest {
         assertEquals(DiarioDePredicciones.Estado.NO_CONFIRMADA, libro.deIntento(op, 1).orElseThrow().estado());
     }
 
+    // REVISION DE IDENTIDAD (integracion, 27/11/2026). Las dos pruebas E8 afirmaban que una operacion NUEVA del mismo
+    // usuario ADOPTABA la prediccion de otra con la misma huella (CERO POST). El contenido no prueba identidad: ahora
+    // cada operacion pide la suya. Las pruebas se invierten a proposito; ver 11_INTEGRACION_FINAL_Y_MERGES.md.
+
     @Test
-    @DisplayName("E8 · respondio despues del vencimiento local: la nueva operacion del MISMO usuario la adopta, CERO POST")
-    void adoptaLaDeUnaOperacionVencida() {
+    @DisplayName("E8 (revisada) · la prediccion TERMINADA de otra operacion del MISMO usuario y la misma entrada NO se"
+            + " adopta: la nueva pide la suya (1 POST)")
+    void noAdoptaLaTerminadaDeOtraOperacion() {
         var libro = new LibroEnMemoria();
         var g = generador(libro);
         var vencida = UUID.randomUUID();
         var nueva = UUID.randomUUID();
-        libro.anadir(vencida, 1, g.huellaDe(PROMPT, 1), DiarioDePredicciones.Estado.SUCCEEDED, "p1", "{\"ok\":1}");
-        assertEquals("{\"ok\":1}", llamar(g, nueva, 1));
+        libro.anadir(vencida, 1, g.huellaDe(PROMPT, 1), DiarioDePredicciones.Estado.SUCCEEDED, "p1", "{\"ajeno\":1}");
+        server.expect(ExpectedCount.once(), requestTo(URL))
+                .andRespond(withSuccess(prediccion("succeeded"), MediaType.APPLICATION_JSON));
+        assertEquals("{\"ok\":1}", llamar(g, nueva, 1), "su propia salida, no la de la otra operacion");
         server.verify();
         var f = libro.deIntento(nueva, 1).orElseThrow();
-        assertEquals(1L, f.reusedFrom());
+        assertNull(f.reusedFrom(), "nada heredado");
+        assertTrue(libro.eventos.stream().noneMatch(e -> e.startsWith("adoptar")));
     }
 
     @Test
-    @DisplayName("E8 · la de la operacion vencida aun seguia en curso: se adopta y se sigue por su id, CERO POST")
-    void adoptaUnaEnCurso() {
+    @DisplayName("E8 (revisada) · la de otra operacion AUN EN CURSO tampoco se adopta ni se consulta: 1 POST propio")
+    void noAdoptaLaEnCursoDeOtraOperacion() {
         var libro = new LibroEnMemoria();
         var g = generador(libro);
-        var vencida = UUID.randomUUID();
-        libro.anadir(vencida, 1, g.huellaDe(PROMPT, 1), DiarioDePredicciones.Estado.ENVIADA, "p1", null);
-        server.expect(ExpectedCount.once(), requestTo(GET))
+        libro.anadir(UUID.randomUUID(), 1, g.huellaDe(PROMPT, 1), DiarioDePredicciones.Estado.ENVIADA, "pOtra", null);
+        server.expect(ExpectedCount.once(), requestTo(URL))
                 .andRespond(withSuccess(prediccion("succeeded"), MediaType.APPLICATION_JSON));
         assertEquals("{\"ok\":1}", llamar(g, UUID.randomUUID(), 1));
+        server.verify();   // ningun GET a la prediccion de la otra operacion
+    }
+
+    @Test
+    @DisplayName("identidad · una generacion y una adaptacion con la MISMA entrada no comparten prediccion")
+    void generacionYAdaptacionNoSeConfunden() {
+        var libro = new LibroEnMemoria();
+        var g = generador(libro);
+        var generacion = UUID.randomUUID();
+        // La adaptacion anotada con la huella que tendria su propia peticion: aun asi, otra operacion no la ve.
+        libro.anadir(generacion, 1, g.huellaDe(PROMPT, 1), DiarioDePredicciones.Estado.SUCCEEDED, "pGen",
+                "{\"generacion\":1}");
+        server.expect(ExpectedCount.once(), requestTo(URL))
+                .andRespond(withSuccess(prediccion("succeeded"), MediaType.APPLICATION_JSON));
+        var adaptacion = UUID.randomUUID();
+        var salida = DiarioDePredicciones.durante(adaptacion, USUARIO, () -> g.call(PROMPT,
+                ReplicateTrainingPlanGenerator.Peticion.deCorrecciones(1), USUARIO, (short) 1, 1));
+        assertEquals("{\"ok\":1}", salida);
         server.verify();
+        assertNull(libro.deIntento(adaptacion, 1).orElseThrow().reusedFrom());
     }
 
     @Test

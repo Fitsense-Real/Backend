@@ -47,30 +47,6 @@ public class JdbcDiarioDePredicciones implements DiarioDePredicciones {
     }
 
     @Override
-    public Optional<Entrada> reutilizable(long userId, String requestHash, UUID excepto, Instant desde) {
-        // La mas reciente: una terminada con exito antes que una en curso de la misma hora.
-        return jdbc.query("SELECT " + COLUMNAS + " FROM plan_generation_predictions"
-                        + " WHERE user_id = ? AND request_hash = ? AND operation_id <> ?"
-                        + " AND status IN ('SUCCEEDED', 'ENVIADA') AND requested_at >= ?"
-                        + " ORDER BY (status = 'SUCCEEDED') DESC, requested_at DESC LIMIT 1",
-                FILA, userId, requestHash, excepto, Timestamp.from(desde)).stream().findFirst();
-    }
-
-    @Override
-    public Entrada adoptar(Entrada origen, UUID operationId, int attempt, Instant ahora) {
-        var t = Timestamp.from(ahora);
-        Long id = jdbc.queryForObject("INSERT INTO plan_generation_predictions (operation_id, user_id, attempt,"
-                        + " request_hash, status, replicate_prediction_id, reused_from_row_id, output, error,"
-                        + " requested_at, sent_at, finished_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                        + " RETURNING prediction_row_id", Long.class,
-                operationId, origen.userId(), attempt, origen.requestHash(), origen.estado().name(),
-                origen.predictionId(), origen.id(), origen.output(), origen.error(), t, t,
-                origen.estado().terminal() ? t : null);
-        return new Entrada(id, operationId, origen.userId(), attempt, origen.requestHash(), origen.estado(),
-                origen.predictionId(), origen.output(), origen.error(), origen.id());
-    }
-
-    @Override
     public long solicitar(UUID operationId, long userId, int attempt, String requestHash, Instant ahora) {
         // Si habia una fila vigente para este intento con OTRA peticion, queda como historial. Una con la MISMA
         // peticion no se toca: si otra ejecucion la anoto entre medias, ux_pgp_intento_vigente rechaza este INSERT

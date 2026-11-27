@@ -43,7 +43,7 @@ public class DetectorEventosPush {
               FROM plan_generation_operations o
               JOIN weekly_training_plans p ON p.plan_id = o.plan_id AND p.status <> 'REPLACED'
               JOIN users u ON u.user_id = o.user_id AND u.status = 'ACTIVE'
-             WHERE o.status = 'COMPLETED' AND o.finished_at >= ?
+             WHERE o.status = 'COMPLETED' AND o.kind = 'FIRST_PLAN' AND o.finished_at >= ?
             ON CONFLICT (dedupe_key) DO NOTHING""";
 
     static final String SEMANALES = """
