@@ -1,0 +1,17 @@
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 16.21 s <<< FAILURE! -- in Experimento Kora: 20 usuarios x 3 sesiones con los servicios reales
+[ERROR] main.web.services.fitsense.orchestation.ExperimentoKora20IT.experimento -- Time elapsed: 0.045 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: BLOQUEADO: sin REPLICATE_API_TOKEN no se ejecuta la etapa C (ninguna llamada realizada) ==> expected: <false> but was: <true>
+[ERROR] Failures: 
+[ERROR]   ExperimentoKora20IT.experimento:141 BLOQUEADO: sin REPLICATE_API_TOKEN no se ejecuta la etapa C (ninguna llamada realizada) ==> expected: <false> but was: <true>
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-failsafe-plugin:3.5.6:verify (default) on project fitsense-backend: There are test failures.
+[ERROR] 
+[ERROR] See /home/user/wt_k20/target/failsafe-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
