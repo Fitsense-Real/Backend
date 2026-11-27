@@ -16,10 +16,15 @@
 #   4. Compara, tabla por tabla, el numero de filas del origen y del destino, y la ultima version de Flyway.
 #   5. Escribe un informe (informe.txt) y termina con codigo 0 solo si todo coincide.
 #
-# Que NO hace: no restaura nunca sobre una base con datos; no modifica el origen; no borra copias; no sube nada.
+# Que NO hace: no restaura nunca sobre una base con datos; no modifica el origen; no borra copias; no sube nada;
+#   no imprime credenciales (pasa la clave por PGPASSWORD o ~/.pgpass; el informe solo lleva host, puerto y base).
+# La copia queda con permisos 600 (umask 077): CIFRARLA y moverla a un almacen con acceso restringido es parte del
+#   procedimiento de 06_OPERACION_RAILWAY_Y_RESPALDOS.md, no de este script.
 # Requisitos: bash, pg_dump/pg_restore/psql de la misma version mayor que el servidor (16), sha256sum.
 # =====================================================================================================================
 set -euo pipefail
+# La copia contiene datos personales: solo la puede leer quien la hizo (directorio 700, ficheros 600).
+umask 077
 
 ORIGEN="${1:?Uso: verificar_respaldo.sh ORIGEN_URL DESTINO_URL [DIRECTORIO_SALIDA]}"
 DESTINO="${2:?Uso: verificar_respaldo.sh ORIGEN_URL DESTINO_URL [DIRECTORIO_SALIDA]}"
@@ -49,6 +54,7 @@ echo "1/4 Copia del origen (solo lectura)..."
 T0=$(date +%s)
 PGOPTIONS='-c default_transaction_read_only=on' pg_dump "$ORIGEN" --format=custom --no-owner --no-acl --file="$COPIA"
 T1=$(date +%s)
+chmod 600 "$COPIA"
 HUELLA=$(sha256sum "$COPIA" | cut -d' ' -f1)
 TAMANO=$(stat -c %s "$COPIA")
 
