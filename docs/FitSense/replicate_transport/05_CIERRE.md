@@ -1,69 +1,72 @@
 # 05 · Cierre
 
-**Orden:** «ORDEN DE TRABAJO — CIERRE H2-v4 Y CORRECCIÓN DE TRANSPORTE REPLICATE».
-**Autorización:** cerrar la PR #87; investigar y corregir el transporte con pruebas sin coste; preparar una PR independiente.
-**NO MERGE. NO DESPLIEGUE. NO GASTOS DE IA.**
+**Órdenes:**
+- «ORDEN DE TRABAJO — CIERRE H2-v4 Y CORRECCIÓN DE TRANSPORTE REPLICATE»;
+- «ORDEN DE TRABAJO — VALIDACIÓN FINAL Y MERGE CONDICIONAL DE PR #88».
 
-## 1. H2-v4 (PR-2.2) cerrada
+**Límites que se respetan:** sin despliegue, sin llamadas pagadas, sin tocar H2, PR-1.7 por omisión.
 
-- La **PR #87 se cerró sin fusionar**, con un comentario de cierre: **RECHAZADA** por P1 (3 perfiles frente a un máximo de 1) y K2 (75,9 s frente a 72,9 s).
-- Su rama `feature/h2-v4-pr22` (cabeza `3f27f54b`, CI en verde) **se conserva**, con:
-  - el código de PR-2.2;
-  - el informe `06_EVALUACION_REAL_Y_DECISION.md`;
-  - el libro, con 104 reservas;
-  - las 103 respuestas oficiales y la sensibilidad de G08.
-- No se modificó nada de esa evidencia. PR-1.7 sigue por omisión.
+## 1. H2-v4 (PR-2.2), cerrada
+
+- La PR #87 está **cerrada sin fusionar**: RECHAZADA por P1 (3 > 1) y K2 (75,9 s > 72,9 s).
+- La rama `feature/h2-v4-pr22` (`3f27f54b`) conserva su código y su evidencia, sin cambios.
 
 ## 2. Resultado técnico
 
-**Causa** (`01`):
-- Cabeceras 2xx **sin `Content-Type`**: Spring lo da por `application/octet-stream`.
-- Una conexión **reiniciada a mitad del cuerpo**, que lanza `RestClientException` «Error while extracting response…».
-- El camino sin libro convertía **cualquier** fallo del POST en «proveedor caído», sin id con que seguir la predicción, que terminó y se facturó.
-- Se reproduce sin coste, con el mensaje exacto.
+**Causa de G08** (`01`): cabeceras 2xx **sin `Content-Type`**, que Spring da por `application/octet-stream`, y una conexión **reiniciada a mitad del cuerpo**. Se reproduce sin coste.
 
-**Corrección** (`02`), en un solo archivo de producción (`ReplicateTrainingPlanGenerator.java`):
-- una clasificación única del POST: no enviada, rechazada, incierta o creada;
-- recuperación de la predicción existente por la API documentada (listado y consulta por id, con la misma `input`, solo si hay una);
-- `PREDICCION_NO_CONFIRMADA` sin reenviar cuando no aparece;
-- la misma recuperación al reanudar un intento `SOLICITANDO`;
-- un sondeo que tolera fallos pasajeros en lugar de cancelar.
+**Revisión de seguridad (§3 de la orden).** La primera versión de esta PR recuperaba buscando por contenido, y eso **permitía atribuir a una petición la predicción de otra idéntica**.
+- Quedó demostrado: contra `f3786e60`, el usuario A publicaba como IA la salida del usuario B (S01, S12, S15).
+- **Corregido** en `64e0432d`.
+- El contrato oficial de Replicate (OpenAPI 1.0.0-a1) no ofrece otra prueba de identidad que el `id` de la respuesta del POST: ni `Location`, ni idempotencia, ni metadatos.
+
+**Diseño final** (`02`):
+- se recupera **solo** por el `id` de la propia respuesta, entero o al principio de un cuerpo cortado;
+- ese id se confirma por GET: mismo id, entrada presente e igual a la enviada;
+- en cualquier otro caso queda `PREDICCION_NO_CONFIRMADA`, **sin reenviar**, y se publica el respaldo;
+- el sondeo tolera fallos pasajeros.
+
+**Un solo archivo de producción:** `ReplicateTrainingPlanGenerator.java`.
 
 **Pruebas:**
 
 | Ejecución | Resultado |
 |---|---|
-| `ReplicateRecuperacionTransporteTest` (T01–T14 y diagnóstico) | **25/25** |
-| Prueba inversa (las 25 contra el cliente de `generation`) | **20 fallan** con el cliente anterior; 25/25 pasan con la corrección (`03` §2) |
-| `mvn verify -Pintegration` completo, local | Unitarias **1.655, 0 fallos**, 1 omitida: las 1.630 de `generation` más las 25 nuevas. Integración **887, 0 fallos**, 72 omitidas (las opcionales y de pago), las mismas que en `generation`. **BUILD SUCCESS** (28 min 57 s) |
-| CI de GitHub (`verify`) | Ver la PR |
+| `ReplicateRecuperacionTransporteTest`: diagnóstico (3), T01–T14 (18) y S01–S15 (15 escenarios) | **36/36** |
+| Pruebas inversas (`03` §2) | Contra #88 sin revisar: **6/6** de las de identidad fallan (atribución ajena). Contra `generation`: 28 de 36 fallan. Las mutaciones M1, M2 y M4 rompen las pruebas que las vigilan |
+| `mvn verify -Pintegration` completo, local, sobre `64e0432d` (lo posterior es solo documentación) | Unitarias **1.666, 0 fallos**, 1 omitida (1.630 de `generation` más las 36). Integración **887, 0 fallos**, 72 omitidas (las opcionales y de pago), las mismas que en `generation`. **BUILD SUCCESS** (26 min 49 s) |
+| Suites clave dentro de esa ejecución | V59 libro (20), V59 asíncrona (23), V59 reanudación (12), V58→V59 (1), gpt-5-mini con O20 (5), correcciones de adaptación (5 + 5), O20, V65, progresión y reincorporación: **todas en verde** |
+| CI de GitHub | Ver la PR |
 
-**Incluido en la suite:** generación inicial, adaptación, integración con gpt-5-mini (`ReplicateGpt5MiniDirectoTest`), estados y errores de Replicate, reintentos, respaldo `RULE_ENGINE`, O20, V65, validadores, persistencia del libro V59 (`GeneracionAsincronaResilienciaIT`, `ReanudacionConReplicateSimuladoIT`, `MigracionV58aV59IT`) y concurrencia.
-
-## 3. Condiciones de aceptación (orden §13)
+## 3. Condiciones para el merge (orden §10)
 
 | # | Condición | Estado |
 |---|---|---|
-| 1 | G08 reproducido sin gasto | **Sí** (`g08ReproducidoConElClienteDeProduccion`) |
-| 2 | Causa identificada con evidencia | **Sí.** El *qué* está demostrado; el *quién* no (`04` §1) |
-| 3 | Recupera predicciones existentes cuando es posible | **Sí:** T02, T03, T04, T06, T07, T08, T13 y T14 |
-| 4 | Sin duplicados ante respuestas recuperables | **Sí:** 1 POST en todos los casos; 0 al reanudar |
-| 5 | Estados inciertos con un tratamiento seguro | **Sí:** `PREDICCION_NO_CONFIRMADA`, sin reenviar, y respaldo (T05). Limitaciones en `04` |
-| 6 | No se relajan validadores | **Sí:** no se tocan, y lo recuperado pasa por los mismos (T11) |
-| 7 | Los reintentos por plan inválido siguen | **Sí** (T11, `ReplicateRespuestasInvalidasTest`) |
-| 8 | `RULE_ENGINE` disponible | **Sí** (T05, `ReplicateRespuestasInvalidasTest`) |
-| 9 | Generación y adaptación sin regresiones | **Sí:** suite completa y T14 |
-| 10 | Pruebas en verde | **Sí** |
-| 11 | CI en verde | Ver la PR |
-| 12 | PR-1.7 vigente | **Sí:** no se toca `application.properties` |
+| 1 | Sin riesgo conocido de adoptar resultados de otra operación | **Sí.** No se busca por contenido; S01, S02, S05, S12 y S15 lo vigilan |
+| 2 | Identidad verificada | **Sí:** el id de su propia respuesta, confirmado por GET con la misma entrada |
+| 3 | Cabeceras y campos según el contrato real | **Sí:** OpenAPI. `Location` no está documentado y se ignora (S03) |
+| 4 | Lo ambiguo termina de forma segura | **Sí:** `PREDICCION_NO_CONFIRMADA` y respaldo (S05, S06, S08, S15) |
+| 5 | Sin POST automáticos ante lo incierto | **Sí:** 1 POST en T05, S09, S11 y T12 |
+| 6 | Los reintentos por respuestas inválidas siguen | **Sí** (T11, S14) |
+| 7 | La recuperación no debilita los validadores | **Sí:** no se tocan, y lo recuperado pasa por ellos (S14) |
+| 8 | S01–S15 y T01–T14 aprobadas | **Sí**, 36/36 |
+| 9 | Regresión sin fallos | **Sí** |
+| 10 | CI en verde | Comprobado antes del merge |
+| 11 | Sin conflictos con `generation` | Comprobado antes del merge |
+| 12 | PR-1.7 por omisión | **Sí:** `application.properties` no se toca |
+| 13 | Sin cambios en validadores, políticas ni prompts | **Sí:** el diff de producción es un solo archivo de transporte |
 
-**Cero llamadas pagadas.** Solo hubo consultas `GET` gratuitas a Replicate, hechas durante el cierre de H2-v4 para diagnosticar, y ninguna en esta PR.
+**Cero llamadas pagadas.** Solo hubo GET gratuitos a `api.replicate.com`: la especificación OpenAPI y, en el cierre de H2-v4, las consultas de diagnóstico.
 
-`main` y `generation` no se modificaron.
+`main` no se modifica.
 
 ## 4. Recomendaciones
 
-1. **Revisar y decidir el merge de esta PR.** Corrige un riesgo real de coste y de calidad: el plan válido de la IA se perdía.
-2. **Propuesta aparte, sin hacer aquí: extender el libro V59** a los caminos sin libro (endpoint síncrono, ciclo semanal y adaptación). Así sobrevivirían a un reinicio con un POST en curso (`04` §4). Exige diseño, porque la tabla está ligada a `plan_generation_operations`.
-3. **Vigilar en Railway**, cuando se despliegue con autorización, las líneas `REPLICATE_RECUPERACION` y `PREDICCION_NO_CONFIRMADA`. Su frecuencia dirá si los cortes eran del proxy de la evaluación o también ocurren en producción.
-4. **No retomar H2-v5** hasta decidir esta PR, como pide la orden.
+1. **Extender V59** a los caminos sin libro (endpoint síncrono, ciclo semanal, adaptación), para sobrevivir a un reinicio con un POST en curso (`04` §5). Es una propuesta aparte, con diseño.
+2. **Evaluar `Cancel-After`** (cabecera documentada) igual al límite de cada llamada. Acotaría el coste de una predicción incierta que no se puede cancelar por falta de id. Cambia el comportamiento de todas las predicciones, así que necesita su propia decisión.
+3. **Vigilar** en Railway, cuando se despliegue con autorización, las líneas `REPLICATE_RECUPERACION` y `PREDICCION_NO_CONFIRMADA`.
+
+## 5. Merge
+
+El SHA del merge, el estado `MERGED`, la regresión sobre el commit resultante y el CI posterior se registran en el comentario final de la PR #88 y en el informe de entrega.
+- Este documento se escribe **antes** del merge, para no añadir commits a `generation` después.
