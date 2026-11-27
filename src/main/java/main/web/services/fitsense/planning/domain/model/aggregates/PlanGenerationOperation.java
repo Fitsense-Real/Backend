@@ -25,6 +25,10 @@ import java.util.UUID;
 public class PlanGenerationOperation {
 
     public static final String KIND_FIRST_PLAN = "FIRST_PLAN";
+    /** V66: una peticion SINCRONA del primer plan (POST /users/me/plan/generate). */
+    public static final String KIND_FIRST_PLAN_SYNC = "FIRST_PLAN_SYNC";
+    /** V66: el cierre semanal de un participante (generacion o adaptacion de la semana nueva). */
+    public static final String KIND_WEEKLY_CYCLE = "WEEKLY_CYCLE";
 
     @Id
     @Column(name = "operation_id", nullable = false)
@@ -81,6 +85,14 @@ public class PlanGenerationOperation {
     /** V59: inicio de la primera ejecucion; el tiempo maximo de la operacion se mide desde aqui. */
     @Column(name = "first_started_at")
     private OffsetDateTime firstStartedAt;
+
+    /** V66: identidad logica de FIRST_PLAN_SYNC y WEEKLY_CYCLE; nula en FIRST_PLAN. */
+    @Column(name = "operation_key", length = 160)
+    private String operationKey;
+
+    /** V66: semana medida de un WEEKLY_CYCLE. */
+    @Column(name = "measured_week_start")
+    private LocalDate measuredWeekStart;
 
     protected PlanGenerationOperation() {
         // JPA
@@ -165,4 +177,6 @@ public class PlanGenerationOperation {
     public String getLeaseOwner() { return leaseOwner; }
     public OffsetDateTime getLeaseExpiresAt() { return leaseExpiresAt; }
     public OffsetDateTime getFirstStartedAt() { return firstStartedAt; }
+    public String getOperationKey() { return operationKey; }
+    public LocalDate getMeasuredWeekStart() { return measuredWeekStart; }
 }

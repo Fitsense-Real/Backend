@@ -8,7 +8,10 @@ import main.web.services.fitsense.planning.domain.model.commands.GenerateWeeklyP
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import main.web.services.fitsense.planning.application.internal.generation.SeguimientoOperacionesIa;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Optional;
 
@@ -28,6 +31,12 @@ import java.util.Optional;
  *   <li><b>Frecuencia:</b> {@link LimiteDeGeneraciones}, solo para las peticiones que llegan a generar.</li>
  * </ol>
  * No cambia que se genera ni como: el pipeline, los validadores y el respaldo son los mismos.
+ * <p>
+ * V66 · SEGUIMIENTO V59: generate y persist corren dentro de una operacion {@code FIRST_PLAN_SYNC} con libro de
+ * predicciones ({@link SeguimientoOperacionesIa}). Si el proceso muere a mitad, la siguiente peticion de la misma
+ * persona y semana adopta esa operacion y su libro: sigue por su id la prediccion ya creada o reutiliza su salida, en vez
+ * de pagar otra; un envio sin id confirmado no se reenvia. La publicacion comprueba, en su misma transaccion, que la
+ * operacion sigue siendo de esta ejecucion. El contrato del endpoint no cambia.
  */
 @Service
 public class GeneracionInicialService {
@@ -37,12 +46,25 @@ public class GeneracionInicialService {
     private final WeeklyTrainingPlanCommandService commandService;
     private final CicloSemanalBloqueo bloqueo;
     private final LimiteDeGeneraciones limite;
+    /** V66: null solo en pruebas que lo construyen a mano (sin base): entonces, como antes. */
+    private final SeguimientoOperacionesIa seguimiento;
+    private final TransactionTemplate tx;
 
+    /** Para pruebas sin base: sin seguimiento V66. */
     public GeneracionInicialService(WeeklyTrainingPlanCommandService commandService, CicloSemanalBloqueo bloqueo,
                                     LimiteDeGeneraciones limite) {
+        this(commandService, bloqueo, limite, null, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public GeneracionInicialService(WeeklyTrainingPlanCommandService commandService, CicloSemanalBloqueo bloqueo,
+                                    LimiteDeGeneraciones limite, SeguimientoOperacionesIa seguimiento,
+                                    PlatformTransactionManager transacciones) {
         this.commandService = commandService;
         this.bloqueo = bloqueo;
         this.limite = limite;
+        this.seguimiento = seguimiento;
+        this.tx = transacciones == null ? null : new TransactionTemplate(transacciones);
     }
 
     public Optional<WeeklyTrainingPlan> generar(GenerateWeeklyPlanCommand command) {
@@ -50,8 +72,26 @@ public class GeneracionInicialService {
         var r = bloqueo.ejecutar(userId, () -> {
             var prepared = commandService.prepare(command);
             limite.consumir(userId);
-            var generated = commandService.generate(prepared);
-            return commandService.persist(prepared, generated);
+            if (seguimiento == null) {
+                var generated = commandService.generate(prepared);
+                return commandService.persist(prepared, generated);
+            }
+            try {
+                return seguimiento.ejecutar(
+                        SeguimientoOperacionesIa.Clave.primerPlanSincrono(userId, command.weekStartDate()),
+                        plan -> plan.map(WeeklyTrainingPlan::getId).orElse(null),
+                        guarda -> {
+                            var generated = commandService.generate(prepared);
+                            // Fencing en la MISMA transaccion que publica: si otra ejecucion adopto la operacion, esta
+                            // no publica (FOR UPDATE: nadie se la quita entre la comprobacion y el commit).
+                            return tx.execute(s -> {
+                                guarda.run();
+                                return commandService.persist(prepared, generated);
+                            });
+                        });
+            } catch (SeguimientoOperacionesIa.EnCursoEnOtroProceso otra) {
+                throw new GeneracionEnCursoException(userId);
+            }
         });
         return switch (r.estado()) {
             case EJECUTADO -> r.valor();
