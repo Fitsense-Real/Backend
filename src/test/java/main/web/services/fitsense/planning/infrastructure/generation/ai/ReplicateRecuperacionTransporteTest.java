@@ -829,12 +829,6 @@ class ReplicateRecuperacionTransporteTest {
     /** El libro en memoria con cada operacion bajo un cerrojo, como las transacciones de la base. */
     private record LibroSincronizado(DiarioDePredicciones d) implements DiarioDePredicciones {
         @Override public synchronized Optional<Entrada> deIntento(UUID o, int a) { return d.deIntento(o, a); }
-        @Override public synchronized Optional<Entrada> reutilizable(long u, String h, UUID e, Instant desde) {
-            return d.reutilizable(u, h, e, desde);
-        }
-        @Override public synchronized Entrada adoptar(Entrada o, UUID op, int a, Instant ahora) {
-            return d.adoptar(o, op, a, ahora);
-        }
         @Override public synchronized long solicitar(UUID o, long u, int a, String h, Instant ahora) {
             return d.solicitar(o, u, a, h, ahora);
         }

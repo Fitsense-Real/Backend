@@ -109,7 +109,7 @@ El libro (`plan_generation_predictions`) **no cambia**: sigue apuntando a la ope
 **Por qué la vía síncrona no se reanuda en segundo plano:**
 - El contrato del endpoint es síncrono: la persona espera la respuesta.
 - Publicar en segundo plano un plan que nadie pidió de nuevo cambiaría ese contrato, porque la siguiente petición recibiría 409 «ya existe».
-- Por eso se reanuda cuando la persona repite. Si no repite, la operación se cierra a los 30 min y su libro queda. Una petición nueva reutiliza lo ya recibido (`reutilizable`: misma persona y huella, 24 h).
+- Por eso se reanuda cuando la persona repite. Si no repite, la operación se cierra a los 30 min y su libro queda. **Revisión de integración (27/11/2026):** una petición nueva es otra operación y pide su propia predicción; ya no se adopta la de otra operación por persona y huella (el contenido no prueba identidad). Ver `docs/FitSense/cierre_preproduccion/11_INTEGRACION_FINAL_Y_MERGES.md`.
 
 ## 8. Predicciones sin identificador (orden §4)
 

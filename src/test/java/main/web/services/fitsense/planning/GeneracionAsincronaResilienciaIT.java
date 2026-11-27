@@ -461,10 +461,12 @@ class GeneracionAsincronaResilienciaIT {
     }
 
     @Test
-    @DisplayName("E8/E15 · libro JDBC: reutilizable solo del MISMO usuario y MISMA peticion; adoptar deja la traza")
-    void libroReutilizable() {
+    @DisplayName("E8/E15 (revision de identidad) · libro JDBC: una operacion NUEVA del mismo usuario y la misma peticion"
+            + " no ve ni hereda las filas de la anterior; anota la suya sin reused_from")
+    void libroSinReutilizacionEntreOperaciones() {
+        // Antes de la revision de integracion (27/11/2026) el libro adoptaba la prediccion de OTRA operacion por usuario
+        // y huella. El contenido no prueba identidad: ahora no existe ninguna consulta de filas de otra operacion.
         long ana = participante();
-        long beto = participante();
         var vieja = service.request(ana).operation().getId();
         jdbc.update("UPDATE plan_generation_operations SET status = 'FAILED', reason_code = 'TIEMPO_EXCEDIDO',"
                 + " finished_at = now() WHERE operation_id = ?", vieja);
@@ -473,15 +475,14 @@ class GeneracionAsincronaResilienciaIT {
         libro.enviada(f, "pAna", Instant.now());
         libro.terminada(f, DiarioDePredicciones.Estado.SUCCEEDED, "{\"ana\":1}", null, Instant.now());
         var nueva = service.request(ana).operation().getId();
-        var desde = Instant.now().minusSeconds(3600);
-        assertThat(libro.reutilizable(beto, hash, nueva, desde)).as("nunca de otro usuario").isEmpty();
-        assertThat(libro.reutilizable(ana, "e".repeat(64), nueva, desde)).as("nunca otra peticion").isEmpty();
-        var origen = libro.reutilizable(ana, hash, nueva, desde).orElseThrow();
-        var adoptada = libro.adoptar(origen, nueva, 1, Instant.now());
-        assertThat(adoptada.reusedFrom()).isEqualTo(f);
-        assertThat(libro.deIntento(nueva, 1).orElseThrow().output()).isEqualTo("{\"ana\":1}");
-        assertThat(libro.recuento(nueva).reutilizadas()).isEqualTo(1);
-        assertThat(libro.recuento(nueva).iniciadas()).isZero();
+        assertThat(libro.deIntento(nueva, 1)).as("la nueva no ve la fila de la vieja").isEmpty();
+        long g = libro.solicitar(nueva, ana, 1, hash, Instant.now());
+        var suya = libro.deIntento(nueva, 1).orElseThrow();
+        assertThat(suya.id()).isEqualTo(g).isNotEqualTo(f);
+        assertThat(suya.reusedFrom()).as("nada heredado").isNull();
+        assertThat(suya.predictionId()).as("sin id hasta que su propio POST lo devuelva").isNull();
+        assertThat(libro.recuento(nueva).reutilizadas()).isZero();
+        assertThat(libro.deIntento(vieja, 1).orElseThrow().predictionId()).isEqualTo("pAna");
     }
 
     // ===================================================================================== worker real (R02, R15, R20)

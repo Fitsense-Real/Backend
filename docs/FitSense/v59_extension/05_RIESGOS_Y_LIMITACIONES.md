@@ -7,8 +7,8 @@
 
 2. **La vía síncrona solo se reanuda si la persona repite la petición** (`02` §7).
    - Si no repite, la operación se cierra a los 30 min (`TIEMPO_EXCEDIDO`).
-   - Su libro queda, y una petición posterior reutiliza una predicción ya terminada o en curso: misma persona, misma huella, menos de 24 h.
-   - Lo que **no** reutiliza es una `NO_CONFIRMADA` de una operación ya cerrada. Una petición explícita nueva, pasada la ventana, puede pagar otra predicción. Es una petición nueva de la persona, no un reenvío automático.
+   - Su libro queda, pero **una petición posterior es otra operación y pide su propia predicción** (revisión de integración del 27/11/2026: ya no se adopta la de otra operación por persona y huella; el contenido no prueba identidad).
+   - Puede pagar otra predicción. Es una petición nueva de la persona, no un reenvío automático, y la acota el límite por usuario.
 
 3. **El ciclo semanal se relanza durante 24 h** (`weekly-recovery-hours`). Después, `TIEMPO_EXCEDIDO` y la semana queda como hoy cuando un ciclo falla: sin plan nuevo, con adherencia `NULL`. No se publica una semana tarde.
 
