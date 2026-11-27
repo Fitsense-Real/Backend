@@ -178,7 +178,11 @@ public class WeeklyUserMetrics {
     @Column(name = "calculation_version", nullable = false, length = 30)
     private String calculationVersion;
 
-    @Column(name = "calculated_at", nullable = false, insertable = false, updatable = false)
+    /**
+     * Cuando se calculo por ULTIMA vez. Lo pone la base al insertar (DEFAULT now()) y, desde B5.3, se renueva en cada
+     * recalculo: antes conservaba el primero y un recalculo no dejaba rastro de cuando ocurrio.
+     */
+    @Column(name = "calculated_at", nullable = false, insertable = false)
     private OffsetDateTime calculatedAt;
 
     protected WeeklyUserMetrics() {
@@ -199,6 +203,7 @@ public class WeeklyUserMetrics {
     public void recalculate(MetricsCalculation calculation, String riskFactorsJson,
                             String calculationVersion) {
         this.calculationVersion = calculationVersion;
+        this.calculatedAt = OffsetDateTime.now();
         apply(calculation, riskFactorsJson);
     }
 

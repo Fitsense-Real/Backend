@@ -61,6 +61,11 @@ public class PlanGenerationPipeline {
      */
     private final AirCircuitBreaker breaker;
 
+    /** B5.1: para el panel operativo y las alertas (no cambia el comportamiento del cortacircuitos). */
+    public boolean cortacircuitosAbierto() {
+        return breaker.abierto();
+    }
+
     /**
      * RENDIMIENTO (12/11/2026) · PRESUPUESTO TOTAL DE LA FASE DE IA, DESACTIVADO POR OMISION. Sin el, solo hay limites
      * por llamada (unos 290-330 s cada una, R-3/R-2). Si se activa ({@code fitsense.ai.generate.total-budget-seconds}

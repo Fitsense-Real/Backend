@@ -88,6 +88,11 @@ public class AdaptedWeekCommandService {
      */
     private final AirCircuitBreaker breaker = new AirCircuitBreaker();
 
+    /** B5.1: para el panel operativo y las alertas (no cambia el comportamiento del cortacircuitos). */
+    public boolean cortacircuitosAbierto() {
+        return breaker.abierto();
+    }
+
     /**
      * Que heredados quedaron fuera SOLO por seguridad, para la sustitucion
      * obligatoria de SafetySubstitutionPolicy. Null en las pruebas que
