@@ -73,6 +73,12 @@ class ReplicateRespuestasInvalidasTest {
     void sobreIlegible(String cuerpo) {
         var g = generador();
         server.expect(requestTo(URL)).andRespond(withSuccess(cuerpo, MediaType.APPLICATION_JSON));
+        if (cuerpo.startsWith("{\"id\":\"p1\""))
+            // RT: el JSON cortado traia su id completo: se intenta confirmar por ese id (aqui no existe) y, al no poder,
+            // sigue siendo un fallo del proveedor sin reenviar.
+            server.expect(requestTo("https://api.replicate.test/v1/predictions/p1"))
+                    .andRespond(org.springframework.test.web.client.response.MockRestResponseCreators
+                            .withStatus(org.springframework.http.HttpStatus.NOT_FOUND));
 
         var e = assertThrows(AiProviderUnavailableException.class, () -> g.call("prompt", 1, USUARIO, (short) 1, 1));
         assertTrue(e.getMessage().contains("no se pudo interpretar"), e.getMessage());
@@ -86,6 +92,7 @@ class ReplicateRespuestasInvalidasTest {
         var g = generador();
         server.expect(requestTo(URL)).andRespond(withSuccess("", MediaType.APPLICATION_JSON));
         assertThrows(AiProviderUnavailableException.class, () -> g.call("prompt", 1, USUARIO, (short) 1, 1));
+        server.verify();
     }
 
     @Test
@@ -94,6 +101,7 @@ class ReplicateRespuestasInvalidasTest {
         var g = generador();
         server.expect(requestTo(URL)).andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
         assertThrows(AiProviderUnavailableException.class, () -> g.call("prompt", 1, USUARIO, (short) 1, 1));
+        server.verify();
     }
 
     @Test

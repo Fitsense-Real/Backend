@@ -404,31 +404,47 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         }
         String rawBody;
         try {
-            rawBody = postSinEspera(input);
+            rawBody = enviar(input, null);
         } catch (EnvioNoAceptado e) {
             medicion.postFallo();
             diario.terminada(fila, DiarioDePredicciones.Estado.ERROR_ENVIO, null, e.getMessage(), reloj.instant());
             throw new AiProviderUnavailableException(e.getMessage());
         } catch (EnvioIncierto e) {
+            // RT: Replicate pudo crearla. Solo se sigue si SU PROPIA respuesta (en esta conexion) llego a traer el id.
             medicion.postFallo();
-            return noConfirmada(fila, ambito, attempt, e.getMessage());
+            return confirmarPorId(fila, input, e.idDeSuRespuesta(), e.getMessage(), peticion, prompt, medicion, plazo,
+                    ambito, attempt);
         }
         medicion.postTerminado();
 
-        ReplicateResponse response;
-        try {
-            response = jsonSupport.read(rawBody, ReplicateResponse.class);
-        } catch (RuntimeException e) {
-            response = null;
-        }
-        if (response == null || response.id() == null || !ID_VALIDO.matcher(response.id()).matches()) {
-            // Un 2xx sin identificador legible: Replicate pudo crearla. Mismo trato conservador.
+        ReplicateResponse response = leerSobre(rawBody);
+        if (response == null || !idValido(response.id())) {
+            // Un 2xx sin identificador legible: Replicate pudo crearla. Nunca se inventa el id: solo el que SU respuesta
+            // traiga completo (un sobre cortado puede traerlo al principio).
             medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
-            return noConfirmada(fila, ambito, attempt, "respuesta 2xx sin identificador de prediccion legible");
+            return confirmarPorId(fila, input, response == null ? idDeSuRespuesta(rawBody) : null,
+                    "respuesta 2xx sin identificador de prediccion legible", peticion, prompt, medicion, plazo, ambito,
+                    attempt);
         }
         diario.enviada(fila, response.id(), reloj.instant());
         medicion.predictionId(response.id());
         return seguir(fila, response, peticion, prompt, medicion, plazo);
+    }
+
+    /**
+     * RT: el envio pudo aceptarse y su respuesta no se pudo leer entera. Si esa MISMA respuesta trajo el id completo y
+     * Replicate lo confirma ({@link #verificarPorId}), se anota y se sigue ESA prediccion; si no, NO_CONFIRMADA como
+     * antes y no se reenvia.
+     */
+    private String confirmarPorId(long fila, Map<String, Object> input, String id, String motivo, Peticion peticion,
+                                  String prompt, Medicion medicion, java.time.Instant plazo,
+                                  DiarioDePredicciones.Ambito ambito, int attempt) {
+        var verificada = id == null ? null : verificarPorId(id, input, motivo);
+        if (verificada == null)
+            return noConfirmada(fila, ambito, attempt, motivo + (id == null ? "" : " [id " + id + " sin verificar]"));
+        diario.enviada(fila, verificada.id(), reloj.instant());
+        medicion.predictionId(verificada.id());
+        return seguir(fila, verificada, peticion, prompt, medicion, plazo);
     }
 
     private String noConfirmada(long fila, DiarioDePredicciones.Ambito ambito, int attempt, String motivo) {
@@ -462,6 +478,8 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                 return seguir(e.id(), enCurso, peticion, prompt, medicion, plazo);
             }
             case SOLICITANDO -> {
+                // El proceso murio entre el envio y la confirmacion: no hay id de ESTE envio. Buscar por contenido podria
+                // atribuirle la prediccion de otra peticion identica (RT, revision de seguridad): no se hace.
                 return noConfirmada(e.id(), ambito, e.attempt(), "envio sin confirmar al reanudar");
             }
             default -> {
@@ -534,33 +552,137 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
     /** El envio pudo llegar y aceptarse sin que conozcamos su id (corte de lectura, 5xx, conexion reiniciada). */
     static final class EnvioIncierto extends RuntimeException {
-        EnvioIncierto(String m) { super(m); }
+        private final String idDeSuRespuesta;
+
+        EnvioIncierto(String m) { this(m, null); }
+
+        /** @param idDeSuRespuesta el id COMPLETO que traia la parte leida de la respuesta, o null */
+        EnvioIncierto(String m, String idDeSuRespuesta) {
+            super(m);
+            this.idDeSuRespuesta = idDeSuRespuesta;
+        }
+
+        String idDeSuRespuesta() { return idDeSuRespuesta; }
     }
 
     /**
-     * POST SIN {@code Prefer: wait}: Replicate devuelve el identificador en cuanto crea la prediccion, y se guarda
-     * antes de esperar. Asi la ventana sin identificador es la de una peticion corta, no los 60 s de la espera.
+     * RT · EL POST DE CREACION, clasificado igual en los dos caminos (con libro V59 y sin el):
+     * <ul>
+     *   <li>{@link EnvioNoAceptado}: no hay prediccion. Fallo de CONEXION (el cuerpo no salio) o 4xx (Replicate la
+     *   rechazo).</li>
+     *   <li>{@link EnvioIncierto}: pudo crearse. 5xx, corte o limite de lectura, y cualquier fallo al LEER la respuesta.
+     *   Es el caso de G08 (H2-v4): cabeceras 2xx sin {@code Content-Type} (Spring lo da por
+     *   {@code application/octet-stream}) y un cuerpo que se corta: {@code RestClientException "Error while extracting
+     *   response..."}, que no es ni {@code ResourceAccessException} ni {@code RestClientResponseException}.</li>
+     * </ul>
+     *
+     * @param esperaSegundos {@code Prefer: wait} (camino sin libro) o null (con libro: el id llega enseguida)
      */
-    private String postSinEspera(Map<String, Object> input) {
+    private String enviar(Map<String, Object> input, Integer esperaSegundos) {
+        Lectura l;
         try {
-            return restClient.post()
+            var peticion = restClient.post()
                     .uri(properties.baseUrl())
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("input", input))
-                    .retrieve()
-                    .body(String.class);
-        } catch (org.springframework.web.client.RestClientResponseException e) {
-            int codigo = e.getStatusCode().value();
-            if (codigo >= 400 && codigo < 500)
-                throw new EnvioNoAceptado("Replicate rechazo la peticion (http " + codigo + ")");
-            throw new EnvioIncierto("Replicate respondio http " + codigo);
+                    .accept(MediaType.APPLICATION_JSON);
+            if (esperaSegundos != null) peticion = peticion.header("Prefer", "wait=" + esperaSegundos);
+            // RT: el cuerpo se lee a mano para CONSERVAR lo recibido si la conexion se corta a mitad (G08): ahi puede
+            // venir ya el id de la prediccion. Con retrieve().body(...) se perdia todo.
+            l = peticion.body(Map.of("input", input)).exchange((solicitud, respuesta) -> leer(respuesta));
         } catch (org.springframework.web.client.ResourceAccessException e) {
+            log.warn("Replicate no respondio correctamente: {}", e.getMessage());
             if (noLlegoAEnviarse(e)) throw new EnvioNoAceptado("no se pudo conectar con Replicate: " + e.getMessage());
             throw new EnvioIncierto("se corto la respuesta de Replicate: " + e.getMessage());
         } catch (RuntimeException e) {
+            log.warn("Replicate no respondio correctamente: {}", e.getMessage());
             throw new EnvioIncierto(e.getClass().getSimpleName() + ": " + e.getMessage());
         }
+        int codigo = l.codigo();
+        if (codigo >= 400 && codigo < 500) {
+            log.warn("Replicate no respondio correctamente: http {}", codigo);
+            throw new EnvioNoAceptado("Replicate rechazo la peticion (http " + codigo + ")");
+        }
+        if (codigo >= 500 || codigo < 200 || codigo >= 300) {
+            log.warn("Replicate no respondio correctamente: http {}", codigo);
+            throw new EnvioIncierto("Replicate respondio http " + codigo);
+        }
+        if (l.corte() != null) {
+            // 2xx: la prediccion se creo (201/202), pero el cuerpo no llego entero. Solo un id COMPLETO de esa misma
+            // respuesta sirve para seguirla.
+            var id = idDeSuRespuesta(l.cuerpo());
+            var motivo = "se corto la lectura de la respuesta http " + codigo + " de Replicate (Content-Type "
+                    + (l.tipo() == null ? "ausente" : l.tipo()) + ", " + l.bytes() + " bytes leidos, id "
+                    + (id == null ? "no recibido" : "recibido") + "): " + l.corte();
+            log.warn("Replicate no respondio correctamente: {}", motivo);
+            throw new EnvioIncierto(motivo, id);
+        }
+        return l.cuerpo();
+    }
+
+    /** Lo que se leyo de la respuesta del POST: codigo, tipo, cuerpo (entero o hasta el corte) y el corte, si hubo. */
+    private record Lectura(int codigo, String tipo, String cuerpo, long bytes, java.io.IOException corte) {}
+
+    private static Lectura leer(org.springframework.http.client.ClientHttpResponse respuesta) throws java.io.IOException {
+        int codigo = respuesta.getStatusCode().value();
+        var tipo = respuesta.getHeaders().getContentType();
+        var leido = new java.io.ByteArrayOutputStream();
+        java.io.IOException corte = null;
+        try (var in = respuesta.getBody()) {
+            var buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) != -1) leido.write(buf, 0, n);
+        } catch (java.io.IOException e) {
+            corte = e;
+        }
+        return new Lectura(codigo, tipo == null ? null : tipo.toString(),
+                leido.toString(java.nio.charset.StandardCharsets.UTF_8), leido.size(), corte);
+    }
+
+    /**
+     * RT · El {@code id} de primer nivel de una respuesta de Replicate, solo si llego COMPLETO (con su comilla de
+     * cierre) y es alfanumerico. Sirve para un sobre cortado: se recorre con el analizador de flujo de Jackson hasta
+     * donde haya datos; un {@code "id"} anidado (p. ej. dentro de {@code input}) no cuenta. Si el corte cae dentro del
+     * id, o antes, devuelve null: nunca se completa ni se adivina.
+     */
+    static String idDeSuRespuesta(String texto) {
+        if (texto == null || texto.isBlank()) return null;
+        try (var p = HUELLA.getFactory().createParser(texto)) {
+            if (p.nextToken() != com.fasterxml.jackson.core.JsonToken.START_OBJECT) return null;
+            int profundidad = 1;
+            com.fasterxml.jackson.core.JsonToken t;
+            while ((t = p.nextToken()) != null) {
+                switch (t) {
+                    case START_OBJECT, START_ARRAY -> profundidad++;
+                    case END_OBJECT, END_ARRAY -> profundidad--;
+                    case FIELD_NAME -> {
+                        if (profundidad == 1 && "id".equals(p.currentName())) {
+                            if (p.nextToken() != com.fasterxml.jackson.core.JsonToken.VALUE_STRING) return null;
+                            var id = p.getText();
+                            return idValido(id) ? id : null;
+                        }
+                    }
+                    default -> { }
+                }
+            }
+        } catch (java.io.IOException | RuntimeException e) {
+            return null;
+        }
+        return null;
+    }
+
+    /** El sobre de Replicate, o null si no es su JSON (vacio, cortado, otra cosa). Nunca copia el cuerpo al log. */
+    private ReplicateResponse leerSobre(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        try {
+            return jsonSupport.read(raw, ReplicateResponse.class);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static boolean idValido(String id) {
+        return id != null && ID_VALIDO.matcher(id).matches();
     }
 
     /** Solo un fallo de CONEXION (antes de enviar el cuerpo) garantiza que no hay prediccion. */
@@ -580,14 +702,18 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
         String rawBody;
         try {
-            rawBody = post(input, esperaDelPost(plazo));
-        } catch (RuntimeException e) {
-            // ANTES SALIA post_ms=0 SIEMPRE. Un POST que revienta a los 50 s y
-            // uno que revienta al instante se registraban igual, y por tanto ese
-            // campo no media nada en el caso en que mas falta hace. La excepcion
-            // se relanza TAL CUAL: el pipeline sigue viendo exactamente lo mismo.
+            rawBody = enviar(input, esperaDelPost(plazo));
+        } catch (EnvioNoAceptado e) {
+            // ANTES SALIA post_ms=0 SIEMPRE. Un POST que revienta a los 50 s y uno que revienta al instante se
+            // registraban igual. No hay prediccion: fallo del proveedor, como siempre.
             medicion.postFallo();
-            throw e;
+            throw new AiProviderUnavailableException(e.getMessage());
+        } catch (EnvioIncierto e) {
+            // RT (G08, H2-v4): la prediccion pudo crearse y terminar. Solo se sigue por el id que SU respuesta traia
+            // completo; si no, fallo del proveedor INCIERTO y no se reenvia (el pipeline pasa al respaldo).
+            medicion.postFallo();
+            return seguirSinLibro(confirmarPorIdOFallar(input, e.idDeSuRespuesta(), e.getMessage(), medicion),
+                    peticion, prompt, medicion, plazo);
         }
         medicion.postTerminado();
 
@@ -602,15 +728,41 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // que nadie capturaba, y la semana se quedaba sin plan aunque el motor de reglas pudiera hacerla. Es un fallo
         // del PROVEEDOR -el modelo no llego a proponer nada-, no del modelo: va por el mismo camino que un 5xx. El
         // cuerpo crudo no se copia al mensaje ni al log (repite el prompt entero).
-        ReplicateResponse response;
-        try {
-            response = jsonSupport.read(rawBody, ReplicateResponse.class);
-        } catch (RuntimeException e) {
+        // RT: un 2xx ilegible o sin id tampoco prueba que no se creara. Nunca se inventa el id: solo el que el propio
+        // sobre traiga completo al principio (JSON cortado) se verifica y se sigue.
+        ReplicateResponse response = leerSobre(rawBody);
+        if (response == null) {
             medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
             log.warn("Replicate devolvio un cuerpo que no es una respuesta valida ({} caracteres)",
                     rawBody == null ? 0 : rawBody.length());
-            throw new AiProviderUnavailableException("la respuesta de Replicate no se pudo interpretar");
+            response = confirmarPorIdOFallar(input, idDeSuRespuesta(rawBody),
+                    "la respuesta de Replicate no se pudo interpretar", medicion);
+        } else if (!idValido(response.id()) && !response.succeeded()) {
+            medicion.resultado(ReplicateTiming.Resultado.INVALID_RESPONSE);
+            response = confirmarPorIdOFallar(input, null, "respuesta 2xx sin identificador de prediccion legible",
+                    medicion);
         }
+        return seguirSinLibro(response, peticion, prompt, medicion, plazo);
+    }
+
+    /**
+     * RT: sigue la prediccion por el id que traia SU respuesta, si Replicate lo confirma; si no hay id o no se puede
+     * verificar, fallo del proveedor INCIERTO (sin reenviar). El mensaje conserva el motivo original.
+     */
+    private ReplicateResponse confirmarPorIdOFallar(Map<String, Object> input, String id, String motivo,
+                                                    Medicion medicion) {
+        var verificada = id == null ? null : verificarPorId(id, input, motivo);
+        if (verificada == null)
+            throw new AiProviderUnavailableException("PREDICCION_NO_CONFIRMADA: " + motivo + " (no se puede confirmar"
+                    + " a que prediccion corresponde" + (id == null ? "" : "; id " + id + " sin verificar")
+                    + "; no se reenvia)");
+        medicion.predictionId(verificada.id());
+        return verificada;
+    }
+
+    /** Sondeo, cancelacion y desenlace del camino sin libro (antes, el final de callMedido). */
+    private String seguirSinLibro(ReplicateResponse response, Peticion peticion, String prompt, Medicion medicion,
+                                  java.time.Instant plazo) {
         medicion.predictionId(response == null ? null : response.id());
 
         // Prefer: wait tiene un techo duro de 60 s del lado de Replicate. Con el
@@ -860,6 +1012,7 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         var pausa = Duration.ofMillis(properties.pollIntervalMillis());
         var actual = pending;
         int consultas = 0;
+        int fallosSeguidos = 0;
 
         while (actual != null && actual.pending() && reloj.instant().isBefore(limite)) {
             try {
@@ -878,13 +1031,25 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                         .retrieve()
                         .body(String.class);
                 consultas++;
-                actual = jsonSupport.read(raw, ReplicateResponse.class);
+                var leida = leerSobre(raw);
+                if (leida == null || leida.status() == null)
+                    throw new IllegalStateException("respuesta de consulta ilegible");
+                actual = leida;
+                fallosSeguidos = 0;
             } catch (RuntimeException e) {
                 consultas++;
+                fallosSeguidos++;
+                // RT: consultar es un GET gratuito e idempotente sobre la MISMA prediccion. Un fallo pasajero (red,
+                // 5xx, corte, cuerpo ilegible) se reintenta en la siguiente vuelta, dentro del mismo limite; antes el
+                // primero dejaba de esperar y CANCELABA una prediccion que podia terminar bien. Un 4xx (no existe, sin
+                // permiso) o FALLOS_SEGUIDOS_MAX seguidos terminan el sondeo como antes.
+                boolean definitivo = e instanceof org.springframework.web.client.RestClientResponseException r
+                        && r.getStatusCode().is4xxClientError();
                 // NO es un timeout: puede haber pasado a los tres segundos.
-                log.warn("Fallo al consultar la prediccion {} tras {} consulta(s): {}",
-                        pending.id(), consultas, e.getMessage());
-                return new Sondeo(actual, consultas, Sondeo.Desenlace.FALLO_LA_CONSULTA);
+                log.warn("Fallo al consultar la prediccion {} tras {} consulta(s) ({} seguido(s)): {}",
+                        pending.id(), consultas, fallosSeguidos, e.getMessage());
+                if (definitivo || fallosSeguidos >= SONDEO_FALLOS_SEGUIDOS_MAX)
+                    return new Sondeo(actual, consultas, Sondeo.Desenlace.FALLO_LA_CONSULTA);
             }
         }
 
@@ -896,11 +1061,15 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
                             + "(el POST ya habia esperado hasta {} s con Prefer: wait)",
                     pending.id(), properties.timeoutSeconds(), properties.preferWaitSeconds());
 
+        // RT: si se acabo el tiempo con la ultima consulta fallida, lo que paso es que no se pudo preguntar.
         return new Sondeo(actual, consultas,
                 actual != null && actual.pending()
-                        ? Sondeo.Desenlace.LIMITE_AGOTADO
+                        ? (fallosSeguidos > 0 ? Sondeo.Desenlace.FALLO_LA_CONSULTA : Sondeo.Desenlace.LIMITE_AGOTADO)
                         : Sondeo.Desenlace.RESPONDIO);
     }
+
+    /** RT: fallos SEGUIDOS de consulta tolerados antes de dejar de esperar (los demas limites no cambian). */
+    static final int SONDEO_FALLOS_SEGUIDOS_MAX = 3;
 
     /**
      * R-2: pide a Replicate que cancele una prediccion que dejamos de esperar. Una sola vez, nunca lanza: un fallo al
@@ -974,19 +1143,75 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         return (int) Math.max(1, Math.min(configurada, quedan));
     }
 
-    private String post(Map<String, Object> input, int esperaSegundos) {
+    // =====================================================================================================
+    // RT · CONFIRMAR LA PREDICCION DE UNA RESPUESTA INCOMPLETA, POR SU ID (transporte, 27/11/2026)
+    // =====================================================================================================
+
+    /**
+     * RT · IDENTIDAD. La API de Replicate (OpenAPI 1.0.0-a1) no documenta ninguna cabecera con el id ({@code Location}
+     * u otra), ni clave de idempotencia, ni metadatos de prediccion: la UNICA prueba de que una prediccion es la de
+     * este envio es el {@code id} que Replicate devuelve en la respuesta de ESTE POST, en esta conexion. Por eso:
+     * <ul>
+     *   <li>Nunca se busca por contenido (listado + comparar la entrada): dos peticiones identicas, de dos usuarios o
+     *   dos operaciones, son indistinguibles, y adoptar una seria atribuir el resultado de otra.</li>
+     *   <li>Un id de la propia respuesta (entero o al principio de un cuerpo cortado) se confirma con
+     *   {@code GET /v1/predictions/{id}}: tiene que existir, ser ese id, conservar su entrada y que esta sea la que se
+     *   envio. Una entrada borrada ({@code data_removed}) o vacia no se puede verificar: incierta.</li>
+     *   <li>Una sola consulta: si falla, incierta. Despues, el sondeo normal (que tolera fallos pasajeros).</li>
+     * </ul>
+     *
+     * @return la prediccion tal como la devuelve su GET (en curso o terminada), o null si no se puede confirmar
+     */
+    ReplicateResponse verificarPorId(String id, Map<String, Object> input, String motivo) {
+        var url = urlDeConsulta(id);
+        if (url == null) return null;
+        String raw;
+        com.fasterxml.jackson.databind.JsonNode arbol;
+        com.fasterxml.jackson.databind.JsonNode esperada;
         try {
-            return restClient.post()
-                    .uri(properties.baseUrl())
+            esperada = jsonSupport.read(jsonSupport.write(input), com.fasterxml.jackson.databind.JsonNode.class);
+            raw = pollClient.get()
+                    .uri(url)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.apiToken())
-                    .header("Prefer", "wait=" + esperaSegundos)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of("input", input))
+                    .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
                     .body(String.class);
+            arbol = jsonSupport.read(raw, com.fasterxml.jackson.databind.JsonNode.class);
         } catch (RuntimeException e) {
-            log.warn("Replicate no respondio correctamente: {}", e.getMessage());
-            throw new AiProviderUnavailableException(e.getMessage());
+            log.warn("REPLICATE_RECUPERACION resultado=CONSULTA_FALLIDA prediction_id={} motivo_envio=\"{}\" error={}",
+                    id, motivo, e.getClass().getSimpleName());
+            return null;
         }
+        String resultado;
+        if (arbol == null || !id.equals(arbol.path("id").asText(null))) resultado = "IDENTIDAD_DISTINTA";
+        else if (arbol.path("data_removed").asBoolean(false)) resultado = "NO_VERIFICABLE_DATOS_BORRADOS";
+        else if (arbol.get("input") == null || !arbol.get("input").isObject() || arbol.get("input").isEmpty())
+            resultado = "NO_VERIFICABLE_SIN_ENTRADA";
+        else if (!mismaEntrada(arbol.get("input"), esperada)) resultado = "IDENTIDAD_DISTINTA";
+        else resultado = null;
+        var r = resultado == null ? leerSobre(raw) : null;
+        if (resultado == null && (r == null || r.status() == null)) resultado = "CONSULTA_ILEGIBLE";
+        if (resultado != null) {
+            log.warn("REPLICATE_RECUPERACION resultado={} prediction_id={} motivo_envio=\"{}\": no se adopta",
+                    resultado, id, motivo);
+            return null;
+        }
+        log.info("REPLICATE_RECUPERACION resultado=RECUPERADA_POR_ID prediction_id={} estado={} motivo_envio=\"{}\":"
+                + " id de la propia respuesta, confirmado; se sigue esa prediccion, no se crea otra", id, r.status(),
+                motivo);
+        return r;
+    }
+
+    /** Cada campo enviado esta, igual, en la entrada de la prediccion (una entrada vacia no coincide). */
+    static boolean mismaEntrada(com.fasterxml.jackson.databind.JsonNode suya,
+                                com.fasterxml.jackson.databind.JsonNode esperada) {
+        if (suya == null || !suya.isObject() || esperada == null || !esperada.isObject() || esperada.isEmpty())
+            return false;
+        var campos = esperada.fields();
+        while (campos.hasNext()) {
+            var c = campos.next();
+            if (!c.getValue().equals(suya.get(c.getKey()))) return false;
+        }
+        return true;
     }
 }

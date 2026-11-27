@@ -1,0 +1,12 @@
+# Extracto del registro de la corrida REAL de H2-v4 (26/11/2026), replica 2, G08 brazo B. Sin token ni prompt.
+2026-11-26T20:58:31.851Z  WARN 9341 --- [Fitsense] [           main] f.p.i.g.a.ReplicateTrainingPlanGenerator : Replicate no respondio correctamente: Error while extracting response for type [java.lang.String] and content type [application/octet-stream]
+2026-11-26T20:58:31.852Z  INFO 9341 --- [Fitsense] [           main] f.p.i.g.a.ReplicateTrainingPlanGenerator : REPLICATE_TIMING user=19 week=1 attempt=1 prediction_id=desconocido post_ms=1729 polling_ms=0 polling_requests=0 total_ms=1729 resultado=POST_ERROR
+2026-11-26T20:58:31.852Z  INFO 9341 --- [Fitsense] [           main] f.p.i.g.a.ReplicateTrainingPlanGenerator : REPLICATE_CONSUMO user=19 week=1 attempt=1 modelo=gpt-5-mini formato=direct prediction_id=desconocido resultado=POST_ERROR origen=nueva predict_time_s=no_reportado tokens_entrada=no_reportado tokens_salida=no_reportado coste_usd=no_reportado coste_cota_usd=0.041034 [...]
+
+# Libro de presupuesto (h2_v4/evaluacion_real/libro_presupuesto.csv, rama feature/h2-v4-pr22)
+2026-11-26T20:58:30.117106078Z;RESERVA;E1;G08#r2;B;1;0.041034;5.403466;-;PR-2.2
+2026-11-26T20:58:31.852698875Z;RESULTADO;E1;G08#r2;B;1;0.000000;5.403466;desconocido;ERROR_PROVEEDOR -
+
+# La prediccion en Replicate (GET /v1/predictions/{id}, gratuito)
+prediction_id;created_at;completed_at;status;predict_time_s;model
+g40bmfgq8nrzr0d236ktnedbfm;2026-11-26T20:58:30.597Z;2026-11-26T20:59:25.590607Z;succeeded;54.956543;openai/gpt-5-mini

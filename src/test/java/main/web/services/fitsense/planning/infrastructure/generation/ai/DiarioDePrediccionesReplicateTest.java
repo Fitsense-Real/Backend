@@ -295,6 +295,7 @@ class DiarioDePrediccionesReplicateTest {
         var op = UUID.randomUUID();
         server.expect(ExpectedCount.once(), requestTo(URL)).andRespond(withException(new IOException("reset")));
         assertThrows(AiProviderUnavailableException.class, () -> llamar(g, op, 1));
+        server.verify();
         assertEquals(DiarioDePredicciones.Estado.NO_CONFIRMADA, libro.deIntento(op, 1).orElseThrow().estado());
     }
 

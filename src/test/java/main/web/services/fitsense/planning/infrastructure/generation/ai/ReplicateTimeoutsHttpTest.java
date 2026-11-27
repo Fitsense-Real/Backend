@@ -167,7 +167,11 @@ class ReplicateTimeoutsHttpTest {
         long ms = medir(() -> assertThrows(AiProviderUnavailableException.class,
                 () -> g.call("prompt", 1, 7L, (short) 1, 1)));
 
-        assertTrue(ms < 8_000, "tardo " + ms + " ms");
+        // RT: ahora, tras el corte, se busca la prediccion (GET del listado, con el limite del sondeo). Este servidor
+        // tambien deja colgado el listado, asi que la busqueda falla y termina acotada. Cada limite cuenta dos veces:
+        // al cerrar, HttpURLConnection intenta vaciar el resto del cuerpo (el POST NO se reenvia: lo comprueba
+        // ReplicateRecuperacionTransporteTest.t04AMediasSeRecupera).
+        assertTrue(ms < 15_000, "tardo " + ms + " ms");
     }
 
     @Test

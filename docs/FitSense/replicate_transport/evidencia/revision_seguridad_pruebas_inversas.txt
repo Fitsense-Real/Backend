@@ -1,0 +1,88 @@
+# Revision de seguridad (27/11/2026). Pruebas inversas SIN coste de ReplicateRecuperacionTransporteTest (36 pruebas).
+# Solo se anadieron stubs sin comportamiento para compilar (idDeSuRespuesta=null; SONDEO_FALLOS_SEGUIDOS_MAX en generation).
+
+## a2_pr88
+Tests run: 6, Failures: 6, Errors: 0, Skipped: 0
+s01DosUsuariosAmbasExisten:546 sin su id, la de A no se puede distinguir de la de B ==> expected: <0> but was: <1>
+s01DosUsuariosIdenticos:533->noConfirmada:266 Expected main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException to be thrown, but nothing was thrown.
+s02UnaCoincidenciaSinIdentidad:554->noConfirmada:266 Expected main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException to be thrown, but nothing was thrown.
+s05VariasCandidatas:611 expected: <0> but was: <1>
+s12AdaptacionNoReutilizaAjena:697->noConfirmada:266 Expected main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException to be thrown, but nothing was thrown.
+s15RespaldoSeguro:764 expected: <RULE_ENGINE> but was: <AI>
+
+## a_pr88
+Tests run: 36, Failures: 15, Errors: 10, Skipped: 0
+idDeSuRespuesta:316 expected: <g40bmfgq8nrzr0d236ktnedbfm> but was: <null>
+s01DosUsuariosAmbasExisten:541 sin su id, la de A no se puede distinguir de la de B ==> expected: <0> but was: <1>
+s01DosUsuariosIdenticos:529 A ni siquiera consulta la prediccion de B ==> expected: <1> but was: <2>
+s02UnaCoincidenciaSinIdentidad:551 y aun asi no se adopta ==> expected: <0> but was: <1>
+s04ParcialConId:585 un id a medias no se completa ni se busca ==> expected: <0> but was: <2>
+s05VariasCandidatas:606 expected: <0> but was: <1>
+s08DatosBorrados:644 expected: <true> but was: <false>
+s11ConcurrentesConCorte:681->concurrentes:789 [INCIERTA, INCIERTA] ==> expected: <true> but was: <false>
+s12AdaptacionNoReutilizaAjena:693 expected: <1> but was: <2>
+s13ReanudacionV59:723 ni POST ni busqueda ==> expected: <1> but was: <4>
+t03SinIdentificador:370 expected: <0> but was: <1>
+t04TimeoutSinNada:387 expected: <0> but was: <1>
+t06Errores:404 expected: <0> but was: <1>
+t09Cancelada:449 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Error while extracting response for type [java.lan
+t10Fallida:459 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Error while extracting response for type [java.lang.
+s07DesfaseDeReloj:634->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Error whi
+s14ValidacionTrasRecuperar:738 ? PlanGenerationFailed No se pudo generar un plan valido para el usuario 7. Ultimos problemas: V15: reparto
+t02G08SeRecuperaPorSuId:346->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Err
+t02TruncadaSeRecupera:359->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: la respuesta de Replicate 
+t04AMediasConId:377->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Error while
+t07EnCurso:428->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Error while extr
+t08Completada:438->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Error while e
+t11SalidaInvalidaRecuperada:472 ? NullPointer Cannot invoke "main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.source()" because "draft" is null
+t13ConLibroG08:495->lambda$t13ConLibroG08$13:495->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: Res
+t14Adaptacion:507 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: RestClientException: Error while extracting re
+
+## b_generation
+Tests run: 36, Failures: 17, Errors: 11, Skipped: 0
+idDeSuRespuesta:316 expected: <g40bmfgq8nrzr0d236ktnedbfm> but was: <null>
+s01DosUsuariosAmbasExisten:540->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and c
+s01DosUsuariosIdenticos:528->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and cont
+s02UnaCoincidenciaSinIdentidad:549->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] a
+s04ParcialConId:584->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content type
+s05VariasCandidatas:605->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content 
+s08DatosBorrados:643->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content typ
+s09PostSinRespuesta:653->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content 
+s11ConcurrentesConCorte:681->concurrentes:789 [INCIERTA, INCIERTA] ==> expected: <true> but was: <false>
+s12AdaptacionNoReutilizaAjena:692->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] an
+s15RespaldoSeguro:762 
+t03SinIdentificador:367->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: starting null ==> expected: <true> but was: <false>
+t04TimeoutSinNada:385->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content ty
+t05CerradaSinRespuesta:394->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and conte
+t06Errores:402->noConfirmada:262 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: 502 X: "{"detail":"bad gateway"}" ==> expected: <true> but was: <false>
+t09Cancelada:449 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content type [application/octet-s
+t10Fallida:459 El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content type [application/octet-str
+s07DesfaseDeReloj:634->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.Stri
+s10GetIntermitente:664->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: starting null
+s14ValidacionTrasRecuperar:738 ? PlanGenerationFailed No se pudo generar un plan valido para el usuario 7. Ultimos problemas: V15: reparto
+t02G08SeRecuperaPorSuId:346->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lan
+t02TruncadaSeRecupera:359->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: la respuesta de Replicate no se pudo interpretar
+t04AMediasConId:377->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String
+t07EnCurso:428->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and
+t08Completada:438->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] 
+t11SalidaInvalidaRecuperada:472 ? NullPointer Cannot invoke "main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft.source()" because "draft" is null
+t13ConLibroG08:495->lambda$t13ConLibroG08$13:495->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: PREDICCION_NO_CONFIRMADA: Res
+t14Adaptacion:507 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: Error while extracting response for type [java.lang.String] and content 
+
+## m1_sin_comparar_entrada
+Tests run: 36, Failures: 1, Errors: 0, Skipped: 0
+s04ParcialConId:594->noConfirmada:261 Expected main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException to be thrown, but nothing was thrown.
+
+## m2_id_a_cualquier_profundidad
+Tests run: 36, Failures: 2, Errors: 0, Skipped: 0
+idDeSuRespuesta:317 expected: <g40bmfgq8nrzr0d236ktnedbfm> but was: <anidado1>
+s04ParcialConId:588->noConfirmada:261 Expected main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException to be thrown, but nothing was thrown.
+
+## m4_sondeo_sin_tolerancia
+Tests run: 36, Failures: 0, Errors: 1, Skipped: 0
+s10GetIntermitente:664->llamar:245 ? AiProviderUnavailable El plan propuesto no cumple las restricciones: El proveedor de IA no esta disponible: starting null
+
+## Atribucion ajena con el codigo de #88 (f3786e60), extracto del registro:
+REPLICATE_RECUPERACION resultado=RECUPERADA prediction_id=adaptb1 estado=succeeded candidatas=2 motivo_envio="RestClientException: Error while extracting response for type [java.lang.String] and conte
+REPLICATE_RECUPERACION resultado=RECUPERADA prediction_id=prediccionb1 estado=succeeded candidatas=2 motivo_envio="RestClientException: Error while extracting response for type [java.lang.String] and 
+REPLICATE_RECUPERACION resultado=RECUPERADA prediction_id=prediccionb1 estado=succeeded candidatas=2 motivo_envio="RestClientException: Error while extracting response for type [java.lang.String] and 

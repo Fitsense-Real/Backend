@@ -229,7 +229,9 @@ class ReplicateTimingInstrumentationTest {
         montar(150);
         server.expect(requestTo(URL))
                 .andRespond(withSuccess(prediccion("starting", true), MediaType.APPLICATION_JSON));
-        server.expect(requestTo(POLL)).andRespond(withServerError());
+        // RT: un fallo de consulta pasajero se reintenta (GET gratuito, misma prediccion); el tercero seguido termina.
+        server.expect(ExpectedCount.times(ReplicateTrainingPlanGenerator.SONDEO_FALLOS_SEGUIDOS_MAX), requestTo(POLL))
+                .andRespond(withServerError());
         // R-2: la prediccion seguia viva al dejar de esperar, asi que se pide su cancelacion (una vez).
         server.expect(ExpectedCount.once(), requestTo(CANCEL))
                 .andRespond(withSuccess(prediccion("canceled", false), MediaType.APPLICATION_JSON));
@@ -239,7 +241,8 @@ class ReplicateTimingInstrumentationTest {
 
         var t = timing();
         assertEquals("POLL_ERROR", t.get("resultado"));
-        assertEquals("1", t.get("polling_requests"), "fallo en la primera consulta");
+        assertEquals(String.valueOf(ReplicateTrainingPlanGenerator.SONDEO_FALLOS_SEGUIDOS_MAX),
+                t.get("polling_requests"), "tres consultas fallidas seguidas");
         assertTrue(Long.parseLong(t.get("polling_ms")) < 150_000,
                 "ocurrio muchisimo antes del limite, y el registro tiene que decirlo");
         assertEquals("mc7xdrmr", t.get("prediction_id"), "el id ya se conocia");
