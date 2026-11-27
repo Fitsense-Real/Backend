@@ -176,8 +176,11 @@ class OperacionYExportacionIT {
     }
 
     @Test
-    @DisplayName("recalcular una semana renueva calculated_at (antes conservaba el primer calculo)")
-    void calculadoEnSeRenueva() throws Exception {
+    @DisplayName("recalcular una semana CONSERVA calculated_at (fecha del primer calculo, como documenta ADHERENCIA.md)")
+    void calculadoEnSeConserva() throws Exception {
+        // Revision de integracion (27/11/2026): B5 renovaba calculated_at al recalcular, pero ADHERENCIA.md documenta
+        // que es la fecha del PRIMER calculo y los analisis se apoyan en ello. Se conserva; registrar los recalculos
+        // necesita una columna propia (recalculated_at), propuesta con migracion posterior a V66 (07, seccion 4).
         var p = cuenta("USER", true, true);
         planning.generateWeeklyPlan(p.id(), S1, PlanAdjustment.none(), null, null).orElseThrow();
         ciclo.runFor(p.id(), S1, S1.plusWeeks(1));
@@ -189,7 +192,7 @@ class OperacionYExportacionIT {
                 OffsetDateTime.class, p.id());
         assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_user_metrics WHERE user_id = ?",
                 Integer.class, p.id()), "sigue siendo una fila por semana");
-        assertTrue(segundo.isAfter(primero), primero + " -> " + segundo);
+        assertEquals(primero, segundo, "la semantica documentada no cambia");
     }
 
     @Test

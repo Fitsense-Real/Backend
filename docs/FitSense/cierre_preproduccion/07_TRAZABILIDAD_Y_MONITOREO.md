@@ -61,13 +61,13 @@
 | Adaptaciones y sus motivos | `plan_adaptation_attempts` (V32), `user_interventions` | Sí |
 | Ejecución de sesiones | `workout_sessions`, `workout_session_exercises` | Sí, pero **se editan en el mismo registro**: sin historial de cambios (§4) |
 | Métricas semanales | `weekly_user_metrics` (una fila por semana) | Sí; un recálculo **sobrescribe** (§3.2 y §4) |
-| Recálculos | `calculation_version` y, desde B5, `calculated_at` | Se ve el último; no el anterior (§4) |
+| Recálculos | `calculation_version`; `calculated_at` es el **primer** cálculo (`ADHERENCIA.md`) | No se ve cuándo se recalculó ni el valor anterior (§4) |
 | Abandono y retirada | `weekly_user_metrics.is_dropout`, `users.withdrawn_at`, `user_consents.withdrawn_at` | Sí |
 | Datos exportados | `GET /api/v1/admin/exports/weekly-metrics` (§3.3), auditado | Sí |
 
 ### 3.2 Implementado sin migración
 
-- **`calculated_at` se renueva en cada recálculo.** Antes conservaba la fecha del primero (`insertable=false, updatable=false`), y un recálculo no dejaba rastro de cuándo ocurrió. Prueba: `OperacionYExportacionIT.calculadoEnSeRenueva`, que comprueba que sigue habiendo una fila por semana. **No cambia ninguna fórmula.**
+- **`calculated_at` NO cambia** (revisión de integración del 27/11/2026). Una primera versión de B5 lo renovaba en cada recálculo, pero `ADHERENCIA.md` documenta que es la fecha del **primer** cálculo y los análisis se apoyan en ello. Se conserva esa semántica (`OperacionYExportacionIT.calculadoEnSeConserva`). Registrar cuándo se recalcula necesita una columna propia, `recalculated_at`, con migración posterior a V66 (§4).
 - **Detalle de administración solo de participantes.** `GET /admin/participants/{id}` y `/{id}/adherence` dan 404 para una cuenta que no participa. Antes mostraban nombre y correo de cualquier cuenta USER. Prueba: `OperacionYExportacionIT.detalleSoloParticipantes`. `SeguridadRolesIT.datosPersonales` sigue en verde.
 
 ### 3.3 Exportación seudonimizada (P1-05): **RESUELTO**
@@ -87,7 +87,7 @@
 
 | Propuesta | Para qué | Esquema propuesto |
 |---|---|---|
-| Historial de métricas | No perder el valor anterior a un recálculo | `weekly_user_metrics_history` (copia de la fila, más `superseded_at` y `calculation_version`). Se rellena con un *trigger* `BEFORE UPDATE`, sin cambiar el código de cálculo |
+| Historial de métricas y `recalculated_at` | No perder el valor anterior a un recálculo ni cuándo ocurrió | `weekly_user_metrics_history` (copia de la fila, más `superseded_at` y `calculation_version`). Se rellena con un *trigger* `BEFORE UPDATE`, sin cambiar el código de cálculo |
 | Historial de sesiones | Ver qué se editó y cuándo | `workout_session_changes` (`session_id`, `planned_exercise_id`, valor anterior y nuevo, `changed_at`), solo de inserción |
 | Motivo del respaldo (P2-02) | Saber por qué un plan es `RULE_ENGINE` (IA apagada, cortacircuitos, proveedor, rechazos, inviable, tope) | Columna `weekly_training_plans.fallback_reason`, o una clave en `input_snapshot` (sin migración, pero requiere pasar el motivo por `GeneratedPlan`, lo que toca muchas pruebas) |
 | Rol de base de datos de solo lectura | Analizar sin acceso de escritura | `CREATE ROLE fitsense_analisis` con `GRANT SELECT` sobre las tablas del estudio. Es una operación de base, no de Flyway |

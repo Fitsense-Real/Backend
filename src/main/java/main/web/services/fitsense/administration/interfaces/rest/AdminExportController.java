@@ -29,7 +29,7 @@ import java.time.ZoneOffset;
  *   <li>identidad: solo {@code participant_code} (P-xxx) y el estado en el estudio; nunca correo, nombre, fecha de
  *       nacimiento, notas de salud ni el id interno;</li>
  *   <li>semana: las columnas de {@code weekly_user_metrics} tal como estan (las formulas no cambian), su
- *       {@code calculation_version} y {@code calculated_at} (ultimo calculo, B5.3);</li>
+ *       {@code calculation_version} y {@code calculated_at} (fecha del PRIMER calculo, ADHERENCIA.md);</li>
  *   <li>el plan medido: su origen ({@code AI}, {@code RULE_ENGINE}, {@code CONSERVED}) y su version.</li>
  * </ul>
  * Solo participantes ({@code is_study_participant}); los retirados se incluyen con {@code study_status=WITHDRAWN}
