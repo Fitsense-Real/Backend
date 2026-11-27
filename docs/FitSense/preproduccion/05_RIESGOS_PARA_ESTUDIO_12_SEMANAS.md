@@ -60,7 +60,7 @@ Cada riesgo remite a su evidencia y a la acción de `06_PLAN_DE_CIERRE_BACKEND.m
 |---|---|---|---|
 | `orchestation/CopiaSinIaIT.techo` | **17 ciclos** | Adherencia total, techo de progresión y mantenimiento | **Sí** |
 | `orchestation/CopiaSinIaIT.reincorporacionYMantenimiento` | hasta 12 | Reincorporación | **Sí**. Depende de la fecha: S1 = semana actual + 1 (`:88`) |
-| `orchestation/ValidacionMultisemanaIT` | 2–4 por secuencia (13 secuencias) | Hecho, falta puntual o recurrente, falta de tiempo, 0 minutos, fatiga, parcial con dolor, demasiado difícil, desmotivación, varios motivos, alternancia, sin registro. Linaje y "lo que dolió no vuelve" | **Sí** (salvo `cambiaSuPerfil`) |
+| `orchestation/ValidacionMultisemanaIT` | 2–4 por secuencia (13 secuencias) | Hecho, falta puntual o recurrente, falta de tiempo, 0 minutos, fatiga, parcial con dolor, demasiado difícil, desmotivación, varios motivos, alternancia, sin registro. Linaje y "lo que dolió no vuelve" | **Sí** (2 casos omitidos por propiedad, entre ellos `cambiaSuPerfil`) |
 | `orchestation/CicloConcurrenteIT` | 1–2 | Carreras, dos instancias, conexión de bloqueo perdida | **Sí** |
 | `integral/CicloCompletoHttpIT` | hasta 3 | Flujo HTTP completo con JWT: parcial, baja adherencia, dolor, retirada | **Sí** |
 | `planning/GeneracionAsincronaResilienciaIT`, `ReanudacionConReplicateSimuladoIT` | — | Reinicio y segunda instancia en la generación asíncrona | **Sí** |

@@ -47,10 +47,10 @@ Comando: `mvn -B verify -Pintegration` (Maven 3.9.11, OpenJDK 21.0.13, Docker 29
 | Fase | Ejecutadas | Aprobadas | Fallidas | Errores | Omitidas |
 |---|---|---|---|---|---|
 | Unitarias (surefire) | 1.666 | 1.665 | 0 | 0 | 1 |
-| Integración (failsafe) | __IT_RUN__ | __IT_OK__ | __IT_FAIL__ | __IT_ERR__ | __IT_SKIP__ |
-| **Total** | __TOT_RUN__ | __TOT_OK__ | __TOT_FAIL__ | __TOT_ERR__ | __TOT_SKIP__ |
+| Integración (failsafe) | 887 | 815 | 0 | 0 | 72 |
+| **Total** | **2.553** | **2.480** | **0** | **0** | **73** |
 
-Resultado del *build*: __BUILD__. Duración: __DUR__.
+Resultado del *build*: **BUILD SUCCESS** (código de salida 0). Duración: 35 min 55 s.
 
 **Omitidas y pruebas que necesitan servicios externos.** Ninguna se ha ejecutado. Todas se desactivan solas sin su propiedad:
 
@@ -83,7 +83,7 @@ Resultado del *build*: __BUILD__. Duración: __DUR__.
 - la no generación para no participantes;
 - el IDOR de `skip`, `report` y `finish`.
 
-**Incidencias reproducibles.** Ninguna prueba falló: __INCIDENCIAS__. Los fallos de §2 marcados **CON ERROR** se demuestran leyendo el código (con fichero y línea), no con una prueba que falle, porque ninguna los cubre.
+**Incidencias reproducibles.** Ninguna prueba falló ni dio error (0 + 0). Los fallos de §2 marcados **CON ERROR** se demuestran leyendo el código (con fichero y línea), no con una prueba que falle, porque ninguna los cubre.
 
 ---
 
