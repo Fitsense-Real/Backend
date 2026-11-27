@@ -28,9 +28,9 @@ import java.util.regex.Pattern;
  * {@link Flyway} ya configurados, antes de que se use ninguno, y aborta el
  * arranque si apuntan al host de produccion.
  * <p>
- * El host de produccion NO esta copiado aqui: se lee del
- * {@code application.properties} de la aplicacion, asi que si cambia, la
- * guardia lo sigue.
+ * El host de produccion se lee de {@code produccion-bloqueada.properties},
+ * un recurso SOLO de pruebas: desde P1-04 la configuracion de la aplicacion
+ * ya no lleva ninguna URL por omision.
  * <p>
  * Se registra en {@code src/test/resources/META-INF/spring.factories} y, por
  * tanto, solo existe en el classpath de pruebas: unitarias e integracion,
@@ -71,10 +71,13 @@ public class BaseDeProduccionBloqueada
         });
     }
 
-    /** Host de {@code spring.datasource.url} en el application.properties de la aplicacion. */
+    /**
+     * Host de la base de produccion, de {@code produccion-bloqueada.properties} (recurso de pruebas). Hasta P1-04 se
+     * leia del application.properties de la aplicacion; ahora este ya no tiene URL por omision.
+     */
     static Optional<String> hostDeProduccion() {
         try {
-            var url = PropertiesLoaderUtils.loadProperties(new ClassPathResource("application.properties"))
+            var url = PropertiesLoaderUtils.loadProperties(new ClassPathResource("produccion-bloqueada.properties"))
                     .getProperty("spring.datasource.url");
             return hostDe(url);
         } catch (IOException e) {
@@ -92,7 +95,7 @@ public class BaseDeProduccionBloqueada
         if (hostDe(url).filter(hostProduccion::equals).isPresent())
             throw new IllegalStateException(("BASE DE PRODUCCION BLOQUEADA EN PRUEBAS: %s apunta a %s. "
                     + "Las pruebas usan Testcontainers o la base de pruebas declarada con "
-                    + "-Dfitsense.pruebas.url, nunca la de application.properties.")
+                    + "-Dfitsense.pruebas.url, nunca la de produccion.")
                     .formatted(origen, hostProduccion));
     }
 

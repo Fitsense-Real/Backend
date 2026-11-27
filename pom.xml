@@ -288,6 +288,7 @@
 						<!-- Sin worker de generacion inicial en pruebas: cada contexto en
 						     cache sondearia una base inexistente o ya detenida. -->
 						<fitsense.plan-generation.worker.enabled>false</fitsense.plan-generation.worker.enabled>
+						<fitsense.ai-operations.recovery.enabled>false</fitsense.ai-operations.recovery.enabled>
 					</systemPropertyVariables>
 					<!-- SPRING_APPLICATION_JSON gana a las propiedades de sistema:
 					     se vacia para que no pueda reintroducir una URL. -->
@@ -321,6 +322,7 @@
 								<spring.datasource.password>bloqueada</spring.datasource.password>
 								<fitsense.ai.enabled>false</fitsense.ai.enabled>
 								<fitsense.plan-generation.worker.enabled>false</fitsense.plan-generation.worker.enabled>
+						<fitsense.ai-operations.recovery.enabled>false</fitsense.ai-operations.recovery.enabled>
 							</systemPropertyVariables>
 							<!-- Flyway y Hikari NO se bloquean aqui: las IT de P2-D declaran
 							     su base con @DynamicPropertySource y Flyway la sigue. La

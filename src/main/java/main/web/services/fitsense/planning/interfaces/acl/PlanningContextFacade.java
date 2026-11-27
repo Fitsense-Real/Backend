@@ -70,6 +70,60 @@ public class PlanningContextFacade {
         this.regeneracionSegura = r;
     }
 
+    /** V66: el seguimiento V59 del cierre semanal. Null en las pruebas que construyen el facade a mano. */
+    private main.web.services.fitsense.planning.application.internal.generation.SeguimientoOperacionesIa seguimiento;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setSeguimiento(main.web.services.fitsense.planning.application.internal.generation.SeguimientoOperacionesIa s) {
+        this.seguimiento = s;
+    }
+
+    /** V66: otra ejecucion viva tiene el cierre semanal de este participante y semana: no se hace nada. */
+    public static final class CicloEnCurso extends RuntimeException {
+        public CicloEnCurso(String mensaje) {
+            super(mensaje);
+        }
+    }
+
+    /** V66: un cierre semanal interrumpido (proceso muerto) que el barrido debe relanzar. */
+    public record CicloSemanalHuerfanoView(long userId, LocalDate semanaMedida, LocalDate semanaNueva, int ejecuciones) {}
+
+    /**
+     * V66 · El cierre semanal de un participante dentro de su operacion {@code WEEKLY_CYCLE}, con libro de predicciones:
+     * la generacion o la adaptacion de la semana nueva anota cada prediccion antes de enviarla. Si el proceso muere a
+     * mitad, el barrido (o el siguiente cierre de la misma semana) adopta la operacion y el libro reanuda cada prediccion
+     * por su id, sin pagar otra. Sin seguimiento (pruebas a mano), el ciclo tal cual.
+     *
+     * @throws CicloEnCurso si otra ejecucion viva tiene esta operacion
+     */
+    public Optional<Long> cicloConSeguimiento(Long userId, LocalDate semanaMedida, LocalDate semanaNueva,
+                                              java.util.function.Supplier<Optional<Long>> ciclo) {
+        if (seguimiento == null) return ciclo.get();
+        try {
+            return seguimiento.ejecutar(
+                    main.web.services.fitsense.planning.application.internal.generation.SeguimientoOperacionesIa.Clave
+                            .cicloSemanal(userId, semanaMedida, semanaNueva),
+                    plan -> plan == null ? null : plan.orElse(null),
+                    guarda -> ciclo.get());
+        } catch (main.web.services.fitsense.planning.application.internal.generation.SeguimientoOperacionesIa
+                .EnCursoEnOtroProceso otra) {
+            throw new CicloEnCurso(otra.getMessage());
+        }
+    }
+
+    /** V66: los cierres semanales interrumpidos que aun se pueden relanzar. */
+    public List<CicloSemanalHuerfanoView> ciclosSemanalesHuerfanos() {
+        if (seguimiento == null) return List.of();
+        return seguimiento.ciclosHuerfanos().stream()
+                .map(h -> new CicloSemanalHuerfanoView(h.userId(), h.semanaMedida(), h.semanaNueva(), h.ejecuciones()))
+                .toList();
+    }
+
+    /** V66: cierra las operaciones huerfanas que ya no se reanudaran (sin adopciones o fuera de su ventana). */
+    public int cerrarOperacionesIaVencidas() {
+        return seguimiento == null ? 0 : seguimiento.cerrarVencidas();
+    }
+
     /** P-02: el dolor de la semana medida queda registrado ANTES de preparar la siguiente. */
     private void registrarDolorDeLaSemanaAnterior(Long userId, LocalDate weekStartDate) {
         if (painMemory != null) painMemory.registrarSemana(userId, weekStartDate.minusWeeks(1));

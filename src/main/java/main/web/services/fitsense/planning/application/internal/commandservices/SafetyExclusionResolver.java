@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.domain.model.valueobjects.CandidateExercise;
 import main.web.services.fitsense.planning.domain.model.valueobjects.ExclusionesDeSeguridad;
@@ -98,7 +99,7 @@ public class SafetyExclusionResolver {
         });
         if (!originales.isEmpty())
             log.info("EXCLUSIONES_SEGURIDAD user={} heredados={} motivos={}", context.userId(),
-                    originales.keySet(), conMotivo);
+                    DetalleSensible.ids(originales.keySet()), DetalleSensible.mapa(conMotivo));
         return new ExclusionesDeSeguridad(originales, conMotivo);
     }
 }
