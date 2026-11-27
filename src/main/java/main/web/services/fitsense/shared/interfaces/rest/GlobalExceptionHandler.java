@@ -20,6 +20,15 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /** B5.1: cuenta inicios de sesion fallidos y limites superados (solo el numero). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos contadores;
+
+    private void contar(String suceso) {
+        if (contadores != null) contadores.sumar(suceso);
+    }
+
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiErrorResource> handleNotFound(ResourceNotFoundException ex) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), List.of());
@@ -85,6 +94,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp.DemasiadasSolicitudesException.class)
     public ResponseEntity<ApiErrorResource> handleDemasiadasSolicitudes(
             main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp.DemasiadasSolicitudesException ex) {
+        contar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.LIMITE_SUPERADO);
         var status = HttpStatus.TOO_MANY_REQUESTS;
         return ResponseEntity.status(status)
                 .header(org.springframework.http.HttpHeaders.RETRY_AFTER, String.valueOf(ex.reintentarEnSegundos()))
@@ -135,6 +145,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiErrorResource> handleInvalidCredentials(InvalidCredentialsException ex) {
+        contar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.LOGIN_FALLIDO);
         return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), List.of());
     }
 

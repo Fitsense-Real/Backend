@@ -33,8 +33,20 @@ public class EnvioDeCorreo {
         return t;
     });
 
+    private main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos contadores;
+
     public EnvioDeCorreo(CorreoSaliente correo) {
         this.correo = correo;
+    }
+
+    /** B5.1: contadores operativos (opcionales: las pruebas unitarias construyen esto sin Spring). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void contadores(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos contadores) {
+        this.contadores = contadores;
+    }
+
+    private void contar(String suceso) {
+        if (contadores != null) contadores.sumar(suceso);
     }
 
     public CorreoSaliente correo() {
@@ -60,6 +72,7 @@ public class EnvioDeCorreo {
             ejecutor.execute(() -> enviar(mensaje));
         } catch (RejectedExecutionException e) {
             log.warn("CORREO_DESCARTADO tipo={} transporte={}: cola llena", mensaje.tipo(), correo.transporte());
+            contar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.CORREO_DESCARTADO);
         }
     }
 
@@ -68,6 +81,7 @@ public class EnvioDeCorreo {
             try {
                 correo.enviar(mensaje);
                 log.info("CORREO_ENVIADO tipo={} transporte={}", mensaje.tipo(), correo.transporte());
+                contar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.CORREO_ENVIADO);
                 return;
             } catch (CorreoSaliente.CorreoNoEnviadoException e) {
                 log.warn("CORREO_FALLIDO tipo={} transporte={} intento={} causa={}", mensaje.tipo(),
@@ -76,6 +90,7 @@ public class EnvioDeCorreo {
                 log.warn("CORREO_FALLIDO tipo={} transporte={} intento={} causa={}", mensaje.tipo(),
                         correo.transporte(), intento, e.getClass().getSimpleName());
             }
+            contar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.CORREO_FALLIDO);
             if (!correo.entregaReal()) return;
             try {
                 Thread.sleep(2000);

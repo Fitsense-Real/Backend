@@ -23,6 +23,11 @@ public final class AdminAudit {
         AUDIT.info("ADMIN_PERSONAL_DATA_VIEWED adminId={} participantId={}", adminId, participantId);
     }
 
+    /** B5.3: cada exportacion (que, cuantas filas). El contenido no se registra. */
+    public static void exported(Long adminId, String que, int filas) {
+        AUDIT.info("ADMIN_EXPORT adminId={} export={} filas={}", adminId, que, filas);
+    }
+
     public static void denied(Long userId, String method, String path) {
         AUDIT.warn("ADMIN_ACCESS_DENIED userId={} method={} path={}", userId, method, path);
     }

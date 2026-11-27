@@ -65,6 +65,15 @@ public class PlanGenerationOperationService {
     private final Duration maxQueued;
     private final int maxExecutions;
 
+    private main.web.services.fitsense.planning.application.internal.commandservices.LimiteDeGeneraciones limite;
+
+    /** B5.2: opcional, para que las pruebas que construyen el servicio a mano no lo necesiten. */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void limiteDeGeneraciones(
+            main.web.services.fitsense.planning.application.internal.commandservices.LimiteDeGeneraciones limite) {
+        this.limite = limite;
+    }
+
     public PlanGenerationOperationService(PlanGenerationOperationRepository operations,
                                           WeeklyTrainingPlanRepository plans,
                                           WeeklyTrainingPlanCommandService commandService,
@@ -145,7 +154,14 @@ public class PlanGenerationOperationService {
         validateCanGenerate(userId);
         var week = commandService.firstPlanWeekStart(userId);
         try {
-            var created = tx.execute(s -> operations.saveAndFlush(PlanGenerationOperation.pending(userId, week, now())));
+            var created = tx.execute(s -> {
+                var op = operations.saveAndFlush(PlanGenerationOperation.pending(userId, week, now()));
+                // B5.2 (P1-07): el mismo limite por usuario que la ruta sincrona, solo para la operacion que SI se
+                // crea. Dentro de la transaccion: una peticion simultanea que pierde la carrera (doble toque) no
+                // consume cupo, y si el cupo se agota la operacion no queda creada. 429 DEMASIADAS_GENERACIONES.
+                if (limite != null) limite.consumir(userId);
+                return op;
+            });
             log.info("Generacion inicial {} registrada para el usuario {} (semana {})", created.getId(), userId, week);
             return new Requested(created, true);
         } catch (DataIntegrityViolationException race) {

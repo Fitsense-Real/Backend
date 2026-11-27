@@ -36,6 +36,11 @@ import java.util.Optional;
 @Service
 public class WeeklyCycleService {
 
+    /** B5.1: cierres que terminan sin plan (opcional: las pruebas unitarias construyen el servicio sin Spring). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos contadores;
+
+
     private static final Logger log = LoggerFactory.getLogger(WeeklyCycleService.class);
 
     private final PlanningContextFacade planningContextFacade;
@@ -209,6 +214,7 @@ public class WeeklyCycleService {
             // el cierre del resto de la cohorte.
             log.error("No se pudo generar el plan del usuario {} para la semana del {}: {}",
                     userId, newWeekStart, e.getMessage());
+            if (contadores != null) contadores.sumar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.CICLO_SIN_PLAN);
             return Optional.empty();
         }
 
