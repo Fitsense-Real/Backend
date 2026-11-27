@@ -140,7 +140,7 @@ public class SeguimientoOperacionesIa {
     }
 
     @jakarta.annotation.PreDestroy
-    void parar() {
+    public void parar() {
         latido.shutdownNow();
     }
 
