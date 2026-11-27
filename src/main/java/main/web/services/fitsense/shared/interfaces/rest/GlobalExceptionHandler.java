@@ -99,6 +99,14 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), List.of(ex.codigo()));
     }
 
+    /** P1-02: el plan activo cambio durante la generacion; no se publico encima. */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.PlanCambioDuranteLaGeneracionException.class)
+    public ResponseEntity<ApiErrorResource> handlePlanCambiado(
+            main.web.services.fitsense.planning.domain.exceptions.PlanCambioDuranteLaGeneracionException ex) {
+        return build(HttpStatus.CONFLICT, "Tu plan cambio mientras se preparaba uno nuevo. Consulta el plan actual.",
+                List.of("PLAN_CAMBIADO_DURANTE_LA_GENERACION"));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());
