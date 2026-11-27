@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.domain.model.valueobjects.NoFactibleReason;
 import main.web.services.fitsense.planning.domain.model.aggregates.PlanAdaptationAttempt;
 import main.web.services.fitsense.planning.domain.model.aggregates.SafeRegenerationAttempt;
@@ -154,7 +155,7 @@ public class SafeRegenerationService {
         });
         log.warn("REGENERACION_SEGURA usuario {} semana {}: NO_FACTIBLE por dolor (intento V32 {}) resuelto en el"
                         + " mismo ciclo con el motor de reglas · plan {} · excluidos {}", userId, newWeekStart,
-                intento.getId(), plan, excluidos);
+                intento.getId(), plan, DetalleSensible.ids(excluidos));
         return Optional.ofNullable(plan);
     }
 
@@ -247,7 +248,8 @@ public class SafeRegenerationService {
         tx.executeWithoutResult(status -> regeneraciones.save(new SafeRegenerationAttempt(userId,
                 medida.weeklyMetricId(), medida.measuredPlanId(), newWeekStart, intento.getId(),
                 intento.getRejectionReason(), excluidos, motivo, codigo)));
-        log.error("REGENERACION_SEGURA_NO_FACTIBLE usuario {} semana {}: {}", userId, newWeekStart, motivo);
+        log.error("REGENERACION_SEGURA_NO_FACTIBLE usuario {} semana {} codigo {}: {}", userId, newWeekStart, codigo,
+                DetalleSensible.valor(motivo));
         return Optional.empty();
     }
 }

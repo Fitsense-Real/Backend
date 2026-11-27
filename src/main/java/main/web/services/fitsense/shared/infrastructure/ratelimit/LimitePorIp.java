@@ -28,7 +28,12 @@ public class LimitePorIp {
         private final long reintentarEnSegundos;
 
         public DemasiadasSolicitudesException(long reintentarEnSegundos) {
-            super("Demasiadas solicitudes desde esta conexion. Espera antes de volver a intentarlo.");
+            this("Demasiadas solicitudes desde esta conexion. Espera antes de volver a intentarlo.",
+                    reintentarEnSegundos);
+        }
+
+        public DemasiadasSolicitudesException(String mensaje, long reintentarEnSegundos) {
+            super(mensaje);
             this.reintentarEnSegundos = reintentarEnSegundos;
         }
 
@@ -54,20 +59,38 @@ public class LimitePorIp {
 
     /** Cuenta la peticion; lanza si la IP ya agoto el cupo de esta accion. */
     public void comprobar(String accion, HttpServletRequest peticion) {
+        comprobar(accion, peticion, maximo, ventana);
+    }
+
+    /**
+     * Igual, con un cupo propio de la accion (login y registro: P0-02). La IP es {@code getRemoteAddr()}: con
+     * {@code server.forward-headers-strategy=native}, Tomcat solo la toma de {@code X-Forwarded-For} si la peticion
+     * llega de un proxy de confianza ({@code server.tomcat.remoteip.internal-proxies}); la cabecera que mande un
+     * cliente cualquiera se ignora.
+     */
+    public void comprobar(String accion, HttpServletRequest peticion, int maximoAccion, Duration ventanaAccion) {
         var ahora = clock.instant();
-        if (marcas.size() > MAXIMO_DE_CLAVES) purgarTodo(ahora);
-        var l = marcas.computeIfAbsent(accion + "|" + peticion.getRemoteAddr(), k -> new ArrayDeque<>());
+        var l = deque(accion + "|" + peticion.getRemoteAddr(), ahora);
         synchronized (l) {
-            purgar(l, ahora);
-            if (l.size() >= maximo)
+            purgar(l, ahora, ventanaAccion);
+            if (l.size() >= maximoAccion)
                 throw new DemasiadasSolicitudesException(
-                        Math.max(1, Duration.between(ahora, l.peekFirst().plus(ventana)).toSeconds()));
+                        Math.max(1, Duration.between(ahora, l.peekFirst().plus(ventanaAccion)).toSeconds()));
             l.addLast(ahora);
         }
     }
 
+    private Deque<Instant> deque(String clave, Instant ahora) {
+        if (marcas.size() > MAXIMO_DE_CLAVES) purgarTodo(ahora);
+        return marcas.computeIfAbsent(clave, k -> new ArrayDeque<>());
+    }
+
     private void purgar(Deque<Instant> l, Instant ahora) {
-        while (!l.isEmpty() && !l.peekFirst().plus(ventana).isAfter(ahora)) l.removeFirst();
+        purgar(l, ahora, ventana);
+    }
+
+    private static void purgar(Deque<Instant> l, Instant ahora, Duration v) {
+        while (!l.isEmpty() && !l.peekFirst().plus(v).isAfter(ahora)) l.removeFirst();
     }
 
     /**

@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalConfigurationService;
 import main.web.services.fitsense.planning.application.internal.queryservices.PublishedPlanSafetyService;
@@ -379,7 +380,7 @@ public class PublishedPlanSafetyRepairService {
     private static Resultado registrar(Long userId, TrainingWeek week, Resultado r) {
         log.info("REPARACION_SEGURIDAD user={} semana={} estado={} plan={} nuevo={} conflictos={} sustituciones={} "
                         + "problemas={}", userId, week.startDate(), r.estado(), r.planOriginal(), r.planNuevo(),
-                r.conflictos(), r.sustituciones().size(), r.problemas());
+                DetalleSensible.mapa(r.conflictos()), r.sustituciones().size(), r.problemas());
         return r;
     }
 }

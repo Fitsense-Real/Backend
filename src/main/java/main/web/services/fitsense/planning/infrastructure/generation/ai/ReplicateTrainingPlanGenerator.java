@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
@@ -533,8 +534,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         medicion.salida(output.length());
         diario.terminada(fila, DiarioDePredicciones.Estado.SUCCEEDED, output, null, reloj.instant());
         medicion.resultado(ReplicateTiming.Resultado.SUCCEEDED);
+        // S-1: la salida completa (el plan de una persona) solo con detalle sensible permitido, nunca en prod.
         log.info("Salida de la IA (prediccion {}, prompt {}, {} caracteres de prompt): {}",
-                response.id(), peticion.promptVersion(), prompt.length(), output);
+                response.id(), peticion.promptVersion(), prompt.length(),
+                DetalleSensible.texto(output));
         return output;
     }
 
@@ -721,7 +724,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // el catalogo) y casi siempre llega con status "starting" y output null,
         // asi que no muestra el plan. Queda en DEBUG; la salida real del modelo
         // se registra en INFO mas abajo, cuando la prediccion termina.
-        log.debug("Replicate respondio (crudo): {}", rawBody);
+        // S-1: el cuerpo crudo lleva la salida de la IA: ni en DEBUG sin detalle sensible permitido.
+        if (log.isDebugEnabled())
+            log.debug("Replicate respondio (crudo): {}",
+                    DetalleSensible.texto(rawBody));
 
         // R-1 (resiliencia de Replicate, 11/11/2026): el SOBRE de Replicate se leia fuera de todo manejo de errores.
         // Un 2xx que no era su JSON (pagina de un proxy, cuerpo vacio, JSON cortado) lanzaba IllegalStateException,
@@ -821,8 +827,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // inicial. La linea rendida no cambia para la generacion inicial:
         // Peticion.deSemana une las dos versiones con un espacio, igual que los
         // dos marcadores de antes.
+        // S-1: la salida completa (el plan de una persona) solo con detalle sensible permitido, nunca en prod.
         log.info("Salida de la IA (prediccion {}, prompt {}, {} caracteres de prompt): {}",
-                response.id(), peticion.promptVersion(), prompt.length(), output);
+                response.id(), peticion.promptVersion(), prompt.length(),
+                DetalleSensible.texto(output));
         return output;
     }
 
