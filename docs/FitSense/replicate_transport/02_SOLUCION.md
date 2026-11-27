@@ -1,98 +1,120 @@
-# 02 · Solución: recuperar la predicción existente, sin duplicar
+# 02 · Solución: recuperar solo la predicción propia, sin duplicar ni atribuir ajenas
 
 **Archivo de producción modificado: uno,** `planning/infrastructure/generation/ai/ReplicateTrainingPlanGenerator.java`.
 
 No cambia nada de esto:
 - el modelo, los parámetros (`medium`, `low`, 16.000), los prompts ni las versiones (PR-1.7 por omisión);
 - los validadores (V8C, V15, V20, V23–V26, V65), las políticas, O20, la adaptación, la progresión ni la reincorporación;
-- el catálogo, Firebase, Mobile, la base de datos ni las migraciones;
-- las propiedades de configuración.
+- el catálogo, Firebase, Mobile, la base de datos, las migraciones ni las propiedades.
 
-El libro V59 (`plan_generation_predictions`) se usa **tal como está**.
+El libro V59 se usa **tal como está**.
 
-## 1. Una sola clasificación del POST (`enviar`)
+> **Revisión de seguridad (orden «VALIDACIÓN FINAL Y MERGE CONDICIONAL DE PR #88»).**
+> - La primera versión recuperaba buscando en el listado de Replicate una predicción con la misma entrada. Eso **podía atribuir a una petición el resultado de otra**: dos usuarios, o dos operaciones, con la misma entrada.
+> - Se demostró contra el código de `f3786e60` (`03` §2): el usuario A **publicaba como IA** la salida del usuario B.
+> - Esa búsqueda **se eliminó**. Lo que sigue es el diseño final.
 
-Los dos caminos, con libro (generación asíncrona) y sin él (endpoint síncrono, ciclo semanal, adaptación y arneses), pasan por la misma función:
+## 1. Cómo se identifica una predicción
 
-| Resultado del POST | Clasificación | Por qué |
+**El contrato de Replicate** (OpenAPI 1.0.0-a1, `01` §4):
+- no ofrece cabecera con el id: ni `Location` ni otra;
+- no ofrece clave de idempotencia ni metadatos de predicción.
+
+**La única prueba de que una predicción es la de este envío es el `id` que Replicate escribe en la respuesta de ESTE POST, en esta conexión.** Por tanto:
+
+| Evidencia | ¿Prueba identidad? | Uso |
 |---|---|---|
-| Fallo de **conexión** (`ConnectException`, `UnknownHost`, `NoRouteToHost`, límite de conexión) | **No enviada** | El cuerpo no salió: no hay predicción |
-| **4xx** | **Rechazada** | Replicate no la creó: es definitivo |
-| **5xx** | **Incierta** | Pudo crearse. Ante un 502 o un 504 de una pasarela, no se sabe |
-| Corte, reinicio o límite de lectura | **Incierta** | La petición llegó |
-| Fallo al **leer** la respuesta, como en G08 (`RestClientException` «Error while extracting response…») | **Incierta** | Era la tercera clase que antes no se distinguía |
-| 2xx ilegible (vacío, HTML, JSON cortado) o 2xx sin `id` válido y sin éxito | **Incierta** | Nunca se inventa un id |
-| 2xx con `id` válido | **Creada** | Se sigue por su id, como siempre |
+| `id` de la respuesta completa del POST | Sí, como siempre | Se anota (V59: `ENVIADA`) y se sigue por ese id |
+| `id` de **primer nivel**, **completo**, al principio de un cuerpo **cortado** (G08) | Sí, porque es la misma respuesta. Se confirma además por GET (§3) | Se confirma y se sigue |
+| `id` a medias (el corte cae dentro), o un `"id"` anidado (por ejemplo en `input`) | **No** | Nunca se completa ni se adivina: incierta |
+| Cabecera `Location` | **No documentada** | Se ignora (`s03LocationNoDocumentadoSeIgnora`) |
+| Una predicción del listado con la **misma entrada** | **No**: dos peticiones idénticas son indistinguibles | **No se busca** |
+| Misma entrada **y** una sola coincidencia | **No**: la propia puede no existir y la que aparece ser ajena (S01) | **No se busca** |
 
-Además, el POST pide `Accept: application/json`.
+**Peticiones idénticas** (dos usuarios, o dos operaciones del mismo usuario): cada una solo puede seguir la predicción cuyo id le devolvió **su** POST.
+- La reutilización deliberada del libro V59 (`reutilizable`: mismo usuario, misma huella, otra operación vencida) **no cambia**. Usa los registros propios de la base, no el contenido de Replicate.
 
-## 2. Estado incierto: buscar la predicción existente (`recuperar`)
+## 2. Clasificación del POST (`enviar`)
 
-Solo con la API documentada y solo con `GET`, que son gratuitos e idempotentes:
-1. `GET /v1/predictions`: las más recientes.
-2. **Candidatas:** las creadas desde el inicio del envío menos 2 minutos de margen de reloj, del mismo modelo (`openai/gpt-5-mini`, sacado de la URL) y de origen `api`. Como mucho 20.
-3. `GET /v1/predictions/{id}` de cada candidata, para comparar su `input` **campo por campo** con lo enviado: `system_prompt`, `prompt`, `reasoning_effort`, `verbosity` y `max_completion_tokens`. En el formato `structured`, también `model` y `json_schema`.
-4. **Decisión:**
-   - **exactamente una** coincide: se adopta. Se sigue esa predicción, en curso o terminada, por el sondeo de siempre;
-   - **ninguna** coincide: se espera una pausa y se repite una vez más (2 rondas), por si tarda en aparecer;
-   - **varias** coinciden (ambigua), o falla una consulta: **no se adopta ninguna**.
+El cuerpo se lee a mano (`exchange`) para **conservar lo recibido** si la conexión se corta. Antes, `retrieve().body(String)` lo perdía todo.
 
-Cada intento queda en una línea `REPLICATE_RECUPERACION resultado=RECUPERADA|SIN_COINCIDENCIA|AMBIGUA|LISTADO_FALLIDO|CONSULTA_FALLIDA`, con el motivo del envío.
-- Solo lleva ids, sin prompt ni token.
-- `REPLICATE_TIMING` y `REPLICATE_CONSUMO` llevan el id recuperado.
-
-**Si no se recupera:** `AiProviderUnavailableException("PREDICCION_NO_CONFIRMADA: <motivo> (no se encontró en Replicate una predicción con esta misma entrada; no se reenvía)")`.
-- El pipeline corta los intentos de IA y publica `RULE_ENGINE`, como cualquier fallo del proveedor.
-- **No se crea otra predicción.**
-- Con libro, la fila queda `NO_CONFIRMADA`, como antes.
-
-## 3. Comportamiento por caso (orden §4)
-
-| Caso | Antes | Ahora |
+| Resultado | Clasificación | Qué se hace |
 |---|---|---|
-| **A. Rechazada antes de crearse** (conexión o 4xx) | Fallo del proveedor | **Igual:** fallo del proveedor; con libro, `ERROR_ENVIO`. No se busca nada |
-| **B. Creada con su id** | Se sigue por su id | **Igual.** No se crea otra mientras sigue en curso |
-| **C. Completada con la respuesta ilegible** (G08) | **Sin libro:** fallo del proveedor y predicción perdida. **Con libro:** `NO_CONFIRMADA`, también perdida | **Se busca y se adopta,** y se usa su salida. Con libro, la fila pasa a `ENVIADA` y luego a `SUCCEEDED` con su id. **Ningún POST nuevo** |
-| **D. Resultado final inválido** | El validador lo rechaza y se reintenta | **Igual.** La salida recuperada pasa por **los mismos** `toDraft`, normalizador y validador (`t11SalidaInvalidaRecuperada`) |
-| **E. Estado desconocido** (no aparece, ambigua o la búsqueda falla) | Sin libro: fallo del proveedor; un reintento de la operación pagaba otra | **`PREDICCION_NO_CONFIRMADA`,** explícita. **No se reenvía:** el pipeline va al respaldo |
+| Fallo de **conexión** | **No enviada** | Fallo del proveedor; con libro, `ERROR_ENVIO`. No hay predicción |
+| **4xx** | **Rechazada** | Igual: definitivo |
+| **5xx**, o un código fuera de 2xx | **Incierta** | `PREDICCION_NO_CONFIRMADA`, sin reenviar |
+| Corte o límite de lectura **antes** del cuerpo | **Incierta** | Igual |
+| **2xx con el cuerpo cortado** (G08) | **Incierta, con un posible id** | Si lo leído trae el `id` completo de primer nivel, se confirma (§3); si no, `PREDICCION_NO_CONFIRMADA` |
+| 2xx entero pero ilegible (JSON cortado con cierre normal) | Igual | Igual: se busca el id de primer nivel en lo leído |
+| 2xx legible sin `id` y sin éxito | **Incierta** | `PREDICCION_NO_CONFIRMADA`. Nunca se inventa |
+| 2xx con `id` válido | **Creada** | Se sigue por su id |
 
-## 4. Reanudación tras un reinicio (libro V59)
+El POST pide `Accept: application/json`, y el registro del corte dice el `Content-Type` real: «ausente» en G08.
 
-| Estado del intento | Antes | Ahora |
+## 3. Confirmación por id (`verificarPorId`)
+
+Un solo `GET /v1/predictions/{id}`, gratuito. Se adopta **solo si**:
+1. responde 2xx con un JSON cuyo `id` es ese;
+2. **no** tiene `data_removed`;
+3. tiene una `input` no vacía;
+4. esa `input` es **igual, campo por campo,** a la enviada: `system_prompt`, `prompt`, `reasoning_effort`, `verbosity` y `max_completion_tokens`.
+
+Si falla cualquiera, no se adopta. Queda `REPLICATE_RECUPERACION resultado=CONSULTA_FALLIDA|IDENTIDAD_DISTINTA|NO_VERIFICABLE_DATOS_BORRADOS|NO_VERIFICABLE_SIN_ENTRADA|CONSULTA_ILEGIBLE`, y la petición pasa a **`PREDICCION_NO_CONFIRMADA`**.
+
+Si se adopta: `resultado=RECUPERADA_POR_ID`.
+- Con libro, la fila pasa de `SOLICITANDO` a `ENVIADA` con el id, y luego a `SUCCEEDED`.
+- Después, el sondeo de siempre.
+
+**Sin ventana de tiempo:** la identidad no depende de los relojes (`s07DesfaseDeReloj`).
+
+## 4. Cuándo queda sin confirmar
+
+Queda `PREDICCION_NO_CONFIRMADA` en todo envío incierto **sin un id de su propia respuesta confirmado**:
+- 5xx;
+- conexión cortada sin respuesta;
+- límite de lectura sin cuerpo;
+- 2xx sin id;
+- id a medias o anidado;
+- id cuyo GET falla, no existe, tiene otra entrada o tiene los datos borrados;
+- reanudación de un intento `SOLICITANDO`.
+
+**Cómo se trata:**
+- **Mensaje:** `AiProviderUnavailableException("PREDICCION_NO_CONFIRMADA: <motivo> (no se puede confirmar a qué predicción corresponde[; id X sin verificar]; no se reenvía)")`. Nunca dice «no existe».
+- **Con libro:** `NO_CONFIRMADA`, que se repite al reanudar sin pedir otra.
+- **Pipeline:** corta los intentos de IA y publica `RULE_ENGINE`, como cualquier fallo del proveedor. **No se crea otra predicción.**
+
+## 5. Reanudación tras un reinicio (V59)
+
+| Estado del intento | Comportamiento (igual que en `generation`) |
+|---|---|
+| `SUCCEEDED` | Reutiliza la salida, sin llamar |
+| `ENVIADA` | Sigue la predicción por su id: **ahora también si ese id vino de una respuesta cortada** y se confirmó |
+| `SOLICITANDO` | `NO_CONFIRMADA`. Sin id no hay identidad. La primera versión buscaba por contenido; se eliminó |
+| Resto | Se repite el desenlace |
+
+**Caminos sin libro** (endpoint síncrono, ciclo semanal, adaptación): no sobreviven a un reinicio con un POST en curso. Es una limitación conocida (`04`).
+
+## 6. Sondeo: un fallo pasajero ya no cancela (`awaitCompletion`)
+
+- Un fallo de red, un 5xx, un corte o un cuerpo ilegible al consultar se reintenta en la vuelta siguiente, dentro del **mismo límite total**.
+- Termina con **3 fallos seguidos** (`SONDEO_FALLOS_SEGUIDOS_MAX`) o con un **4xx**.
+- Si se acaba el tiempo con la última consulta fallida, el desenlace es `POLL_ERROR`.
+- **Antes:** el primer fallo cancelaba una predicción que podía terminar bien.
+
+## 7. Reintentos: qué es cada uno
+
+| Mecanismo | Qué hace | ¿Crea predicciones? |
 |---|---|---|
-| `SUCCEEDED` | Reutiliza la salida, sin llamar | Igual |
-| `ENVIADA` | Sigue la predicción por su id | Igual |
-| `SOLICITANDO` (el proceso murió entre el envío y la confirmación) | `NO_CONFIRMADA` directamente | **Se busca la misma petición en Replicate** (ventana de 60 minutos; Replicate borra la entrada de las predicciones de la API a la hora). Si está, se sigue por su id, **0 POST**. Si no, `NO_CONFIRMADA` como antes |
-| Resto de finales | Se repite el desenlace | Igual |
+| Reintento HTTP del cliente | `HttpURLConnection` **no reenvía el POST**, porque Spring 7.0.9 usa modo *streaming* (`t05CerradaSinRespuesta`, `s09PostSinRespuesta`). Un **GET** sí puede repetirse una vez al cerrarse la conexión: es idempotente y gratuito | No |
+| Consulta de una predicción existente | GET por id, en la confirmación (1) y en el sondeo (con tolerancia) | No |
+| Reintento por propuesta inválida | Hasta 3 intentos del pipeline (`AI_ATTEMPTS`), sin cambios. Una salida recuperada que no pasa el contrato o el validador cuenta como intento inválido (T11, S14) | Sí, como siempre |
+| Reanudación | Libro V59 (§5) | No: reutiliza o sigue por id |
+| Respaldo `RULE_ENGINE` | Sin cambios. Lo incierto acaba aquí (S15) | No |
 
-**Carrera entre dos ejecuciones** de la misma operación:
-- El índice único `ux_pgp_intento_vigente` hace que la segunda reanude la fila de la primera (`REPLICATE_CARRERA`).
-- Si la primera aún está enviando, la segunda busca la predicción y la sigue si ya existe, o queda `NO_CONFIRMADA`.
-- **Nunca se envían dos** (`t12Concurrencia`: 1 POST).
+**El máximo de predicciones por generación no sube.** Lo único nuevo es **un GET** gratuito, y solo cuando una respuesta cortada traía el id.
 
-## 5. Sondeo: un fallo pasajero ya no cancela (`awaitCompletion`)
+## 8. Seguridad
 
-**Antes:** el primer `GET` de consulta que fallaba terminaba el sondeo, y la predicción se **cancelaba** (R-2) aunque fuera a terminar bien.
-
-**Ahora:**
-- Un fallo de red, un 5xx, un corte o un cuerpo ilegible al consultar **se reintenta en la vuelta siguiente**, dentro del **mismo límite total** (`timeout-seconds` y el plazo de la generación). Es un `GET` gratuito sobre la misma predicción.
-- Termina como antes con **3 fallos seguidos** (`SONDEO_FALLOS_SEGUIDOS_MAX`) o con un **4xx** (no existe o sin permiso).
-- Si se acaba el tiempo con la última consulta fallida, el desenlace es `FALLO_LA_CONSULTA` (`POLL_ERROR`), no `TIMEOUT`.
-
-## 6. Reintentos: qué no cambia (orden §8)
-
-| Reintento | Qué es | Cambio |
-|---|---|---|
-| Del cliente HTTP | `HttpURLConnection` no reenvía el POST (modo *streaming* de Spring) | Ninguno. Ahora lo vigila `t05CerradaSinRespuesta` |
-| De la consulta | `GET` sobre la misma predicción | Tolera fallos pasajeros (§5). **No crea predicciones** |
-| Del pipeline por plan inválido | Hasta 3 intentos (`AI_ATTEMPTS`) | Ninguno |
-| Por fallo del proveedor | Corta y va a `RULE_ENGINE` | Ninguno. Lo incierto sigue ese camino y **no consume un intento nuevo** |
-| Respaldo `RULE_ENGINE` | Determinista y validado | Ninguno |
-
-**El número máximo de predicciones por generación no sube.** Lo que se añade son `GET` gratuitos: como mucho, 2 listados y 20 consultas por ronda, y solo en un envío incierto.
-
-## 7. Seguridad
-
-- Una predicción recuperada **se valida exactamente igual** que una recibida: mismo ensamblador, mismo normalizador, mismos V1–V27 y V8C, O20 y V65. No se publica nada que no los pase.
-- No se adopta **nunca** una predicción cuya entrada no sea idéntica, ni una de otro modelo, ni una elegida entre varias.
+- Una predicción recuperada **se valida exactamente igual** que una recibida (T11, S14): ensamblador, normalizador, V1–V27 y V8C, O20 y V65. No se publica nada que no los pase.
+- **Nunca** se adopta una predicción sin el id de la propia respuesta. Tampoco una cuya entrada no sea idéntica, ni una con los datos borrados.
 - Los registros llevan ids y motivos, sin prompt, token ni datos del participante.

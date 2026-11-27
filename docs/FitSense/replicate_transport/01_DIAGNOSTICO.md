@@ -80,16 +80,26 @@ La llamada de la evaluación, igual que el endpoint síncrono, el ciclo semanal 
 
 ## 4. Contrato de Replicate que se usa
 
+> **Revisión de seguridad (27/11/2026).** Este contrato se contrastó con la especificación oficial `https://api.replicate.com/openapi.json` (*Replicate HTTP API* 1.0.0-a1), obtenida con un GET gratuito. La web de documentación no es accesible desde este entorno.
+> - **`models.predictions.create`:** responde `201` (con `Prefer: wait`, ya con la salida) o `202` («creada, sin todas las salidas»). El cuerpo es el objeto de predicción. **No documenta ninguna cabecera de respuesta, tampoco `Location`.**
+> - **Petición:** solo admite `input`, `webhook`, `webhook_events_filter` y `stream` (obsoleto). Además, las cabeceras `Prefer` y `Cancel-After`.
+> - **No existe** clave de idempotencia ni metadatos de predicción. Los metadatos de la API son solo de archivos.
+> - **`predictions.list`:** admite `created_after`, `created_before` y `source`.
+>
+> **Conclusión:** la única prueba documentada de que una predicción pertenece a un envío es el **`id` de la respuesta de ese POST**. Ver `02` §1.
+
 Solo API documentada, sin nada no documentado:
 
 | Llamada | Para qué |
 |---|---|
 | `POST /v1/models/{owner}/{name}/predictions` | Crear. `Prefer: wait` sin libro; sin espera con libro |
 | `GET /v1/predictions/{id}` | Estado y salida. **Trae la `input` completa** (comprobado con `g40bmfgq8nrzr0d236ktnedbfm`) |
-| `GET /v1/predictions` | Listado, de la más reciente a la más antigua. **Trae `input` vacía (`{}`)**, comprobado el 26/11 con una consulta gratuita. Para comparar la entrada hay que pedir cada candidata por su id |
+| `GET /v1/predictions` | Listado. **Trae `input` vacía (`{}`)**, comprobado el 26/11. **No se usa para recuperar:** el contenido no prueba la identidad (`02` §1) |
 | `POST /v1/predictions/{id}/cancel` | Cancelar (R-2) |
 
-Replicate **no documenta una clave de idempotencia**. La única forma documentada de encontrar una predicción cuyo id no llegó es el listado más la consulta por id, comparando la entrada.
+Replicate **no documenta una clave de idempotencia ni metadatos**.
+- La primera versión de esta PR buscaba por el listado y comparaba la entrada.
+- La revisión de seguridad demostró que así se puede **atribuir la predicción de otra petición idéntica** (`02` §1, `03` §2), y se eliminó.
 
 **Salidas de gpt-5-mini que se procesan** (`ReplicateResponse.joinedOutput`):
 - texto;
