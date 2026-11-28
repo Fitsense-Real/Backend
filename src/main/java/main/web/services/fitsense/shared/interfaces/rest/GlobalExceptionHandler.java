@@ -205,6 +205,23 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ApiErrorResource> build(HttpStatus status, String message, List<String> details) {
         return ResponseEntity.status(status)
-                .body(ApiErrorResource.of(status.value(), status.getReasonPhrase(), message, details));
+                .body(ApiErrorResource.of(status.value(), status.getReasonPhrase(), sinIdInterno(message), details));
+    }
+
+    private static final java.util.regex.Pattern NO_ENCONTRADO_CUENTA = java.util.regex.Pattern.compile(
+            "(?i)\\b((?:perfil del )?usuario) no encontrad([oa]): \\d+");
+    private static final java.util.regex.Pattern ID_DE_CUENTA = java.util.regex.Pattern.compile(
+            "(?i)\\b(usuario|cuenta) \\d+\\b");
+
+    /**
+     * C8 · Ningun error lleva el id interno de la cuenta. Varias excepciones de dominio anteriores lo incluyen en su
+     * mensaje («El usuario 5 ya tiene un plan activo…», «Perfil del usuario no encontrado: 5»), que sirve en los logs
+     * pero no debe llegar a la app. Se quita aqui, en el unico punto por el que pasan todas las respuestas de error;
+     * los logs no cambian. Los ids de otros recursos que la propia peticion nombra (un plan, un ejercicio) se quedan.
+     */
+    static String sinIdInterno(String mensaje) {
+        if (mensaje == null) return null;
+        String m = NO_ENCONTRADO_CUENTA.matcher(mensaje).replaceAll("$1 no encontrad$2");
+        return ID_DE_CUENTA.matcher(m).replaceAll("$1");
     }
 }
