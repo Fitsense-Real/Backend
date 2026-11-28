@@ -49,6 +49,7 @@ public class VigilanteOperativo {
         if (r != null) {
             medidor(r, "participantes_sin_plan", i -> i.participantesSinPlanVigente());
             medidor(r, "cierres_pendientes", i -> i.cierresPendientesSemanaAnterior());
+            medidor(r, "cierres_fuera_de_ventana", i -> i.cierresFueraDeVentana());
             medidor(r, "generaciones_fallidas_24h", i -> i.generacionesFallidas24h());
             medidor(r, "adaptaciones_fallidas_7d", i -> i.adaptacionesFallidas7d());
             medidor(r, "operaciones_huerfanas", i -> i.operacionesHuerfanas());
@@ -80,6 +81,8 @@ public class VigilanteOperativo {
         var alertas = new ArrayList<String>();
         if (i.participantesSinPlanVigente() > 0) alertas.add(alerta("PARTICIPANTES_SIN_PLAN", i.participantesSinPlanVigente(), 0));
         if (i.cierresPendientesSemanaAnterior() > 0) alertas.add(alerta("CIERRE_SEMANAL_PENDIENTE", i.cierresPendientesSemanaAnterior(), 0));
+        // C3: una semana que ya no se recupera sola. Requiere intervencion (04_CONTINUIDAD_CIERRE_SEMANAL.md), en ERROR.
+        if (i.cierresFueraDeVentana() > 0) alertas.add(alertaGrave("CIERRE_SEMANAL_FUERA_DE_VENTANA", i.cierresFueraDeVentana()));
         if (i.generacionesFallidas24h() >= umbralGeneraciones) alertas.add(alerta("GENERACIONES_FALLIDAS_24H", i.generacionesFallidas24h(), umbralGeneraciones));
         if (i.adaptacionesFallidas7d() >= umbralAdaptaciones) alertas.add(alerta("ADAPTACIONES_FALLIDAS_7D", i.adaptacionesFallidas7d(), umbralAdaptaciones));
         if (i.operacionesHuerfanas() > 0) alertas.add(alerta("OPERACIONES_HUERFANAS", i.operacionesHuerfanas(), 0));
@@ -93,6 +96,12 @@ public class VigilanteOperativo {
         if (sinPlan > cierresSinPlanVistos) alertas.add(alerta("CIERRES_SIN_PLAN", sinPlan - cierresSinPlanVistos, 0));
         cierresSinPlanVistos = sinPlan;
         return alertas;
+    }
+
+    private static String alertaGrave(String tipo, long valor) {
+        log.error("ALERTA_OPERATIVA tipo={} valor={} umbral=0 accion=GET /api/v1/admin/operations/weekly-closures/overdue",
+                tipo, valor);
+        return tipo;
     }
 
     private static String alerta(String tipo, long valor, long umbral) {
