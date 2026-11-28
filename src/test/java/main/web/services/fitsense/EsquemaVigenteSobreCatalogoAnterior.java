@@ -65,7 +65,9 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             "65:db/migration/V65__dolor_identificacion_posterior.sql",
             // V66 (seguimiento V59 de la generacion sincrona y el cierre semanal): dos columnas, restricciones e
             // indices en plan_generation_operations, sin datos.
-            "66:db/migration/V66__operaciones_ia_sincrona_y_ciclo_semanal.sql");
+            "66:db/migration/V66__operaciones_ia_sincrona_y_ciclo_semanal.sql",
+            // V67 (C4, propuesta: historial de recalculos de metricas): una tabla, su funcion y su disparador, sin datos.
+            "67:db/migration/V67__historial_de_recalculos_de_metricas.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {
@@ -81,8 +83,17 @@ public class EsquemaVigenteSobreCatalogoAnterior {
                 if (actual != null && actual.getVersion().isAtLeast(partes[0])) continue;
                 if (jdbc.queryForObject("SELECT count(*) FROM public.test_esquema_vigente WHERE version = ?",
                         Integer.class, partes[0]) > 0) continue;
-                new ResourceDatabasePopulator(new ClassPathResource(partes[1]))
-                        .execute(flyway.getConfiguration().getDataSource());
+                var script = new ClassPathResource(partes[1]);
+                var poblador = new ResourceDatabasePopulator(script);
+                // ScriptUtils corta en ';' y no entiende el $$ de una funcion plpgsql (V67): ese script va entero como
+                // una sola sentencia; el controlador de PostgreSQL si separa respetando el $$.
+                try (var in = script.getInputStream()) {
+                    if (new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).contains("$$"))
+                        poblador.setSeparator(org.springframework.jdbc.datasource.init.ScriptUtils.EOF_STATEMENT_SEPARATOR);
+                } catch (java.io.IOException e) {
+                    throw new IllegalStateException(e);
+                }
+                poblador.execute(flyway.getConfiguration().getDataSource());
                 jdbc.update("INSERT INTO public.test_esquema_vigente VALUES (?)", partes[0]);
             }
         };

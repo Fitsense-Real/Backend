@@ -26,6 +26,8 @@ public class WeeklyUserMetricsCommandServiceImpl implements WeeklyUserMetricsCom
     private final ExternalConfigurationService externalConfigurationService;
     private final ExternalIamService externalIamService;
     private final JsonSupport jsonSupport;
+    /** C4: null solo en pruebas unitarias que construyen el servicio a mano. */
+    private main.web.services.fitsense.analytics.infrastructure.persistence.jdbc.HistorialDeRecalculos historial;
 
     public WeeklyUserMetricsCommandServiceImpl(WeeklyUserMetricsRepository metricsRepository,
                                                WeeklyMetricsCalculator calculator,
@@ -41,6 +43,11 @@ public class WeeklyUserMetricsCommandServiceImpl implements WeeklyUserMetricsCom
         this.externalConfigurationService = externalConfigurationService;
         this.externalIamService = externalIamService;
         this.jsonSupport = jsonSupport;
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void historial(main.web.services.fitsense.analytics.infrastructure.persistence.jdbc.HistorialDeRecalculos historial) {
+        this.historial = historial;
     }
 
     @Override
@@ -92,7 +99,16 @@ public class WeeklyUserMetricsCommandServiceImpl implements WeeklyUserMetricsCom
 
         var metrics = existing
                 .map(found -> {
+                    // C4: lo que habia antes de sobrescribir. La formula y calculated_at no cambian.
+                    var antes = found.valoresMedidos();
+                    var versionAnterior = found.getCalculationVersion();
                     found.recalculate(calculation, riskFactorsJson, configuration.version());
+                    if (historial != null)
+                        historial.registrar(found, antes, versionAnterior,
+                                main.web.services.fitsense.analytics.infrastructure.persistence.jdbc
+                                        .HistorialDeRecalculos.CIERRE_REPETIDO,
+                                main.web.services.fitsense.analytics.infrastructure.persistence.jdbc
+                                        .HistorialDeRecalculos.PROCESO_CIERRE_SEMANAL);
                     return found;
                 })
                 .orElseGet(() -> new WeeklyUserMetrics(command.userId(), week.startDate(),

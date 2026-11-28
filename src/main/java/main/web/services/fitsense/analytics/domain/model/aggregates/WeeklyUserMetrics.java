@@ -202,6 +202,60 @@ public class WeeklyUserMetrics {
         apply(calculation, riskFactorsJson);
     }
 
+    /**
+     * C4 · Los valores MEDIDOS de la fila, con el nombre de su columna, para registrar un recalculo (antes y despues).
+     * Son exactamente los que {@link #apply} escribe; ni identificadores ni fechas.
+     */
+    public java.util.Map<String, Object> valoresMedidos() {
+        var v = new java.util.LinkedHashMap<String, Object>();
+        v.put("plan_id", planId);
+        v.put("week_number", weekNumber);
+        v.put("has_active_plan", hasActivePlan);
+        v.put("scheduled_workouts", scheduledWorkouts);
+        v.put("valid_workouts", validWorkouts);
+        v.put("completed_workouts", completedWorkouts);
+        v.put("skipped_workouts", skippedWorkouts);
+        v.put("recorded_workouts", recordedWorkouts);
+        v.put("observed_adherence_pct", observedAdherencePct);
+        v.put("registration_coverage_pct", registrationCoveragePct);
+        v.put("assigned_exercises", assignedExercises);
+        v.put("completed_exercises", completedExercises);
+        v.put("weighted_adherence_pct", weightedAdherencePct);
+        v.put("frequency_adherence_pct", frequencyAdherencePct);
+        v.put("workout_adherence_pct", workoutAdherencePct);
+        v.put("exercise_adherence_pct", exerciseAdherencePct);
+        v.put("planned_week_volume", plannedWeekVolume);
+        v.put("executed_volume", executedVolume);
+        v.put("planned_reps", plannedReps);
+        v.put("planned_seconds", plannedSeconds);
+        v.put("executed_reps", executedReps);
+        v.put("executed_seconds", executedSeconds);
+        v.put("total_training_minutes", totalTrainingMinutes);
+        v.put("average_session_rpe", averageSessionRpe);
+        v.put("average_satisfaction", averageSatisfaction);
+        v.put("consecutive_skips", consecutiveSkips);
+        v.put("days_since_last_workout", daysSinceLastWorkout);
+        v.put("dominant_skip_reason", dominantSkipReason == null ? null : dominantSkipReason.name());
+        v.put("risk_score", riskScore);
+        v.put("risk_level", riskLevel == null ? null : riskLevel.name());
+        v.put("risk_factors", riskFactors);
+        v.put("is_dropout", dropout);
+        return v;
+    }
+
+    /** Columnas cuyo valor difiere entre dos instantaneas de {@link #valoresMedidos} (12.50 y 12.5 son el mismo). */
+    public static java.util.List<String> camposCambiados(java.util.Map<String, Object> antes,
+                                                         java.util.Map<String, Object> despues) {
+        var r = new java.util.ArrayList<String>();
+        for (var k : despues.keySet()) {
+            Object a = antes.get(k), d = despues.get(k);
+            boolean iguales = a instanceof BigDecimal x && d instanceof BigDecimal y ? x.compareTo(y) == 0
+                    : java.util.Objects.equals(a, d);
+            if (!iguales) r.add(k);
+        }
+        return r;
+    }
+
     private void apply(MetricsCalculation calculation, String riskFactorsJson) {
         this.planId = calculation.planId();
         this.weekNumber = calculation.weekNumber();
