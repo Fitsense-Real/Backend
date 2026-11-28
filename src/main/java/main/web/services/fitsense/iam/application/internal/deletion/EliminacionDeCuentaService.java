@@ -60,6 +60,8 @@ public class EliminacionDeCuentaService {
             "plan_generation_predictions",
             "plan_generation_operations",
             "workout_sessions",
+            // V67 (C4): historial de recalculos; referencia a weekly_user_metrics, se borra antes.
+            "weekly_metric_recalculations",
             "weekly_user_metrics",
             "weekly_training_plans",
             "password_reset_tokens",
