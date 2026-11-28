@@ -44,13 +44,20 @@ public class IndicadoresOperativosService {
             """;
 
     /**
-     * C3 · Una semana medida que se quedo SIN cerrar: el participante tuvo plan esa semana y no tiene su medicion.
+     * C3 · Una semana medida cuyo cierre NO SE COMPLETO: el participante tuvo plan esa semana y, o no tiene su medicion
+     * ({@code SIN_MEDICION}), o se midio pero la semana siguiente no tiene plan ({@code SIN_PLAN_NUEVO}).
      * {@code EN_VENTANA}: todavia dentro de {@code fitsense.weekly-cycle.catch-up-hours} desde el lunes 03:00 local, el
      * planificador la recupera solo. {@code FUERA_DE_VENTANA}: ya no se recupera automaticamente (a proposito: ver
      * 04_CONTINUIDAD_CIERRE_SEMANAL.md) y necesita la decision del equipo. Seudonimizada: el codigo P-xxx, nunca el correo.
      */
     public record CierreAtrasado(String participantCode, String timezone, LocalDate measuredWeekStart,
-                                 long hoursSinceDue, String status, boolean newWeekWithoutPlan) {}
+                                 long hoursSinceDue, String status, boolean newWeekWithoutPlan, boolean measured,
+                                 String reason) {}
+
+    /** La semana medida no tiene medicion (el cierre no llego a medir). */
+    public static final String SIN_MEDICION = "SIN_MEDICION";
+    /** La semana se midio, pero la semana siguiente no tiene plan (el cierre no llego a publicar). */
+    public static final String SIN_PLAN_NUEVO = "SIN_PLAN_NUEVO";
 
     public static final String EN_VENTANA = "EN_VENTANA";
     public static final String FUERA_DE_VENTANA = "FUERA_DE_VENTANA";
@@ -119,9 +126,10 @@ public class IndicadoresOperativosService {
     }
 
     /**
-     * C3 · Semanas sin cerrar de los participantes activos, en las ultimas {@code overdue-lookback-weeks} semanas: tuvo
-     * plan esa semana (alguna version no reemplazada) y no tiene medicion, y ya paso su cierre (lunes siguiente, 03:00
-     * locales). SOLO LECTURA: no cierra, no mide y no genera nada. Una retirada saca a la persona de la lista (sus semanas
+     * C3 · Cierres incompletos de los participantes activos, en las ultimas {@code overdue-lookback-weeks} semanas: tuvo
+     * plan esa semana (alguna version no reemplazada), ya paso su cierre (lunes siguiente, 03:00 locales) y falta la
+     * medicion o el plan de la semana siguiente. Una semana sin plan no se espera medir: no aparece (aparece la anterior,
+     * como SIN_PLAN_NUEVO). SOLO LECTURA: no cierra, no mide y no genera nada. Una retirada saca a la persona de la lista (sus semanas
      * posteriores no se esperan).
      */
     @Transactional(readOnly = true)
@@ -138,19 +146,26 @@ public class IndicadoresOperativosService {
                            AS horas,
                        NOT EXISTS (SELECT 1 FROM weekly_training_plans n
                                     WHERE n.user_id = s.user_id AND n.week_start_date = s.semana + 7
-                                      AND n.status <> 'REPLACED') AS nueva_sin_plan
+                                      AND n.status <> 'REPLACED') AS nueva_sin_plan,
+                       EXISTS (SELECT 1 FROM weekly_user_metrics m
+                                WHERE m.user_id = s.user_id AND m.week_start_date = s.semana) AS medida
                   FROM semanas s
                  WHERE s.ahora_local > s.semana + interval '7 days 3 hours'
                    AND EXISTS (SELECT 1 FROM weekly_training_plans w
                                 WHERE w.user_id = s.user_id AND w.week_start_date = s.semana AND w.status <> 'REPLACED')
-                   AND NOT EXISTS (SELECT 1 FROM weekly_user_metrics m
-                                    WHERE m.user_id = s.user_id AND m.week_start_date = s.semana)
+                   AND (NOT EXISTS (SELECT 1 FROM weekly_user_metrics m
+                                     WHERE m.user_id = s.user_id AND m.week_start_date = s.semana)
+                        OR NOT EXISTS (SELECT 1 FROM weekly_training_plans n
+                                        WHERE n.user_id = s.user_id AND n.week_start_date = s.semana + 7
+                                          AND n.status <> 'REPLACED'))
                  ORDER BY s.semana, s.participant_code
                 """, (rs, i) -> {
             long horas = rs.getLong("horas");
+            boolean medida = rs.getBoolean("medida");
             return new CierreAtrasado(rs.getString("participant_code"), rs.getString("timezone"),
                     rs.getObject("semana", LocalDate.class), horas,
-                    horas < horasDeRecuperacion ? EN_VENTANA : FUERA_DE_VENTANA, rs.getBoolean("nueva_sin_plan"));
+                    horas < horasDeRecuperacion ? EN_VENTANA : FUERA_DE_VENTANA, rs.getBoolean("nueva_sin_plan"),
+                    medida, medida ? SIN_PLAN_NUEVO : SIN_MEDICION);
         }, semanasHaciaAtras);
     }
 

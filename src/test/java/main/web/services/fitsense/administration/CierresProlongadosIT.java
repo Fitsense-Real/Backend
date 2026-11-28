@@ -149,6 +149,8 @@ class CierresProlongadosIT {
         var lista = de(c);
         var w2 = lista.stream().filter(x -> x.measuredWeekStart().equals(W2)).findFirst().orElseThrow();
         assertEquals(IndicadoresOperativosService.FUERA_DE_VENTANA, w2.status());
+        assertEquals(IndicadoresOperativosService.SIN_MEDICION, w2.reason());
+        assertFalse(w2.measured());
         assertTrue(w2.hoursSinceDue() >= 7 * 24, "su cierre fue hace mas de una semana");
         assertFalse(w2.newWeekWithoutPlan(), "W1 si tuvo plan");
         assertEquals(estadoEsperadoW1(), lista.stream().filter(x -> x.measuredWeekStart().equals(W1)).findFirst()
@@ -160,9 +162,14 @@ class CierresProlongadosIT {
     @Test
     @DisplayName("semanas cerradas, cuentas retiradas o que no participan: no aparecen")
     void soloLoQueFaltaDeVerdad() {
+        // Cierre COMPLETO de W2 y de W1: medicion de la semana y plan de la siguiente (revision final: antes bastaba
+        // la medicion, y una semana medida sin plan nuevo quedaba como cerrada).
         var cerrada = participante("USER", true);
         plan(cerrada, W2);
+        plan(cerrada, W1);
+        plan(cerrada, LUNES_ACTUAL);
         analitica.calculateWeek(cerrada.id(), W2);
+        analitica.calculateWeek(cerrada.id(), W1);
         var retirada = participante("USER", true);
         plan(retirada, W2);
         jdbc.update("UPDATE users SET withdrawn_at = now() WHERE user_id = ?", retirada.id());
@@ -244,5 +251,81 @@ class CierresProlongadosIT {
                 + " week_start_date = ?", Integer.class, c.id(), s2), "sin plan publicado tarde");
         assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ? AND status ="
                 + " 'ACTIVE'", Integer.class, c.id()), "un solo plan activo, el de S1, intacto");
+    }
+
+    // ------------------------------------------------------------------ revision final (orden de merge)
+
+    @Test
+    @DisplayName("semana medida pero sin plan nuevo: SIN_PLAN_NUEVO; la semana sin plan no se espera medir")
+    void medidaSinPlanNuevo() {
+        var c = participante("USER", true);
+        plan(c, W2);
+        analitica.calculateWeek(c.id(), W2);   // W2 medida, pero W1 sin plan: el cierre no llego a publicar
+        var lista = de(c);
+        assertEquals(1, lista.size(), lista.toString());
+        var w2 = lista.get(0);
+        assertEquals(W2, w2.measuredWeekStart());
+        assertEquals(IndicadoresOperativosService.SIN_PLAN_NUEVO, w2.reason());
+        assertTrue(w2.measured());
+        assertTrue(w2.newWeekWithoutPlan());
+        assertEquals(IndicadoresOperativosService.FUERA_DE_VENTANA, w2.status());
+        assertTrue(indicadores.calcular().cierresFueraDeVentana() >= 1, "tambien cuenta para la alerta");
+        assertTrue(vigilante.revisar().contains("CIERRE_SEMANAL_FUERA_DE_VENTANA"));
+    }
+
+    @Test
+    @DisplayName("reinicio: la deteccion sale de la base; una instancia nueva del servicio ve lo mismo")
+    void sobreviveAUnReinicio(@Autowired org.springframework.context.ApplicationContext contexto) {
+        var c = participante("USER", true);
+        plan(c, W2);
+        var nueva = new IndicadoresOperativosService(jdbc,
+                contexto.getBean(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.class),
+                contexto.getBeanProvider(main.web.services.fitsense.planning.application.internal.commandservices
+                        .PlanGenerationPipeline.class),
+                contexto.getBeanProvider(main.web.services.fitsense.planning.application.internal.commandservices
+                        .AdaptedWeekCommandService.class), 24, 13);
+        assertEquals(de(c), nueva.cierresAtrasados().stream().filter(x -> c.codigo().equals(x.participantCode())).toList());
+    }
+
+    @Test
+    @DisplayName("reanudacion dentro de la ventana: el planificador recupera la semana y deja de aparecer")
+    void reanudacionDentroDeVentana() {
+        LocalDate s1 = RelojPruebas.SEMANA_REFERENCIA, s2 = s1.plusWeeks(1);
+        String zona = "America/Bogota";
+        var c = participante("USER", true);
+        jdbc.update("UPDATE users SET timezone = ? WHERE user_id = ?", zona, c.id());
+        plan(c, s1);
+        assertTrue(de(c).stream().anyMatch(x -> x.measuredWeekStart().equals(s1)), "antes de reanudar, aparece");
+        var tick = s2.atTime(3, 0).atZone(ZoneId.of(zona)).plusHours(5).toInstant();
+        new WeeklyCycleScheduler(iam, ciclo, pendientes, 24, 3, Optional.of(Clock.fixed(tick, ZoneOffset.UTC))).runHourly();
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_user_metrics WHERE user_id = ? AND"
+                + " week_start_date = ?", Integer.class, c.id(), s1));
+        assertTrue(de(c).stream().noneMatch(x -> x.measuredWeekStart().equals(s1)), "recuperada: ya no aparece");
+    }
+
+    @Test
+    @DisplayName("ejecuciones concurrentes de la deteccion y las alertas: mismo resultado y ninguna escritura")
+    void concurrentes() throws Exception {
+        var c = participante("USER", true);
+        plan(c, W2);
+        long metricas = filas("weekly_user_metrics"), planes = filas("weekly_training_plans");
+        var esperado = de(c);
+        var tareas = new java.util.ArrayList<java.util.concurrent.Callable<Object>>();
+        for (int i = 0; i < 6; i++) {
+            tareas.add(() -> de(c));
+            tareas.add(() -> vigilante.revisar());
+        }
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(6);
+        try {
+            for (var f : pool.invokeAll(tareas)) {
+                var r = f.get(30, java.util.concurrent.TimeUnit.SECONDS);
+                if (r instanceof List<?> l && !l.isEmpty() && l.get(0) instanceof IndicadoresOperativosService.CierreAtrasado)
+                    assertEquals(esperado, l);
+            }
+        } finally {
+            pool.shutdown();
+        }
+        assertEquals(metricas, filas("weekly_user_metrics"));
+        assertEquals(planes, filas("weekly_training_plans"));
     }
 }
