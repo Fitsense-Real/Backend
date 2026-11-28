@@ -1,0 +1,21 @@
+id,bloque,escenario,generacion_esperada,sesiones_esperadas,aviso_smax_esperado,progresion_activada,horizonte_semanas,intencion
+O01,G,CUMPLIMIENTO_TOTAL,PLAN_VALIDO,3,NO,NO,4,NO_CHANGE en los 4 ciclos; la semana siguiente copia la publicada
+O02,G,OMISION_POR_TIEMPO,PLAN_VALIDO,2,NO,NO,4,C1: adherencia observada 50 % -> ADAPT_LOCALIZED; la sesion omitida por falta de tiempo SIN minutos declarados se CONSERVA (FaltaDeTiempoPolicy); C2-C4 NO_CHANGE
+O03,G,FATIGA_OMISION,PLAN_VALIDO,4,NO,NO,4,"C1: 75 % -> ADAPT_LOCALIZED (REVISAR_CARGA_Y_RECUPERACION) en la sesion 3, sin subir dosis; sin alto impacto"
+O04,G,DIFICULTAD,PLAN_VALIDO,5,NO,NO,4,"C1: 72 % -> ADAPT_LOCALIZED (VARIANTE_MAS_SENCILLA_O_CARGA) en la sesion 2 (peor: 0 %), sustituto no mas dificil"
+O05,G,DESMOTIVACION,PLAN_VALIDO,4,NO,NO,4,C1: 35 % -> ADAPT_EXPANDED; sesiones 1-2 INVESTIGAR_CAMBIO_MINIMO; la parcial sin causa (P40) no autoriza cambios
+O06,G,DOLOR_EN_EJERCICIO,PLAN_VALIDO,3,NO,NO,4,C1: dolor en el ultimo ejercicio de la sesion 1 -> SEGURIDAD_ANTE_DOLOR (localizada); ese ejercicio no vuelve
+O07,G,SMAX_CUMPLIMIENTO,PLAN_VALIDO,4,SI,NO,4,Pide 5 dias: el tope de principiante programa 4 (aviso S_MAX); NO_CHANGE en los 4 ciclos
+O08,G,SMAX_SIN_REGISTRO,PLAN_VALIDO,4,SI,NO,4,"Pide 7 dias -> 4 (S_MAX); C1: sesion sin registro = hueco (cobertura 75 %, observada 100 %) -> NO_CHANGE"
+O09,G,OMISION_TOLERADA,PLAN_VALIDO,6,SI,NO,4,"Pide 7 dias -> 6 (S_MAX); C1: 83,3 % >= 80 -> NO_CHANGE (una omision no obliga a adaptar)"
+O10,G,PARCIAL_SIN_CAUSA,PLAN_VALIDO,1,NO,NO,4,1 dia x 30 min; C1: 40 % sin causa registrada -> ADAPT_EXPANDED con CAUSA_NO_REGISTRADA: no se inventan cambios
+O11,G,ESPERADO_SIN_PLAN,ESPERADO_SIN_PLAN,0,NO,NO,4,"ESPERADO_SIN_PLAN: fuerza avanzada, 1 dia x 30 min (barrido V46 REV2: INVALIDO V25; precedente N19 FUERZA_SIN_TIEMPO)"
+O12,G,DOLOR_OMISION_MAYOR,PLAN_VALIDO,2,NO,NO,4,62 anos (sin alto impacto) y hombro (sin por encima de la cabeza ni colgarse); C1: omision por dolor -> SEGURIDAD_ANTE_DOLOR
+O13,G,PARCIAL_TOLERADO,PLAN_VALIDO,3,NO,NO,4,"67 anos (sin impacto, carga axial ni inversion) y rodilla (sin arrodillarse; 1205 y 1263 bloqueados); C1: 86,7 % -> NO_CHANGE"
+O14,G,FATIGA_TARDIA,PLAN_VALIDO,4,NO,NO,4,C1: fatiga en un ejercicio con la sesion >= 80 % -> NO_CHANGE; C2: 75 % -> ADAPT_LOCALIZED (REVISAR_CARGA)
+O15,P,PROGRESION_ORDINARIA,PLAN_VALIDO,3,NO,SI,4,"Progresion encendida: C1 NO_CHANGE sin paso (una semana no basta); desde C2, como mucho UN paso por ciclo, techo 1,10"
+O16,P,PROGRESION_NO_FORZADA,PLAN_VALIDO,4,NO,SI,4,C1 sin paso (una semana); C2 75 % -> ADAPT_LOCALIZED con CONSERVAR (omision por tiempo sin minutos); C3 sin paso (la semana previa no fue 100 %)
+O17,P,FATIGA_Y_RECUPERACION,PLAN_VALIDO,3,NO,SI,4,"C1: 66,7 % -> ADAPT_LOCALIZED (REVISAR_CARGA, dosis reducida); despues la recuperacion nunca supera la referencia"
+O18,P,REINCORPORACION,PLAN_VALIDO,3,NO,SI,26,C1: parcial por falta de tiempo -> ACORTAR (retira el ultimo relleno); reincorporacion solo tras una progresion posterior
+O19,P,REINCORPORACION,PLAN_VALIDO,3,NO,SI,26,Rodilla (sin arrodillarse); C1: ACORTAR en la sesion 2; reincorporacion solo tras una progresion posterior
+O20,P,DOLOR_Y_PROGRESION,PLAN_VALIDO,3,NO,SI,8,"C1: dolor -> SEGURIDAD_ANTE_DOLOR; con progresion encendida, el ejercicio excluido no vuelve en 8 semanas"

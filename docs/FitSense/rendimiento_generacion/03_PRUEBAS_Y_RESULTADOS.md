@@ -1,0 +1,58 @@
+# 03 · Pruebas y resultados
+
+**Ninguna llamada a Replicate (USD 0).** Cada cifra lleva su origen:
+- **REAL**: trazas medidas en campañas anteriores.
+- **SIMULADO**: cálculo o reloj falso sobre tiempos reales.
+- **LOCAL**: medición en este contenedor.
+
+## 1. Escenarios
+
+| Escenario | Antes | Ahora | Prueba |
+|---|---|---|---|
+| Válida al primer intento | 1 predicción; p50 60,5 s (REAL) | 1 predicción; ~59,9 s (SIMULADO: −1 s de sondeo) | `PresupuestoGeneracionTest.validaALaPrimera`, `ReplicateSondeoRendimientoTest` |
+| Válida tras un rechazo | 2 predicciones; p50 148,2 s (REAL) | 2 predicciones; ~146 s (SIMULADO) | `PlanGenerationPipelineCircuitBreakerTest`, `ReplicateRespuestasInvalidasTest` |
+| Timeout de una predicción | Sondeo hasta 150 s, cancelación (R-2) y respaldo | Igual. Si además se agota el presupuesto: se corta antes, se cancela y no cuenta para el corte | `ReplicateSondeoRendimientoTest.sinPlazoComoAntes` / `plazoCortaYCancela`, `ReplicateCancelacionTest` |
+| JSON inválido | Fallo del proveedor y respaldo (R-1) | Igual | `ReplicateRespuestasInvalidasTest` (14) |
+| Proveedor caído | Respaldo inmediato; cuenta para el corte | Igual | `PresupuestoGeneracionTest.presupuestoNoAbreElCorte`, `PlanGenerationPipelineCircuitBreakerTest` |
+| **H-G9** | **3 predicciones rechazadas** (~3 × 69,5 s ≈ 210 s) y respaldo | **0 predicciones**; respaldo en ~0,1 s | `FactibilidadGeneracionIAIT.rejillaHG9` |
+| Perfil factible parecido a H-G9 | IA | **IA** (sin cambios) | `FactibilidadGeneracionIAIT` (principiante; 40 y 45 min) |
+| Respaldo determinista | Motor de reglas + V1–V27 | Igual (8–21 ms LOCAL) | Las mismas |
+| Generaciones repetidas | 422 sin coste (R-5) | Igual | `GeneracionInicialConcurrenteIT.repetidasTrasPublicar`, `GeneracionInicialServiceTest` |
+| Solicitudes concurrentes | 409 sin llamar a la IA (R-5) | Igual | `GeneracionInicialConcurrenteIT.dosSimultaneas` |
+| Tercer intento sin tiempo (predicciones de 170 s) | 3 intentos: 510 s | **2 intentos: 340 s**, después el respaldo | `PresupuestoGeneracionTest.tercerIntentoSinTiempo` |
+
+## 2. Antes y después
+
+| Indicador | Antes | Después | Origen |
+|---|---|---|---|
+| Tiempo total, GRA (40 generaciones con IA) | p50 75,8 s · p95 268,7 s · máx. 350,1 s | p50 74,3 s · p95 267,6 s · máx. 345,1 s | SIMULADO sobre trazas REALES (`REPRODUCCION_TRAZAS.csv`) |
+| Tiempo total, válidas al primer intento | p50 60,5 s | p50 59,9 s | ídem |
+| Tiempo total, H-G9 | ~210 s (3 × p50 real) | ~0,1 s | SIMULADO + `FactibilidadGeneracionIAIT` |
+| Peor caso teórico de una petición | ~919 s | Sin cambio por omisión: el presupuesto queda desactivado tras la auditoría. Con 360 s activado: 360 s + una lectura en curso + cancelación (≤ ~490 s) | Cálculo (`01` §5, `02` C, `04` §6) |
+| Retraso del sondeo por predicción | media 1555 ms · p95 2894 ms | media 501 ms · p95 941 ms | SIMULADO con los 56 `predict_time` REALES |
+| Intentos, GRA | 56 | 56 (0 desenlaces cambian) | SIMULADO sobre trazas REALES |
+| Intentos, H-G9 (por generación) | 3 + respaldo | 0 + respaldo | `FactibilidadGeneracionIAIT` |
+| Llamadas evitadas | — | 3 por generación inicial H-G9. 6 de 240 perfiles de un día. 0 en los demás | `FactibilidadGeneracionIAIT` |
+| Uso de respaldo | H-G9: respaldo tras 3 rechazos | H-G9: respaldo directo. Por lo demás, igual: el presupuesto está desactivado. Con 360 s, 2 de 8 generaciones de estrés pasarían al respaldo | ídem y `auditoria_pr54/PRESUPUESTOS_SOBRE_TRAZAS.csv` |
+| Planes inválidos publicados | 0 | **0** | Validación completa en todos los caminos; regresión |
+| Regresiones V24 / V8C | — | **0** | Regresión completa (§3) |
+
+## 3. Regresión (local, `./mvnw verify -Pintegration`, sin token de Replicate)
+
+| Árbol | Unitarias | Integración | Resultado |
+|---|---|---|---|
+| `generation` `3a1d92f` (R-1 a R-5 fusionadas) | 1396 / 0 / 1 omitida | 606 / 0 / 44 omitidas | BUILD SUCCESS |
+| Esta rama, antes de la auditoría | 1414 / 0 / 1 (+18 nuevas) | 609 / 0 / 45 (+2 nuevas; el laboratorio opt-in `TiemposGeneracionIT` cuenta como omitido) | BUILD SUCCESS |
+| **Esta rama, tras la auditoría** (`04`) | **1417 / 0 / 1** (+3: casos límite, umbral y presupuesto desactivado) | **617 / 0 / 46** (+7 de `ReintentosYFactibilidadIT`; `AuditoriaFactibilidadIT` es opt-in y cuenta como omitida) | **BUILD SUCCESS** |
+
+**Incluidas sin cambios de resultado:**
+- Los cuatro objetivos (`GeneracionPorObjetivoIT`, `FactibilidadPorObjetivoIT`, cobertura completa por objetivo).
+- V24 (generación intacta y V24 + V8C).
+- V8C (H-A1/H-A2, sustituciones, dolor, carga y retiradas).
+- Progresión, reincorporación y guardas de dificultad y dolor.
+- `CicloConcurrenteIT`, `GeneracionInicialConcurrenteIT` (R-5), `ConfiguracionEvaluadaIT` y `HG9GeneralFitnessIT`.
+
+**Cohorte integral con IA simulada** (`EvaluacionK20IT`, PLAN-REV-2.0, progresión activada):
+- Escenarios O06, O12 y O20, 8 semanas cada uno.
+- **0 diferencias** de estado, decisión, tipos del informe y llamadas, frente a `generation` anterior y frente a `generation` final. Se repitió tras la auditoría: 0 diferencias.
+- 0 llamadas evitadas por la comprobación previa: ninguno de esos perfiles es de una sesión inviable.

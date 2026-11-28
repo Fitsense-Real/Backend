@@ -1,0 +1,8 @@
+perfil: LOSE_WEIGHT BEGINNER CASA_PESO_CORPORAL 4 dias 70 min
+elegibles: 127 · piso V20: 2940 s · techo V4: 4830 s
+borrador del motor de reglas: VALIDO
+sesion 0 2026-11-02 UPPER_BODY: 8 ejercicios, 2940 s
+sesion 1 2026-11-03 LOWER_BODY: 8 ejercicios, 2940 s
+sesion 2 2026-11-05 UPPER_BODY: 8 ejercicios, 2940 s
+sesion 3 2026-11-06 LOWER_BODY: 8 ejercicios, 2940 s
+redistribucion entre dias consecutivos: 0 de 0 sesiones arregladas; plan completo: VALIDO (existe solucion que el motor no encontro)

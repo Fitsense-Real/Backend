@@ -1,0 +1,1291 @@
+exercise_id	lote	veredicto	gravedad	atributo	actual	segun_gif	discrepancia_previa	usuario_31	evidencia
+1320	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false	plan 63	Sentado en el suelo, manos en el suelo detras de la cadera
+1320	prioridad	CONFIRMADO	BAJA	instructions	silla o banco	suelo		plan 63	Las instrucciones describen fondos en silla; el GIF no tiene silla
+776	prioridad	CONFIRMADO	ALTA	requires_hanging / requires_overhead / requires_inversion	false / false / false	true / true / true	V28 aprobo nivel 1 y HIP_HINGE con material de texto	plan 63	Suspension invertida en anillas, cabeza abajo
+776	prioridad	CONFIRMADO	ALTA	difficulty_level	1	3	V28 (nivel 1 aprobado)	plan 63	Habilidad gimnastica en anillas
+776	prioridad	CONFIRMADO	MEDIA	equipment	body weight	gymnastic rings		plan 63	Anillas visibles en todos los fotogramas
+776	prioridad	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HIP_HINGE	no es bisagra de pie (OTHER o VERTICAL_PULL)	V28	plan 63	Cuenta hoy como LOWER_HIP en el slot 4C
+1103	prioridad	CONFIRMADO	MEDIA	body_part / target	waist / abs	upper legs / quads		plan 63	Sentadilla con brazos al frente
+301	prioridad	PROBABLE	MEDIA	movement_pattern	KNEE_DOMINANT	HORIZONTAL_PULL		plan 63	Mantiene la sentadilla y rema el cuerpo hacia la espaldera; cuenta como LOWER_KNEE
+301	prioridad	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)		plan 63	Agarra una espaldera fija
+1185	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true		intento 1	De pie, brazos por encima de la cabeza; no es de suelo
+309	prioridad	CONFIRMADO	ALTA	requires_kneeling	false	true		intento 3	Una rodilla y las manos en el banco, patada de gluteo
+309	prioridad	CONFIRMADO	MEDIA	instructions	hip thrust en banco	patada de gluteo con rodilla en banco		intento 3	Las instrucciones describen otro ejercicio
+791	prioridad	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + cajon o banco		intentos 1-2	Se sienta en un cajon en cada repeticion
+1077	prioridad	CONFIRMADO	BAJA	instructions	con banda	sin banda		plan 63	El GIF no muestra banda; el implemento (peso corporal) coincide
+94	prioridad	SIN_ERROR		-				intentos 1-2	De pie con los dos pies sobre la tabla (las instrucciones dicen un pie)
+505	prioridad	SIN_ERROR		-				intento 3	Banco declinado; inversion=true coherente
+1004	prioridad	SIN_ERROR		-				intentos 2-3	Peso muerto en maquina
+1003	prioridad	SIN_ERROR		-				intentos 1-3	
+144	prioridad	SIN_ERROR		-				plan 63	
+139	prioridad	SIN_ERROR		-				plan 63	
+985	prioridad	SIN_ERROR		-				plan 63	
+1254	prioridad	SIN_ERROR		-				intentos 1-3	
+314	prioridad	CONFIRMADO	MEDIA	equipment	body weight	bench			Manos en un banco, pies en el suelo
+56	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	2	3 (probable)			Flexion arquero
+64	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	2	3 (probable)			Dominada arquero
+68	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba; no es de suelo
+68	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			Flexion y extension de tronco
+108	prioridad	SIN_ERROR		-					"Falso positivo de impacto (""jack knife"")"
+117	prioridad	SIN_ERROR		-					Falso positivo de habilidad
+149	prioridad	PROBABLE	MEDIA	axial_load	false	true	V25 fijo axial_load=false		Barra sobre la espalda, de pie (no es de suelo)
+254	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba
+254	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			
+400	prioridad	SIN_ERROR		-					Brazos a la altura del hombro
+448	prioridad	SIN_ERROR		-					Brazos a la altura del hombro; asiento sin exigir (convencion de los sentados)
+458	prioridad	SIN_ERROR		-					Fondos en paralelas: apoyo, no suspension
+461	prioridad	CONFIRMADO	MEDIA	difficulty_level	1	3			Flexion con palmada; ya la excluye el alto impacto para principiantes
+514	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			Press sentado por encima de la cabeza
+664	prioridad	SIN_ERROR		-					Push press sin fase de vuelo
+825	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Manos en el suelo, piernas sobre el balon
+882	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba
+882	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			
+883	prioridad	PROBABLE	MEDIA	body_part	upper legs	waist			
+916	prioridad	CONFIRMADO	ALTA	requires_kneeling	false	true			Rodillas sobre la almohadilla (curl nordico)
+916	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Curl nordico
+937	prioridad	CONFIRMADO	MEDIA	difficulty_level	1	3			Muscle-up con impulso; el alto impacto ya lo excluye para principiantes
+937	prioridad	CONFIRMADO	MEDIA	equipment	pull-up bar	gymnastic rings			
+941	prioridad	SIN_ERROR		-					
+962	prioridad	PROBABLE	MEDIA	body_part	back	upper legs			Peso muerto sumo con remo alto
+974	prioridad	CONFIRMADO	ALTA	difficulty_level	1	3			L-sit; un principiante con suelo permitido puede recibirlo
+1057	prioridad	SIN_ERROR		-					De pie; falso positivo de suelo
+1058	prioridad	CONFIRMADO	ALTA	requires_inversion	false	true			Posicion de pica, cabeza bajo la cadera con peso en brazos
+1068	prioridad	CONFIRMADO	MEDIA	difficulty_level	1	3			Muscle-up; el alto impacto ya lo excluye para principiantes
+1068	prioridad	CONFIRMADO	MEDIA	equipment	pull-up bar	gymnastic rings			
+1086	prioridad	PROBABLE	MEDIA	movement_pattern	KNEE_DOMINANT	HIP_HINGE + elevacion			Cuenta como LOWER_KNEE sin flexion de rodilla dominante
+1089	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Tumbado boca arriba en el suelo
+1100	prioridad	SIN_ERROR		-					Flexion con giro a plancha lateral
+1135	prioridad	SIN_ERROR		-					De pie; falso positivo de suelo
+1161	prioridad	CONFIRMADO	ALTA	requires_floor	false	true			Manos en el suelo sobre el balon
+1180	prioridad	SIN_ERROR		-					El GIF no es una flexion a una mano real
+1192	prioridad	CONFIRMADO	MEDIA	equipment	body weight	gymnastic rings			Exige anillas y no las exige
+1192	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			
+1272	prioridad	SIN_ERROR		-					Brazos no pasan de la cabeza
+1289	prioridad	SIN_ERROR		-					Sin fase de vuelo
+1297	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Pies en el suelo, posicion de flexion
+1301	prioridad	CONFIRMADO	ALTA	requires_floor	false	true	V25 lo fijo en false		Manos en el suelo, pies en las correas
+1301	prioridad	CONFIRMADO	BAJA	requires_hanging / requires_overhead	true / true	false / false	V25 los fijo en true		No cuelga (restriccion de mas)
+1301	prioridad	CONFIRMADO	MEDIA	equipment	pull-up bar	suspension straps			
+1305	prioridad	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2 (probable)			V-sit con apoyo de manos
+1306	prioridad	SIN_ERROR		-					Silla romana: apoyo en antebrazos
+1308	prioridad	CONFIRMADO	ALTA	requires_overhead	false	true			De pie, brazos arriba
+1308	prioridad	PROBABLE	MEDIA	body_part	back	waist			
+54	grupo	PENDIENTE_CRITERIO	MEDIA	movement_pattern	KNEE_DOMINANT	LOCOMOTION_CARDIO (probable)			Pasos de agilidad
+142	grupo	CONFIRMADO	MEDIA	body_part / target	back / spine	upper legs / hamstrings			Peso muerto piernas rectas
+145	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper legs	sentadilla + remo			Precedente V36: domina el tren inferior
+302	grupo	PROBABLE	MEDIA	movement_pattern	KNEE_DOMINANT	HORIZONTAL_PULL			Igual que 301; espaldera no modelada
+439	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	back / KNEE_DOMINANT	sentadilla + remo			
+449	grupo	CONFIRMADO	MEDIA	movement_pattern	KNEE_DOMINANT	ELBOW_FLEXION			Sentadilla isometrica; cuenta como LOWER_KNEE
+558	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper arms	sentadilla + curl			Precedente V36 (527, 609): upper legs
+567	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper arms	zancada + extension			Precedente V36: upper legs
+671	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	chest / HIP_EXTENSION	pullover + puente en balon			
+775	grupo	SIN_ERROR		-					
+796	grupo	PENDIENTE_CRITERIO	MEDIA	combinado	upper arms	subida al banco + curl			Precedente V36: upper legs
+824	grupo	PROBABLE	MEDIA	body_part	back	upper legs			Extension de cadera sobre balon
+853	grupo	CONFIRMADO	MEDIA	movement_pattern	KNEE_DOMINANT	LOCOMOTION_CARDIO			Marcha con rodillas altas; cuenta como LOWER_KNEE
+1102	grupo	PENDIENTE_CRITERIO	MEDIA	movement_pattern	KNEE_DOMINANT	MOBILITY (probable)			Paso atras con brazos arriba
+1106	grupo	PROBABLE	MEDIA	body_part	waist	chest			
+1111	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			Flexion con patada
+1113	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			
+1115	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			
+1262	grupo	PROBABLE	MEDIA	body_part	upper legs	chest			
+1146	grupo	CONFIRMADO	MEDIA	equipment	body weight	bench			
+1174	grupo	PENDIENTE_CRITERIO	BAJA	body_part	cardio	upper legs			
+1184	grupo	PROBABLE	MEDIA	movement_pattern	HIP_ABDUCTION_ADDUCTION	TRUNK_ROTATION_LATERAL_FLEXION			Elevacion de rodillas con giro en silla romana
+1201	grupo	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Plancha Copenhague
+1225	grupo	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado en el suelo
+1295	grupo	PROBABLE	MEDIA	body_part	cardio	upper legs			Zancadas caminando
+862	grupo	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Dominada con rodillas
+1055	grupo	CONFIRMADO	ALTA	requires_kneeling	false	true			De rodillas en el suelo
+59	grupo	CONFIRMADO	MEDIA	movement_pattern	LOCOMOTION_CARDIO	TRUNK_ROTATION_LATERAL_FLEXION			Abdominal bicicleta en el suelo; cuenta como CARDIO
+902	grupo	PENDIENTE_CRITERIO	MEDIA	movement_pattern	LOCOMOTION_CARDIO	MOBILITY o CORE (probable)			
+1374	grupo	CONFIRMADO	ALTA	requires_hanging / requires_overhead	false / false	true / true			Colgado de la barra elevando rodillas
+1374	grupo	CONFIRMADO	MEDIA	equipment	body weight	pull-up bar			
+1374	grupo	CONFIRMADO	MEDIA	movement_pattern	LOCOMOTION_CARDIO	TRUNK_FLEXION			Cuenta como CARDIO
+1374	grupo	CONFIRMADO	BAJA	high_impact	true	false			Sin fase de vuelo (restriccion de mas)
+243	muestra	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Pie trasero sobre el banco
+606	muestra	CONFIRMADO	ALTA	requires_kneeling	false	true			Rodilla y mano en el banco
+606	muestra	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			
+606	muestra	CONFIRMADO	BAJA	instructions	de pie inclinado	rodilla en el banco			
+718	muestra	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Banco inclinado
+1082	muestra	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true	V25 los fijo en false		De rodillas en el suelo, cae sobre las manos
+1125	muestra	CONFIRMADO	ALTA	requires_floor	false	true			Manos en el suelo, pies en el balon
+1199	muestra	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado de lado en el suelo
+622	muestra	PENDIENTE_CRITERIO	BAJA	difficulty_level	3	1-2 (probable)			Elevacion lateral a una mano (nivel de mas)
+198	muestra	SIN_ERROR		-					
+201	muestra	SIN_ERROR		-					
+277	muestra	SIN_ERROR		-					
+290	muestra	SIN_ERROR		-					
+311	muestra	SIN_ERROR		-					
+364	muestra	SIN_ERROR		-					
+388	muestra	SIN_ERROR		-					
+392	muestra	SIN_ERROR		-					
+395	muestra	SIN_ERROR		-					
+428	muestra	SIN_ERROR		-					
+433	muestra	SIN_ERROR		-					
+455	muestra	SIN_ERROR		-					
+474	muestra	SIN_ERROR		-					
+480	muestra	SIN_ERROR		-					
+492	muestra	SIN_ERROR		-					
+506	muestra	SIN_ERROR		-					
+510	muestra	SIN_ERROR		-					
+553	muestra	SIN_ERROR		-					
+672	muestra	SIN_ERROR		-					
+717	muestra	SIN_ERROR		-					
+752	muestra	SIN_ERROR		-					
+756	muestra	SIN_ERROR		-					
+781	muestra	SIN_ERROR		-					
+785	muestra	SIN_ERROR		-					
+859	muestra	SIN_ERROR		-					
+878	muestra	SIN_ERROR		-					
+909	muestra	SIN_ERROR		-					
+928	muestra	SIN_ERROR		-					
+1008	muestra	SIN_ERROR		-					
+1187	muestra	SIN_ERROR		-					
+1204	muestra	SIN_ERROR		-					
+1240	muestra	SIN_ERROR		-					
+1338	muestra	SIN_ERROR		-					
+393	usuario31	CONFIRMADO	ALTA	requires_overhead	false	true		intentos 1-3	Jalon desde polea alta: manos por encima de la cabeza al inicio
+393	usuario31	CONFIRMADO	MEDIA	movement_pattern	HORIZONTAL_PULL	VERTICAL_PULL		intentos 1-3	Sigue contando para UPPER_PULL
+456	usuario31	CONFIRMADO	ALTA	requires_overhead	false	true		plan 63	Palo o banda por encima de la cabeza
+1255	usuario31	CONFIRMADO	MEDIA	equipment	body weight	bench		intento 3	Pie apoyado en un banco
+548	usuario31	SIN_ERROR		-				intentos 1-3	
+436	usuario31	SIN_ERROR		-				intentos 1-3	
+1325	usuario31	SIN_ERROR		-				intentos 1-3, plan 63	
+1137	usuario31	SIN_ERROR		-				intentos 1-3	
+341	usuario31	SIN_ERROR		-				intentos 1-3	
+1052	usuario31	SIN_ERROR		-				intentos 1-3	
+727	usuario31	SIN_ERROR		-				intentos 1-3	Sentado en banco (convencion de los sentados)
+1150	usuario31	SIN_ERROR		-				intentos 1-3	
+1015	usuario31	SIN_ERROR		-				intentos 1-2	
+136	usuario31	SIN_ERROR		-				intentos 2-3	
+992	usuario31	SIN_ERROR		-				plan 63	
+135	usuario31	SIN_ERROR		-				plan 63	
+294	usuario31	SIN_ERROR		-				plan 63	
+1178	usuario31	SIN_ERROR		-				plan 63	
+65	A01	SIN_ERROR		-					
+873	A01	SIN_ERROR		-					
+353	A01	CONFIRMADO	ALTA	requires_overhead	false	true			Tumbado en banco inclinado, tira desde polea por encima de la cabeza
+353	A01	CONFIRMADO	MEDIA	equipment	cable	cable + bench			Banco inclinado
+353	A01	PROBABLE	MEDIA	movement_pattern	ELBOW_EXTENSION	SHOULDER_EXTENSION			Brazos casi rectos
+391	A01	CONFIRMADO	MEDIA	movement_pattern	ELBOW_EXTENSION	SHOULDER_EXTENSION			Brazos rectos de la horizontal a la cadera
+300	A01	PROBABLE	MEDIA	movement_pattern	HORIZONTAL_PULL	VERTICAL_PULL			Dominada con pies en el banco
+635	A01	SIN_ERROR		-					
+982	A01	SIN_ERROR		-					
+594	A01	PROBABLE	ALTA	requires_overhead	false	true			Y-raise: brazos en prolongacion del tronco por encima de la cabeza
+750	A01	SIN_ERROR		-					
+804	A01	CONFIRMADO	ALTA	requires_floor	false	true			Prono sobre balon con manos en el suelo
+1261	A01	SIN_ERROR		-					
+808	A01	SIN_ERROR		-					
+1259	A01	SIN_ERROR		-					
+74	A01	CONFIRMADO	ALTA	requires_kneeling	false	true	V25 fijo requires_kneeling=false		Rodillas en la almohadilla de asistencia
+75	A01	CONFIRMADO	ALTA	requires_kneeling	false	true	V25 fijo requires_kneeling=false		Rodillas en la almohadilla de asistencia
+76	A01	SIN_ERROR		-					
+77	A01	SIN_ERROR		-					
+113	A01	SIN_ERROR		-					
+464	A01	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Dominada libre completa
+874	A01	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Dominada Gironda al esternon
+995	A01	SIN_ERROR		-					
+1108	A01	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Dominada libre completa
+1147	A01	SIN_ERROR		-					
+1191	A01	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Dominada desplazandose de lado a lado
+231	A01	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Tumbado en banco
+231	A01	PENDIENTE_CRITERIO	MEDIA	combinado	back / VERTICAL_PUSH	pullover + press			
+1177	A01	SIN_ERROR		-					
+1294	A01	CONFIRMADO	ALTA	requires_hanging / requires_overhead	false / false	true / true			Colgado de la barra balanceandose
+1294	A01	CONFIRMADO	MEDIA	equipment	body weight	pull-up bar			
+1294	A01	CONFIRMADO	ALTA	difficulty_level	1	3			Balanceo gimnastico colgado
+1223	A01	CONFIRMADO	MEDIA	equipment	smith machine	smith machine + bench			Banco inclinado
+1223	A01	PENDIENTE_CRITERIO	BAJA	movement_pattern	HORIZONTAL_PULL	protraccion escapular (SHOULDER_RAISE u OTHER)			Empuje de escapulas, no es remo
+323	A01	CONFIRMADO	MEDIA	equipment	cable	cable + bench			Tumbado en banco
+495	A01	CONFIRMADO	MEDIA	equipment	body weight	body weight + bench			Pies sobre el banco
+155	A01	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Tumbado en banco
+178	A01	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Banco inclinado
+590	A01	SIN_ERROR		-					
+382	A01	CONFIRMADO	MEDIA	body_part / movement_pattern	chest / TRUNK_ROTATION_LATERAL_FLEXION	shoulders / SHOULDER_RAISE			Elevacion lateral inclinado con polea
+901	A01	SIN_ERROR		-					
+821	A01	SIN_ERROR		-					
+922	A01	PROBABLE	MEDIA	body_part	lower arms	upper legs o shoulders			Cargada colgante: no trabaja el antebrazo como principal
+1017	A01	SIN_ERROR		-					
+262	A01	PENDIENTE_CRITERIO	MEDIA	combinado	shoulders / HIP_HINGE	bisagra + balanceo de brazos			
+953	A01	PROBABLE	MEDIA	body_part	shoulders	upper legs			Cargada con bisagra de cadera
+267	A02	PENDIENTE_CRITERIO	MEDIA	combinado	shoulders / KNEE_DOMINANT	sentadilla + press			Thruster
+952	A02	PENDIENTE_CRITERIO	MEDIA	combinado	shoulders / KNEE_DOMINANT	sentadilla + press			Thruster
+973	A02	SIN_ERROR		-					
+943	A02	SIN_ERROR		-					
+930	A02	PROBABLE	MEDIA	body_part	upper arms	upper legs o shoulders			Cargada colgante
+971	A02	PROBABLE	MEDIA	body_part	upper arms	upper legs o shoulders			Cargada colgante
+528	A02	CONFIRMADO	MEDIA	movement_pattern	TRUNK_FLEXION	ELBOW_FLEXION			Curl sentado en balon con una pierna elevada
+316	A02	CONFIRMADO	MEDIA	movement_pattern	VERTICAL_PULL	HORIZONTAL_PULL			Remo invertido bajo la barra, talones en el suelo
+316	A02	CONFIRMADO	BAJA	requires_hanging / requires_overhead	true / true	false / false	V25 fijo requires_hanging=true, requires_overhead=true		No cuelga (restriccion de mas)
+316	A02	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Tumbado bajo la barra, talones en el suelo (igual que 912)
+684	A02	CONFIRMADO	MEDIA	body_part / target	upper arms / biceps	lower arms / forearms			Curl de muneca
+684	A02	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo detras del banco, antebrazos sobre el banco
+685	A02	CONFIRMADO	MEDIA	body_part / target	upper arms / biceps	lower arms / forearms			Curl de muneca
+685	A02	PROBABLE	ALTA	requires_floor / requires_kneeling	false / false	true / true			Misma familia over bench (no ampliado)
+730	A02	CONFIRMADO	MEDIA	body_part / target	upper arms / biceps	lower arms / forearms			Curl de muneca
+1313	A02	SIN_ERROR		-					
+160	A02	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Sentadilla hasta el banco
+161	A02	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Sentadilla hasta el banco
+889	A02	SIN_ERROR		-					
+93	A02	SIN_ERROR		-					
+876	A02	SIN_ERROR		-					
+1117	A02	SIN_ERROR		-					
+875	A02	CONFIRMADO	MEDIA	equipment	body weight	body weight + bench			Tumbado en un banco
+875	A02	CONFIRMADO	BAJA	requires_floor	true	false			En banco, no en el suelo (restriccion de mas)
+875	A02	PROBABLE	MEDIA	body_part	upper legs	waist			Patadas de tijera
+310	A02	PROBABLE	MEDIA	body_part	upper legs	waist			Giro de tronco tumbado
+1314	A02	SIN_ERROR		-					
+162	A02	PENDIENTE_CRITERIO	MEDIA	combinado	upper legs / VERTICAL_PUSH	cargada + press			
+674	A02	PENDIENTE_CRITERIO	MEDIA	combinado	upper legs / VERTICAL_PUSH	arrancada a una mano			
+813	A02	CONFIRMADO	ALTA	difficulty_level	1	3			Bandera humana en un poste
+813	A02	CONFIRMADO	MEDIA	equipment	body weight	poste o espaldera (no modelado)			
+858	A02	SIN_ERROR		-					
+1298	A02	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Manos en el suelo, cuerpo suspendido sobre los brazos
+1298	A02	CONFIRMADO	ALTA	difficulty_level	1	3			Maltesa en straddle: habilidad gimnastica de elite
+1298	A02	CONFIRMADO	BAJA	requires_hanging / requires_overhead	true / true	false / false	V25 fijo requires_hanging=true, requires_overhead=true		No cuelga
+502	A02	CONFIRMADO	MEDIA	movement_pattern	ELBOW_FLEXION	TRUNK_FLEXION			Encogimiento abdominal en el suelo
+959	A02	SIN_ERROR		-					
+298	A02	SIN_ERROR		-					
+903	A02	PENDIENTE_CRITERIO	MEDIA	movement_pattern	LOCOMOTION_CARDIO	MOBILITY o CORE (probable)			Inchworm
+1085	A02	SIN_ERROR		-					
+61	A02	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	1-2			Elevacion de rodillas colgado de correas
+62	A02	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	2 (probable)			Elevacion de piernas rectas colgado
+504	A02	SIN_ERROR		-					
+865	A02	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	1-2			Elevacion de rodillas colgado
+866	A02	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	1-2			Elevacion de rodillas colgado
+868	A02	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Pica colgado: piernas hasta la barra
+869	A02	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	2 (probable)			Piernas rectas colgado
+870	A02	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	2 (probable)			Piernas rectas colgado
+427	A02	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Tumbado sobre el bosu en el suelo
+427	A02	CONFIRMADO	MEDIA	equipment	cable	cable + bosu ball			
+867	A03	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	1-2			Elevacion oblicua de rodillas colgado
+871	A03	PENDIENTE_CRITERIO	BAJA	difficulty_level	1	2 (probable)			Piernas rectas con giro, colgado
+927	A03	PROBABLE	MEDIA	body_part	waist	shoulders			Press inclinado con kettlebell
+119	B01	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo con piernas extendidas
+304	B01	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)			Rema agarrado a una espaldera
+307	B01	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)			Rema agarrado a una espaldera
+308	B01	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)			Rema con toalla en la espaldera
+349	B01	SIN_ERROR		-					
+350	B01	SIN_ERROR		-					
+351	B01	CONFIRMADO	ALTA	requires_overhead	false	true	V25 fijo requires_overhead=false		Tira desde polea alta con brazos por encima de la cabeza
+352	B01	SIN_ERROR		-					
+357	B01	SIN_ERROR		-					
+394	B01	SIN_ERROR		-					
+432	B01	SIN_ERROR		-					
+434	B01	CONFIRMADO	ALTA	requires_overhead	false	true			Polea alta: manos por encima de la cabeza al inicio
+434	B01	PROBABLE	MEDIA	movement_pattern	HORIZONTAL_PULL	VERTICAL_PULL			
+437	B01	SIN_ERROR		-					
+482	B01	SIN_ERROR		-					
+592	B01	SIN_ERROR		-					
+712	B01	SIN_ERROR		-					
+910	B01	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Tumbado bajo la barra con talones en el suelo (igual que 912, que si la lleva)
+911	B01	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Tumbado bajo la barra, rodillas flexionadas (igual que 912)
+912	B01	SIN_ERROR		-					
+913	B01	CONFIRMADO	ALTA	requires_hanging / requires_inversion / requires_overhead	false / false / false	true / true / true	V25 fijo requires_hanging=false, requires_inversion=false, requires_overhead=false		Colgado cabeza abajo de la barra con las piernas enganchadas
+913	B01	CONFIRMADO	ALTA	difficulty_level	1	3			Remo invertido colgado
+913	B01	CONFIRMADO	MEDIA	equipment	smith machine o suspension straps	pull-up bar			Barra fija
+914	B01	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Remo con correas desde tumbado en el suelo (igual que 912)
+994	B01	SIN_ERROR		-					
+997	B01	SIN_ERROR		-					
+1001	B01	SIN_ERROR		-					
+1002	B01	SIN_ERROR		-					
+1035	B01	SIN_ERROR		-					
+1036	B01	SIN_ERROR		-					
+1037	B01	SIN_ERROR		-					
+1039	B01	SIN_ERROR		-					
+1040	B01	SIN_ERROR		-					
+1041	B01	CONFIRMADO	ALTA	requires_kneeling	false	true			Una rodilla en la almohadilla de la maquina
+1156	B01	CONFIRMADO	BAJA	requires_floor	true	false	V25 fijo requires_floor=true		Sentado en un asiento inclinado, no en el suelo
+1307	B01	PROBABLE	ALTA	requires_floor	false	true			Remo en anillas desde casi tumbado, talones en el suelo
+66	B01	CONFIRMADO	MEDIA	equipment	body weight	bench			Manos apoyadas en un banco
+809	B01	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo abrazando el balon
+810	B01	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true	V25 fijo requires_floor=false, requires_kneeling=false		De rodillas en el suelo con los brazos sobre el balon
+822	B01	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			Rodillas y manos en el suelo sobre el balon
+823	B01	SIN_ERROR		-					
+938	B01	SIN_ERROR		-					
+1188	B01	CONFIRMADO	ALTA	requires_overhead	false	true			Sentado con un brazo extendido por encima de la cabeza
+1190	B02	SIN_ERROR		-					
+1257	B02	SIN_ERROR		-					
+1258	B02	SIN_ERROR		-					
+1260	B02	PROBABLE	ALTA	requires_overhead	false	true			Mano detras de la cabeza con el codo por encima
+1309	B02	CONFIRMADO	BAJA	requires_overhead	true	false	V25 fijo requires_overhead=true		Brazos a la altura del hombro (restriccion de mas)
+1310	B02	SIN_ERROR		-					
+1070	B02	CONFIRMADO	ALTA	requires_overhead	false	true			Brazo apoyado en la pared por encima de la cabeza
+120	B02	SIN_ERROR		-					
+593	B02	SIN_ERROR		-					
+999	B02	SIN_ERROR		-					
+1000	B02	SIN_ERROR		-					
+1038	B02	SIN_ERROR		-					
+1033	B02	SIN_ERROR		-					
+1087	B02	PENDIENTE_CRITERIO	BAJA	high_impact	true	false (probable)			Lanzamiento al suelo sin fase de vuelo; V10 incluye slam en impacto por nombre
+69	B02	PENDIENTE_CRITERIO	ALTA	requires_floor	false	true o false (criterio balon)			Prono sobre balon, puntas de pies en el suelo, sin manos en el suelo
+805	B02	PENDIENTE_CRITERIO	ALTA	requires_floor	false	true o false (criterio balon)			Prono sobre balon, rodillas y pies en el suelo
+805	B02	PROBABLE	ALTA	requires_kneeling	false	true	V25 fijo requires_kneeling=false		Rodillas apoyadas en el suelo
+806	B02	PENDIENTE_CRITERIO	ALTA	requires_floor	false	true o false (criterio balon)			Prono sobre balon, pies en el suelo
+807	B02	PENDIENTE_CRITERIO	ALTA	requires_floor	false	true o false (criterio balon)			Prono sobre balon, pies en el suelo
+908	B02	SIN_ERROR		-					
+996	B02	SIN_ERROR		-					
+1066	B02	SIN_ERROR		-					
+114	B02	PENDIENTE_CRITERIO	BAJA	equipment	band	band + cajon (convencion de los sentados)			Sentado en un cajon
+115	B02	PENDIENTE_CRITERIO	BAJA	equipment	band	band + cajon (convencion de los sentados)			Sentado en un cajon
+116	B02	PENDIENTE_CRITERIO	BAJA	equipment	band	band + cajon (convencion de los sentados)			Sentado en un cajon
+143	B02	PENDIENTE_CRITERIO	BAJA	equipment	band	band + cajon (convencion de los sentados)			Sentado en un cajon
+998	B02	SIN_ERROR		-					
+1034	B02	SIN_ERROR		-					
+1164	B02	SIN_ERROR		-					
+53	B02	SIN_ERROR		-					
+253	B02	PROBABLE	BAJA	requires_kneeling	true	false	V25 fijo requires_kneeling=true		Gateo con rodillas en el aire (restriccion de mas)
+293	B02	SIN_ERROR		-					
+854	B02	PENDIENTE_CRITERIO	BAJA	high_impact	true	false (probable)			Rodillas altas apoyado en la pared, sin fase de vuelo clara
+893	B02	SIN_ERROR		-					
+1054	B02	SIN_ERROR		-					
+1093	B02	CONFIRMADO	BAJA	requires_floor	true	false			De pie elevando rodillas (restriccion de mas)
+1093	B02	CONFIRMADO	BAJA	instructions	desde flexion	de pie			El nombre push to run no coincide con el GIF
+1133	B02	SIN_ERROR		-					
+1134	B02	CONFIRMADO	MEDIA	equipment	body weight	treadmill			Carrera en cinta
+1175	B02	SIN_ERROR		-					
+1176	B02	SIN_ERROR		-					
+342	B02	CONFIRMADO	MEDIA	equipment	cable	cable + bench			Banco inclinado
+343	B03	SIN_ERROR		-					
+581	B03	SIN_ERROR		-					
+582	B03	SIN_ERROR		-					
+591	B03	SIN_ERROR		-					
+900	B03	SIN_ERROR		-					
+1025	B03	SIN_ERROR		-					
+72	B03	SIN_ERROR		-					
+73	B03	SIN_ERROR		-					
+102	B03	SIN_ERROR		-					
+421	B03	SIN_ERROR		-					
+460	B03	SIN_ERROR		-					
+494	B03	SIN_ERROR		-					
+496	B03	SIN_ERROR		-					
+547	B03	SIN_ERROR		-					
+580	B03	SIN_ERROR		-					
+583	B03	SIN_ERROR		-					
+588	B03	SIN_ERROR		-					
+589	B03	SIN_ERROR		-					
+895	B03	CONFIRMADO	MEDIA	equipment	body weight	bench + step platform			Pies en un banco, manos en un step
+895	B03	PROBABLE	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Baja las manos al suelo entre los apoyos
+896	B03	CONFIRMADO	MEDIA	equipment	body weight	step platform			Manos en un step
+897	B03	SIN_ERROR		-					
+898	B03	CONFIRMADO	MEDIA	equipment	body weight	smith machine			Manos en la barra de la multipower
+899	B03	SIN_ERROR		-					
+933	B03	SIN_ERROR		-					
+988	B03	SIN_ERROR		-					
+989	B03	SIN_ERROR		-					
+990	B03	SIN_ERROR		-					
+991	B03	SIN_ERROR		-					
+1026	B03	SIN_ERROR		-					
+1080	B03	CONFIRMADO	BAJA	equipment	medicine ball	medicine ball + companero			Pase a otra persona: no es realizable en solitario
+1081	B03	SIN_ERROR		-					
+1084	B03	PENDIENTE_CRITERIO	BAJA	high_impact	true	false (probable)			Lanzamiento de pecho sin fase de vuelo
+1092	B03	SIN_ERROR		-					
+1095	B03	CONFIRMADO	BAJA	requires_floor	true	false			De pie, sin suelo (restriccion de mas)
+1095	B03	PROBABLE	MEDIA	movement_pattern	HORIZONTAL_PUSH	MOBILITY			Balanceo de brazos sin carga; cuenta hoy como UPPER_PUSH
+1096	B03	SIN_ERROR		-					
+1097	B03	SIN_ERROR		-					
+1098	B03	SIN_ERROR		-					
+1099	B03	SIN_ERROR		-					
+1122	B03	SIN_ERROR		-					
+1123	B03	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Pies sobre el balon, manos en el suelo (flexion completa)
+1126	B04	SIN_ERROR		-					
+1138	B04	SIN_ERROR		-					
+1155	B04	SIN_ERROR		-					
+1179	B04	SIN_ERROR		-					
+1334	B04	SIN_ERROR		-					
+466	B04	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo con el brazo sobre el balon
+773	B04	SIN_ERROR		-					
+1373	B04	SIN_ERROR		-					
+95	B04	PENDIENTE_CRITERIO	BAJA	equipment	band	band + cajon (convencion de los sentados)			Sentado en un cajon
+133	B04	PENDIENTE_CRITERIO	BAJA	equipment	band	band + cajon (convencion de los sentados)			Sentado en un cajon
+733	B04	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+983	B04	SIN_ERROR		-					
+134	B04	SIN_ERROR		-					
+493	B04	CONFIRMADO	MEDIA	equipment	body weight	bench + step platform			Manos en un banco, puntas en un step
+695	B04	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+816	B04	CONFIRMADO	MEDIA	equipment	stability ball	stability ball + dumbbell			Lleva mancuernas
+817	B04	CONFIRMADO	MEDIA	equipment	stability ball	stability ball + dumbbell			Lleva mancuernas
+818	B04	CONFIRMADO	MEDIA	equipment	stability ball	stability ball + dumbbell			Lleva mancuernas
+984	B04	SIN_ERROR		-					
+1014	B04	SIN_ERROR		-					
+1016	B04	SIN_ERROR		-					
+1018	B04	SIN_ERROR		-					
+1253	B04	CONFIRMADO	BAJA	equipment	body weight	escalon (no modelado)			Sobre una escalera
+55	B04	CONFIRMADO	BAJA	requires_floor	true	false	V25 fijo requires_floor=true		De pie (restriccion de mas)
+453	B04	SIN_ERROR		-					
+454	B04	SIN_ERROR		-					
+1136	B04	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo con piernas extendidas
+1053	B04	SIN_ERROR		-					
+1173	B04	SIN_ERROR		-					
+336	B04	SIN_ERROR		-					
+417	B04	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo junto a la polea
+98	B04	SIN_ERROR		-					
+99	B04	PROBABLE	ALTA	requires_overhead	false	true			Elevacion frontal hasta la altura de la cabeza o por encima
+100	B04	SIN_ERROR		-					
+137	B04	SIN_ERROR		-					
+416	B04	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+575	B04	SIN_ERROR		-					
+576	B04	SIN_ERROR		-					
+703	B04	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+706	B04	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+707	B05	SIN_ERROR		-					
+708	B05	SIN_ERROR		-					
+709	B05	SIN_ERROR		-					
+986	B05	SIN_ERROR		-					
+1020	B05	SIN_ERROR		-					
+1021	B05	SIN_ERROR		-					
+101	B05	SIN_ERROR		-					
+574	B05	PROBABLE	MEDIA	movement_pattern	VERTICAL_PUSH	SHOULDER_RAISE			Brazos colgando en banco inclinado; elevacion corta, no press
+574	B05	PROBABLE	BAJA	requires_overhead	true	false	V25 fijo requires_overhead=true		No pasa de la altura del hombro (restriccion de mas)
+704	B05	SIN_ERROR		-					
+705	B05	SIN_ERROR		-					
+739	B05	SIN_ERROR		-					
+740	B05	SIN_ERROR		-					
+987	B05	SIN_ERROR		-					
+1022	B05	CONFIRMADO	MEDIA	equipment	leverage machine	landmine + barbell			Barra anclada al suelo con disco
+1022	B05	PENDIENTE_CRITERIO	MEDIA	combinado	shoulders / VERTICAL_PUSH	sentadilla + press (thruster con landmine)			
+1023	B05	SIN_ERROR		-					
+1024	B05	SIN_ERROR		-					
+1154	B05	SIN_ERROR		-					
+132	B05	SIN_ERROR		-					
+319	B05	SIN_ERROR		-					
+366	B05	CONFIRMADO	MEDIA	equipment	cable	cable + bench			Banco inclinado
+368	B05	SIN_ERROR		-					
+443	B05	CONFIRMADO	MEDIA	equipment	cable	cable + bench			Banco inclinado
+604	B05	SIN_ERROR		-					
+605	B05	CONFIRMADO	ALTA	requires_overhead	false	true			Extension de triceps con mancuernas por encima de la cabeza
+720	B05	SIN_ERROR		-					
+721	B05	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+722	B05	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+729	B05	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+759	B05	SIN_ERROR		-					
+803	B05	SIN_ERROR		-					
+128	B05	SIN_ERROR		-					
+130	B05	SIN_ERROR		-					
+315	B05	PENDIENTE_CRITERIO	BAJA	equipment	body weight	silla o banco (convencion de los sentados)			Sentado
+320	B05	SIN_ERROR		-					
+446	B05	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+491	B05	SIN_ERROR		-					
+524	B05	SIN_ERROR		-					
+526	B05	SIN_ERROR		-					
+596	B05	SIN_ERROR		-					
+597	B05	SIN_ERROR		-					
+598	B06	SIN_ERROR		-					
+599	B06	SIN_ERROR		-					
+601	B06	SIN_ERROR		-					
+608	B06	PENDIENTE_CRITERIO	ALTA	difficulty_level	1	3 (probable)			De rodillas sobre un balon de estabilidad: equilibrio avanzado con riesgo de caida
+608	B06	PROBABLE	BAJA	requires_floor	true	false	V25 fijo requires_floor=true		Sobre el balon, no en el suelo
+691	B06	SIN_ERROR		-					
+692	B06	SIN_ERROR		-					
+719	B06	SIN_ERROR		-					
+723	B06	SIN_ERROR		-					
+724	B06	SIN_ERROR		-					
+726	B06	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+728	B06	SIN_ERROR		-					
+757	B06	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+1011	B06	SIN_ERROR		-					
+1012	B06	SIN_ERROR		-					
+1048	B06	SIN_ERROR		-					
+1049	B06	SIN_ERROR		-					
+1050	B06	SIN_ERROR		-					
+1160	B06	SIN_ERROR		-					
+78	B06	SIN_ERROR		-					
+129	B06	SIN_ERROR		-					
+313	B06	SIN_ERROR		-					
+318	B06	CONFIRMADO	ALTA	requires_floor	false	true			Plancha en el suelo pasando de antebrazos a manos
+508	B06	SIN_ERROR		-					
+509	B06	SIN_ERROR		-					
+600	B06	SIN_ERROR		-					
+686	B06	SIN_ERROR		-					
+777	B06	CONFIRMADO	MEDIA	equipment	body weight	parallel bars			Fondos en paralelas
+777	B06	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Fondos en paralelas con todo el peso corporal
+812	B06	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo con las manos sobre el balon
+921	B06	CONFIRMADO	MEDIA	equipment	body weight	smith machine			Manos en la barra de la multipower
+1047	B06	SIN_ERROR		-					
+1051	B06	SIN_ERROR		-					
+1079	B06	SIN_ERROR		-					
+1088	B06	SIN_ERROR		-					
+1120	B06	SIN_ERROR		-					
+1152	B06	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado y sentado en el suelo
+1152	B06	CONFIRMADO	BAJA	equipment	parallel bars	body weight			No usa paralelas (restriccion de mas)
+1206	B06	SIN_ERROR		-					
+1318	B06	SIN_ERROR		-					
+1321	B06	CONFIRMADO	MEDIA	equipment	body weight	smith machine			Manos en la barra de la multipower
+828	B06	SIN_ERROR		-					
+1119	B06	SIN_ERROR		-					
+1322	B07	CONFIRMADO	BAJA	requires_overhead	true	false	V25 fijo requires_overhead=true		Brazo cruzado ante el pecho (restriccion de mas)
+1044	B07	SIN_ERROR		-					
+1045	B07	SIN_ERROR		-					
+1159	B07	PENDIENTE_CRITERIO	BAJA	equipment	band	band + bench (convencion de los sentados)			Sentado en un banco
+1198	B07	SIN_ERROR		-					
+1200	B07	SIN_ERROR		-					
+1311	B07	CONFIRMADO	BAJA	requires_floor	true	false	V25 fijo requires_floor=true		De pie (restriccion de mas)
+121	B07	SIN_ERROR		-					
+122	B07	SIN_ERROR		-					
+879	B07	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Tumbado en el suelo con los pies sobre el banco
+1005	B07	SIN_ERROR		-					
+1042	B07	SIN_ERROR		-					
+1073	B07	SIN_ERROR		-					
+1112	B07	SIN_ERROR		-					
+1118	B07	SIN_ERROR		-					
+1148	B07	SIN_ERROR		-					
+1157	B07	SIN_ERROR		-					
+125	B07	SIN_ERROR		-					
+147	B07	SIN_ERROR		-					
+148	B07	SIN_ERROR		-					
+1043	B07	SIN_ERROR		-					
+146	B07	SIN_ERROR		-					
+327	B07	CONFIRMADO	ALTA	requires_kneeling	false	true			Rodillas en la almohadilla (curl nordico asistido)
+327	B07	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Curl nordico asistido
+507	B07	SIN_ERROR		-					
+877	B07	SIN_ERROR		-					
+880	B07	CONFIRMADO	ALTA	requires_kneeling	false	true			Rodillas en la almohadilla del GHD
+880	B07	CONFIRMADO	MEDIA	equipment	body weight	banco GHD (no modelado)			
+880	B07	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Glute-ham raise
+884	B07	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado boca arriba en el suelo
+884	B07	CONFIRMADO	MEDIA	movement_pattern	KNEE_DOMINANT	MOBILITY			Abraza las rodillas: estiramiento; hoy cuenta como LOWER_KNEE
+915	B07	CONFIRMADO	ALTA	requires_kneeling	false	true			Rodillas en el banco (curl nordico)
+915	B07	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	3 (probable)			Curl nordico
+939	B07	SIN_ERROR		-					
+1007	B07	SIN_ERROR		-					
+1009	B07	SIN_ERROR		-					
+1046	B07	SIN_ERROR		-					
+1076	B07	SIN_ERROR		-					
+1114	B07	PROBABLE	MEDIA	equipment	body weight	bench			Se sujeta a un banco inclinado
+1195	B07	CONFIRMADO	ALTA	requires_kneeling	false	true	V25 fijo requires_kneeling=false		Rodillas en la almohadilla, cae hasta las manos
+1196	B07	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo, cae hasta apoyar las manos
+1196	B07	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Curl nordico con caida
+1197	B07	CONFIRMADO	ALTA	requires_kneeling	false	true			De rodillas sobre un step
+1197	B07	CONFIRMADO	MEDIA	equipment	body weight	step platform			
+1205	B07	PENDIENTE_CRITERIO	MEDIA	difficulty_level	1	2-3 (probable)			Sentadilla sissy
+1263	B07	SIN_ERROR		-					
+1264	B07	SIN_ERROR		-					
+1265	B08	SIN_ERROR		-					
+1312	B08	SIN_ERROR		-					
+1315	B08	SIN_ERROR		-					
+67	B08	SIN_ERROR		-					
+312	B08	SIN_ERROR		-					
+465	B08	PENDIENTE_CRITERIO	BAJA	equipment	body weight	bench (convencion de los sentados)			Sentado en un banco
+811	B08	SIN_ERROR		-					
+827	B08	SIN_ERROR		-					
+881	B08	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado boca arriba en el suelo
+917	B08	SIN_ERROR		-					
+978	B08	SIN_ERROR		-					
+1075	B08	SIN_ERROR		-					
+1149	B08	SIN_ERROR		-					
+1151	B08	SIN_ERROR		-					
+1193	B08	CONFIRMADO	BAJA	requires_floor	true	false	V25 fijo requires_floor=true		Sentado en un taburete (restriccion de mas)
+1194	B08	SIN_ERROR		-					
+1375	B08	SIN_ERROR		-					
+123	B08	SIN_ERROR		-					
+126	B08	PENDIENTE_CRITERIO	BAJA	equipment	band	band + cajon (convencion de los sentados)			Sentado en un cajon
+1158	B08	PENDIENTE_CRITERIO	BAJA	equipment	band	band + bench (convencion de los sentados)			Sentado en un banco
+105	B08	SIN_ERROR		-					
+107	B08	SIN_ERROR		-					
+141	B08	CONFIRMADO	ALTA	requires_overhead	false	true			Lleva la banda por encima de la cabeza
+296	B08	CONFIRMADO	MEDIA	equipment	body weight	bench			Antebrazo apoyado en un banco
+296	B08	PROBABLE	BAJA	requires_floor	true	false			Plancha lateral inclinada de pie sobre el banco (restriccion de mas)
+503	B08	SIN_ERROR		-					
+860	B08	CONFIRMADO	ALTA	requires_floor	false	true			Plancha maltesa con manos en el suelo
+860	B08	CONFIRMADO	ALTA	difficulty_level	1	3			Maltesa completa: habilidad gimnastica de elite
+936	B08	SIN_ERROR		-					
+1104	B08	SIN_ERROR		-					
+1140	B08	SIN_ERROR		-					
+1182	B08	CONFIRMADO	MEDIA	equipment	body weight	step platform o cajon			Pies apoyados en un cajon
+1183	B08	SIN_ERROR		-					
+1300	B08	SIN_ERROR		-					
+57	B08	SIN_ERROR		-					
+60	B08	SIN_ERROR		-					
+63	B08	SIN_ERROR		-					
+104	B08	SIN_ERROR		-					
+106	B08	SIN_ERROR		-					
+110	B08	SIN_ERROR		-					
+111	B08	SIN_ERROR		-					
+138	B08	SIN_ERROR		-					
+140	B09	SIN_ERROR		-					
+297	B09	SIN_ERROR		-					
+299	B09	SIN_ERROR		-					
+348	B09	SIN_ERROR		-					
+424	B09	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+462	B09	SIN_ERROR		-					
+497	B09	SIN_ERROR		-					
+499	B09	SIN_ERROR		-					
+500	B09	SIN_ERROR		-					
+501	B09	SIN_ERROR		-					
+530	B09	SIN_ERROR		-					
+531	B09	SIN_ERROR		-					
+814	B09	SIN_ERROR		-					
+815	B09	SIN_ERROR		-					
+856	B09	SIN_ERROR		-					
+863	B09	SIN_ERROR		-					
+864	B09	SIN_ERROR		-					
+904	B09	SIN_ERROR		-					
+906	B09	SIN_ERROR		-					
+907	B09	SIN_ERROR		-					
+935	B09	SIN_ERROR		-					
+976	B09	SIN_ERROR		-					
+1027	B09	SIN_ERROR		-					
+1028	B09	SIN_ERROR		-					
+1029	B09	SIN_ERROR		-					
+1030	B09	SIN_ERROR		-					
+1061	B09	SIN_ERROR		-					
+1062	B09	CONFIRMADO	MEDIA	equipment	body weight	bench			Tumbado en un banco
+1062	B09	CONFIRMADO	BAJA	requires_floor	true	false			En banco (restriccion de mas)
+1063	B09	CONFIRMADO	MEDIA	equipment	body weight	bench			Banco declinado
+1063	B09	CONFIRMADO	BAJA	requires_floor	true	false			En banco (restriccion de mas)
+1063	B09	PROBABLE	BAJA	requires_inversion	false	true			Banco declinado: coherencia con 504 y 505
+1101	B09	SIN_ERROR		-					
+1105	B09	SIN_ERROR		-					
+1107	B09	SIN_ERROR		-					
+1139	B09	SIN_ERROR		-					
+1142	B09	CONFIRMADO	MEDIA	equipment	body weight	bench			Sentado en el borde de un banco
+1186	B09	SIN_ERROR		-					
+1269	B09	SIN_ERROR		-					
+1302	B09	SIN_ERROR		-					
+58	B09	CONFIRMADO	MEDIA	equipment	body weight	banco de hiperextension (no modelado)			Inclinacion lateral en banco romano
+70	B09	SIN_ERROR		-					
+109	B09	SIN_ERROR		-					
+112	B10	SIN_ERROR		-					
+425	B10	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+498	B10	SIN_ERROR		-					
+774	B10	SIN_ERROR		-					
+905	B10	SIN_ERROR		-					
+993	B10	SIN_ERROR		-					
+1060	B10	SIN_ERROR		-					
+1064	B10	CONFIRMADO	MEDIA	equipment	body weight	bench			Piernas sobre un banco
+1065	B10	SIN_ERROR		-					
+1124	B10	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Manos y pies en el suelo sobre el balon
+1141	B10	SIN_ERROR		-					
+1181	B10	CONFIRMADO	BAJA	requires_floor	true	false			Sentadilla isometrica contra la pared (restriccion de mas)
+1256	B10	SIN_ERROR		-					
+1303	B10	CONFIRMADO	MEDIA	equipment	body weight	parallel bars o captains chair			Apoyo en la estacion de fondos
+1303	B10	CONFIRMADO	BAJA	requires_floor	true	false	V25 fijo requires_floor=true		De pie en la estacion (restriccion de mas)
+1304	B10	CONFIRMADO	MEDIA	equipment	body weight	parallel bars o captains chair			Apoyo en la estacion de fondos
+1304	B10	CONFIRMADO	BAJA	requires_floor	true	false	V25 fijo requires_floor=true		De pie en la estacion (restriccion de mas)
+179	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+303	C01	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)			Rema agarrado a una espaldera
+305	C01	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)			Rema agarrado a una espaldera
+435	C01	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+468	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+549	C01	SIN_ERROR		-					
+550	C01	SIN_ERROR		-					
+156	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+158	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+159	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+230	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+358	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+831	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+1069	C01	SIN_ERROR		-					
+345	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+377	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+379	C01	SIN_ERROR		-					
+154	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+339	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+340	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+380	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+381	C01	SIN_ERROR		-					
+625	C01	SIN_ERROR		-					
+626	C01	SIN_ERROR		-					
+1220	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+153	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+667	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+667	C01	CONFIRMADO	MEDIA	movement_pattern	VERTICAL_PUSH	HORIZONTAL_PUSH			Press tumbado en banco; cuenta para UPPER_PUSH igual
+667	C01	CONFIRMADO	BAJA	requires_overhead	true	false	V25 fijo requires_overhead=true		Press tumbado, no por encima de la cabeza (restriccion de mas)
+213	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+214	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+257	C01	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+258	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+373	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+469	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+534	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+653	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+654	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+655	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+656	C01	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo detras del banco, antebrazo sobre el banco
+657	C01	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo detras del banco, antebrazo sobre el banco
+693	C01	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+694	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+829	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+1274	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+215	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+216	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+734	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+735	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+736	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+1214	C02	CONFIRMADO	MEDIA	equipment	smith machine	smith machine + step platform			Antepies sobre un step
+1215	C02	SIN_ERROR		-					
+268	C02	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HORIZONTAL_PULL	SHOULDER_RAISE o SCAPULAR_ELEVATION			Remo al menton: tiron vertical, no horizontal; hoy cuenta como UPPER_PULL
+269	C02	CONFIRMADO	ALTA	requires_overhead	false	true			La barra sube por encima de la cabeza
+270	C02	CONFIRMADO	ALTA	requires_overhead	false	true			La barra sube por encima de la cabeza
+470	C02	SIN_ERROR		-					
+617	C02	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell			Tumbado en el suelo, no en banco
+742	C02	SIN_ERROR		-					
+782	C02	CONFIRMADO	ALTA	requires_overhead	false	true			La mancuerna sube por encima de la cabeza
+334	C02	SIN_ERROR		-					
+335	C02	SIN_ERROR		-					
+471	C02	CONFIRMADO	MEDIA	equipment	cable	cable + bench			Tumbado en un banco
+537	C02	SIN_ERROR		-					
+538	C02	SIN_ERROR		-					
+578	C02	SIN_ERROR		-					
+623	C02	PENDIENTE_CRITERIO	BAJA	difficulty_level	3	1-2 (probable)			Elevacion lateral apoyado (nivel de mas)
+660	C02	PENDIENTE_CRITERIO	BAJA	difficulty_level	3	2 (probable)			Pajaro apoyado en banco (nivel de mas)
+665	C02	SIN_ERROR		-					
+219	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+220	C02	SIN_ERROR		-					
+221	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+512	C02	SIN_ERROR		-					
+513	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+535	C02	SIN_ERROR		-					
+536	C02	SIN_ERROR		-					
+661	C02	SIN_ERROR		-					
+662	C02	SIN_ERROR		-					
+702	C02	SIN_ERROR		-					
+783	C02	SIN_ERROR		-					
+944	C02	SIN_ERROR		-					
+949	C02	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Sentado en el suelo con piernas abiertas
+950	C02	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+171	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+204	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+206	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+207	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+209	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+210	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+248	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+250	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+252	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+331	C03	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			Una rodilla en el suelo
+371	C03	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Tumbado en el suelo
+489	C03	SIN_ERROR		-					
+490	C03	SIN_ERROR		-					
+690	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado en un banco que no se exige
+732	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+758	C03	SIN_ERROR		-					
+797	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+820	C03	SIN_ERROR		-					
+834	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+840	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+841	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+842	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+847	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+1242	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+208	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+244	C03	CONFIRMADO	MEDIA	equipment	barbell	barbell + banco Scott (no modelado)			Banco de predicador
+245	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+249	C03	CONFIRMADO	MEDIA	equipment	barbell	barbell + banco Scott (no modelado)			Banco de predicador
+251	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+330	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+369	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+370	C03	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o recostado en un banco que no se exige
+398	C03	CONFIRMADO	MEDIA	equipment	cable	cable + banco Scott (no modelado)			Banco de predicador
+403	C03	CONFIRMADO	MEDIA	equipment	cable	cable + banco Scott (no modelado)			Banco de predicador
+411	C03	CONFIRMADO	MEDIA	equipment	cable	cable + banco Scott (no modelado)			Banco de predicador
+441	C03	CONFIRMADO	MEDIA	equipment	cable	cable + banco Scott (no modelado)			Banco de predicador
+445	C03	CONFIRMADO	MEDIA	equipment	cable	cable + banco Scott (no modelado)			Banco de predicador
+447	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+562	C03	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+563	C03	SIN_ERROR		-					
+564	C04	SIN_ERROR		-					
+568	C04	SIN_ERROR		-					
+570	C04	SIN_ERROR		-					
+679	C04	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+687	C04	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + banco Scott (no modelado)			Banco de predicador
+769	C04	SIN_ERROR		-					
+770	C04	SIN_ERROR		-					
+835	C04	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+837	C04	CONFIRMADO	MEDIA	equipment	ez barbell	ez barbell + banco Scott (no modelado)			Banco de predicador
+845	C04	CONFIRMADO	MEDIA	equipment	ez barbell	ez barbell + banco Scott (no modelado)			Banco de predicador
+846	C04	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+848	C04	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+849	C04	CONFIRMADO	MEDIA	equipment	ez barbell	ez barbell + banco Scott (no modelado)			Banco de predicador
+202	C04	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+205	C04	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+560	C04	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+561	C04	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+1078	C04	CONFIRMADO	MEDIA	equipment	body weight	bench			Manos en un banco
+1317	C04	CONFIRMADO	MEDIA	equipment	body weight	parallel bars			Fondos en paralelas
+196	C04	CONFIRMADO	MEDIA	equipment	sin banco	+ bench			Tumbado o apoyado en un banco que no se exige
+239	C04	PENDIENTE_CRITERIO	BAJA	equipment	sin banco	+ bench (convencion de los sentados)			Sentado en un banco
+966	C04	SIN_ERROR		-					
+124	C04	CONFIRMADO	MEDIA	equipment	band	band + bench o cajon			Pie trasero sobre un cajon
+183	C04	SIN_ERROR		-					
+184	C04	SIN_ERROR		-					
+236	C04	SIN_ERROR		-					
+237	C04	CONFIRMADO	MEDIA	equipment	barbell	barbell + step platform			Sobre un step
+240	C04	SIN_ERROR		-					
+241	C04	SIN_ERROR		-					
+753	C04	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Pie trasero en un banco
+918	C04	SIN_ERROR		-					
+919	C04	SIN_ERROR		-					
+1288	C04	CONFIRMADO	MEDIA	equipment	smith machine	smith machine + bench			Pie trasero en un banco
+819	C04	SIN_ERROR		-					
+970	C04	SIN_ERROR		-					
+229	C04	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo con la barra arriba
+229	C04	CONFIRMADO	ALTA	requires_overhead	false	true			Barra sostenida por encima de la cabeza
+274	C04	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo con la barra arriba
+274	C04	CONFIRMADO	ALTA	requires_overhead	false	true			Barra sostenida por encima de la cabeza
+227	C04	PENDIENTE_CRITERIO	BAJA	equipment	barbell	barbell + bench (convencion de los sentados)			Sentado en un banco
+118	D01	SIN_ERROR		-					
+157	D01	SIN_ERROR		-					
+180	D01	SIN_ERROR		-					
+181	D01	SIN_ERROR		-					
+232	D01	SIN_ERROR		-					
+233	D01	SIN_ERROR		-					
+306	D01	CONFIRMADO	MEDIA	equipment	body weight	espaldera (no modelada)			Rema con toalla agarrado a una espaldera
+359	D01	SIN_ERROR		-					
+387	D01	CONFIRMADO	ALTA	requires_overhead	false	true	V25 fijo requires_overhead=false		Polea alta, brazo por encima de la cabeza al inicio
+387	D01	PROBABLE	MEDIA	movement_pattern	HORIZONTAL_PULL	VERTICAL_PULL			
+478	D01	SIN_ERROR		-					
+479	D01	SIN_ERROR		-					
+483	D01	SIN_ERROR		-					
+484	D01	SIN_ERROR		-					
+486	D01	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+518	D01	SIN_ERROR		-					
+636	D01	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Mano apoyada en un banco
+673	D01	SIN_ERROR		-					
+711	D01	SIN_ERROR		-					
+713	D01	SIN_ERROR		-					
+832	D01	SIN_ERROR		-					
+929	D01	SIN_ERROR		-					
+961	D01	SIN_ERROR		-					
+963	D01	SIN_ERROR		-					
+981	D01	CONFIRMADO	MEDIA	equipment	barbell	landmine + barbell			Barra anclada (remo T)
+1031	D01	SIN_ERROR		-					
+1072	D01	CONFIRMADO	MEDIA	equipment	body weight	toalla + anclaje (no modelado)			Toalla atada a un poste
+1227	D01	SIN_ERROR		-					
+1228	D01	SIN_ERROR		-					
+1229	D01	SIN_ERROR		-					
+1230	D01	SIN_ERROR		-					
+234	D01	SIN_ERROR		-					
+438	D01	SIN_ERROR		-					
+749	D01	SIN_ERROR		-					
+1226	D01	SIN_ERROR		-					
+1287	D01	SIN_ERROR		-					
+481	D01	CONFIRMADO	ALTA	requires_overhead	false	true			Brazos por encima de la cabeza al inicio (polea alta)
+71	D01	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+325	D01	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+326	D01	SIN_ERROR		-					
+354	D01	SIN_ERROR		-					
+355	D02	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+356	D02	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+386	D02	SIN_ERROR		-					
+389	D02	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+390	D02	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+463	D02	SIN_ERROR		-					
+485	D02	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+487	D02	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado en un banco
+977	D02	CONFIRMADO	MEDIA	equipment	pull-up bar	captains chair o pull-up bar			Dominada en la estacion
+1032	D02	SIN_ERROR		-					
+1067	D02	SIN_ERROR		-					
+1071	D02	CONFIRMADO	BAJA	name_en	one arm chin-up	dominada a dos manos			El GIF muestra una dominada con dos manos
+1109	D02	SIN_ERROR		-					
+1143	D02	SIN_ERROR		-					
+1144	D02	SIN_ERROR		-					
+1145	D02	SIN_ERROR		-					
+1189	D02	PENDIENTE_CRITERIO	BAJA	requires_hanging	true	false (probable)			Pies en el suelo: dominada parcial desde de pie
+1323	D02	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Jalon sentado
+1336	D02	PENDIENTE_CRITERIO	BAJA	requires_hanging	true	false (probable)			Pies en el suelo
+1337	D02	PENDIENTE_CRITERIO	BAJA	requires_hanging	true	false (probable)			Pies en el suelo
+532	D02	SIN_ERROR		-					
+533	D02	SIN_ERROR		-					
+894	D02	SIN_ERROR		-					
+1293	D02	SIN_ERROR		-					
+1324	D02	SIN_ERROR		-					
+324	D02	SIN_ERROR		-					
+338	D02	CONFIRMADO	MEDIA	equipment	cable	cable + bench			Banco declinado
+344	D02	SIN_ERROR		-					
+346	D02	SIN_ERROR		-					
+378	D02	SIN_ERROR		-					
+422	D02	SIN_ERROR		-					
+473	D02	SIN_ERROR		-					
+541	D02	SIN_ERROR		-					
+543	D02	SIN_ERROR		-					
+544	D02	SIN_ERROR		-					
+545	D02	SIN_ERROR		-					
+546	D02	SIN_ERROR		-					
+584	D02	SIN_ERROR		-					
+585	D02	SIN_ERROR		-					
+628	D02	SIN_ERROR		-					
+629	D03	SIN_ERROR		-					
+631	D03	SIN_ERROR		-					
+668	D03	SIN_ERROR		-					
+887	D03	SIN_ERROR		-					
+888	D03	CONFIRMADO	ALTA	requires_kneeling	false	true			Rueda la barra desde de rodillas en el suelo
+103	D03	CONFIRMADO	ALTA	requires_floor	false	true			Sentado en el suelo con piernas extendidas
+151	D03	SIN_ERROR		-					
+152	D03	SIN_ERROR		-					
+176	D03	SIN_ERROR		-					
+177	D03	SIN_ERROR		-					
+222	D03	SIN_ERROR		-					
+223	D03	SIN_ERROR		-					
+272	D03	SIN_ERROR		-					
+273	D03	SIN_ERROR		-					
+383	D03	SIN_ERROR		-					
+384	D03	SIN_ERROR		-					
+457	D03	SIN_ERROR		-					
+459	D03	SIN_ERROR		-					
+515	D03	SIN_ERROR		-					
+517	D03	SIN_ERROR		-					
+540	D03	SIN_ERROR		-					
+542	D03	SIN_ERROR		-					
+586	D03	SIN_ERROR		-					
+587	D03	SIN_ERROR		-					
+624	D03	SIN_ERROR		-					
+630	D03	SIN_ERROR		-					
+632	D03	SIN_ERROR		-					
+669	D03	SIN_ERROR		-					
+710	D03	SIN_ERROR		-					
+855	D03	SIN_ERROR		-					
+925	D03	SIN_ERROR		-					
+934	D03	SIN_ERROR		-					
+955	D03	SIN_ERROR		-					
+956	D03	SIN_ERROR		-					
+957	D03	SIN_ERROR		-					
+1083	D03	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true	V25 fijo requires_floor=false, requires_kneeling=false		De rodillas en el suelo; cae sobre las manos
+1094	D03	SIN_ERROR		-					
+1218	D03	SIN_ERROR		-					
+1219	D03	SIN_ERROR		-					
+1221	D03	SIN_ERROR		-					
+1222	D04	CONFIRMADO	MEDIA	equipment	smith machine	smith machine + bench			Banco en la multipower
+1224	D04	SIN_ERROR		-					
+1284	D04	CONFIRMADO	MEDIA	equipment	smith machine	smith machine + bench			Banco en la multipower
+1285	D04	SIN_ERROR		-					
+1286	D04	SIN_ERROR		-					
+1335	D04	SIN_ERROR		-					
+516	D04	SIN_ERROR		-					
+627	D04	SIN_ERROR		-					
+634	D04	SIN_ERROR		-					
+670	D04	SIN_ERROR		-					
+784	D04	SIN_ERROR		-					
+633	D04	CONFIRMADO	MEDIA	movement_pattern	VERTICAL_PUSH	HORIZONTAL_PUSH			Press tumbado sobre balon
+633	D04	CONFIRMADO	BAJA	requires_overhead	true	false	V25 fijo requires_overhead=true		Press tumbado (restriccion de mas)
+173	D04	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo detras del banco, antebrazos sobre el banco
+174	D04	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo detras del banco, antebrazos sobre el banco
+256	D04	SIN_ERROR		-					
+413	D04	SIN_ERROR		-					
+613	D04	SIN_ERROR		-					
+614	D04	SIN_ERROR		-					
+615	D04	SIN_ERROR		-					
+616	D04	SIN_ERROR		-					
+658	D04	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo detras del banco, antebrazos sobre el banco
+659	D04	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo detras del banco, antebrazos sobre el banco
+1275	D04	SIN_ERROR		-					
+96	D04	CONFIRMADO	MEDIA	equipment	band	band + step platform			Antepie sobre un step
+97	D04	CONFIRMADO	MEDIA	equipment	sin step	+ step platform			Antepie sobre un step
+259	D04	SIN_ERROR		-					
+260	D04	CONFIRMADO	MEDIA	equipment	sin step	+ step platform			Antepie sobre un step
+261	D04	SIN_ERROR		-					
+414	D04	SIN_ERROR		-					
+415	D04	SIN_ERROR		-					
+737	D04	SIN_ERROR		-					
+738	D04	CONFIRMADO	MEDIA	equipment	sin step	+ step platform			Antepie sobre un step
+1056	D04	CONFIRMADO	MEDIA	equipment	body weight	bench			Manos en un banco
+1207	D04	SIN_ERROR		-					
+1213	D04	SIN_ERROR		-					
+1276	D04	PENDIENTE_CRITERIO	BAJA	equipment	smith machine	smith machine + bench (convencion de los sentados)			Sentado en un banco
+1277	D04	SIN_ERROR		-					
+1278	D04	PENDIENTE_CRITERIO	BAJA	equipment	smith machine	smith machine + bench (convencion de los sentados)			Sentado en un banco
+1278	D04	CONFIRMADO	BAJA	axial_load	true	false	V25 fijo axial_load=true		Sentado, la carga va sobre los muslos
+295	D04	CONFIRMADO	MEDIA	equipment	plyo box	bench			Baja desde un banco
+295	D04	PENDIENTE_CRITERIO	BAJA	high_impact	true	false (probable)			Bajada a una pierna sin salto
+322	D04	SIN_ERROR		-					
+218	D05	SIN_ERROR		-					
+271	D05	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HORIZONTAL_PULL	SHOULDER_RAISE o SCAPULAR_ELEVATION			Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+375	D05	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+376	D05	SIN_ERROR		-					
+420	D05	SIN_ERROR		-					
+472	D05	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HORIZONTAL_PULL	SHOULDER_RAISE o SCAPULAR_ELEVATION			Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+663	D05	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HORIZONTAL_PULL	SHOULDER_RAISE o SCAPULAR_ELEVATION			Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+696	D05	PROBABLE	ALTA	requires_kneeling	false	true			Rodilla y mano sobre el banco
+696	D05	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			
+780	D05	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HORIZONTAL_PULL	SHOULDER_RAISE o SCAPULAR_ELEVATION			Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+1217	D05	SIN_ERROR		-					
+1283	D05	PENDIENTE_CRITERIO	MEDIA	movement_pattern	HORIZONTAL_PULL	SHOULDER_RAISE o SCAPULAR_ELEVATION			Remo al menton (familia, igual que 268); hoy cuenta como UPPER_PULL
+150	D05	SIN_ERROR		-					
+217	D05	SIN_ERROR		-					
+265	D05	SIN_ERROR		-					
+333	D05	SIN_ERROR		-					
+337	D05	SIN_ERROR		-					
+374	D05	SIN_ERROR		-					
+419	D05	SIN_ERROR		-					
+539	D05	SIN_ERROR		-					
+573	D05	CONFIRMADO	ALTA	requires_overhead	false	true			El brazo llega por encima de la cabeza
+577	D05	PENDIENTE_CRITERIO	MEDIA	combinado	shoulders / SHOULDER_RAISE	sentadilla + elevacion lateral			
+579	D05	SIN_ERROR		-					
+618	D05	SIN_ERROR		-					
+619	D05	SIN_ERROR		-					
+620	D05	SIN_ERROR		-					
+621	D05	SIN_ERROR		-					
+666	D05	SIN_ERROR		-					
+697	D05	PENDIENTE_CRITERIO	BAJA	equipment	dumbbell	dumbbell + bench (convencion de los sentados)			Sentado en un banco
+698	D05	SIN_ERROR		-					
+699	D05	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Pecho apoyado en un banco inclinado
+700	D05	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Pecho apoyado en un banco inclinado
+701	D05	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Pecho apoyado en un banco inclinado
+741	D05	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Tumbado de lado en un banco
+741	D05	CONFIRMADO	BAJA	requires_floor	true	false			En banco (restriccion de mas)
+744	D05	SIN_ERROR		-					
+745	D05	SIN_ERROR		-					
+746	D05	SIN_ERROR		-					
+979	D05	CONFIRMADO	ALTA	requires_overhead	false	true			La barra sube por encima de la cabeza
+175	D05	SIN_ERROR		-					
+263	D05	SIN_ERROR		-					
+264	D05	SIN_ERROR		-					
+266	D06	SIN_ERROR		-					
+321	D06	SIN_ERROR		-					
+418	D06	SIN_ERROR		-					
+511	D06	SIN_ERROR		-					
+743	D06	SIN_ERROR		-					
+747	D06	SIN_ERROR		-					
+778	D06	SIN_ERROR		-					
+779	D06	SIN_ERROR		-					
+830	D06	CONFIRMADO	MEDIA	equipment	ez barbell	ez barbell + bench			Prono sobre banco inclinado
+923	D06	SIN_ERROR		-					
+924	D06	SIN_ERROR		-					
+940	D06	SIN_ERROR		-					
+942	D06	SIN_ERROR		-					
+945	D06	SIN_ERROR		-					
+946	D06	SIN_ERROR		-					
+947	D06	SIN_ERROR		-					
+948	D06	SIN_ERROR		-					
+951	D06	SIN_ERROR		-					
+954	D06	SIN_ERROR		-					
+1019	D06	CONFIRMADO	MEDIA	equipment	leverage machine	landmine + barbell			Barra anclada al suelo
+1216	D06	SIN_ERROR		-					
+1271	D06	SIN_ERROR		-					
+1279	D06	SIN_ERROR		-					
+1280	D06	SIN_ERROR		-					
+1281	D06	SIN_ERROR		-					
+1282	D06	SIN_ERROR		-					
+885	D06	SIN_ERROR		-					
+289	D06	SIN_ERROR		-					
+328	D06	CONFIRMADO	ALTA	requires_overhead	false	true			Extension de triceps por encima de la cabeza
+365	D06	SIN_ERROR		-					
+367	D06	SIN_ERROR		-					
+399	D06	SIN_ERROR		-					
+402	D06	SIN_ERROR		-					
+405	D06	SIN_ERROR		-					
+406	D06	SIN_ERROR		-					
+409	D06	SIN_ERROR		-					
+412	D06	SIN_ERROR		-					
+442	D06	SIN_ERROR		-					
+444	D06	SIN_ERROR		-					
+451	D06	SIN_ERROR		-					
+488	D07	SIN_ERROR		-					
+566	D07	SIN_ERROR		-					
+607	D07	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo, pecho sobre el balon
+610	D07	SIN_ERROR		-					
+611	D07	SIN_ERROR		-					
+612	D07	SIN_ERROR		-					
+638	D07	SIN_ERROR		-					
+639	D07	SIN_ERROR		-					
+640	D07	SIN_ERROR		-					
+643	D07	SIN_ERROR		-					
+647	D07	SIN_ERROR		-					
+650	D07	SIN_ERROR		-					
+682	D07	SIN_ERROR		-					
+761	D07	SIN_ERROR		-					
+762	D07	SIN_ERROR		-					
+763	D07	SIN_ERROR		-					
+767	D07	SIN_ERROR		-					
+771	D07	SIN_ERROR		-					
+794	D07	SIN_ERROR		-					
+798	D07	SIN_ERROR		-					
+833	D07	SIN_ERROR		-					
+836	D07	SIN_ERROR		-					
+131	D07	CONFIRMADO	BAJA	requires_overhead	true	false	V25 fijo requires_overhead=true		Brazo a la altura del hombro (restriccion de mas)
+167	D07	SIN_ERROR		-					
+168	D07	SIN_ERROR		-					
+170	D07	SIN_ERROR		-					
+172	D07	SIN_ERROR		-					
+247	D07	SIN_ERROR		-					
+287	D07	SIN_ERROR		-					
+288	D07	SIN_ERROR		-					
+291	D07	SIN_ERROR		-					
+292	D07	SIN_ERROR		-					
+329	D07	SIN_ERROR		-					
+362	D07	SIN_ERROR		-					
+363	D07	SIN_ERROR		-					
+372	D07	SIN_ERROR		-					
+397	D07	CONFIRMADO	MEDIA	equipment	cable	cable + banco Scott (no modelado)			Banco de predicador
+401	D07	PENDIENTE_CRITERIO	BAJA	requires_overhead	true	false o true			Brazos a la altura de la cabeza, no por encima
+408	D07	SIN_ERROR		-					
+410	D07	SIN_ERROR		-					
+450	D08	SIN_ERROR		-					
+520	D08	SIN_ERROR		-					
+521	D08	SIN_ERROR		-					
+522	D08	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador, no plano
+523	D08	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador, no plano
+525	D08	SIN_ERROR		-					
+529	D08	SIN_ERROR		-					
+555	D08	SIN_ERROR		-					
+556	D08	SIN_ERROR		-					
+557	D08	SIN_ERROR		-					
+559	D08	PENDIENTE_CRITERIO	BAJA	requires_floor	false	true o false (criterio bosu)			Sentado sobre un bosu apoyado en el suelo, pies en el suelo
+569	D08	SIN_ERROR		-					
+571	D08	SIN_ERROR		-					
+572	D08	SIN_ERROR		-					
+641	D08	SIN_ERROR		-					
+642	D08	SIN_ERROR		-					
+644	D08	SIN_ERROR		-					
+646	D08	SIN_ERROR		-					
+648	D08	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador
+651	D08	SIN_ERROR		-					
+652	D08	SIN_ERROR		-					
+676	D08	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador
+677	D08	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Pecho sobre banco inclinado
+678	D08	SIN_ERROR		-					
+680	D08	SIN_ERROR		-					
+681	D08	SIN_ERROR		-					
+683	D08	SIN_ERROR		-					
+688	D08	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador
+689	D08	CONFIRMADO	ALTA	requires_floor / requires_kneeling	false / false	true / true			De rodillas en el suelo con los brazos sobre el balon
+716	D08	SIN_ERROR		-					
+731	D08	SIN_ERROR		-					
+764	D08	SIN_ERROR		-					
+765	D08	SIN_ERROR		-					
+766	D08	SIN_ERROR		-					
+768	D08	SIN_ERROR		-					
+772	D08	SIN_ERROR		-					
+792	D08	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador de pie
+793	D08	SIN_ERROR		-					
+795	D08	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador de pie
+800	D08	SIN_ERROR		-					
+801	D09	SIN_ERROR		-					
+802	D09	CONFIRMADO	BAJA	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)			Banco de predicador
+838	D09	SIN_ERROR		-					
+839	D09	SIN_ERROR		-					
+844	D09	SIN_ERROR		-					
+850	D09	SIN_ERROR		-					
+852	D09	SIN_ERROR		-					
+169	D09	SIN_ERROR		-					
+203	D09	SIN_ERROR		-					
+211	D09	SIN_ERROR		-					
+212	D09	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench + rack			Tumbado en banco en un rack
+246	D09	SIN_ERROR		-					
+565	D09	SIN_ERROR		-					
+602	D09	SIN_ERROR		-					
+603	D09	SIN_ERROR		-					
+645	D09	SIN_ERROR		-					
+799	D09	SIN_ERROR		-					
+843	D09	SIN_ERROR		-					
+851	D09	SIN_ERROR		-					
+920	D09	SIN_ERROR		-					
+1121	D09	SIN_ERROR		-					
+1153	D09	SIN_ERROR		-					
+1239	D09	SIN_ERROR		-					
+1241	D09	SIN_ERROR		-					
+407	D09	PROBABLE	MEDIA	movement_pattern	SHOULDER_EXTENSION	HORIZONTAL_PULL o SHOULDER_RAISE			Tiron horizontal con brazo extendido
+317	D09	SIN_ERROR		-					
+404	D09	PENDIENTE_CRITERIO	BAJA	equipment	cable	cable + bench (convencion de los sentados)			Sentado en un banco
+452	D09	SIN_ERROR		-					
+649	D09	CONFIRMADO	MEDIA	movement_pattern	VERTICAL_PUSH	HORIZONTAL_PUSH			Press tumbado sobre balon
+649	D09	CONFIRMADO	BAJA	requires_overhead	true	false	V25 fijo requires_overhead=true		Press tumbado (restriccion de mas)
+886	D09	SIN_ERROR		-					
+361	D09	SIN_ERROR		-					
+186	D09	SIN_ERROR		-					
+187	D09	CONFIRMADO	ALTA	requires_floor	false	true	V25 fijo requires_floor=false		Tumbado en el suelo con las piernas sobre el banco
+440	D09	SIN_ERROR		-					
+1202	D09	SIN_ERROR		-					
+164	D09	SIN_ERROR		-					
+188	D09	SIN_ERROR		-					
+235	D09	CONFIRMADO	BAJA	equipment	barbell	barbell + rack (no modelado)			Peso muerto desde soportes
+238	D09	SIN_ERROR		-					
+242	D09	SIN_ERROR		-					
+282	D10	SIN_ERROR		-					
+283	D10	SIN_ERROR		-					
+284	D10	SIN_ERROR		-					
+360	D10	SIN_ERROR		-					
+396	D10	SIN_ERROR		-					
+551	D10	SIN_ERROR		-					
+715	D10	SIN_ERROR		-					
+751	D10	SIN_ERROR		-					
+788	D10	SIN_ERROR		-					
+789	D10	SIN_ERROR		-					
+790	D10	SIN_ERROR		-					
+969	D10	SIN_ERROR		-					
+1129	D10	SIN_ERROR		-					
+1231	D10	SIN_ERROR		-					
+1233	D10	SIN_ERROR		-					
+127	D10	CONFIRMADO	MEDIA	equipment	band	band + bench o cajon			Pie trasero sobre un cajon
+163	D10	SIN_ERROR		-					
+165	D10	SIN_ERROR		-					
+166	D10	SIN_ERROR		-					
+182	D10	SIN_ERROR		-					
+185	D10	SIN_ERROR		-					
+189	D10	SIN_ERROR		-					
+190	D10	SIN_ERROR		-					
+191	D10	SIN_ERROR		-					
+192	D10	SIN_ERROR		-					
+193	D10	SIN_ERROR		-					
+194	D10	SIN_ERROR		-					
+195	D10	SIN_ERROR		-					
+197	D10	SIN_ERROR		-					
+199	D10	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Pie trasero en un banco
+200	D10	SIN_ERROR		-					
+278	D10	SIN_ERROR		-					
+279	D10	SIN_ERROR		-					
+280	D10	CONFIRMADO	MEDIA	equipment	barbell	barbell + step platform			Salta sobre un step
+281	D10	SIN_ERROR		-					
+285	D10	SIN_ERROR		-					
+286	D10	SIN_ERROR		-					
+519	D10	SIN_ERROR		-					
+552	D10	SIN_ERROR		-					
+554	D10	SIN_ERROR		-					
+595	D11	SIN_ERROR		-					
+637	D11	CONFIRMADO	MEDIA	equipment	dumbbell	dumbbell + bench			Tumbado boca abajo en un banco
+637	D11	CONFIRMADO	BAJA	requires_floor	true	false			En banco (restriccion de mas)
+675	D11	SIN_ERROR		-					
+714	D11	SIN_ERROR		-					
+754	D11	SIN_ERROR		-					
+755	D11	SIN_ERROR		-					
+786	D11	CONFIRMADO	BAJA	equipment	dumbbell + plyo box o step	dumbbell + bench, plyo box o step			El GIF usa un banco, que no figura entre las alternativas
+787	D11	SIN_ERROR		-					
+826	D11	SIN_ERROR		-					
+964	D11	SIN_ERROR		-					
+965	D11	SIN_ERROR		-					
+967	D11	SIN_ERROR		-					
+968	D11	SIN_ERROR		-					
+972	D11	SIN_ERROR		-					
+1006	D11	SIN_ERROR		-					
+1010	D11	SIN_ERROR		-					
+1074	D11	SIN_ERROR		-					
+1110	D11	CONFIRMADO	MEDIA	equipment	body weight	bench o cajon			Pie trasero sobre un cajon
+1232	D11	SIN_ERROR		-					
+1234	D11	SIN_ERROR		-					
+1235	D11	SIN_ERROR		-					
+1236	D11	SIN_ERROR		-					
+1237	D11	CONFIRMADO	ALTA	requires_floor	false	true			Tumbado en el suelo bajo la barra de la multipower
+1238	D11	SIN_ERROR		-					
+1266	D11	SIN_ERROR		-					
+1273	D11	SIN_ERROR		-					
+1290	D11	SIN_ERROR		-					
+1291	D11	SIN_ERROR		-					
+225	D11	SIN_ERROR		-					
+226	D11	SIN_ERROR		-					
+275	D11	SIN_ERROR		-					
+857	D11	SIN_ERROR		-					
+861	D11	SIN_ERROR		-					
+975	D11	SIN_ERROR		-					
+1299	D11	SIN_ERROR		-					
+224	D11	CONFIRMADO	ALTA	requires_overhead	false	true			Press de la barra por encima de la cabeza
+224	D11	CONFIRMADO	MEDIA	equipment	barbell	barbell + bench			Banco declinado
+224	D11	CONFIRMADO	BAJA	requires_floor	true	false			En banco (restriccion de mas)
+385	D11	SIN_ERROR		-					
+429	D11	SIN_ERROR		-					
+430	D11	SIN_ERROR		-					
+475	D11	SIN_ERROR		-					
+228	D12	SIN_ERROR		-					
+276	D12	SIN_ERROR		-					
+347	D12	SIN_ERROR		-					
+423	D12	SIN_ERROR		-					
+426	D12	SIN_ERROR		-					
+431	D12	CONFIRMADO	ALTA	requires_overhead	false	true			Lleva las manos por encima de la cabeza en diagonal
+476	D12	SIN_ERROR		-					
+477	D12	CONFIRMADO	ALTA	requires_overhead	false	true			Empieza con las manos por encima de la cabeza
+748	D12	PROBABLE	ALTA	requires_overhead	false	true			Mano detras de la cabeza con el codo por encima (igual que 1260)
+926	D12	SIN_ERROR		-					
+958	D12	SIN_ERROR		-					
+960	D12	SIN_ERROR		-					
+980	D12	SIN_ERROR		-					
+1268	D12	SIN_ERROR		-					

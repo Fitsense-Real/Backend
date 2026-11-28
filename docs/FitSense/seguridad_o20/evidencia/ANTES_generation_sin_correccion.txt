@@ -1,0 +1,54 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 16.73 s <<< FAILURE! -- in main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT
+main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.elegiblesSinLaFamilia -- Time elapsed: 0.725 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: OPCION A: su variante equivalente tampoco ==> expected: <false> but was: <true>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertFalse.failNotFalse(AssertFalse.java:69)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:41)
+	at org.junit.jupiter.api.Assertions.assertFalse(Assertions.java:255)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.elegiblesSinLaFamilia(DolorFamiliaEquivalenteAntesIT.java:146)
+
+main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.simetrico -- Time elapsed: 0.166 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertFalse.failNotFalse(AssertFalse.java:69)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:41)
+	at org.junit.jupiter.api.AssertFalse.assertFalse(AssertFalse.java:35)
+	at org.junit.jupiter.api.Assertions.assertFalse(Assertions.java:246)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.simetrico(DolorFamiliaEquivalenteAntesIT.java:166)
+
+main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.lavarianteNoSeCuela -- Time elapsed: 0.135 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: [V2: se esperaban 3 entrenamientos y el plan trae 1., V5: el entrenamiento del 2026-11-02 trae 1 ejercicios y el minimo es 2., V17: el entrenamiento del 2026-11-02 declara 30 minutos pero su contenido dura unos 8 (desvio de 275 %, maximo 20 %). Declara lo que dure el contenido final, despues de corregir lo demas., V25: la semana omite la capacidad principal STRENGTH, que es factible con el conjunto elegible. Incluye al menos una colocacion con su dosis antes de completar con secundarias., V25: el slot LOWER_KNEE no tiene ninguna colocacion con dosis de STRENGTH en la semana, y es factible. Cubrelo con un ejercicio de ese slot con dosis STRENGTH, no HYPERTROPHY: un slot trabajado solo con dosis de hipertrofia no cuenta como fuerza., V25: el slot LOWER_HIP no tiene ninguna colocacion con dosis de STRENGTH en la semana, y es factible. Cubrelo con un ejercicio de ese slot con dosis STRENGTH, no HYPERTROPHY: un slot trabajado solo con dosis de hipertrofia no cuenta como fuerza., V25: el slot UPPER_PUSH no tiene ninguna colocacion con dosis de STRENGTH en la semana, y es factible. Cubrelo con un ejercicio de ese slot con dosis STRENGTH, no HYPERTROPHY: un slot trabajado solo con dosis de hipertrofia no cuenta como fuerza., V25: el slot UPPER_PULL no tiene ninguna colocacion con dosis de STRENGTH en la semana, y es factible. Cubrelo con un ejercicio de ese slot con dosis STRENGTH, no HYPERTROPHY: un slot trabajado solo con dosis de hipertrofia no cuenta como fuerza.] ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:69)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:41)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:228)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.lavarianteNoSeCuela(DolorFamiliaEquivalenteAntesIT.java:180)
+
+main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.cicloO20SinRestricciones -- Time elapsed: 0.792 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: el plan activo 5 contiene la familia de lo que dolio: [538] ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:69)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:41)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:228)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.comprobarSinFamilia(DolorFamiliaEquivalenteAntesIT.java:248)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.cicloO20(DolorFamiliaEquivalenteAntesIT.java:217)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.cicloO20SinRestricciones(DolorFamiliaEquivalenteAntesIT.java:190)
+
+main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.cicloO20ConRestricciones -- Time elapsed: 0.471 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: el plan activo 7 contiene la familia de lo que dolio: [538] ==> expected: <true> but was: <false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:158)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:139)
+	at org.junit.jupiter.api.AssertTrue.failNotTrue(AssertTrue.java:69)
+	at org.junit.jupiter.api.AssertTrue.assertTrue(AssertTrue.java:41)
+	at org.junit.jupiter.api.Assertions.assertTrue(Assertions.java:228)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.comprobarSinFamilia(DolorFamiliaEquivalenteAntesIT.java:248)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.cicloO20(DolorFamiliaEquivalenteAntesIT.java:217)
+	at main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteAntesIT.cicloO20ConRestricciones(DolorFamiliaEquivalenteAntesIT.java:197)
+

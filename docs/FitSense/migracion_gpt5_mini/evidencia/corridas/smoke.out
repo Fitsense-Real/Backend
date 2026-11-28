@@ -1,0 +1,7 @@
+PRESUPUESTO antes de G5M_SMOKE_O02: cargado=0.0 USD en 0 predicciones -> disponible USD 0.8
+RUN G5M_SMOKE_O02 [INFO] BUILD SUCCESS usuarios=1 llamadas=2 incidencias=0
+llamadas_proveedor=2
+usd_medido=0.0787 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno
+CARGADO TOTAL (cota): 2 0.0787
+FIN_G5M

@@ -1,0 +1,47 @@
+{
+  "llamadas_live" : 4,
+  "respuestas_replay" : 0,
+  "max_llamadas" : 12,
+  "escenarios" : [ "E1: {ACORTAR_O_REORGANIZAR} APLICADA, 1 llamadas; [495:3x6/150, 350:3x6/150, 1264:3x6/150, 1176:3x120s/60, 1175:3x120s/60] -> [495:2x6/150, 350:2x6/150, 1264:2x6/150, 1176:2x60s/60, 1175:2x60s/60] -> no es una retirada de un relleno", "E2: {ACORTAR_O_REORGANIZAR} APLICADA, 1 llamadas; [460:3x6/150, 352:3x6/150, 1043:3x6/150, 1324:3x120s/60, 1293:3x120s/60] -> [460:3x6/150, 352:2x6/150, 1043:2x6/150, 1324:2x60s/60, 1293:2x60s/60] -> no es una retirada de un relleno", "E3: {ACORTAR_O_REORGANIZAR} APLICADA, 1 llamadas; [991:3x6/150, 1146:3x6/150, 1205:3x6/150, 253:3x120s/60, 1176:3x120s/60] -> [991:2x6/150, 1146:2x6/150, 1205:2x6/150, 253:2x60s/60, 1176:2x60s/60] -> no es una retirada de un relleno", "E4: {ACORTAR_O_REORGANIZAR} APLICADA, 1 llamadas; [1138:3x6/150, 74:3x6/150, 507:3x6/150, 893:3x120s/60, 1293:3x120s/60] -> [1138:2x6/150, 74:2x6/150, 507:2x6/150, 893:2x60s/60, 1293:2x45s/60] -> no es una retirada de un relleno" ],
+  "predicciones" : [ {
+    "etapa" : "E1 · B/C",
+    "prediction_id" : "nrbp9hvms1rmw0d1hzzahjwvm8",
+    "total_ms" : 24343,
+    "resultado" : "SUCCEEDED",
+    "modelo" : "openai/gpt-5-structured",
+    "tokens_entrada" : 27601,
+    "tokens_salida" : 2789,
+    "predict_time_s" : 22.503426794,
+    "coste_estimado_usd" : 0.01247825
+  }, {
+    "etapa" : "E2 · B/C",
+    "prediction_id" : "2me4qnpp1hrmt0d1hzz9qce5wg",
+    "total_ms" : 23725,
+    "resultado" : "SUCCEEDED",
+    "modelo" : "openai/gpt-5-structured",
+    "tokens_entrada" : 27600,
+    "tokens_salida" : 2667,
+    "predict_time_s" : 21.152972721,
+    "coste_estimado_usd" : 0.012234
+  }, {
+    "etapa" : "E3 · B/C",
+    "prediction_id" : "vk15vz9nw1rmw0d1hzzvwygxdr",
+    "total_ms" : 23679,
+    "resultado" : "SUCCEEDED",
+    "modelo" : "openai/gpt-5-structured",
+    "tokens_entrada" : 27596,
+    "tokens_salida" : 2251,
+    "predict_time_s" : 21.45013635,
+    "coste_estimado_usd" : 0.011401
+  }, {
+    "etapa" : "E4 · B/C",
+    "prediction_id" : "xhj08hmp3xrmt0d1hzzv92kqrm",
+    "total_ms" : 26776,
+    "resultado" : "SUCCEEDED",
+    "modelo" : "openai/gpt-5-structured",
+    "tokens_entrada" : 27595,
+    "tokens_salida" : 2736,
+    "predict_time_s" : 26.450419288,
+    "coste_estimado_usd" : 0.01237075
+  } ]
+}

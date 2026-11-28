@@ -1,0 +1,7 @@
+{
+  "llamadas_live" : 0,
+  "respuestas_replay" : 0,
+  "max_llamadas" : 12,
+  "escenarios" : [ "E1: ACORTAR APLICADA con 0 llamada(s); retira 1175 3x120s/60", "E1: retirada real del 1175 en s1, reincorporacion publicada para s11 y entrenada; pasos [s2 mantenimiento, s3 PROGRESION 327, s4 PROGRESION 712, s5 PROGRESION 495, s6 PROGRESION 327, s7 PROGRESION 712, s8 PROGRESION 495, s9 mantenimiento, s10 REINCORPORACION 1175]" ],
+  "predicciones" : [ ]
+}

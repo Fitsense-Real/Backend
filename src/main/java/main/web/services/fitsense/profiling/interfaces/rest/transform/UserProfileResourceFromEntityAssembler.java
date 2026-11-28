@@ -25,7 +25,12 @@ public class UserProfileResourceFromEntityAssembler {
                 entity.getSessionMinutes(),
                 entity.equipmentCodesAsList(),
                 entity.blockedExerciseIdsAsList(),
-                entity.getHealthNotes()
+                entity.getHealthNotes(),
+                entity.allowancesOrDefault().allowHighImpact(),
+                entity.allowancesOrDefault().allowFloorExercises(),
+                entity.allowancesOrDefault().allowKneelingExercises(),
+                entity.allowancesOrDefault().allowHangingExercises(),
+                entity.allowancesOrDefault().allowOverheadExercises()
         );
     }
 }

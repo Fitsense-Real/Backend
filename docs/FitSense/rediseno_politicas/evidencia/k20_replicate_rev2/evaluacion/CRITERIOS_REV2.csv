@@ -1,0 +1,41 @@
+criterio,dimension,cohorte,comprobacion,valor,resultado
+A-1,FACTIBILIDAD,N,R_N: 0 DEFECTO (PASS + ESPERADO_SIN_PLAN = todos),PASS 19 · ESPERADO_SIN_PLAN 1 · DEFECTO 0 ,CUMPLE
+A-2,FACTIBILIDAD,N,R_N: 0 incumplimientos de seguridad del oraculo,0,CUMPLE
+B-0,ACEPTACION,N,R_N: ciclos con IA / aceptados intento 1 / aceptados al final / con fallo del proveedor,14 / 13 / 13 / 0,INFORMATIVO
+B-2,ACEPTACION,N,"R_N: ciclos con fallo del proveedor <= 10 % (si no: INCIDENCIA_PROVEEDOR, la corrida no vale para B ni C y se evalua aparte)",0/14,CUMPLE
+C-1,PERTINENCIA,N,R_N: 0 cambios de la IA NO pertinentes (todas las sesiones),0,CUMPLE
+D-1,SIN_PLAN_ESPERADO,N,R_N: perfiles ESPERADO_SIN_PLAN (aparte; no cuentan como PASS ni como exito),N19,INFORMATIVO
+G-1,GASTO,N,R_N: predicciones / USD medido / bloqueo,14 / 0.1622 / ninguno,INFORMATIVO
+A-1,FACTIBILIDAD,N,Rp_N: 0 DEFECTO (PASS + ESPERADO_SIN_PLAN = todos),PASS 19 · ESPERADO_SIN_PLAN 1 · DEFECTO 0 ,CUMPLE
+A-2,FACTIBILIDAD,N,Rp_N: 0 incumplimientos de seguridad del oraculo,0,CUMPLE
+B-0,ACEPTACION,N,Rp_N: ciclos con IA / aceptados intento 1 / aceptados al final / con fallo del proveedor,14 / 14 / 14 / 0,INFORMATIVO
+B-2,ACEPTACION,N,"Rp_N: ciclos con fallo del proveedor <= 10 % (si no: INCIDENCIA_PROVEEDOR, la corrida no vale para B ni C y se evalua aparte)",0/14,CUMPLE
+C-1,PERTINENCIA,N,Rp_N: 0 cambios de la IA NO pertinentes (todas las sesiones),0,CUMPLE
+D-1,SIN_PLAN_ESPERADO,N,Rp_N: perfiles ESPERADO_SIN_PLAN (aparte; no cuentan como PASS ni como exito),N19,INFORMATIVO
+G-1,GASTO,N,Rp_N: predicciones / USD medido / bloqueo,14 / 0.1642 / ninguno,INFORMATIVO
+B-1,ACEPTACION,N,R + R': aceptados por los validadores al final >= 80% de los ciclos con IA (sin fallos del proveedor),27/28 = 96.4%,CUMPLE
+B-1,ACEPTACION,N,R + R': limite inferior de Wilson al 95 % >= 63 %,82.3%,CUMPLE
+C-2,PERTINENCIA,N,R + R': efectivas y pertinentes >= 80% de las factibles evaluables (sin REQUIERE_REVISION: 13),14/15 = 93.3%,CUMPLE
+C-2,PERTINENCIA,N,R + R': limite inferior de Wilson al 95 % >= 63 %,70.2%,CUMPLE
+C-3,PERTINENCIA,N,R_N: ninguna corrida por debajo del 75% de sus factibles evaluables,6/7,CUMPLE
+C-3,PERTINENCIA,N,Rp_N: ninguna corrida por debajo del 75% de sus factibles evaluables,8/8,CUMPLE
+C-4,PERTINENCIA,N,R + R': cambios que tocan ejercicios con error de catalogo (REQUIERE_REVISION),13,INFORMATIVO
+A-1,FACTIBILIDAD,U,R_U: 0 DEFECTO (PASS + ESPERADO_SIN_PLAN = todos),PASS 20 · ESPERADO_SIN_PLAN 0 · DEFECTO 0 ,CUMPLE
+A-2,FACTIBILIDAD,U,R_U: 0 incumplimientos de seguridad del oraculo,0,CUMPLE
+B-0,ACEPTACION,U,R_U: ciclos con IA / aceptados intento 1 / aceptados al final / con fallo del proveedor,8 / 8 / 8 / 0,INFORMATIVO
+B-2,ACEPTACION,U,"R_U: ciclos con fallo del proveedor <= 10 % (si no: INCIDENCIA_PROVEEDOR, la corrida no vale para B ni C y se evalua aparte)",0/8,CUMPLE
+C-1,PERTINENCIA,U,R_U: 0 cambios de la IA NO pertinentes (todas las sesiones),0,CUMPLE
+D-1,SIN_PLAN_ESPERADO,U,R_U: perfiles ESPERADO_SIN_PLAN (aparte; no cuentan como PASS ni como exito),ninguno,INFORMATIVO
+G-1,GASTO,U,R_U: predicciones / USD medido / bloqueo,8 / 0.1158 / ninguno,INFORMATIVO
+A-1,FACTIBILIDAD,U,Rp_U: 0 DEFECTO (PASS + ESPERADO_SIN_PLAN = todos),PASS 20 · ESPERADO_SIN_PLAN 0 · DEFECTO 0 ,CUMPLE
+A-2,FACTIBILIDAD,U,Rp_U: 0 incumplimientos de seguridad del oraculo,0,CUMPLE
+B-0,ACEPTACION,U,Rp_U: ciclos con IA / aceptados intento 1 / aceptados al final / con fallo del proveedor,8 / 8 / 8 / 0,INFORMATIVO
+B-2,ACEPTACION,U,"Rp_U: ciclos con fallo del proveedor <= 10 % (si no: INCIDENCIA_PROVEEDOR, la corrida no vale para B ni C y se evalua aparte)",0/8,CUMPLE
+C-1,PERTINENCIA,U,Rp_U: 0 cambios de la IA NO pertinentes (todas las sesiones),0,CUMPLE
+D-1,SIN_PLAN_ESPERADO,U,Rp_U: perfiles ESPERADO_SIN_PLAN (aparte; no cuentan como PASS ni como exito),ninguno,INFORMATIVO
+G-1,GASTO,U,Rp_U: predicciones / USD medido / bloqueo,8 / 0.1201 / ninguno,INFORMATIVO
+B-1,ACEPTACION,U,R + R': aceptados por los validadores al final >= 90% de los ciclos con IA (sin fallos del proveedor),16/16 = 100.0%,CUMPLE
+C-2,PERTINENCIA,U,R + R': efectivas y pertinentes >= 90% de las factibles evaluables (sin REQUIERE_REVISION: 7),17/17 = 100.0%,CUMPLE
+C-3,PERTINENCIA,U,R_U: ninguna corrida por debajo del 80% de sus factibles evaluables,8/8,CUMPLE
+C-3,PERTINENCIA,U,Rp_U: ninguna corrida por debajo del 80% de sus factibles evaluables,9/9,CUMPLE
+C-4,PERTINENCIA,U,R + R': cambios que tocan ejercicios con error de catalogo (REQUIERE_REVISION),7,INFORMATIVO

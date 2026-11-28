@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.planning.GeneracionReferenciaIT
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 16.03 s <<< FAILURE! -- in main.web.services.fitsense.planning.GeneracionReferenciaIT
+main.web.services.fitsense.planning.GeneracionReferenciaIT.generacionIntacta -- Time elapsed: 9.233 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: el plan inicial cambio: LOSE_WEIGHT/BEGINNER/30/GYM ==> expected: <LOSE_WEIGHT/BEGINNER/30/GYM | MONDAY FULL_BODY 23min 1102:2x10r/120 1054:3x90s/60 1325:3x90s/60| WEDNESDAY FULL_BODY 23min 142:2x8r/120 1093:3x90s/60 253:3x90s/60| FRIDAY FULL_BODY 23min 421:2x8r/120 253:3x90s/60 1325:3x90s/60 || VALIDA> but was: <LOSE_WEIGHT/BEGINNER/30/GYM | MONDAY FULL_BODY 23min 916:2x8r/120 253:3x90s/60 1093:3x90s/60| WEDNESDAY FULL_BODY 23min 142:2x8r/120 1117:3x90s/60 1054:3x90s/60| FRIDAY FULL_BODY 23min 341:2x8r/120 853:3x90s/60 1325:3x90s/60 || VALIDA>
+	at main.web.services.fitsense.planning.GeneracionReferenciaBase.generacionIntacta(GeneracionReferenciaBase.java:83)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

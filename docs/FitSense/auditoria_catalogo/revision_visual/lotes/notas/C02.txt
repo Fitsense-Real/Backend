@@ -1,0 +1,28 @@
+694|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+829|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+1274|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+215|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+216|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+734|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+735|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+736|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+658|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo detras del banco, antebrazos sobre el banco
+659|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo detras del banco, antebrazos sobre el banco
+173|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo detras del banco, antebrazos sobre el banco
+174|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo detras del banco, antebrazos sobre el banco
+684|CONFIRMADO|ALTA|requires_floor / requires_kneeling|false / false|true / true|De rodillas en el suelo detras del banco, antebrazos sobre el banco
+685|PROBABLE|ALTA|requires_floor / requires_kneeling|false / false|true / true|Misma familia over bench (no ampliado)
+1214|CONFIRMADO|MEDIA|equipment|smith machine|smith machine + step platform|Antepies sobre un step
+269|CONFIRMADO|ALTA|requires_overhead|false|true|La barra sube por encima de la cabeza
+270|CONFIRMADO|ALTA|requires_overhead|false|true|La barra sube por encima de la cabeza
+268|PENDIENTE_CRITERIO|MEDIA|movement_pattern|HORIZONTAL_PULL|SHOULDER_RAISE o SCAPULAR_ELEVATION|Remo al menton: tiron vertical, no horizontal; hoy cuenta como UPPER_PULL
+617|CONFIRMADO|BAJA|equipment|dumbbell + bench|dumbbell|Tumbado en el suelo, no en banco
+782|CONFIRMADO|ALTA|requires_overhead|false|true|La mancuerna sube por encima de la cabeza
+471|CONFIRMADO|MEDIA|equipment|cable|cable + bench|Tumbado en un banco
+623|PENDIENTE_CRITERIO|BAJA|difficulty_level|3|1-2 (probable)|Elevacion lateral apoyado (nivel de mas)
+660|PENDIENTE_CRITERIO|BAJA|difficulty_level|3|2 (probable)|Pajaro apoyado en banco (nivel de mas)
+949|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo con piernas abiertas
+219|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+221|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+513|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco
+950|PENDIENTE_CRITERIO|BAJA|equipment|sin banco|+ bench (convencion de los sentados)|Sentado en un banco

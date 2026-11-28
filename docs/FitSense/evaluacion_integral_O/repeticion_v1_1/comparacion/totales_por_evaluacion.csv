@@ -1,0 +1,7 @@
+evaluacion,APROBADO,FALLO,NO APLICA,REQUIERE REVISION,aprobacion_tecnica,huella
+original S_O · v1.0 (oficial antecedente),139,3,43,15,139/142 = 97.9 %,7eb133539b588352
+original S_O · v1.1 (diagnóstico),142,0,43,15,142/142 = 100.0 %,7eb133539b588352
+repetición S_O · v1.0 (solo comparación),139,3,43,15,139/142 = 97.9 %,7eb133539b588352
+repetición S_O′ · v1.0 (solo comparación),139,3,43,15,139/142 = 97.9 %,7eb133539b588352
+repetición S_O · v1.1 (OFICIAL DEFINITIVO),142,0,43,15,142/142 = 100.0 %,7eb133539b588352
+repetición S_O′ · v1.1 (reproducibilidad),142,0,43,15,142/142 = 100.0 %,7eb133539b588352

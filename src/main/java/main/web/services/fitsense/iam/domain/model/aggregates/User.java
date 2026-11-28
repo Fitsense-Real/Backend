@@ -16,6 +16,10 @@ import java.time.OffsetDateTime;
 @Getter
 @Entity
 @Table(name = "users")
+// Solo se escriben las columnas que cambian. Sin esto, guardar la entidad (p. ej. registrar un inicio de sesion
+// leido antes) reescribia la fila entera y podia deshacer un cambio concurrente: el estado DELETED de una
+// eliminacion en curso o, con V61, el cambio de contrasena y de token_version.
+@org.hibernate.annotations.DynamicUpdate
 public class User extends AuditableAbstractAggregateRoot<User> {
 
     @Id
@@ -42,8 +46,16 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Embedded
     private StudyEnrollment enrollment;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 20)
+    private UserRole role;
+
     @Column(name = "last_login_at")
     private OffsetDateTime lastLoginAt;
+
+    /** V61: version de las credenciales. Cambia con la contrasena y revoca los JWT emitidos antes. */
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion;
 
     protected User() {
         // JPA
@@ -55,6 +67,8 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.name = new PersonName(command.firstName(), command.lastName());
         this.timezone = new UserTimezone(command.timezone());
         this.status = UserStatus.ACTIVE;
+        // El registro publico nunca fija el rol: el comando no lo trae.
+        this.role = UserRole.USER;
         this.enrollment = command.acceptsStudyParticipation()
                 ? StudyEnrollment.enrolledNow(consentVersion, participantCode)
                 : StudyEnrollment.notParticipating();
@@ -68,6 +82,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         if (newPasswordHash == null || newPasswordHash.isBlank())
             throw new DomainRuleViolationException("El hash de la contrasena no puede estar vacio.");
         this.passwordHash = newPasswordHash;
+        this.tokenVersion++;
     }
 
     public void registerLogin() {

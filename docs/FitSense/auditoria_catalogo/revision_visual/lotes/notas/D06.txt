@@ -1,0 +1,3 @@
+830|CONFIRMADO|MEDIA|equipment|ez barbell|ez barbell + bench|Prono sobre banco inclinado
+1019|CONFIRMADO|MEDIA|equipment|leverage machine|landmine + barbell|Barra anclada al suelo
+328|CONFIRMADO|ALTA|requires_overhead|false|true|Extension de triceps por encima de la cabeza

@@ -1,0 +1,17 @@
+caso;brazo;prediction_id;ms;origen
+G25;A;amtc9y238drzr0d218zabt8w28;66678;REAL
+G25;B;wzd8xpa60hrzw0d218zst2t5pc;95567;REAL
+G26;B;2gdtd0dvqnrzr0d2190a80s9ww;118366;REAL
+G26;A;nqgk5yca8nrzy0d21918cj7e1g;103269;REAL
+G05;A;68j4j48yb5rzy0d2192bvkb4xm;99269;REAL
+G05;B;bypn6kx1r1rzy0d2192r096ymw;94171;REAL
+G06;B;e9th970hv5rzr0d2193s41z8dm;65322;REAL
+G06;A;7awj948h69rzy0d21949zfr45m;0;RECUPERADA_GET (POST_ERROR en el backend; prediccion creada y facturada)
+G02;A;jz2v2ta1bxrzr0d2194ahjm1km;48183;REAL
+G02;B;cb5j9gqxc1rzy0d21949hh787g;77397;REAL
+G18;B;2gpkgrhcv9rzw0d2195b6er7fw;95935;REAL
+G18;A;zza2vnd3r5rzr0d2195vqz6v54;89045;REAL
+G14;A;dk8mppr035rzr0d2196s72wzng;89530;REAL
+G14;B;be62g82xtsrzy0d2197btt52rr;132478;REAL
+G04;B;hv6ynn33k1rzw0d2198b98s14c;56372;REAL
+G04;A;hv0dy69y41rzw0d2198vx6v5m0;0;RECUPERADA_GET (POST_ERROR en el backend; prediccion creada y facturada)

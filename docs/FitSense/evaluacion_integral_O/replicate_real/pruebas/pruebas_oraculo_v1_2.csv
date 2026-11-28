@@ -1,0 +1,11 @@
+prueba,esperado,obtenido,resultado
+IDENTIDAD O_S,v1.2 == v1.1,identicos,PASA
+IDENTIDAD O_Sp,v1.2 == v1.1,identicos,PASA
+IDENTIDAD O_D,v1.2 == v1.1,identicos,PASA
+IDENTIDAD O_HIST,v1.2 == v1.1,identicos,PASA
+IDENTIDAD O_S,v1.2 == v1.1,identicos,PASA
+IDENTIDAD O_Sp,v1.2 == v1.1,identicos,PASA
+PRUEBAS NEGATIVAS v1.1 ejecutadas con v1.2,19/19 PASA,19/19 PASA,PASA
+R1-C control: corrida REPLICATE con sus intentos tal cual,O03 A10 APROBADO (v1.2),v1.2 APROBADO [-] · v1.1 APROBADO,PASA
+R1-V intento 1 real valido y publicable (v1.1 lo daria FALLO),O03 A10 APROBADO (v1.2) y FALLO (v1.1),v1.2 APROBADO [-] · v1.1 FALLO,PASA
+R1-N negativa: adaptacion de la IA publicada sin intento publicable,O03 A10 FALLO (v1.2),v1.2 FALLO [C1: se publico una adaptacion de la IA sin ningun intento juzgado publicable] · v1.1 APROBADO,PASA

@@ -1,0 +1,11 @@
+ .../UserInterventionCommandServiceImpl.java        |  15 +-
+ .../domain/services/MensajeDeIntervencion.java     |  87 ++++++++
+ .../WeeklyTrainingPlanCommandServiceImpl.java      |  10 +-
+ .../domain/services/DescripcionAdaptacion.java     | 223 +++++++++++++++++++++
+ .../MensajeIntencionDecisionTest.java              |  42 ++++
+ .../domain/services/MensajeDeIntervencionTest.java | 124 ++++++++++++
+ .../orchestation/AdaptacionCompletaIT.java         |  21 ++
+ .../fitsense/p2d/ConservacionPatronH1IT.java       |  24 +++
+ .../internal/DescripcionAdaptacionTest.java        | 192 ++++++++++++++++++
+ .../internal/SustitucionDificultadMayorTest.java   |  82 ++++++++
+ 10 files changed, 817 insertions(+), 3 deletions(-)

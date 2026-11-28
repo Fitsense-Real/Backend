@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteIT
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 26.06 s -- in main.web.services.fitsense.orchestation.DolorFamiliaEquivalenteIT

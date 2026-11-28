@@ -1,0 +1,95 @@
+== LOSE_WEIGHT/BEGINNER/3d/45/CASA
+cardio_elegible 253 Gateo de oso | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1054 Escalador | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1093 Empujar para correr | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_prescribible [253, 1054, 1093]
+MONDAY UPPER_BODY segundos=2052 pegado_al_anterior=false cardio_usado=[253, 1093] bloqueado_V18=[] cardio_aun_valido=[1054]
+TUESDAY LOWER_BODY segundos=1824 pegado_al_anterior=true cardio_usado=[1054] bloqueado_V18=[253, 1093] cardio_aun_valido=[]
+WEDNESDAY UPPER_BODY segundos=2052 pegado_al_anterior=true cardio_usado=[253, 1093] bloqueado_V18=[1054] cardio_aun_valido=[]
+libres_del_enfoque TUESDAY total=117
+  1	trabajo | lower legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  5	trabajo | lower legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | upper legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  30	trabajo | upper legs | ESTRUCTURAL | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=[STRENGTH]
+  1	trabajo | upper legs | MOVILIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  2	trabajo | upper legs | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  12	trabajo | upper legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | SIN_CAPACIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | waist | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | ESTRUCTURAL | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  4	trabajo | waist | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  50	trabajo | waist | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+== LOSE_WEIGHT/BEGINNER/4d/45/CASA
+cardio_elegible 253 Gateo de oso | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1054 Escalador | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1093 Empujar para correr | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_prescribible [253, 1054, 1093]
+MONDAY UPPER_BODY segundos=2052 pegado_al_anterior=false cardio_usado=[1054, 1093] bloqueado_V18=[] cardio_aun_valido=[253]
+TUESDAY LOWER_BODY segundos=1824 pegado_al_anterior=true cardio_usado=[253] bloqueado_V18=[1054, 1093] cardio_aun_valido=[]
+WEDNESDAY UPPER_BODY segundos=2052 pegado_al_anterior=true cardio_usado=[1054, 1093] bloqueado_V18=[253] cardio_aun_valido=[]
+THURSDAY LOWER_BODY segundos=1824 pegado_al_anterior=true cardio_usado=[253] bloqueado_V18=[1054, 1093] cardio_aun_valido=[]
+libres_del_enfoque TUESDAY total=117
+  1	trabajo | lower legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  5	trabajo | lower legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | upper legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  30	trabajo | upper legs | ESTRUCTURAL | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=[STRENGTH]
+  1	trabajo | upper legs | MOVILIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  2	trabajo | upper legs | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  12	trabajo | upper legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | SIN_CAPACIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | waist | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | ESTRUCTURAL | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  4	trabajo | waist | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  50	trabajo | waist | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+== LOSE_WEIGHT/BEGINNER/5d/45/CASA
+cardio_elegible 253 Gateo de oso | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1054 Escalador | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1093 Empujar para correr | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_prescribible [253, 1054, 1093]
+MONDAY UPPER_BODY segundos=2052 pegado_al_anterior=false cardio_usado=[253, 1093] bloqueado_V18=[] cardio_aun_valido=[1054]
+TUESDAY LOWER_BODY segundos=1824 pegado_al_anterior=true cardio_usado=[1054] bloqueado_V18=[253, 1093] cardio_aun_valido=[]
+THURSDAY UPPER_BODY segundos=2052 pegado_al_anterior=false cardio_usado=[1054, 1093] bloqueado_V18=[] cardio_aun_valido=[253]
+FRIDAY LOWER_BODY segundos=1824 pegado_al_anterior=true cardio_usado=[253] bloqueado_V18=[1054, 1093] cardio_aun_valido=[]
+libres_del_enfoque TUESDAY total=117
+  1	trabajo | lower legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  5	trabajo | lower legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | upper legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  30	trabajo | upper legs | ESTRUCTURAL | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=[STRENGTH]
+  1	trabajo | upper legs | MOVILIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  2	trabajo | upper legs | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  12	trabajo | upper legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | SIN_CAPACIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | waist | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | ESTRUCTURAL | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  4	trabajo | waist | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  50	trabajo | waist | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+== LOSE_WEIGHT/BEGINNER/6d/45/CASA
+cardio_elegible 253 Gateo de oso | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1054 Escalador | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_elegible 1093 Empujar para correr | cardio DURATION | dosis=CARDIO 3x90 s, descanso 60 s
+cardio_prescribible [253, 1054, 1093]
+MONDAY UPPER_BODY segundos=2052 pegado_al_anterior=false cardio_usado=[253, 1093] bloqueado_V18=[] cardio_aun_valido=[1054]
+WEDNESDAY LOWER_BODY segundos=1836 pegado_al_anterior=false cardio_usado=[253, 1054] bloqueado_V18=[] cardio_aun_valido=[1093]
+THURSDAY UPPER_BODY segundos=1830 pegado_al_anterior=true cardio_usado=[1093] bloqueado_V18=[253, 1054] cardio_aun_valido=[]
+SATURDAY LOWER_BODY segundos=1836 pegado_al_anterior=false cardio_usado=[1054, 1093] bloqueado_V18=[] cardio_aun_valido=[253]
+libres_del_enfoque WEDNESDAY total=117
+  1	trabajo | lower legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  5	trabajo | lower legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | upper legs | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  30	trabajo | upper legs | ESTRUCTURAL | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=[STRENGTH]
+  1	trabajo | upper legs | MOVILIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  2	trabajo | upper legs | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  12	trabajo | upper legs | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | upper legs | SIN_CAPACIDAD | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | EN_REVISION | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  3	trabajo | waist | EN_REVISION | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  1	trabajo | waist | ESTRUCTURAL | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  4	trabajo | waist | RESISTIDO | DURATION | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO
+  50	trabajo | waist | RESISTIDO | SETS_REPS | dificultad<=1:true | prescribible_LOSE_WEIGHT=NO

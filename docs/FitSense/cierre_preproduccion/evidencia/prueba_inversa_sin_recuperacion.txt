@@ -1,0 +1,15 @@
+Escenarios con fallos:
+ - U01: semana 5: un plan activo y solo uno (hay 0)
+ - U01: semana 4: una medicion
+ - U02: semana 5: un plan activo y solo uno (hay 0)
+ - U02: semana 4: una medicion
+ - U07: semana 5: un plan activo y solo uno (hay 0)
+ - U07: semana 4: una medicion
+ - U08: semana 5: un plan activo y solo uno (hay 0)
+ - U08: semana 4: una medicion
+ - U09: semana 5: un plan activo y solo uno (hay 0)
+ - U09: semana 4: una medicion
+ - U09: semana 8: un plan activo y solo uno (hay 0)
+ - E12-16: las semanas anteriores a la retirada se conservan
+ - push: U01 1: eventos=10 envios=10 distintos=10
+

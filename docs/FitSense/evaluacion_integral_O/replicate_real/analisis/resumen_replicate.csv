@@ -1,0 +1,3 @@
+corrida,ciclos_con_orden_de_IA,predicciones,tokens_entrada,tokens_salida,usd_medido,latencia_mediana_s,latencia_max_s,aceptadas_intento_1,aceptadas_tras_reintento,aceptacion_final,sin_efecto_propuesto_por_ia,sin_efecto_sin_propuesta,respaldo_tras_rechazos,respaldo_tras_error,otros,intentos_rechazados,errores_proveedor,pertinencia_ACC,pertinencia_ALT,pertinencia_CONS-J,pertinencia_INC
+R_O,10,10,281633,22784,0.166,47.8,63.1,8,0,8/10,1,0,0,1,0,0,1,10,0,2,0
+Rp_O,10,10,334826,26838,0.1374,38.2,59.9,10,0,10/10,0,0,0,0,0,0,0,10,1,1,0

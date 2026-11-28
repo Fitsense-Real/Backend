@@ -1,0 +1,16 @@
+{
+  "modo" : "IA real",
+  "duracion_min" : 1,
+  "llamadas" : 2,
+  "llamadas_con_error" : 0,
+  "predicciones_con_metricas" : 2,
+  "tokens_entrada" : 17110,
+  "tokens_salida" : 6066,
+  "coste_estimado_usd" : 0.0164095,
+  "latencia_media_ms" : 33354,
+  "latencia_max_ms" : 36145,
+  "motivo_parada" : null,
+  "violaciones_linaje" : 0,
+  "violaciones_comprobaciones" : [ "U02 s2: ai_calls V32 = 3, llamadas contadas = 0" ],
+  "cortes" : [ "U02: fin del foco (semana 5)" ]
+}

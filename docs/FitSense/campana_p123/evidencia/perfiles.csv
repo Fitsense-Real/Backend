@@ -1,0 +1,13 @@
+user_id;fitness_level;goal_type;days_per_week;available_days;session_minutes;training_location;equipment_codes;blocked_exercise_ids;allow_high_impact;allow_floor_exercises;allow_kneeling_exercises;allow_hanging_exercises;allow_overhead_exercises
+2;INTERMEDIATE;GAIN_MUSCLE;2;{2,6};30;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{};true;true;true;true;true
+3;ADVANCED;GAIN_MUSCLE;5;{1,2,4,6,7};60;HOME;{"body weight",dumbbell,band};{};true;true;true;true;true
+4;BEGINNER;LOSE_WEIGHT;7;{1,2,3,4,5,6,7};30;HOME;{"body weight",band};{};false;true;true;true;true
+5;INTERMEDIATE;LOSE_WEIGHT;6;{1,2,3,5,6,7};45;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{293,404,1133};true;true;true;true;true
+6;BEGINNER;INCREASE_STRENGTH;1;{7};60;HOME;{"body weight",dumbbell,band};{};true;true;true;true;true
+7;ADVANCED;INCREASE_STRENGTH;4;{1,3,5,6};60;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{};true;true;true;true;false
+8;BEGINNER;GENERAL_FITNESS;1;{3};30;HOME;{"body weight"};{};false;true;true;true;true
+9;INTERMEDIATE;GENERAL_FITNESS;3;{1,4,7};45;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{};true;true;false;false;true
+10;INTERMEDIATE;GAIN_MUSCLE;2;{3,7};30;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{};true;true;true;true;true
+11;INTERMEDIATE;LOSE_WEIGHT;6;{2,3,4,5,6,7};30;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{};true;true;true;true;true
+12;INTERMEDIATE;GAIN_MUSCLE;2;{2,6};30;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{};true;true;true;true;true
+13;INTERMEDIATE;GAIN_MUSCLE;2;{3,7};30;GYM;{"body weight",dumbbell,barbell,cable,"leverage machine",bench,band};{};true;true;true;true;true

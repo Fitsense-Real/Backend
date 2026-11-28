@@ -1,0 +1,71 @@
+corrida,id,sesion,intervencion,factible_sonda,origen,cambio,categoria,detalle
+R,U03,S3,REVISAR_CARGA_Y_RECUPERACION,no,SIN_EFECTO,no,CONS-J,sin cambios
+R,U04,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Jalón con cable (389, dif 2, lats) por Dominada paralela con agarre estrecho asistida (74, dif 1, lats) | sustituye Jalón trasero con cable (392, dif 2, lats) por Dominada asistida (75, dif 1, lats)"
+R,U04,S3,INVESTIGAR_CAMBIO_MINIMO,no,SIN_EFECTO,no,CONS-J,sin cambios
+R,U07,S3,CAUSA_NO_REGISTRADA,,SIN_EFECTO_SIN_IA,no,CONS-J,sin cambios
+R,U08,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Press de banca con cable (323): reps 10 -> 9 | Jalón trasero ancho por detrás de la cabeza (487): reps 10 -> 9
+R,U09,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Press de banca declinado con mancuerna (540, dif 2, pectorals) por Fondos de pecho asistidos (de rodillas) (72, dif 1, pectorals) | sustituye Remo vertical con mancuerna (780, dif 2, delts) por Remo de deltoides traseros con banda, de pie (135, dif 1, delts) | Press inclinado a una mano en polea (380): reps 10 -> 9 | Remo T-bar con palanca (1039): reps 10 -> 9"
+R,U09,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Press de agarre invertido con Smith (1284): reps 10 -> 9
+R,U12,S3,CAUSA_NO_REGISTRADA,,SIN_EFECTO_SIN_IA,no,CONS-J,sin cambios
+R,U13,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Pies rápidos v. 2 (1117): dur 90 -> 80 | Media sentadilla (853): dur 90 -> 80
+R,U14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Media sentadilla (853): dur 90 -> 80 | Pies rápidos v. 2 (1117): dur 90 -> 80
+R,U14,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Empujar para correr (1093): dur 90 -> 80
+R,U18,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Escalador (1054): sets 3 -> 2
+R,U19,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Media sentadilla (853): sets 3 -> 2
+R,U19,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Curl de bíceps sentado con press de hombro (725): reps 10 -> 9
+R',U03,S3,REVISAR_CARGA_Y_RECUPERACION,no,SIN_EFECTO,no,CONS-J,sin cambios
+R',U04,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Press inclinado a una mano en polea (380, dif 2, pectorals) por Fondos de pecho asistidos (de rodillas) (72, dif 1, pectorals) | sustituye Peso muerto con cable (360, dif 2, glutes) por Peso muerto con piernas rígidas y banda (147, dif 1, glutes)"
+R',U04,S3,INVESTIGAR_CAMBIO_MINIMO,no,SIN_EFECTO,no,CONS-J,sin cambios
+R',U07,S3,CAUSA_NO_REGISTRADA,,SIN_EFECTO_SIN_IA,no,CONS-J,sin cambios
+R',U08,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Press de banca con cable (323): reps 10 -> 9 | Jalón trasero ancho por detrás de la cabeza (487): reps 10 -> 9
+R',U09,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Press de banca declinado con mancuerna (540, dif 2, pectorals) por Fondos de pecho asistidos (de rodillas) (72, dif 1, pectorals) | sustituye Remo vertical con mancuerna (780, dif 2, delts) por Remo de deltoides traseros con banda, de pie (135, dif 1, delts) | Press inclinado a una mano en polea (380): reps 10 -> 9 | Remo T-bar con palanca (1039): reps 10 -> 9"
+R',U09,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Press de agarre invertido con Smith (1284): reps 10 -> 9
+R',U12,S3,CAUSA_NO_REGISTRADA,,SIN_EFECTO_SIN_IA,no,CONS-J,sin cambios
+R',U13,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Pies rápidos v. 2 (1117): dur 90 -> 80 | Media sentadilla (853): dur 90 -> 80
+R',U14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Media sentadilla (853): dur 90 -> 80 | Pies rápidos v. 2 (1117): dur 90 -> 80
+R',U14,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Empujar para correr (1093): dur 90 -> 80
+R',U18,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Press de hombros con banda (101): reps 10 -> 9 | Elevación de codo y push-up invertido (775): reps 10 -> 9 | Flexión con manos anchas (1334): reps 15 -> 14 | Sentadilla marcha (contra la pared) (1076): reps 15 -> 14 | Escalador (1054): dur 90 -> 80 | Estiramiento lumbar sentado (1188): dur 30 -> 20
+R',U19,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Media sentadilla (853): sets 3 -> 2
+R',U19,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Escalador (1054): dur 90 -> 80
+R,J01,S4,REVISAR_CARGA_Y_RECUPERACION,no,SIN_EFECTO,no,CONS-J,sin cambios
+R,J02,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Flexión hindú modificada (1058): reps 10 -> 9 | Pulldown en máquina con agarre invertido (1164): reps 10 -> 9
+R,J04,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Flexión de rodillas en apoyo (933): sets 3 -> 2 | Elevación de codo y push-up invertido (775): sets 3 -> 2 | Puente de cadera con banda en rodillas (1157): sets 3 -> 2
+R,J05,S3,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Puente a una pierna con pierna extendida (1202, dif 2, glutes) por Puente de glúteos bajo en el suelo (1073, dif 1, glutes)"
+R,J06,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Puentes de glúteos (299): reps 13 -> 12
+R,J07,S3,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Press de pecho inclinado en palanca v.2 (992): sets 3 -> 2
+R,J08,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Sentadilla de baño con apoyo (1114): sets 3 -> 2 | Correr (1133): dur 120 -> 110
+R,J09,S4,INVESTIGAR_CAMBIO_MINIMO,no,SIN_EFECTO,no,CONS-J,sin cambios
+R,J10,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Giro izquierdo. boxeo (973): reps 10 -> 9
+R,J11,S4,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Sentadilla pliométrica con mancuerna (675): sets 3 -> 2
+R,J12,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Flexión (1096): reps 10 -> 9
+R,J13,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Elevación lateral con mancuerna (578, dif 2, delts) por Elevación frontal con banda (99, dif 1, delts)"
+R,J13,S3,INVESTIGAR_CAMBIO_MINIMO,no,SIN_EFECTO,no,CONS-J,sin cambios
+R,J14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla en banco con barra (161, dif 3, quads) por Sentadilla con banda a una pierna (127, dif 2, quads) | sustituye Paso pasante sumo con mancuerna (790, dif 2, glutes) por Pase de banda (125, dif 1, glutes) | Elevacion de talones sentado a una pierna con mancuerna (agarre martillo) (735): reps 13 -> 12 | Abdominal medio (864): reps 13 -> 12 | Rodillo abdominal de pie con barra (275): reps 13 -> 12"
+R,J14,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Dip de pecho con agarre ancho asistido (rodillas) (73): sets 3 -> 2
+R,J14,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla a una pierna (1110, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes) | sustituye Peso muerto a una pierna con mancuerna (751, dif 3, glutes) por Peso muerto con piernas rígidas y banda (147, dif 1, glutes) | sustituye Voltereta de judo con cable (347, dif 2, abs) por Crunch giratorio de rodillas con banda (109, dif 1, abs) | Prensa de pantorrilla con palanca (984): reps 13 -> 12"
+R,J15,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Escalador (1054): dur 90 -> 80
+R,J15,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Empujar para correr (1093): dur 90 -> 80
+R,J16,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla con mancuerna (755, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes) | sustituye Peso muerto con piernas rígidas y mancuerna (788, dif 2, glutes) por Peso muerto con piernas rígidas y banda (147, dif 1, glutes) | Elevacion de talones sentado a una pierna con mancuerna (agarre martillo) (735): reps 13 -> 12 | Sit-up completo con brazos elevados (63): reps 13 -> 12"
+R,J16,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Flexión de agarre cerrado (508): reps 10 -> 9
+R,J16,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla con mancuerna (755, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes) | Crunch oblicuos en suelo (1065): reps 13 -> 12 | Curl de bíceps en zancada con mancuerna (609): reps 10 -> 9"
+R',J01,S4,REVISAR_CARGA_Y_RECUPERACION,no,SIN_EFECTO,no,CONS-J,sin cambios
+R',J02,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Flexión hindú modificada (1058): reps 10 -> 9 | Pulldown en máquina con agarre invertido (1164): reps 10 -> 9
+R',J04,S3,REVISAR_CARGA_Y_RECUPERACION,si,IA,si,ACC,Puente de cadera con banda en rodillas (1157): sets 3 -> 2 | Media sentadilla (853): sets 3 -> 2 | Estiramiento lateral de suelo de lado (1190): dur 30 -> 20
+R',J05,S3,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Puente a una pierna con pierna extendida (1202, dif 2, glutes) por Puente de glúteos bajo en el suelo (1073, dif 1, glutes)"
+R',J06,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Prensa Pallof horizontal con banda (107): reps 13 -> 12
+R',J07,S3,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Ciclo cross trainer (532, dif 2, cardiovascular system) por Saltos con las piernas separadas (53, dif 1, cardiovascular system) | Press de pecho inclinado en palanca v.2 (992): sets 3 -> 2 | Carrera de zancada corta (1175): dur 120 -> 110"
+R',J08,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Sentadilla de baño con apoyo (1114): reps 10 -> 9 | Sentadilla sissy (1205): reps 18 -> 17 | Gemelos de pie (1254): sets 3 -> 2 | Crunch rana (856): reps 18 -> 17 | Correr (1133): dur 120 -> 110 | Estiramiento de isquiotibiales con pierna elevada (978): dur 30 -> 20
+R',J09,S4,INVESTIGAR_CAMBIO_MINIMO,no,SIN_EFECTO,no,CONS-J,sin cambios
+R',J10,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Giro izquierdo. boxeo (973): reps 10 -> 9
+R',J11,S4,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Sentadilla pliométrica con mancuerna (675): sets 3 -> 2
+R',J12,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Flexión (1096): reps 10 -> 9
+R',J13,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Elevación lateral con mancuerna (578, dif 2, delts) por Elevación frontal con banda (98, dif 1, delts)"
+R',J13,S3,INVESTIGAR_CAMBIO_MINIMO,no,SIN_EFECTO,no,CONS-J,sin cambios
+R',J14,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla en banco con barra (161, dif 3, quads) por Sentadilla con banda a una pierna (127, dif 2, quads) | sustituye Paso pasante sumo con mancuerna (790, dif 2, glutes) por Peso muerto con piernas rígidas y banda (147, dif 1, glutes)"
+R',J14,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Remo sentado con banda de espalda recta (1156): sets 3 -> 2
+R',J14,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla a una pierna (1110, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes) | sustituye Peso muerto a una pierna con mancuerna (751, dif 3, glutes) por Peso muerto con piernas rígidas y banda (147, dif 1, glutes)"
+R',J15,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,Escalador (1054): dur 90 -> 80
+R',J15,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Empujar para correr (1093): dur 90 -> 80
+R',J16,S2,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla con mancuerna (755, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes) | sustituye Peso muerto con piernas rígidas y mancuerna (788, dif 2, glutes) por Peso muerto con piernas rígidas y banda (147, dif 1, glutes) | sustituye Paso pasante sumo con mancuerna (790, dif 2, glutes) por Pase de banda (125, dif 1, glutes) | Elevacion de talones sentado a una pierna con mancuerna (agarre martillo) (735): reps 13 -> 12 | Crunch de ingle (863): reps 13 -> 12 | Sit-up completo con brazos elevados (63): reps 13 -> 12 | Media sentadilla (853): dur 120 -> 110"
+R',J16,S3,INVESTIGAR_CAMBIO_MINIMO,si,IA,si,ACC,Flexión de agarre cerrado (508): reps 10 -> 9
+R',J16,S4,VARIANTE_MAS_SENCILLA_O_CARGA,si,IA,si,ACC,"sustituye Sentadilla con mancuerna (755, dif 2, glutes) por Sentadilla con banda (144, dif 1, glutes) | sustituye Paso pasante sumo con mancuerna (790, dif 2, glutes) por Pase de banda (125, dif 1, glutes) | Crunch oblicuos en suelo (1065): reps 13 -> 12 | Curl de bíceps en zancada con mancuerna (609): reps 10 -> 9 | Elevacion de talones sentado con mancuerna (695): reps 18 -> 17 | Elevación de tronco versión 2 (1186): reps 18 -> 17 | Pies rápidos v. 2 (1117): dur 120 -> 110 | Gateo de oso (253): dur 120 -> 110"

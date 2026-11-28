@@ -3,13 +3,15 @@ package main.web.services.fitsense.orchestration.application.internal;
 import main.web.services.fitsense.adaptation.interfaces.acl.AdaptationContextFacade;
 import main.web.services.fitsense.adaptation.interfaces.acl.AdjustmentOrderView;
 import main.web.services.fitsense.analytics.interfaces.acl.AnalyticsContextFacade;
+import main.web.services.fitsense.analytics.interfaces.acl.WeeklyMetricsView;
+import main.web.services.fitsense.orchestration.infrastructure.locking.CicloSemanalBloqueo;
 import main.web.services.fitsense.planning.domain.model.valueobjects.AdjustmentType;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanAdjustment;
+import main.web.services.fitsense.planning.interfaces.acl.MeasuredWeekView;
 import main.web.services.fitsense.planning.interfaces.acl.PlanningContextFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,18 +36,97 @@ import java.util.Optional;
 @Service
 public class WeeklyCycleService {
 
+    /** B5.1: cierres que terminan sin plan (opcional: las pruebas unitarias construyen el servicio sin Spring). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos contadores;
+
+
     private static final Logger log = LoggerFactory.getLogger(WeeklyCycleService.class);
 
     private final PlanningContextFacade planningContextFacade;
     private final AnalyticsContextFacade analyticsContextFacade;
     private final AdaptationContextFacade adaptationContextFacade;
+    /** Exclusion por participante entre hilos e instancias. Null solo en pruebas que construyen a mano. */
+    private final CicloSemanalBloqueo bloqueo;
 
+    /** Para pruebas que construyen el servicio a mano: sin bloqueo. */
     public WeeklyCycleService(PlanningContextFacade planningContextFacade,
                               AnalyticsContextFacade analyticsContextFacade,
                               AdaptationContextFacade adaptationContextFacade) {
+        this(planningContextFacade, analyticsContextFacade, adaptationContextFacade, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public WeeklyCycleService(PlanningContextFacade planningContextFacade,
+                              AnalyticsContextFacade analyticsContextFacade,
+                              AdaptationContextFacade adaptationContextFacade,
+                              CicloSemanalBloqueo bloqueo) {
         this.planningContextFacade = planningContextFacade;
         this.analyticsContextFacade = analyticsContextFacade;
         this.adaptationContextFacade = adaptationContextFacade;
+        this.bloqueo = bloqueo;
+    }
+
+    /**
+     * El resultado explicito de un ciclo.
+     * <ul>
+     *   <li>{@code EJECUTADO}: el ciclo corrio; {@code planId} es el plan de la
+     *       semana nueva (publicado ahora o ya existente), o vacio si no hubo.</li>
+     *   <li>{@code EN_CURSO}: otro ciclo del mismo participante se esta
+     *       ejecutando; este no hizo nada. Reintentar despues es seguro.</li>
+     *   <li>{@code SIN_BLOQUEO}: no se pudo abrir la conexion del bloqueo; no se
+     *       hizo nada para no ejecutar sin exclusion.</li>
+     * </ul>
+     */
+    public record ResultadoCiclo(CicloSemanalBloqueo.Estado estado, Optional<Long> planId) {}
+
+    /**
+     * El ciclo con exclusion por participante (CicloSemanalBloqueo): el bloqueo se
+     * toma antes de cerrar la semana y se suelta al terminar, pase lo que pase.
+     * Dentro, el ciclo vuelve a comprobar si la decision ya produjo su plan.
+     */
+    public ResultadoCiclo ejecutar(Long userId, LocalDate measuredWeekStart, LocalDate newWeekStart) {
+        if (bloqueo == null)
+            return new ResultadoCiclo(CicloSemanalBloqueo.Estado.EJECUTADO,
+                    cicloSinBloqueo(userId, measuredWeekStart, newWeekStart));
+        CicloSemanalBloqueo.Resultado<Optional<Long>> r;
+        try {
+            // V66: dentro del bloqueo, el ciclo corre en su operacion WEEKLY_CYCLE con libro de predicciones (lo que
+            // permite reanudarlo tras un reinicio sin pagar otra vez a la IA).
+            r = bloqueo.ejecutar(userId, () -> planningContextFacade.cicloConSeguimiento(userId, measuredWeekStart,
+                    newWeekStart, () -> cicloSinBloqueo(userId, measuredWeekStart, newWeekStart)));
+        } catch (PlanningContextFacade.CicloEnCurso otra) {
+            log.info("Ciclo semanal del usuario {} (semana medida {}) en curso en otra ejecucion: {}", userId,
+                    measuredWeekStart, otra.getMessage());
+            return new ResultadoCiclo(CicloSemanalBloqueo.Estado.EN_CURSO, Optional.empty());
+        }
+        return new ResultadoCiclo(r.estado(), r.valor() == null ? Optional.empty() : r.valor());
+    }
+
+    /**
+     * V66 · RELANZA LOS CIERRES SEMANALES INTERRUMPIDOS. Un ciclo cuyo proceso murio deja su operacion WEEKLY_CYCLE en
+     * curso con el lease vencido; la tarea del lunes no vuelve a pasar por esa hora. Este barrido cierra las que ya no se
+     * reanudaran y relanza las demas con {@link #ejecutar}: el mismo bloqueo, la misma comprobacion de «ya publicado» y,
+     * dentro, la adopcion de la operacion con su libro, asi que ninguna prediccion se vuelve a pedir y ninguna semana se
+     * publica dos veces. Aislado por participante.
+     *
+     * @return ciclos relanzados
+     */
+    public int recuperarInterrumpidos() {
+        if (bloqueo == null) return 0;
+        planningContextFacade.cerrarOperacionesIaVencidas();
+        int relanzados = 0;
+        for (var h : planningContextFacade.ciclosSemanalesHuerfanos()) {
+            try {
+                log.warn("CICLO_SEMANAL_RECUPERACION usuario={} semana_medida={} semana_nueva={} ejecuciones={}",
+                        h.userId(), h.semanaMedida(), h.semanaNueva(), h.ejecuciones());
+                ejecutar(h.userId(), h.semanaMedida(), h.semanaNueva());
+                relanzados++;
+            } catch (RuntimeException e) {
+                log.error("Fallo la recuperacion del ciclo semanal del usuario {}: {}", h.userId(), e.getMessage(), e);
+            }
+        }
+        return relanzados;
     }
 
     /**
@@ -62,6 +143,11 @@ public class WeeklyCycleService {
      * abarcando, no hay nada que marcar como rollback-only.
      */
     public Optional<Long> runFor(Long userId, LocalDate measuredWeekStart, LocalDate newWeekStart) {
+        // Vacio tambien con EN_CURSO o SIN_BLOQUEO: no se publico nada en esta llamada.
+        return ejecutar(userId, measuredWeekStart, newWeekStart).planId();
+    }
+
+    private Optional<Long> cicloSinBloqueo(Long userId, LocalDate measuredWeekStart, LocalDate newWeekStart) {
         // 1. Cerrar. El plan deja de admitir sesiones nuevas.
         planningContextFacade.closeWeek(userId, measuredWeekStart);
 
@@ -77,7 +163,26 @@ public class WeeklyCycleService {
         // 4. Decidir. Vacio en la primera semana o si no hubo plan.
         var order = adaptationContextFacade.decideForWeek(userId, measuredWeekStart);
 
-        // 5. Generar.
+        // 5. Generar, UNA vez por semana medida. Si la orden de esta semana ya
+        //    produjo su plan, el ciclo se esta repitiendo (otra instancia, un
+        //    relanzamiento manual): adaptar otra vez publicaria una segunda
+        //    version de la semana nueva y otra fila de evidencia por la misma
+        //    decision. Se devuelve el plan que ya salio.
+        var yaPublicado = order.flatMap(view -> adaptationContextFacade.resultingPlanOf(view.interventionId()));
+        if (yaPublicado.isPresent()) {
+            log.info("Ciclo semanal repetido para el usuario {} y la semana medida {}: el plan {} ya se"
+                    + " publico, no se adapta otra vez", userId, measuredWeekStart, yaPublicado.get());
+            return yaPublicado;
+        }
+
+        // Sin orden (primera semana medida o semana sin plan) puede que la
+        // semana nueva YA tenga plan: el primero se genera para el lunes
+        // siguiente cuando se pide a mitad de semana. Se respeta.
+        if (order.isEmpty()) {
+            var existente = planningContextFacade.findActivePlanId(userId, newWeekStart);
+            if (existente.isPresent()) return existente;
+        }
+
         var adjustment = order.map(WeeklyCycleService::toAdjustment).orElse(PlanAdjustment.none());
 
 
@@ -86,7 +191,22 @@ public class WeeklyCycleService {
 
         Optional<Long> planId;
         try {
-            planId = planningContextFacade.generateWeeklyPlan(userId, newWeekStart, adjustment,
+            // LA SEMANA SE DERIVA DE LA ANTERIOR EN CUANTO HAY UNA.
+            //
+            // decideForWeek devuelve vacio exactamente cuando no hay semana
+            // medida con plan: primera semana del participante, o una semana
+            // sin plan. Ese es el unico caso de generacion inicial; a partir de
+            // ahi la semana nueva se copia de la anterior y se corrige solo lo
+            // que fallo, que es la direccion aprobada -«solo se adapta cuando
+            // hay baja adherencia; si no, no se hace nada»-.
+            //
+            // Con NO_CHANGE o INSUFFICIENT_DATA no se le pide nada a la IA: el
+            // productor conserva la continuidad y publica igual, porque la
+            // semana nueva necesita un plan aunque no se cambie nada de el.
+            planId = order.isPresent()
+                    ? planningContextFacade.adaptWeeklyPlan(userId, newWeekStart, adjustment,
+                    previousAdherence, previousRpe, medidaDe(metrics, order.get()))
+                    : planningContextFacade.generateWeeklyPlan(userId, newWeekStart, adjustment,
                     previousAdherence, previousRpe);
         } catch (RuntimeException e) {
             // 19.4: si no hay plan valido la semana queda sin plan y su
@@ -94,6 +214,7 @@ public class WeeklyCycleService {
             // el cierre del resto de la cohorte.
             log.error("No se pudo generar el plan del usuario {} para la semana del {}: {}",
                     userId, newWeekStart, e.getMessage());
+            if (contadores != null) contadores.sumar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.CICLO_SIN_PLAN);
             return Optional.empty();
         }
 
@@ -103,23 +224,81 @@ public class WeeklyCycleService {
         return planId;
     }
 
-    private static PlanAdjustment toAdjustment(AdjustmentOrderView order) {
+    /**
+     * Los cuatro datos de la semana medida que planning necesita para la
+     * evidencia de V32, y que no puede consultar: no tiene ACL hacia analytics.
+     * <p>
+     * Si no hubiera metricas no habria orden -{@code decideForWeek} las usa
+     * para decidir-, asi que llegar aqui sin ellas significaria que el paso 2 y
+     * el 4 del ciclo discrepan. Se dice en voz alta en vez de registrar una
+     * evidencia con identificadores inventados.
+     */
+    private static MeasuredWeekView medidaDe(Optional<WeeklyMetricsView> metrics,
+                                             AdjustmentOrderView order) {
+        var vista = metrics.orElseThrow(() -> new IllegalStateException(
+                "Hay orden de ajuste y no hay metricas de la semana medida."));
+
+        return new MeasuredWeekView(
+                vista.weeklyMetricId(),
+                vista.planId(),
+                vista.observedAdherencePct(),
+                vista.registrationCoveragePct(),
+                order.outcome());
+    }
+
+    /**
+     * La vista del ACL traducida a lo que entiende planning.
+     * <p>
+     * VISIBILIDAD DE PAQUETE, no privado, para que {@code WeeklyCycleAdjustmentTest}
+     * pueda comprobar la regla de abajo sin montar los tres facades. Es la unica
+     * razon: no lo llama nadie mas.
+     * <p>
+     * LOS DOS MECANISMOS NO PUEDEN VIAJAR JUNTOS. {@code PlanAdjustment} lanza
+     * si recibe {@code targetVolume != null} con sesiones senaladas -son
+     * irreconciliables: con la dosis fijada por capacidad en 4D, nada puede
+     * mover el volumen hasta un objetivo porcentual-. Y la trampa es que
+     * {@code AdjustmentOrderView.targetVolume()} es un {@code int} PRIMITIVO:
+     * al pasarlo a un parametro {@code Integer} se autoboxea, asi que
+     * <b>incluso un cero llega como no nulo</b> y dispararia esa excepcion.
+     * <p>
+     * Por eso los tres campos de volumen solo viajan cuando el mecanismo
+     * porcentual ACTUO de verdad, y eso se reconoce por los tipos: si lo unico
+     * que hay es {@code NONE}, no hubo ajuste porcentual y el volumen no
+     * significa nada.
+     * <p>
+     * ESA CONDICION NO ES COSMETICA. Desde que la tabla de decision porcentual
+     * salio del flujo, los tipos son {@code NONE} y el volumen es 0 SIEMPRE.
+     * Pasar ese cero autoboxeado haria que {@code PlanAdjustment.isActive()}
+     * -que es literalmente {@code targetVolume != null}- devolviera cierto cada
+     * semana, y {@code persist} marcaria cada plan con
+     * {@code adjustment_applied = "NONE"} como si se le hubiera aplicado un
+     * ajuste. Con sesiones senaladas, ademas, lanzaria.
+     */
+    static PlanAdjustment toAdjustment(AdjustmentOrderView order) {
         List<AdjustmentType> types = order.adjustmentTypes().stream()
                 .map(AdjustmentType::valueOf)
                 .toList();
 
+        List<PlanAdjustment.TargetedSession> senaladas = order.targetedSessions().stream()
+                .map(s -> new PlanAdjustment.TargetedSession(
+                        s.plannedWorkoutId(), s.intervencion()))
+                .toList();
+
+        boolean porcentual = types.stream().anyMatch(tipo -> tipo != AdjustmentType.NONE);
+
         return new PlanAdjustment(
                 types,
-                order.targetVolume(),
-                order.targetVolumeMin(),
-                order.targetVolumeMax(),
-                order.targetVolumeChangePct(),
-                order.loadChangePct(),
+                porcentual ? (Integer) order.targetVolume() : null,
+                porcentual ? (Integer) order.targetVolumeMin() : null,
+                porcentual ? (Integer) order.targetVolumeMax() : null,
+                porcentual ? order.targetVolumeChangePct() : 0.0,
+                porcentual ? order.loadChangePct() : 0.0,
                 order.forcedMaxDifficulty(),
                 order.forcedDaysPerWeek(),
                 order.forcedSessionMinutes(),
                 order.reason(),
                 order.dominantSkipReason(),
-                order.distributionHint());
+                order.distributionHint(),
+                senaladas);
     }
 }

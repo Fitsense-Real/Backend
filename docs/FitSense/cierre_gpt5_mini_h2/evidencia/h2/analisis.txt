@@ -1,0 +1,45 @@
+Parejas completas con respuesta: 13 · excluidas: ninguna
+
+| Caso | Objetivo | Nivel | Lugar | Días | Min | A válida | B válida | A V15 (mitad) | B V15 (mitad) | A otros | B otros | A s | B s |
+|---|---|---|---|---:|---:|---|---|---|---|---|---|---:|---:|
+| G02 | GAIN_MUSCLE | BEGINNER | HOME | 4 | 60 | VALIDA | VALIDA | 0 (0) | 0 (0) | {} | {} | 48.2 | 77.4 |
+| G04 | GAIN_MUSCLE | INTERMEDIATE | HOME | 3 | 45 | VALIDA | VALIDA | 0 (0) | 0 (0) | {} | {} | n/d | 56.4 |
+| G05 | GAIN_MUSCLE | INTERMEDIATE | GYM | 5 | 60 | VALIDA | RECHAZADA | 0 (0) | 1 (0) | {} | {V26=1} | 99.3 | 94.2 |
+| G06 | GAIN_MUSCLE | BEGINNER | GYM | 4 | 60 | RECHAZADA | VALIDA | 0 (0) | 0 (0) | {V23=1} | {} | n/d | 65.3 |
+| G08 | LOSE_WEIGHT | BEGINNER | HOME | 4 | 60 | VALIDA | RECHAZADA | 0 (0) | 2 (2) | {} | {V26=3} | 74.9 | 104.3 |
+| G10 | LOSE_WEIGHT | INTERMEDIATE | HOME | 3 | 45 | VALIDA | VALIDA | 0 (0) | 0 (0) | {} | {} | 39.3 | 54.3 |
+| G12 | LOSE_WEIGHT | BEGINNER | GYM | 4 | 60 | VALIDA | VALIDA | 0 (0) | 0 (0) | {} | {} | 83.0 | 69.3 |
+| G14 | INCREASE_STRENGTH | BEGINNER | HOME | 4 | 60 | RECHAZADA | RECHAZADA | 2 (2) | 0 (0) | {} | {V24=4, V26=3} | 89.5 | 132.5 |
+| G16 | INCREASE_STRENGTH | INTERMEDIATE | HOME | 3 | 45 | VALIDA | VALIDA | 0 (0) | 0 (0) | {} | {} | 74.8 | 77.5 |
+| G18 | INCREASE_STRENGTH | BEGINNER | GYM | 4 | 60 | RECHAZADA | VALIDA | 2 (2) | 0 (0) | {V26=3} | {} | 89.0 | 95.9 |
+| G20 | GENERAL_FITNESS | BEGINNER | HOME | 4 | 60 | RECHAZADA | VALIDA | 0 (0) | 0 (0) | {V1=1} | {} | 86.2 | 103.1 |
+| G25 | GAIN_MUSCLE | INTERMEDIATE | GYM | 6 | 60 | VALIDA | VALIDA | 0 (0) | 0 (0) | {} | {} | 66.7 | 95.6 |
+| G26 | GAIN_MUSCLE | INTERMEDIATE | HOME | 5 | 60 | VALIDA | VALIDA | 0 (0) | 0 (0) | {} | {} | 103.3 | 118.4 |
+
+| Métrica (primera propuesta) | A · PR-1.7 | B · PR-1.9 |
+|---|---:|---:|
+| validas_primera | 9 | 10 |
+| casos_con_v15 | 2 | 2 |
+| casos_con_v15_mitad | 2 | 1 |
+| rechazos_v15 | 4 | 3 |
+| rechazos_v15_mitad | 4 | 2 |
+| otros | {'V1': 1, 'V23': 1, 'V26': 3} | {'V24': 4, 'V26': 7} |
+| casos_con_otros | {'V1': 1, 'V23': 1, 'V26': 1} | {'V24': 1, 'V26': 3} |
+| mediana_s | 82.976 | 95.567 |
+| max_s | 103.269 | 132.478 |
+| parejas_con_tiempo | 11 | 11 |
+| cota_usd | 0.702833 | 0.704786 |
+| caracteres_salida_mediana | 5818 | 6541 |
+
+C1 (mitad V15) discordantes: solo A = 2, solo B = 1; McNemar exacta p = 1.0000
+V15 (cualquiera) discordantes: solo A = 2, solo B = 2; McNemar exacta p = 1.0000
+Validez a la primera discordante: solo A = 2, solo B = 3; McNemar exacta p = 1.0000
+
+Criterios previos (CRITERIOS_ACEPTACION_H2.md) medibles en la primera propuesta:
+- Potencia de C1: A con rechazo V15 de la mitad en 2 casos (< 3: INCONCLUSO por construccion)
+- C1: B < A en casos con V15 de la mitad: 1 < 2 -> CUMPLE
+- C5: validas a la primera B >= A - 1: 10 >= 8 -> CUMPLE
+- C6: ninguna otra categoria sube mas de 1 caso en B: {'V1': -1, 'V23': -1, 'V24': 1, 'V26': 2} -> NO CUMPLE
+- C7 (latencia por prediccion): mediana B <= A x 1,10: 95.6 <= 91.3 -> NO CUMPLE
+- C2, C3, C4: NO MEDIBLES en la primera propuesta (no se publica; no hay reintentos ni respaldo).
+- C8: el arbol de la evaluacion no cambia V15, V24, V8C, D8, P-03 ni el catalogo (diff de #69 + #83).

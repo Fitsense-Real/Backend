@@ -1,0 +1,3 @@
+431|CONFIRMADO|ALTA|requires_overhead|false|true|Lleva las manos por encima de la cabeza en diagonal
+477|CONFIRMADO|ALTA|requires_overhead|false|true|Empieza con las manos por encima de la cabeza
+748|PROBABLE|ALTA|requires_overhead|false|true|Mano detras de la cabeza con el codo por encima (igual que 1260)

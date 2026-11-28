@@ -1,0 +1,39 @@
+equipment_id,code,name_es,requires_gym,display_order
+1,body weight,Peso corporal,false,1
+10,olympic barbell,Barra olimpica,true,10
+11,cable,Polea,true,11
+12,leverage machine,Maquina,true,12
+13,smith machine,Maquina Smith,true,13
+14,sled machine,Maquina de trineo,true,14
+15,weighted,Lastre,true,15
+16,assisted,Asistido,true,16
+17,other,Otro,false,17
+18,bench,Banco,false,18
+19,pull-up bar,Barra fija,false,19
+2,dumbbell,Mancuerna,false,2
+20,suspension straps,Correas de suspension,false,20
+21,parallel bars,Barras paralelas,true,21
+22,gymnastic rings,Anillas,true,22
+23,bosu ball,BOSU,false,23
+24,balance board,Tabla de equilibrio,false,24
+25,ab wheel,Rueda abdominal,false,25
+26,step platform,Step / plataforma,false,26
+27,plyo box,Cajon pliometrico,false,27
+28,stationary bike,Bicicleta estatica,false,28
+29,treadmill,Caminadora,false,29
+3,band,Banda elastica,false,3
+30,landmine,Landmine,true,30
+31,captains chair,Estacion de elevacion de piernas,true,31
+32,wall bars,Espaldera,false,32
+33,anchor point,Punto de anclaje firme (poste fijo o anclaje de puerta),false,33
+34,ghd bench,Banco GHD,true,34
+35,hyperextension bench,Banco de hiperextension (romano),true,35
+36,squat rack,Rack de sentadilla,true,36
+37,preacher bench,Banco Scott (predicador),true,37
+38,vertical pole,Poste vertical fijo (barra de bandera),true,38
+4,kettlebell,Pesa rusa,false,4
+5,stability ball,Balon de estabilidad,false,5
+6,medicine ball,Balon medicinal,false,6
+7,rope,Cuerda,false,7
+8,barbell,Barra,true,8
+9,ez barbell,Barra EZ,true,9

@@ -1,0 +1,26 @@
+ejercicios activos con nombre original incompatible con su patron: 23
+1195 | self assisted inverse leg curl | Curl invertido de piernas asistido | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 304 | perfiles 295
+1196 | self assisted inverse leg curl | Curl de piernas invertido asistido | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 283 | perfiles 273
+404 | cable pulldown bicep curl | Curl de bíceps alto en cable | VERTICAL_PULL | iso false | d 2 | colocaciones REV2 278 | perfiles 200
+1100 | raise single arm push-up | Flexión unilateral con brazo elevado | HORIZONTAL_PUSH | iso false | d 2 | colocaciones REV2 204 | perfiles 197
+725 | dumbbell seated biceps curl to shoulder press | Curl de bíceps sentado con press de hombro | VERTICAL_PUSH | iso false | d 1 | colocaciones REV2 184 | perfiles 176
+1266 | standing single leg curl | Curl de pierna en una pierna de pie | KNEE_DOMINANT | iso true | d 2 | colocaciones REV2 166 | perfiles 164
+760 | dumbbell standing alternate hammer curl and press | Curl martillo alterno de pie y press | VERTICAL_PUSH | iso false | d 2 | colocaciones REV2 84 | perfiles 83
+558 | dumbbell biceps curl squat | Curl de bíceps con sentadilla | KNEE_DOMINANT | iso false | d 2 | colocaciones REV2 75 | perfiles 73
+609 | dumbbell lunge with bicep curl | Curl de bíceps en zancada con mancuerna | KNEE_DOMINANT | iso false | d 2 | colocaciones REV2 71 | perfiles 70
+567 | dumbbell forward lunge triceps extension | Zancada hacia adelante con extensión de tríceps | KNEE_DOMINANT | iso false | d 2 | colocaciones REV2 67 | perfiles 66
+527 | dumbbell bicep curl lunge with bowling motion | Curl de bíceps con zancada y lanzamiento | KNEE_DOMINANT | iso false | d 2 | colocaciones REV2 66 | perfiles 66
+327 | cable assisted inverse leg curl | Curl de piernas inverso asistido por cable | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 58 | perfiles 57
+1008 | lever leg extension | Extensión de piernas con palanca | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 54 | perfiles 52
+580 | dumbbell incline breeding | Curl inclinado con mancuerna | HORIZONTAL_PUSH | iso false | d 1 | colocaciones REV2 53 | perfiles 53
+1009 | lever lying leg curl | Curl de piernas acostado con palanca | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 50 | perfiles 50
+1007 | lever kneeling leg curl | Curl de piernas de rodillas con palanca | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 49 | perfiles 49
+915 | inverse leg curl (bench support) | Curl femoral invertido con banco | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 47 | perfiles 47
+1046 | lever seated leg curl | Curl de piernas sentado | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 42 | perfiles 42
+916 | inverse leg curl (on pull-up cable machine) | Curl de piernas invertido en polea | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 42 | perfiles 42
+1010 | lever lying two-one leg curl | Curl de isquiotibiales tendido con palanca | KNEE_DOMINANT | iso true | d 2 | colocaciones REV2 21 | perfiles 21
+1197 | self assisted inverse leg curl (on floor) | Curl invertido de piernas asistido (en suelo) | KNEE_DOMINANT | iso true | d 1 | colocaciones REV2 0 | perfiles 0
+796 | dumbbell step up single leg balance with bicep curl | Curl de bíceps con mancuerna en balance de una pierna | KNEE_DOMINANT | iso false | d 3 | colocaciones REV2 0 | perfiles 0
+826 | exercise ball one legged diagonal kick hamstring curl | Curl de isquiotibiales diagonal con una pierna en balón | KNEE_DOMINANT | iso false | d 2 | colocaciones REV2 0 | perfiles 0
+HIST_final planes con KNEE_DOMINANT por objetivo {'LOSE_WEIGHT': 903, 'GAIN_MUSCLE': 945, 'INCREASE_STRENGTH': 945, 'GENERAL_FITNESS': 945} | cubiertos SOLO por aislados (curl/extension) {'LOSE_WEIGHT': 54, 'GAIN_MUSCLE': 43, 'INCREASE_STRENGTH': 26, 'GENERAL_FITNESS': 60}
+REV2_final planes con KNEE_DOMINANT por objetivo {'LOSE_WEIGHT': 761, 'GAIN_MUSCLE': 945, 'INCREASE_STRENGTH': 945, 'GENERAL_FITNESS': 945} | cubiertos SOLO por aislados (curl/extension) {'LOSE_WEIGHT': 80, 'GAIN_MUSCLE': 64, 'INCREASE_STRENGTH': 45, 'GENERAL_FITNESS': 89}

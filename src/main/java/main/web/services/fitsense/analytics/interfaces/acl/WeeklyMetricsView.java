@@ -1,5 +1,7 @@
 package main.web.services.fitsense.analytics.interfaces.acl;
 
+import main.web.services.fitsense.shared.domain.model.valueobjects.EvidenceRule;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -20,10 +22,25 @@ public record WeeklyMetricsView(
         String riskLevel,
         boolean dropout,
         int scheduledWorkouts,
-        int assignedExercises
+        int assignedExercises,
+        // V30. Lo que necesita el decisor para separar "no sabemos" de "no
+        // entreno". weightedAdherencePct sigue siendo la primaria.
+        Integer recordedWorkouts,
+        BigDecimal observedAdherencePct,
+        BigDecimal registrationCoveragePct
 ) {
     /** Sin plan o sin adherencia calculable no hay nada que ajustar. */
     public boolean isActionable() {
         return hasActivePlan && weightedAdherencePct != null && planId != null;
+    }
+
+    /**
+     * V30. isActionable dice que la semana se puede medir; esto dice que se
+     * puede DECIDIR sobre ella. El umbral de cobertura es provisional y entra
+     * como parametro, no escrito aqui.
+     */
+    public boolean hasEnoughEvidence(double coberturaMinimaPct) {
+        return isActionable() && EvidenceRule.enoughEvidence(
+                observedAdherencePct, registrationCoveragePct, coberturaMinimaPct);
     }
 }

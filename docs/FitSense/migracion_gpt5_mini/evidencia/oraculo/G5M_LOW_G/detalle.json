@@ -1,0 +1,3060 @@
+[
+ {
+  "adaptaciones": [],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 28,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "APROBADO",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "AI",
+   "intentos_plan": "2",
+   "llamadas": 2,
+   "rechazadas": 1,
+   "validas": 1
+  },
+  "id": "O01",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {
+   "high_impact": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    4,
+    4,
+    4
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    24,
+    24,
+    24
+   ],
+   "minutos_estimados": [
+    24,
+    24,
+    24
+   ],
+   "patrones": [
+    "HIP_EXTENSION",
+    "HIP_HINGE",
+    "HORIZONTAL_PULL",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT",
+    "VERTICAL_PUSH"
+   ],
+   "plan_id": 1,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 3
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O01",
+    "inicio": "2026-11-02",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 1,
+    "plan_siguiente": 2,
+    "programadas": 3,
+    "semana": 1,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O01",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 2,
+    "plan_siguiente": 3,
+    "programadas": 3,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O01",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 3,
+    "plan_siguiente": 4,
+    "programadas": 3,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O01",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 4,
+    "plan_siguiente": 5,
+    "programadas": 3,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 3,
+  "user_id": 1
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 1,
+    "estado_v32": "SIN_EFECTO",
+    "fuente": "CONSERVED",
+    "id": "O02",
+    "igual": true,
+    "intervencion": "CONSERVAR",
+    "llamadas_ia": "0",
+    "pertinencia": "CONS-J",
+    "problemas": "-",
+    "reducciones": "-",
+    "retirados": "-",
+    "sesion": 16,
+    "sustituciones": "-",
+    "trabajo_antes_s": 636,
+    "trabajo_despues_s": 636
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 35,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "AI",
+   "intentos_plan": "1",
+   "llamadas": 1,
+   "rechazadas": 0,
+   "validas": 1
+  },
+  "id": "O02",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA",
+   "UPPER_PULL"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA",
+   "UPPER_PULL"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {
+   "high_impact": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E4/E7 nombre o instrucciones 853"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    4,
+    4
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    27,
+    27
+   ],
+   "minutos_estimados": [
+    27,
+    27
+   ],
+   "patrones": [
+    "HIP_EXTENSION",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT"
+   ],
+   "plan_id": 6,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 2
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "50.00",
+    "adherencia_ponderada": "50.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "ADAPT_LOCALIZED",
+    "decision_oraculo": "ADAPT_LOCALIZED",
+    "estado_v32": "SIN_EFECTO",
+    "fuente": "CONSERVED",
+    "guion": "O:LACK_OF_TIME/H",
+    "id": "O02",
+    "inicio": "2026-11-02",
+    "intervenciones": "CONSERVAR",
+    "llamadas_ia": "0",
+    "omitidas": 1,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 6,
+    "plan_siguiente": 7,
+    "programadas": 2,
+    "semana": 1,
+    "senal": "LACK_OF_TIME",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 2,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H",
+    "id": "O02",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 7,
+    "plan_siguiente": 8,
+    "programadas": 2,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 2,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H",
+    "id": "O02",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 8,
+    "plan_siguiente": 9,
+    "programadas": 2,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 2,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H",
+    "id": "O02",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 9,
+    "plan_siguiente": 10,
+    "programadas": 2,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 2,
+  "user_id": 2
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 1,
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "id": "O03",
+    "igual": false,
+    "intervencion": "REVISAR_CARGA_Y_RECUPERACION",
+    "llamadas_ia": "1",
+    "pertinencia": "ACC",
+    "problemas": "-",
+    "reducciones": "73.sets 3->2;486.sets 3->2",
+    "retirados": "-",
+    "sesion": 28,
+    "sustituciones": "-",
+    "trabajo_antes_s": 216,
+    "trabajo_despues_s": 180
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 41,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "APROBADO",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "APROBADO",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "4",
+   "llamadas": 3,
+   "rechazadas": 3,
+   "validas": 0
+  },
+  "id": "O03",
+  "limitaciones_final": [],
+  "limitaciones_tras_generacion": [],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 3 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "C3: RECUPERACION con la progresion apagada (P-A1, REV2)"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [
+   {
+    "antes": "{\"descanso\": 150, \"reps\": 6, \"segundos\": null, \"series\": 2}",
+    "ciclo": 3,
+    "condiciones": "",
+    "despues": "{\"descanso\": 150, \"reps\": 6, \"segundos\": null, \"series\": 3}",
+    "estado_reserva": null,
+    "exercise_id": 73,
+    "id": "O03",
+    "problemas": "-",
+    "sesion_origen": 36,
+    "techo_backend": 79,
+    "techo_oraculo": 79,
+    "tipo": "RECUPERACION",
+    "volumen_antes": 60,
+    "volumen_base_backend": 72,
+    "volumen_base_oraculo": 72,
+    "volumen_despues": 66
+   }
+  ],
+  "prohibido": {
+   "high_impact": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E3 curl nordico 327"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    5,
+    4,
+    4,
+    4
+   ],
+   "estado_dosis": "DOSIS_OBJETIVO",
+   "minutos_declarados": [
+    35,
+    25,
+    32,
+    25
+   ],
+   "minutos_estimados": [
+    35,
+    25,
+    32,
+    25
+   ],
+   "patrones": [
+    "HIP_EXTENSION",
+    "HIP_HINGE",
+    "HORIZONTAL_PULL",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT",
+    "VERTICAL_PULL"
+   ],
+   "plan_id": 11,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 4
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "75.00",
+    "adherencia_ponderada": "75.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "ADAPT_LOCALIZED",
+    "decision_oraculo": "ADAPT_LOCALIZED",
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "guion": "H/H/O:FATIGUE/H",
+    "id": "O03",
+    "inicio": "2026-11-02",
+    "intervenciones": "REVISAR_CARGA_Y_RECUPERACION",
+    "llamadas_ia": "1",
+    "omitidas": 1,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 11,
+    "plan_siguiente": 12,
+    "programadas": 4,
+    "semana": 1,
+    "senal": "FATIGUE",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O03",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 12,
+    "plan_siguiente": 13,
+    "programadas": 4,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O03",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "RECUPERACION:73",
+    "plan": 13,
+    "plan_siguiente": 14,
+    "programadas": 4,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O03",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 14,
+    "plan_siguiente": 15,
+    "programadas": 4,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 4,
+  "user_id": 3
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 1,
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "id": "O04",
+    "igual": false,
+    "intervencion": "VARIANTE_MAS_SENCILLA_O_CARGA",
+    "llamadas_ia": "1",
+    "pertinencia": "INC",
+    "problemas": "mas trabajo: aumentos [(1133, 'sets', '3', 'None'), (1309, 'sets', '2', 'None')] anadidos [] trabajo 696->344",
+    "reducciones": "116.sets 3->2;1309.dur 30->20",
+    "retirados": "-",
+    "sesion": 47,
+    "sustituciones": "673->119;520->128",
+    "trabajo_antes_s": 696,
+    "trabajo_despues_s": 344
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "C1 sesion 47: mas trabajo: aumentos [(1133, 'sets', '3', 'None'), (1309, 'sets', '2', 'None')] anadidos [] trabajo 696->344"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 30,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "APROBADO",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "FALLO",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "AI",
+   "intentos_plan": "2",
+   "llamadas": 2,
+   "rechazadas": 1,
+   "validas": 1
+  },
+  "id": "O04",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {},
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    5,
+    5,
+    5,
+    5,
+    5
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    31,
+    31,
+    31,
+    31,
+    31
+   ],
+   "minutos_estimados": [
+    31,
+    31,
+    31,
+    31,
+    31
+   ],
+   "patrones": [
+    "HIP_HINGE",
+    "HORIZONTAL_PULL",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT",
+    "VERTICAL_PULL"
+   ],
+   "plan_id": 16,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 5
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "72.01",
+    "adherencia_ponderada": "72.01",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "ADAPT_LOCALIZED",
+    "decision_oraculo": "ADAPT_LOCALIZED",
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "guion": "H/O:TOO_DIFFICULT/H/P60/H",
+    "id": "O04",
+    "inicio": "2026-11-02",
+    "intervenciones": "VARIANTE_MAS_SENCILLA_O_CARGA",
+    "llamadas_ia": "1",
+    "omitidas": 1,
+    "parciales": 1,
+    "pasos": "-",
+    "plan": 16,
+    "plan_siguiente": 17,
+    "programadas": 5,
+    "semana": 1,
+    "senal": "TOO_DIFFICULT",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 5,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H/H",
+    "id": "O04",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 17,
+    "plan_siguiente": 18,
+    "programadas": 5,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 5,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H/H",
+    "id": "O04",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 18,
+    "plan_siguiente": 19,
+    "programadas": 5,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 5,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H/H",
+    "id": "O04",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 19,
+    "plan_siguiente": 20,
+    "programadas": 5,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 5,
+  "user_id": 4
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 1,
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "id": "O05",
+    "igual": false,
+    "intervencion": "INVESTIGAR_CAMBIO_MINIMO",
+    "llamadas_ia": "1",
+    "pertinencia": "ACC",
+    "problemas": "-",
+    "reducciones": "-",
+    "retirados": "-",
+    "sesion": 71,
+    "sustituciones": "1096->933",
+    "trabajo_antes_s": 330,
+    "trabajo_despues_s": 330
+   },
+   {
+    "ciclo": 1,
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "id": "O05",
+    "igual": false,
+    "intervencion": "INVESTIGAR_CAMBIO_MINIMO",
+    "llamadas_ia": "1",
+    "pertinencia": "ACC",
+    "problemas": "-",
+    "reducciones": "-",
+    "retirados": "-",
+    "sesion": 72,
+    "sustituciones": "1114->507",
+    "trabajo_antes_s": 336,
+    "trabajo_despues_s": 336
+   },
+   {
+    "ciclo": 1,
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "id": "O05",
+    "igual": true,
+    "intervencion": "CAUSA_NO_REGISTRADA",
+    "llamadas_ia": "1",
+    "pertinencia": "CONS-J",
+    "problemas": "-",
+    "reducciones": "-",
+    "retirados": "-",
+    "sesion": 74,
+    "sustituciones": "-",
+    "trabajo_antes_s": 336,
+    "trabajo_despues_s": 336
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": true,
+   "TRAS_GENERACION": true
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 26,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "APROBADO",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "AI",
+   "intentos_plan": "3",
+   "llamadas": 3,
+   "rechazadas": 2,
+   "validas": 1
+  },
+  "id": "O05",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA",
+   "DOSIS_NO_DEMOSTRADA",
+   "UPPER_PULL"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA",
+   "DOSIS_NO_DEMOSTRADA",
+   "UPPER_PULL"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {},
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E2 dosis de espalda u hombro solo de ejercicios no demostrados",
+    "E4/E7 nombre o instrucciones 1320"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    4,
+    4,
+    4,
+    4
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    24,
+    23,
+    24,
+    23
+   ],
+   "minutos_estimados": [
+    24,
+    23,
+    24,
+    23
+   ],
+   "patrones": [
+    "HIP_EXTENSION",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT"
+   ],
+   "plan_id": 21,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 4
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "34.81",
+    "adherencia_ponderada": "34.81",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "ADAPT_EXPANDED",
+    "decision_oraculo": "ADAPT_EXPANDED",
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "guion": "O:LACK_OF_MOTIVATION/O:LACK_OF_MOTIVATION/H/P40",
+    "id": "O05",
+    "inicio": "2026-11-02",
+    "intervenciones": "CAUSA_NO_REGISTRADA|INVESTIGAR_CAMBIO_MINIMO",
+    "llamadas_ia": "1",
+    "omitidas": 2,
+    "parciales": 1,
+    "pasos": "-",
+    "plan": 21,
+    "plan_siguiente": 22,
+    "programadas": 4,
+    "semana": 1,
+    "senal": "LACK_OF_MOTIVATION",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O05",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 22,
+    "plan_siguiente": 23,
+    "programadas": 4,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O05",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 23,
+    "plan_siguiente": 24,
+    "programadas": 4,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O05",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 24,
+    "plan_siguiente": 25,
+    "programadas": 4,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 4,
+  "user_id": 5
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 1,
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "id": "O06",
+    "igual": false,
+    "intervencion": "SEGURIDAD_ANTE_DOLOR",
+    "llamadas_ia": "1",
+    "pertinencia": "ACC",
+    "problemas": "-",
+    "reducciones": "1135.sets 3->2",
+    "retirados": "1096",
+    "sesion": 91,
+    "sustituciones": "-",
+    "trabajo_antes_s": 774,
+    "trabajo_despues_s": 600
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 52,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "APROBADO",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "APROBADO",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "APROBADO",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [
+   1096
+  ],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "AI",
+   "intentos_plan": "2",
+   "llamadas": 2,
+   "rechazadas": 1,
+   "validas": 1
+  },
+  "id": "O06",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "negativa: excluidos por dolor [1096] no vuelven"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {},
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    3,
+    3,
+    3
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    29,
+    29,
+    29
+   ],
+   "minutos_estimados": [
+    29,
+    29,
+    29
+   ],
+   "patrones": [
+    "HIP_HINGE",
+    "HORIZONTAL_PUSH"
+   ],
+   "plan_id": 26,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 3
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "94.44",
+    "adherencia_ponderada": "94.44",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "ADAPT_LOCALIZED",
+    "decision_oraculo": "ADAPT_LOCALIZED",
+    "estado_v32": "APLICADA",
+    "fuente": "AI",
+    "guion": "HD/H/H",
+    "id": "O06",
+    "inicio": "2026-11-02",
+    "intervenciones": "SEGURIDAD_ANTE_DOLOR",
+    "llamadas_ia": "1",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 26,
+    "plan_siguiente": 27,
+    "programadas": 3,
+    "semana": 1,
+    "senal": "PAIN_OR_DISCOMFORT",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O06",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 27,
+    "plan_siguiente": 28,
+    "programadas": 3,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O06",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 28,
+    "plan_siguiente": 29,
+    "programadas": 3,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O06",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 29,
+    "plan_siguiente": 30,
+    "programadas": 3,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 3,
+  "user_id": 6
+ },
+ {
+  "adaptaciones": [],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 33,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "APROBADO",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "4",
+   "llamadas": 3,
+   "rechazadas": 3,
+   "validas": 0
+  },
+  "id": "O07",
+  "limitaciones_final": [
+   "S_MAX"
+  ],
+  "limitaciones_tras_generacion": [
+   "S_MAX"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 3 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {
+   "high_impact": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    5,
+    4,
+    4,
+    4
+   ],
+   "estado_dosis": "DOSIS_OBJETIVO",
+   "minutos_declarados": [
+    23,
+    19,
+    19,
+    19
+   ],
+   "minutos_estimados": [
+    23,
+    19,
+    19,
+    19
+   ],
+   "patrones": [
+    "HIP_EXTENSION",
+    "HIP_HINGE",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT",
+    "VERTICAL_PULL",
+    "VERTICAL_PUSH"
+   ],
+   "plan_id": 31,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 4
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O07",
+    "inicio": "2026-11-02",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 31,
+    "plan_siguiente": 32,
+    "programadas": 4,
+    "semana": 1,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O07",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 32,
+    "plan_siguiente": 33,
+    "programadas": 4,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O07",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 33,
+    "plan_siguiente": 34,
+    "programadas": 4,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O07",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 34,
+    "plan_siguiente": 35,
+    "programadas": 4,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 4,
+  "user_id": 7
+ },
+ {
+  "adaptaciones": [],
+  "aviso_e2a": {
+   "FINAL": true,
+   "TRAS_GENERACION": true
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 45,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "4",
+   "llamadas": 3,
+   "rechazadas": 3,
+   "validas": 0
+  },
+  "id": "O08",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA",
+   "DOSIS_NO_DEMOSTRADA",
+   "S_MAX",
+   "UPPER_PULL"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA",
+   "DOSIS_NO_DEMOSTRADA",
+   "S_MAX",
+   "UPPER_PULL"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 3 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {
+   "high_impact": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E2 dosis de espalda u hombro solo de ejercicios no demostrados",
+    "E4/E7 nombre o instrucciones 1093",
+    "E4/E7 nombre o instrucciones 853"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    6,
+    5,
+    6,
+    5
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    28,
+    25,
+    27,
+    24
+   ],
+   "minutos_estimados": [
+    28,
+    25,
+    27,
+    24
+   ],
+   "patrones": [
+    "HIP_EXTENSION",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT"
+   ],
+   "plan_id": 36,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 4
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "75.00",
+    "cobertura": "75.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/N/H/H",
+    "id": "O08",
+    "inicio": "2026-11-02",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 36,
+    "plan_siguiente": 37,
+    "programadas": 4,
+    "semana": 1,
+    "senal": "-",
+    "sin_registro": 1
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O08",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 37,
+    "plan_siguiente": 38,
+    "programadas": 4,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O08",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 38,
+    "plan_siguiente": 39,
+    "programadas": 4,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O08",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 39,
+    "plan_siguiente": 40,
+    "programadas": 4,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 4,
+  "user_id": 8
+ },
+ {
+  "adaptaciones": [],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 28,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 1,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "3",
+   "llamadas": 2,
+   "rechazadas": 1,
+   "validas": 0
+  },
+  "id": "O09",
+  "limitaciones_final": [
+   "S_MAX"
+  ],
+  "limitaciones_tras_generacion": [
+   "S_MAX"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 2 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {},
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E4/E7 nombre o instrucciones 1093",
+    "E4/E7 nombre o instrucciones 853"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    6,
+    6,
+    7,
+    6,
+    6,
+    6
+   ],
+   "estado_dosis": "DOSIS_OBJETIVO",
+   "minutos_declarados": [
+    43,
+    40,
+    46,
+    40,
+    40,
+    40
+   ],
+   "minutos_estimados": [
+    43,
+    40,
+    46,
+    40,
+    40,
+    40
+   ],
+   "patrones": [
+    "HIP_HINGE",
+    "HORIZONTAL_PULL",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT"
+   ],
+   "plan_id": 41,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 6
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "83.33",
+    "adherencia_ponderada": "83.33",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 5,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/O:SCHEDULE_CHANGE/H/H",
+    "id": "O09",
+    "inicio": "2026-11-02",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 1,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 41,
+    "plan_siguiente": 42,
+    "programadas": 6,
+    "semana": 1,
+    "senal": "SCHEDULE_CHANGE",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 6,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H/H/H",
+    "id": "O09",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 42,
+    "plan_siguiente": 43,
+    "programadas": 6,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 6,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H/H/H",
+    "id": "O09",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 43,
+    "plan_siguiente": 44,
+    "programadas": 6,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 6,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H/H/H",
+    "id": "O09",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 44,
+    "plan_siguiente": 45,
+    "programadas": 6,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 6,
+  "user_id": 9
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 1,
+    "estado_v32": "SIN_EFECTO",
+    "fuente": "CONSERVED",
+    "id": "O10",
+    "igual": true,
+    "intervencion": "CAUSA_NO_REGISTRADA",
+    "llamadas_ia": "0",
+    "pertinencia": "CONS-J",
+    "problemas": "-",
+    "reducciones": "-",
+    "retirados": "-",
+    "sesion": 176,
+    "sustituciones": "-",
+    "trabajo_antes_s": 774,
+    "trabajo_despues_s": 774
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 38,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 1,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "2",
+   "llamadas": 1,
+   "rechazadas": 0,
+   "validas": 0
+  },
+  "id": "O10",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA",
+   "UPPER_PULL"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA",
+   "UPPER_PULL"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 1 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {},
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E4/E7 nombre o instrucciones 1093"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    3
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    29
+   ],
+   "minutos_estimados": [
+    29
+   ],
+   "patrones": [
+    "HORIZONTAL_PUSH"
+   ],
+   "plan_id": 46,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 1
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "39.63",
+    "adherencia_ponderada": "39.63",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 0,
+    "decision_backend": "ADAPT_EXPANDED",
+    "decision_oraculo": "ADAPT_EXPANDED",
+    "estado_v32": "SIN_EFECTO",
+    "fuente": "CONSERVED",
+    "guion": "P40",
+    "id": "O10",
+    "inicio": "2026-11-02",
+    "intervenciones": "CAUSA_NO_REGISTRADA",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 1,
+    "pasos": "-",
+    "plan": 46,
+    "plan_siguiente": 47,
+    "programadas": 1,
+    "semana": 1,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H",
+    "id": "O10",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 47,
+    "plan_siguiente": 48,
+    "programadas": 1,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H",
+    "id": "O10",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 48,
+    "plan_siguiente": 49,
+    "programadas": 1,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H",
+    "id": "O10",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 49,
+    "plan_siguiente": 50,
+    "programadas": 1,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 1,
+  "user_id": 10
+ },
+ {
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 31,
+  "estado_generacion": "ESPERADO_SIN_PLAN",
+  "estados": {
+   "A10_seguridad_integridad": "NO APLICA",
+   "A1_generacion": "APROBADO",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "NO APLICA",
+   "A4_adherencia": "NO APLICA",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "NO APLICA",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "NO APLICA"
+  },
+  "generacion_backend": "ERROR: FuerzaSinTiempoException: FUERZA_SIN_TIEMPO: con 1 sesion de 30 minutos no caben los 4 patrones de fuerza de tu objetivo con la dosis de fuerza (se necesitan unos 32 minutos por sesion). No acortamos la dosis ni quitamos patrones para que quepa. Puedes indicar 32 minutos o mas por sesion, o mas dias por semana.",
+  "id": "O11",
+  "limitaciones_final": [],
+  "limitaciones_tras_generacion": [
+   "FUERZA_SIN_TIEMPO"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ],
+   "A4_adherencia": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ],
+   "A5_adaptacion_ia": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ],
+   "A6_mantenimiento": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ],
+   "A7_progresion": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ],
+   "A8_reincorporacion": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ],
+   "A9_continuidad": [
+    "sin plan (ESPERADO_SIN_PLAN)"
+   ]
+  },
+  "prohibido": {},
+  "semanas": [],
+  "sesiones_esperadas": 1,
+  "user_id": 11
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 1,
+    "estado_v32": "RESPALDO",
+    "fuente": "CONSERVED",
+    "id": "O12",
+    "igual": false,
+    "intervencion": "SEGURIDAD_ANTE_DOLOR",
+    "llamadas_ia": "1",
+    "pertinencia": "ALT",
+    "problemas": "-",
+    "reducciones": "-",
+    "retirados": "-",
+    "sesion": 182,
+    "sustituciones": "973->98;933->72;1039->119;1291->519;253->1093;853->1117;1054->67;773->900",
+    "trabajo_antes_s": 1686,
+    "trabajo_despues_s": 1386
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 62,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "REQUIERE REVISION",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 1,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "2",
+   "llamadas": 1,
+   "rechazadas": 0,
+   "validas": 0
+  },
+  "id": "O12",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 1 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {
+   "high_impact": true,
+   "requires_hanging": true,
+   "requires_overhead": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E4/E7 nombre o instrucciones 1093",
+    "E4/E7 nombre o instrucciones 853"
+   ],
+   "A5": [
+    "sustituto con revision de catalogo pendiente 1093"
+   ],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    7,
+    8
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    48,
+    52
+   ],
+   "minutos_estimados": [
+    48,
+    52
+   ],
+   "patrones": [
+    "HIP_HINGE",
+    "HORIZONTAL_PULL",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT"
+   ],
+   "plan_id": 51,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 2
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "50.00",
+    "adherencia_ponderada": "50.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "ADAPT_LOCALIZED",
+    "decision_oraculo": "ADAPT_LOCALIZED",
+    "estado_v32": "RESPALDO",
+    "fuente": "CONSERVED",
+    "guion": "H/O:PAIN_OR_DISCOMFORT",
+    "id": "O12",
+    "inicio": "2026-11-02",
+    "intervenciones": "SEGURIDAD_ANTE_DOLOR",
+    "llamadas_ia": "1",
+    "omitidas": 1,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 51,
+    "plan_siguiente": 52,
+    "programadas": 2,
+    "semana": 1,
+    "senal": "PAIN_OR_DISCOMFORT",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 2,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H",
+    "id": "O12",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 52,
+    "plan_siguiente": 53,
+    "programadas": 2,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 2,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H",
+    "id": "O12",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 53,
+    "plan_siguiente": 54,
+    "programadas": 2,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 2,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H",
+    "id": "O12",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 54,
+    "plan_siguiente": 55,
+    "programadas": 2,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 2,
+  "user_id": 12
+ },
+ {
+  "adaptaciones": [],
+  "aviso_e2a": {
+   "FINAL": true,
+   "TRAS_GENERACION": true
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 67,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "1",
+   "llamadas": 0,
+   "rechazadas": 0,
+   "validas": 0
+  },
+  "id": "O13",
+  "limitaciones_final": [
+   "DOSIS_NO_DEMOSTRADA",
+   "UPPER_PULL"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_NO_DEMOSTRADA",
+   "UPPER_PULL"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 0 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {
+   "axial_load": true,
+   "high_impact": true,
+   "requires_inversion": true,
+   "requires_kneeling": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E2 dosis de espalda u hombro solo de ejercicios no demostrados"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    7,
+    5,
+    5
+   ],
+   "estado_dosis": "DOSIS_OBJETIVO",
+   "minutos_declarados": [
+    37,
+    24,
+    26
+   ],
+   "minutos_estimados": [
+    37,
+    24,
+    26
+   ],
+   "patrones": [
+    "HIP_EXTENSION",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT"
+   ],
+   "plan_id": 56,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 3
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "86.77",
+    "adherencia_ponderada": "86.77",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 2,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/P60/H",
+    "id": "O13",
+    "inicio": "2026-11-02",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 1,
+    "pasos": "-",
+    "plan": 56,
+    "plan_siguiente": 57,
+    "programadas": 3,
+    "semana": 1,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O13",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 57,
+    "plan_siguiente": 58,
+    "programadas": 3,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O13",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 58,
+    "plan_siguiente": 59,
+    "programadas": 3,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H",
+    "id": "O13",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 59,
+    "plan_siguiente": 60,
+    "programadas": 3,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 3,
+  "user_id": 13
+ },
+ {
+  "adaptaciones": [
+   {
+    "ciclo": 2,
+    "estado_v32": "RESPALDO",
+    "fuente": "CONSERVED",
+    "id": "O14",
+    "igual": true,
+    "intervencion": "REVISAR_CARGA_Y_RECUPERACION",
+    "llamadas_ia": "1",
+    "pertinencia": "CONS-J",
+    "problemas": "-",
+    "reducciones": "-",
+    "retirados": "-",
+    "sesion": 210,
+    "sustituciones": "-",
+    "trabajo_antes_s": 732,
+    "trabajo_despues_s": 732
+   }
+  ],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "G5M_G",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 23,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "REQUIERE REVISION",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "APROBADO",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "RULE_ENGINE",
+   "intentos_plan": "1",
+   "llamadas": 0,
+   "rechazadas": 0,
+   "validas": 0
+  },
+  "id": "O14",
+  "limitaciones_final": [],
+  "limitaciones_tras_generacion": [],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: RESPALDO DETERMINISTA (RULE_ENGINE) tras 0 llamada(s) de IA"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {
+   "high_impact": true
+  },
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [
+    "E4/E7 nombre o instrucciones 1093",
+    "E4/E7 nombre o instrucciones 853"
+   ],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    6,
+    4,
+    6,
+    4
+   ],
+   "estado_dosis": "DOSIS_OBJETIVO",
+   "minutos_declarados": [
+    34,
+    30,
+    34,
+    30
+   ],
+   "minutos_estimados": [
+    34,
+    30,
+    34,
+    30
+   ],
+   "patrones": [
+    "HIP_HINGE",
+    "HORIZONTAL_PULL",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT",
+    "VERTICAL_PUSH"
+   ],
+   "plan_id": 61,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 4
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "97.92",
+    "adherencia_ponderada": "97.92",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/HF/H",
+    "id": "O14",
+    "inicio": "2026-11-02",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 61,
+    "plan_siguiente": 62,
+    "programadas": 4,
+    "semana": 1,
+    "senal": "FATIGUE",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "75.00",
+    "adherencia_ponderada": "75.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 3,
+    "decision_backend": "ADAPT_LOCALIZED",
+    "decision_oraculo": "ADAPT_LOCALIZED",
+    "estado_v32": "RESPALDO",
+    "fuente": "CONSERVED",
+    "guion": "O:FATIGUE/H/H/H",
+    "id": "O14",
+    "inicio": "2026-11-09",
+    "intervenciones": "REVISAR_CARGA_Y_RECUPERACION",
+    "llamadas_ia": "1",
+    "omitidas": 1,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 62,
+    "plan_siguiente": 63,
+    "programadas": 4,
+    "semana": 2,
+    "senal": "FATIGUE",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O14",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 63,
+    "plan_siguiente": 64,
+    "programadas": 4,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 4,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H/H/H/H",
+    "id": "O14",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 64,
+    "plan_siguiente": 65,
+    "programadas": 4,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 4,
+  "user_id": 14
+ }
+]

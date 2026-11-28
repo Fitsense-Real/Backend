@@ -1,0 +1,51 @@
+metrica,R_U,Rp_U,R_J,Rp_J
+recorridos_PASS,20,20,15,15
+recorridos_total,20,20,16,16
+incumplimientos_oraculo,0,0,1,1
+incumplimientos_detalle,,,J03/A_generacion: 0 planes vigentes en S1,J03/A_generacion: 0 planes vigentes en S1
+sesiones_senaladas,14,14,21,21
+sesiones_factibles,10,10,18,18
+sesiones_sin_adaptacion_posible_o_autorizada,4,4,3,3
+sesiones_tecnicamente_no_factibles,2,2,3,3
+sesiones_tecnicamente_no_factibles_ids,U03 S3 U04 S3,U03 S3 U04 S3,J01 S4 J09 S4 J13 S3,J01 S4 J09 S4 J13 S3
+sesiones_conservadas_causa_no_registrada_sin_IA,2,2,0,0
+sesiones_conservadas_causa_no_registrada_ids,U07 S3 U12 S3,U07 S3 U12 S3,,
+efectivas_pertinentes_IA,10,10,18,18
+efectivas_pertinentes_IA_en_factibles,10,10,18,18
+cat_ACC,10,10,18,18
+cat_ALT,0,0,0,0
+cat_INC,0,0,0,0
+cat_CONS-J,4,4,3,3
+cat_CONS-POL,0,0,0,0
+cat_ACC_origen_IA,10,10,18,18
+cat_ALT_origen_IA,0,0,0,0
+origenes,"{""SIN_EFECTO"": 2, ""IA"": 10, ""SIN_EFECTO_SIN_IA"": 2}","{""SIN_EFECTO"": 2, ""IA"": 10, ""SIN_EFECTO_SIN_IA"": 2}","{""SIN_EFECTO"": 3, ""IA"": 18}","{""SIN_EFECTO"": 3, ""IA"": 18}"
+dificil_sesiones,4,4,10,10
+dificil_con_variante_menos_dificil,2,2,6,7
+dificil_solo_reduccion_de_dosis,2,2,4,3
+dificil_sin_cambio,0,0,0,0
+dificil_con_sustituto_mas_dificil,0,0,0,0
+sustituciones_total,4,4,10,12
+sustituciones_mismo_musculo,4,4,10,12
+desmotivacion_sesiones,4,4,8,8
+desmotivacion_con_cambio,3,3,6,6
+desmotivacion_cambio_de_1,3,3,6,6
+desmotivacion_cambio_de_2,0,0,0,0
+desmotivacion_mas_de_2,0,0,0,0
+propuestas_IA_juzgadas,8,8,15,15
+propuestas_IA_publicables,8,8,15,15
+propuestas_IA_rechazadas,0,0,0,0
+rechazos_por_motivo,{},{},{},{}
+ciclos_con_IA,8,8,15,15
+intentos_por_ciclo,"{""1"": 8}","{""1"": 8}","{""1"": 15}","{""1"": 15}"
+predicciones,8,8,15,15
+tokens_entrada,293095,293095,460087,460087
+tokens_salida,20358,22394,37423,39157
+usd_medido,0.114,0.1181,0.1899,0.1933
+latencia_mediana_s,28.6,30.2,28.8,34.7
+latencia_p90_s,35.0,41.2,69.8,53.8
+coste_estados,"{""MEDIDO"": 8}","{""MEDIDO"": 8}","{""MEDIDO"": 15}","{""MEDIDO"": 15}"
+fallos_generacion_sin_plan,0,0,1,1
+fallos_generacion_ids,,,J03,J03
+incumplimientos_seguridad,0,0,0,0
+incumplimientos_seguridad_detalle,,,,

@@ -83,6 +83,28 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
     @Column(name = "health_notes", length = 500)
     private String healthNotes;
 
+    /**
+     * INC-4C-03: los cinco movimientos que el participante declara que puede
+     * hacer. Las columnas existen desde V25; este campo es lo que faltaba para
+     * que llegaran al filtro de seguridad.
+     */
+    @Embedded
+    private MovementAllowances allowances;
+
+    /**
+     * V53-B (propuesta, apagada por defecto: fitsense.seguridad.permiso-apoyo-suspendido=false). Permiso PROPIO para el
+     * apoyo suspendido sobre un aparato sin soporte de pies (V55). {@code null} = sin responder: con la opcion B
+     * encendida hereda «no colgarse» al leerse (herencia calculada, sin copiarla a la columna). Crear y actualizar el
+     * perfil NO lo tocan: solo {@link #confirmarApoyoSuspendido}. Sin cambio en la API REST (la pregunta de la app es
+     * futura).
+     */
+    @Column(name = "allow_suspended_support")
+    private Boolean allowSuspendedSupport;
+
+    /** V53-B: cuando la persona confirmo el permiso. {@code null} = pendiente de confirmacion explicita. */
+    @Column(name = "suspended_support_confirmed_at")
+    private java.time.OffsetDateTime suspendedSupportConfirmedAt;
+
     protected UserProfile() {
         // JPA
     }
@@ -96,10 +118,15 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
         this.fitnessLevel = require(command.fitnessLevel(), "El nivel de condicion fisica es obligatorio.");
         this.goal = new TrainingGoal(command.goalType(), command.goalText());
         this.trainingLocation = require(command.trainingLocation(), "El lugar de entrenamiento es obligatorio.");
+        requireMinutesForGoal(this.goal.goalType(), command.sessionMinutes());
         applyAvailability(command.daysPerWeek(), command.availableDays(), command.sessionMinutes());
         this.equipmentCodes = normalizeEquipment(command.equipmentCodes());
         this.blockedExerciseIds = normalizeBlocked(command.blockedExerciseIds());
         this.healthNotes = normalizeNotes(command.healthNotes());
+        this.allowances = MovementAllowances.declaradas(
+                command.allowHighImpact(), command.allowFloorExercises(),
+                command.allowKneelingExercises(), command.allowHangingExercises(),
+                command.allowOverheadExercises());
     }
 
     /**
@@ -114,13 +141,43 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
         this.fitnessLevel = require(command.fitnessLevel(), "El nivel de condicion fisica es obligatorio.");
         this.goal = new TrainingGoal(command.goalType(), command.goalText());
         this.trainingLocation = require(command.trainingLocation(), "El lugar de entrenamiento es obligatorio.");
+        requireMinutesForGoal(this.goal.goalType(), command.sessionMinutes());
         applyAvailability(command.daysPerWeek(), command.availableDays(), command.sessionMinutes());
         this.equipmentCodes = normalizeEquipment(command.equipmentCodes());
         this.blockedExerciseIds = normalizeBlocked(command.blockedExerciseIds());
         this.healthNotes = normalizeNotes(command.healthNotes());
+        // Lo no declarado se CONSERVA: ver MovementAllowances.conCambios.
+        this.allowances = allowancesOrDefault().conCambios(
+                command.allowHighImpact(), command.allowFloorExercises(),
+                command.allowKneelingExercises(), command.allowHangingExercises(),
+                command.allowOverheadExercises());
+    }
+
+    /**
+     * V53-B · la CONFIRMACION EXPLICITA del permiso «apoyo suspendido»: fija el valor y la fecha de confirmacion. Es el
+     * unico camino que escribe las columnas de V55; hoy solo lo usan las pruebas (la pregunta en la app es futura).
+     * No toca «no colgarse» ni ningun otro permiso.
+     */
+    public void confirmarApoyoSuspendido(boolean permite) {
+        this.allowSuspendedSupport = permite;
+        this.suspendedSupportConfirmedAt = java.time.OffsetDateTime.now();
+    }
+
+    /** V53-B: si el permiso «apoyo suspendido» sigue pendiente de confirmacion explicita. */
+    public boolean apoyoSuspendidoPendienteDeConfirmar() {
+        return suspendedSupportConfirmedAt == null;
     }
 
     // ---------------------------------------------------------------- consultas
+
+    /**
+     * Nunca nulo. Un perfil creado antes de este cambio tiene las columnas a
+     * TRUE por el DEFAULT de V25; normalizar aqui evita que un embebido nulo
+     * repita en silencio el defecto que estamos arreglando.
+     */
+    public MovementAllowances allowancesOrDefault() {
+        return allowances == null ? MovementAllowances.sinLimitaciones() : allowances;
+    }
 
     public int age() {
         return Period.between(birthDate, LocalDate.now()).getYears();
@@ -159,11 +216,27 @@ public class UserProfile extends AuditableAbstractAggregateRoot<UserProfile> {
 
     // ------------------------------------------------------------------ helpers
 
+    /**
+     * P-01: la duracion tiene que caber en el rango del objetivo. Se rechaza, nunca se corrige:
+     * cambiar en silencio lo que la persona declaro seria inventar su disponibilidad.
+     */
+    static void requireMinutesForGoal(GoalType goalType, Short sessionMinutes) {
+        if (goalType == null || sessionMinutes == null) return;   // los nulos los rechazan sus propias reglas
+        if (!goalType.admiteMinutos(sessionMinutes))
+            throw new DomainRuleViolationException(
+                    ("La duracion por sesion debe estar entre %d y %d minutos (objetivo %s); indicaste %d.")
+                            .formatted(GoalType.MIN_SESSION_MINUTES, GoalType.MAX_SESSION_MINUTES, goalType,
+                                    sessionMinutes));
+    }
+
     private void applyAvailability(Short daysPerWeek, List<Short> availableDays, Short sessionMinutes) {
         if (daysPerWeek == null || daysPerWeek < 1 || daysPerWeek > 7)
             throw new DomainRuleViolationException("Los dias por semana deben estar entre 1 y 7.");
-        if (sessionMinutes == null || sessionMinutes < 15 || sessionMinutes > 180)
-            throw new DomainRuleViolationException("La duracion por sesion debe estar entre 15 y 180 minutos.");
+        // P-01 (30-75) ya se comprobo antes con el objetivo; esto cubre una duracion nula.
+        if (sessionMinutes == null || sessionMinutes < GoalType.MIN_SESSION_MINUTES
+                || sessionMinutes > GoalType.MAX_SESSION_MINUTES)
+            throw new DomainRuleViolationException("La duracion por sesion debe estar entre %d y %d minutos."
+                    .formatted(GoalType.MIN_SESSION_MINUTES, GoalType.MAX_SESSION_MINUTES));
         if (availableDays == null || availableDays.isEmpty())
             throw new DomainRuleViolationException("Indica en que dias puedes entrenar.");
 

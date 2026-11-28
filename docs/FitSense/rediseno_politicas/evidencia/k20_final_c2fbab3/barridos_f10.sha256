@@ -1,0 +1,5 @@
+79bb2d8ba187c8b2db4037b673ab13bc7035195522226f65842c8ec99712f9bf  barrido_PLAN-HIST-1/planes.csv
+d386686a5762a28e62aae56417a61312b5893b381869e74f93599be060076687  barrido_PLAN-HIST-1/barrido_generacion.csv
+4b2994ca9a4cda6435a5035acac5421106e9f186048d4a01079cae06ac67733c  barrido_PLAN-REV-2.0/planes.csv
+5de5f48367b6413917846bc5cd776e74cdf0d7b2be1696ef7f8e3054d307df0f  barrido_PLAN-REV-2.0/barrido_generacion.csv
+Barridos F10 (c2fbab3) identicos byte a byte a evidencia/barridos/HIST_cierre y REV2_cierre (cmp de planes.csv y barrido_generacion.csv); no se duplican.

@@ -21,7 +21,9 @@ public record WeekDenominatorView(
             int expectedDurationMinutes,
             int assignedExercises,
             String status,
-            String skipReason
+            String skipReason,
+            /** Version del plan a la que pertenece: la semana puede combinar varias. */
+            Long planId
     ) {}
 
     public static WeekDenominatorView none() {

@@ -1,0 +1,5 @@
+607675b340392b5406dcb4f6476de6985923d088559975727e2ed06f3991be5f  ../herramientas/oraculo_integral_O_v1_4.py
+6633883bb9a37e349ed5e49806e2bb0537b22550c7860606e01e2328b5985142  ../herramientas/pruebas_oraculo_v1_4.py
+9b996825a6c146f156b7bd8d585a024cb1ccc44adf2054b11f1badb5de2b2106  ../cohorte/O_PERFILES.csv
+1720227e9191c54af67b08669fcfcaf38444334d8fcc4c245832cdb531b93b54  ../replicate_real/cohorte/O11F35_COMPLEMENTARIO.csv
+3cd473f274abb6ebc5a33714a9ff87e18924c4ea4d917de0ba5e866ac57d8e87  evidencia/correr_GRA.sh

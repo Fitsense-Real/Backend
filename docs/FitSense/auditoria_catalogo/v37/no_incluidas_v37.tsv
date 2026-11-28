@@ -1,0 +1,42 @@
+exercise_id	name_en	atributo	actual	segun_gif	motivo	evidencia
+58	45° side bend	equipment	body weight	banco de hiperextension (no modelado)	implemento no modelado en equipment_types	Inclinacion lateral en banco romano
+235	barbell rack pull	equipment	barbell	barbell + rack (no modelado)	implemento no modelado en equipment_types	Peso muerto desde soportes
+244	barbell preacher curl	equipment	barbell	barbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+249	barbell reverse preacher curl	equipment	barbell	barbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+301	bodyweight squatting row	equipment	body weight	espaldera (no modelada)	implemento no modelado en equipment_types	Agarra una espaldera fija
+303	bodyweight standing close-grip one arm row	equipment	body weight	espaldera (no modelada)	implemento no modelado en equipment_types	Rema agarrado a una espaldera
+304	bodyweight standing close-grip row	equipment	body weight	espaldera (no modelada)	implemento no modelado en equipment_types	Rema agarrado a una espaldera
+305	bodyweight standing one arm row	equipment	body weight	espaldera (no modelada)	implemento no modelado en equipment_types	Rema agarrado a una espaldera
+306	bodyweight standing one arm row (with towel)	equipment	body weight	espaldera (no modelada)	implemento no modelado en equipment_types	Rema con toalla agarrado a una espaldera
+307	bodyweight standing row	equipment	body weight	espaldera (no modelada)	implemento no modelado en equipment_types	Rema agarrado a una espaldera
+308	bodyweight standing row (with towel)	equipment	body weight	espaldera (no modelada)	implemento no modelado en equipment_types	Rema con toalla en la espaldera
+309	bench hip extension	instructions	hip thrust en banco	patada de gluteo con rodilla en banco	texto: requiere redactar instrucciones o nombre	Las instrucciones describen otro ejercicio
+397	cable one arm preacher curl	equipment	cable	cable + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+398	cable one arm reverse preacher curl	equipment	cable	cable + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+403	cable preacher curl	equipment	cable	cable + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+411	cable reverse preacher curl	equipment	cable	cable + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+441	cable rope hammer preacher curl	equipment	cable	cable + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+445	cable rope one arm hammer preacher curl	equipment	cable	cable + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+522	dumbbell alternate hammer preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador, no plano
+523	dumbbell alternate preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador, no plano
+606	dumbbell kickback	instructions	de pie inclinado	rodilla en el banco	texto: requiere redactar instrucciones o nombre	
+648	dumbbell one arm hammer preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+676	dumbbell one arm reverse preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+687	dumbbell peacher hammer curl	equipment	dumbbell	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+688	dumbbell preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+792	dumbbell standing preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador de pie
+795	dumbbell standing zottman preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador de pie
+802	dumbbell zottman preacher curl	equipment	dumbbell + bench	dumbbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+813	flag	equipment	body weight	poste o espaldera (no modelado)	implemento no modelado en equipment_types	
+837	ez barbell close grip preacher curl	equipment	ez barbell	ez barbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+845	ez barbell reverse grip preacher curl	equipment	ez barbell	ez barbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+849	ez barbell spider curl	equipment	ez barbell	ez barbell + banco Scott (no modelado)	implemento no modelado en equipment_types	Banco de predicador
+880	glute-ham raise	equipment	body weight	banco GHD (no modelado)	implemento no modelado en equipment_types	
+1071	one arm chin-up	name_en	one arm chin-up	dominada a dos manos	texto: requiere redactar instrucciones o nombre	El GIF muestra una dominada con dos manos
+1072	one arm towel row	equipment	body weight	toalla + anclaje (no modelado)	implemento no modelado en equipment_types	Toalla atada a un poste
+1077	monster walk	instructions	con banda	sin banda	texto: requiere redactar instrucciones o nombre	El GIF no muestra banda; el implemento (peso corporal) coincide
+1080	medicine ball chest pass	equipment	medicine ball	medicine ball + companero	implemento no modelado en equipment_types	Pase a otra persona: no es realizable en solitario
+1093	push to run	instructions	desde flexion	de pie	texto: requiere redactar instrucciones o nombre	El nombre push to run no coincide con el GIF
+1253	standing calf raise (on a staircase)	equipment	body weight	escalon (no modelado)	implemento no modelado en equipment_types	Sobre una escalera
+1320	triceps dips floor	instructions	silla o banco	suelo	texto: requiere redactar instrucciones o nombre	Las instrucciones describen fondos en silla; el GIF no tiene silla
+1374	wind sprints	movement_pattern	LOCOMOTION_CARDIO	TRUNK_FLEXION	sin traduccion directa	Cuenta como CARDIO

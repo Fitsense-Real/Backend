@@ -1,0 +1,8 @@
+425|PENDIENTE_CRITERIO|BAJA|equipment|cable|cable + bench (convencion de los sentados)|Sentado en un banco
+1064|CONFIRMADO|MEDIA|equipment|body weight|bench|Piernas sobre un banco
+1124|CONFIRMADO|ALTA|requires_floor|false|true|Manos y pies en el suelo sobre el balon
+1181|CONFIRMADO|BAJA|requires_floor|true|false|Sentadilla isometrica contra la pared (restriccion de mas)
+1303|CONFIRMADO|MEDIA|equipment|body weight|parallel bars o captains chair|Apoyo en la estacion de fondos
+1303|CONFIRMADO|BAJA|requires_floor|true|false|De pie en la estacion (restriccion de mas)
+1304|CONFIRMADO|MEDIA|equipment|body weight|parallel bars o captains chair|Apoyo en la estacion de fondos
+1304|CONFIRMADO|BAJA|requires_floor|true|false|De pie en la estacion (restriccion de mas)

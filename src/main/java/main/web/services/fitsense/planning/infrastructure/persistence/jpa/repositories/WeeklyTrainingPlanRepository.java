@@ -14,6 +14,8 @@ import java.util.Optional;
 @Repository
 public interface WeeklyTrainingPlanRepository extends JpaRepository<WeeklyTrainingPlan, Long> {
 
+    boolean existsByUserId(Long userId);
+
     Optional<WeeklyTrainingPlan> findByUserIdAndWeekStartDateAndStatus(
             Long userId, LocalDate weekStartDate, PlanStatus status);
 
@@ -53,4 +55,18 @@ public interface WeeklyTrainingPlanRepository extends JpaRepository<WeeklyTraini
 
     /** Ultima semana generada, sin importar el estado: define el week_number siguiente. */
     Optional<WeeklyTrainingPlan> findFirstByUserIdOrderByWeekNumberDescPlanVersionDesc(Long userId);
+
+    /** Ejercicios del plan (todas sus sesiones), solo lectura: aviso E2-a de /plan/limitations (auditoria v46). */
+    @Query("select e.exerciseId from PlannedWorkoutExercise e where e.plannedWorkout.plan.id = :planId")
+    List<Long> exerciseIdsOfPlan(@Param("planId") Long planId);
+
+    /**
+     * O20: las semanas con un plan vigente o cerrado (no sustituido) de un usuario. Mide cuantas semanas han pasado
+     * desde un dolor de sesion sin identificar, sin mirar el reloj.
+     */
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT p.weekStartDate FROM WeeklyTrainingPlan p"
+            + " WHERE p.userId = :userId AND p.status <> main.web.services.fitsense.planning.domain.model"
+            + ".valueobjects.PlanStatus.REPLACED")
+    java.util.List<java.time.LocalDate> semanasConPlan(
+            @org.springframework.data.repository.query.Param("userId") Long userId);
 }

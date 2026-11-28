@@ -1,0 +1,2 @@
+DIAG_SONDEO intervalo=3000 ms (antes) n=56 retraso_medio_ms=1555 retraso_p95_ms=2894 retraso_max_ms=2941 total_p50_ms=65500 total_p95_ms=140500 consultas_media=19.9
+DIAG_SONDEO intervalo=1000 ms (ahora) n=56 retraso_medio_ms=501 retraso_p95_ms=941 retraso_max_ms=965 total_p50_ms=65500 total_p95_ms=139500 consultas_media=58.6

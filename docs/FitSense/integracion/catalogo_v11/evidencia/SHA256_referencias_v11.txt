@@ -1,0 +1,5 @@
+c21bcf5311cf3f43305fd735a17875ef44380258ae607cbc79101b987694b9d7  rejilla_168/rejilla168_contencion_encendida.csv (v1.1)
+5b6c628404e7ebc246d77c5efa1d08de8aeb674782a75ffe60a745c401830529  rejilla_168/rejilla168_contencion_apagada.csv (v1.1)
+539368a9a786730cb7b9f204e7676c60d15ae9c1011075db528f9c466491209f  rejilla_312/planes.csv (v1.1)
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  rejilla_312/violaciones.txt (v1.1)
+98631d1413803faa239bd8af335e43bbdbeba4de516038ea30e01f98581f791b  hall_gm_01/hall_gm_01_40_v11_p03_por_colocacion.csv (v1.1)

@@ -25,7 +25,14 @@ public record ProfileSnapshot(
         int maxDifficultyLevel,
         List<String> equipmentCodes,
         List<Long> blockedExerciseIds,
-        String healthNotes
+        String healthNotes,
+        /** INC-4C-03: lo que el participante declaro. Nunca nulo. */
+        main.web.services.fitsense.profiling.domain.model.valueobjects.MovementAllowances allowances,
+        /*
+         * V53-B (propuesta, apagada por defecto): el permiso propio «apoyo suspendido» tal cual esta guardado (V55).
+         * null = sin responder. Profiling no lo interpreta: planning decide, segun el modo, si lo usa.
+         */
+        Boolean allowSuspendedSupport
 ) {
     public boolean excludesGymOnlyEquipment() {
         return "HOME".equals(trainingLocation);

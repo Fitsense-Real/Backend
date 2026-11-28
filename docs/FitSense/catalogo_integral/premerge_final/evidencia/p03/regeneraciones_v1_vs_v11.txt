@@ -1,0 +1,38 @@
+# Regeneraciones P-03 (REGENERACION_SEGURA*) en la regresion completa
+# v1 = 836a1f5 (regla por colocacion apagada); v1.1 = 12c6897 (encendida en pruebas)
+# Cada linea es una ejecucion; las pruebas HIST y REV2 repiten escenarios.
+
+## Solo en v1 (<) / solo en v1.1 (>)
+1,2d0
+< REGENERACION_SEGURA usuario 17 semana 2026-11-30: NO_FACTIBLE por dolor (intento V32 66) resuelto en el mismo ciclo
+< REGENERACION_SEGURA usuario 17 semana 2026-11-30: NO_FACTIBLE por dolor (intento V32 66) resuelto en el mismo ciclo
+12a11,12
+> REGENERACION_SEGURA_NO_FACTIBLE usuario 17 semana 2026-11-30: P-03 nivel 2 (por colocacion, SUSTITUCION): el ejercicio 253 del MONDAY sube de 2x12 (ejercicio 295) a 3x120s [series 2->3, segundos 0->120, volumen_segundos 0->360]; ant
+> REGENERACION_SEGURA_NO_FACTIBLE usuario 17 semana 2026-11-30: P-03 nivel 2 (por colocacion, SUSTITUCION): el ejercicio 253 del MONDAY sube de 2x12 (ejercicio 295) a 3x120s [series 2->3, segundos 0->120, volumen_segundos 0->360]; ant
+
+## Recuento
+regfinal2: publicadas=10 no_factibles=15 usuarios_publicados=7
+regv11: publicadas=8 no_factibles=17 usuarios_publicados=6
+
+## P03_POR_COLOCACION en v1.1 (12c6897): 13 evaluaciones
+# 04:25 = P03ComparacionPorColocacionIT (contraejemplo 9850 y cambioDeDia 9851, aumentos esperados)
+# plan 75 = usuario 17, ProgresionIT y ProgresionRev2IT#p03Nivel2TrasProgresion
+2026-11-15T04:25:25.394Z plan_medido=1 por_tipo={MANTENIDA=17, SUSTITUCION=0, SIN_CORRESPONDENCIA=0, NUEVA=0} retiradas=1 aumentos=1
+2026-11-15T04:25:25.487Z plan_medido=2 por_tipo={MANTENIDA=16, SUSTITUCION=0, SIN_CORRESPONDENCIA=1, NUEVA=0} retiradas=2 aumentos=1
+2026-11-15T04:33:55.892Z plan_medido=15 por_tipo={MANTENIDA=0, SUSTITUCION=5, SIN_CORRESPONDENCIA=0, NUEVA=12} retiradas=12 aumentos=0
+2026-11-15T04:34:34.654Z plan_medido=1 por_tipo={MANTENIDA=1, SUSTITUCION=1, SIN_CORRESPONDENCIA=5, NUEVA=23} retiradas=28 aumentos=0
+2026-11-15T04:34:37.801Z plan_medido=6 por_tipo={MANTENIDA=6, SUSTITUCION=1, SIN_CORRESPONDENCIA=1, NUEVA=40} retiradas=41 aumentos=0
+2026-11-15T04:37:54.422Z plan_medido=75 por_tipo={MANTENIDA=1, SUSTITUCION=6, SIN_CORRESPONDENCIA=2, NUEVA=11} retiradas=14 aumentos=2
+2026-11-15T04:43:21.743Z plan_medido=36 por_tipo={MANTENIDA=0, SUSTITUCION=6, SIN_CORRESPONDENCIA=0, NUEVA=11} retiradas=11 aumentos=0
+2026-11-15T04:43:22.942Z plan_medido=39 por_tipo={MANTENIDA=0, SUSTITUCION=4, SIN_CORRESPONDENCIA=0, NUEVA=8} retiradas=8 aumentos=0
+2026-11-15T04:43:23.189Z plan_medido=39 por_tipo={MANTENIDA=0, SUSTITUCION=4, SIN_CORRESPONDENCIA=0, NUEVA=8} retiradas=8 aumentos=0
+2026-11-15T04:43:24.969Z plan_medido=44 por_tipo={MANTENIDA=0, SUSTITUCION=4, SIN_CORRESPONDENCIA=0, NUEVA=8} retiradas=8 aumentos=0
+2026-11-15T04:46:14.670Z plan_medido=1 por_tipo={MANTENIDA=1, SUSTITUCION=1, SIN_CORRESPONDENCIA=5, NUEVA=23} retiradas=28 aumentos=0
+2026-11-15T04:46:17.277Z plan_medido=6 por_tipo={MANTENIDA=6, SUSTITUCION=1, SIN_CORRESPONDENCIA=1, NUEVA=40} retiradas=41 aumentos=0
+2026-11-15T04:47:16.671Z plan_medido=75 por_tipo={MANTENIDA=1, SUSTITUCION=6, SIN_CORRESPONDENCIA=2, NUEVA=11} retiradas=14 aumentos=2
+
+## Lineas de auditoria P03_NIVEL2 (ProgresionIT y ProgresionRev2IT)
+v1:
+P03_NIVEL2 PROGRESION PUBLICADO reps 503->476 seg 1620->1560 dosis_cambiadas_en_comunes=[]
+v1.1:
+P03_NIVEL2 PROGRESION NO_FACTIBLE P-03 nivel 2 (por colocacion, SUSTITUCION): el ejercicio 253 del MONDAY sube de 2x12 (ejercicio 295) a 3x120s [series 2->3, segundos 0->120, volumen_segundos 0->360]; ante dolor ninguna colocacion recupera dosis sin autorizacion. medida reps/seg=503/1620

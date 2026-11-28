@@ -1,0 +1,19 @@
+1260|PROBABLE|ALTA|requires_overhead|false|true|Mano detras de la cabeza con el codo por encima
+1309|CONFIRMADO|BAJA|requires_overhead|true|false|Brazos a la altura del hombro (restriccion de mas)
+1070|CONFIRMADO|ALTA|requires_overhead|false|true|Brazo apoyado en la pared por encima de la cabeza
+69|PENDIENTE_CRITERIO|ALTA|requires_floor|false|true o false (criterio balon)|Prono sobre balon, puntas de pies en el suelo, sin manos en el suelo
+805|PENDIENTE_CRITERIO|ALTA|requires_floor|false|true o false (criterio balon)|Prono sobre balon, rodillas y pies en el suelo
+805|PROBABLE|ALTA|requires_kneeling|false|true|Rodillas apoyadas en el suelo
+806|PENDIENTE_CRITERIO|ALTA|requires_floor|false|true o false (criterio balon)|Prono sobre balon, pies en el suelo
+807|PENDIENTE_CRITERIO|ALTA|requires_floor|false|true o false (criterio balon)|Prono sobre balon, pies en el suelo
+1087|PENDIENTE_CRITERIO|BAJA|high_impact|true|false (probable)|Lanzamiento al suelo sin fase de vuelo; V10 incluye slam en impacto por nombre
+114|PENDIENTE_CRITERIO|BAJA|equipment|band|band + cajon (convencion de los sentados)|Sentado en un cajon
+115|PENDIENTE_CRITERIO|BAJA|equipment|band|band + cajon (convencion de los sentados)|Sentado en un cajon
+116|PENDIENTE_CRITERIO|BAJA|equipment|band|band + cajon (convencion de los sentados)|Sentado en un cajon
+143|PENDIENTE_CRITERIO|BAJA|equipment|band|band + cajon (convencion de los sentados)|Sentado en un cajon
+253|PROBABLE|BAJA|requires_kneeling|true|false|Gateo con rodillas en el aire (restriccion de mas)
+854|PENDIENTE_CRITERIO|BAJA|high_impact|true|false (probable)|Rodillas altas apoyado en la pared, sin fase de vuelo clara
+1093|CONFIRMADO|BAJA|requires_floor|true|false|De pie elevando rodillas (restriccion de mas)
+1093|CONFIRMADO|BAJA|instructions|desde flexion|de pie|El nombre push to run no coincide con el GIF
+1134|CONFIRMADO|MEDIA|equipment|body weight|treadmill|Carrera en cinta
+342|CONFIRMADO|MEDIA|equipment|cable|cable + bench|Banco inclinado

@@ -1,0 +1,25 @@
+# Prueba inversa (sin coste): ReplicateRecuperacionTransporteTest contra el ReplicateTrainingPlanGenerator de generation (98276a93),
+# con solo dos constantes anadidas para compilar (RECUPERACION_RONDAS, SONDEO_FALLOS_SEGUIDOS_MAX), sin comportamiento.
+Tests run: 25, Failures: 6, Errors: 14, Skipped: 0
+# Pruebas que FALLAN con el cliente anterior (y pasan con la correccion):
+t02AmbiguaNoSeAdopta
+t02G08SeRecupera
+t02OtraEntradaNoSeAdopta
+t02TruncadaSeRecupera
+t03SinIdentificador
+t03SinIdentificadorRecuperada
+t04AMediasSeRecupera
+t04SondeoFallaUnaVez
+t04TimeoutDelPostConPrediccionCreada
+t05CerradaSinRespuesta
+t05InciertaEnElPipeline
+t06Errores5xxY4xx
+t07RecuperadaEnCurso
+t08RecuperadaCompletada
+t09Cancelada
+t10Fallida
+t11SalidaInvalidaRecuperada
+t13ConLibroG08
+t13ReanudacionSolicitando
+t14Adaptacion
+# Pasan tambien con el cliente anterior: g08ReproducidoConElClienteDeProduccion y elTipoOctetStreamSaleDeLaFaltaDeCabecera (diagnostico), t01RespuestaCorrecta, t06SinConexion, t12Concurrencia (ya protegida por el libro V59).

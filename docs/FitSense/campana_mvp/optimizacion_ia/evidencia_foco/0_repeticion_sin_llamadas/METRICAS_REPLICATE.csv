@@ -1,0 +1,1 @@
+prediction_id,user_id,week,attempt,estado,modelo,version,tokens_entrada,tokens_salida,predict_time_s,total_ms_backend,resultado,coste_estimado_usd

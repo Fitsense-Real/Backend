@@ -1,0 +1,13 @@
+perfil: GAIN_MUSCLE INTERMEDIATE CASA_PESO_CORPORAL 5 dias 70 min
+elegibles: 137 · piso V20: 2940 s · techo V4: 4830 s
+borrador del motor de reglas: 1 problemas
+  - V20: el entrenamiento del 2026-11-03 dura unos 2070 s y el minimo es 2940 s (70 % de 70 minutos): le faltan 870 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.
+sesion 0 2026-11-02 PUSH: 9 ejercicios, 3090 s
+sesion 1 2026-11-03 PULL: 7 ejercicios, 2070 s
+sesion 2 2026-11-04 LEGS: 9 ejercicios, 3108 s
+sesion 3 2026-11-05 UPPER_BODY: 9 ejercicios, 2970 s
+sesion 4 2026-11-06 LOWER_BODY: 9 ejercicios, 2958 s
+sesion 1 (2026-11-03): 154 modificaciones de un paso, 0 dejan la sesion sin problemas
+alguna sesion no tiene arreglo de un paso: se prueban pares
+  (pares no implementados aun para la sesion 1)
+redistribucion entre dias consecutivos: 0 de 1 sesiones arregladas; plan completo: [V20: el entrenamiento del 2026-11-03 dura unos 2070 s y el minimo es 2940 s (70 % de 70 minutos): le faltan 870 s. Agrega un ejercicio del enfoque o una serie a los que ya tiene, no descanso.]

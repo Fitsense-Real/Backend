@@ -1,0 +1,2 @@
+id,ciclo,tipo,sesion_origen,exercise_id,antes,despues,volumen_antes,volumen_despues,volumen_base_oraculo,techo_oraculo,techo_backend,volumen_base_backend,estado_reserva,condiciones,problemas
+O03,3,RECUPERACION,36,73,"{""descanso"": 150, ""reps"": 6, ""segundos"": null, ""series"": 2}","{""descanso"": 150, ""reps"": 6, ""segundos"": null, ""series"": 3}",60,66,72,79,79,72,,,-

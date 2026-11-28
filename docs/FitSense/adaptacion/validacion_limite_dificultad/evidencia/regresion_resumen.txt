@@ -1,0 +1,17 @@
+HEAD 2385b642721ba24fc3d73583ffaebf3fc3c00b8c
+off verify exit=0
+off 960+replay exit=0
+d109a3daa156d6d28bdfbebf109e5b5066bee8213c3663b21ad7b177dd18a859  planes.csv
+d227848ba040e73af459b052ab518f67d0b80af55cc731cbe2a455f5abe265ef  colocaciones.csv
+off replay:  1 file changed, 2 insertions(+), 2 deletions(-)
+on verify exit=1
+on 960+replay exit=0
+d109a3daa156d6d28bdfbebf109e5b5066bee8213c3663b21ad7b177dd18a859  planes.csv
+d227848ba040e73af459b052ab518f67d0b80af55cc731cbe2a455f5abe265ef  colocaciones.csv
+on replay:  5 files changed, 30 insertions(+), 30 deletions(-)
+preferencia verify exit=1
+preferencia 960+replay exit=0
+d109a3daa156d6d28bdfbebf109e5b5066bee8213c3663b21ad7b177dd18a859  planes.csv
+d227848ba040e73af459b052ab518f67d0b80af55cc731cbe2a455f5abe265ef  colocaciones.csv
+preferencia replay:  5 files changed, 30 insertions(+), 30 deletions(-)
+FIN

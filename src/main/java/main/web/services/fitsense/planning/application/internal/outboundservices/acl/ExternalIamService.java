@@ -26,6 +26,14 @@ public class ExternalIamService {
         return iamContextFacade.isEligibleForPlanGeneration(userId);
     }
 
+    /**
+     * C1 · opcion A: ¿sigue siendo un participante elegible AHORA, dentro de la transaccion que publica? Bloquea la
+     * fila de la cuenta hasta el commit (ver {@link IamContextFacade#elegibleAlPublicar}).
+     */
+    public boolean elegibleAlPublicar(Long userId) {
+        return iamContextFacade.elegibleAlPublicar(userId);
+    }
+
     public ZoneId timezoneOf(Long userId) {
         return iamContextFacade.fetchTimezone(userId).orElse(FALLBACK_ZONE);
     }

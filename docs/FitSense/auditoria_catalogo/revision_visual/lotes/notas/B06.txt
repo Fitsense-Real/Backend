@@ -1,0 +1,12 @@
+608|PENDIENTE_CRITERIO|ALTA|difficulty_level|1|3 (probable)|De rodillas sobre un balon de estabilidad: equilibrio avanzado con riesgo de caida
+608|PROBABLE|BAJA|requires_floor|true|false|Sobre el balon, no en el suelo
+726|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+757|PENDIENTE_CRITERIO|BAJA|equipment|dumbbell|dumbbell + bench (convencion de los sentados)|Sentado en un banco
+318|CONFIRMADO|ALTA|requires_floor|false|true|Plancha en el suelo pasando de antebrazos a manos
+777|CONFIRMADO|MEDIA|equipment|body weight|parallel bars|Fondos en paralelas
+777|PENDIENTE_CRITERIO|MEDIA|difficulty_level|1|2-3 (probable)|Fondos en paralelas con todo el peso corporal
+812|CONFIRMADO|ALTA|requires_floor|false|true|Sentado en el suelo con las manos sobre el balon
+921|CONFIRMADO|MEDIA|equipment|body weight|smith machine|Manos en la barra de la multipower
+1152|CONFIRMADO|ALTA|requires_floor|false|true|Tumbado y sentado en el suelo
+1152|CONFIRMADO|BAJA|equipment|parallel bars|body weight|No usa paralelas (restriccion de mas)
+1321|CONFIRMADO|MEDIA|equipment|body weight|smith machine|Manos en la barra de la multipower

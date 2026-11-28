@@ -53,13 +53,23 @@ public class PlanDraftFromJsonAssembler {
                             "prescription_type", problems);
                     if (type == null || exercise.exerciseId() == null) continue;
 
+                    // Las tres conversiones ANTES de construir: si alguna se sale
+                    // de rango, el ejercicio se descarta entero en vez de entrar
+                    // con el campo en null.
+                    int antes = problems.size();
+                    var sets = toShort(exercise.plannedSets(), "planned_sets",
+                            exercise.exerciseId(), problems);
+                    var reps = toShort(exercise.plannedReps(), "planned_reps",
+                            exercise.exerciseId(), problems);
+                    var rest = toShort(exercise.restSeconds(), "rest_seconds",
+                            exercise.exerciseId(), problems);
+                    if (problems.size() > antes) continue;
+
                     exercises.add(new PlanDraft.DraftExercise(
-                            exercise.exerciseId(), type,
-                            toShort(exercise.plannedSets()),
-                            toShort(exercise.plannedReps()),
+                            exercise.exerciseId(), type, sets, reps,
                             exercise.plannedDurationSeconds(),
                             exercise.targetLoadKg(),
-                            toShort(exercise.restSeconds()),
+                            rest,
                             exercise.notes()));
                 }
             }
@@ -110,8 +120,35 @@ public class PlanDraftFromJsonAssembler {
         }
     }
 
-    private Short toShort(Integer value) {
-        return value == null ? null : value.shortValue();
+    /**
+     * Convierte a Short COMPROBANDO EL RANGO.
+     * <p>
+     * Antes llamaba a {@code shortValue()} directo, que trunca en silencio. Para
+     * una dosis eso es peor que fallar, porque el truncamiento puede producir un
+     * valor que PARECE correcto:
+     * <ul>
+     *   <li>65626 segundos de descanso se convertian en <b>90</b>, que es
+     *       exactamente el descanso estructural que exige 4D;</li>
+     *   <li>65539 series se convertian en <b>3</b>;</li>
+     *   <li>100000 repeticiones se convertian en <b>-31072</b>.</li>
+     * </ul>
+     * Una respuesta incorrecta del modelo se volvia una prescripcion que pasaba
+     * la validacion, y despues no habia forma de saber que lo prescrito no era
+     * lo que el modelo dijo.
+     * <p>
+     * El nulo sigue siendo nulo: es un campo opcional segun el tipo de
+     * prescripcion, no un error.
+     */
+    private Short toShort(Integer value, String campo, Long exerciseId, List<String> problems) {
+        if (value == null) return null;
+        if (value < Short.MIN_VALUE || value > Short.MAX_VALUE) {
+            problems.add(("%s del ejercicio %d vale %d, que se sale del rango permitido "
+                    + "(%d a %d).")
+                    .formatted(campo, exerciseId, value,
+                            (int) Short.MIN_VALUE, (int) Short.MAX_VALUE));
+            return null;
+        }
+        return value.shortValue();
     }
 
     // Estructura literal de 19.2. Se mapea aparte del dominio para que un cambio

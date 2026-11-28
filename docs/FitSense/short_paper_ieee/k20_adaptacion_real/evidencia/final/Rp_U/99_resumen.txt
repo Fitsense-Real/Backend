@@ -1,0 +1,5 @@
+usuarios=20
+llamadas_proveedor=8
+incidencias=0
+usd_medido=0.1181 (tarifa 0.25 / 2.0 USD por millon)
+bloqueo_presupuesto=ninguno

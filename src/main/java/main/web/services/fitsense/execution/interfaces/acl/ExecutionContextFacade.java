@@ -4,6 +4,7 @@ import main.web.services.fitsense.execution.domain.model.aggregates.WorkoutSessi
 import main.web.services.fitsense.execution.domain.model.queries.GetSessionsByWeekQuery;
 import main.web.services.fitsense.execution.domain.services.WorkoutSessionQueryService;
 import main.web.services.fitsense.execution.infrastructure.persistence.jpa.repositories.WorkoutSessionRepository;
+import main.web.services.fitsense.execution.domain.model.valueobjects.SessionStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +64,42 @@ public class ExecutionContextFacade {
                 .toList();
     }
 
-    /** Ultima sesion que conto, en cualquier semana. Base de days_since_last_workout. */
+    /**
+     * LAS SESIONES QUE CUENTAN DE ESOS ENTRENAMIENTOS. Es la que usa la
+     * adherencia: la sesion se atribuye al entrenamiento al que pertenece, no
+     * a la fecha en que empezo. Por fecha, una sesion del domingo por la noche
+     * en UTC-5 caia en la semana siguiente (el corte es medianoche UTC), y un
+     * entrenamiento hecho antes de su dia quedaba fuera de su semana.
+     */
+    @Transactional(readOnly = true)
+    public List<SessionSummaryView> fetchCountedSessionsOf(Collection<Long> plannedWorkoutIds,
+                                                           int durationToRepsDivisor) {
+        if (plannedWorkoutIds == null || plannedWorkoutIds.isEmpty()) return List.of();
+        return sessionRepository.findByPlannedWorkoutIdInAndCountsTowardAdherenceTrue(plannedWorkoutIds)
+                .stream()
+                .map(session -> toView(session, durationToRepsDivisor))
+                .toList();
+    }
+
+    /** Hay una sesion IN_PROGRESS de ese entrenamiento. */
+    @Transactional(readOnly = true)
+    public boolean hasOpenSession(Long plannedWorkoutId) {
+        return sessionRepository.existsByPlannedWorkoutIdAndStatus(plannedWorkoutId, SessionStatus.IN_PROGRESS);
+    }
+
+    /**
+     * Ultima sesion que cuenta Y es valida (cumplimiento >= minValidPct),
+     * anterior a {@code before}. Una sesion por debajo del umbral sigue en el
+     * historial y aporta su porcentaje a la adherencia, pero no reinicia los
+     * dias sin entrenar.
+     */
+    @Transactional(readOnly = true)
+    public Optional<OffsetDateTime> fetchLastValidSessionAt(Long userId, double minValidPct,
+                                                            OffsetDateTime before) {
+        return sessionRepository.findLastValidSessionDate(userId, java.math.BigDecimal.valueOf(minValidPct), before);
+    }
+
+    /** Ultima sesion que conto, en cualquier semana, sea o no valida. */
     @Transactional(readOnly = true)
     public Optional<OffsetDateTime> fetchLastCountedSessionAt(Long userId) {
         return sessionRepository.findLastCountedSessionDate(userId);
@@ -104,6 +140,7 @@ public class ExecutionContextFacade {
                 session.executedEquivalentVolume(durationToRepsDivisor),
                 session.executedReps(),
                 session.executedSeconds(),
-                session.dominantSkipReason().map(Enum::name).orElse(null));
+                session.dominantSkipReason().map(Enum::name).orElse(null),
+                session.algunEjercicioConDolor());
     }
 }

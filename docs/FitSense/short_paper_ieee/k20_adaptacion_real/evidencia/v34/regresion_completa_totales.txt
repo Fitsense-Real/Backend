@@ -1,0 +1,8 @@
+Commit d01bb19 (mismo src/ que el HEAD actual salvo un comentario de EvaluacionK20IT)
+[INFO] Tests run: 1214, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 523, Failures: 0, Errors: 0, Skipped: 41
+[INFO] BUILD SUCCESS
+EXIT 0
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in 4D v3.4: tope de colocaciones de GAIN_MUSCLE derivado del piso de V20 (30-75 min)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.85 s -- in 4D v3.4: GAIN_MUSCLE genera planes validos en cada minuto de 30 a 75 (rejilla de 312 perfiles)
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.584 s -- in R0548 (GM intermedio, casa, 7 dias, 75 min): la generacion inicial publica un plan valido (4D v3.4)

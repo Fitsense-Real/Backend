@@ -1,0 +1,206 @@
+[
+ {
+  "adaptaciones": [],
+  "aviso_e2a": {
+   "FINAL": false,
+   "TRAS_GENERACION": false
+  },
+  "carpeta": "GRA_R1_F35",
+  "checks": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [],
+   "A6_mantenimiento": [],
+   "A7_progresion": [],
+   "A8_reincorporacion": [],
+   "A9_continuidad": []
+  },
+  "edad_en_la_ejecucion": 31,
+  "estado_generacion": "PLAN_PUBLICADO",
+  "estados": {
+   "A10_seguridad_integridad": "APROBADO",
+   "A1_generacion": "APROBADO",
+   "A2_personalizacion_restricciones": "APROBADO",
+   "A3_registro_ejecucion": "APROBADO",
+   "A4_adherencia": "APROBADO",
+   "A5_adaptacion_ia": "NO APLICA",
+   "A6_mantenimiento": "APROBADO",
+   "A7_progresion": "NO APLICA",
+   "A8_reincorporacion": "NO APLICA",
+   "A9_continuidad": "APROBADO"
+  },
+  "excluidos_por_dolor": [],
+  "generacion_backend": "PUBLICADO",
+  "generacion_ia": {
+   "errores_proveedor": 0,
+   "fuente": "AI",
+   "intentos_plan": "1",
+   "llamadas": 1,
+   "rechazadas": 0,
+   "validas": 1
+  },
+  "id": "O11F35",
+  "limitaciones_final": [
+   "DOSIS_LIMITADA"
+  ],
+  "limitaciones_tras_generacion": [
+   "DOSIS_LIMITADA"
+  ],
+  "notas": {
+   "A10_seguridad_integridad": [],
+   "A1_generacion": [
+    "generacion inicial: PROPUESTA DE LA IA VALIDA (Replicate)"
+   ],
+   "A2_personalizacion_restricciones": [],
+   "A3_registro_ejecucion": [],
+   "A4_adherencia": [],
+   "A5_adaptacion_ia": [
+    "ningun ciclo ordeno una adaptacion que requiera IA"
+   ],
+   "A6_mantenimiento": [],
+   "A7_progresion": [
+    "progresion apagada en su bloque (G); no hubo ningun paso"
+   ],
+   "A8_reincorporacion": [
+    "ningun ejercicio retirado ni excluido"
+   ],
+   "A9_continuidad": []
+  },
+  "pasos": [],
+  "prohibido": {},
+  "retirados_sin_reincorporar": [],
+  "revision_catalogo": {
+   "A1": [],
+   "A5": [],
+   "A7": []
+  },
+  "s1": {
+   "ejercicios_por_sesion": [
+    4
+   ],
+   "estado_dosis": "DOSIS_LIMITADA",
+   "minutos_declarados": [
+    32
+   ],
+   "minutos_estimados": [
+    32
+   ],
+   "patrones": [
+    "HIP_HINGE",
+    "HORIZONTAL_PULL",
+    "HORIZONTAL_PUSH",
+    "KNEE_DOMINANT"
+   ],
+   "plan_id": 1,
+   "politica": "PLAN-REV-2.0",
+   "sesiones": 1
+  },
+  "semanas": [
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H",
+    "id": "O11F35",
+    "inicio": "2026-11-02",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 1,
+    "plan_siguiente": 2,
+    "programadas": 1,
+    "semana": 1,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H",
+    "id": "O11F35",
+    "inicio": "2026-11-09",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 2,
+    "plan_siguiente": 3,
+    "programadas": 1,
+    "semana": 2,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H",
+    "id": "O11F35",
+    "inicio": "2026-11-16",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 3,
+    "plan_siguiente": 4,
+    "programadas": 1,
+    "semana": 3,
+    "senal": "-",
+    "sin_registro": 0
+   },
+   {
+    "adherencia_observada": "100.00",
+    "adherencia_ponderada": "100.00",
+    "cobertura": "100.00",
+    "coinciden": true,
+    "completas": 1,
+    "decision_backend": "NO_CHANGE",
+    "decision_oraculo": "NO_CHANGE",
+    "estado_v32": "SIN_ORDEN",
+    "fuente": "CONSERVED",
+    "guion": "H",
+    "id": "O11F35",
+    "inicio": "2026-11-23",
+    "intervenciones": "-",
+    "llamadas_ia": "0",
+    "omitidas": 0,
+    "parciales": 0,
+    "pasos": "-",
+    "plan": 4,
+    "plan_siguiente": 5,
+    "programadas": 1,
+    "semana": 4,
+    "senal": "-",
+    "sin_registro": 0
+   }
+  ],
+  "sesiones_esperadas": 1,
+  "user_id": 1
+ }
+]

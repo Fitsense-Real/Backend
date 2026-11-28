@@ -21,12 +21,14 @@ public class TokenServiceImpl implements BearerTokenService {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String AUTHORIZATION_HEADER = "Authorization";
+    /** V61: version de credenciales (users.token_version) con la que se emitio el token. */
+    static final String TOKEN_VERSION_CLAIM = "tv";
 
     private final SecretKey signingKey;
     private final long expirationMillis;
 
     public TokenServiceImpl(@Value("${authorization.jwt.secret}") String secret,
-                            @Value("${authorization.jwt.expiration-days:7}") int expirationDays) {
+                            @Value("${authorization.jwt.expiration.days:${authorization.jwt.expiration-days:7}}") int expirationDays) {
         var keyBytes = decodeSecret(secret);
         if (keyBytes.length < 32)
             throw new IllegalStateException(
@@ -44,15 +46,22 @@ public class TokenServiceImpl implements BearerTokenService {
     }
 
     @Override
-    public String generateToken(Long userId, String email) {
+    public String generateToken(Long userId, String email, int tokenVersion) {
         var now = new Date();
         return Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("email", email)
+                .claim(TOKEN_VERSION_CLAIM, tokenVersion)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expirationMillis))
                 .signWith(signingKey)
                 .compact();
+    }
+
+    @Override
+    public int extractTokenVersion(String token) {
+        var tv = parse(token).get(TOKEN_VERSION_CLAIM, Integer.class);
+        return tv == null ? 0 : tv;
     }
 
     @Override
