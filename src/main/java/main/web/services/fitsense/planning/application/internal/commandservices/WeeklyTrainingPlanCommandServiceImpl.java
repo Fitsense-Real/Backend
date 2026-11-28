@@ -120,9 +120,9 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     @Transactional(readOnly = true)
     public PreparedPlanGeneration prepare(GenerateWeeklyPlanCommand command) {
         if (!externalIamService.isEligibleForPlanGeneration(command.userId()))
+            // Sin el id interno en el mensaje: llega a la app. El ciclo semanal ya registra el usuario en su log.
             throw new main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException(
-                    "El usuario %d no esta activo en el estudio: no se le generan planes."
-                            .formatted(command.userId()));
+                    main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException.TEXTO);
 
         var profile = externalProfilingService.fetchProfile(command.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil del usuario", command.userId()));
@@ -297,7 +297,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     private void exigirElegibleAlPublicar(Long userId) {
         if (externalIamService != null && !externalIamService.elegibleAlPublicar(userId))
             throw new main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException(
-                    "El usuario %d ya no es un participante activo del estudio: no se publica el plan.".formatted(userId));
+                    main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException.TEXTO);
     }
 
     static void exigirMismoPlanActivo(PreparedPlanGeneration prepared, Optional<WeeklyTrainingPlan> ahora) {
