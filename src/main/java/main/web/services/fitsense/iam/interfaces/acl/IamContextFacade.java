@@ -19,10 +19,25 @@ public class IamContextFacade {
 
     private final UserQueryService userQueryService;
     private final UserRepository userRepository;
+    private final boolean planesExigenParticipacion;
 
-    public IamContextFacade(UserQueryService userQueryService, UserRepository userRepository) {
+    /**
+     * B2.4 (P0-04): {@code fitsense.study.plans-require-participation}.
+     * <ul>
+     *   <li>{@code true} (por omision, el comportamiento de siempre, OPCION A): solo un participante activo recibe
+     *       planes. Requiere que el registro y el consentimiento digan claramente que el servicio es parte del
+     *       estudio (decision del equipo y del comite, pendiente).</li>
+     *   <li>{@code false} (OPCION B): cualquier cuenta activa recibe planes, participe o no, y la retirada del estudio
+     *       no quita el servicio. Los analisis siguen filtrando por {@code is_study_participant}.</li>
+     * </ul>
+     * No se cambia el valor por omision sin la decision formal: ver 03_CONSENTIMIENTOS_Y_CONTRATOS.md.
+     */
+    public IamContextFacade(UserQueryService userQueryService, UserRepository userRepository,
+                            @org.springframework.beans.factory.annotation.Value(
+                                    "${fitsense.study.plans-require-participation:true}") boolean planesExigenParticipacion) {
         this.userQueryService = userQueryService;
         this.userRepository = userRepository;
+        this.planesExigenParticipacion = planesExigenParticipacion;
     }
 
     public boolean existsUser(Long userId) {
@@ -39,7 +54,7 @@ public class IamContextFacade {
     @Transactional(readOnly = true)
     public boolean isEligibleForPlanGeneration(Long userId) {
         return userQueryService.handle(new GetUserByIdQuery(userId))
-                .map(user -> user.isEligibleForPlanGeneration())
+                .map(user -> planesExigenParticipacion ? user.isEligibleForPlanGeneration() : user.canSignIn())
                 .orElse(false);
     }
 
@@ -49,10 +64,15 @@ public class IamContextFacade {
         return userRepository.findDistinctActiveTimezones();
     }
 
-    /** Participantes activos de una zona: los que reciben plan en el cierre. */
+    /**
+     * Cuentas de una zona que reciben plan en el cierre semanal: los participantes activos (opcion A, por omision)
+     * o todas las cuentas activas (opcion B, {@code fitsense.study.plans-require-participation=false}).
+     */
     @Transactional(readOnly = true)
     public List<Long> fetchActiveParticipantIdsInTimezone(String zone) {
-        return userRepository.findActiveParticipantsInTimezone(zone).stream()
+        var cuentas = planesExigenParticipacion ? userRepository.findActiveParticipantsInTimezone(zone)
+                : userRepository.findActiveUsersInTimezone(zone);
+        return cuentas.stream()
                 .map(user -> user.getId())
                 .toList();
     }

@@ -18,62 +18,141 @@ import java.util.Optional;
  * Consentimientos versionados (V63, CONSENTIMIENTO_Y_EDAD.md). Distingue el consentimiento de investigacion de la
  * aceptacion de condiciones y privacidad, guarda version, momento, accion afirmativa y origen, y registra la retirada.
  * <p>
- * <b>Nada de esto afirma que exista un documento aprobado.</b> Las versiones vigentes de condiciones y privacidad se
- * configuran ({@code fitsense.consent.terms-version}, {@code fitsense.consent.privacy-version}) y estan vacias por
- * omision: sin version aprobada no se puede aceptar nada. {@code fitsense.consent.enforce-on-signup} (apagado) hace
- * obligatorias ambas aceptaciones en el registro; encenderlo exige tener las dos versiones.
+ * <b>Nada de esto afirma que exista un documento aprobado.</b> La version vigente de cada tipo sale del registro de
+ * documentos ({@link DocumentosLegales}, B2.2): solo un documento {@code PUBLISHED}, con referencia de aprobacion,
+ * cuenta como aprobado. Si un tipo no tiene ningun documento declarado, se usan las propiedades anteriores
+ * ({@code fitsense.consent.terms-version}, {@code fitsense.consent.privacy-version}, vacias por omision; y
+ * {@code fitsense.study.consent-version}, que vale {@code MVP-1.0} y <b>no</b> es un documento aprobado).
+ * <p>
+ * Evidencia del consentimiento informado (B2.1, {@code affirmative_action}):
+ * <ul>
+ *   <li>{@code CASILLA_REGISTRO}: la app envio la version mostrada y coincide con el documento aprobado vigente;</li>
+ *   <li>{@code CASILLA_SIN_VERSION_CONFIRMADA}: hay documento aprobado, pero la app no envio que version mostro
+ *       (solo posible con la exigencia apagada: app anterior);</li>
+ *   <li>{@code CASILLA_SIN_DOCUMENTO_APROBADO}: no hay documento aprobado; la fila se conserva por compatibilidad,
+ *       pero <b>no es prueba valida</b> de un consentimiento informado.</li>
+ * </ul>
+ * {@code fitsense.consent.enforce-on-signup} (apagado) exige en el registro condiciones y privacidad vigentes y, si la
+ * persona acepta participar, la version vigente del consentimiento informado. Encenderlo exige los tres documentos.
+ * {@code fitsense.consent.privacy-record} decide como se registra la privacidad: {@code ACEPTACION} (por omision) o
+ * {@code CONSTANCIA} (constancia de que se informo, segun el fundamento juridico que se apruebe; ver
+ * 03_CONSENTIMIENTOS_Y_CONTRATOS.md). Ninguna de las dos sustituye a otro consentimiento que la ley pudiera exigir.
  */
 @Service
 public class ConsentimientoService {
 
     public enum Tipo { STUDY_PARTICIPATION, TERMS_OF_SERVICE, PRIVACY_POLICY }
 
+    public enum RegistroPrivacidad { ACEPTACION, CONSTANCIA }
+
+    public static final String CASILLA_REGISTRO = "CASILLA_REGISTRO";
+    public static final String CASILLA_SIN_VERSION_CONFIRMADA = "CASILLA_SIN_VERSION_CONFIRMADA";
+    public static final String CASILLA_SIN_DOCUMENTO_APROBADO = "CASILLA_SIN_DOCUMENTO_APROBADO";
+    public static final String CONSTANCIA_DE_LECTURA = "CONSTANCIA_DE_LECTURA";
+
     public record Consentimiento(Tipo tipo, String version, Instant aceptadoEn, String accion, String origen,
                                  Instant retiradoEn) {}
 
     private final JdbcTemplate jdbc;
     private final UserCommandService usuarios;
+    private final DocumentosLegales documentos;
     private final String versionEstudio;
     private final Optional<String> versionCondiciones;
     private final Optional<String> versionPrivacidad;
     private final boolean exigirEnRegistro;
+    private final RegistroPrivacidad registroPrivacidad;
     private final Clock clock;
 
-    public ConsentimientoService(JdbcTemplate jdbc, UserCommandService usuarios,
+    public ConsentimientoService(JdbcTemplate jdbc, UserCommandService usuarios, DocumentosLegales documentos,
                                  @Value("${fitsense.study.consent-version:MVP-1.0}") String versionEstudio,
                                  @Value("${fitsense.consent.terms-version:}") String condiciones,
                                  @Value("${fitsense.consent.privacy-version:}") String privacidad,
                                  @Value("${fitsense.consent.enforce-on-signup:false}") boolean exigir,
+                                 @Value("${fitsense.consent.privacy-record:ACEPTACION}") RegistroPrivacidad registro,
                                  Optional<Clock> clock) {
         this.jdbc = jdbc;
         this.usuarios = usuarios;
+        this.documentos = documentos;
         this.versionEstudio = versionEstudio;
         this.versionCondiciones = vacia(condiciones);
         this.versionPrivacidad = vacia(privacidad);
         this.exigirEnRegistro = exigir;
+        this.registroPrivacidad = registro;
         this.clock = clock.orElse(Clock.systemUTC());
-        if (exigir && (versionCondiciones.isEmpty() || versionPrivacidad.isEmpty()))
-            throw new IllegalStateException("fitsense.consent.enforce-on-signup=true exige fitsense.consent."
-                    + "terms-version y privacy-version (documentos aprobados).");
+        documentos.validar();
+        for (var t : Tipo.values()) {
+            if (!documentos.declarado(t)) continue;
+            var anterior = t == Tipo.TERMS_OF_SERVICE ? versionCondiciones
+                    : t == Tipo.PRIVACY_POLICY ? versionPrivacidad : Optional.<String>empty();
+            var vigente = documentos.vigente(t, this.clock).map(d -> d.getVersion().trim());
+            if (anterior.isPresent() && !anterior.equals(vigente))
+                throw new IllegalStateException("Dos fuentes para la version vigente de " + t + ": la propiedad"
+                        + " anterior (" + anterior.get() + ") y fitsense.legal-documents (" + vigente.orElse("ninguna")
+                        + "). Deja solo fitsense.legal-documents.");
+        }
+        documentos.vigente(Tipo.STUDY_PARTICIPATION, this.clock).ifPresent(d -> {
+            if (d.getVersion().trim().length() > 20)
+                throw new IllegalStateException("La version del consentimiento informado no puede superar 20"
+                        + " caracteres (users.consent_version).");
+        });
+        if (exigir && (versionVigente(Tipo.TERMS_OF_SERVICE).isEmpty() || versionVigente(Tipo.PRIVACY_POLICY).isEmpty()
+                || !documentoAprobado(Tipo.STUDY_PARTICIPATION)))
+            throw new IllegalStateException("fitsense.consent.enforce-on-signup=true exige condiciones, privacidad y un"
+                    + " consentimiento informado PUBLICADO (documentos aprobados).");
     }
 
-    /** Antes de crear la cuenta: con la exigencia encendida, condiciones y privacidad vigentes son obligatorias. */
-    public void validarRegistro(String condiciones, String privacidad) {
+    /**
+     * Antes de crear la cuenta. Con la exigencia encendida, condiciones y privacidad vigentes son obligatorias y, si
+     * la persona acepta participar, tambien la version vigente del consentimiento informado. Una version enviada que
+     * no sea la vigente se rechaza siempre (este o no encendida la exigencia).
+     */
+    public void validarRegistro(String condiciones, String privacidad, boolean participa, String estudio) {
         if (exigirEnRegistro) {
             if (condiciones == null || privacidad == null)
                 throw new DomainRuleViolationException(
                         "Para registrarte tienes que aceptar las condiciones de uso y la politica de privacidad.");
+            if (participa && estudio == null)
+                throw new DomainRuleViolationException("Para participar en el estudio tienes que aceptar la version"
+                        + " vigente del consentimiento informado.");
         }
         if (condiciones != null) vigente(Tipo.TERMS_OF_SERVICE, condiciones);
         if (privacidad != null) vigente(Tipo.PRIVACY_POLICY, privacidad);
+        if (estudio != null) {
+            if (!participa)
+                throw new DomainRuleViolationException("Se envio una version del consentimiento informado sin aceptar"
+                        + " participar en el estudio.");
+            if (!documentoAprobado(Tipo.STUDY_PARTICIPATION))
+                throw new DomainRuleViolationException("Todavia no hay una version aprobada del consentimiento"
+                        + " informado: no se puede aceptar.");
+            vigente(Tipo.STUDY_PARTICIPATION, estudio);
+        }
+    }
+
+    /** Compatibilidad: el registro anterior a B2 (sin version del consentimiento informado). */
+    public void validarRegistro(String condiciones, String privacidad) {
+        validarRegistro(condiciones, privacidad, false, null);
     }
 
     /** En la misma transaccion que crea la cuenta. */
     @Transactional
+    public void registrarAlta(long userId, boolean participa, String condiciones, String privacidad, String estudio) {
+        if (participa) {
+            String version = versionVigente(Tipo.STUDY_PARTICIPATION).orElse(versionEstudio);
+            String evidencia = !documentoAprobado(Tipo.STUDY_PARTICIPATION) ? CASILLA_SIN_DOCUMENTO_APROBADO
+                    : estudio == null ? CASILLA_SIN_VERSION_CONFIRMADA : CASILLA_REGISTRO;
+            insertar(userId, Tipo.STUDY_PARTICIPATION, version, evidencia, "APP");
+            // La columna anterior de users, que leen el panel y los analisis, con la misma version.
+            jdbc.update("UPDATE users SET consent_version = ? WHERE user_id = ?", version, userId);
+        }
+        if (condiciones != null) insertar(userId, Tipo.TERMS_OF_SERVICE, condiciones, CASILLA_REGISTRO, "APP");
+        if (privacidad != null) insertar(userId, Tipo.PRIVACY_POLICY, privacidad,
+                registroPrivacidad == RegistroPrivacidad.CONSTANCIA ? CONSTANCIA_DE_LECTURA : CASILLA_REGISTRO, "APP");
+    }
+
+    /** Compatibilidad: el registro anterior a B2. */
+    @Transactional
     public void registrarAlta(long userId, boolean participa, String condiciones, String privacidad) {
-        if (participa) insertar(userId, Tipo.STUDY_PARTICIPATION, versionEstudio, "CASILLA_REGISTRO", "APP");
-        if (condiciones != null) insertar(userId, Tipo.TERMS_OF_SERVICE, condiciones, "CASILLA_REGISTRO", "APP");
-        if (privacidad != null) insertar(userId, Tipo.PRIVACY_POLICY, privacidad, "CASILLA_REGISTRO", "APP");
+        registrarAlta(userId, participa, condiciones, privacidad, null);
     }
 
     /** Acepta una version nueva de condiciones o privacidad (la de investigacion solo se da al registrarse). */
@@ -85,7 +164,8 @@ public class ConsentimientoService {
         vigente(tipo, version);
         var ya = activo(userId, tipo, version);
         if (ya.isPresent()) return ya.get();
-        insertar(userId, tipo, version, "BOTON_ACEPTAR", "APP");
+        insertar(userId, tipo, version, tipo == Tipo.PRIVACY_POLICY && registroPrivacidad == RegistroPrivacidad.CONSTANCIA
+                ? CONSTANCIA_DE_LECTURA : "BOTON_ACEPTAR", "APP");
         return activo(userId, tipo, version).orElseThrow();
     }
 
@@ -112,13 +192,37 @@ public class ConsentimientoService {
                         rs.getTimestamp(6) == null ? null : rs.getTimestamp(6).toInstant()), userId);
     }
 
-    /** Versiones vigentes configuradas (vacias = sin documento aprobado). */
+    /**
+     * Version vigente de cada tipo: la del documento publicado si el tipo esta en el registro; si no, la propiedad
+     * anterior (vacia = sin documento aprobado; la de investigacion vale {@code MVP-1.0}, que NO es un documento
+     * aprobado: ver {@link #documentoAprobado}).
+     */
     public Optional<String> versionVigente(Tipo tipo) {
+        if (documentos.declarado(tipo)) return documentos.vigente(tipo, clock).map(d -> d.getVersion().trim());
         return switch (tipo) {
             case STUDY_PARTICIPATION -> Optional.of(versionEstudio);
             case TERMS_OF_SERVICE -> versionCondiciones;
             case PRIVACY_POLICY -> versionPrivacidad;
         };
+    }
+
+    /**
+     * ¿La version vigente corresponde a un documento aprobado? Condiciones y privacidad: si tienen version (por el
+     * registro o por la propiedad anterior, que solo se rellena con documentos aprobados). Investigacion: solo con un
+     * documento PUBLICADO en el registro; {@code MVP-1.0} no lo es.
+     */
+    public boolean documentoAprobado(Tipo tipo) {
+        if (tipo == Tipo.STUDY_PARTICIPATION) return documentos.vigente(tipo, clock).isPresent();
+        return versionVigente(tipo).isPresent();
+    }
+
+    /** Los documentos publicados y vigentes (lo que la app consulta antes de registrarse). */
+    public List<DocumentosLegales.Documento> documentosVigentes() {
+        return documentos.vigentes(clock);
+    }
+
+    public RegistroPrivacidad registroPrivacidad() {
+        return registroPrivacidad;
     }
 
     public boolean exigirEnRegistro() {

@@ -45,7 +45,8 @@ public class AuthenticationController {
                                                  HttpServletRequest peticion) {
         limite.antesDelRegistro(peticion);
         var command = SignUpCommandFromResourceAssembler.toCommandFromResource(resource);
-        return registro.registrar(command, resource.acceptedTermsVersion(), resource.acceptedPrivacyVersion())
+        return registro.registrar(command, resource.acceptedTermsVersion(), resource.acceptedPrivacyVersion(),
+                        resource.acceptedStudyConsentVersion())
                 .map(UserResourceFromEntityAssembler::toResourceFromEntity)
                 .map(created -> ResponseEntity.status(HttpStatus.CREATED).body(created))
                 .orElseGet(() -> ResponseEntity.badRequest().build());

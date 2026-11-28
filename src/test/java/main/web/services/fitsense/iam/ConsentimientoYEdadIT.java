@@ -117,7 +117,10 @@ class ConsentimientoYEdadIT {
         assertEquals(1, h.size());
         assertEquals("STUDY_PARTICIPATION", h.get(0).get("type").asText());
         assertEquals("MVP-1.0", h.get(0).get("documentVersion").asText());
-        assertEquals("CASILLA_REGISTRO", h.get(0).get("affirmativeAction").asText());
+        // B2: sin documento aprobado del consentimiento informado, la fila se conserva pero NO es prueba valida.
+        assertEquals("CASILLA_SIN_DOCUMENTO_APROBADO", h.get(0).get("affirmativeAction").asText());
+        assertFalse(estado.get("approvedDocuments").get("STUDY_PARTICIPATION").asBoolean(),
+                "MVP-1.0 no es un documento aprobado");
         assertEquals("APP", h.get(0).get("source").asText());
         assertTrue(h.get(0).get("withdrawnAt").isNull());
 
