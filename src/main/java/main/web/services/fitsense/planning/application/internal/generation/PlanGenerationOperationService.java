@@ -9,7 +9,6 @@ import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationO
 import main.web.services.fitsense.planning.domain.services.WeeklyTrainingPlanCommandService;
 import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.PlanGenerationOperationRepository;
 import main.web.services.fitsense.planning.infrastructure.persistence.jpa.repositories.WeeklyTrainingPlanRepository;
-import main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException;
 import main.web.services.fitsense.shared.domain.exceptions.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,9 +193,11 @@ public class PlanGenerationOperationService {
 
     private void validateCanGenerate(Long userId) {
         if (profiling.fetchProfile(userId).isEmpty())
-            throw new DomainRuleViolationException(GenerationFailureClassifier.TEXTO_PERFIL_INCOMPLETO);
+            throw new main.web.services.fitsense.planning.domain.exceptions.PerfilIncompletoException(
+                    GenerationFailureClassifier.TEXTO_PERFIL_INCOMPLETO);
         if (!iam.isEligibleForPlanGeneration(userId))
-            throw new DomainRuleViolationException(GenerationFailureClassifier.TEXTO_NO_GENERABLE);
+            throw new main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException(
+                    GenerationFailureClassifier.TEXTO_NO_GENERABLE);
     }
 
     /** Solo el dueno la ve; para cualquier otro usuario no existe (404). */

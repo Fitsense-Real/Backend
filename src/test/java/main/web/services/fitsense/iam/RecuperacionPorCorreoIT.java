@@ -137,7 +137,7 @@ class RecuperacionPorCorreoIT {
     }
 
     static String codigo(MimeMessage m) throws Exception {
-        Matcher c = Pattern.compile("codigo en la app:\\s+([A-Za-z0-9_-]{43})").matcher((String) m.getContent());
+        Matcher c = Pattern.compile("«Restablecer contraseña»:\\s+([A-Za-z0-9_-]{43})").matcher((String) m.getContent());
         assertTrue(c.find(), "el correo lleva el codigo");
         return c.group(1);
     }
@@ -156,7 +156,7 @@ class RecuperacionPorCorreoIT {
         var m = correos[0];
         assertEquals(email, m.getAllRecipients()[0].toString());
         assertTrue(m.getFrom()[0].toString().contains("no-reply@pruebas.invalid"));
-        assertEquals("Kora: restablece tu contrasena", m.getSubject());
+        assertEquals("Kora: código para restablecer tu contraseña", m.getSubject());
         String texto = (String) m.getContent();
         assertFalse(texto.contains(CLAVE), "el correo nunca lleva la contrasena");
         String token = codigo(m);

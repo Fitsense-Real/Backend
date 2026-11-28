@@ -46,21 +46,24 @@ public class GuardasDeSeguridadEnProduccion {
         m.put("fitsense.logging.sensitive-detail", "false");
         m.put("fitsense.api-docs.enabled", "false");
         m.put("fitsense.cycle.manual-run.enabled", "false");
+        // C1 · opcion A, decision de producto para el estudio: solo participantes reciben planes. La B queda fuera.
+        m.put("fitsense.study.plans-require-participation", "true");
         APROBADAS = java.util.Collections.unmodifiableMap(m);
     }
 
     /** Valor efectivo cuando la propiedad no esta definida: el del codigo. */
-    private static final Map<String, String> POR_OMISION_EN_CODIGO = Map.of(
-            "fitsense.dose.enforcement", "OBSERVE",
-            "fitsense.capability.enforcement", "ENFORCE",
-            "fitsense.coverage.enforcement", "OBSERVE",
-            "fitsense.adaptation.difficulty-guard", "off",
-            "fitsense.adaptation.pain-localized-removal", "off",
-            "fitsense.catalogo.contencion-conservadora", "true",
-            "fitsense.security.require-https", "false",
-            "fitsense.logging.sensitive-detail", "false",
-            "fitsense.api-docs.enabled", "false",
-            "fitsense.cycle.manual-run.enabled", "false");
+    private static final Map<String, String> POR_OMISION_EN_CODIGO = Map.ofEntries(
+            Map.entry("fitsense.dose.enforcement", "OBSERVE"),
+            Map.entry("fitsense.capability.enforcement", "ENFORCE"),
+            Map.entry("fitsense.coverage.enforcement", "OBSERVE"),
+            Map.entry("fitsense.adaptation.difficulty-guard", "off"),
+            Map.entry("fitsense.adaptation.pain-localized-removal", "off"),
+            Map.entry("fitsense.catalogo.contencion-conservadora", "true"),
+            Map.entry("fitsense.security.require-https", "false"),
+            Map.entry("fitsense.logging.sensitive-detail", "false"),
+            Map.entry("fitsense.api-docs.enabled", "false"),
+            Map.entry("fitsense.cycle.manual-run.enabled", "false"),
+            Map.entry("fitsense.study.plans-require-participation", "true"));
 
     public GuardasDeSeguridadEnProduccion(Environment entorno) {
         comprobar(entorno);

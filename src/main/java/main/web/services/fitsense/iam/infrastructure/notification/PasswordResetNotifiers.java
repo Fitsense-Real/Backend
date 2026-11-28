@@ -59,7 +59,9 @@ public class PasswordResetNotifiers {
                                     @org.springframework.beans.factory.annotation.Value(
                                             "${fitsense.password-reset.link-template:}") String plantilla,
                                     @org.springframework.beans.factory.annotation.Value(
-                                            "${fitsense.mail.from-name:Kora}") String app) {
+                                            "${fitsense.mail.from-name:Kora}") String app,
+                                    @org.springframework.beans.factory.annotation.Value(
+                                            "${fitsense.password-reset.ttl-minutes:30}") long minutos) {
         if (!envio.correo().entregaReal())
             throw new IllegalStateException("fitsense.password-reset.delivery=email requiere fitsense.mail.transport"
                     + " distinto de none (smtp, resend o brevo).");
@@ -67,7 +69,7 @@ public class PasswordResetNotifiers {
         return new PasswordResetNotifier() {
             @Override
             public void enviar(String email, String token, OffsetDateTime caduca) {
-                envio.trasConfirmar(MensajeDeRecuperacion.crear(email, token, caduca, enlace, app));
+                envio.trasConfirmar(MensajeDeRecuperacion.crear(email, token, caduca, enlace, app, minutos));
             }
 
             @Override
