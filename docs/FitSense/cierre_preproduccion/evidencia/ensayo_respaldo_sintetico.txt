@@ -1,0 +1,14 @@
+FitSense · verificacion de copia y restauracion
+fecha_utc=2026-11-27T15:44:52Z
+origen=127.0.0.1:55431/postgres
+destino=127.0.0.1:55432/postgres
+copia=ensayo_respaldo/fitsense.dump bytes=16038 sha256=808e4f1fe7407e38fdd604649f7e60957fe7b0c1aa9ab65eac81e7d4e0453d09
+segundos_copia=0 segundos_restauracion=0 segundos_total=0
+
+tabla                                               origen      destino estado
+flyway_schema_history                                    1            1 OK
+users                                                  250          250 OK
+weekly_user_metrics                                   3000         3000 OK
+flyway_origen=65 flyway_destino=65
+
+RESULTADO=OK (todas las tablas coinciden)
