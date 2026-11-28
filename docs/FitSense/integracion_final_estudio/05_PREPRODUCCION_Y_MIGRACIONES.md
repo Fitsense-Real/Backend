@@ -13,13 +13,13 @@ Este documento amplía `cierre_preproduccion/06_OPERACION_RAILWAY_Y_RESPALDOS.md
 | **Usuarios** | Solo sintéticos (`@pruebas.invalid` o un dominio del equipo), creados por la API. Códigos P-xxx de prueba | Ningún dato de una persona |
 | **Credenciales** | Todas propias de preproducción: `JWT_SECRET` (`openssl rand -base64 48`), `DB_PASSWORD` y, cuando existan, la clave de correo y las credenciales de Firebase de pruebas. Solo como variables de Railway | Una filtración de preproducción no compromete nada más |
 | **Perfil seguro** | `SPRING_PROFILES_ACTIVE=prod`. Activa las guardas (`GuardasDeSeguridadEnProduccion`, que con C1 incluye la opción A), HTTPS obligatorio y la prohibición del log detallado | Preproducción tiene que comportarse como producción |
-| **HTTPS y proxy** | `FITSENSE_REQUIRE_HTTPS=true`, `server.forward-headers-strategy=native`. Verificar en el panel que el proxy de Railway está en los rangos de confianza de Tomcat. Si no lo está, `SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES` con el rango exacto, **nunca `.*`** | Si no, los límites por IP afectarían a todos a la vez (`cierre_preproduccion/02`) |
+| **HTTPS y proxy** | `FITSENSE_REQUIRE_HTTPS=true`, `server.forward-headers-strategy=native`. Verificar en el panel que el proxy de Railway está en los rangos de confianza de Tomcat. Si no lo está, `SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES` con el rango exacto, **nunca `.*`** | Si no, los límites por IP afectarían a todos a la vez (`cierre_preproduccion/02_SEGURIDAD_Y_LOGS.md`) |
 | **CORS** | `FITSENSE_CORS_ORIGINS=https://<panel-preproduccion>`, solo ese origen | — |
 | **Firebase de pruebas** | Un **proyecto de Firebase de pruebas**, distinto de `kora-fitpe`, con `FITSENSE_PUSH_ENABLED=false` hasta probarlo con un dispositivo del equipo. Hay que fijar `FITSENSE_FIREBASE_PROJECT_ID`, porque por omisión vale el del proyecto real | Ningún aviso puede llegar a un dispositivo que no sea de prueba |
 | **Correo de pruebas** | Proveedor con dominio de pruebas y buzones sintéticos (`03` §6). Hasta entonces, `FITSENSE_MAIL_TRANSPORT=none` | — |
 | **IA** | `FITSENSE_AI_ENABLED=false`, **sin** `REPLICATE_API_TOKEN`. **Por omisión el código la tiene encendida** (`FITSENSE_AI_ENABLED:true`): la variable es obligatoria | Cero gasto; los planes salen del motor de reglas |
 | **Health checks** | Ruta de salud de Railway: `/actuator/health`. Es la única expuesta, sin detalles | — |
-| **Monitoreo y alertas** | Regla del log de Railway sobre `ALERTA_OPERATIVA` (`cierre_preproduccion/07`), que incluye `CIERRE_SEMANAL_FUERA_DE_VENTANA` (C3), y una comprobación externa de *uptime* de `/actuator/health` cada 5 min | — |
+| **Monitoreo y alertas** | Regla del log de Railway sobre `ALERTA_OPERATIVA` (`cierre_preproduccion/07_TRAZABILIDAD_Y_MONITOREO.md`), que incluye `CIERRE_SEMANAL_FUERA_DE_VENTANA` (C3), y una comprobación externa de *uptime* de `/actuator/health` cada 5 min | — |
 | **Respaldo y restauración** | `scripts/respaldo/verificar_respaldo.sh` (§3) contra una base aislada vacía, antes de V66 y después periódicamente | — |
 | **Control de gastos** | IA apagada. Si un día se enciende para una prueba autorizada: `FITSENSE_AI_GENERATE_MAX_PER_HOUR` bajo y el tope de gasto de Replicate en su panel. El tope global en el backend sigue **pendiente** (P1-07) | — |
 | **Límites de recursos** | Una sola réplica: los límites y la cola de correo están en memoria (P2-03). Memoria del contenedor ≥ 1 GB. el *pool* de Hikari (10 conexiones por omisión: no se configura en el repositorio; se cambiaría con `SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE`) por debajo del máximo de conexiones del plan de PostgreSQL | — |
@@ -73,9 +73,9 @@ Sobre una tercera base con la misma copia se provocó un fallo de V66, un objeto
 
 **Prohibido en esta orden:** aplicar V66 a producción.
 
-### 2.3 V67 (propuesta C4)
+### 2.3 V67 (propuesta C4): NO está en `generation`
 
-Solo se aplicaría si se aprueba [#99](https://github.com/Fitsense-Real/Backend/pull/99). Crea una tabla y no toca ninguna fila: `MigracionV66aV67IT` comprueba que una medición de V66 queda idéntica. Seguiría el mismo procedimiento.
+**V66 es la última migración de `generation`.** V67 solo existe en la rama de [#99](https://github.com/Fitsense-Real/Backend/pull/99), un borrador excluido de esta integración. Solo se aplicaría si se aprueba. Crea una tabla y no toca ninguna fila: `MigracionV66aV67IT` comprueba que una medición de V66 queda idéntica. Seguiría el mismo procedimiento.
 
 ## 3. Respaldo: lo que conserva el script y lo que falta
 
@@ -101,6 +101,6 @@ Nota: en un SSD o en un sistema de ficheros con copia en escritura, `shred` no g
 4. Primer arranque: V1..V66 sobre la base vacía, las guardas en el log (`GUARDAS_SEGURIDAD perfil_prod=true`), `REGISTRO_NO_DEFINITIVO` presente (es lo esperado en preproducción) y `/actuator/health` en 200.
 5. `VALIDATE CONSTRAINT ck_pgo_lease`.
 6. Regla de alertas y *uptime* configurados.
-7. Fusionar antes las PR que se aprueben de esta orden (C1–C3) y, si se decide, C4.
+7. C1–C3 ya están en `generation` (#96–#98). Decidir antes si se fusionan [#101](https://github.com/Fitsense-Real/Backend/pull/101) (CORS), [#102](https://github.com/Fitsense-Real/Backend/pull/102) (código vigente) y [#103](https://github.com/Fitsense-Real/Backend/pull/103) (mensajes sin id). C4 (#99) solo con su validación metodológica.
 
 Clasificación: **PREPARADO SIN ACTIVAR**, con la autorización de despliegue y la base **BLOQUEADAS POR INFRAESTRUCTURA**.

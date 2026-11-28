@@ -1,6 +1,6 @@
 # 06 · Trazabilidad de los recálculos (P1-09)
 
-**PR:** [#99](https://github.com/Fitsense-Real/Backend/pull/99) (Backend-C4). Es un **BORRADOR, PENDIENTE DE VALIDACIÓN METODOLÓGICA**: no se fusiona sin esa aprobación. Lleva migración (V67) y nada más.
+**PR:** [#99](https://github.com/Fitsense-Real/Backend/pull/99) (Backend-C4). Es un **BORRADOR, PENDIENTE DE VALIDACIÓN METODOLÓGICA**: no se fusiona sin esa aprobación. Lleva migración (V67) y nada más. **Se excluyó de la integración final del 28/11/2026:** V67, su tabla, su disparador y su código **no están en `generation`**, cuya última migración es V66.
 
 ## 1. El problema
 
@@ -54,3 +54,13 @@ El primer ensayo encontró un falso «cambio» en un recálculo idéntico: `risk
 4. **Conservación.** El historial se conserva con la medición y se borra con la cuenta. Para quien se retira, según D-1.
 
 Hasta esa validación: **PENDIENTE** (P1-09), con la propuesta **PREPARADA SIN ACTIVAR** en #99.
+
+## 5. Preguntas que el equipo debe responder antes de aprobar #99
+
+1. ¿Qué origina un recálculo? Hoy, solo repetir el cierre de una semana ya medida.
+2. ¿Cómo se distingue del cálculo inicial? La fila de `weekly_user_metrics` es el primero, y cada recálculo deja una fila en el historial.
+3. ¿Puede un recálculo modificar resultados que ya se usaron (exportados o analizados)? ¿Se bloquea a partir de una fecha?
+4. ¿Cómo se preserva el valor histórico: basta `previous_values`, o la medición oficial no debe sobrescribirse?
+5. ¿Qué versión del algoritmo se registra: la de umbrales (`calculation_version`) o también la del código?
+6. ¿Cómo se auditan las correcciones manuales, si se permiten?
+7. ¿Cómo se reportan los recálculos en la tesis?

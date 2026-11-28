@@ -1,7 +1,7 @@
 # 01 · Opción A y elegibilidad
 
 **Orden:** cierre del registro para el estudio, correo y preparación operativa (28/11/2026). **Base:** `generation` en `41c498ab`.
-**PR:** [#96](https://github.com/Fitsense-Real/Backend/pull/96) (Backend-C1). Sin fusionar.
+**PR:** [#96](https://github.com/Fitsense-Real/Backend/pull/96) (Backend-C1), **fusionada en `generation`** el 28/11/2026 (merge `434a9dc0`, cabeza `401ca56`), tras la revisión final (§6).
 
 ## 1. La decisión
 
@@ -82,8 +82,40 @@ En la asíncrona, una operación pendiente cuya persona se retira termina en `FA
 
 | Punto | Clasificación |
 |---|---|
-| Opción A como comportamiento del backend | **RESUELTO** (en la PR C1, sin fusionar) |
-| Opción B bloqueada en `prod` | **RESUELTO** (en C1) |
+| Opción A como comportamiento del backend | **RESUELTO** (integrado: #96) |
+| Opción B bloqueada en `prod` | **RESUELTO** (integrado: #96) |
 | Registro definitivo de la opción A (participación obligatoria y consentimiento válido para planes) | **PREPARADO SIN ACTIVAR** |
 | Protocolo y consentimiento informado aprobados | **BLOQUEADO POR APROBACIÓN** |
 | Destino de los datos de quien se retira (D-1) | **BLOQUEADO POR APROBACIÓN** |
+
+## 6. Revisión final antes del merge (orden del 28/11/2026)
+
+Escenarios obligatorios y prueba que cubre cada uno (`OpcionAExclusivaIT`, salvo que se indique otra):
+
+| # | Escenario | Prueba | Resultado |
+|---|---|---|---|
+| 1 | Participación activa | `participanteSiGenera` | Síncrona 201; asíncrona 202 y `COMPLETED` |
+| 2 | Ausencia de participación | `noParticipanteNiSincronaNiAsincrona` | 422 `PARTICIPACION_NO_VIGENTE` por las dos rutas |
+| 3 | Participación retirada | `retiradoNoGenera` | Ídem; fuera del cierre semanal |
+| 4 | Retirada durante una generación | `retiradaDuranteLaGeneracion` | La fase 3 no publica |
+| 5 | Publicación después de la retirada | `pendienteNoPublicaTrasRetirarse`, `cicloNoPublicaParaRetirados` | `FAILED NO_GENERABLE`; el ciclo no publica |
+| 6 | Dos operaciones concurrentes | `dosPublicacionesConcurrentes`, `dosPublicacionesYRetiradaConcurrentes`, `retiradaSimultaneaEspera` | Publica una sola. Nunca un plan después de la retirada ni dos planes. La retirada espera al `FOR SHARE` |
+| 7 | Reintentos de publicación | `reintentosDePublicacion` | Tres reintentos y una petición nueva: todos rechazados, 0 planes |
+| 8 | Síncrona y asíncrona | 1–3 y `mensajesSinIdInterno` | Mismo criterio y mismo código |
+| 9 | Perfil ausente | `perfilAusente` | Asíncrona 422 `PERFIL_INCOMPLETO` (nuevo en la revisión); síncrona 404; ninguna operación ni plan |
+| 10 | Participante no elegible | `cuentaNoActivaNoElegible`; `ConsentimientoExigidoIT.elegibilidadPorConsentimientoValido` | Cuenta `INACTIVE` y casilla `MVP-1.0` con el registro definitivo: no elegibles al pedir ni al publicar |
+
+**Seguridad del consentimiento (§3 de la orden):**
+
+| Comprobación | Evidencia |
+|---|---|
+| No se registra participación automáticamente | `registroNoInscribe` |
+| `MVP-1.0` no es evidencia válida | `casillaSinDocumentoNoEsValida`, `codigosSinDocumentos` (`DOCUMENTO_NO_PUBLICADO`) |
+| Versiones existentes y vigentes; cambio durante el registro | `ConsentimientoExigidoIT.registroExigido` (`VERSION_NO_VIGENTE` con versión anterior e inventada) |
+| Sin cuentas a medias | Todos los rechazos comprueban 0 cuentas |
+| Documentos aceptados individualmente | `POST /users/me/consents` por tipo (`ConsentimientoYEdadIT`); la participación solo al registrarse |
+| El servidor no confía en Mobile; una petición directa no elude nada | `ConsentimientoExigidoIT.peticionDirectaNoEludeNada`: los campos falsificados (`studyParticipant`, `role`, `participantCode`, `consentVersion`, `affirmativeAction`) se ignoran |
+| La generación comprueba además la participación activa | Escenarios 1–10 |
+| Sin cambios en datos ni evidencias históricas | Sin migraciones. Las filas `CASILLA_SIN_DOCUMENTO_APROBADO` existentes no se tocan; solo dejan de contar con el registro definitivo |
+
+**Hallazgo anterior a esta orden.** Algunos errores de generación que ya existían llevan el id interno **de la propia cuenta** en `message`, por ejemplo 404 «Perfil del usuario no encontrado: 5» o 422 «El usuario 5 ya tiene un plan activo…». No exponen datos de otras personas, y los errores nuevos de C1 no los llevan (`mensajesSinIdInterno`). La corrección está en [#103](https://github.com/Fitsense-Real/Backend/pull/103) (C8), abierta y sin fusionar (`08`).

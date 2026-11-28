@@ -1,6 +1,6 @@
 # 03 · Recuperación de contraseña con correo real
 
-**PR:** [#97](https://github.com/Fitsense-Real/Backend/pull/97) (Backend-C2), solo el texto del correo.
+**PR:** [#97](https://github.com/Fitsense-Real/Backend/pull/97) (Backend-C2), solo el texto del correo, **fusionada** (`09a92028`). Además, [#102](https://github.com/Fitsense-Real/Backend/pull/102) (C6, abierta y sin fusionar) trata el hallazgo de §8.
 **Antecedentes:** `cierre_preproduccion/05_CORREO_Y_RECUPERACION.md` (configuración y procedimiento) y `preparacion_google_play_backend/COMPARATIVA_PROVEEDORES_CORREO.md` (proveedores). No se repiten aquí.
 
 **Estado: el correo NO está operativo.** No hay proveedor contratado ni credenciales, y no se ha hecho ninguna prueba de entrega real.
@@ -103,7 +103,7 @@ Resultado en la rama C2: **11 unitarias y 14 de integración, 0 fallos**.
 
 ## 6. Prueba de entrega real (preparada, NO ejecutada)
 
-Se hace cuando haya un **proveedor autorizado** y credenciales de pruebas, **solo** en preproducción y **solo** con un buzón sintético del equipo. Se sigue el procedimiento de `cierre_preproduccion/05` §3, midiendo además:
+Se hace cuando haya un **proveedor autorizado** y credenciales de pruebas, **solo** en preproducción y **solo** con un buzón sintético del equipo. Se sigue el procedimiento de `cierre_preproduccion/05_CORREO_Y_RECUPERACION.md` §3, midiendo además:
 
 | Medida | Cómo | Criterio |
 |---|---|---|
@@ -119,8 +119,32 @@ Se hace cuando haya un **proveedor autorizado** y credenciales de pruebas, **sol
 | Punto | Clasificación |
 |---|---|
 | Flujo de recuperación (código, límites, revocación) | **RESUELTO** (ya existía; probado) |
-| Texto del correo apto para uso real | **RESUELTO** (en C2, sin fusionar) |
+| Texto del correo apto para uso real | **RESUELTO** (integrado: #97) |
 | Configuración del proveedor | **PREPARADO SIN ACTIVAR** |
 | Contratación y dominio verificado | **BLOQUEADO POR APROBACIÓN** (P-10) |
 | Prueba de entrega real | **BLOQUEADO POR INFRAESTRUCTURA** (sin proveedor ni buzón) |
 | Cola de correo persistente | **PENDIENTE** (riesgo aceptado y documentado) |
+| Solo vale el código más reciente | **PREPARADO SIN ACTIVAR** (#102, abierta; §8) |
+
+## 8. Hallazgo de Mobile: el código anterior seguía valiendo
+
+**Observación:** al pedir un código nuevo, el anterior seguía siendo válido hasta que se usaba uno de los dos.
+
+**Diagnóstico** sobre el código de `generation`:
+- `solicitar` creaba el token sin tocar los pendientes; solo `confirmar` invalidaba los demás.
+- **No era una decisión del contrato:** ningún documento ni prueba lo exigía. `RecuperacionContrasenaIT.unSoloUso` confirma el segundo y solo después comprueba que el primero no vale.
+- **Era una debilidad menor:** varios códigos válidos a la vez para la misma cuenta.
+
+**Corrección**, en [#102](https://github.com/Fitsense-Real/Backend/pull/102) y **no fusionada**: esta orden no lo autoriza y no se mezcla con #97.
+
+| Punto | Comportamiento con #102 |
+|---|---|
+| Política | **Solo vale el código más reciente.** Una solicitud nueva invalida los pendientes |
+| Límite | Por encima de 3 por hora no se emite código ni se invalida nada: el último enviado sigue valiendo |
+| Concurrencia | Solicitar y confirmar bloquean primero la cuenta y después los tokens: sin cruce de bloqueos, límite exacto, nunca dos códigos vigentes. Un código nunca sirve dos veces |
+| Reenvíos | Si un correo anterior llega tarde, su código da 400. El correo nuevo lo avisa: «Si pediste más de un código, solo vale el del correo más reciente» |
+| Disponibilidad | Si el correo más reciente se pierde (cola en memoria y reinicio), hay que pedir otro (§4) |
+| Contrato HTTP | Sin cambios (202/204/400/429). Sin migración |
+| Pruebas | `soloElMasReciente`, `porEncimaDelLimiteNoInvalida`, `simultaneas` (5 rondas en paralelo, sin 5xx) y las de recuperación existentes: 0 fallos |
+
+**Mientras #102 no se fusione**, el comportamiento sigue siendo el anterior.
