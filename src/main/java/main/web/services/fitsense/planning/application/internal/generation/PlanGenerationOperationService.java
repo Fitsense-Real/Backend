@@ -196,7 +196,8 @@ public class PlanGenerationOperationService {
         if (profiling.fetchProfile(userId).isEmpty())
             throw new DomainRuleViolationException(GenerationFailureClassifier.TEXTO_PERFIL_INCOMPLETO);
         if (!iam.isEligibleForPlanGeneration(userId))
-            throw new DomainRuleViolationException(GenerationFailureClassifier.TEXTO_NO_GENERABLE);
+            throw new main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException(
+                    GenerationFailureClassifier.TEXTO_NO_GENERABLE);
     }
 
     /** Solo el dueno la ve; para cualquier otro usuario no existe (404). */

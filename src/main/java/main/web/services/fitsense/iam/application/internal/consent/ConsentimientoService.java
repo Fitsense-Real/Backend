@@ -1,8 +1,11 @@
 package main.web.services.fitsense.iam.application.internal.consent;
 
+import main.web.services.fitsense.iam.domain.exceptions.ConsentimientoRechazadoException;
 import main.web.services.fitsense.iam.domain.model.commands.WithdrawFromStudyCommand;
 import main.web.services.fitsense.iam.domain.services.UserCommandService;
 import main.web.services.fitsense.shared.domain.exceptions.DomainRuleViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,17 @@ import java.util.Optional;
  * {@code fitsense.consent.privacy-record} decide como se registra la privacidad: {@code ACEPTACION} (por omision) o
  * {@code CONSTANCIA} (constancia de que se informo, segun el fundamento juridico que se apruebe; ver
  * 03_CONSENTIMIENTOS_Y_CONTRATOS.md). Ninguna de las dos sustituye a otro consentimiento que la ley pudiera exigir.
+ * <p>
+ * <b>Opcion A (decision de producto, C1):</b> Kora solo es para participantes del estudio. Con el registro
+ * definitivo ({@code enforce-on-signup=true} y {@code plans-require-participation=true}):
+ * <ul>
+ *   <li>sin aceptar participar no se crea la cuenta ({@code PARTICIPACION_REQUERIDA});</li>
+ *   <li>solo un consentimiento {@code CASILLA_REGISTRO} (version aprobada que la app confirmo haber mostrado) cuenta
+ *       como consentimiento informado valido para recibir planes ({@link #consentimientoValido}). Una casilla sin
+ *       documento aprobado ({@code MVP-1.0}) no lo es.</li>
+ * </ul>
+ * Los rechazos llevan un codigo estable ({@link ConsentimientoRechazadoException}). Encender el registro definitivo
+ * exige documentos aprobados y una compilacion de Mobile que envie las tres versiones: no se hace en esta orden.
  */
 @Service
 public class ConsentimientoService {
@@ -61,7 +75,10 @@ public class ConsentimientoService {
     private final Optional<String> versionPrivacidad;
     private final boolean exigirEnRegistro;
     private final RegistroPrivacidad registroPrivacidad;
+    private final boolean planesExigenParticipacion;
     private final Clock clock;
+
+    private static final Logger log = LoggerFactory.getLogger(ConsentimientoService.class);
 
     public ConsentimientoService(JdbcTemplate jdbc, UserCommandService usuarios, DocumentosLegales documentos,
                                  @Value("${fitsense.study.consent-version:MVP-1.0}") String versionEstudio,
@@ -69,6 +86,7 @@ public class ConsentimientoService {
                                  @Value("${fitsense.consent.privacy-version:}") String privacidad,
                                  @Value("${fitsense.consent.enforce-on-signup:false}") boolean exigir,
                                  @Value("${fitsense.consent.privacy-record:ACEPTACION}") RegistroPrivacidad registro,
+                                 @Value("${fitsense.study.plans-require-participation:true}") boolean planesExigenParticipacion,
                                  Optional<Clock> clock) {
         this.jdbc = jdbc;
         this.usuarios = usuarios;
@@ -78,6 +96,7 @@ public class ConsentimientoService {
         this.versionPrivacidad = vacia(privacidad);
         this.exigirEnRegistro = exigir;
         this.registroPrivacidad = registro;
+        this.planesExigenParticipacion = planesExigenParticipacion;
         this.clock = clock.orElse(Clock.systemUTC());
         documentos.validar();
         for (var t : Tipo.values()) {
@@ -99,6 +118,10 @@ public class ConsentimientoService {
                 || !documentoAprobado(Tipo.STUDY_PARTICIPATION)))
             throw new IllegalStateException("fitsense.consent.enforce-on-signup=true exige condiciones, privacidad y un"
                     + " consentimiento informado PUBLICADO (documentos aprobados).");
+        if (!exigir)
+            log.warn("REGISTRO_NO_DEFINITIVO: fitsense.consent.enforce-on-signup=false. Las cuentas nuevas no quedan con"
+                    + " un consentimiento informado valido: este modo es para pruebas con usuarios sinteticos, no para"
+                    + " inscribir participantes del estudio.");
     }
 
     /**
@@ -109,21 +132,27 @@ public class ConsentimientoService {
     public void validarRegistro(String condiciones, String privacidad, boolean participa, String estudio) {
         if (exigirEnRegistro) {
             if (condiciones == null || privacidad == null)
-                throw new DomainRuleViolationException(
+                throw new ConsentimientoRechazadoException(ConsentimientoRechazadoException.CONSENTIMIENTO_REQUERIDO,
                         "Para registrarte tienes que aceptar las condiciones de uso y la politica de privacidad.");
+            // Opcion A: Kora solo es para participantes. Sin aceptar participar, una cuenta no tendria servicio.
+            if (planesExigenParticipacion && !participa)
+                throw new ConsentimientoRechazadoException(ConsentimientoRechazadoException.PARTICIPACION_REQUERIDA,
+                        "Kora solo esta disponible para las personas que participan en el estudio. Para registrarte"
+                                + " tienes que aceptar participar.");
             if (participa && estudio == null)
-                throw new DomainRuleViolationException("Para participar en el estudio tienes que aceptar la version"
-                        + " vigente del consentimiento informado.");
+                throw new ConsentimientoRechazadoException(ConsentimientoRechazadoException.CONSENTIMIENTO_REQUERIDO,
+                        "Para participar en el estudio tienes que aceptar la version vigente del consentimiento"
+                                + " informado.");
         }
         if (condiciones != null) vigente(Tipo.TERMS_OF_SERVICE, condiciones);
         if (privacidad != null) vigente(Tipo.PRIVACY_POLICY, privacidad);
         if (estudio != null) {
             if (!participa)
-                throw new DomainRuleViolationException("Se envio una version del consentimiento informado sin aceptar"
-                        + " participar en el estudio.");
+                throw new ConsentimientoRechazadoException(ConsentimientoRechazadoException.VERSION_SIN_PARTICIPACION,
+                        "Se envio una version del consentimiento informado sin aceptar participar en el estudio.");
             if (!documentoAprobado(Tipo.STUDY_PARTICIPATION))
-                throw new DomainRuleViolationException("Todavia no hay una version aprobada del consentimiento"
-                        + " informado: no se puede aceptar.");
+                throw new ConsentimientoRechazadoException(ConsentimientoRechazadoException.DOCUMENTO_NO_PUBLICADO,
+                        "Todavia no hay una version aprobada del consentimiento informado: no se puede aceptar.");
             vigente(Tipo.STUDY_PARTICIPATION, estudio);
         }
     }
@@ -229,11 +258,33 @@ public class ConsentimientoService {
         return exigirEnRegistro;
     }
 
+    /**
+     * Opcion A con el registro definitivo: para recibir planes no basta la casilla, hace falta un consentimiento
+     * informado valido. Con la exigencia apagada (pruebas) no se exige, y el comportamiento es el anterior.
+     */
+    public boolean exigeConsentimientoValidoParaPlanes() {
+        return exigirEnRegistro && planesExigenParticipacion;
+    }
+
+    /**
+     * Consentimiento informado VALIDO y no retirado: una fila {@code CASILLA_REGISTRO}, que solo se escribe si habia un
+     * documento aprobado vigente y la app confirmo que version mostro. {@code CASILLA_SIN_DOCUMENTO_APROBADO}
+     * ({@code MVP-1.0}) y {@code CASILLA_SIN_VERSION_CONFIRMADA} no cuentan.
+     */
+    public boolean consentimientoValido(long userId) {
+        return Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS (SELECT 1 FROM user_consents WHERE user_id = ?"
+                + " AND consent_type = 'STUDY_PARTICIPATION' AND withdrawn_at IS NULL AND affirmative_action = ?)",
+                Boolean.class, userId, CASILLA_REGISTRO));
+    }
+
     private void vigente(Tipo tipo, String version) {
-        var v = versionVigente(tipo).orElseThrow(() -> new DomainRuleViolationException(
+        var v = versionVigente(tipo).orElseThrow(() -> new ConsentimientoRechazadoException(
+                ConsentimientoRechazadoException.DOCUMENTO_NO_PUBLICADO,
                 "Todavia no hay una version aprobada de " + tipo + ": no se puede aceptar."));
+        // Inexistente, vencida o cambiada mientras la persona se registraba: la app vuelve a leer /legal-documents.
         if (!v.equals(version))
-            throw new DomainRuleViolationException("La version aceptada de " + tipo + " no es la vigente (" + v + ").");
+            throw new ConsentimientoRechazadoException(ConsentimientoRechazadoException.VERSION_NO_VIGENTE,
+                    "La version aceptada de " + tipo + " no es la vigente (" + v + ").");
     }
 
     private Optional<Consentimiento> activo(long userId, Tipo tipo, String version) {

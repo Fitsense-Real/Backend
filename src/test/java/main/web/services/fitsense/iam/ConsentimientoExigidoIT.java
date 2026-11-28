@@ -95,6 +95,15 @@ class ConsentimientoExigidoIT {
                 .getStatus();
     }
 
+    /** "estado:codigo" del registro: el codigo es details[0] (C1). */
+    String rechazo(String email, boolean participa, String extra) throws Exception {
+        var r = http.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON).content("""
+                {"email":"%s","password":"Clave-exigida-1","firstName":"Sintetico","timezone":"America/Lima",
+                 "acceptsStudyParticipation":%s%s}""".formatted(email, participa, extra))).andReturn().getResponse();
+        var d = JSON.readTree(r.getContentAsString()).get("details");
+        return r.getStatus() + ":" + (d == null || d.isEmpty() ? "" : d.get(0).asText());
+    }
+
     int cuentas(String patron) {
         return jdbc.queryForObject("SELECT count(*) FROM users WHERE email LIKE ?", Integer.class, patron);
     }
@@ -109,22 +118,31 @@ class ConsentimientoExigidoIT {
     @Test
     @DisplayName("sin condiciones, sin privacidad o con una version desactualizada: 422 y ninguna cuenta")
     void registroExigido() throws Exception {
-        assertEquals(422, registrar("e1@pruebas.invalid", false, ""));
-        assertEquals(422, registrar("e2@pruebas.invalid", false, ",\"acceptedTermsVersion\":\"PRUEBA-T1\""));
-        assertEquals(422, registrar("e3@pruebas.invalid", false,
-                ",\"acceptedTermsVersion\":\"PRUEBA-T0\",\"acceptedPrivacyVersion\":\"PRUEBA-P1\""),
+        assertEquals("422:CONSENTIMIENTO_REQUERIDO", rechazo("e1@pruebas.invalid", true, ""));
+        assertEquals("422:CONSENTIMIENTO_REQUERIDO",
+                rechazo("e2@pruebas.invalid", true, ",\"acceptedTermsVersion\":\"PRUEBA-T1\""));
+        // C1, "cambio de version durante el registro": la app leyo PRUEBA-T0 y, mientras la persona se registraba, entro
+        // en vigor PRUEBA-T1. Se rechaza con un codigo que le dice a la app que vuelva a leer /legal-documents.
+        assertEquals("422:VERSION_NO_VIGENTE", rechazo("e3@pruebas.invalid", true,
+                ",\"acceptedTermsVersion\":\"PRUEBA-T0\",\"acceptedPrivacyVersion\":\"PRUEBA-P1\""
+                        + ",\"acceptedStudyConsentVersion\":\"PRUEBA-CI1\""),
                 "PRUEBA-T0 es una version anterior: ya no es la vigente");
+        assertEquals("422:VERSION_NO_VIGENTE", rechazo("e5@pruebas.invalid", true,
+                ",\"acceptedTermsVersion\":\"NO-EXISTE\",\"acceptedPrivacyVersion\":\"PRUEBA-P1\""
+                        + ",\"acceptedStudyConsentVersion\":\"PRUEBA-CI1\""), "una version inventada tampoco");
         assertEquals(0, cuentas("e_@pruebas.invalid"), "ninguna cuenta a medias");
     }
 
     @Test
     @DisplayName("participar sin version del consentimiento informado, con otra version o con el borrador: 422")
     void participacionExigeConsentimientoInformado() throws Exception {
-        assertEquals(422, registrar("ci1@pruebas.invalid", true, TODO));
-        assertEquals(422, registrar("ci2@pruebas.invalid", true, TODO + ",\"acceptedStudyConsentVersion\":\"OTRA\""));
-        assertEquals(422, registrar("ci3@pruebas.invalid", true,
+        assertEquals("422:CONSENTIMIENTO_REQUERIDO", rechazo("ci1@pruebas.invalid", true, TODO));
+        assertEquals("422:VERSION_NO_VIGENTE",
+                rechazo("ci2@pruebas.invalid", true, TODO + ",\"acceptedStudyConsentVersion\":\"OTRA\""));
+        assertEquals("422:VERSION_NO_VIGENTE", rechazo("ci3@pruebas.invalid", true,
                 TODO + ",\"acceptedStudyConsentVersion\":\"BORRADOR-CI2\""), "un borrador nunca se acepta");
-        assertEquals(422, registrar("ci4@pruebas.invalid", false,
+        // Opcion A: sin aceptar participar no hay cuenta (antes de mirar la version enviada).
+        assertEquals("422:PARTICIPACION_REQUERIDA", rechazo("ci4@pruebas.invalid", false,
                 TODO + ",\"acceptedStudyConsentVersion\":\"PRUEBA-CI1\""), "version sin aceptar participar");
         assertEquals(0, cuentas("ci_@pruebas.invalid"), "ninguna cuenta a medias");
     }
@@ -145,14 +163,61 @@ class ConsentimientoExigidoIT {
                 .getResponse().getContentAsString()).has("token"));
     }
 
+    /**
+     * INVERTIDA EN C1 (opcion A). Antes: sin participar bastaban condiciones y privacidad y se creaba una cuenta sin
+     * servicio. Con la decision de producto (Kora solo para participantes), el registro definitivo la rechaza: una cuenta
+     * que no participa no podria recibir ningun plan. La participacion sigue sin marcarse sola: hay que aceptarla.
+     */
     @Test
-    @DisplayName("sin participar: condiciones y privacidad bastan; no queda ninguna fila de investigacion")
+    @DisplayName("opcion A: sin aceptar participar, 422 PARTICIPACION_REQUERIDA y ninguna cuenta (ni filas de aceptacion)")
     void sinParticipar() throws Exception {
-        assertEquals(201, registrar("np1@pruebas.invalid", false, TODO));
-        assertEquals(List.of("PRIVACY_POLICY:PRUEBA-P1:CASILLA_REGISTRO", "TERMS_OF_SERVICE:PRUEBA-T1:CASILLA_REGISTRO"),
-                filas("np1@pruebas.invalid"));
-        assertFalse(jdbc.queryForObject("SELECT is_study_participant FROM users WHERE email = ?", Boolean.class,
-                "np1@pruebas.invalid"), "la participacion nunca se marca sola");
+        assertEquals("422:PARTICIPACION_REQUERIDA", rechazo("np1@pruebas.invalid", false, TODO));
+        assertEquals(0, cuentas("np1@pruebas.invalid"));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM user_consents", Integer.class) - jdbc.queryForObject(
+                "SELECT count(*) FROM user_consents c JOIN users u USING (user_id)", Integer.class),
+                "ninguna aceptacion huerfana");
+    }
+
+    @Autowired main.web.services.fitsense.iam.interfaces.acl.IamContextFacade iam;
+    @Autowired main.web.services.fitsense.iam.application.internal.consent.ConsentimientoService consentimientos;
+
+    @Test
+    @DisplayName("opcion A con registro definitivo: elegible solo con consentimiento CASILLA_REGISTRO no retirado")
+    void elegibilidadPorConsentimientoValido() throws Exception {
+        assertEquals(201, registrar("valido@pruebas.invalid", true,
+                TODO + ",\"acceptedStudyConsentVersion\":\"PRUEBA-CI1\""));
+        long valido = jdbc.queryForObject("SELECT user_id FROM users WHERE email = 'valido@pruebas.invalid'", Long.class);
+        assertTrue(consentimientos.exigeConsentimientoValidoParaPlanes());
+        assertTrue(consentimientos.consentimientoValido(valido));
+        assertTrue(iam.isEligibleForPlanGeneration(valido));
+        assertTrue(iam.fetchActiveParticipantIdsInTimezone("America/Lima").contains(valido));
+
+        // Una cuenta que participa con la casilla de antes (MVP-1.0, sin documento aprobado): NO es consentimiento
+        // informado valido. Con el registro definitivo no recibe planes ni entra en el cierre semanal.
+        jdbc.update("INSERT INTO users (email, password_hash, first_name, timezone, is_study_participant,"
+                + " consent_granted_at, consent_version, enrolled_at) VALUES ('casilla@pruebas.invalid', 'x', 'Sintetico',"
+                + " 'America/Lima', TRUE, now(), 'MVP-1.0', now())");
+        long casilla = jdbc.queryForObject("SELECT user_id FROM users WHERE email = 'casilla@pruebas.invalid'", Long.class);
+        jdbc.update("INSERT INTO user_consents (user_id, consent_type, document_version, granted_at, affirmative_action,"
+                + " source) VALUES (?, 'STUDY_PARTICIPATION', 'MVP-1.0', now(), 'CASILLA_SIN_DOCUMENTO_APROBADO', 'APP')",
+                casilla);
+        assertFalse(iam.isEligibleForPlanGeneration(casilla));
+        assertFalse(iam.fetchActiveParticipantIdsInTimezone("America/Lima").contains(casilla));
+
+        // Retirar el consentimiento valido quita la elegibilidad.
+        consentimientos.retirar(valido, main.web.services.fitsense.iam.application.internal.consent
+                .ConsentimientoService.Tipo.STUDY_PARTICIPATION);
+        assertFalse(iam.isEligibleForPlanGeneration(valido));
+    }
+
+    @Test
+    @DisplayName("solicitud repetida: el segundo registro con el mismo correo se rechaza y no duplica la evidencia")
+    void solicitudRepetida() throws Exception {
+        String datos = TODO + ",\"acceptedStudyConsentVersion\":\"PRUEBA-CI1\"";
+        assertEquals(201, registrar("repetido@pruebas.invalid", true, datos));
+        assertEquals(422, registrar("repetido@pruebas.invalid", true, datos));
+        assertEquals(1, cuentas("repetido@pruebas.invalid"));
+        assertEquals(3, filas("repetido@pruebas.invalid").size(), "tres aceptaciones, no seis");
     }
 
     @Test
