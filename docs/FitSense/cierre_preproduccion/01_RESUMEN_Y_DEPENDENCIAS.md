@@ -44,7 +44,7 @@ B1 (#90), B2 (#91), B5 (#93), B4: independientes entre sí y de B3.
 - **Sin conflictos.** Las cinco PR de código se fusionaron en una rama local temporal (sin subir) **sin conflictos** y se ejecutó la regresión completa (`09`). En la primera prueba hubo un conflicto trivial en `application.properties` entre B1 y B3, que se resolvió en B3 llevando su bloque al final del fichero.
 - **Decisiones externas que bloquean la activación:**
   - documentos aprobados (P-6);
-  - participación A/B (P0-04);
+  - ~~participación A/B (P0-04)~~: resuelta el 28/11/2026, opción A (`integracion_final_estudio/01`);
   - protocolo de datos D-1..D-7 (P0-07);
   - proveedor de correo (P-10);
   - base y retención de preproducción (P-14);

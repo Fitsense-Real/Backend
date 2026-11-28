@@ -85,6 +85,8 @@ El fundamento jurídico lo decide asesoría legal. **Ninguno de los dos sustituy
 
 ## 4. B2.4 · Participación en el estudio (P0-04): **BLOQUEADO POR DECISIÓN (ambas opciones preparadas)**
 
+> **Actualización 28/11/2026:** la elección funcional está **hecha: opción A**. Kora solo es para personas inscritas en el estudio (`docs/FitSense/integracion_final_estudio/01_OPCION_A_Y_ELEGIBILIDAD.md`, PR C1). Sigue pendiente la **aprobación del protocolo y del consentimiento informado**. El texto de abajo se conserva como registro de la decisión.
+
 Interruptor `fitsense.study.plans-require-participation`, que se aplica en `IamContextFacade`. El dominio (`User`) no cambia.
 
 | Opción | Valor | Comportamiento | Prueba |
@@ -126,5 +128,5 @@ No se ha introducido ningún cambio de retención ni de tratamiento. Decisiones 
 ## 7. Pendiente
 
 - **Documentos aprobados y su referencia (P-6).** Sin ellos, todo B2 queda **preparado sin activar**.
-- **Decisión A/B (P0-04)** y decisiones D-1 a D-7.
+- ~~Decisión A/B (P0-04)~~ (resuelta el 28/11/2026: opción A) y decisiones D-1 a D-7.
 - **Mobile:** pantallas de documentos, envío de `acceptedStudyConsentVersion` y casilla sin marcar por omisión.

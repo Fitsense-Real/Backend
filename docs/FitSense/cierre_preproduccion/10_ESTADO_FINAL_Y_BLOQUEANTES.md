@@ -38,7 +38,7 @@ Estados: **RESUELTO** · **PREPARADO SIN ACTIVAR** · **BLOQUEADO POR DECISIÓN*
 | P0-01 | Logs sin datos sensibles (S-1) | **RESUELTO** | B1 #90 | — |
 | P0-02 | Límites de login y registro | **RESUELTO** | B1 #90 | Verificar el *proxy* de Railway |
 | P0-03 | Términos, privacidad y consentimiento informado | **PREPARADO SIN ACTIVAR** | B2 #91 | Documentos aprobados (P-6), Mobile y activar la exigencia |
-| P0-04 | Participación y servicio | **BLOQUEADO POR DECISIÓN** | B2 #91 (A por omisión, B preparada) | Decisión formal del equipo y del comité |
+| P0-04 | Participación y servicio | ~~BLOQUEADO POR DECISIÓN~~ → **RESUELTO: opción A (28/11/2026)** | B2 #91; C1 (exclusividad comprobada en todas las rutas, B bloqueada en `prod`) | Aprobación del protocolo y del consentimiento informado (`integracion_final_estudio/08`) |
 | P0-05 | Cierre semanal recuperable | **RESUELTO** | B3 #92 y #89 (V66) | — |
 | P0-06 | Copias y restauración | **PREPARADO SIN ACTIVAR** | B4 (script ensayado con datos sintéticos) | Base y retención (P-14); ensayo contra la base de preproducción |
 | P0-07 | Protocolo de datos del estudio | **BLOQUEADO POR DECISIÓN** | B2 (especificación D-1..D-7) | Decisiones del estudio y del comité |
@@ -75,10 +75,10 @@ Es el de la orden y no el de los números de PR: #90 → #89 → #92 → #94 →
 |---|---|---|
 | 1–2 | PR, ramas y SHA | §1 |
 | 3 | P0 resueltos | **P0-01, P0-02 y P0-05**, fusionados en `generation` |
-| 4 | P0 bloqueados y motivo | **P0-03** (no hay documentos aprobados), **P0-04** (decisión A/B), **P0-07** (protocolo de datos), **P0-09** (proveedor de correo), **P0-06** y **P0-08** (preparados; falta la base y la autorización de despliegue) |
+| 4 | P0 bloqueados y motivo | **P0-03** (no hay documentos aprobados), **P0-04** (decisión A/B; **resuelta el 28/11/2026: opción A**), **P0-07** (protocolo de datos), **P0-09** (proveedor de correo), **P0-06** y **P0-08** (preparados; falta la base y la autorización de despliegue) |
 | 5 | P1 implementados | P1-01, P1-02, P1-04, P1-06, P1-11; P1-05 y P1-09 en parte; P1-07 el límite por usuario |
 | 6 | Cambios de contrato para Mobile | 429 en login, registro, consentimientos y generación; `GET /api/v1/legal-documents`; `acceptedStudyConsentVersion`; `approvedDocuments`; 409 `PLAN_CAMBIADO_DURANTE_LA_GENERACION`; recuperación con código (`05` §4). Con la configuración por omisión, **nada se rompe** |
-| 7 | Decisiones pendientes del estudio | P-6 documentos, P0-04 A/B, D-1..D-7 (retirada, eliminación y evidencias, datos a Replicate, `health_notes`, cribado de aptitud, criterios de exclusión, acceso seudonimizado), P-10 correo, P-14 retención, tope de gasto de IA |
+| 7 | Decisiones pendientes del estudio | P-6 documentos, ~~P0-04 A/B~~ (resuelta: A), D-1..D-7 (retirada, eliminación y evidencias, datos a Replicate, `health_notes`, cribado de aptitud, criterios de exclusión, acceso seudonimizado), P-10 correo, P-14 retención, tope de gasto de IA |
 | 8 | Resultado de las pruebas | `09`; con #89 y las siete combinadas, `11` §4 y §5 |
 | 9 | Estado del CI | En verde en cada merge (`11` §5) |
 | 10 | V59 y V66 | #89 fusionada con la corrección H-1. V66 está en `generation` y **no se ha aplicado a ninguna base real**. B3 la complementa (37/37 tras el merge) |
