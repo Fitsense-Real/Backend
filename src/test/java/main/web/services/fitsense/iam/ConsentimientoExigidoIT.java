@@ -232,10 +232,29 @@ class ConsentimientoExigidoIT {
             versiones.put(d.get("type").asText(), d.get("version").asText());
             assertEquals("PUBLISHED", d.get("status").asText());
             assertTrue(d.get("url").asText().startsWith("https://"));
+            assertTrue(d.get("requiredForSignup").asBoolean(), "opcion A con registro definitivo: los tres son obligatorios");
         });
         assertEquals(java.util.Map.of("PRIVACY_POLICY", "PRUEBA-P1", "STUDY_PARTICIPATION", "PRUEBA-CI1",
                 "TERMS_OF_SERVICE", "PRUEBA-T1"), versiones, "la mas reciente en vigor de cada tipo; sin borradores");
         assertFalse(r.getContentAsString().contains("BORRADOR") || r.getContentAsString().contains("SINTETICO"),
                 "ni borradores ni la referencia interna de aprobacion");
+    }
+
+    @Test
+    @DisplayName("peticion directa a la API con campos falsificados: no elude el consentimiento ni fija rol, codigo o version")
+    void peticionDirectaNoEludeNada() throws Exception {
+        String falsos = ",\"studyParticipant\":true,\"role\":\"ADMIN\",\"participantCode\":\"P-999\","
+                + "\"consentVersion\":\"MVP-1.0\",\"affirmativeAction\":\"CASILLA_REGISTRO\"";
+        assertEquals("422:CONSENTIMIENTO_REQUERIDO", rechazo("directo1@pruebas.invalid", true, TODO + falsos),
+                "sin la version del consentimiento informado no hay cuenta, envie lo que envie");
+        assertEquals(0, cuentas("directo1@pruebas.invalid"));
+
+        assertEquals(201, registrar("directo2@pruebas.invalid", true,
+                TODO + ",\"acceptedStudyConsentVersion\":\"PRUEBA-CI1\"" + falsos));
+        var fila = jdbc.queryForMap("SELECT role, participant_code, consent_version FROM users WHERE email = ?",
+                "directo2@pruebas.invalid");
+        assertEquals("USER", fila.get("role"), "el registro publico nunca fija el rol");
+        assertNotEquals("P-999", fila.get("participant_code"), "el codigo lo asigna el servidor");
+        assertEquals("PRUEBA-CI1", fila.get("consent_version"), "la version es la vigente validada, no la enviada aparte");
     }
 }

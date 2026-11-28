@@ -259,6 +259,16 @@ public class ConsentimientoService {
     }
 
     /**
+     * ¿El registro exige la version vigente de este documento? Con la exigencia encendida, condiciones y privacidad
+     * siempre; el consentimiento informado, con la opcion A (participar es obligatorio). Con la B, solo si se participa
+     * (no se puede decir por adelantado: false).
+     */
+    public boolean exigidoEnRegistro(Tipo tipo) {
+        if (!exigirEnRegistro) return false;
+        return tipo != Tipo.STUDY_PARTICIPATION || planesExigenParticipacion;
+    }
+
+    /**
      * Opcion A con el registro definitivo: para recibir planes no basta la casilla, hace falta un consentimiento
      * informado valido. Con la exigencia apagada (pruebas) no se exige, y el comportamiento es el anterior.
      */

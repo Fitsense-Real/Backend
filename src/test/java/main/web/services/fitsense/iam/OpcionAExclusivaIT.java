@@ -294,4 +294,136 @@ class OpcionAExclusivaIT extends ParticipacionBase {
         assertFalse(consentimientos.exigeConsentimientoValidoParaPlanes(),
                 "con el registro definitivo apagado (pruebas) todavia no se exige; encenderlo es otra etapa");
     }
+
+    // ------------------------------------------------------------------ revision final (orden de merge)
+
+    /** Ningun mensaje de error lleva el id interno de la cuenta. */
+    static void sinIdInterno(Respuesta r) {
+        var texto = String.valueOf(r.cuerpo() == null ? "" : r.cuerpo().get("message"));
+        assertFalse(texto.matches("(?is).*usuario\\s+\\d+.*"), texto);
+    }
+
+    @Test
+    @DisplayName("perfil ausente: asincrona 422 PERFIL_INCOMPLETO, sincrona 404; ningun plan ni operacion")
+    void perfilAusente() throws Exception {
+        String email = "sin-perfil-" + UUID.randomUUID() + "@pruebas.invalid";
+        assertEquals(201, registrar(email, ",\"acceptsStudyParticipation\":true").status());
+        var jwt = llamar(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"" + email + "\",\"password\":\"Clave-opcion-a-1\"}")).cuerpo().get("token").asText();
+        long id = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
+        var c = new Cuenta(id, jwt);
+        var a = asincrona(c);
+        assertEquals(422, a.status());
+        assertEquals("PERFIL_INCOMPLETO", a.codigo());
+        var s = sincrona(c);
+        assertEquals(404, s.status());
+        sinIdInterno(a);
+        assertEquals(0, planes(id));
+        assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM plan_generation_operations WHERE user_id = ?",
+                Integer.class, id));
+    }
+
+    @Test
+    @DisplayName("cuenta no activa (INACTIVE) aunque participe: no elegible ni al pedir ni al publicar")
+    void cuentaNoActivaNoElegible() throws Exception {
+        var c = alta(true);
+        jdbc.update("UPDATE users SET status = 'INACTIVE' WHERE user_id = ?", c.id());
+        assertFalse(iam.isEligibleForPlanGeneration(c.id()));
+        new TransactionTemplate(transacciones).executeWithoutResult(e -> assertFalse(iam.elegibleAlPublicar(c.id())));
+        assertFalse(iam.fetchActiveParticipantIdsInTimezone(ZONA).contains(c.id()));
+    }
+
+    @Test
+    @DisplayName("los mensajes de PARTICIPACION_NO_VIGENTE no llevan el id interno, por ninguna ruta")
+    void mensajesSinIdInterno() throws Exception {
+        var c = alta(false);
+        var s = sincrona(c);
+        var a = asincrona(c);
+        assertEquals(ParticipacionNoVigenteException.CODIGO, s.codigo());
+        sinIdInterno(s);
+        sinIdInterno(a);
+        var comando = GenerateWeeklyPlanCommand.firstPlan(c.id(), planes.firstPlanWeekStart(c.id()));
+        var e = assertThrows(ParticipacionNoVigenteException.class, () -> planes.prepare(comando));
+        assertFalse(e.getMessage().contains(String.valueOf(c.id())) && e.getMessage().matches("(?is).*usuario.*"));
+    }
+
+    @Test
+    @DisplayName("reintentos de publicacion tras la retirada: siguen rechazados y no crean planes")
+    void reintentosDePublicacion() throws Exception {
+        var c = alta(true);
+        var comando = GenerateWeeklyPlanCommand.firstPlan(c.id(), planes.firstPlanWeekStart(c.id()));
+        var preparada = planes.prepare(comando);
+        var generada = planes.generate(preparada);
+        retirar(c);
+        for (int i = 0; i < 3; i++)
+            assertThrows(ParticipacionNoVigenteException.class, () -> planes.persist(preparada, generada));
+        assertEquals(ParticipacionNoVigenteException.CODIGO, sincrona(c).codigo(), "y una peticion nueva tambien");
+        assertEquals(0, planes(c.id()));
+    }
+
+    @Test
+    @DisplayName("dos publicaciones concurrentes de un participante activo: una publica y la otra se rechaza")
+    void dosPublicacionesConcurrentes() throws Exception {
+        var c = alta(true);
+        var comando = GenerateWeeklyPlanCommand.firstPlan(c.id(), planes.firstPlanWeekStart(c.id()));
+        var p1 = planes.prepare(comando);
+        var g1 = planes.generate(p1);
+        var p2 = planes.prepare(comando);
+        var g2 = planes.generate(p2);
+        var salida = new java.util.concurrent.CyclicBarrier(2);
+        java.util.function.Supplier<String> publicar1 = () -> intentar(salida, () -> planes.persist(p1, g1));
+        java.util.function.Supplier<String> publicar2 = () -> intentar(salida, () -> planes.persist(p2, g2));
+        var r1 = CompletableFuture.supplyAsync(publicar1);
+        var r2 = CompletableFuture.supplyAsync(publicar2);
+        var resultados = java.util.List.of(r1.get(30, TimeUnit.SECONDS), r2.get(30, TimeUnit.SECONDS));
+        assertEquals(1, resultados.stream().filter("PUBLICADO"::equals).count(), resultados.toString());
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM weekly_training_plans WHERE user_id = ? AND status ="
+                + " 'ACTIVE'", Integer.class, c.id()), "nunca dos planes activos");
+    }
+
+    @Test
+    @DisplayName("dos publicaciones concurrentes y una retirada simultanea: nunca un plan tras la retirada ni dos planes")
+    void dosPublicacionesYRetiradaConcurrentes() throws Exception {
+        var c = alta(true);
+        var comando = GenerateWeeklyPlanCommand.firstPlan(c.id(), planes.firstPlanWeekStart(c.id()));
+        var p1 = planes.prepare(comando);
+        var g1 = planes.generate(p1);
+        var p2 = planes.prepare(comando);
+        var g2 = planes.generate(p2);
+        var salida = new java.util.concurrent.CyclicBarrier(3);
+        var r1 = CompletableFuture.supplyAsync(() -> intentar(salida, () -> planes.persist(p1, g1)));
+        var r2 = CompletableFuture.supplyAsync(() -> intentar(salida, () -> planes.persist(p2, g2)));
+        var r3 = CompletableFuture.supplyAsync(() -> intentar(salida, () -> {
+            consentimientos.retirar(c.id(), ConsentimientoService.Tipo.STUDY_PARTICIPATION);
+            return java.util.Optional.empty();
+        }));
+        var resultados = java.util.List.of(r1.get(30, TimeUnit.SECONDS), r2.get(30, TimeUnit.SECONDS),
+                r3.get(30, TimeUnit.SECONDS));
+        long publicados = resultados.subList(0, 2).stream().filter("PUBLICADO"::equals).count();
+        assertTrue(publicados <= 1, resultados.toString());
+        assertFalse(iam.isEligibleForPlanGeneration(c.id()), "la retirada siempre se aplica");
+        if (publicados == 1) {
+            // Solo puede haberse publicado ANTES de que la retirada se hiciera efectiva: su transaccion la espero.
+            var plan = jdbc.queryForObject("SELECT created_at FROM weekly_training_plans WHERE user_id = ?",
+                    java.time.OffsetDateTime.class, c.id());
+            var retirada = jdbc.queryForObject("SELECT withdrawn_at FROM users WHERE user_id = ?",
+                    java.time.OffsetDateTime.class, c.id());
+            assertFalse(plan.isAfter(retirada.plusSeconds(1)), plan + " / " + retirada);
+        }
+        assertTrue(resultados.subList(0, 2).stream().allMatch(r -> r.equals("PUBLICADO")
+                || r.equals("ParticipacionNoVigenteException") || r.equals("PlanCambioDuranteLaGeneracionException")
+                || r.equals("PlanAlreadyExistsException") || r.equals("DataIntegrityViolationException")), resultados.toString());
+        // Despues de la retirada, nada mas se publica.
+        assertThrows(ParticipacionNoVigenteException.class, () -> planes.persist(p1, g1));
+    }
+
+    static String intentar(java.util.concurrent.CyclicBarrier salida, java.util.concurrent.Callable<?> accion) {
+        try {
+            salida.await(10, TimeUnit.SECONDS);
+            accion.call();
+            return "PUBLICADO";
+        } catch (Exception e) {
+            return e.getClass().getSimpleName();
+        }
+    }
 }

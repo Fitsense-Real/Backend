@@ -132,6 +132,14 @@ public class GlobalExceptionHandler {
                 List.of(main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException.CODIGO));
     }
 
+    /** C1 · sin perfil no se pide un plan (ruta asincrona; la sincrona responde 404 al buscar el perfil). */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.PerfilIncompletoException.class)
+    public ResponseEntity<ApiErrorResource> handlePerfilIncompleto(
+            main.web.services.fitsense.planning.domain.exceptions.PerfilIncompletoException ex) {
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(),
+                List.of(main.web.services.fitsense.planning.domain.exceptions.PerfilIncompletoException.CODIGO));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());
