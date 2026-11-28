@@ -156,7 +156,7 @@ public class WebSecurityConfiguration {
     }
 
     /**
-     * Solo los origenes exactos de FITSENSE_CORS_ORIGINS. Sin credenciales de
+     * Solo los origenes exactos de FITSENSE_CORS_ORIGINS, que pueden leer {@code Retry-After}. Sin credenciales de
      * navegador: la autenticacion va en la cabecera Authorization (Bearer), no en
      * cookies, asi que {@code allowCredentials} no hace falta y queda en false.
      */
@@ -170,6 +170,9 @@ public class WebSecurityConfiguration {
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setAllowCredentials(false);
+        // C7 · un navegador solo deja leer las cabeceras de respuesta "seguras" y las que se exponen. Retry-After (429)
+        // tiene que poder leerse para decir cuanto esperar; solo a los origenes configurados, nada mas se abre.
+        config.setExposedHeaders(List.of("Retry-After"));
         config.setMaxAge(3600L);
         source.registerCorsConfiguration("/api/**", config);
         return source;
