@@ -117,6 +117,29 @@ public class GlobalExceptionHandler {
                 List.of("PLAN_CAMBIADO_DURANTE_LA_GENERACION"));
     }
 
+    /** C1 · contrato de consentimientos: 422 con el codigo estable en details[0] (mismo mensaje que antes). */
+    @ExceptionHandler(main.web.services.fitsense.iam.domain.exceptions.ConsentimientoRechazadoException.class)
+    public ResponseEntity<ApiErrorResource> handleConsentimientoRechazado(
+            main.web.services.fitsense.iam.domain.exceptions.ConsentimientoRechazadoException ex) {
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of(ex.codigo()));
+    }
+
+    /** C1 · opcion A: la cuenta no es un participante activo y elegible; no se generan ni publican planes. */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException.class)
+    public ResponseEntity<ApiErrorResource> handleParticipacionNoVigente(
+            main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException ex) {
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(),
+                List.of(main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException.CODIGO));
+    }
+
+    /** C1 · sin perfil no se pide un plan (ruta asincrona; la sincrona responde 404 al buscar el perfil). */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.PerfilIncompletoException.class)
+    public ResponseEntity<ApiErrorResource> handlePerfilIncompleto(
+            main.web.services.fitsense.planning.domain.exceptions.PerfilIncompletoException ex) {
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(),
+                List.of(main.web.services.fitsense.planning.domain.exceptions.PerfilIncompletoException.CODIGO));
+    }
+
     @ExceptionHandler(DomainRuleViolationException.class)
     public ResponseEntity<ApiErrorResource> handleDomainRule(DomainRuleViolationException ex) {
         return build(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), List.of());

@@ -32,11 +32,16 @@ abstract class ParticipacionBase {
                 participante ? java.sql.Timestamp.valueOf("2026-11-01 10:00:00") : null,
                 retirado ? java.sql.Timestamp.valueOf("2026-11-10 10:00:00") : null);
         long u = jdbc.queryForObject("SELECT user_id FROM users WHERE email = ?", Long.class, email);
+        perfil(u);
+        return u;
+    }
+
+    /** Perfil sintetico completo (casa, 3 dias de 45 min, peso corporal). */
+    void perfil(long u) {
         perfiles.handle(new CreateUserProfileCommand(u, LocalDate.of(1990, 3, 10), BiologicalSex.FEMALE,
                 new BigDecimal("164"), new BigDecimal("63"), null, FitnessLevel.BEGINNER, GoalType.GENERAL_FITNESS,
                 "Sintetico", TrainingLocation.HOME, (short) 3, List.of((short) 1, (short) 3, (short) 5), (short) 45,
                 List.of("body weight"), List.of(), null, true, true, true, false, false));
-        return u;
     }
 
     /** Generacion inicial asincrona por el servicio real (IA apagada: motor de reglas). */

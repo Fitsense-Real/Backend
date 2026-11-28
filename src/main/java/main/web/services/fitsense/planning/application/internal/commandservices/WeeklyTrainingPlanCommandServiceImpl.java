@@ -120,9 +120,9 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     @Transactional(readOnly = true)
     public PreparedPlanGeneration prepare(GenerateWeeklyPlanCommand command) {
         if (!externalIamService.isEligibleForPlanGeneration(command.userId()))
-            throw new DomainRuleViolationException(
-                    "El usuario %d no esta activo en el estudio: no se le generan planes."
-                            .formatted(command.userId()));
+            // Sin el id interno en el mensaje: llega a la app. El ciclo semanal ya registra el usuario en su log.
+            throw new main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException(
+                    main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException.TEXTO);
 
         var profile = externalProfilingService.fetchProfile(command.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil del usuario", command.userId()));
@@ -293,6 +293,13 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
      * FASE 3. Materializa el borrador y lo guarda. Transaccional y corta.
      */
     /** P1-02: control optimista sobre la identidad del plan activo de la semana (fase 1 frente a la publicacion). */
+    /** Null solo en pruebas unitarias que construyen el servicio a mano sin IAM. */
+    private void exigirElegibleAlPublicar(Long userId) {
+        if (externalIamService != null && !externalIamService.elegibleAlPublicar(userId))
+            throw new main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException(
+                    main.web.services.fitsense.planning.domain.exceptions.ParticipacionNoVigenteException.TEXTO);
+    }
+
     static void exigirMismoPlanActivo(PreparedPlanGeneration prepared, Optional<WeeklyTrainingPlan> ahora) {
         Long vigente = ahora.map(WeeklyTrainingPlan::getId).orElse(null);
         if (!java.util.Objects.equals(prepared.previousActivePlanId(), vigente))
@@ -314,6 +321,10 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
         var command = prepared.command();
         var draft = generated.draft();
         var adjustment = prepared.adjustment();
+
+        // C1 · opcion A: la participacion se comprobo en la fase 1, pero la IA tarda. Si la persona se retiro (o dejo de
+        // ser elegible) mientras tanto, no se publica nada.
+        exigirElegibleAlPublicar(command.userId());
 
         // Se relee el plan previo en vez de arrastrar la entidad de la fase 1:
         // entre fase y fase pasaron ~90 s sin sesion de persistencia abierta. Y
@@ -400,6 +411,9 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
                     publicacion.weeklyMetricId(), command.userId(), yaPublicado.get());
             return planRepository.findById(yaPublicado.get());
         }
+
+        // C1 · opcion A: como en persist, una retirada durante la adaptacion impide publicar la semana nueva.
+        exigirElegibleAlPublicar(command.userId());
 
         // Se relee el plan previo, por lo mismo que en persist: entre fases
         // pasaron minutos sin sesion de persistencia abierta.

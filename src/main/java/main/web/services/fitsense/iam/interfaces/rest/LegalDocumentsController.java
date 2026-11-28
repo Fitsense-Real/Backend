@@ -23,8 +23,12 @@ import java.util.List;
 @Tag(name = "Consentimientos", description = "Historial, aceptacion y retirada de consentimientos versionados")
 public class LegalDocumentsController {
 
+    /**
+     * {@code requiredForSignup}: el registro rechaza la cuenta si no se envia la version vigente de este documento
+     * (C1). Con la exigencia apagada, false en todos.
+     */
     public record DocumentoResource(String type, String version, String title, String url, String status,
-                                    String effectiveFrom) {}
+                                    String effectiveFrom, boolean requiredForSignup) {}
 
     public record DocumentosResource(boolean enforcedOnSignup, String privacyRecord,
                                      List<DocumentoResource> documents) {}
@@ -44,7 +48,7 @@ public class LegalDocumentsController {
         // Sin limite por IP a proposito: devuelve configuracion estatica, sin tocar la base ni datos de nadie.
         var docs = servicio.documentosVigentes().stream().map(d -> new DocumentoResource(d.getType().name(),
                 d.getVersion().trim(), d.getTitle(), d.getUrl().trim(), d.getStatus().name(),
-                d.getEffectiveFrom().toString())).toList();
+                d.getEffectiveFrom().toString(), servicio.exigidoEnRegistro(d.getType()))).toList();
         return ResponseEntity.ok().cacheControl(CacheControl.noCache())
                 .body(new DocumentosResource(servicio.exigirEnRegistro(), servicio.registroPrivacidad().name(), docs));
     }
