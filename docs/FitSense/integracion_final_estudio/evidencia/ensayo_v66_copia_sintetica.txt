@@ -1,0 +1,42 @@
+FitSense · C5 · ensayo de V66 sobre una copia SINTETICA (28/11/2026)
+Bases: tres PostgreSQL 16 locales de Docker (origen, destino aislado, ensayo de fallo). Ningun dato real.
+Origen: Flyway V1..V65 + 200 participantes sinteticos, 2400 mediciones, 200 operaciones FIRST_PLAN (180 FAILED, 20 PENDING, 20 PROCESSING huerfanas) y 20 predicciones ENVIADA.
+
+== 1. Copia y restauracion (scripts/respaldo/verificar_respaldo.sh, de #95)
+copia=copia/fitsense.dump bytes=601218 sha256=224f7a0bf1cb5aae374306957660c125af9d2cba72708679541a5c26142c99b6
+segundos_copia=1 segundos_restauracion=0 segundos_total=1
+flyway_schema_history                                   68           68 OK
+flyway_origen=65 flyway_destino=65
+RESULTADO=OK (todas las tablas coinciden)
+permisos: 700 directorio, 600 copia
+
+== 2. V66 en el destino aislado y comprobacion de integridad
+tabla (con filas)                          origen  destino estado
+body_parts                                     10       10 OK
+calculation_configs                             9        9 OK
+equipment_types                                38       38 OK
+exercise_difficulty_approvals                   4        4 OK
+exercise_equipment_requirements              1522     1522 OK
+exercises                                    1376     1376 OK
+plan_generation_operations                    200      200 OK
+plan_generation_predictions                    20       20 OK
+user_consents                                 200      200 OK
+users                                         200      200 OK
+weekly_user_metrics                          2400     2400 OK
+tablas_nuevas_en_destino=[]
+flyway_origen=65 (intacto) flyway_destino=66 migraciones_fallidas=0
+operaciones_por_tipo_destino=FIRST_PLAN:200
+operaciones_con_operation_key=0 (FIRST_PLAN no la usa)
+restricciones_no_validadas_destino=ck_pgo_lease (ck_pgo_lease NOT VALID es anterior a V66, P2-04)
+huerfanas_recuperables=20 predicciones_enviadas_conservadas=20
+huella_metricas origen=eae52e9d6495d486fae4f6c27129c446 destino=eae52e9d6495d486fae4f6c27129c446 OK
+RESULTADO=OK (V66 aplicada sobre la copia; ningun dato cambio)
+
+== 3. Fallo provocado de V66 y recuperacion (tercera base, misma copia)
+objeto ajeno que choca con V66: columna operation_key creada antes de migrar
+migrar a 66: FALLA (exit 1) -> esquema identico al anterior, flyway sigue en 65:true, ck_pgo_kind (que V66 borra primero) sigue existiendo
+se retira el objeto ajeno y se repite: MIGRADO a 66, exito=true
+conclusion: V66 es una sola transaccion; si falla, no deja nada a medias
+
+== 4. Limpieza
+copia sintetica borrada con shred -u al terminar; contenedores eliminados
