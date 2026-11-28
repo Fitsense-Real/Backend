@@ -14,17 +14,26 @@ class MensajeDeRecuperacionTest {
     static final OffsetDateTime CADUCA = OffsetDateTime.parse("2026-11-19T21:30:00-05:00");
 
     @Test
-    @DisplayName("sin plantilla: el codigo; con plantilla: el enlace; caducidad en UTC")
+    @DisplayName("sin plantilla: el codigo; con plantilla: el enlace; vigencia en minutos y hora en UTC; con tildes")
     void contenido() {
-        var codigo = MensajeDeRecuperacion.crear("p@pruebas.invalid", "TOKEN_abc-1", CADUCA, Optional.empty(), "Kora");
-        assertTrue(codigo.texto().contains("introduce este codigo en la app:\n\nTOKEN_abc-1"));
-        assertTrue(codigo.texto().contains("20/11/2026 02:30 UTC"));
-        assertEquals("Kora: restablece tu contrasena", codigo.asunto());
+        var codigo = MensajeDeRecuperacion.crear("p@pruebas.invalid", "TOKEN_abc-1", CADUCA, Optional.empty(), "Kora", 30);
+        assertTrue(codigo.texto().contains("pégalo en la app, en «Restablecer contraseña»:\n\nTOKEN_abc-1"));
+        assertTrue(codigo.texto().contains("Caduca en 30 minutos (el 20/11/2026 a las 02:30 UTC)"));
+        assertTrue(codigo.texto().contains("se cierran las sesiones"));
+        assertEquals("Kora: código para restablecer tu contraseña", codigo.asunto());
         assertEquals("RECUPERACION_CONTRASENA", codigo.tipo());
         var enlace = MensajeDeRecuperacion.crear("p@pruebas.invalid", "TOKEN_abc-1", CADUCA,
-                Optional.of("https://web.pruebas.invalid/restablecer?token={token}"), "Kora");
+                Optional.of("https://web.pruebas.invalid/restablecer?token={token}"), "Kora", 30);
         assertTrue(enlace.texto().contains("https://web.pruebas.invalid/restablecer?token=TOKEN_abc-1"));
-        assertTrue(enlace.texto().contains("Nunca te pediremos tu contrasena por correo."));
+        assertTrue(enlace.texto().contains("Nunca te pediremos tu contraseña ni este código"));
+    }
+
+    @Test
+    @DisplayName("nunca lleva la contrasena ni el destinatario en el cuerpo")
+    void sinDatosDeLaCuenta() {
+        var m = MensajeDeRecuperacion.crear("persona@pruebas.invalid", "TOKEN_abc-1", CADUCA, Optional.empty(), "Kora", 30);
+        assertFalse(m.texto().contains("persona@pruebas.invalid"));
+        assertFalse(m.texto().toLowerCase().contains("contraseña actual"));
     }
 
     @Test

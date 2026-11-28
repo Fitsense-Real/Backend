@@ -15,7 +15,7 @@ import java.util.Optional;
 final class MensajeDeRecuperacion {
 
     static final String MARCADOR = "{token}";
-    private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm 'UTC'");
+    private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy 'a las' HH:mm 'UTC'");
 
     private MensajeDeRecuperacion() {
     }
@@ -33,24 +33,32 @@ final class MensajeDeRecuperacion {
         return Optional.of(p);
     }
 
+    /**
+     * C2 · texto claro para quien lo recibe: en castellano con tildes (los tres transportes envian UTF-8), cuanto dura
+     * el codigo ademas de la hora en UTC (las personas del estudio no viven en UTC) y que hacer con un codigo de 43
+     * caracteres (copiar y pegar, no teclear). Sigue sin llevar la contrasena ni ningun dato de la cuenta.
+     */
     static CorreoSaliente.Mensaje crear(String para, String token, OffsetDateTime caduca, Optional<String> enlace,
-                                        String app) {
+                                        String app, long minutos) {
         String accion = enlace
-                .map(e -> "Para elegir una contrasena nueva, abre este enlace:\n\n" + e.replace(MARCADOR, token))
-                .orElse("Para elegir una contrasena nueva, introduce este codigo en la app:\n\n" + token);
+                .map(e -> "Para elegir una contraseña nueva, abre este enlace desde el teléfono donde usas la app:\n\n"
+                        + e.replace(MARCADOR, token))
+                .orElse("Para elegir una contraseña nueva, copia este código y pégalo en la app,"
+                        + " en «Restablecer contraseña»:\n\n" + token);
         String texto = """
                 Hola:
 
-                Hemos recibido una solicitud para restablecer la contrasena de tu cuenta de %s.
+                Recibimos una solicitud para restablecer la contraseña de tu cuenta de %s.
 
                 %s
 
-                Caduca el %s y solo sirve una vez.
+                Caduca en %d minutos (el %s) y solo sirve una vez. Al cambiar la contraseña se cierran las sesiones
+                abiertas en otros dispositivos.
 
-                Si no lo has pedido tu, ignora este mensaje: tu contrasena no cambia.
-                Nunca te pediremos tu contrasena por correo.
-                """.formatted(app, accion, HORA.format(caduca.withOffsetSameInstant(ZoneOffset.UTC)));
+                Si no lo pediste tú, ignora este mensaje: tu contraseña no cambia.
+                Nunca te pediremos tu contraseña ni este código por correo, teléfono o mensaje.
+                """.formatted(app, accion, minutos, HORA.format(caduca.withOffsetSameInstant(ZoneOffset.UTC)));
         return new CorreoSaliente.Mensaje("RECUPERACION_CONTRASENA", para,
-                "%s: restablece tu contrasena".formatted(app), texto);
+                "%s: código para restablecer tu contraseña".formatted(app), texto);
     }
 }
