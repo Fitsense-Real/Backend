@@ -2,7 +2,9 @@ package main.web.services.fitsense.iam.infrastructure.persistence.jpa.repositori
 
 import main.web.services.fitsense.iam.domain.model.aggregates.User;
 import main.web.services.fitsense.iam.domain.model.valueobjects.EmailAddress;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,14 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(EmailAddress email);
+
+    /**
+     * C6 · Bloquea la fila de la cuenta (FOR UPDATE) hasta el final de la transaccion. La recuperacion de contrasena la
+     * toma SIEMPRE antes que cualquier fila de password_reset_tokens: solicitar y confirmar no pueden bloquearse entre si.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    Optional<User> bloquearPorId(Long id);
 
     boolean existsByEmail(EmailAddress email);
 

@@ -52,8 +52,8 @@ final class MensajeDeRecuperacion {
 
                 %s
 
-                Caduca en %d minutos (el %s) y solo sirve una vez. Al cambiar la contraseña se cierran las sesiones
-                abiertas en otros dispositivos.
+                Caduca en %d minutos (el %s) y solo sirve una vez. Si pediste más de un código, solo vale el del correo
+                más reciente. Al cambiar la contraseña se cierran las sesiones abiertas en otros dispositivos.
 
                 Si no lo pediste tú, ignora este mensaje: tu contraseña no cambia.
                 Nunca te pediremos tu contraseña ni este código por correo, teléfono o mensaje.

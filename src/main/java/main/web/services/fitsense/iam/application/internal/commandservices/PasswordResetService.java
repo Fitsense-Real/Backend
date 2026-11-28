@@ -31,6 +31,8 @@ import java.util.HexFormat;
  *   <li><b>Confirmacion:</b> el token (bloqueado en la base para que dos confirmaciones simultaneas no lo usen dos
  *       veces) tiene que existir, no estar usado ni caducado y ser de una cuenta activa. Se cambia la contrasena, se
  *       marca usado y se invalidan los demas tokens pendientes de esa cuenta. Cualquier fallo da el mismo error.</li>
+ *   <li><b>C6 · Solo vale el codigo mas reciente:</b> una solicitud nueva invalida los pendientes. Las dos operaciones
+ *       bloquean primero la cuenta y despues los tokens.</li>
  * </ul>
  * La entrega la hace {@link PasswordResetNotifier}; sin proveedor autorizado no se envia nada.
  */
@@ -80,8 +82,14 @@ public class PasswordResetService {
         }
         var usuario = usuarios.findByEmail(direccion).filter(u -> u.canSignIn()).orElse(null);
         if (usuario == null) return;
+        // C6: la cuenta se bloquea primero (el mismo orden que confirmar). Dos solicitudes simultaneas se ordenan, el
+        // limite por hora es exacto y no quedan dos codigos vigentes.
+        usuarios.bloquearPorId(usuario.getId());
         var ahora = OffsetDateTime.now(reloj);
         if (tokens.countByUserIdAndCreatedAtAfter(usuario.getId(), ahora.minusHours(1)) >= maximoPorHora) return;
+        // C6: SOLO VALE EL CODIGO MAS RECIENTE. Uno anterior que llegue tarde ya no sirve. Por encima del limite (arriba)
+        // no se invalida nada: el ultimo codigo enviado sigue valiendo.
+        tokens.invalidarPendientes(usuario.getId(), ahora);
 
         var bytes = new byte[32];
         ALEATORIO.nextBytes(bytes);
@@ -96,7 +104,12 @@ public class PasswordResetService {
         if (token == null || token.isBlank() || token.length() > 200)
             throw new IllegalArgumentException(TOKEN_NO_VALIDO);
         var ahora = OffsetDateTime.now(reloj);
-        var fila = tokens.bloquearPorHash(sha256(token.trim())).filter(t -> t.usableAt(ahora))
+        var hash = sha256(token.trim());
+        // C6: primero la cuenta y despues el token, como en solicitar (sin cruce de bloqueos). El token se carga ya
+        // bloqueado y fresco: una confirmacion simultanea del mismo codigo lo ve usado.
+        var dueno = tokens.usuarioDelToken(hash).orElseThrow(() -> new IllegalArgumentException(TOKEN_NO_VALIDO));
+        usuarios.bloquearPorId(dueno);
+        var fila = tokens.bloquearPorHash(hash).filter(t -> t.usableAt(ahora))
                 .orElseThrow(() -> new IllegalArgumentException(TOKEN_NO_VALIDO));
         var usuario = usuarios.findById(fila.getUserId()).filter(u -> u.canSignIn())
                 .orElseThrow(() -> new IllegalArgumentException(TOKEN_NO_VALIDO));

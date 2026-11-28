@@ -44,7 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "fitsense.ai.enabled=false",
         "fitsense.ai.api-token=",
         "fitsense.password-reset.ttl-minutes=30",
-        "fitsense.password-reset.max-requests-per-hour=3"
+        "fitsense.password-reset.max-requests-per-hour=3",
+        // C6: esta clase prueba la politica por CUENTA; el limite por IP (comun a toda la clase) lo prueba
+        // RecuperacionPorCorreoIT.limitePorIp con su valor por omision.
+        "fitsense.public-rate-limit.max-per-window=1000"
 })
 @Import(RecuperacionContrasenaIT.Buzon.class)
 @DisplayName("Recuperacion de contrasena: token de un solo uso, caducidad, limite y sin enumeracion")
@@ -165,6 +168,67 @@ class RecuperacionContrasenaIT {
     }
 
     // ----------------------------------------------------------------- apoyo
+
+    // ------------------------------------------------------------------ C6: solo vale el codigo mas reciente
+
+    @Test
+    @DisplayName("C6 · pedir un codigo nuevo invalida el anterior: solo vale el mas reciente")
+    void soloElMasReciente() throws Exception {
+        var email = registrar();
+        solicitar(email).andExpect(status().isAccepted());
+        solicitar(email).andExpect(status().isAccepted());
+        var primero = ENVIADOS.get(email).get(0);
+        var segundo = ENVIADOS.get(email).get(1);
+        confirmar(primero, "clave-nueva-456").andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("El codigo de recuperacion no es valido o ha caducado."));
+        assertTrue(entra(email, CLAVE), "el intento con el codigo viejo no cambio nada");
+        confirmar(segundo, "clave-nueva-456").andExpect(status().isNoContent());
+        assertTrue(entra(email, "clave-nueva-456"));
+    }
+
+    @Test
+    @DisplayName("C6 · por encima del limite no se emite codigo NI se invalida el ultimo: sigue valiendo")
+    void porEncimaDelLimiteNoInvalida() throws Exception {
+        var email = registrar();
+        for (int i = 0; i < 5; i++) solicitar(email).andExpect(status().isAccepted());
+        var enviados = ENVIADOS.get(email);
+        assertEquals(3, enviados.size());
+        assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM password_reset_tokens t JOIN users u USING"
+                + " (user_id) WHERE u.email = ? AND used_at IS NULL", Integer.class, email), "un solo codigo vigente");
+        confirmar(enviados.get(0), "clave-nueva-456").andExpect(status().isBadRequest());
+        confirmar(enviados.get(2), "clave-nueva-456").andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("C6 · solicitudes y confirmaciones simultaneas de la misma cuenta: sin errores 5xx ni dos codigos vigentes")
+    void simultaneas() throws Exception {
+        var email = registrar();
+        solicitar(email).andExpect(status().isAccepted());
+        var pool = java.util.concurrent.Executors.newFixedThreadPool(4);
+        try {
+            for (int ronda = 0; ronda < 5; ronda++) {
+                var vigente = ENVIADOS.get(email).get(ENVIADOS.get(email).size() - 1);
+                var clave = "clave-ronda-" + ronda + "-x";
+                var tareas = new java.util.ArrayList<java.util.concurrent.Callable<Integer>>();
+                tareas.add(() -> solicitar(email).andReturn().getResponse().getStatus());
+                tareas.add(() -> confirmar(vigente, clave).andReturn().getResponse().getStatus());
+                tareas.add(() -> confirmar(vigente, clave).andReturn().getResponse().getStatus());
+                var estados = new java.util.ArrayList<Integer>();
+                for (var f : pool.invokeAll(tareas)) estados.add(f.get(30, java.util.concurrent.TimeUnit.SECONDS));
+                assertTrue(estados.stream().allMatch(e -> e == 202 || e == 204 || e == 400), estados.toString());
+                assertTrue(estados.stream().filter(e -> e == 204).count() <= 1, "un codigo nunca sirve dos veces");
+                assertTrue(jdbc.queryForObject("SELECT count(*) FROM password_reset_tokens t JOIN users u USING (user_id)"
+                        + " WHERE u.email = ? AND used_at IS NULL", Integer.class, email) <= 1, "nunca dos codigos vigentes");
+                jdbc.update("DELETE FROM password_reset_tokens WHERE user_id = (SELECT user_id FROM users WHERE email = ?)"
+                        + " AND used_at IS NOT NULL", email);   // el limite por hora no corta la prueba
+                if (ENVIADOS.get(email).isEmpty() || jdbc.queryForObject("SELECT count(*) FROM password_reset_tokens t"
+                        + " JOIN users u USING (user_id) WHERE u.email = ? AND used_at IS NULL", Integer.class, email) == 0)
+                    solicitar(email).andExpect(status().isAccepted());
+            }
+        } finally {
+            pool.shutdown();
+        }
+    }
 
     private String registrar() throws Exception {
         String email = "recupera" + SECUENCIA.incrementAndGet() + "@pruebas.invalid";

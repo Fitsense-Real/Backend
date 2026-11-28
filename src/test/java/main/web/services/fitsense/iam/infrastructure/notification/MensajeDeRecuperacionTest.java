@@ -20,6 +20,7 @@ class MensajeDeRecuperacionTest {
         assertTrue(codigo.texto().contains("pégalo en la app, en «Restablecer contraseña»:\n\nTOKEN_abc-1"));
         assertTrue(codigo.texto().contains("Caduca en 30 minutos (el 20/11/2026 a las 02:30 UTC)"));
         assertTrue(codigo.texto().contains("se cierran las sesiones"));
+        assertTrue(codigo.texto().contains("solo vale el del correo"), "C6: solo el codigo mas reciente");
         assertEquals("Kora: código para restablecer tu contraseña", codigo.asunto());
         assertEquals("RECUPERACION_CONTRASENA", codigo.tipo());
         var enlace = MensajeDeRecuperacion.crear("p@pruebas.invalid", "TOKEN_abc-1", CADUCA,

@@ -16,12 +16,16 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
 
     long countByUserIdAndCreatedAtAfter(Long userId, OffsetDateTime desde);
 
+    /** C6 · Solo el dueno del token, sin cargar la entidad (se carga despues, ya bloqueada, en {@link #bloquearPorHash}). */
+    @Query("SELECT t.userId FROM PasswordResetToken t WHERE t.tokenHash = :hash")
+    Optional<Long> usuarioDelToken(String hash);
+
     /** Con bloqueo: dos confirmaciones simultaneas del mismo token no pueden usarlo dos veces. */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT t FROM PasswordResetToken t WHERE t.tokenHash = :hash")
     Optional<PasswordResetToken> bloquearPorHash(String hash);
 
-    /** Al cambiar la contrasena, cualquier otro token pendiente del usuario deja de valer. */
+    /** Al pedir un codigo nuevo (C6) y al cambiar la contrasena, cualquier otro token pendiente del usuario deja de valer. */
     @Modifying
     @Query("UPDATE PasswordResetToken t SET t.usedAt = :ahora WHERE t.userId = :userId AND t.usedAt IS NULL")
     int invalidarPendientes(Long userId, OffsetDateTime ahora);
