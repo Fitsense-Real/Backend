@@ -44,15 +44,8 @@ public interface DiarioDePredicciones {
     /** El intento vigente (no DESCARTADA) de esta operacion. */
     Optional<Entrada> deIntento(UUID operationId, int attempt);
 
-    /**
-     * Una prediccion de OTRA operacion del MISMO usuario, con la MISMA peticion, terminada con exito o aun en curso, y
-     * pedida hace menos de {@code ventana}. Es lo que evita pagar dos veces cuando una operacion vencio con su
-     * prediccion en marcha y el usuario reintenta.
-     */
-    Optional<Entrada> reutilizable(long userId, String requestHash, UUID excepto, Instant desde);
-
-    /** Copia una prediccion de otra operacion como intento de esta (sin llamar a Replicate). */
-    Entrada adoptar(Entrada origen, UUID operationId, int attempt, Instant ahora);
+    // Revision de integracion (27/11/2026): ya NO hay consulta de predicciones de OTRA operacion. La identidad de una
+    // prediccion es su operacion y su intento (deIntento) o el id de su propia respuesta; nunca el contenido.
 
     /**
      * Anota la prediccion ANTES de enviarla. Devuelve el id de la fila. Descarta una fila vigente de este intento con

@@ -62,7 +62,10 @@ public class EsquemaVigenteSobreCatalogoAnterior {
             // V64 (notificaciones push): cuatro tablas nuevas, sin datos.
             "64:db/migration/V64__notificaciones_push.sql",
             // V65 (O20, identificacion posterior del dolor): dos columnas NULL y un CHECK, sin datos.
-            "65:db/migration/V65__dolor_identificacion_posterior.sql");
+            "65:db/migration/V65__dolor_identificacion_posterior.sql",
+            // V66 (seguimiento V59 de la generacion sincrona y el cierre semanal): dos columnas, restricciones e
+            // indices en plan_generation_operations, sin datos.
+            "66:db/migration/V66__operaciones_ia_sincrona_y_ciclo_semanal.sql");
 
     @Bean
     FlywayMigrationStrategy catalogoFijadoConEsquemaVigente() {

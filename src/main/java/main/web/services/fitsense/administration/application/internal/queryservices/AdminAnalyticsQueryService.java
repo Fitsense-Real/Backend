@@ -240,7 +240,7 @@ public class AdminAnalyticsQueryService {
                        u.last_login_at, u.created_at, p.user_id AS perfil, p.goal_type, p.fitness_level,
                        p.training_location, p.days_per_week, p.session_minutes
                   FROM users u LEFT JOIN user_profiles p ON p.user_id = u.user_id
-                 WHERE u.user_id = :id AND u.role = 'USER'
+                 WHERE u.user_id = :id AND u.role = 'USER' AND u.is_study_participant
                 """, Map.of("id", participantId), (rs, i) -> new ParticipantDetailResource(
                 rs.getLong("user_id"), rs.getString("participant_code"), rs.getString("first_name"),
                 rs.getString("last_name"), rs.getString("email"), rs.getString("timezone"),
@@ -258,7 +258,8 @@ public class AdminAnalyticsQueryService {
     public Optional<ParticipantAdherenceResource> participantAdherence(long participantId, LocalDate from,
                                                                        LocalDate to) {
         AnalyticsFilters.period(from, to).validate();
-        var codigo = jdbc.query("SELECT participant_code FROM users WHERE user_id = :id AND role = 'USER'",
+        var codigo = jdbc.query("SELECT participant_code FROM users WHERE user_id = :id AND role = 'USER'"
+                        + " AND is_study_participant",
                 Map.of("id", participantId), (rs, i) -> Optional.ofNullable(rs.getString(1)));
         if (codigo.isEmpty()) return Optional.empty();
 

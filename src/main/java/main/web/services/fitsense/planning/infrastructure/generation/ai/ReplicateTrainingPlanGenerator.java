@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.infrastructure.generation.ai;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.domain.exceptions.AiProviderUnavailableException;
 import main.web.services.fitsense.planning.domain.model.valueobjects.GenerationSource;
 import main.web.services.fitsense.planning.domain.model.valueobjects.PlanDraft;
@@ -277,17 +278,11 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
 
     @org.springframework.beans.factory.annotation.Value("${fitsense.ai.cost.output-usd-per-million:2.00}")
     void setTarifaSalidaUsdMillon(double usd) { this.tarifaSalidaUsdMillon = usd; }
-    private Duration ventanaReutilizacion = Duration.ofHours(24);
 
     /** Opcional: sin libro (pruebas unitarias del cliente), todo sigue como antes. */
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     void setDiario(DiarioDePredicciones diario) {
         this.diario = diario;
-    }
-
-    @org.springframework.beans.factory.annotation.Value("${fitsense.plan-generation.reuse-window-hours:24}")
-    void setVentanaReutilizacionHoras(long horas) {
-        this.ventanaReutilizacion = Duration.ofHours(Math.max(0, horas));
     }
 
     /** Huella estable entre arranques: claves ordenadas (Map.of no garantiza el orden entre JVM). */
@@ -374,21 +369,14 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         var input = entrada(prompt, peticion);
         medicion.entrada(input);
         String hash = huella(input);
+        // IDENTIDAD (revision de integracion, 27/11/2026): solo se reanuda una prediccion de ESTA operacion y de ESTE
+        // intento, con la MISMA peticion. Nunca se adopta la de otra operacion por coincidir usuario y huella: el
+        // contenido no prueba identidad (dos generaciones independientes con la misma entrada son predicciones
+        // distintas). Una operacion huerfana se recupera adoptando LA OPERACION por su clave persistida (V66), con lo
+        // que sus filas siguen siendo suyas.
         var propia = diario.deIntento(ambito.operationId(), attempt);
-        DiarioDePredicciones.Entrada previa = null;
-        if (propia.isPresent() && propia.get().requestHash().equals(hash)) {
-            previa = propia.get();
-        } else if (propia.isEmpty()) {
-            var otra = diario.reutilizable(ambito.userId(), hash, ambito.operationId(),
-                    reloj.instant().minus(ventanaReutilizacion));
-            if (otra.isPresent()) {
-                previa = diario.adoptar(otra.get(), ambito.operationId(), attempt, reloj.instant());
-                log.info("REPLICATE_ADOPTADA operacion={} intento={} prediction_id={} de_operacion={} estado={}",
-                        ambito.operationId(), attempt, otra.get().predictionId(), otra.get().operationId(),
-                        otra.get().estado());
-            }
-        }
-        if (previa != null) return reanudar(previa, peticion, prompt, medicion, plazo, ambito);
+        if (propia.isPresent() && propia.get().requestHash().equals(hash))
+            return reanudar(propia.get(), peticion, prompt, medicion, plazo, ambito);
 
         // Nueva: se anota ANTES de enviar. Si el proceso muere entre el envio y la confirmacion, la fila queda en
         // SOLICITANDO y la reanudacion NO reenvia (Replicate pudo aceptarla).
@@ -533,8 +521,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         medicion.salida(output.length());
         diario.terminada(fila, DiarioDePredicciones.Estado.SUCCEEDED, output, null, reloj.instant());
         medicion.resultado(ReplicateTiming.Resultado.SUCCEEDED);
+        // S-1: la salida completa (el plan de una persona) solo con detalle sensible permitido, nunca en prod.
         log.info("Salida de la IA (prediccion {}, prompt {}, {} caracteres de prompt): {}",
-                response.id(), peticion.promptVersion(), prompt.length(), output);
+                response.id(), peticion.promptVersion(), prompt.length(),
+                DetalleSensible.texto(output));
         return output;
     }
 
@@ -721,7 +711,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // el catalogo) y casi siempre llega con status "starting" y output null,
         // asi que no muestra el plan. Queda en DEBUG; la salida real del modelo
         // se registra en INFO mas abajo, cuando la prediccion termina.
-        log.debug("Replicate respondio (crudo): {}", rawBody);
+        // S-1: el cuerpo crudo lleva la salida de la IA: ni en DEBUG sin detalle sensible permitido.
+        if (log.isDebugEnabled())
+            log.debug("Replicate respondio (crudo): {}",
+                    DetalleSensible.texto(rawBody));
 
         // R-1 (resiliencia de Replicate, 11/11/2026): el SOBRE de Replicate se leia fuera de todo manejo de errores.
         // Un 2xx que no era su JSON (pagina de un proxy, cuerpo vacio, JSON cortado) lanzaba IllegalStateException,
@@ -821,8 +814,10 @@ public class ReplicateTrainingPlanGenerator implements TrainingPlanGenerator {
         // inicial. La linea rendida no cambia para la generacion inicial:
         // Peticion.deSemana une las dos versiones con un espacio, igual que los
         // dos marcadores de antes.
+        // S-1: la salida completa (el plan de una persona) solo con detalle sensible permitido, nunca en prod.
         log.info("Salida de la IA (prediccion {}, prompt {}, {} caracteres de prompt): {}",
-                response.id(), peticion.promptVersion(), prompt.length(), output);
+                response.id(), peticion.promptVersion(), prompt.length(),
+                DetalleSensible.texto(output));
         return output;
     }
 

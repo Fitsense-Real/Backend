@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalCatalogService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalExecutionService;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.ExternalProfilingService;
@@ -118,8 +119,9 @@ public class PainMemoryService {
                     registrar(plan, w, e, Reason.DOLOR_SESION_SIN_IDENTIFICAR, via).ifPresent(nuevos::add);
         }
         if (!nuevos.isEmpty())
+            // S-1: que ejercicio dolio es un dato de salud: sin detalle sensible, solo el recuento.
             log.warn("DOLOR_REGISTRADO usuario {} plan {} via {}: {}", plan.getUserId(), plan.getId(), via,
-                    nuevos.stream().map(Registro::exerciseId).toList());
+                    DetalleSensible.ids(nuevos.stream().map(Registro::exerciseId).toList()));
         return nuevos;
     }
 
@@ -136,7 +138,7 @@ public class PainMemoryService {
                     .ifPresent(nuevos::add);
         if (!nuevos.isEmpty())
             log.warn("DOLOR_REGISTRADO usuario {} sesion {} via OMISION: {}", workout.getPlan().getUserId(),
-                    workout.getId(), nuevos.stream().map(Registro::exerciseId).toList());
+                    workout.getId(), DetalleSensible.ids(nuevos.stream().map(Registro::exerciseId).toList()));
         return nuevos;
     }
 
@@ -250,12 +252,12 @@ public class PainMemoryService {
         if (!derivadas.isEmpty())
             log.info("DOLOR_FAMILIA usuario {}: variantes excluidas {} (variante<-ejercicio que dolio; provisionales {};"
                     + " por angulo {}; confirmacion pedida {})", userId,
-                    derivadas.values().stream().collect(java.util.stream.Collectors.toMap(ExclusionEfectiva::exerciseId,
-                            ExclusionEfectiva::derivaDe, (a, b) -> a, TreeMap::new)),
-                    derivadas.values().stream().filter(ExclusionEfectiva::provisional)
-                            .map(ExclusionEfectiva::exerciseId).toList(),
-                    derivadas.values().stream().filter(x -> x.origen() == Origen.PRECAUCION)
-                            .map(ExclusionEfectiva::exerciseId).toList(), pedir);
+                    DetalleSensible.mapa(derivadas.values().stream().collect(java.util.stream.Collectors.toMap(
+                            ExclusionEfectiva::exerciseId, ExclusionEfectiva::derivaDe, (a, b) -> a, TreeMap::new))),
+                    DetalleSensible.ids(derivadas.values().stream().filter(ExclusionEfectiva::provisional)
+                            .map(ExclusionEfectiva::exerciseId).toList()),
+                    DetalleSensible.ids(derivadas.values().stream().filter(x -> x.origen() == Origen.PRECAUCION)
+                            .map(ExclusionEfectiva::exerciseId).toList()), DetalleSensible.ids(pedir));
         resultado.sort(Comparator.comparing(ExclusionEfectiva::exerciseId));
         return List.copyOf(resultado);
     }
@@ -287,7 +289,8 @@ public class PainMemoryService {
         } catch (RuntimeException e) {
             // FALLA CERRADO sobre lo directo: sin catalogo se mantiene, como minimo, la exclusion registrada. Se deja
             // constancia: la familia no se pudo calcular y la variante podria seguir siendo elegible en esta lectura.
-            log.error("DOLOR_FAMILIA_NO_CALCULADA usuario {} ejercicios {}: {}", userId, base.keySet(), e.toString());
+            log.error("DOLOR_FAMILIA_NO_CALCULADA usuario {} ejercicios {}: {}", userId, DetalleSensible.ids(base.keySet()),
+                    e.getClass().getSimpleName());
             return resultado;
         }
         base.forEach((original, permanente) -> equivalentes.getOrDefault(original, List.of()).forEach(eq -> {
@@ -418,8 +421,9 @@ public class PainMemoryService {
                 .filter(x -> sesiones.contains(x.getSourcePlannedWorkoutId()) && !exerciseId.equals(x.getExerciseId()))
                 .map(UserSafetyExclusion::getExerciseId).distinct().sorted().toList();
         log.warn("DOLOR_IDENTIFICADO_DESPUES usuario {} ejercicio {} exclusiones {} derivadas {} no_relacionados_levantados"
-                + " {} no_levantados {} siguen_excluidos {}", userId, exerciseId, ids, derivadasDelConfirmado, levantados,
-                noLevantados.keySet(), otros);
+                        + " {} no_levantados {} siguen_excluidos {}", userId, DetalleSensible.valor(exerciseId),
+                DetalleSensible.ids(ids), DetalleSensible.ids(derivadasDelConfirmado), DetalleSensible.ids(levantados),
+                DetalleSensible.ids(noLevantados.keySet()), DetalleSensible.ids(otros));
         return new Identificacion(exerciseId, ids, ahora, derivadasDelConfirmado, List.copyOf(levantados),
                 java.util.Collections.unmodifiableMap(noLevantados), otros,
                 "Queda confirmado: este ejercicio, sus variantes equivalentes y el mismo movimiento con otro angulo no"
@@ -475,8 +479,8 @@ public class PainMemoryService {
         }
         boolean candidato = catalog.fetchEligibleFor(perfil, perfil.maxDifficultyLevel(), seguridad).stream()
                 .anyMatch(c -> exerciseId.equals(c.exerciseId()));
-        log.warn("DOLOR_REACTIVADO usuario {} ejercicio {} exclusiones {} candidato_hoy={}", userId, exerciseId, ids,
-                candidato);
+        log.warn("DOLOR_REACTIVADO usuario {} ejercicio {} exclusiones {} candidato_hoy={}", userId,
+                DetalleSensible.valor(exerciseId), DetalleSensible.ids(ids), candidato);
         return new Reactivacion(exerciseId, ids, ahora, candidato, candidato
                 ? "Vuelve a considerarse en las proximas semanas. No se anade de inmediato: entra solo si una"
                 + " adaptacion, una regeneracion o una reincorporacion lo eligen y pasa todas las reglas."

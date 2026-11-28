@@ -1,5 +1,6 @@
 package main.web.services.fitsense.planning.application.internal.commandservices;
 
+import main.web.services.fitsense.shared.infrastructure.logging.DetalleSensible;
 import main.web.services.fitsense.planning.application.internal.outboundservices.acl.*;
 import main.web.services.fitsense.planning.domain.exceptions.*;
 import main.web.services.fitsense.planning.domain.model.aggregates.PlanAdaptationAttempt;
@@ -173,7 +174,7 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
             var antes = eligible.size();
             eligible = eligible.stream().filter(c -> !excluidosPorDolor.contains(c.exerciseId())).toList();
             log.info("DOLOR_PERSISTENTE usuario {}: la semana del {} se prepara sin {} ({} candidato(s) menos)",
-                    command.userId(), week.startDate(), excluidosPorDolor, antes - eligible.size());
+                    command.userId(), week.startDate(), DetalleSensible.ids(excluidosPorDolor), antes - eligible.size());
         }
         if (eligible.isEmpty())
             throw new main.web.services.fitsense.catalog.domain.exceptions.EmptyEligibleSetException(
@@ -291,6 +292,14 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
     /**
      * FASE 3. Materializa el borrador y lo guarda. Transaccional y corta.
      */
+    /** P1-02: control optimista sobre la identidad del plan activo de la semana (fase 1 frente a la publicacion). */
+    static void exigirMismoPlanActivo(PreparedPlanGeneration prepared, Optional<WeeklyTrainingPlan> ahora) {
+        Long vigente = ahora.map(WeeklyTrainingPlan::getId).orElse(null);
+        if (!java.util.Objects.equals(prepared.previousActivePlanId(), vigente))
+            throw new main.web.services.fitsense.planning.domain.exceptions.PlanCambioDuranteLaGeneracionException(
+                    prepared.command().userId(), prepared.weekStartDate(), prepared.previousActivePlanId(), vigente);
+    }
+
     @Override
     @Transactional
     public Optional<WeeklyTrainingPlan> persist(PreparedPlanGeneration prepared,
@@ -315,6 +324,9 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         if (previousActive.isPresent() && !command.replaceExisting())
             throw new PlanAlreadyExistsException(command.userId(), prepared.weekStartDate());
+        // P1-02: el plan activo tiene que ser el mismo sobre el que se preparo (fase 1). Si otro camino publico una
+        // version mientras la IA respondia, no se publica encima en silencio.
+        exigirMismoPlanActivo(prepared, previousActive);
 
         var snapshotJson = jsonSupport.write(PlanInputSnapshot.of(prepared.context()));
 
@@ -396,6 +408,9 @@ public class WeeklyTrainingPlanCommandServiceImpl implements WeeklyTrainingPlanC
 
         if (previousActive.isPresent() && !command.replaceExisting())
             throw new PlanAlreadyExistsException(command.userId(), prepared.weekStartDate());
+        // P1-02: el plan activo tiene que ser el mismo sobre el que se preparo (fase 1). Si otro camino publico una
+        // version mientras la IA respondia, no se publica encima en silencio.
+        exigirMismoPlanActivo(prepared, previousActive);
 
         var adjustment = prepared.adjustment();
         var etiqueta = publicacion.etiquetaDeAjuste();

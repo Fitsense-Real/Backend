@@ -20,6 +20,15 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /** B5.1: cuenta inicios de sesion fallidos y limites superados (solo el numero). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos contadores;
+
+    private void contar(String suceso) {
+        if (contadores != null) contadores.sumar(suceso);
+    }
+
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiErrorResource> handleNotFound(ResourceNotFoundException ex) {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), List.of());
@@ -85,6 +94,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp.DemasiadasSolicitudesException.class)
     public ResponseEntity<ApiErrorResource> handleDemasiadasSolicitudes(
             main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp.DemasiadasSolicitudesException ex) {
+        contar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.LIMITE_SUPERADO);
         var status = HttpStatus.TOO_MANY_REQUESTS;
         return ResponseEntity.status(status)
                 .header(org.springframework.http.HttpHeaders.RETRY_AFTER, String.valueOf(ex.reintentarEnSegundos()))
@@ -97,6 +107,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResource> handleSolicitudPushInvalida(
             main.web.services.fitsense.notifications.application.DispositivosPushService.SolicitudPushInvalidaException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), List.of(ex.codigo()));
+    }
+
+    /** P1-02: el plan activo cambio durante la generacion; no se publico encima. */
+    @ExceptionHandler(main.web.services.fitsense.planning.domain.exceptions.PlanCambioDuranteLaGeneracionException.class)
+    public ResponseEntity<ApiErrorResource> handlePlanCambiado(
+            main.web.services.fitsense.planning.domain.exceptions.PlanCambioDuranteLaGeneracionException ex) {
+        return build(HttpStatus.CONFLICT, "Tu plan cambio mientras se preparaba uno nuevo. Consulta el plan actual.",
+                List.of("PLAN_CAMBIADO_DURANTE_LA_GENERACION"));
     }
 
     @ExceptionHandler(DomainRuleViolationException.class)
@@ -127,6 +145,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiErrorResource> handleInvalidCredentials(InvalidCredentialsException ex) {
+        contar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.LOGIN_FALLIDO);
         return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), List.of());
     }
 

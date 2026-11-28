@@ -1,0 +1,157 @@
+participante,escenario,semana,origen_plan,versiones,adherencia_ponderada,decision,estado_adaptacion
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",1,RULE_ENGINE,1,100.00,null,null
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",2,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",3,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",4,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",5,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",6,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",7,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",8,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U01,"E12-01/E12-08 adherencia alta (sin cambios, progresion)",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",1,RULE_ENGINE,1,33.33,null,null
+U02,"E12-02 adherencia baja y recuperacion",2,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U02,"E12-02 adherencia baja y recuperacion",3,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U02,"E12-02 adherencia baja y recuperacion",4,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U02,"E12-02 adherencia baja y recuperacion",5,CONSERVED,1,100.00,ADAPT_EXPANDED,RESPALDO
+U02,"E12-02 adherencia baja y recuperacion",6,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",7,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",8,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U02,"E12-02 adherencia baja y recuperacion",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",1,RULE_ENGINE,1,33.33,null,null
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",2,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",3,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",4,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",5,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",6,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",7,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",8,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",9,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",10,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",11,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",12,CONSERVED,1,33.33,ADAPT_EXPANDED,RESPALDO
+U03,"E12-03/E12-07 parciales y omitidas (adaptaciones sucesivas)",13,CONSERVED,1,null,ADAPT_EXPANDED,SIN_EFECTO
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",1,RULE_ENGINE,1,100.00,null,null
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",2,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",3,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",4,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",5,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",6,CONSERVED,1,0.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",7,CONSERVED,1,0.00,INSUFFICIENT_DATA,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",8,CONSERVED,1,100.00,INSUFFICIENT_DATA,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U04,"E12-04 semanas sin actividad (6 y 7) e interrupcion temporal",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",1,RULE_ENGINE,1,100.00,null,null
+U05,"E12-05 dolor en la semana 3 y exclusion O20",2,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",3,CONSERVED,1,95.83,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",4,CONSERVED,1,100.00,ADAPT_LOCALIZED,RESPALDO
+U05,"E12-05 dolor en la semana 3 y exclusion O20",5,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",6,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",7,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",8,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U05,"E12-05 dolor en la semana 3 y exclusion O20",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",1,RULE_ENGINE,1,100.00,null,null
+U06,"E12-06 progresion, fatiga y reincorporacion",2,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",3,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",4,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",5,CONSERVED,1,60.23,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",6,CONSERVED,1,100.00,ADAPT_LOCALIZED,SIN_EFECTO
+U06,"E12-06 progresion, fatiga y reincorporacion",7,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",8,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U06,"E12-06 progresion, fatiga y reincorporacion",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U07,"E12-16 retirada en la semana 6",1,RULE_ENGINE,1,100.00,null,null
+U07,"E12-16 retirada en la semana 6",2,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U07,"E12-16 retirada en la semana 6",3,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U07,"E12-16 retirada en la semana 6",4,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U07,"E12-16 retirada en la semana 6",5,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U07,"E12-16 retirada en la semana 6",6,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U07,"E12-16 retirada en la semana 6",7,null,0,null,null,null
+U07,"E12-16 retirada en la semana 6",8,null,0,null,null,null
+U07,"E12-16 retirada en la semana 6",9,null,0,null,null,null
+U07,"E12-16 retirada en la semana 6",10,null,0,null,null,null
+U07,"E12-16 retirada en la semana 6",11,null,0,null,null,null
+U07,"E12-16 retirada en la semana 6",12,null,0,null,null,null
+U07,"E12-16 retirada en la semana 6",13,null,0,null,null,null
+U08,"E12-17 recuperacion de cuenta en la semana 8",1,RULE_ENGINE,1,100.00,null,null
+U08,"E12-17 recuperacion de cuenta en la semana 8",2,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",3,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",4,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",5,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",6,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",7,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",8,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U08,"E12-17 recuperacion de cuenta en la semana 8",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",1,RULE_ENGINE,1,33.33,null,null
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",2,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",3,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",4,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",5,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",6,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",7,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",8,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",9,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",10,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",11,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",12,CONSERVED,1,33.33,ADAPT_EXPANDED,SIN_EFECTO
+U09,"E12-10 interrupcion durante la adaptacion (semana 7)",13,CONSERVED,1,null,ADAPT_EXPANDED,SIN_EFECTO
+U10,"E12-13 cambio de version durante la generacion (semana 11)",1,RULE_ENGINE,1,100.00,null,null
+U10,"E12-13 cambio de version durante la generacion (semana 11)",2,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",3,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",4,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",5,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",6,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",7,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",8,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",12,RULE_ENGINE,2,100.00,NO_CHANGE,SIN_ORDEN
+U10,"E12-13 cambio de version durante la generacion (semana 11)",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",1,null,0,null,null,null
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",2,null,0,null,null,null
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",3,null,0,null,null,null
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",4,null,0,null,null,null
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",5,RULE_ENGINE,1,0.00,null,null
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",6,CONSERVED,1,100.00,INSUFFICIENT_DATA,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",7,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",8,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",9,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",10,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U11,"E12-14 perdida de conexion con Replicate al generar el primer plan",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",1,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",2,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",3,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",4,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",5,RULE_ENGINE,1,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",6,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",7,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",8,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",9,null,0,null,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",10,RULE_ENGINE,1,100.00,null,null
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",11,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",12,CONSERVED,1,100.00,NO_CHANGE,SIN_ORDEN
+U12,"E12-11 prediccion sin identificador confirmado (ruta asincrona)",13,CONSERVED,1,null,NO_CHANGE,SIN_ORDEN

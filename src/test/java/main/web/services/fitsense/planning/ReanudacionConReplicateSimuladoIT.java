@@ -515,7 +515,7 @@ class ReanudacionConReplicateSimuladoIT {
 
     @Test
     @DisplayName("R14/R10 · vence de verdad con la prediccion en curso: FAILED, sin publicar ni pagar mas; el reintento"
-            + " adopta lo ya pagado")
+            + " es OTRA operacion y pide sus propias predicciones (revision de identidad)")
     void venceDeVerdadDuranteUnaPrediccion() throws Exception {
         long u = participante();
         var id = service.request(u).operation().getId();
@@ -540,14 +540,16 @@ class ReanudacionConReplicateSimuladoIT {
         assertThat(planesDe(u)).isZero();
         assertThat(libro.recuento(id).completadas()).as("la salida tardia queda en el libro").isEqualTo(1);
 
-        // R10: el usuario reintenta (FAILED reintentable): adopta el intento 1 y paga solo los que faltan.
+        // R10: el usuario reintenta (FAILED reintentable). Antes de la revision de integracion (27/11/2026) la nueva
+        // operacion ADOPTABA la prediccion de la vencida por usuario y huella. El contenido no prueba identidad: ahora
+        // es otra operacion y pide las suyas. Se acepta el coste (lo vigila el limite por usuario de B5).
         var segunda = service.request(u).operation().getId();
         assertThat(service.claimNext()).contains(segunda);
         service.execute(segunda);
         assertThat(estado(segunda)).isEqualTo("COMPLETED");
         assertThat(planesDe(u)).isEqualTo(1);
-        assertThat(POSTS.get()).as("1 adoptada + 2 nuevas, no 1 + 3").isEqualTo(3);
-        assertThat(libro.recuento(segunda).reutilizadas()).isEqualTo(1);
+        assertThat(POSTS.get()).as("la de la vencida no se hereda: 1 + 3 propias").isEqualTo(4);
+        assertThat(libro.recuento(segunda).reutilizadas()).isZero();
     }
 
     @Test
@@ -708,7 +710,8 @@ class ReanudacionConReplicateSimuladoIT {
     }
 
     @Test
-    @DisplayName("E15 · reintento manual tras un fallo con la misma peticion: adopta las salidas, 0 POST nuevos")
+    @DisplayName("E15 (revision de identidad) · reintento manual tras un fallo con la misma peticion: es OTRA operacion;"
+            + " no adopta las salidas de la anterior y pide las suyas")
     void reintentoManualAdopta() {
         long u = participante();
         var primera = service.request(u).operation().getId();
@@ -725,10 +728,11 @@ class ReanudacionConReplicateSimuladoIT {
         assertThat(service.claimNext()).contains(segunda);
         service.execute(segunda);
 
-        assertThat(POSTS.get()).as("las 3 predicciones ya pagadas se adoptan").isEqualTo(3);
+        // Antes: "las 3 predicciones ya pagadas se adoptan" (0 POST). Ahora cada operacion paga las suyas.
+        assertThat(POSTS.get()).as("3 de la primera + 3 propias de la segunda").isEqualTo(6);
         assertThat(estado(segunda)).isEqualTo("COMPLETED");
         assertThat(planesDe(u)).isEqualTo(1);
-        assertThat(libro.recuento(segunda).reutilizadas()).isEqualTo(3);
-        assertThat(libro.recuento(segunda).iniciadas()).isZero();
+        assertThat(libro.recuento(segunda).reutilizadas()).isZero();
+        assertThat(libro.recuento(segunda).iniciadas()).isEqualTo(3);
     }
 }

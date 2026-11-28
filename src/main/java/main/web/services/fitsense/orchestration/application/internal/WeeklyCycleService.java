@@ -36,6 +36,11 @@ import java.util.Optional;
 @Service
 public class WeeklyCycleService {
 
+    /** B5.1: cierres que terminan sin plan (opcional: las pruebas unitarias construyen el servicio sin Spring). */
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos contadores;
+
+
     private static final Logger log = LoggerFactory.getLogger(WeeklyCycleService.class);
 
     private final PlanningContextFacade planningContextFacade;
@@ -84,8 +89,44 @@ public class WeeklyCycleService {
         if (bloqueo == null)
             return new ResultadoCiclo(CicloSemanalBloqueo.Estado.EJECUTADO,
                     cicloSinBloqueo(userId, measuredWeekStart, newWeekStart));
-        var r = bloqueo.ejecutar(userId, () -> cicloSinBloqueo(userId, measuredWeekStart, newWeekStart));
+        CicloSemanalBloqueo.Resultado<Optional<Long>> r;
+        try {
+            // V66: dentro del bloqueo, el ciclo corre en su operacion WEEKLY_CYCLE con libro de predicciones (lo que
+            // permite reanudarlo tras un reinicio sin pagar otra vez a la IA).
+            r = bloqueo.ejecutar(userId, () -> planningContextFacade.cicloConSeguimiento(userId, measuredWeekStart,
+                    newWeekStart, () -> cicloSinBloqueo(userId, measuredWeekStart, newWeekStart)));
+        } catch (PlanningContextFacade.CicloEnCurso otra) {
+            log.info("Ciclo semanal del usuario {} (semana medida {}) en curso en otra ejecucion: {}", userId,
+                    measuredWeekStart, otra.getMessage());
+            return new ResultadoCiclo(CicloSemanalBloqueo.Estado.EN_CURSO, Optional.empty());
+        }
         return new ResultadoCiclo(r.estado(), r.valor() == null ? Optional.empty() : r.valor());
+    }
+
+    /**
+     * V66 · RELANZA LOS CIERRES SEMANALES INTERRUMPIDOS. Un ciclo cuyo proceso murio deja su operacion WEEKLY_CYCLE en
+     * curso con el lease vencido; la tarea del lunes no vuelve a pasar por esa hora. Este barrido cierra las que ya no se
+     * reanudaran y relanza las demas con {@link #ejecutar}: el mismo bloqueo, la misma comprobacion de «ya publicado» y,
+     * dentro, la adopcion de la operacion con su libro, asi que ninguna prediccion se vuelve a pedir y ninguna semana se
+     * publica dos veces. Aislado por participante.
+     *
+     * @return ciclos relanzados
+     */
+    public int recuperarInterrumpidos() {
+        if (bloqueo == null) return 0;
+        planningContextFacade.cerrarOperacionesIaVencidas();
+        int relanzados = 0;
+        for (var h : planningContextFacade.ciclosSemanalesHuerfanos()) {
+            try {
+                log.warn("CICLO_SEMANAL_RECUPERACION usuario={} semana_medida={} semana_nueva={} ejecuciones={}",
+                        h.userId(), h.semanaMedida(), h.semanaNueva(), h.ejecuciones());
+                ejecutar(h.userId(), h.semanaMedida(), h.semanaNueva());
+                relanzados++;
+            } catch (RuntimeException e) {
+                log.error("Fallo la recuperacion del ciclo semanal del usuario {}: {}", h.userId(), e.getMessage(), e);
+            }
+        }
+        return relanzados;
     }
 
     /**
@@ -173,6 +214,7 @@ public class WeeklyCycleService {
             // el cierre del resto de la cohorte.
             log.error("No se pudo generar el plan del usuario {} para la semana del {}: {}",
                     userId, newWeekStart, e.getMessage());
+            if (contadores != null) contadores.sumar(main.web.services.fitsense.shared.infrastructure.observability.ContadoresOperativos.CICLO_SIN_PLAN);
             return Optional.empty();
         }
 

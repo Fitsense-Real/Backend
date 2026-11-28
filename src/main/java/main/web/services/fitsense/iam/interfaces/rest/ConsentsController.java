@@ -35,29 +35,46 @@ public class ConsentsController {
         }
     }
 
-    public record EstadoResource(Map<String, String> currentVersions, boolean enforcedOnSignup,
-                                 List<ConsentimientoResource> history) {}
+    /**
+     * {@code approvedDocuments}: si la version vigente de cada tipo corresponde a un documento aprobado (B2.1). Una
+     * participacion registrada sin documento aprobado ({@code CASILLA_SIN_DOCUMENTO_APROBADO}) no es prueba valida.
+     */
+    public record EstadoResource(Map<String, String> currentVersions, Map<String, Boolean> approvedDocuments,
+                                 boolean enforcedOnSignup, List<ConsentimientoResource> history) {}
 
     private final ConsentimientoService servicio;
+    private final main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp limite;
+    private final int aceptacionesPorIp;
 
-    public ConsentsController(ConsentimientoService servicio) {
+    public ConsentsController(ConsentimientoService servicio,
+                              main.web.services.fitsense.shared.infrastructure.ratelimit.LimitePorIp limite,
+                              @org.springframework.beans.factory.annotation.Value(
+                                      "${fitsense.consent.accept-per-ip:20}") int aceptacionesPorIp) {
         this.servicio = servicio;
+        this.limite = limite;
+        this.aceptacionesPorIp = aceptacionesPorIp;
     }
 
     @GetMapping
     @Operation(summary = "Versiones vigentes y el historial de consentimientos propios")
     public EstadoResource estado(@AuthenticationPrincipal UserDetailsImpl principal) {
         var vigentes = new LinkedHashMap<String, String>();
-        Arrays.stream(ConsentimientoService.Tipo.values())
-                .forEach(t -> vigentes.put(t.name(), servicio.versionVigente(t).orElse(null)));
-        return new EstadoResource(vigentes, servicio.exigirEnRegistro(),
+        var aprobados = new LinkedHashMap<String, Boolean>();
+        Arrays.stream(ConsentimientoService.Tipo.values()).forEach(t -> {
+            vigentes.put(t.name(), servicio.versionVigente(t).orElse(null));
+            aprobados.put(t.name(), servicio.documentoAprobado(t));
+        });
+        return new EstadoResource(vigentes, aprobados, servicio.exigirEnRegistro(),
                 servicio.historial(principal.getUserId()).stream().map(ConsentimientoResource::de).toList());
     }
 
     @PostMapping
     @Operation(summary = "Acepta la version vigente de las condiciones o de la politica de privacidad")
     public ResponseEntity<ConsentimientoResource> aceptar(@AuthenticationPrincipal UserDetailsImpl principal,
-                                                          @Valid @RequestBody AceptacionResource r) {
+                                                          @Valid @RequestBody AceptacionResource r,
+                                                          jakarta.servlet.http.HttpServletRequest peticion) {
+        // P0-02: el mismo cupo por IP que los endpoints publicos (429 con Retry-After).
+        limite.comprobar("consents-accept", peticion, aceptacionesPorIp, java.time.Duration.ofMinutes(15));
         var c = servicio.aceptar(principal.getUserId(), r.type(), r.documentVersion());
         return ResponseEntity.status(HttpStatus.CREATED).body(ConsentimientoResource.de(c));
     }
